@@ -376,6 +376,11 @@ HERE
     assert_template_result('',     '{% if null == true %}?{% endif %}', {})         
   end
   
+  def test_for_reversed
+    assigns = {'array' => [ 1, 2, 3] }
+    assert_template_result('321','{%for item in array reversed %}{{item}}{%endfor%}',assigns)    
+  end
+  
   def test_ifchanged
     assigns = {'array' => [ 1, 1, 2, 2, 3, 3] }
     assert_template_result('123','{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}',assigns)

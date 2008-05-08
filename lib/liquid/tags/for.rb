@@ -20,7 +20,9 @@ module Liquid
   #
   #    {% for item in collection limit:5 offset:10 %}
   #      {{ item.name }}
-  #    {% end %}
+  #    {% end %}             
+  #
+  #  To reverse the for loop simply use {% for item in collection reversed %}
   #
   # == Available variables:
   #
@@ -40,13 +42,14 @@ module Liquid
   # forloop.last:: Returns true if the item is the last item.
   #
   class For < Block                                             
-    Syntax = /(\w+)\s+in\s+(#{VariableSignature}+)/   
+    Syntax = /(\w+)\s+in\s+(#{VariableSignature}+)\s*(reversed)?/   
   
     def initialize(tag_name, markup, tokens)
       if markup =~ Syntax
         @variable_name = $1
         @collection_name = $2
-        @name = "#{$1}-#{$2}"
+        @name = "#{$1}-#{$2}"           
+        @reversed = $3             
         @attributes = {}
         markup.scan(TagAttributes) do |key, value|
           @attributes[key] = value
@@ -80,10 +83,12 @@ module Liquid
       
       return '' if segment.empty?
       
+      segment.reverse! if @reversed
+
       result = []
         
-      length = segment.length
-      
+      length = segment.length            
+            
       # Store our progress through the collection for the continue flag
       context.registers[:for][@name] = from + segment.length
               
