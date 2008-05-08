@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Content-Language" content="en-us" />
+		
+		<title>products</title>
+		
+		<meta name="ROBOTS" content="ALL" />
+		<meta http-equiv="imagetoolbar" content="no" />
+		<meta name="MSSmartTagsPreventParsing" content="true" />
+		<meta name="Copyright" content="(c) 2005 Copyright content:  Copyright design: Tobias Luetke" />
+		<!-- (c) Copyright 2005 by Tobias Luetke All Rights Reserved. -->
+	</head>
+	
+	<body>
+	  
+	  <h1>There are currently {{products | count}} products in the {{section}} catalog</h1>
+
+    {% if cool_products %}
+      Cool products :) 
+    {% else %}
+      Uncool products :(    
+    {% endif %}
+
+    <ul id="products">
+      
+      {% for product in products %}
+        <li>
+          <h2>{{product.name}}</h2>
+          Only {{product.price | price }}
+      
+          {{product.description | prettyprint | paragraph }}
+          
+          {{ 'it rocks!' | paragraph }}
+          
+        </li>      
+      {% endfor %}
+      
+    </ul>
+	
+	</body>
+</html>
