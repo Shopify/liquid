@@ -90,8 +90,7 @@ module Liquid
           token.respond_to?(:render) ? token.render(context) : token
         rescue Exception => e          
           context.handle_error(e)
-        end
-          
+        end          
       end      
     end
   end  

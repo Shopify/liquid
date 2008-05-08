@@ -96,9 +96,10 @@ class IncludeTagTest < Test::Unit::TestCase
     end                   
     
     Liquid::Template.file_system = infinite_file_system.new
-    
-    assert_match /-{552}Liquid error: stack level too deep$/, 
-      Template.parse("{% include 'loop' %}").render                 
+                   
+    assert_raise(Liquid::StackLevelError) do
+      Template.parse("{% include 'loop' %}").render!
+    end
     
   end
             

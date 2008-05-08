@@ -64,35 +64,31 @@ module Liquid
       collection = context[@collection_name]
       collection = collection.to_a if collection.is_a?(Range)
     
-      return '' if collection.nil? or collection.empty?
-    
-      range = (0..collection.length)
-    
-      if @attributes['limit'] or @attributes['offset']
-        offset = 0
-        if @attributes['offset'] == 'continue'
-          offset = context.registers[:for][@name] 
-        else          
-          offset = context[@attributes['offset']] || 0
-        end
-        limit  = context[@attributes['limit']]
-
-        range_end = limit ? offset + limit : collection.length
-        range = (offset..range_end-1)
-      
-        # Save the range end in the registers so that future calls to 
-        # offset:continue have something to pick up
-        context.registers[:for][@name] = range_end
+      return '' unless collection.respond_to?(:each) 
+                                                 
+      from = if @attributes['offset'] == 'continue'
+        context.registers[:for][@name].to_i
+      else
+        context[@attributes['offset']].to_i
       end
-            
-      result = []
-      segment = collection[range]
-      return '' if segment.nil?        
-
-      context.stack do 
-        length = segment.length
+        
+      limit = context[@attributes['limit']]
+      to    = limit ? limit.to_i + from : nil  
+          
+                       
+      segment = slice_collection_using_each(collection, from, to)      
       
-        segment.each_with_index do |item, index|
+      return '' if segment.empty?
+      
+      result = []
+        
+      length = segment.length
+      
+      # Store our progress through the collection for the continue flag
+      context.registers[:for][@name] = from + segment.length
+              
+      context.stack do 
+        segment.each_with_index do |item, index|     
           context[@variable_name] = item
           context['forloop'] = {
             'name'    => @name,
@@ -103,15 +99,32 @@ module Liquid
             'rindex0' => length - index -1,
             'first'   => (index == 0),
             'last'    => (index == length - 1) }
-        
+
           result << render_all(@nodelist, context)
         end
       end
-    
-      # Store position of last element we rendered. This allows us to do 
-    
-      result 
-    end           
+      result     
+    end          
+        
+    def slice_collection_using_each(collection, from, to)       
+      segments = []      
+      index = 0      
+      yielded = 0
+      collection.each do |item|         
+                
+        if to && to <= index
+          break
+        end
+        
+        if from <= index                               
+          segments << item
+        end                    
+                
+        index += 1
+      end    
+
+      segments
+    end
   end
 
   Template.register_tag('for', For)

@@ -7,4 +7,5 @@ module Liquid
   class FileSystemError < Error; end
   class StandardError < Error; end
   class SyntaxError < Error; end
+  class StackLevelError < Error; end
 end

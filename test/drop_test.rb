@@ -59,6 +59,16 @@ class ProductDrop < Liquid::Drop
     def callmenot
       "protected"
     end
+end                   
+
+class EnumerableDrop < Liquid::Drop   
+  include Enumerable
+  
+  def each
+    yield 1
+    yield 2
+    yield 3
+  end
 end
 
 
@@ -132,6 +142,10 @@ class DropsTest < Test::Unit::TestCase
   
   def test_access_context_from_drop
     assert_equal '123', Liquid::Template.parse( '{%for a in dummy%}{{ context.loop_pos }}{% endfor %}'  ).render('context' => ContextDrop.new, 'dummy' => [1,2,3])            
+  end             
+  
+  def test_enumerable_drop         
+    assert_equal '123', Liquid::Template.parse( '{% for c in collection %}{{c}}{% endfor %}').render('collection' => EnumerableDrop.new)
   end
   
   

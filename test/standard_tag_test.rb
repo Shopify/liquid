@@ -104,11 +104,14 @@ HERE
     assert_template_result('12','{%for i in array limit:2 %}{{ i }}{%endfor%}',assigns)
     assert_template_result('1234','{%for i in array limit:4 %}{{ i }}{%endfor%}',assigns)
     assert_template_result('3456','{%for i in array limit:4 offset:2 %}{{ i }}{%endfor%}',assigns)
-    assert_template_result('3456','{%for i in array limit: 4 offset: 2 %}{{ i }}{%endfor%}',assigns)    
-    
+    assert_template_result('3456','{%for i in array limit: 4 offset: 2 %}{{ i }}{%endfor%}',assigns)        
+  end
+  
+  def test_dynamic_variable_limiting
+    assigns = {'array' => [1,2,3,4,5,6,7,8,9,0]}
     assigns['limit'] = 2
     assigns['offset'] = 2
-    assert_template_result('34','{%for i in array limit: limit offset: offset %}{{ i }}{%endfor%}',assigns)    
+    assert_template_result('34','{%for i in array limit: limit offset: offset %}{{ i }}{%endfor%}',assigns)        
   end
   
   def test_nested_for

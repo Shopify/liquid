@@ -60,6 +60,7 @@ module Liquid
 
     # push new local scope on the stack. use <tt>Context#stack</tt> instead
     def push
+      raise StackLevelError, "Nesting too deep" if @scopes.length > 100
       @scopes.unshift({})
     end
     
