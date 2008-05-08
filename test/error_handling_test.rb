@@ -59,15 +59,11 @@ class ErrorHandlingTest < Test::Unit::TestCase
     
   end            
   
-  def test_missing_endtag
+  def test_missing_endtag_parse_time_error
     
-    assert_nothing_raised do
+    assert_raise(Liquid::SyntaxError) do
       
       template = Liquid::Template.parse(' {% for a in b %} ... ')
-      assert_equal ' Liquid error: Unknown operator =! ', template.render
-      
-      assert_equal 1, template.errors.size
-      assert_equal Liquid::SyntaxError, template.errors.first.class
       
     end
     

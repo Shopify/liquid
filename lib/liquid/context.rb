@@ -42,10 +42,12 @@ module Liquid
     def handle_error(e)
       errors.push(e)
       raise if @rethrow_errors
-      
+        
       case e
-      when SyntaxError then "Liquid syntax error: #{e.message}"        
-      else "Liquid error: #{e.message}"
+      when SyntaxError 
+        "Liquid syntax error: #{e.message}"        
+      else 
+        "Liquid error: #{e.message}"
       end
     end
     
