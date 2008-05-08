@@ -1,8 +1,5 @@
 module Liquid
   
-  class ContextError < StandardError
-  end
-  
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
   #   context['variable'] = 'testing'

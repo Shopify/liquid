@@ -1,7 +1,8 @@
 CHANGELOG
+History.txt
 MIT-LICENSE
 Manifest.txt
-README
+README.txt
 Rakefile
 example/server/example_servlet.rb
 example/server/liquid_servlet.rb
@@ -20,6 +21,7 @@ lib/liquid/errors.rb
 lib/liquid/extensions.rb
 lib/liquid/file_system.rb
 lib/liquid/htmltags.rb
+lib/liquid/module_ex.rb
 lib/liquid/standardfilters.rb
 lib/liquid/strainer.rb
 lib/liquid/tag.rb
@@ -36,6 +38,7 @@ lib/liquid/tags/unless.rb
 lib/liquid/template.rb
 lib/liquid/variable.rb
 test/block_test.rb
+test/condition_test.rb
 test/context_test.rb
 test/drop_test.rb
 test/error_handling_test.rb
@@ -47,6 +50,7 @@ test/helper.rb
 test/html_tag_test.rb
 test/if_else_test.rb
 test/include_tag_test.rb
+test/module_ex_test.rb
 test/output_test.rb
 test/parsing_quirks_test.rb
 test/regexp_test.rb
@@ -56,5 +60,6 @@ test/standard_tag_test.rb
 test/statements_test.rb
 test/strainer_test.rb
 test/template_test.rb
+test/test_helper.rb
 test/unless_else_test.rb
 test/variable_test.rb

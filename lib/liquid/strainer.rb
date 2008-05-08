@@ -24,7 +24,7 @@ module Liquid
     end
               
     def self.global_filter(filter)
-      raise StandardError, "Passed filter is not a module" unless filter.is_a?(Module)
+      raise ArgumentError, "Passed filter is not a module" unless filter.is_a?(Module)
       @@filters[filter.name] = filter
     end
     

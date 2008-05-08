@@ -96,7 +96,7 @@ module Liquid
       left, right = context[left], context[right]
             
 
-      operation = self.class.operators[op] || raise(ArgumentError.new("Error in tag '#{name}' - Unknown operator #{op}"))
+      operation = self.class.operators[op] || raise(ArgumentError.new("Unknown operator #{op}"))
 
       if operation.respond_to?(:call)
         operation.call(self, left, right)

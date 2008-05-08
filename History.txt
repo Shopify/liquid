@@ -1,5 +1,9 @@
+1.9.0 / 2008-03-04
+
 * Fixed gem install rake task
 * Improve Error encapsulation in liquid by maintaining a own set of exceptions instead of relying on ruby build ins
+
+Before 1.9.0
 
 * Added If with or / and expressions
 
