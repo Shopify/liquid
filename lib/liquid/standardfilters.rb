@@ -155,6 +155,26 @@ module Liquid
       array.last if array.respond_to?(:last)
     end
     
+    # addition
+    def plus(input, operand)
+      input + operand if input.respond_to?('+')
+    end
+    
+    # subtraction
+    def minus(input, operand)
+      input - operand if input.respond_to?('-')
+    end
+    
+    # multiplication
+    def times(input, operand)
+      input * operand if input.respond_to?('*')
+    end
+    
+    # division
+    def divided_by(input, operand)
+      input / operand if input.respond_to?('/')
+    end
+    
   end
    
   Template.register_filter(StandardFilters)

@@ -118,9 +118,25 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_template_result "a<br />\nb<br />\nc", "{{ source | newline_to_br }}", 'source' => "a\nb\nc"
   end
   
+  def test_plus
+    assert_template_result "2", "{{ 1 | plus:1 }}"
+    assert_template_result "11", "{{ '1' | plus:'1' }}"
+  end
   
+  def test_minus
+    assert_template_result "4", "{{ input | minus:operand }}", 'input' => 5, 'operand' => 1
+  end
   
+  def test_times
+    assert_template_result "12", "{{ 3 | times:4 }}"
+    assert_template_result "foofoofoofoo", "{{ 'foo' | times:4 }}"
+  end
   
+  def test_divided_by
+    assert_template_result "4", "{{ 12 | divided_by:3 }}"
+    assert_template_result "4", "{{ 14 | divided_by:3 }}"
+    assert_template_result "5", "{{ 15 | divided_by:3 }}"
+  end
   
 end
 
