@@ -51,14 +51,14 @@ module Liquid
       else        
         
         expressions = markup.split(/\b(and|or)\b/).reverse
-        raise SyntaxHelp unless expressions.shift =~ Syntax 
+        raise(SyntaxError, SyntaxHelp) unless expressions.shift =~ Syntax 
 
         condition = Condition.new($1, $2, $3)               
         
         while not expressions.empty?
           operator = expressions.shift 
           
-          raise SyntaxHelp unless expressions.shift.to_s =~ Syntax    
+          raise(SyntaxError, SyntaxHelp) unless expressions.shift.to_s =~ Syntax    
           
           new_condition = Condition.new($1, $2, $3)
           new_condition.send(operator.to_sym, condition)     

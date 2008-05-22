@@ -116,6 +116,10 @@ class IfElseTest < Test::Unit::TestCase
     assert_raise(SyntaxError){ assert_template_result('', '{% if jerry == 1 %}')}
   end
   
+  def test_syntax_error_no_expression
+    assert_raise(SyntaxError) { assert_template_result('', '{% if %}') }
+  end
+  
   def test_if_with_custom_condition
     Condition.operators['contains'] = :[]
     
