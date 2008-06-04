@@ -24,4 +24,8 @@ class LiquidView
     liquid.render(assigns, :filters => [@action_view.controller.master_helper_module], :registers => {:action_view => @action_view, :controller => @action_view.controller})
   end
 
+  def compilable?
+    false
+  end
+
 end
