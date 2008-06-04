@@ -131,7 +131,8 @@ module Liquid
     private
     
     # Uses the <tt>Liquid::TemplateParser</tt> regexp to tokenize the passed source
-    def tokenize(source)      
+    def tokenize(source)
+      source = source.source if source.respond_to?(:source)      
       return [] if source.to_s.empty?
       tokens = source.split(TemplateParser)
 
