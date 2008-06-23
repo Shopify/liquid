@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://www.liquidmarkup.org"
   s.has_rdoc = true
   s.authors = ["Tobias Lütke"]
-  p s.files  = File.read('Manifest.txt').to_a.collect { |f| f.strip }
+  s.files  = Dir['lib/**/*']
   s.rdoc_options = ["--main", "README.txt"]
   s.extra_rdoc_files = ["History.txt", "Manifest.txt", "README.txt"]
 end
