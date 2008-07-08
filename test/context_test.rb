@@ -40,6 +40,28 @@ class CategoryDrop
   end
 end
 
+class CounterDrop < Liquid::Drop
+  def count
+    @count ||= 0
+    @count += 1
+  end
+end
+
+class ArrayLike
+  def fetch(index)
+  end
+
+  def [](index)
+    @counts ||= []
+    @counts[index] ||= 0
+    @counts[index] += 1
+  end
+
+  def to_liquid
+    self
+  end
+end
+
 
 class ContextTest < Test::Unit::TestCase
   include Liquid
@@ -299,6 +321,14 @@ class ContextTest < Test::Unit::TestCase
     assert_equal 'freestyle', @context['products[nested.var].last']
   end
 
+  def test_hash_notation_only_for_hash_access
+    @context['array'] = [1,2,3,4,5]
+    @context['hash'] = {'first' => 'Hello'}
+
+    assert_equal 1, @context['array.first']
+    assert_equal nil, @context['array["first"]']
+    assert_equal 'Hello', @context['hash["first"]']
+  end
 
   def test_first_can_appear_in_middle_of_callchain
 
@@ -364,6 +394,22 @@ class ContextTest < Test::Unit::TestCase
     assert_equal 100, @context['cents.cents.cents.amount']
   end
 
+  def test_drop_with_variable_called_only_once
+    @context['counter'] = CounterDrop.new
+
+    assert_equal 1, @context['counter.count']
+    assert_equal 2, @context['counter.count']
+    assert_equal 3, @context['counter.count']
+  end
+
+  def test_drop_with_key_called_only_once
+    @context['counter'] = CounterDrop.new
+
+    assert_equal 1, @context['counter["count"]']
+    assert_equal 2, @context['counter["count"]']
+    assert_equal 3, @context['counter["count"]']
+  end
+
   def test_proc_as_variable
     @context['dynamic'] = Proc.new { 'Hello' }
 
@@ -382,6 +428,12 @@ class ContextTest < Test::Unit::TestCase
     assert_equal 'Hello', @context['dynamic.lambda']
   end
 
+  def test_array_containing_lambda_as_variable
+    @context['dynamic'] = [1,2, lambda { 'Hello' } ,4,5]
+
+    assert_equal 'Hello', @context['dynamic[2]']
+  end
+
   def test_lambda_is_called_once
     @context['callcount'] = lambda { @global ||= 0; @global += 1; @global.to_s }
 
@@ -398,6 +450,16 @@ class ContextTest < Test::Unit::TestCase
     assert_equal '1', @context['callcount.lambda']
     assert_equal '1', @context['callcount.lambda']
     assert_equal '1', @context['callcount.lambda']
+
+    @global = nil
+  end
+
+  def test_lambda_in_array_is_called_once
+    @context['callcount'] = [1,2, lambda { @global ||= 0; @global += 1; @global.to_s } ,4,5]
+
+    assert_equal '1', @context['callcount[2]']
+    assert_equal '1', @context['callcount[2]']
+    assert_equal '1', @context['callcount[2]']
 
     @global = nil
   end
