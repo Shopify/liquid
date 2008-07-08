@@ -18,6 +18,17 @@ class ParsingQuirksTest < Test::Unit::TestCase
     end
   end
   
+  def test_raise_on_label_and_no_close_bracets
+    assert_raise(SyntaxError) do
+      Template.parse("TEST {{ ")
+    end
+  end    
+  
+  def test_raise_on_label_and_no_close_bracets_percent
+    assert_raise(SyntaxError) do
+      Template.parse("TEST {% ")
+    end
+  end
   
   def test_error_on_empty_filter
     assert_nothing_raised do
@@ -26,4 +37,5 @@ class ParsingQuirksTest < Test::Unit::TestCase
       Template.parse("{{|test|}}")      
     end
   end
+  
 end
