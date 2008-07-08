@@ -192,6 +192,7 @@ class ContextTest < Test::Unit::TestCase
   def test_hierachical_data
     @context['hash'] = {"name" => 'tobi'}
     assert_equal 'tobi', @context['hash.name']
+    assert_equal 'tobi', @context['hash["name"]']
   end
 
   def test_keywords

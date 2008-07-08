@@ -174,7 +174,7 @@ module Liquid
     #
     #  @context['hash'] = {"name" => 'tobi'}
     #  assert_equal 'tobi', @context['hash.name']
-    #  assert_equal 'tobi', @context['hash[name]']
+    #  assert_equal 'tobi', @context['hash["name"]']
     #
     def variable(markup)
       parts = markup.scan(VariableParser)
