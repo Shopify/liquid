@@ -1,12 +1,11 @@
 #!/usr/bin/env ruby
 require File.dirname(__FILE__) + '/helper'
 
-
 module MoneyFilter
   def money(input)
     sprintf(' %d$ ', input)
   end
-  
+
   def money_with_underscore(input)
     sprintf(' %d$ ', input)
   end
@@ -18,33 +17,32 @@ module CanadianMoneyFilter
   end
 end
 
-
 class FiltersTest < Test::Unit::TestCase
   include Liquid
-  
+
   def setup
     @context = Context.new
   end
-    
-  def test_local_filter    
+
+  def test_local_filter
     @context['var'] = 1000
     @context.add_filters(MoneyFilter)
     assert_equal ' 1000$ ', Variable.new("var | money").render(@context)
-  end  
-  
+  end
+
   def test_underscore_in_filter_name
     @context['var'] = 1000
     @context.add_filters(MoneyFilter)
     assert_equal ' 1000$ ', Variable.new("var | money_with_underscore").render(@context)
   end
 
-  def test_second_filter_overwrites_first    
+  def test_second_filter_overwrites_first
     @context['var'] = 1000
     @context.add_filters(MoneyFilter)
-    @context.add_filters(CanadianMoneyFilter)  
-    assert_equal ' 1000$ CAD ', Variable.new("var | money").render(@context)    
+    @context.add_filters(CanadianMoneyFilter)
+    assert_equal ' 1000$ CAD ', Variable.new("var | money").render(@context)
   end
-  
+
   def test_size
     @context['var'] = 'abcd'
     @context.add_filters(MoneyFilter)
@@ -53,7 +51,7 @@ class FiltersTest < Test::Unit::TestCase
 
   def test_join
     @context['var'] = [1,2,3,4]
-    assert_equal "1 2 3 4", Variable.new("var | join").render(@context)    
+    assert_equal "1 2 3 4", Variable.new("var | join").render(@context)
   end
 
   def test_sort
@@ -67,15 +65,15 @@ class FiltersTest < Test::Unit::TestCase
     assert_equal [3], Variable.new("value | sort").render(@context)
     assert_equal ['are', 'flattened'], Variable.new("arrays | sort").render(@context)
   end
-  
+
   def test_strip_html
     @context['var'] = "<b>bla blub</a>"
-    assert_equal "bla blub", Variable.new("var | strip_html").render(@context)    
+    assert_equal "bla blub", Variable.new("var | strip_html").render(@context)
   end
 
   def test_capitalize
     @context['var'] = "blub"
-    assert_equal "Blub", Variable.new("var | capitalize").render(@context)    
+    assert_equal "Blub", Variable.new("var | capitalize").render(@context)
   end
 end
 
@@ -84,15 +82,14 @@ class FiltersInTemplate < Test::Unit::TestCase
 
   def test_local_global
     Template.register_filter(MoneyFilter)
-    
+
     assert_equal " 1000$ ", Template.parse("{{1000 | money}}").render(nil, nil)
     assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render(nil, :filters => CanadianMoneyFilter)
     assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render(nil, :filters => [CanadianMoneyFilter])
   end
-  
+
   def test_local_filter_with_deprecated_syntax
     assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render(nil, CanadianMoneyFilter)
     assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render(nil, [CanadianMoneyFilter])
   end
-  
 end
