@@ -51,6 +51,7 @@ end
 require 'liquid/drop'
 require 'liquid/extensions'
 require 'liquid/errors'
+require 'liquid/scanner'
 require 'liquid/strainer'
 require 'liquid/context'
 require 'liquid/tag'
