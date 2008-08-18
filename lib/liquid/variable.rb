@@ -61,7 +61,7 @@ module Liquid
       return '' if @name.nil?
       @filters.inject(context[@name]) do |output, filter|
         filterargs = filter[1].to_a.collect do |a|
-         context[a]
+          resolve_argument(a, context)
         end
         begin
           output = context.invoke(filter[0], output, *filterargs)
@@ -70,5 +70,14 @@ module Liquid
         end
       end
     end
+
+    private
+      def resolve_argument(arg, context)
+        if arg.is_a?(Hash)
+          Hash[*(arg.map { |key, value| [key, context[value]] }.flatten)]
+        else
+          context[arg]
+        end
+      end
   end
 end
