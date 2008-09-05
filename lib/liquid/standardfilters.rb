@@ -126,16 +126,13 @@ module Liquid
         return input.to_s
       end
       
-      date = case input
-      when String
-        Time.parse(input)
-      when Date, Time, DateTime
-        input
+      date = input.is_a?(String) ? Time.parse(input) : input
+      
+      if date.respond_to?(:strftime)
+        date.strftime(format.to_s)
       else
-        return input
+        input
       end
-              
-      date.strftime(format.to_s)
     rescue => e 
       input
     end
