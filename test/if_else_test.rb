@@ -117,6 +117,18 @@ class IfElseTest < Test::Unit::TestCase
     assert_template_result('yes','{% if "FOO BAR"|truncatewords:1,"--" == "FOO--" %}yes{% endif %}')
     assert_template_result('yes','{% if "FOO BAR"|truncatewords:1,"--"|downcase == "foo--" %}yes{% endif %}')
     assert_template_result('yes','{% if "foo--" == "FOO BAR"|truncatewords:1,"--"|downcase %}yes{% endif %}')
+    # array transformation, to make sure we aren't converting arrays to strings somewhere along the way:
+    assert_template_result('yes','{% if values|sort == sorted %}yes{% endif %}', 'values' => %w{foo bar baz}, 'sorted' => %w{bar baz foo})
+  end
+  
+  def test_allow_no_spaces_in_filtered_expressions
+    assert_template_result('','{% if "foo--" == "FOO BAR" |truncatewords:1,"--"|downcase %}yes{% endif %}')
+    assert_template_result('','{% if "foo--" == "FOO BAR"| truncatewords:1,"--"|downcase %}yes{% endif %}')
+    assert_template_result('','{% if "foo--" == "FOO BAR"|truncatewords :1,"--"|downcase %}yes{% endif %}')
+    assert_template_result('','{% if "foo--" == "FOO BAR"|truncatewords: 1,"--"|downcase %}yes{% endif %}')
+    assert_template_result('','{% if "foo--" == "FOO BAR"|truncatewords:1 ,"--"|downcase %}yes{% endif %}')
+    assert_template_result('','{% if "foo--" == "FOO BAR"|truncatewords:1, "--"|downcase %}yes{% endif %}')
+    assert_template_result('','{% if "foo--" == "FOO BAR"|truncatewords:1,"--" |downcase %}yes{% endif %}')
   end
   
   def test_syntax_error_no_variable
