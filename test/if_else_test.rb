@@ -112,6 +112,13 @@ class IfElseTest < Test::Unit::TestCase
     assert_template_result('elsif','{% if false %}if{% elsif true %}elsif{% endif %}')    
   end
   
+  def test_with_filtered_expressions
+    assert_template_result('yes','{% if "BLAH"|downcase == "blah" %}yes{% endif %}')
+    assert_template_result('yes','{% if "FOO BAR"|truncatewords:1,"--" == "FOO--" %}yes{% endif %}')
+    assert_template_result('yes','{% if "FOO BAR"|truncatewords:1,"--"|downcase == "foo--" %}yes{% endif %}')
+    assert_template_result('yes','{% if "foo--" == "FOO BAR"|truncatewords:1,"--"|downcase %}yes{% endif %}')
+  end
+  
   def test_syntax_error_no_variable
     assert_raise(SyntaxError){ assert_template_result('', '{% if jerry == 1 %}')}
   end

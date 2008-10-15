@@ -19,8 +19,8 @@ module Liquid
       @filters = []
       if match = markup.match(/\s*(#{QuotedFragment})/)
         @name = match[1]
-        if markup.match(/#{FilterSperator}\s*(.*)/)
-          filters = Regexp.last_match(1).split(/#{FilterSperator}/)
+        if markup.match(/#{FilterSeparator}\s*(.*)/)
+          filters = Regexp.last_match(1).split(/#{FilterSeparator}/)
         
           filters.each do |f|    
             if matches = f.match(/\s*(\w+)/)
