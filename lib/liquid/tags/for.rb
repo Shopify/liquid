@@ -42,7 +42,7 @@ module Liquid
   # forloop.last:: Returns true if the item is the last item.
   #
   class For < Block                                             
-    Syntax = /(\w+)\s+in\s+(#{VariableSignature}+)\s*(reversed)?/   
+    Syntax = /(\w+)\s+in\s+(#{Expression}+)\s*(reversed)?/   
   
     def initialize(tag_name, markup, tokens)
       if markup =~ Syntax

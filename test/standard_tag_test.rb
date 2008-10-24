@@ -99,6 +99,10 @@ HERE
     assert_template_result('+--', '{%for item in array%}{% if forloop.first %}+{% else %}-{% endif %}{%endfor%}', assigns)
   end
   
+  def test_for_with_filtered_expressions
+    assert_template_result('abc','{% for letter in letters|sort %}{{ letter }}{% endfor %}', 'letters' => %w{c b a})
+  end
+  
   def test_limiting
     assigns = {'array' => [1,2,3,4,5,6,7,8,9,0]}
     assert_template_result('12','{%for i in array limit:2 %}{{ i }}{%endfor%}',assigns)
