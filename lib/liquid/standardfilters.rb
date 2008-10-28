@@ -63,9 +63,27 @@ module Liquid
     end
 
     # Sort elements of the array
-    def sort(input)
-      [input].flatten.sort
+    # provide optional property with which to sort an array of hashes or drops
+    def sort(input, property = nil)
+      ary = [input].flatten
+      if property.nil?
+        ary.sort
+      elsif ary.first.respond_to?('[]') and !ary.first[property].nil?
+        ary.sort {|a,b| a[property] <=> b[property] }
+      elsif ary.first.respond_to?(property)
+        ary.sort {|a,b| a.send(property) <=> b.send(property) }
+      end
     end               
+    
+    # map/collect on a given property
+    def map(input, property)
+      ary = [input].flatten
+      if ary.first.respond_to?('[]') and !ary.first[property].nil?
+        ary.map {|e| e[property] }
+      elsif ary.first.respond_to?(property)
+        ary.map {|e| e.send(property) }
+      end
+    end
             
     # Replace occurrences of a string with another
     def replace(input, string, replacement = '')
