@@ -67,6 +67,13 @@ class StandardFiltersTest < Test::Unit::TestCase
   
   def test_sort
     assert_equal [1,2,3,4], @filters.sort([4,3,2,1])    
+    assert_equal [{"a" => 1}, {"a" => 2}, {"a" => 3}, {"a" => 4}], @filters.sort([{"a" => 4}, {"a" => 3}, {"a" => 1}, {"a" => 2}], "a")
+  end
+  
+  def test_map
+    assert_equal [1,2,3,4], @filters.map([{"a" => 1}, {"a" => 2}, {"a" => 3}, {"a" => 4}], 'a')
+    assert_template_result 'abc', "{{ ary | map:'foo' | map:'bar' }}",
+      'ary' => [{'foo' => {'bar' => 'a'}}, {'foo' => {'bar' => 'b'}}, {'foo' => {'bar' => 'c'}}]
   end
   
   def test_date
@@ -118,9 +125,25 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_template_result "a<br />\nb<br />\nc", "{{ source | newline_to_br }}", 'source' => "a\nb\nc"
   end
   
+  def test_plus
+    assert_template_result "2", "{{ 1 | plus:1 }}"
+    assert_template_result "11", "{{ '1' | plus:'1' }}"
+  end
   
+  def test_minus
+    assert_template_result "4", "{{ input | minus:operand }}", 'input' => 5, 'operand' => 1
+  end
   
+  def test_times
+    assert_template_result "12", "{{ 3 | times:4 }}"
+    assert_template_result "foofoofoofoo", "{{ 'foo' | times:4 }}"
+  end
   
+  def test_divided_by
+    assert_template_result "4", "{{ 12 | divided_by:3 }}"
+    assert_template_result "4", "{{ 14 | divided_by:3 }}"
+    assert_template_result "5", "{{ 15 | divided_by:3 }}"
+  end
   
 end
 

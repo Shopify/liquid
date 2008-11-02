@@ -13,7 +13,7 @@ module Liquid
   #
   class If < Block
     SyntaxHelp = "Syntax Error in tag 'if' - Valid syntax: if [expression]"
-    Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/
+    Syntax = /(#{Expression})\s*([=!<>a-z_]+)?\s*(#{Expression})?/
     
     def initialize(tag_name, markup, tokens)    
     

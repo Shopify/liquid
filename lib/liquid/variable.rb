@@ -21,8 +21,7 @@ module Liquid
         @name = match[1]
         if markup.match(/#{FilterSeparator}\s*(.*)/)
           filters = Regexp.last_match(1).split(/#{FilterSeparator}/)
-
-          filters.each do |f|
+          filters.each do |f|    
             if matches = f.match(/\s*(\w+)/)
               filtername = matches[1]
               filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*(#{QuotedFragment})/).flatten

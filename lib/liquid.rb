@@ -33,7 +33,12 @@ module Liquid
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
   VariableIncompleteEnd       = /\}\}?/
-  QuotedFragment              = /"[^"]+"|'[^']+'|[^\s,|]+/
+  QuotedFragment              = /"[^"]+"|'[^']+'|[^\s,\|]+/
+  StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s,\|,\:,\,]+/
+  FirstFilterArgument         = /#{FilterArgumentSeparator}(?:#{StrictQuotedFragment})/
+  OtherFilterArgument         = /#{ArgumentSeparator}(?:#{StrictQuotedFragment})/
+  SpacelessFilter             = /#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/
+  Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/
   AnyStartingTag              = /\{\{|\{\%/
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/
