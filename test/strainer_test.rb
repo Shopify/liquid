@@ -13,4 +13,9 @@ class StrainerTest < Test::Unit::TestCase
     assert_equal true, strainer.respond_to?('size') # from the standard lib
   end
   
+  def test_should_respond_to_two_parameters
+    strainer = Strainer.create(nil)
+    assert_equal true, strainer.respond_to?('size', false)
+  end
+  
 end

@@ -34,7 +34,7 @@ module Liquid
       strainer
     end
     
-    def respond_to?(method)
+    def respond_to?(method, include_private = false)
       method_name = method.to_s
       return false if method_name =~ INTERNAL_METHOD
       return false if @@required_methods.include?(method_name)
