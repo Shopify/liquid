@@ -13,8 +13,8 @@ module Liquid
   #    <div class="green"> Item five</div>
   #
   class Cycle < Tag
-    SimpleSyntax = /#{Expression}/        
-    NamedSyntax = /(#{Expression})\s*\:\s*(.*)/
+    SimpleSyntax = /^#{Expression}/        
+    NamedSyntax = /^(#{Expression})\s*\:\s*(.*)/
   
     def initialize(tag_name, markup, tokens)      
       case markup
@@ -27,7 +27,6 @@ module Liquid
       else
         raise SyntaxError.new("Syntax Error in 'cycle' - Valid syntax: cycle [name :] var [, var2, var3 ...]")
       end
-
       super    
     end    
   

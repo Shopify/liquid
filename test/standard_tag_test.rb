@@ -212,6 +212,11 @@ HERE
     assert_template_result('a-b:1 a-b:2','a-b:{{a-b}} {%assign a-b = 2 %}a-b:{{a-b}}',assigns)
     
   end
+  
+  def test_assign_with_colon_and_spaces
+    assigns = {'var' => {'a:b c' => {'paged' => '1' }}}
+    assert_template_result('var2: 1','{%assign var2 = var["a:b c"].paged %}var2: {{var2}}',assigns)
+  end
 
   def test_capture
     assigns = {'var' => 'content' }
@@ -348,6 +353,9 @@ HERE
     assert_template_result('one two','{%cycle "one", "two"%} {%cycle "one", "two"%}') 
     
     assert_template_result('one two one','{%cycle "one", "two"%} {%cycle "one", "two"%} {%cycle "one", "two"%}') 
+    
+    assert_template_result('text-align: left text-align: right','{%cycle "text-align: left", "text-align: right" %} {%cycle "text-align: left", "text-align: right"%}') 
+    
   end
   
   def test_multiple_cycles
