@@ -103,7 +103,17 @@ module Liquid
     # remove the first occurrences of a substring
     def remove_first(input, string)
       input.to_s.sub(string, '')      
-    end            
+    end             
+                              
+    # add one string to another
+    def append(input, string)
+      input.to_s + string.to_s
+    end
+                                
+    # prepend a string to another
+    def prepend(input, string)
+      string.to_s + input.to_s
+    end
                                              
     # Add <br /> tags in front of all newlines in input string
     def newline_to_br(input)        
