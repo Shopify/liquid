@@ -392,18 +392,7 @@ HERE
     assigns = {'array' => [ 1, 2, 3] }
     assert_template_result('321','{%for item in array reversed %}{{item}}{%endfor%}',assigns)    
   end
-  
-  def test_append
-    assigns = {'a' => 'bc', 'b' => 'd' }
-    assert_template_result('bcd',"{{ a | append: 'd'}}",assigns)        
-    assert_template_result('bcd',"{{ a | append: b}}",assigns)        
-  end
-  
-  def test_prepend
-    assigns = {'a' => 'bc', 'b' => 'a' }
-    assert_template_result('abc',"{{ a | prepend: 'a'}}",assigns)        
-    assert_template_result('abc',"{{ a | prepend: b}}",assigns)        
-  end
+
   
   def test_ifchanged
     assigns = {'array' => [ 1, 1, 2, 2, 3, 3] }

@@ -137,6 +137,18 @@ class StandardFiltersTest < Test::Unit::TestCase
   def test_times
     assert_template_result "12", "{{ 3 | times:4 }}"
     assert_template_result "foofoofoofoo", "{{ 'foo' | times:4 }}"
+  end    
+  
+  def test_append
+    assigns = {'a' => 'bc', 'b' => 'd' }
+    assert_template_result('bcd',"{{ a | append: 'd'}}",assigns)        
+    assert_template_result('bcd',"{{ a | append: b}}",assigns)        
+  end
+  
+  def test_prepend
+    assigns = {'a' => 'bc', 'b' => 'a' }
+    assert_template_result('abc',"{{ a | prepend: 'a'}}",assigns)        
+    assert_template_result('abc',"{{ a | prepend: b}}",assigns)        
   end
   
   def test_divided_by
