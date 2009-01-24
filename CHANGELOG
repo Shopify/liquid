@@ -1,3 +1,5 @@
+* Fix LiquidView for Rails 2.2. Fix local assigns for all versions of Rails
+
 * Fixed gem install rake task
 * Improve Error encapsulation in liquid by maintaining a own set of exceptions instead of relying on ruby build ins
 
