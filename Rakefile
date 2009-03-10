@@ -3,7 +3,7 @@ require 'rubygems'
 require 'rake'
 require 'hoe'
 
-PKG_VERSION = "1.9.0"
+PKG_VERSION = "2.0.0"
 PKG_NAME    = "liquid"
 PKG_DESC    = "A secure non evaling end user template engine with aesthetic markup."
 

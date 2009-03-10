@@ -14,7 +14,7 @@ module Liquid
   #
   class Cycle < Tag
     SimpleSyntax = /^#{Expression}/        
-    NamedSyntax = /^(#{Expression})\s*\:\s*(.*)/
+    NamedSyntax  = /^(#{Expression})\s*\:\s*(.*)/
   
     def initialize(tag_name, markup, tokens)      
       case markup

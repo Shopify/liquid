@@ -345,8 +345,7 @@ HERE
     
   end
   
-  
-  
+   
   def test_cycle
 
     assert_template_result('one','{%cycle "one", "two"%}')  
@@ -355,6 +354,9 @@ HERE
     assert_template_result('one two one','{%cycle "one", "two"%} {%cycle "one", "two"%} {%cycle "one", "two"%}') 
     
     assert_template_result('text-align: left text-align: right','{%cycle "text-align: left", "text-align: right" %} {%cycle "text-align: left", "text-align: right"%}') 
+
+    assert_template_result(' ','{% cycle "", "", "</tr><tr>" %}')  
+    assert_template_result('  </tr><tr> ','{% cycle "", "", "</tr><tr>" %} {% cycle "", "", "</tr><tr>" %} {% cycle "", "", "</tr><tr>" %} {% cycle "", "", "</tr><tr>" %}')  
     
   end
   
