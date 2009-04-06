@@ -22,16 +22,33 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 module Liquid
-  FilterSeparator             = /\|/
-  ArgumentSeparator           = ','
-  FilterArgumentSeparator     = ':'
-  VariableAttributeSeparator  = '.'
-  TagStart                    = /\{\%/
-  TagEnd                      = /\%\}/
-  VariableSignature           = /\(?[\w\-\.\[\]]\)?/
-  VariableSegment             = /[\w\-]\??/
+  
+  # Basic apperence:
+                                   
+  # Tags {% look like this %}
+  TagStart                    = /\{%/
+  TagEnd                      = /%\}/
+  
+  # Variables {{look}} like {{this}}
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
+  
+  # Arguments are passed {% like: this %}
+  FilterArgumentSeparator     = ':'     
+  
+  # Hashes are separated {{ like.this }}
+  VariableAttributeSeparator  = '.'   
+  
+  # Filters are piped in {{ like | this }}
+  FilterSeparator             = /\|/     
+  
+  # Muliple arguments are {% separated: like, this %}
+  ArgumentSeparator           = ','
+                                                     
+                                                     
+  # Lexical parsing regexped go below.
+  VariableSignature           = /\(?[\w\-\.\[\]]\)?/
+  VariableSegment             = /[\w\-]\??/
   VariableIncompleteEnd       = /\}\}?/
   QuotedString                = /"[^"]+"|'[^']+'/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/  
