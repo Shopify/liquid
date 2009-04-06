@@ -9,7 +9,7 @@ module Liquid
   #  {{ monkey }}
   #
   class Assign < Tag
-    Syntax = /(#{VariableSignature}+)\s*=\s*(#{Expression}+)/   
+    Syntax = /(#{VariableSignature}+)\s*=\s*(#{QuotedFragment}+)/   
   
     def initialize(tag_name, markup, tokens)          
       if markup =~ Syntax

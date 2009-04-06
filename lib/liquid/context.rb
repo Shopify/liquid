@@ -133,9 +133,6 @@ module Liquid
         :blank?
       when 'empty'
         :empty?
-      # filtered variables
-      when SpacelessFilter
-        filtered_variable(key)
       # Single quoted strings
       when /^'(.*)'$/
         $1.to_s
@@ -223,10 +220,6 @@ module Liquid
       end
 
       object
-    end
-    
-    def filtered_variable(markup)
-      Variable.new(markup).render(self)
     end
   end
 end

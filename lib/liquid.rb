@@ -22,7 +22,7 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 module Liquid
-  FilterSeparator             = /\|/
+  FilterSperator              = /\|/
   ArgumentSeparator           = ','
   FilterArgumentSeparator     = ':'
   VariableAttributeSeparator  = '.'
@@ -33,13 +33,7 @@ module Liquid
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
   VariableIncompleteEnd       = /\}\}?/
-  QuotedString                = /"[^"]+"|'[^']+'/
-  QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/
-  StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s,\|,\:,\,]+/
-  FirstFilterArgument         = /#{FilterArgumentSeparator}(?:#{StrictQuotedFragment})/
-  OtherFilterArgument         = /#{ArgumentSeparator}(?:#{StrictQuotedFragment})/
-  SpacelessFilter             = /#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/
-  Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/
+  QuotedFragment              = /"[^"]+"|'[^']+'|[^\s,|]+/
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/
   AnyStartingTag              = /\{\{|\{\%/
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/
