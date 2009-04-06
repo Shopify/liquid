@@ -22,7 +22,7 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 module Liquid
-  FilterSperator              = /\|/
+  FilterSeparator             = /\|/
   ArgumentSeparator           = ','
   FilterArgumentSeparator     = ':'
   VariableAttributeSeparator  = '.'
