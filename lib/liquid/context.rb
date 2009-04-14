@@ -224,7 +224,7 @@ module Liquid
 
       object
     end
-    
+
     def filtered_variable(markup)
       Variable.new(markup).render(self)
     end
