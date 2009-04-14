@@ -14,7 +14,7 @@ module Liquid
   # One of the strainer's responsibilities is to keep malicious method calls out
   class Strainer < parent_object #:nodoc:
     INTERNAL_METHOD = /^__/
-    @@required_methods = Set.new([:__send__, :respond_to?, :extend, :methods, :class, :object_id])
+    @@required_methods = Set.new([:__id__, :__send__, :respond_to?, :extend, :methods, :class, :object_id])
 
     @@filters = {}
 

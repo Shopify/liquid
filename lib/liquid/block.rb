@@ -1,19 +1,19 @@
 module Liquid
-  
+
   class Block < Tag
 
     def parse(tokens)
       @nodelist ||= []
       @nodelist.clear
 
-      while token = tokens.shift 
+      while token = tokens.shift
 
         case token
-        when /^#{TagStart}/                   
+        when /^#{TagStart}/
           if token =~ /^#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/
 
             # if we found the proper block delimitor just end parsing here and let the outer block
-            # proceed                               
+            # proceed
             if block_delimiter == $1
               end_tag
               return
@@ -23,10 +23,10 @@ module Liquid
             if tag = Template.tags[$1]
               @nodelist << tag.new($1, $2, tokens)
             else
-              # this tag is not registered with the system 
+              # this tag is not registered with the system
               # pass it to the current block for special handling or error reporting
               unknown_tag($1, $2, tokens)
-            end              
+            end
           else
             raise SyntaxError, "Tag '#{token}' was not properly terminated with regexp: #{TagEnd.inspect} "
           end
@@ -37,19 +37,19 @@ module Liquid
         else
           @nodelist << token
         end
-      end       
-      
-      # Make sure that its ok to end parsing in the current block. 
-      # Effectively this method will throw and exception unless the current block is 
-      # of type Document 
+      end
+
+      # Make sure that its ok to end parsing in the current block.
+      # Effectively this method will throw and exception unless the current block is
+      # of type Document
       assert_missing_delimitation!
-    end                     
-    
-    def end_tag      
+    end
+
+    def end_tag
     end
 
     def unknown_tag(tag, params, tokens)
-      case tag 
+      case tag
       when 'else'
         raise SyntaxError, "#{block_name} tag does not expect else tag"
       when 'end'
@@ -61,7 +61,7 @@ module Liquid
 
     def block_delimiter
       "end#{block_name}"
-    end                           
+    end
 
     def block_name
       @tag_name
@@ -77,7 +77,7 @@ module Liquid
     def render(context)
       render_all(@nodelist, context)
     end
-    
+
     protected
 
     def assert_missing_delimitation!
@@ -86,12 +86,12 @@ module Liquid
 
     def render_all(list, context)
       list.collect do |token|
-        begin        
+        begin
           token.respond_to?(:render) ? token.render(context) : token
-        rescue Exception => e          
+        rescue Exception => e
           context.handle_error(e)
-        end          
-      end      
+        end
+      end
     end
-  end  
+  end
 end
