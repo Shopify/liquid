@@ -29,7 +29,7 @@ module Liquid
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
-  VariableSegment             = /[\w\-]\??/
+  VariableSegment             = /[\w\-]/
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
   VariableIncompleteEnd       = /\}\}?/
@@ -44,7 +44,7 @@ module Liquid
   AnyStartingTag              = /\{\{|\{\%/
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/
-  VariableParser              = /\[[^\]]+\]|#{VariableSegment}+/
+  VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/
 end
 
 require 'liquid/drop'
