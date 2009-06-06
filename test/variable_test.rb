@@ -138,4 +138,23 @@ class VariableResolutionTest < Test::Unit::TestCase
     assert_equal 'worked', template.render
   end
 
+  def test_reuse_parsed_template
+    template = Template.parse(%|{{ greeting }} {{ name }}|)
+    template.assigns['greeting'] = 'Goodbye'
+    assert_equal 'Hello Tobi', template.render('greeting' => 'Hello', 'name' => 'Tobi')
+    assert_equal 'Hello ', template.render('greeting' => 'Hello', 'unknown' => 'Tobi')
+    assert_equal 'Hello Brian', template.render('greeting' => 'Hello', 'name' => 'Brian')
+    assert_equal 'Goodbye Brian', template.render('name' => 'Brian')
+    assert_equal({'greeting'=>'Goodbye'}, template.assigns)
+  end
+
+  def test_assigns_not_polluted_from_template
+    template = Template.parse(%|{{ test }}{% assign test = 'bar' %}{{ test }}|)
+    template.assigns['test'] = 'baz'
+    assert_equal 'bazbar', template.render
+    assert_equal 'bazbar', template.render
+    assert_equal 'foobar', template.render('test' => 'foo')
+    assert_equal 'bazbar', template.render
+  end
+
 end

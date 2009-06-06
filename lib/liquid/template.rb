@@ -89,10 +89,11 @@ module Liquid
       when Liquid::Context
         args.shift
       when Hash
-        self.assigns.merge!(args.shift)
-        Context.new(assigns, registers, @rethrow_errors)
+        a = args.shift
+        assigns.each { |k,v| a[k] = v unless a.has_key?(k) }
+        Context.new(a, registers, @rethrow_errors)
       when nil
-        Context.new(assigns, registers, @rethrow_errors)
+        Context.new(assigns.dup, registers, @rethrow_errors)
       else
         raise ArgumentError, "Expect Hash or Liquid::Context as parameter"
       end
