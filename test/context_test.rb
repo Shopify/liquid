@@ -156,7 +156,9 @@ class ContextTest < Test::Unit::TestCase
     assert_equal 'hi? hi!', context.invoke(:hi, 'hi?')
 
     context = Context.new(@template)
-    assert_equal 'hi?', context.invoke(:hi, 'hi?')
+    assert_raises(FilterNotFound) {
+      context.invoke(:hi, 'hi?')
+    }
 
     context.add_filters(filter)
     assert_equal 'hi? hi!', context.invoke(:hi, 'hi?')

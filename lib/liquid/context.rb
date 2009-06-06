@@ -56,7 +56,7 @@ module Liquid
       if strainer.respond_to?(method)
         strainer.__send__(method, *args)
       else
-        args.first
+        raise FilterNotFound, "Filter '#{method}' not found"
       end
     end
 
