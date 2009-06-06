@@ -159,16 +159,12 @@ module Liquid
     # fetches an object starting at the local scope and then moving up
     # the hierachy
     def find_variable(key)
-      @scopes.each do |scope|
-        if scope.has_key?(key)
-          variable = scope[key]
-          variable = scope[key] = variable.call(self) if variable.is_a?(Proc)
-          variable = variable.to_liquid
-          variable.context = self if variable.respond_to?(:context=)
-          return variable
-        end
-      end
-      nil
+      scope = @scopes[0..-2].find { |s| s.has_key?(key) } || @scopes.last
+      variable = scope[key]
+      variable = scope[key] = variable.call(self) if variable.is_a?(Proc)
+      variable = variable.to_liquid
+      variable.context = self if variable.respond_to?(:context=)
+      return variable
     end
 
     # resolves namespaced queries gracefully.
