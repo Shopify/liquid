@@ -131,5 +131,11 @@ class VariableResolutionTest < Test::Unit::TestCase
     template = Template.parse(%|{{ test.test }}|)
     assert_equal 'worked', template.render('test' => {'test' => 'worked'})
   end
+  
+  def test_preset_assigns
+    template = Template.parse(%|{{ test }}|)
+    template.assigns['test'] = 'worked'
+    assert_equal 'worked', template.render
+  end
 
 end
