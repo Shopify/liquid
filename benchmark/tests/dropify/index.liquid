@@ -1,0 +1,47 @@
+<div id="frontproducts"><div id="frontproducts-top"><div id="frontproducts-bottom">
+<h2 style="display: none;">Featured Items</h2>
+{% for product in collections.frontpage.products limit:1 offset:0 %}
+  <div class="productmain">
+   <a href="{{ product.url }}"><img src="{{ product.featured_image | product_img_url: 'small' }}" alt="{{ product.title | escape }}" /></a>
+   <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+   <div class="description">{{ product.description | strip_html | truncatewords: 18 }}</div>
+	<p class="money">{{ product.price_min | money }}</p>
+  </div>
+{% endfor %}
+{% for product in collections.frontpage.products offset:1 %}
+  <div class="product">
+   <a href="{{ product.url }}"><img src="{{ product.featured_image | product_img_url: 'thumb' }}" alt="{{ product.title | escape }}" /></a>
+   <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+     <p class="money">{{ product.price_min | money }}</p>
+  </div>
+{% endfor %}
+</div></div></div>
+
+<div id="mainarticle">
+	{% assign article = pages.frontpage %}
+
+  {% if article.content != "" %}
+	  <h2>{{ article.title }}</h2>
+    <div class="article-body textile">
+		  {{ article.content }}
+		</div>
+	{% else %}
+    <div class="article-body textile">
+	  In <em>Admin &gt; Blogs &amp; Pages</em>, create a page with the handle <strong><code>frontpage</code></strong> and it will show up here.<br />
+	  {{ "Learn more about handles" | link_to "http://wiki.shopify.com/Handle" }}
+    </div>
+	{% endif %}
+  
+</div>
+<br style="clear: both;" />
+<div id="articles">
+  {% for article in blogs.news.articles offset:1  %}
+    <div class="article">
+		<h2>{{ article.title }}</h2>
+		<div class="article-body textile">
+		  {{ article.content }}
+		</div>    
+	</div>
+  {% endfor %}
+</div>
+
