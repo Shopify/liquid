@@ -37,7 +37,7 @@ class Paginate < Liquid::Block
       
       context['paginate'] = pagination      
       
-      collection_size  = context[@collection_name].size
+      collection_size  = context[@collection_name].size      
 
       raise ArgumentError.new("Cannot paginate array '#{@collection_name}'. Not found.") if collection_size.nil?
     
@@ -88,6 +88,6 @@ class Paginate < Liquid::Block
   end
   
   def current_url
-    "/collections/#{frontpage}"
+    "/collections/frontpage"
   end
 end    

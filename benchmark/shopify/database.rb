@@ -41,4 +41,5 @@ end
 
 if __FILE__ == $0
   p Database.tables['collections']['frontpage'].keys
+  #p Database.tables['blog']['articles']
 end

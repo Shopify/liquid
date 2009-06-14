@@ -10,7 +10,6 @@ require 'rubygems'
 require 'active_support'
 require 'yaml'
 require 'digest/md5'
-
 require 'shopify/liquid'
 require 'shopify/database.rb'
 
@@ -50,7 +49,7 @@ class ThemeProfiler
       $stdout.puts "* rendered template %s, content: %s" % [template_name, Digest::MD5.hexdigest(html)]
       
       # Uncomment to dump html files to /tmp so that you can inspect for errors
-      #File.open("/tmp/#{File.basename(template_name)}.html", "w+") { |fp| fp <<html}
+      # File.open("/tmp/#{File.basename(template_name)}.html", "w+") { |fp| fp <<html}
     end
   
     RubyProf.stop    
@@ -70,8 +69,6 @@ class ThemeProfiler
       content_for_layout
     end    
   end
-  
-  
 end
 
 
