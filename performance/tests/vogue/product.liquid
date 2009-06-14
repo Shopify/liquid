@@ -1,0 +1,62 @@
+<div id="product-left">
+	{% for image in product.images %}{% if forloop.first %}<div id="product-image">
+		<a href="{{ image | product_img_url: 'large' }}" rel="lightbox[images]" title="{{ product.title | escape }}"><img src="{{ image | product_img_url: 'medium' }}" alt="{{ product.title | escape }}" /></a>
+	</div>{% else %}
+	<div class="product-images">
+		<a href="{{ image | product_img_url: 'large' }}" rel="lightbox[images]" title="{{ product.title | escape }}"><img src="{{ image | product_img_url: 'small' }}" alt="{{ product.title | escape }}" /></a>
+	</div>{% endif %}{% endfor %}
+</div>
+<div id="product-right">
+	<h1>{{ product.title }}</h1>
+	{{ product.description }}
+	
+	{% if product.available %}
+	<form action="/cart/add" method="post">
+
+	  <div id="product-variants">
+      <div id="price-field"></div>
+
+      <select id="product-select" name='id'>
+        {% for variant in product.variants %}
+          <option value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+        {% endfor %}
+      </select>
+		</div>
+
+    <input type="image" src="{{ 'purchase.png' | asset_url }}" name="add" value="Purchase" id="purchase" />
+	</form>
+	{% else %}
+	  <p class="bold-red">This product is temporarily unavailable</p>
+	{% endif %}
+
+	<div id="product-details">
+		<strong>Continue Shopping</strong><br />
+		Browse more {{ product.type | link_to_type }} or additional {{ product.vendor | link_to_vendor }} products.
+	</div>
+</div>
+
+
+<script type="text/javascript">
+<!--
+  // mootools callback for multi variants dropdown selector
+  var selectCallback = function(variant, selector) {
+    if (variant && variant.available == true) {
+      // selected a valid variant
+      $('purchase').removeClass('disabled'); // remove unavailable class from add-to-cart button
+      $('purchase').disabled = false;           // reenable add-to-cart button
+      $('price-field').innerHTML = Shopify.formatMoney(variant.price, "{{shop.money_with_currency_format}}");  // update price field
+    } else {
+      // variant doesn't exist
+      $('purchase').addClass('disabled');      // set add-to-cart button to unavailable class
+      $('purchase').disabled = true;              // disable add-to-cart button      
+      $('price-field').innerHTML = (variant) ? "Sold Out" : "Unavailable"; // update price-field message
+    }
+  };
+
+  // initialize multi selector for product
+  window.addEvent('domready', function() {
+    new Shopify.OptionSelectors("product-select", { product: {{ product | json }}, onVariantSelected: selectCallback }); 
+  });
+-->
+</script>
+

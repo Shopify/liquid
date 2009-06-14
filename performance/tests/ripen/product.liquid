@@ -1,0 +1,75 @@
+<div id="product-page">
+	<h2 class="heading-shaded">{{ product.title }}</h2>
+	<div id="product-details">
+	<div id="product-images">
+		{% for image in product.images %}
+			{% if forloop.first %}
+				<a href="{{ image | product_img_url: 'large' }}" class="product-image" rel="lightbox[ product]" title="">
+				  <img src="{{ image | product_img_url: 'medium'}}" alt="{{product.title | escape }}" />
+				</a>
+			{% else %}
+				<a href="{{ image | product_img_url: 'large' }}" class="product-image-small" rel="lightbox[ product]" title="">
+				  <img src="{{ image | product_img_url: 'small'}}" alt="{{product.title | escape }}" />
+				</a>
+			{% endif %}
+		{% endfor %}
+	</div>
+	
+	<ul id="product-info">
+		<li>Vendor: {{ product.vendor | link_to_vendor }}</li>
+		<li>Type: {{ product.type | link_to_type }}</li>
+	  </ul>
+	  
+	  <small>{{ product.price_min | money }}{% if product.price_varies %} - {{ product.price_max | money }}{% endif %}</small>
+		
+	  <div id="product-options">
+              {% if product.available %}
+
+		<form action="/cart/add" method="post">
+
+      <select id="product-select" name='id'>
+        {% for variant in product.variants %}
+          <option value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+        {% endfor %}
+      </select>
+		
+      <div id="price-field"></div>		
+		
+			<div class="add-to-cart"><input type="image" name="add" value="Add to Cart" id="add" src="{{ 'add-to-cart.gif' | asset_url }}" /></div>
+		</form>
+              {% else %}
+                  <span>Sold Out!</span>
+              {% endif %}
+	  </div>
+	  
+	  <div class="product-description">
+		{{ product.description }}
+	  </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+<!--
+  // mootools callback for multi variants dropdown selector
+  var selectCallback = function(variant, selector) {
+    if (variant && variant.available == true) {
+      // selected a valid variant
+      $('add').removeClass('disabled'); // remove unavailable class from add-to-cart button
+      $('add').disabled = false;           // reenable add-to-cart button
+      $('price-field').innerHTML = Shopify.formatMoney(variant.price, "{{shop.money_with_currency_format}}");  // update price field
+    } else {
+      // variant doesn't exist
+      $('add').addClass('disabled');      // set add-to-cart button to unavailable class
+      $('add').disabled = true;              // disable add-to-cart button      
+      $('price-field').innerHTML = (variant) ? "Sold Out" : "Unavailable"; // update price-field message
+    }
+  };
+
+  // initialize multi selector for product
+  window.addEvent('domready', function() {
+    new Shopify.OptionSelectors("product-select", { product: {{ product | json }}, onVariantSelected: selectCallback }); 
+  });
+-->
+</script>
+

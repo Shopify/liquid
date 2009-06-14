@@ -1,0 +1,98 @@
+
+	<div id="page" class="innerpage clearfix">
+		<div id="text-page">
+
+					<div class="entry">
+						<h1><span>{{article.title}}</span></h1>
+						<div class="entry-post">
+							<div class="meta">{{ article.created_at | date: "%b %d" }}</div>
+							{{ article.content }}
+						</div>
+						
+	<!-- Comments -->
+{% if blog.comments_enabled? %}
+<div id="comments">
+  <h2>Comments</h2>
+  
+  <!-- List all comments -->
+  <ul id="comment-list">
+  {% for comment in article.comments %}
+    <li>
+      <div class="comment">
+        {{ comment.content }}
+      </div>
+      
+  	  <div class="comment-details">
+  		  Posted by <span class="comment-author">{{ comment.author }}</span> on <span class="comment-date">{{ comment.created_at | date: "%B %d, %Y" }}</span>
+      </div>
+  	</li>
+  {% endfor %}
+  </ul>
+  
+  <!-- Comment Form -->
+  <div id="comment-form">
+  {% form article %}
+    <h2>Leave a comment</h2>
+    
+    <!-- Check if a comment has been submitted in the last request, and if yes display an appropriate message -->
+    {% if form.posted_successfully? %}
+      {% if blog.moderated? %}
+        <div class="notice">
+          Successfully posted your comment.<br />
+          It will have to be approved by the blog owner first before showing up.
+        </div>
+      {% else %}
+        <div class="notice">Successfully posted your comment.</div>
+      {% endif %}
+    {% endif %}
+    
+    {% if form.errors %}
+      <div class="notice error">Not all the fields have been filled out correctly!</div>
+    {% endif %}
+    
+    <dl>
+      <dt class="{% if form.errors contains 'author' %}error{% endif %}"><label for="comment_author">Your name</label></dt>
+      <dd><input type="text" id="comment_author" name="comment[author]" size="40" value="{{form.author}}" class="{% if form.errors contains 'author' %}input-error{% endif %}" /></dd>
+
+      <dt class="{% if form.errors contains 'email' %}error{% endif %}"><label for="comment_email">Your email</label></dt>
+      <dd><input type="text" id="comment_email" name="comment[email]" size="40" value="{{form.email}}" class="{% if form.errors contains 'email' %}input-error{% endif %}" /></dd>
+
+      <dt class="{% if form.errors contains 'body' %}error{% endif %}"><label for="comment_body">Your comment</label></dt>
+      <dd><textarea id="comment_body" name="comment[body]" cols="40" rows="5" class="{% if form.errors contains 'body' %}input-error{% endif %}">{{form.body}}</textarea></dd>
+    </dl>
+    
+    {% if blog.moderated? %}
+      <p class="hint">comments have to be approved before showing up</p>
+    {% endif %}    
+
+    <input type="submit" value="Post comment" id="comment-submit" />
+  {% endform %}
+  </div>
+  <!-- END Comment Form -->
+  
+</div>
+{% endif %}
+<!-- END Comments -->					
+						
+						
+					</div>
+		</div>
+		
+		<div id="three-reasons" class="clearfix">
+			<h3>Why Shop With Us?</h3>
+			<ul>
+				<li class="two-a">
+					<h4>24 Hours</h4>
+					<p>We're always here to help.</p>
+				</li>
+				<li class="two-c">
+					<h4>No Spam</h4>
+					<p>We'll never share your info.</p>
+				</li>
+				<li class="two-d">
+					<h4>Secure Servers</h4>
+					<p>Checkout is 256bit encrypted.</p>
+				</li>
+			</ul>
+		</div>
+	</div>
