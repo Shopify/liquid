@@ -1,6 +1,10 @@
 module Liquid
 
   class Block < Tag
+    IsTag             = /^#{TagStart}/
+    IsVariable        = /^#{VariableStart}/
+    FullToken         = /^#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/
+    ContentOfVariable = /^#{VariableStart}(.*)#{VariableEnd}$/
 
     def parse(tokens)
       @nodelist ||= []
@@ -9,8 +13,8 @@ module Liquid
       while token = tokens.shift
 
         case token
-        when /^#{TagStart}/
-          if token =~ /^#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/
+        when IsTag
+          if token =~ FullToken
 
             # if we found the proper block delimitor just end parsing here and let the outer block
             # proceed
@@ -30,7 +34,7 @@ module Liquid
           else
             raise SyntaxError, "Tag '#{token}' was not properly terminated with regexp: #{TagEnd.inspect} "
           end
-        when /^#{VariableStart}/
+        when IsVariable
           @nodelist << create_variable(token)
         when ''
           # pass
@@ -68,7 +72,7 @@ module Liquid
     end
 
     def create_variable(token)
-      token.scan(/^#{VariableStart}(.*)#{VariableEnd}$/) do |content|
+      token.scan(ContentOfVariable) do |content|
         return Variable.new(content.first)
       end
       raise SyntaxError.new("Variable '#{token}' was not properly terminated with regexp: #{VariableEnd.inspect} ")

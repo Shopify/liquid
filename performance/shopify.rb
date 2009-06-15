@@ -81,7 +81,7 @@ end
   puts 'Success'
   puts
 
-[RubyProf::FlatPrinter, RubyProf::GraphPrinter, RubyProf::GraphHtmlPrinter].each do |klass|
+[RubyProf::FlatPrinter, RubyProf::GraphPrinter, RubyProf::GraphHtmlPrinter, RubyProf::CallTreePrinter].each do |klass|
   filename = (ENV['TMP'] || '/tmp') + (klass.name.include?('Html') ? "/liquid.#{klass.name.downcase}.html" : "/liquid.#{klass.name.downcase}.txt")
   filename.gsub!(/:+/, '_')
   File.open(filename, "w+") { |fp| klass.new(results).print(fp) }
