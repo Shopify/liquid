@@ -22,3 +22,10 @@ Hoe.new(PKG_NAME, PKG_VERSION) do |p|
   p.email          = "tobi@leetsoft.com"
   p.url            = "http://www.liquidmarkup.org"    
 end
+
+desc "Run the liquid profile/perforamce coverage"
+task :profile do
+  
+  ruby "performance/shopify.rb"
+  
+end

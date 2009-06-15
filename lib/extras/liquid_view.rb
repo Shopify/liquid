@@ -5,32 +5,43 @@
 # 
 #   ActionView::Base::register_template_handler :liquid, LiquidView
 class LiquidView
+  PROTECTED_ASSIGNS = %w( template_root response _session template_class action_name request_origin session template
+                          _response url _request _cookies variables_added _flash params _headers request cookies
+                          ignore_missing_templates flash _params logger before_filter_chain_aborted headers )
+  PROTECTED_INSTANCE_VARIABLES = %w( @_request @controller @_first_render @_memoized__pick_template @view_paths 
+                                     @helpers @assigns_added @template @_render_stack @template_format @assigns )
+  
+  def self.call(template)
+    "LiquidView.new(self).render(template, local_assigns)"
+  end
 
-  def initialize(action_view)
-    @action_view = action_view
+  def initialize(view)
+    @view = view
   end
   
-
-  def render(template, local_assigns_for_rails_less_than_2_1_0 = nil)
-    @action_view.controller.headers["Content-Type"] ||= 'text/html; charset=utf-8'
-    assigns = @action_view.assigns.dup
+  def render(template, local_assigns = nil)
+    @view.controller.headers["Content-Type"] ||= 'text/html; charset=utf-8'
     
-    # template is a Template object in Rails >=2.1.0, a source string previously.
-    if template.respond_to? :source
-      source = template.source
-      local_assigns = template.locals
+    # Rails 2.2 Template has source, but not locals
+    if template.respond_to?(:source) && !template.respond_to?(:locals)
+      assigns = (@view.instance_variables - PROTECTED_INSTANCE_VARIABLES).inject({}) do |hash, ivar|
+                  hash[ivar[1..-1]] = @view.instance_variable_get(ivar)
+                  hash
+                end
     else
-      source = template
-      local_assigns = local_assigns_for_rails_less_than_2_1_0
+      assigns = @view.assigns.reject{ |k,v| PROTECTED_ASSIGNS.include?(k) }
     end
-
-    if content_for_layout = @action_view.instance_variable_get("@content_for_layout")
+    
+    source = template.respond_to?(:source) ? template.source : template
+    local_assigns = (template.respond_to?(:locals) ? template.locals : local_assigns) || {}
+    
+    if content_for_layout = @view.instance_variable_get("@content_for_layout")
       assigns['content_for_layout'] = content_for_layout
     end
-    assigns.merge!(local_assigns)
+    assigns.merge!(local_assigns.stringify_keys)
     
     liquid = Liquid::Template.parse(source)
-    liquid.render(assigns, :filters => [@action_view.controller.master_helper_module], :registers => {:action_view => @action_view, :controller => @action_view.controller})
+    liquid.render(assigns, :filters => [@view.controller.master_helper_module], :registers => {:action_view => @view, :controller => @view.controller})
   end
 
   def compilable?

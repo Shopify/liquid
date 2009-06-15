@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <title>{{shop.name}} - {{page_title}}</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  {{ 'main.css'     | asset_url | stylesheet_tag }}
+	{{ 'shop.js'      | asset_url | script_tag }}
+	
+	{{ 'mootools.js'         | asset_url         | script_tag }}
+	{{ 'slimbox.js'          | asset_url         | script_tag }}
+  {{ 'option_selection.js' | shopify_asset_url | script_tag }}
+	{{ 'slimbox.css'         | asset_url         | stylesheet_tag }}
+
+  {{ content_for_header }}
+ </head>
+ 
+<body id="page-{{template}}">
+<p class="hide"><a href="#navigation">Skip to navigation.</a></p>
+<div id="wrapper">
+	<div class="content clearfix">	
+		<div id="header">
+			<h2><a href="/">{{shop.name}}</a></h2>
+		</div>
+		<div id="left-col">
+			{{ content_for_layout }} 
+		</div>
+		<div id="right-col">
+			{% if template != 'cart' %}
+			    <div id="cart-right-col">
+					<dl id="cart-right-col-info">
+						<dt>Shopping Cart</dt>
+						<dd>
+						{% if cart.item_count != 0 %}
+							<a href="/cart">{{ cart.item_count }} {{ cart.item_count | pluralize: 'item', 'items' }}</a> in your cart
+						{% else %}
+							Your cart is empty
+						{% endif %}
+						</dd>
+					</dl>
+				</div>
+			{% endif %}
+			<div id="search">
+				<dl id="searchbox">
+				<dt>Search</dt>
+				<dd>
+				<form action="/search" method="get">
+				<fieldset>
+				<input class="search-input" type="text" onclick="this.select()" value="Search this shop..." name="q" />
+				</fieldset>
+				</form>
+				</dd>
+				</dl>
+			</div>
+			<div id="navigation">
+				<dl class="navbar">
+				<dt>Navigation</dt>
+				{% for link in linklists.main-menu.links %}
+					<dd>{{ link.title | link_to: link.url }}</dd>
+				{% endfor %}
+				</dl>
+				
+				{% if tags %}
+				<dl class="navbar">
+				<dt>Tags</dt>
+  				{% for tag in collection.tags %} 
+					<dd>{{ tag | highlight_active_tag | link_to_tag: tag }}</dd>
+  				{% endfor %}
+  				</dl>
+				{% endif %}
+			</div>
+		</div>
+		
+	</div>
+    <div id="content-padding"></div>
+</div>
+
+<div id="footer">
+	{% for link in linklists.footer.links %}
+	{{ link.title | link_to: link.url }} {% if forloop.rindex != 1 %} | {% endif %}
+	{% endfor %}
+</div>
+
+</body>
+</html>

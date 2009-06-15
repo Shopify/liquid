@@ -156,7 +156,9 @@ class ContextTest < Test::Unit::TestCase
     assert_equal 'hi? hi!', context.invoke(:hi, 'hi?')
 
     context = Context.new(@template)
-    assert_equal 'hi?', context.invoke(:hi, 'hi?')
+    assert_raises(FilterNotFound) {
+      context.invoke(:hi, 'hi?')
+    }
 
     context.add_filters(filter)
     assert_equal 'hi? hi!', context.invoke(:hi, 'hi?')
@@ -190,9 +192,10 @@ class ContextTest < Test::Unit::TestCase
     end
 
     context = Context.new(@template)
-    methods = context.strainer.methods
+    methods_before = context.strainer.methods.map { |method| method.to_s }
     context.add_filters(filter)
-    assert_equal (methods + ['hi']).sort, context.strainer.methods.sort
+    methods_after = context.strainer.methods.map { |method| method.to_s }
+    assert_equal (methods_before + ["hi"]).sort, methods_after.sort
   end
 
   def test_add_item_in_outer_scope
@@ -289,10 +292,8 @@ class ContextTest < Test::Unit::TestCase
   end
 
   def test_access_hashes_with_hash_notation
-
     @context['products'] = {'count' => 5, 'tags' => ['deepsnow', 'freestyle'] }
     @context['product'] = {'variants' => [ {'title' => 'draft151cm'}, {'title' => 'element151cm'}  ]}
-
 
     assert_equal 5, @context['products["count"]']
     assert_equal 'deepsnow', @context['products["tags"][0]']
@@ -417,25 +418,25 @@ class ContextTest < Test::Unit::TestCase
   end
 
   def test_lambda_as_variable
-    @context['dynamic'] = lambda { 'Hello' }
+    @context['dynamic'] = proc { 'Hello' }
 
     assert_equal 'Hello', @context['dynamic']
   end
 
   def test_nested_lambda_as_variable
-    @context['dynamic'] = { "lambda" => lambda { 'Hello' } }
+    @context['dynamic'] = { "lambda" => proc { 'Hello' } }
 
     assert_equal 'Hello', @context['dynamic.lambda']
   end
 
   def test_array_containing_lambda_as_variable
-    @context['dynamic'] = [1,2, lambda { 'Hello' } ,4,5]
+    @context['dynamic'] = [1,2, proc { 'Hello' } ,4,5]
 
     assert_equal 'Hello', @context['dynamic[2]']
   end
 
   def test_lambda_is_called_once
-    @context['callcount'] = lambda { @global ||= 0; @global += 1; @global.to_s }
+    @context['callcount'] = proc { @global ||= 0; @global += 1; @global.to_s }
 
     assert_equal '1', @context['callcount']
     assert_equal '1', @context['callcount']
@@ -445,7 +446,7 @@ class ContextTest < Test::Unit::TestCase
   end
 
   def test_nested_lambda_is_called_once
-    @context['callcount'] = { "lambda" => lambda { @global ||= 0; @global += 1; @global.to_s } }
+    @context['callcount'] = { "lambda" => proc { @global ||= 0; @global += 1; @global.to_s } }
 
     assert_equal '1', @context['callcount.lambda']
     assert_equal '1', @context['callcount.lambda']
@@ -455,7 +456,7 @@ class ContextTest < Test::Unit::TestCase
   end
 
   def test_lambda_in_array_is_called_once
-    @context['callcount'] = [1,2, lambda { @global ||= 0; @global += 1; @global.to_s } ,4,5]
+    @context['callcount'] = [1,2, proc { @global ||= 0; @global += 1; @global.to_s } ,4,5]
 
     assert_equal '1', @context['callcount[2]']
     assert_equal '1', @context['callcount[2]']
@@ -467,7 +468,7 @@ class ContextTest < Test::Unit::TestCase
   def test_access_to_context_from_proc
     @context.registers[:magic] = 345392
 
-    @context['magic'] = lambda { @context.registers[:magic] }
+    @context['magic'] = proc { @context.registers[:magic] }
 
     assert_equal 345392, @context['magic']
   end

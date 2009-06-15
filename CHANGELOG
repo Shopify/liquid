@@ -1,9 +1,13 @@
+* Ruby 1.9.1 bugfixes
+
+* Fix LiquidView for Rails 2.2. Fix local assigns for all versions of Rails
+
 * Fixed gem install rake task
 * Improve Error encapsulation in liquid by maintaining a own set of exceptions instead of relying on ruby build ins
 
 * Added If with or / and expressions
 
-* Implemented .to_liquid for all objects which can be passed to liquid like Strings Arrays Hashes Numerics and Booleans. To export new objects to liquid just implement .to_liquid on them and return objects which themselves have .to_liquid methods. 
+* Implemented .to_liquid for all objects which can be passed to liquid like Strings Arrays Hashes Numerics and Booleans. To export new objects to liquid just implement .to_liquid on them and return objects which themselves have .to_liquid methods.
 
 * Added more tags to standard library
 
@@ -22,17 +26,17 @@
 * Fixed bug with string filter parameters failing to tolerate commas in strings. [Paul Hammond]
 
 * Improved filter parameters. Filter parameters are now context sensitive; Types are resolved according to the rules of the context. Multiple parameters are now separated by the Liquid::ArgumentSeparator: , by default [Paul Hammond]
-	
-	{{ 'Typo' | link_to: 'http://typo.leetsoft.com', 'Typo - a modern weblog engine' }}
-	
 
-* Added Liquid::Drop. A base class which you can use for exporting proxy objects to liquid which can acquire more data when used in liquid. [Tobias Luetke] 
+  {{ 'Typo' | link_to: 'http://typo.leetsoft.com', 'Typo - a modern weblog engine' }}
+
+
+* Added Liquid::Drop. A base class which you can use for exporting proxy objects to liquid which can acquire more data when used in liquid. [Tobias Luetke]
 
   class ProductDrop < Liquid::Drop
     def top_sales
        Shop.current.products.find(:all, :order => 'sales', :limit => 10 )
     end
-  end   
+  end
   t = Liquid::Template.parse( ' {% for product in product.top_sales %} {{ product.name }} {% endfor %} '  )
   t.render('product' => ProductDrop.new )
 

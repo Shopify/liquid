@@ -1,0 +1,94 @@
+	<div id="gwrap">
+		<div id="gbox">
+			<h1>Three Great Reasons You Should Shop With Us...</h1>
+			<ul>
+				<li class="gbox1">
+					<h2>Free Shipping</h2>
+					<p>On all orders over $25</p>
+				</li>
+				<li class="gbox2">
+					<h2>Top Quality</h2>
+					<p>Hand made in our shop</p>
+				</li>
+				<li class="gbox3">
+					<h2>100% Guarantee</h2>
+					<p>Any time, any reason</p>
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+	<div id="page" class="clearfix">
+		
+		<div class="latest-news">{{pages.alert.content}}</div>
+		
+		<ul class="item-list clearfix">
+		
+			{% for product in collections.frontpage.products %}
+			<li>
+				<form action="/cart/add" method="post">
+				<div class="item-list-item">					
+					<div class="ili-top clearfix">
+						<div class="ili-top-content">
+							<h2><a href="{{product.url}}">{{product.title}}</a></h2>
+							{{ product.description | truncatewords: 15 }}</p> <!-- extra cloding <p> tag for truncation -->
+						</div>						
+						<a href="{{product.url}}" class="ili-top-image"><img src="{{ product.featured_image | product_img_url: 'small' }}" alt="{{ product.title | escape }}"/></a>	
+					</div>
+					
+					<div class="ili-bottom clearfix">
+						<p class="hiddenvariants" style="display: none">{% for variant in product.variants %}<span><input type="radio" name="id" value="{{variant.id}}" id="radio_{{variant.id}}" style="vertical-align: middle;" {%if forloop.first%} checked="checked" {%endif%} /><label for="radio_{{variant.id}}">{{ variant.price | money_with_currency }} - {{ variant.title }}</label></span>{% endfor %}</p>
+						<input type="submit" class="" value="Add to Basket" />
+						<p>
+							<a href="{{product.url}}">View Details</a>	
+							
+							<span>
+								{% if product.compare_at_price %} 			  
+									{% if product.price_min != product.compare_at_price %}			    
+										{{product.compare_at_price | money}} -
+			  						{% endif %}
+								{% endif %}
+								<strong>
+									{{product.price_min | money}}
+								</strong>
+							</span>
+						</p>
+					</div>
+				</div>
+				</form>
+			</li>
+			{% endfor %}
+
+		</ul>
+
+		<div id="one-two">
+			<div id="two">
+				<h3>Why Shop With Us?</h3>
+				<ul>
+					<li class="two-a">
+						<h4>24 Hours</h4>
+						<p>We're always here to help.</p>
+					</li>
+					<li class="two-c">
+						<h4>No Spam</h4>
+						<p>We'll never share your info.</p>
+					</li>
+					<li class="two-b">
+						<h4>Save Energy</h4>
+						<p>We're green, all the way.</p>
+					</li>
+					<li class="two-d">
+						<h4>Secure Servers</h4>
+						<p>Checkout is 256bits encrypted.</p>
+					</li>
+				</ul>
+			</div>
+			
+			<div id="one">
+				<h3>Our Company</h3>
+				{{pages.about-us.content | truncatewords: 49}} <a href="/pages/about-us">read more</a></p>
+			</div>
+		</div>
+		
+	</div>
+	<!-- end page -->

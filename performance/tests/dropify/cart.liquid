@@ -1,0 +1,66 @@
+<script type="text/javascript">
+  function remove_item(id) {
+      document.getElementById('updates_'+id).value = 0;
+      document.getElementById('cartform').submit();
+  }
+</script>
+
+<div>
+
+  {% if cart.item_count == 0 %} 
+    <h4>Your shopping cart is looking rather empty...</h4>
+  {% else %}
+  <form action="/cart" method="post" id="cartform">
+
+  <div id="cart">
+  
+  <h3>You have {{ cart.item_count }} {{ cart.item_count | pluralize: 'product', 'products' }} in here!</h3>
+
+    <ul id="line-items">
+      {% for item in cart.items %}
+      <li id="item-{{item.id}}" class="clearfix">
+        <div class="thumb">
+				  <div class="prodimage">
+          <a href="{{item.product.url}}" title="View {{item.title}} Page"><img src="{{item.product.featured_image | product_img_url: 'thumb' }}" alt="{{item.title | escape }}" /></a>
+        </div></div>
+        <h3 style="padding-right: 150px">
+			<a href="{{item.product.url}}" title="View {{item.title | escape }} Page">
+				{{ item.title }}
+				{% if item.variant.available == true %}
+				   ({{item.variant.title}})
+				{% endif %}
+			</a>	
+		</h3>
+        <small class="itemcost">Costs {{ item.price | money }} each, <span class="money">{{item.line_price | money }}</span> total.</small>
+        <p class="right">
+          <label for="updates">How many? </label> 
+          <input type="text" size="4" name="updates[{{item.variant.id}}]" id="updates_{{item.variant.id}}" value="{{item.quantity}}" onfocus="this.select();"/><br />
+          <a href="#" onclick="remove_item({{item.variant.id}}); return false;" class="remove"><img style="padding:15px 0 0 0;margin:0;" src="{{ 'delete.gif' | asset_url }}" /></a>
+        </p>
+      </li>
+      {% endfor %}
+      <li id="total">
+        <input type="image" id="update-cart" name="update" value="Update My Cart" src="{{ 'update.gif' | asset_url }}" />
+        Subtotal: 
+        <span class="money">{{ cart.total_price | money_with_currency }}</span>
+      </li>
+    </ul>
+
+  </div>
+  
+    <div class="info">
+		<input type="image" value="Checkout!" name="checkout" src="{{ 'checkout.gif' | asset_url }}" />
+    </div>
+  
+  	{% if additional_checkout_buttons %}
+    <div class="additional-checkout-buttons">
+      <p>- or -</p>
+      {{ content_for_additional_checkout_buttons }}
+    </div>
+    {% endif %}
+  
+  </form>
+
+  {% endif %}
+
+</div>

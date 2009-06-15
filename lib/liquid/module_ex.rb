@@ -18,7 +18,7 @@
 #   end
 # end
 #
-# if you want to extend the drop to other methods you can defines more methods 
+# if you want to extend the drop to other methods you can defines more methods
 # in the class <YourClass>::LiquidDropClass
 #
 #   class SomeClass::LiquidDropClass
@@ -37,11 +37,11 @@
 # output:
 # 'this comes from an allowed method and this from another allowed method'
 #
-# You can also chain associations, by adding the liquid_method call in the 
+# You can also chain associations, by adding the liquid_method call in the
 # association models.
 #
 class Module
-  
+
   def liquid_methods(*allowed_methods)
     drop_class = eval "class #{self.to_s}::LiquidDropClass < Liquid::Drop; self; end"
     define_method :to_liquid do
@@ -58,5 +58,5 @@ class Module
       end
     end
   end
-  
+
 end

@@ -1,10 +1,10 @@
 Gem::Specification.new do |s|
   s.name = %q{liquid}
-  s.version = "1.9.0"
-  s.specification_version = 2 if s.respond_to? :specification_version=
+  s.version = "2.0.1"
+
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tobias Luetke"]
-  s.date = %q{2008-06-23}
+  s.date = %q{2009-04-13}
   s.description = %q{A secure non evaling end user template engine with aesthetic markup.}
   s.email = %q{tobi@leetsoft.com}
   s.extra_rdoc_files = ["History.txt", "Manifest.txt", "README.txt"]
@@ -14,6 +14,16 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--main", "README.txt"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{liquid}
-  s.rubygems_version = %q{1.2.0}
+  s.rubygems_version = %q{1.3.1}
   s.summary = %q{A secure non evaling end user template engine with aesthetic markup.}
+
+  if s.respond_to? :specification_version then
+    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
+    s.specification_version = 2
+
+    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+    else
+    end
+  else
+  end
 end

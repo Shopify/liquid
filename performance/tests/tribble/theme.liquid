@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>{{shop.name}} - {{page_title}}</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	{{ 'reset.css'     | asset_url | stylesheet_tag }}
+	{{ 'style.css'     | asset_url | stylesheet_tag }}
+	
+	{{ 'lightbox.css'                         | asset_url | stylesheet_tag }}
+  {{ 'prototype/1.6/prototype.js'           | global_asset_url  | script_tag }}
+  {{ 'scriptaculous/1.8.2/scriptaculous.js' | global_asset_url  | script_tag }}
+	{{ 'lightbox.js'                          | asset_url | script_tag }}
+  {{ 'option_selection.js'                  | shopify_asset_url | script_tag }}
+
+  {{ content_for_header }}
+</head>
+<body id="page-{{template}}">
+
+<div id="wrap">
+	
+	<div id="top">
+		<div id="cart">
+			<h3>Shopping Cart</h3>
+			<p class="cart-count">
+				{% if cart.item_count == 0 %}
+					Your cart is currently empty
+				{% else %}
+					{{ cart.item_count }} {{ cart.item_count | pluralize: 'item', 'items' }} <span>-</span> Total: {{cart.total_price | money_with_currency }} <span>-</span> <a href="/cart">View Cart</a>
+				{% endif %}			
+			</p>
+		</div>	
+		
+		<div id="site-title">
+			<h3><a href="/">{{shop.name}}</a></h3>
+			<h4><span>Tribble: A Shopify Theme</span></h4>
+			
+		</div>	
+	</div>
+	
+	<ul id="nav">
+		{% for link in linklists.main-menu.links %}
+		 <li>{{ link.title | link_to: link.url }}</li>
+		{% endfor %}
+	</ul>
+	
+	{{ content_for_layout }}
+
+	<div id="foot" class="clearfix">
+		<div class="quick-links">
+			<h4>Quick Navigation</h4>
+			<ul class="clearfix">
+				<li><a href="/">Home</a></li>
+				<li><a href="#top">Back to top</a></li>
+				{% for link in linklists.main-menu.links %}
+		 		<li>{{ link.title | link_to: link.url }}</li>
+				{% endfor %}
+			</ul>
+		</div>
+		
+		<div class="quick-contact">
+			<h4>Quick Contact</h4>
+			<div class="vcard">
+ 				
+  				<div class="org fn">
+   					<div class="organization-name">Really Great Widget Co.</div>
+  				</div>
+				<div class="adr">
+  					<span class="street-address">2531 Barrington Court</span>
+  					<span class="locality">Hayward</span>, 
+					<abbr title="California" class="region">CA</abbr>
+	  				<span class="postal-code">94545</span>
+ 				</div>
+				<a class="email" href="mailto:email@myshopifysite.com">
+					email@myshopifysite.com
+				</a>
+				<div class="tel">
+					<span class="type">Support:</span> <span class="value">800-555-9954</span>
+				</div>
+			</div>
+
+		</div>
+		
+		<p><a href="http://shopify.com" class="we-made">Powered by Shopify</a> &copy; Copyright {{ "now" | date: "%Y" }} {{ shop.name }}, All Rights Reserved.  <a href="/blogs/news.xml" id="foot-rss">RSS Feed</a></p>
+	</div>
+	
+</div>
+
+</body>
+</html>

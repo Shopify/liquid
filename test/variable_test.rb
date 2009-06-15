@@ -131,5 +131,42 @@ class VariableResolutionTest < Test::Unit::TestCase
     template = Template.parse(%|{{ test.test }}|)
     assert_equal 'worked', template.render('test' => {'test' => 'worked'})
   end
+  
+  def test_preset_assigns
+    template = Template.parse(%|{{ test }}|)
+    template.assigns['test'] = 'worked'
+    assert_equal 'worked', template.render
+  end
+
+  def test_reuse_parsed_template
+    template = Template.parse(%|{{ greeting }} {{ name }}|)
+    template.assigns['greeting'] = 'Goodbye'
+    assert_equal 'Hello Tobi', template.render('greeting' => 'Hello', 'name' => 'Tobi')
+    assert_equal 'Hello ', template.render('greeting' => 'Hello', 'unknown' => 'Tobi')
+    assert_equal 'Hello Brian', template.render('greeting' => 'Hello', 'name' => 'Brian')
+    assert_equal 'Goodbye Brian', template.render('name' => 'Brian')
+    assert_equal({'greeting'=>'Goodbye'}, template.assigns)
+  end
+
+  def test_assigns_not_polluted_from_template
+    template = Template.parse(%|{{ test }}{% assign test = 'bar' %}{{ test }}|)
+    template.assigns['test'] = 'baz'
+    assert_equal 'bazbar', template.render
+    assert_equal 'bazbar', template.render
+    assert_equal 'foobar', template.render('test' => 'foo')
+    assert_equal 'bazbar', template.render
+  end
+
+  def test_hash_with_default_proc
+    template = Template.parse(%|Hello {{ test }}|)
+    assigns = Hash.new { |h,k| raise "Unknown variable '#{k}'" }
+    assigns['test'] = 'Tobi'
+    assert_equal 'Hello Tobi', template.render!(assigns)
+    assigns.delete('test')
+    e = assert_raises(RuntimeError) {
+      template.render!(assigns)
+    }
+    assert_equal "Unknown variable 'test'", e.message
+  end
 
 end

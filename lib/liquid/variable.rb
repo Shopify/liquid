@@ -21,8 +21,7 @@ module Liquid
         @name = match[1]
         if markup.match(/#{FilterSeparator}\s*(.*)/)
           filters = Regexp.last_match(1).split(/#{FilterSeparator}/)
-        
-          filters.each do |f|    
+          filters.each do |f|
             if matches = f.match(/\s*(\w+)/)
               filtername = matches[1]
               filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*(#{QuotedFragment})/).flatten
@@ -35,8 +34,7 @@ module Liquid
 
     def render(context)
       return '' if @name.nil?
-      output = context[@name]
-      @filters.inject(output) do |output, filter|
+      @filters.inject(context[@name]) do |output, filter|
         filterargs = filter[1].to_a.collect do |a|
          context[a]
         end
@@ -46,7 +44,6 @@ module Liquid
           raise FilterNotFound, "Error - filter '#{filter[0]}' in '#{@markup.strip}' could not be found."
         end
       end
-      output
     end
   end
 end

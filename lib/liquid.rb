@@ -22,41 +22,29 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 module Liquid
-  
-  # Basic apperence:
-                                   
-  # Tags {% look like this %}
-  TagStart                    = /\{%/
-  TagEnd                      = /%\}/
-  
-  # Variables {{look}} like {{this}}
+  FilterSeparator             = /\|/
+  ArgumentSeparator           = ','
+  FilterArgumentSeparator     = ':'
+  VariableAttributeSeparator  = '.'
+  TagStart                    = /\{\%/
+  TagEnd                      = /\%\}/
+  VariableSignature           = /\(?[\w\-\.\[\]]\)?/
+  VariableSegment             = /[\w\-]/
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
-  
-  # Arguments are passed {% like: this %}
-  FilterArgumentSeparator     = ':'     
-  
-  # Hashes are separated {{ like.this }}
-  VariableAttributeSeparator  = '.'   
-  
-  # Filters are piped in {{ like | this }}
-  FilterSeparator             = /\|/     
-  
-  # Muliple arguments are {% separated: like, this %}
-  ArgumentSeparator           = ','
-                                                     
-                                                     
-  # Lexical parsing regexped go below.
-  VariableSignature           = /\(?[\w\-\.\[\]]\)?/
-  VariableSegment             = /[\w\-]\??/
   VariableIncompleteEnd       = /\}\}?/
   QuotedString                = /"[^"]+"|'[^']+'/
-  QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/  
+  QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/
+  StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s,\|,\:,\,]+/
+  FirstFilterArgument         = /#{FilterArgumentSeparator}(?:#{StrictQuotedFragment})/
+  OtherFilterArgument         = /#{ArgumentSeparator}(?:#{StrictQuotedFragment})/
+  SpacelessFilter             = /#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/
+  Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/
   AnyStartingTag              = /\{\{|\{\%/
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/
-  VariableParser              = /\[[^\]]+\]|#{VariableSegment}+/
+  VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/
 end
 
 require 'liquid/drop'

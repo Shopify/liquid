@@ -1,0 +1,945 @@
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+#   Variants
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+product_variants: 
+  - &product-1-var-1
+    id: 1
+    title: 151cm / Normal
+    price: 19900
+    weight: 1000
+    compare_at_price: 49900
+    available: true
+    inventory_quantity: 5
+    option1: 151cm
+    option2: Normal
+    option3: 
+  - &product-1-var-2
+    id: 2
+    title: 155cm / Normal
+    price: 31900
+    weight: 1000
+    compare_at_price: 50900
+    available: true
+    inventory_quantity: 2
+    option1: 155cm
+    option2: Normal
+    option3: 
+  - &product-2-var-1
+    id: 3
+    title: 162cm
+    price: 29900
+    weight: 1000
+    compare_at_price: 52900
+    available: true
+    inventory_quantity: 3
+    option1: 162cm
+    option2: 
+    option3: 
+  - &product-3-var-1
+    id: 4
+    title: 159cm
+    price: 19900
+    weight: 1000
+    compare_at_price: 
+    available: true
+    inventory_quantity: 4
+    option1: 159cm
+    option2: 
+    option3: 
+  - &product-4-var-1
+    id: 5
+    title: 159cm
+    price: 19900
+    weight: 1000
+    compare_at_price: 32900
+    available: true
+    inventory_quantity: 6
+    option1: 159cm
+    option2: 
+    option3: 
+  - &product-1-var-3
+    id: 6
+    title: 158cm / Wide
+    price: 23900
+    weight: 1000
+    compare_at_price: 99900
+    available: false
+    inventory_quantity: 0
+    option1: 158cm
+    option2: Wide
+    option3:
+  - &product-3-var-2
+    id: 7
+    title: 162cm
+    price: 19900
+    weight: 1000
+    compare_at_price: 
+    available: false
+    inventory_quantity: 0
+    option1: 162cm
+    option2: 
+    option3: 
+  - &product-3-var-3
+    id: 8
+    title: 165cm
+    price: 22900
+    weight: 1000
+    compare_at_price:
+    available: true
+    inventory_quantity: 4
+    option1: 165cm
+    option2: 
+    option3: 
+  - &product-5-var-1
+    id: 9
+    title: black / 42
+    price: 11900
+    weight: 500
+    compare_at_price: 22900
+    available: true
+    inventory_quantity: 1
+    option1: black
+    option2: 42
+    option3:
+  - &product-5-var-2
+    id: 10
+    title: beige / 42
+    price: 11900
+    weight: 500
+    compare_at_price: 22900
+    available: true
+    inventory_quantity: 3
+    option1: beige
+    option2: 42
+    option3:
+  - &product-5-var-3
+    id: 11
+    title: white / 42
+    price: 13900
+    weight: 500
+    compare_at_price: 24900
+    available: true
+    inventory_quantity: 1
+    option1: white
+    option2: 42
+    option3:
+  - &product-5-var-4
+    id: 12
+    title: black / 44
+    price: 11900
+    weight: 500
+    compare_at_price: 22900
+    available: true
+    inventory_quantity: 2
+    option1: black
+    option2: 44
+    option3:
+  - &product-5-var-5
+    id: 13
+    title: beige / 44
+    price: 11900
+    weight: 500
+    compare_at_price: 22900
+    available: false
+    inventory_quantity: 0
+    option1: beige
+    option2: 44
+    option3:
+  - &product-5-var-6
+    id: 14
+    title: white / 44
+    price: 13900
+    weight: 500
+    compare_at_price: 24900
+    available: false
+    inventory_quantity: 0
+    option1: white
+    option2: 44
+    option3:
+  - &product-6-var-1
+    id: 15
+    title: red
+    price: 2179500
+    weight: 200000
+    compare_at_price:
+    available: true
+    inventory_quantity: 0
+    option1: red
+    option2:
+    option3:
+  - &product-7-var-1
+    id: 16
+    title: black / small
+    price: 1900
+    weight: 200
+    compare_at_price:
+    available: true
+    inventory_quantity: 20
+    option1: black
+    option2: small
+    option3:
+  - &product-7-var-2
+    id: 17
+    title: black / medium
+    price: 1900
+    weight: 200
+    compare_at_price:
+    available: false
+    inventory_quantity: 0
+    option1: black
+    option2: medium
+    option3:
+  - &product-7-var-3
+    id: 18
+    title: black / large
+    price: 1900
+    weight: 200
+    compare_at_price:
+    available: true
+    inventory_quantity: 10
+    option1: black
+    option2: large
+    option3:
+  - &product-7-var-4
+    id: 19
+    title: black / extra large
+    price: 1900
+    weight: 200
+    compare_at_price:
+    available: false
+    inventory_quantity: 0
+    option1: black
+    option2: extra large
+    option3:
+  - &product-8-var-1
+    id: 20
+    title: brown / small
+    price: 5900
+    weight: 400
+    compare_at_price: 6900
+    available: true
+    inventory_quantity: 5
+    option1: brown
+    option2: small
+    option3:
+  - &product-8-var-2
+    id: 21
+    title: brown / medium
+    price: 5900
+    weight: 400
+    compare_at_price: 6900
+    available: false
+    inventory_quantity: 0
+    option1: brown
+    option2: medium
+    option3:       
+  - &product-8-var-3
+    id: 22
+    title: brown / large
+    price: 5900
+    weight: 400
+    compare_at_price: 6900
+    available: true
+    inventory_quantity: 10
+    option1: brown
+    option2: large
+    option3:
+  - &product-8-var-4
+    id: 23
+    title: black / small
+    price: 5900
+    weight: 400
+    compare_at_price: 6900
+    available: true
+    inventory_quantity: 10
+    option1: black
+    option2: small
+    option3:
+  - &product-8-var-5
+    id: 24
+    title: black / medium
+    price: 5900
+    weight: 400
+    compare_at_price: 6900
+    available: true
+    inventory_quantity: 10
+    option1: black
+    option2: medium
+    option3:
+  - &product-8-var-6
+    id: 25
+    title: black / large
+    price: 5900
+    weight: 400
+    compare_at_price: 6900
+    available: false
+    inventory_quantity: 0
+    option1: black
+    option2: large
+    option3:
+  - &product-9-var-1
+    id: 26
+    title: Body Only
+    price: 499995
+    weight: 2000
+    compare_at_price:
+    available: true
+    inventory_quantity: 3
+    option1: Body Only
+    option2:
+    option3:
+  - &product-9-var-2
+    id: 27
+    title: Kit with 18-55mm VR lens
+    price: 523995
+    weight: 2000
+    compare_at_price:
+    available: true
+    inventory_quantity: 2
+    option1: Kit with 18-55mm VR lens
+    option2:
+    option3:
+  - &product-9-var-3
+    id: 28
+    title: Kit with 18-200 VR lens
+    price: 552500
+    weight: 2000
+    compare_at_price:
+    available: true
+    inventory_quantity: 3
+    option1: Kit with 18-200 VR lens
+    option2:
+    option3:
+
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+#   Products
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  
+products:
+  - &product-1
+    id: 1
+    title: Arbor Draft
+    handle: arbor-draft
+    type: Snowboards
+    vendor: Arbor
+    price: 23900
+    price_max: 31900
+    price_min: 23900
+    price_varies: true
+    available: true    
+    tags: 
+      - season2005
+      - pro
+      - intermediate
+      - wooden      
+      - freestyle
+    options: 
+      - Length
+      - Style           
+    compare_at_price: 49900
+    compare_at_price_max: 50900
+    compare_at_price_min: 49900
+    compare_at_price_varies: true
+    url: /products/arbor-draft
+    featured_image: products/arbor_draft.jpg
+    images: 
+      - products/arbor_draft.jpg
+    description: 
+      The Arbor Draft snowboard wouldn't exist if Polynesians hadn't figured out how to surf hundreds of years ago. But the Draft does exist, and it's here to bring your urban and park riding to a new level. The board's freaky Tiki design pays homage to culture that inspired snowboarding. It's designed to spin with ease, land smoothly, lock hook-free onto rails, and take the abuse of a pavement pounding or twelve. The Draft will pop off kickers with authority and carve solidly across the pipe. The Draft features targeted Koa wood die cuts inlayed into the deck that enhance the flex pattern. Now bow down to riding's ancestors.
+    variants: 
+      - *product-1-var-1
+      - *product-1-var-2
+      - *product-1-var-3
+  - &product-2
+    id: 2
+    title: Arbor Element
+    handle: arbor-element
+    type: Snowboards
+    vendor: Arbor
+    price: 29900
+    price_max: 29900
+    price_min: 29900
+    price_varies: false
+    available: true    
+    tags: 
+      - season2005
+      - pro
+      - wooden          
+      - freestyle
+    options:
+      - Length 
+    compare_at_price: 52900
+    compare_at_price_max: 52900
+    compare_at_price_min: 52900
+    compare_at_price_varies: false
+    url: /products/arbor-element
+    featured_image: products/element58.jpg
+    images:
+      - products/element58.jpg
+    description:
+      The Element is a technically advanced all-mountain board for riders who readily transition from one terrain, snow condition, or riding style to another. Its balanced design provides the versatility needed for the true ride-it-all experience. The Element is exceedingly lively, freely initiates, and holds a tight edge at speed. Its structural real-wood topsheet is made with book-matched Koa.
+    variants: 
+      - *product-2-var-1
+    
+  - &product-3
+    id: 3
+    title: Comic ~ Pastel 
+    handle: comic-pastel
+    type: Snowboards
+    vendor: Technine
+    price: 19900
+    price_max: 22900
+    price_min: 19900
+    tags: 
+      - season2006
+      - beginner
+      - intermediate
+      - freestyle      
+      - purple
+    options:
+      - Length
+    price_varies: true
+    available: true    
+    compare_at_price: 
+    compare_at_price_max: 0
+    compare_at_price_min: 0
+    compare_at_price_varies: false
+    url: /products/comic-pastel
+    featured_image: products/technine1.jpg
+    images:
+      - products/technine1.jpg
+      - products/technine2.jpg
+      - products/technine_detail.jpg
+    description:
+      2005 Technine Comic Series Description The Comic series was developed to be the ultimate progressive freestyle board in the Technine line. Dependable edge control and a perfect flex pattern for jumping in the park or out of bounds. Landins and progression will come easy with this board and it will help your riding progress to the next level. Street rails, park jibs, backcountry booters and park jumps, this board will do it all.
+    variants: 
+      - *product-3-var-1
+      - *product-3-var-2
+      - *product-3-var-3
+
+  - &product-4
+    id: 4
+    title: Comic ~ Orange
+    handle: comic-orange
+    type: Snowboards
+    vendor: Technine
+    price: 19900
+    price_max: 19900
+    price_min: 19900
+    price_varies: false
+    available: true    
+    tags: 
+      - season2006
+      - beginner
+      - intermediate
+      - freestyle   
+      - orange
+    options:
+      - Length
+    compare_at_price: 32900
+    compare_at_price_max: 32900
+    compare_at_price_min: 32900
+    compare_at_price_varies: false
+    url: /products/comic-orange
+    featured_image: products/technine3.jpg
+    images:
+      - products/technine3.jpg
+      - products/technine4.jpg
+    description:
+      2005 Technine Comic Series Description The Comic series was developed to be the ultimate progressive freestyle board in the Technine line. Dependable edge control and a perfect flex pattern for jumping in the park or out of bounds. Landins and progression will come easy with this board and it will help your riding progress to the next level. Street rails, park jibs, backcountry booters and park jumps, this board will do it all.
+    variants: 
+      - *product-4-var-1
+      
+  - &product-5
+    id: 5
+    title: Burton Boots
+    handle: burton-boots
+    type: Boots
+    vendor: Burton
+    price: 11900
+    price_max: 11900
+    price_min: 11900
+    price_varies: false
+    available: true        
+    tags: 
+      - season2006
+      - beginner
+      - intermediate   
+      - boots
+    options:
+      - Color
+      - Shoe Size
+    compare_at_price: 22900
+    compare_at_price_max: 22900
+    compare_at_price_min: 22900
+    compare_at_price_varies: false
+    url: /products/burton-boots
+    featured_image: products/burton.jpg
+    images:
+      - products/burton.jpg
+    description:
+      The Burton boots are particularly well on snowboards. The very best thing about them is that the according picture is cubic. This makes testing in a Vision testing environment very easy.
+    variants: 
+      - *product-5-var-1
+      - *product-5-var-2
+      - *product-5-var-3
+      - *product-5-var-4
+      - *product-5-var-5
+      - *product-5-var-6                        
+
+  - &product-6
+    id: 6
+    title: Superbike 1198 S
+    handle: superbike
+    type: Superbike
+    vendor: Ducati
+    price: 2179500
+    price_max: 2179500
+    price_min: 2179500
+    price_varies: false
+    available: true    
+    tags: 
+      - ducati
+      - superbike
+      - bike   
+      - street
+      - racing
+      - performance      
+    options:
+      - Color
+    compare_at_price: 
+    compare_at_price_max: 0
+    compare_at_price_min: 0
+    compare_at_price_varies: false
+    url: /products/superbike
+    featured_image: products/ducati.jpg
+    images:
+      - products/ducati.jpg
+    description:
+      <h3>‘S’ PERFORMANCE</h3>
+      <p>Producing 170hp (125kW) and with a dry weight of just 169kg (372.6lb), the new 1198 S now incorporates more World Superbike technology than ever before by taking the 1198 motor and adding top-of-the-range suspension, lightweight chassis components and a true racing-style traction control system designed for road use.</p>
+      <p>The high performance, fully adjustable 43mm Öhlins forks, which sport low friction titanium nitride-treated fork sliders, respond effortlessly to every imperfection in the tarmac. Beyond their advanced engineering solutions, one of the most important characteristics of Öhlins forks is their ability to communicate the condition and quality of the tyre-to-road contact patch, a feature that puts every rider in superior control. The suspension set-up at the rear is complemented with a fully adjustable Öhlins rear shock equipped with a ride enhancing top-out spring and mounted to a single-sided swingarm for outstanding drive and traction. The front-to-rear Öhlins package is completed with a control-enhancing adjustable steering damper.</p>
+    variants: 
+      - *product-6-var-1
+
+  - &product-7
+    id: 7
+    title: Shopify Shirt
+    handle: shopify-shirt
+    type: Shirt
+    vendor: Shopify
+    price: 1900
+    price_max: 1900
+    price_min: 1900
+    price_varies: false
+    available: true    
+    tags: 
+      - shopify
+      - shirt
+      - apparel  
+      - tshirt
+      - clothing
+    options:
+      - Color
+      - Size
+    compare_at_price: 
+    compare_at_price_max: 0
+    compare_at_price_min: 0
+    compare_at_price_varies: false
+    url: /products/shopify-shirt
+    featured_image: products/shopify_shirt.png
+    images:
+      - products/shopify_shirt.png
+    description:
+      <p>High Quality Shopify Shirt. Wear your e-commerce solution with pride and attract attention anywhere you go.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    variants: 
+      - *product-7-var-1
+      - *product-7-var-2
+      - *product-7-var-3
+      - *product-7-var-4            
+
+  - &product-8
+    id: 8
+    title: Hooded Sweater
+    handle: hooded-sweater
+    type: Sweater
+    vendor: Stormtech
+    price: 5900
+    price_max: 5900
+    price_min: 5900
+    price_varies: false
+    available: true    
+    tags: 
+      - sweater
+      - hooded
+      - apparel  
+      - clothing
+    options:
+      - Color
+      - Size
+    compare_at_price: 6900
+    compare_at_price_max: 6900
+    compare_at_price_min: 6900
+    compare_at_price_varies: false
+    url: /products/hooded-sweater
+    featured_image: products/hooded-sweater.jpg
+    images:
+      - products/hooded-sweater.jpg
+      - products/hooded-sweater-b.jpg
+    description:
+      <p>Extra comfortable zip up sweater. Durable quality, ideal for any outdoor activities.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    variants: 
+      - *product-8-var-1
+      - *product-8-var-2
+      - *product-8-var-3
+      - *product-8-var-4            
+      - *product-8-var-5
+      - *product-8-var-6
+
+  - &product-9
+    id: 9
+    title: D3 Digital SLR Camera
+    handle: d3
+    type: SLR
+    vendor: Nikon
+    price: 499995
+    price_max: 552500
+    price_min: 499995
+    price_varies: true
+    available: true    
+    tags: 
+      - camera
+      - slr
+      - nikon  
+      - professional
+    options:
+      - Bundle
+    compare_at_price:
+    compare_at_price_max: 0
+    compare_at_price_min: 0
+    compare_at_price_varies: false
+    url: /products/d3
+    featured_image: products/d3.jpg
+    images:
+      - products/d3.jpg
+      - products/d3_2.jpg
+      - products/d3_3.jpg      
+    description:
+      <p>Flagship pro D-SLR with a 12.1-MP FX-format CMOS sensor, blazing 9 fps shooting at full FX resolution and low-noise performance up to 6400 ISO.</p>
+      <p><strong>Nikon's original 12.1-megapixel FX-format (23.9 x 36mm) CMOS sensor:</strong> Couple Nikon's exclusive digital image processing system with the 12.1-megapixel FX-format and you'll get breathtakingly rich images while also reducing noise to unprecedented levels with even higher ISOs.</p>
+      <p><strong>Continuous shooting at up to 9 frames per second:</strong> At full FX resolution and up to 11fps in the DX crop mode, the D3 offers uncompromised shooting speeds for fast-action and sports photography.</p>
+    variants: 
+      - *product-9-var-1
+      - *product-9-var-2
+      - *product-9-var-3
+
+      
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+#   Line Items
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+      
+line_items:
+  - &line_item-1
+    id: 1
+    title: 'Arbor Draft'
+    subtitle: '151cm'
+    price: 29900
+    line_price: 29900
+    quantity: 1
+    variant: *product-1-var-1
+    product: *product-1
+
+  - &line_item-2
+    id: 2
+    title: 'Comic ~ Orange'
+    subtitle: '159cm'
+    price: 19900
+    line_price: 39800
+    quantity: 2
+    variant: *product-4-var-1
+    product: *product-4
+    
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+#   Link Lists
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+links:
+  - &link-1
+    id: 1
+    title: Our Sale
+    url: /collections/sale
+  - &link-2
+    id: 2
+    title: Arbor Stuff
+    url: /collections/arbor
+  - &link-3
+    id: 3
+    title: All our Snowboards
+    url: /collections/snowboards
+  - &link-4
+    id: 4
+    title: Powered by Shopify
+    url: 'http://shopify.com'
+  - &link-5
+    id: 5
+    title: About Us
+    url: /pages/about-us
+  - &link-6
+    id: 6
+    title: Policies
+    url: /pages/shipping
+  - &link-7
+    id: 7
+    title: Contact Us
+    url: /pages/contact
+  - &link-8
+    id: 8
+    title: Our blog
+    url: /blogs/bigcheese-blog
+  - &link-9
+    id: 9
+    title: New Boots
+    url: /products/burton-boots
+  - &link-10
+    id: 10
+    title: Paginated Sale
+    url: /collections/paginated-sale
+  - &link-11
+    id: 11
+    title: Our Paginated blog
+    url: /blogs/paginated-blog
+  - &link-12
+    id: 12
+    title: Catalog
+    url: /collections/all
+
+    
+
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+#   Link Lists
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+link_lists:
+  - &link-list-1
+    id: 1
+    title: 'Main Menu'
+    handle: 'main-menu'
+    links:
+      - *link-12      
+      - *link-5
+      - *link-7
+      - *link-8
+  - &link-list-2
+    id: 1
+    title: 'Footer Menu'
+    handle: 'footer'
+    links:
+      - *link-5
+      - *link-6
+      
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+#   Collections
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+collections:
+  - &collection-1
+    id: 1
+    title: Frontpage
+    handle: frontpage
+    url: /collections/frontpage
+    products:
+      - *product-7
+      - *product-8
+      - *product-9
+
+  - &collection-2
+    id: 2
+    title: Arbor
+    handle: arbor
+    url: /collections/arbor
+    products: 
+      - *product-1
+      - *product-2
+
+  - &collection-3
+    id: 3
+    title: Snowboards
+    handle: snowboards
+    url: /collections/snowboards
+    description:
+      <p>This is a description for my <strong>Snowboards</strong> collection.</p>
+    products: 
+      - *product-1
+      - *product-2
+      - *product-3
+      - *product-4
+  
+  - &collection-4
+    id: 4
+    title: Items On Sale
+    handle: sale
+    url: /collections/sale
+    products: 
+      - *product-1
+      
+  - &collection-5
+    id: 5
+    title: Paginated Sale
+    handle: 'paginated-sale'
+    url: '/collections/paginated-sale'
+    products: 
+      - *product-1
+      - *product-2
+      - *product-3
+      - *product-4
+    products_count: 210
+
+  - &collection-6
+    id: 6
+    title: All products
+    handle: 'all'
+    url: '/collections/all'
+    products: 
+      - *product-7
+      - *product-8
+      - *product-9
+      - *product-6
+      - *product-1
+      - *product-2
+      - *product-3
+      - *product-4
+      - *product-5
+
+          
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+#   Pages and Blogs
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+pages:
+  - &page-2
+    id: 1
+    title: Contact Us
+    handle: contact
+    url: /pages/contact
+    author: Tobi
+    content:
+      "<p>You can contact us via phone under (555) 567-2222.</p>
+      <p>Our retail store is located at <em>Rue d'Avignon 32, Avignon (Provence)</em>.</p>
+      <p><strong>Opening Hours:</strong><br />Monday through Friday: 9am - 6pm<br />Saturday: 10am - 3pm<br />Sunday: closed</p>"
+    created_at: 2005-04-04 12:00
+    
+  - &page-3
+    id: 2
+    title: About Us
+    handle: about-us
+    url: /pages/about-us   
+    author: Tobi
+    content:
+      "<p>Our company was founded in 1894 and we are since operating out of Avignon from the beautiful Provence.</p>
+      <p>We offer the highest quality products and are proud to serve our customers to their heart's content.</p>"
+    created_at: 2005-04-04 12:00
+
+  - &page-4
+    id: 3
+    title: Shopping Cart
+    handle: shopping-cart
+    url: /pages/shopping-cart
+    author: Tobi
+    content: "<ul><li>Your order is safe with us. Our checkout uses industry standard security to protect your information.</li><li>Your order will be billed immediately upon checkout.</li><li><b>ALL SALES ARE FINAL:</b> Defective or damaged product will be exchanged</li><li>All orders are processed expediently: usually in under 24 hours.</li></ul>"
+    created_at: 2005-04-04 12:00
+    
+  - &page-5
+    id: 4
+    title: Shipping and Handling
+    handle: shipping
+    url: /pages/shipping    
+    author: Tobi
+    content: <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    created_at: 2005-04-04 12:00
+
+  - &page-6
+    id: 5
+    title: Frontpage
+    handle: frontpage
+    url: /pages/frontpage    
+    author: Tobi
+    content: <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    created_at: 2005-04-04 12:00
+
+blogs:
+  - id: 1
+    handle: news
+    title: News
+    url: /blogs/news
+    articles: 
+      - id: 3
+        title: 'Welcome to the new Foo Shop'
+        author: Daniel
+        content: <p><strong>Welcome to your Shopify store! The jaded Pixel crew is really glad you decided to take Shopify for a spin.</strong></p><p>To help you get you started with Shopify, here are a couple of tips regarding what you see on this page.</p><p>The text you see here is an article. To edit this article, create new articles or create new pages you can go to the <a href="/admin/pages">Blogs &amp; Pages</a> tab of the administration menu.</p><p>The Shopify t-shirt above is a product and selling products is what Shopify is all about. To edit this product, or create new products you can go to the <a href="/admin/products">Products Tab</a> in of the administration menu.</p><p>While you're looking around be sure to check out the <a href="/admin/collections">Collections</a> and <a href="/admin/links">Navigations</a> tabs and soon you will be well on your way to populating your site.</p><p>And of course don't forget to browse the <a href="admin/design/appearance/themes">theme gallery</a> to pick a new look for your shop!</p><p><strong>Shopify is in beta</strong><br />If you would like to make comments or suggestions please visit us in the <a href="http://forums.shopify.com/community">Shopify Forums</a> or drop us an <a href="mailto:feedback@shopify.com">email</a>.</p>  
+        created_at: 2005-04-04 16:00
+      - id: 4
+        title: 'Breaking News: Restock on all sales products'
+        author: Tobi
+        content: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        created_at: 2005-04-04 12:00
+    articles_count: 2
+         
+  - id: 2
+    handle: bigcheese-blog
+    title: Bigcheese blog
+    url: /blogs/bigcheese-blog
+    articles:
+      - id: 1
+        title: 'One thing you probably did not know yet...'
+        author: Justin
+        content: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        created_at: 2005-04-04 16:00
+        comments:
+          - 
+            id: 1
+            author: John Smith
+            email: john@smith.com
+            content: Wow...great article man.
+            status: published
+            created_at: 2009-01-01 12:00
+            updated_at: 2009-02-01 12:00
+            url: ""
+          - 
+            id: 2
+            author: John Jones
+            email: john@jones.com
+            content: I really enjoyed this article. And I love your shop! It's awesome. Shopify rocks!
+            status: published
+            created_at: 2009-03-01 12:00
+            updated_at: 2009-02-01 12:00
+            url: "http://somesite.com/"
+      - id: 2
+        title: Fascinating
+        author: Tobi
+        content: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        created_at: 2005-04-06 12:00
+        comments:
+    articles_count: 2
+    comments_enabled?: true 
+    comment_post_url: ""
+    comments_count: 2
+    moderated?: true 
+
+  - id: 3
+    handle: paginated-blog
+    title: Paginated blog
+    url: /blogs/paginated-blog
+    articles: 
+      - id: 6
+        title: 'One thing you probably did not know yet...'
+        author: Justin
+        content: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        created_at: 2005-04-04 16:00
+    
+      - id: 7
+        title: Fascinating
+        author: Tobi
+        content: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        created_at: 2005-04-06 12:00
+    articles_count: 200

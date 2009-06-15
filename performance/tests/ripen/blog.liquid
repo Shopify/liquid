@@ -1,0 +1,13 @@
+<div id="blog-page">
+  <h2 class="heading-shaded">{{page.title}}</h2>
+   {% for article in blog.articles  %}
+      <h4>
+        {{ article.created_at | date: '%d %b' }}
+        <a href="{{article.url}}">{{ article.title }}</a>
+      </h4>
+      {{ article.content }}
+      {% if blog.comments_enabled? %}
+        <p><a href="{{article.url}}#comments">{{ article.comments_count }} comments</a></p>
+      {% endif %}
+  {% endfor %}
+</div>
