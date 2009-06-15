@@ -23,9 +23,23 @@ Hoe.new(PKG_NAME, PKG_VERSION) do |p|
   p.url            = "http://www.liquidmarkup.org"    
 end
 
-desc "Run the liquid profile/perforamce coverage"
-task :profile do
+
+namespace :profile do
+
   
-  ruby "performance/shopify.rb"
+  task :default => [:run]
   
+  desc "Run the liquid profile/perforamce coverage"
+  task :run do
+  
+    ruby "performance/shopify.rb"
+  
+  end
+  
+  desc "Run KCacheGrind" 
+  task :grind => :run  do
+    system "kcachegrind /tmp/liquid.rubyprof_calltreeprinter.txt"
+  end
 end
+  
+  
