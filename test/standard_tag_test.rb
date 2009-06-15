@@ -351,6 +351,9 @@ HERE
     
     assert_template_result('text-align: left,text-align: right','{%cycle "text-align: left", "text-align: right" %},{%cycle "text-align: left", "text-align: right"%}') 
 
+    assert_template_result('','.{% cycle '' %}')  
+    assert_template_result('','.{% cycle "" %}')  
+    assert_template_result('','.{% cycle "", "" %}')  
     assert_template_result('.','.{% cycle "", "", "</tr><tr>" %}')  
     assert_template_result('...</tr><tr> ','.{% cycle "", "", "</tr><tr>" %}.{% cycle "", "", "</tr><tr>" %}.{% cycle "", "", "</tr><tr>" %} {% cycle "", "", "</tr><tr>" %}')  
     
