@@ -24,7 +24,8 @@ module Liquid
     end
   
     def render(context)      
-      source  = Liquid::Template.file_system.read_template_file(context[@template_name])      
+      file_system = context.registers[:file_system] || Liquid::Template.file_system
+      source  = file_system.read_template_file(context[@template_name])      
       partial = Liquid::Template.parse(source)      
       
       variable = context[@variable_name || @template_name[1..-2]]

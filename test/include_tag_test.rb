@@ -23,10 +23,19 @@ class TestFileSystem
 
     when "recursively_nested_template"
       "-{% include 'recursively_nested_template' %}"
+
+    when "pick_a_source"
+      "from TestFileSystem"
       
     else
       template_path
     end
+  end
+end
+
+class OtherFileSystem
+  def read_template_file(template_path)
+    'from OtherFileSystem'
   end
 end
 
@@ -35,6 +44,11 @@ class IncludeTagTest < Test::Unit::TestCase
   
   def setup
     Liquid::Template.file_system = TestFileSystem.new    
+  end
+  
+  def test_include_tag_looks_for_file_system_in_registers_first
+    assert_equal 'from OtherFileSystem',
+                 Template.parse("{% include 'pick_a_source' %}").render({}, :registers => {:file_system => OtherFileSystem.new})
   end
   
 
