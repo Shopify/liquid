@@ -67,6 +67,10 @@ module Liquid
       @assigns ||= {}
     end
 
+    def instance_assigns
+      @instance_assigns ||= {}
+    end
+
     def errors
       @errors ||= []
     end
@@ -84,16 +88,17 @@ module Liquid
     #
     def render(*args)
       return '' if @root.nil?
-
+      
       context = case args.first
       when Liquid::Context
         args.shift
       when Hash
-        a = args.shift
-        assigns.each { |k,v| a[k] = v unless a.has_key?(k) }
-        Context.new(a, registers, @rethrow_errors)
+        environment = args.shift
+        environment.merge!(assigns) {|k,v1,v2| v1}
+        Context.new(environment, instance_assigns, registers, @rethrow_errors)
       when nil
-        Context.new(assigns.dup, registers, @rethrow_errors)
+        environment = assigns.dup
+        Context.new(environment, instance_assigns, registers, @rethrow_errors)
       else
         raise ArgumentError, "Expect Hash or Liquid::Context as parameter"
       end

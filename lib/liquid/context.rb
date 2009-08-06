@@ -14,13 +14,15 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes
-    attr_reader :errors, :registers
+    attr_reader :errors, :registers, :environment
 
-    def initialize(assigns = {}, registers = {}, rethrow_errors = false)
-      @scopes     = [(assigns || {})]
-      @registers  = registers
-      @errors     = []
+    def initialize(environment = {}, instance_assigns = {}, registers = {}, rethrow_errors = false)
+      @environment    = environment
+      @scopes         = [(instance_assigns || {})]
+      @registers      = registers
+      @errors         = []
       @rethrow_errors = rethrow_errors
+      squash_instance_assigns_with_environment
     end
 
     def strainer
@@ -61,9 +63,9 @@ module Liquid
     end
 
     # push new local scope on the stack. use <tt>Context#stack</tt> instead
-    def push
+    def push(new_scope={})
       raise StackLevelError, "Nesting too deep" if @scopes.length > 100
-      @scopes.unshift({})
+      @scopes.unshift(new_scope)
     end
 
     # merge a hash of variables in the current local scope
@@ -86,15 +88,19 @@ module Liquid
     #   end
     #   context['var]  #=> nil
     #
-    def stack(&block)
+    def stack(new_scope={},&block)
       result = nil
-      push
+      push(new_scope)
       begin
         result = yield
       ensure
         pop
       end
       result
+    end
+    
+    def clear_instance_assigns
+      @scopes[0] = {}
     end
 
     # Only allow String, Numeric, Hash, Array, Proc, Boolean or <tt>Liquid::Drop</tt>
@@ -156,9 +162,14 @@ module Liquid
     # fetches an object starting at the local scope and then moving up
     # the hierachy
     def find_variable(key)
-      scope = @scopes[0..-2].find { |s| s.has_key?(key) } || @scopes.last
-      variable = scope[key]
-      variable = scope[key] = variable.call(self) if variable.is_a?(Proc)
+      scope = @scopes.find { |s| s.has_key?(key) } || environment
+      
+      if scope[key].is_a?(Proc)
+        variable = scope[key] = scope[key].call(self)
+      else
+        variable = scope[key]
+      end
+      
       variable = variable.to_liquid
       variable.context = self if variable.respond_to?(:context=)
       return variable
@@ -217,5 +228,14 @@ module Liquid
 
       object
     end
+    
+    def squash_instance_assigns_with_environment
+      scopes[0].each_key do |k|
+        if environment.has_key?(k)
+          scopes[0][k] = environment[k]
+        end
+      end
+    end
+    
   end
 end
