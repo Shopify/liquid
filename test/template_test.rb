@@ -53,5 +53,23 @@ class TemplateTest < Test::Unit::TestCase
     t.assigns['foo'] = 'from persistent assigns'
     assert_equal 'from persistent assigns', t.parse("{{ foo }}").render
   end
+
+  def test_lambda_is_called_once_from_persistent_assigns_over_multiple_parses_and_renders
+    t = Template.new
+    t.assigns['number'] = lambda { @global ||= 0; @global += 1 }
+    assert_equal '1', t.parse("{{number}}").render
+    assert_equal '1', t.parse("{{number}}").render
+    assert_equal '1', t.render
+    @global = nil
+  end
+
+  def test_lambda_is_called_once_from_custom_assigns_over_multiple_parses_and_renders
+    t = Template.new
+    assigns = {'number' => lambda { @global ||= 0; @global += 1 }}
+    assert_equal '1', t.parse("{{number}}").render(assigns)
+    assert_equal '1', t.parse("{{number}}").render(assigns)
+    assert_equal '1', t.render(assigns)
+    @global = nil
+  end
   
 end

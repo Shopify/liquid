@@ -67,8 +67,7 @@ class ContextTest < Test::Unit::TestCase
   include Liquid
 
   def setup
-    @template = Liquid::Template.new
-    @context = Liquid::Context.new(@template.assigns, @template.registers)
+    @context = Liquid::Context.new
   end
 
   def test_variables
@@ -151,11 +150,11 @@ class ContextTest < Test::Unit::TestCase
       end
     end
 
-    context = Context.new(@template)
+    context = Context.new
     context.add_filters(filter)
     assert_equal 'hi? hi!', context.invoke(:hi, 'hi?')
 
-    context = Context.new(@template)
+    context = Context.new
     assert_raises(FilterNotFound) {
       context.invoke(:hi, 'hi?')
     }
@@ -191,7 +190,7 @@ class ContextTest < Test::Unit::TestCase
       end
     end
 
-    context = Context.new(@template)
+    context = Context.new
     methods_before = context.strainer.methods.map { |method| method.to_s }
     context.add_filters(filter)
     methods_after = context.strainer.methods.map { |method| method.to_s }

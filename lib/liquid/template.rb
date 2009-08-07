@@ -93,12 +93,9 @@ module Liquid
       when Liquid::Context
         args.shift
       when Hash
-        environment = args.shift
-        environment.merge!(assigns) {|k,v1,v2| v1}
-        Context.new(environment, instance_assigns, registers, @rethrow_errors)
+        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors)
       when nil
-        environment = assigns.dup
-        Context.new(environment, instance_assigns, registers, @rethrow_errors)
+        Context.new(assigns, instance_assigns, registers, @rethrow_errors)
       else
         raise ArgumentError, "Expect Hash or Liquid::Context as parameter"
       end

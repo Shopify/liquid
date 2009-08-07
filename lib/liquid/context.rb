@@ -13,16 +13,15 @@ module Liquid
   #
   #   context['bob']  #=> nil  class Context
   class Context
-    attr_reader :scopes
-    attr_reader :errors, :registers, :environment
+    attr_reader :scopes, :errors, :registers, :environments
 
-    def initialize(environment = {}, instance_assigns = {}, registers = {}, rethrow_errors = false)
-      @environment    = environment
-      @scopes         = [(instance_assigns || {})]
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false)
+      @environments   = [environments].flatten
+      @scopes         = [(outer_scope || {})]
       @registers      = registers
       @errors         = []
       @rethrow_errors = rethrow_errors
-      squash_instance_assigns_with_environment
+      squash_instance_assigns_with_environments
     end
 
     def strainer
@@ -162,13 +161,17 @@ module Liquid
     # fetches an object starting at the local scope and then moving up
     # the hierachy
     def find_variable(key)
-      scope = @scopes.find { |s| s.has_key?(key) } || environment
-      
-      if scope[key].is_a?(Proc)
-        variable = scope[key] = scope[key].call(self)
-      else
-        variable = scope[key]
+      scope = @scopes.find { |s| s.has_key?(key) }
+      if scope.nil?
+        @environments.each do |e|
+          if variable = lookup_and_evaluate(e, key)
+            scope = e
+            break
+          end
+        end
       end
+      scope     ||= @environments.last || @scopes.last
+      variable  ||= lookup_and_evaluate(scope, key)
       
       variable = variable.to_liquid
       variable.context = self if variable.respond_to?(:context=)
@@ -204,8 +207,7 @@ module Liquid
              (object.respond_to?(:fetch) and part.is_a?(Integer)))
 
             # if its a proc we will replace the entry with the proc
-            res = object[part]
-            res = object[part] = res.call(self) if res.is_a?(Proc) and object.respond_to?(:[]=)
+            res = lookup_and_evaluate(object, part)
             object = res.to_liquid
 
           # Some special cases. If the part wasn't in square brackets and
@@ -229,10 +231,21 @@ module Liquid
       object
     end
     
-    def squash_instance_assigns_with_environment
-      scopes[0].each_key do |k|
-        if environment.has_key?(k)
-          scopes[0][k] = environment[k]
+    def lookup_and_evaluate(obj, key)
+      if (value = obj[key]).is_a?(Proc) && obj.respond_to?(:[]=)
+        obj[key] = value.call(self)
+      else
+        value
+      end
+    end
+    
+    def squash_instance_assigns_with_environments
+      @scopes.last.each_key do |k|
+        @environments.each do |env|
+          if env.has_key?(k)
+            scopes.last[k] = lookup_and_evaluate(env, k)
+            break
+          end
         end
       end
     end
