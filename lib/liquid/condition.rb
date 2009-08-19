@@ -15,7 +15,7 @@ module Liquid
       '>'  => :>,
       '>=' => :>=,
       '<=' => :<=,
-      'contains' => lambda { |cond, left, right| left.include?(right) },
+      'contains' => lambda { |cond, left, right| left && right ? left.include?(right) : false }
     }
 
     def self.operators
