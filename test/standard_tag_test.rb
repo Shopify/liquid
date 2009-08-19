@@ -326,6 +326,10 @@ HERE
     assert_equal 'variable', Liquid::Template.parse( '{% assign a = "variable"%}{{a}}'  ).render
   end
 
+  def test_assign_an_empty_string
+    assert_equal '', Liquid::Template.parse( '{% assign a = ""%}{{a}}'  ).render
+  end
+
   def test_assign_is_global
     assert_equal 'variable', Liquid::Template.parse( '{%for i in (1..2) %}{% assign a = "variable"%}{% endfor %}{{a}}'  ).render
   end
@@ -347,6 +351,7 @@ HERE
 
     assert_template_result('one','{%cycle "one", "two"%}')
     assert_template_result('one two','{%cycle "one", "two"%} {%cycle "one", "two"%}')
+    assert_template_result(' two','{%cycle "", "two"%} {%cycle "", "two"%}')
 
     assert_template_result('one two one','{%cycle "one", "two"%} {%cycle "one", "two"%} {%cycle "one", "two"%}')
 
