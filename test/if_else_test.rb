@@ -36,6 +36,14 @@ class IfElseTest < Test::Unit::TestCase
     assert_template_result('','{% if a == false or b == false %} YES {% endif %}', 'a' => true, 'b' => true)    
   end     
   
+  def test_comparison_of_strings_containing_and_or_or
+    assert_nothing_raised do
+      awful_markup = "a == 'and' and b == 'or' and c == 'foo and bar' and d == 'bar or baz' and e == 'foo' and foo and bar"
+      assigns = {'a' => 'and', 'b' => 'or', 'c' => 'foo and bar', 'd' => 'bar or baz', 'e' => 'foo', 'foo' => true, 'bar' => true}
+      assert_template_result(' YES ',"{% if #{awful_markup} %} YES {% endif %}", assigns)
+    end
+  end
+  
   def test_if_and
     assert_template_result(' YES ','{% if true and true %} YES {% endif %}')    
     assert_template_result('','{% if false and true %} YES {% endif %}')    

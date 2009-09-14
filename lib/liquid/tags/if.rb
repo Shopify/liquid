@@ -13,7 +13,8 @@ module Liquid
   #
   class If < Block
     SyntaxHelp = "Syntax Error in tag 'if' - Valid syntax: if [expression]"
-    Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/
+    Syntax = /(#{QuotedFragment})\s*(?:([=!<>a-z_]+)\s*(#{QuotedFragment}))?/
+    ExpressionsAndOperators = /and|or|#{QuotedFragment}\s*(?:(?!and|or)(?:[=!<>a-z_]+)\s*#{QuotedFragment})?/
     
     def initialize(tag_name, markup, tokens)    
     
@@ -50,7 +51,9 @@ module Liquid
         ElseCondition.new
       else        
         
-        expressions = markup.split(/\b(and|or)\b/).reverse
+        # expressions = markup.split(/\b(and|or)\b/).reverse
+        
+        expressions = markup.scan(ExpressionsAndOperators).flatten.compact.reverse
         raise(SyntaxError, SyntaxHelp) unless expressions.shift =~ Syntax 
 
         condition = Condition.new($1, $2, $3)               
