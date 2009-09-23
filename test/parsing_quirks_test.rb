@@ -38,4 +38,17 @@ class ParsingQuirksTest < Test::Unit::TestCase
     end
   end
   
+  def test_meaningless_parens
+    assigns = {'b' => 'bar', 'c' => 'baz'}
+    markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
+    assert_template_result(' YES ',"{% if #{markup} %} YES {% endif %}", assigns)
+  end
+  
+  def test_unexpected_characters_silently_eat_logic
+    markup = "true && false"
+    assert_template_result(' YES ',"{% if #{markup} %} YES {% endif %}")
+    markup = "false || true"
+    assert_template_result('',"{% if #{markup} %} YES {% endif %}")
+  end
+  
 end

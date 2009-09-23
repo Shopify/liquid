@@ -17,31 +17,31 @@ class StatementsTest < Test::Unit::TestCase
     assert_equal expected, Template.parse(text).render
   end
 
-  def test_zero_gt_zero
+  def test_true_lq_true
     text = %| {% if 0 > 0 %} true {% else %} false {% endif %} |
     expected = %|  false  |
     assert_equal expected, Template.parse(text).render
   end
 
-  def test_one_gt_zero
+  def test_one_lq_zero
     text = %| {% if 1 > 0 %} true {% else %} false {% endif %} |
     expected = %|  true  |
     assert_equal expected, Template.parse(text).render
   end
 
-  def test_zero_lt_one
+  def test_zero_lq_one
     text = %| {% if 0 < 1 %} true {% else %} false {% endif %} |
     expected = %|  true  |
     assert_equal expected, Template.parse(text).render
   end
 
-  def test_zero_lt_or_equal_zero
+  def test_zero_lq_or_equal_one
     text = %| {% if 0 <= 0 %} true {% else %} false {% endif %} |
     expected = %|  true  |
     assert_equal expected, Template.parse(text).render
   end
 
-  def test_zero_lt_or_equal_zero_involving_nil
+  def test_zero_lq_or_equal_one_involving_nil
     text = %| {% if null <= 0 %} true {% else %} false {% endif %} |
     expected = %|  false  |
     assert_equal expected, Template.parse(text).render
@@ -52,7 +52,7 @@ class StatementsTest < Test::Unit::TestCase
     assert_equal expected, Template.parse(text).render
   end
 
-  def test_zero_gt_or_equal_zero
+  def test_zero_lqq_or_equal_one
     text = %| {% if 0 >= 0 %} true {% else %} false {% endif %} |
     expected = %|  true  |
     assert_equal expected, Template.parse(text).render

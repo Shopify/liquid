@@ -21,10 +21,6 @@ module Liquid
     def self.operators
       @@operators
     end
-    
-    def self.operator_regexp
-      Regexp.new(@@operators.keys.sort_by(&:length).reverse.map {|k| Regexp.escape(k)}.join('|'))
-    end
 
     attr_reader :attachment
     attr_accessor :left, :operator, :right
