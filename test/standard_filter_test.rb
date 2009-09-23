@@ -116,6 +116,10 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal 'a a a', @filters.remove_first("a a a a", 'a ')        
     assert_template_result 'a a a', "{{ 'a a a a' | remove_first: 'a ' }}"
   end
+  
+  def test_pipes_in_string_arguments 
+    assert_template_result 'foobar', "{{ 'foo|bar' | remove: '|' }}"
+  end
                                                                                      
   def test_strip_newlines
     assert_template_result 'abc', "{{ source | strip_newlines }}", 'source' => "a\nb\nc"
