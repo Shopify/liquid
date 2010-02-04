@@ -61,10 +61,10 @@ module ShopFilter
     case style
     when 'original'
       return '/files/shops/random_number/' + url 
-    when 'grande', 'large', 'medium', 'small', 'thumb', 'icon'
+    when 'grande', 'large', 'medium', 'compact', 'small', 'thumb', 'icon'
       "/files/shops/random_number/products/#{$1}_#{style}.#{$2}"              
     else
-      raise ArgumentError, 'valid parameters for filter "size" are: original, grande, large, medium, small, thumb and icon '      
+      raise ArgumentError, 'valid parameters for filter "size" are: original, grande, large, medium, compact, small, thumb and icon '      
     end
   end
   
