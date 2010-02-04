@@ -131,17 +131,28 @@ class StandardFiltersTest < Test::Unit::TestCase
   
   def test_plus
     assert_template_result "2", "{{ 1 | plus:1 }}"
-    assert_template_result "11", "{{ '1' | plus:'1' }}"
+    assert_template_result "2.0", "{{ '1' | plus:'1.0' }}"
   end
   
   def test_minus
     assert_template_result "4", "{{ input | minus:operand }}", 'input' => 5, 'operand' => 1
+    assert_template_result "2.3", "{{ '4.3' | minus:'2' }}"
   end
   
   def test_times
     assert_template_result "12", "{{ 3 | times:4 }}"
-    assert_template_result "foofoofoofoo", "{{ 'foo' | times:4 }}"
+    assert_template_result "0", "{{ 'foo' | times:4 }}"
+    assert_template_result "6.3", "{{ '2.1' | times:3 }}"
+    assert_template_result "6", "{{ '2.1' | times:3 | replace: '.','-' | plus:0}}"
   end    
+  
+  def test_divided_by
+    assert_template_result "4", "{{ 12 | divided_by:3 }}"
+    assert_template_result "4", "{{ 14 | divided_by:3 }}"
+    assert_template_result "4.66666666666667", "{{ 14 | divided_by:'3.0' }}"
+    assert_template_result "5", "{{ 15 | divided_by:3 }}"
+    assert_template_result "Liquid error: divided by 0", "{{ 5 | divided_by:0 }}"
+  end
   
   def test_append
     assigns = {'a' => 'bc', 'b' => 'd' }
@@ -155,10 +166,8 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_template_result('abc',"{{ a | prepend: b}}",assigns)        
   end
   
-  def test_divided_by
-    assert_template_result "4", "{{ 12 | divided_by:3 }}"
-    assert_template_result "4", "{{ 14 | divided_by:3 }}"
-    assert_template_result "5", "{{ 15 | divided_by:3 }}"
+  def test_cannot_access_private_methods
+    assert_template_result('a',"{{ 'a' | to_number }}")
   end
   
 end
