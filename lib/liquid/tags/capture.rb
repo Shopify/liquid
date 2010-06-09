@@ -6,7 +6,7 @@ module Liquid
   #     Monkeys!
   #   {% endcapture %}
   #   ...
-  #   <h1>{{ monkeys }}</h1>
+  #   <h1>{{ heading }}</h1>
   #
   # Capture is useful for saving content for use later in your template, such as
   # in a sidebar or footer.

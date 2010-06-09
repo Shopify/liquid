@@ -6,7 +6,7 @@ module Liquid
   #
   # You can then use the variable later in the page.
   #
-  #  {{ monkey }}
+  #  {{ foo }}
   #
   class Assign < Tag
     Syntax = /(#{VariableSignature}+)\s*=\s*(#{QuotedFragment}+)/   
