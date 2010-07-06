@@ -4,6 +4,8 @@ require 'rake'
 require 'rake/testtask'
 require 'rake/gempackagetask'
 
+task :default => 'test'
+
 Rake::TestTask.new(:test) do |t|
   t.libs << "lib"
   t.libs << "test"
