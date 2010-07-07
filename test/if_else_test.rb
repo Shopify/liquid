@@ -44,6 +44,20 @@ class IfElseTest < Test::Unit::TestCase
     end
   end
   
+  def test_comparison_of_expressions_starting_with_and_or_or
+    assigns = {'order' => {'items_count' => 0}, 'android' => {'name' => 'Roy'}}
+    assert_nothing_raised do
+      assert_template_result( "YES",
+                              "{% if android.name == 'Roy' %}YES{% endif %}",
+                              assigns)
+    end
+    assert_nothing_raised do
+      assert_template_result( "YES",
+                              "{% if order.items_count == 0 %}YES{% endif %}",
+                              assigns)
+    end
+  end
+  
   def test_if_and
     assert_template_result(' YES ','{% if true and true %} YES {% endif %}')    
     assert_template_result('','{% if false and true %} YES {% endif %}')    
