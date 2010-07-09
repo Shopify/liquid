@@ -18,6 +18,11 @@ Rake::GemPackageTask.new(gemspec) do |pkg|
   pkg.gem_spec = gemspec
 end
 
+desc "build the gem and release it to rubygems.org"
+task :release => :gem do
+  sh "gem push pkg/liquid-#{gemspec.version}.gem"
+end
+
 namespace :profile do
 
   
