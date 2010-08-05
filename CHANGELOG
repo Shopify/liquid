@@ -1,3 +1,5 @@
+* Make context and assign work the same
+
 * Ruby 1.9.1 bugfixes
 
 * Fix LiquidView for Rails 2.2. Fix local assigns for all versions of Rails
