@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
-$LOAD_PATH.unshift(File.dirname(__FILE__)+ '/extra')
+extras_path = File.join File.dirname(__FILE__), 'extra'
+$LOAD_PATH.unshift(extras_path) unless $LOAD_PATH.include? extras_path
 
 require 'test/unit'
 require 'test/unit/assertions'
