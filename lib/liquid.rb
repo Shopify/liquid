@@ -38,7 +38,7 @@ module Liquid
   StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s,\|,\:,\,]+/
   FirstFilterArgument         = /#{FilterArgumentSeparator}(?:#{StrictQuotedFragment})/
   OtherFilterArgument         = /#{ArgumentSeparator}(?:#{StrictQuotedFragment})/
-  SpacelessFilter             = /#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/
+  SpacelessFilter             = /^(?:'[^']+'|"[^"]+"|[^'"])*#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/
   Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/
   AnyStartingTag              = /\{\{|\{\%/
