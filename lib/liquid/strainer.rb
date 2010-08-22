@@ -16,6 +16,9 @@ module Liquid
     INTERNAL_METHOD = /^__/
     @@required_methods = Set.new([:__id__, :__send__, :respond_to?, :extend, :methods, :class, :object_id])
 
+    # Ruby 1.9.2 introduces Object#respond_to_missing?, which is invoked by Object#respond_to?
+    @@required_methods << :respond_to_missing? if Object.respond_to? :respond_to_missing?
+
     @@filters = {}
 
     def initialize(context)

@@ -18,4 +18,9 @@ class StrainerTest < Test::Unit::TestCase
     assert_equal true, strainer.respond_to?('size', false)
   end
   
+  # Asserts that Object#respond_to_missing? is not being undefined in Ruby versions where it has been implemented
+  # Currently this method is only present in Ruby v1.9.2, or higher
+  def test_object_respond_to_missing
+    assert_equal Object.respond_to?(:respond_to_missing?), Strainer.create(nil).respond_to?(:respond_to_missing?)
+  end
 end
