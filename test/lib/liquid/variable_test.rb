@@ -1,5 +1,4 @@
-#!/usr/bin/env ruby
-require File.dirname(__FILE__) + '/helper'
+require 'test_helper'
 
 class VariableTest < Test::Unit::TestCase
   include Liquid
@@ -131,7 +130,7 @@ class VariableResolutionTest < Test::Unit::TestCase
     template = Template.parse(%|{{ test.test }}|)
     assert_equal 'worked', template.render('test' => {'test' => 'worked'})
   end
-  
+
   def test_preset_assigns
     template = Template.parse(%|{{ test }}|)
     template.assigns['test'] = 'worked'
@@ -168,5 +167,4 @@ class VariableResolutionTest < Test::Unit::TestCase
     }
     assert_equal "Unknown variable 'test'", e.message
   end
-
-end
+end # VariableTest

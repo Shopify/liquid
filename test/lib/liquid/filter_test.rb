@@ -1,5 +1,4 @@
-#!/usr/bin/env ruby
-require File.dirname(__FILE__) + '/helper'
+require 'test_helper'
 
 module MoneyFilter
   def money(input)
@@ -92,4 +91,4 @@ class FiltersInTemplate < Test::Unit::TestCase
     assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render(nil, CanadianMoneyFilter)
     assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render(nil, [CanadianMoneyFilter])
   end
-end
+end # FiltersTest

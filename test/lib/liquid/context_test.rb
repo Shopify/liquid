@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + '/helper'
+require 'test_helper'
+
 class HundredCentes
   def to_liquid
     100
@@ -61,7 +62,6 @@ class ArrayLike
     self
   end
 end
-
 
 class ContextTest < Test::Unit::TestCase
   include Liquid
@@ -262,10 +262,10 @@ class ContextTest < Test::Unit::TestCase
 
   def test_hash_to_array_transition
     @context['colors'] = {
-     'Blue'    => ['003366','336699', '6699CC', '99CCFF'],
-     'Green'   => ['003300','336633', '669966', '99CC99'],
-     'Yellow'  => ['CC9900','FFCC00', 'FFFF99', 'FFFFCC'],
-     'Red'     => ['660000','993333', 'CC6666', 'FF9999']
+      'Blue'    => ['003366','336699', '6699CC', '99CCFF'],
+      'Green'   => ['003300','336633', '669966', '99CC99'],
+      'Yellow'  => ['CC9900','FFCC00', 'FFFF99', 'FFFFCC'],
+      'Red'     => ['660000','993333', 'CC6666', 'FF9999']
     }
 
     assert_equal '003366', @context['colors.Blue[0]']
@@ -475,5 +475,4 @@ class ContextTest < Test::Unit::TestCase
     assert_kind_of CategoryDrop, @context['category']
     assert_equal @context, @context['category'].context
   end
-
-end
+end # ContextTest

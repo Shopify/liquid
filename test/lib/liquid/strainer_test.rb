@@ -1,5 +1,4 @@
-#!/usr/bin/env ruby
-require File.dirname(__FILE__) + '/helper'
+require 'test_helper'
 
 class StrainerTest < Test::Unit::TestCase
   include Liquid
@@ -23,4 +22,4 @@ class StrainerTest < Test::Unit::TestCase
   def test_object_respond_to_missing
     assert_equal Object.respond_to?(:respond_to_missing?), Strainer.create(nil).respond_to?(:respond_to_missing?)
   end
-end
+end # StrainerTest

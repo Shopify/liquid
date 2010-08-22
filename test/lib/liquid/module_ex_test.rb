@@ -1,5 +1,4 @@
-#!/usr/bin/env ruby
-require File.dirname(__FILE__) + '/helper'
+require 'test_helper'
 
 class TestClassA
   liquid_methods :allowedA, :chainedB
@@ -39,31 +38,31 @@ end
 
 class ModuleExTest < Test::Unit::TestCase
   include Liquid
-  
+
   def setup
     @a = TestClassA.new
     @b = TestClassB.new
     @c = TestClassC.new
   end
-  
+
   def test_should_create_LiquidDropClass
     assert TestClassA::LiquidDropClass
     assert TestClassB::LiquidDropClass
     assert TestClassC::LiquidDropClass
   end
-  
+
   def test_should_respond_to_liquid
     assert @a.respond_to?(:to_liquid)
     assert @b.respond_to?(:to_liquid)
     assert @c.respond_to?(:to_liquid)
   end
-  
+
   def test_should_return_LiquidDropClass_object
     assert @a.to_liquid.is_a?(TestClassA::LiquidDropClass)
     assert @b.to_liquid.is_a?(TestClassB::LiquidDropClass)
     assert @c.to_liquid.is_a?(TestClassC::LiquidDropClass)
   end
-  
+
   def test_should_respond_to_liquid_methods
     assert @a.to_liquid.respond_to?(:allowedA)
     assert @a.to_liquid.respond_to?(:chainedB)
@@ -84,6 +83,5 @@ class ModuleExTest < Test::Unit::TestCase
     assert_equal 'another_allowedC', Liquid::Template.parse("{{ a.chainedB.chainedC.another_allowedC }}").render('a'=>@a)
     assert_equal '', Liquid::Template.parse("{{ a.restricted }}").render('a'=>@a)
     assert_equal '', Liquid::Template.parse("{{ a.unknown }}").render('a'=>@a)
- end
-
-end
+  end
+end # ModuleExTest

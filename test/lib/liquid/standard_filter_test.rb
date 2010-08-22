@@ -1,11 +1,8 @@
-#!/usr/bin/env ruby
-require File.dirname(__FILE__) + '/helper'
-
+require 'test_helper'
 
 class Filters
   include Liquid::StandardFilters
 end
-
 
 class StandardFiltersTest < Test::Unit::TestCase
   include Liquid
@@ -180,5 +177,4 @@ class StandardFiltersTest < Test::Unit::TestCase
   def test_cannot_access_private_methods
     assert_template_result('a',"{{ 'a' | to_number }}")
   end
-
-end
+end # StandardFiltersTest

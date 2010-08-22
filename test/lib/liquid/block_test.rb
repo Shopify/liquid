@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/helper'
+require 'test_helper'
 
 class VariableTest < Test::Unit::TestCase
   include Liquid
@@ -33,26 +33,26 @@ class VariableTest < Test::Unit::TestCase
   def test_variable_many_embedded_fragments
     template = Liquid::Template.parse("  {{funk}} {{so}} {{brother}} ")
     assert_equal 7, template.root.nodelist.size
-    assert_equal [String, Variable, String, Variable, String, Variable, String], block_types(template.root.nodelist)
+    assert_equal [String, Variable, String, Variable, String, Variable, String],
+                 block_types(template.root.nodelist)
   end
-  
+
   def test_with_block
     template = Liquid::Template.parse("  {% comment %} {% endcomment %} ")
-    assert_equal [String, Comment, String], block_types(template.root.nodelist)    
+    assert_equal [String, Comment, String], block_types(template.root.nodelist)
     assert_equal 3, template.root.nodelist.size
   end
-  
-  def test_with_custom_tag 
-    Liquid::Template.register_tag("testtag", Block) 
-     
-    assert_nothing_thrown do 
-      template = Liquid::Template.parse( "{% testtag %} {% endtesttag %}") 
-    end 
+
+  def test_with_custom_tag
+    Liquid::Template.register_tag("testtag", Block)
+
+    assert_nothing_thrown do
+      template = Liquid::Template.parse( "{% testtag %} {% endtesttag %}")
+    end
   end
-  
+
   private
-  
-  def block_types(nodelist)
-    nodelist.collect { |node| node.class }
-  end
-end
+    def block_types(nodelist)
+      nodelist.collect { |node| node.class }
+    end
+end # VariableTest
