@@ -47,6 +47,10 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal '&lt;strong&gt;', @filters.h('<strong>')    
   end
   
+  def test_escape_once
+    assert_equal '&lt;strong&gt;', @filters.escape_once(@filters.escape('<strong>'))
+  end
+  
   def test_truncatewords
     assert_equal 'one two three', @filters.truncatewords('one two three', 4)
     assert_equal 'one two...', @filters.truncatewords('one two three', 2)
