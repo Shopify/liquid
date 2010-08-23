@@ -18,18 +18,18 @@ Liquid is a template engine which I wrote for very specific requirements
 
 ## What does it look like?
 
-<pre>
-<ul id="products">
-  {% for product in products %}
-    <li>
-      <h2>{{product.name}}</h2>
-      Only {{product.price | price }}
+<code>
+  <ul id="products">
+    {% for product in products %}
+      <li>
+        <h2>{{product.name}}</h2>
+        Only {{product.price | price }}
 
-      {{product.description | prettyprint | paragraph }}
-    </li>
-  {% endfor %}
-</ul>
-</pre>
+        {{product.description | prettyprint | paragraph }}
+      </li>
+    {% endfor %}
+  </ul>
+</code>
 
 ## Howto use Liquid
 
