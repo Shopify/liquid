@@ -43,6 +43,7 @@ class RegexpTest < Test::Unit::TestCase
   end
 
   def test_literal_shorthand_regexp
-    assert_match "{{{ {% if 'gnomeslab' contains 'liquid' %}yes{% endif %} }}}", LiteralShorthand
+    assert_equal [["{% if 'gnomeslab' contains 'liquid' %}yes{% endif %}"]],
+    "{{{ {% if 'gnomeslab' contains 'liquid' %}yes{% endif %} }}}".scan(LiteralShorthand)
   end
 end # RegexpTest
