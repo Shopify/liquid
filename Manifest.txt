@@ -2,7 +2,7 @@ CHANGELOG
 History.txt
 MIT-LICENSE
 Manifest.txt
-README.txt
+README.md
 Rakefile
 init.rb
 lib/extras/liquid_view.rb
