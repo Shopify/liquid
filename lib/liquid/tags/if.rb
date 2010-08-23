@@ -14,7 +14,7 @@ module Liquid
   class If < Block
     SyntaxHelp = "Syntax Error in tag 'if' - Valid syntax: if [expression]"
     Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/
-    ExpressionsAndOperators = /(?:\b(?:and|or)\b|(?:\s*(?!\b(?:and|or)\b)(?:#{QuotedFragment}|\S+)\s*)+)/
+    ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/
 
     def initialize(tag_name, markup, tokens)
       @blocks = []
@@ -56,7 +56,7 @@ module Liquid
           condition = Condition.new($1, $2, $3)
 
           while not expressions.empty?
-            operator = expressions.shift
+            operator = (expressions.shift).to_s.strip
 
             raise(SyntaxError, SyntaxHelp) unless expressions.shift.to_s =~ Syntax
 
