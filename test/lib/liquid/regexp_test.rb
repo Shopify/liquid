@@ -41,4 +41,8 @@ class RegexpTest < Test::Unit::TestCase
     assert_equal ['var', '["method"]', '[0]'],          'var["method"][0]'.scan(VariableParser)
     assert_equal ['var', '[method]', '[0]', 'method'],  'var[method][0].method'.scan(VariableParser)
   end
+
+  def test_literal_shorthand_regexp
+    assert_match "{{{ {% if 'gnomeslab' contains 'liquid' %}yes{% endif %} }}}", LiteralShorthand
+  end
 end # RegexpTest

@@ -1,9 +1,9 @@
 module Liquid
-  class Comment < Block                                             
+  class Comment < Block
     def render(context)
       ''
-    end    
+    end
   end
-  
-  Template.register_tag('comment', Comment)  
+
+  Template.register_tag('comment', Comment)
 end
