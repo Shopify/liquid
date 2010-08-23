@@ -15,16 +15,15 @@ module Liquid
     SyntaxHelp = "Syntax Error in tag 'if' - Valid syntax: if [expression]"
     Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/
     ExpressionsAndOperators = /(?:\b(?:and|or)\b|(?:\s*(?!\b(?:and|or)\b)(?:#{QuotedFragment}|\S+)\s*)+)/
-    
-    def initialize(tag_name, markup, tokens)    
-    
+
+    def initialize(tag_name, markup, tokens)
       @blocks = []
-      
+
       push_block('if', markup)
-      
-      super      
+
+      super
     end
-    
+
     def unknown_tag(tag, markup, tokens)
       if ['elsif', 'else'].include?(tag)
         push_block(tag, markup)
@@ -32,48 +31,48 @@ module Liquid
         super
       end
     end
-    
+
     def render(context)
       context.stack do
         @blocks.each do |block|
-          if block.evaluate(context)            
-            return render_all(block.attachment, context)            
+          if block.evaluate(context)
+            return render_all(block.attachment, context)
           end
-        end 
+        end
         ''
       end
     end
-    
-    private
-    
-    def push_block(tag, markup)            
-      block = if tag == 'else'
-        ElseCondition.new
-      else        
-        
-        expressions = markup.scan(ExpressionsAndOperators).reverse
-        raise(SyntaxError, SyntaxHelp) unless expressions.shift =~ Syntax 
 
-        condition = Condition.new($1, $2, $3)               
-        
-        while not expressions.empty?
-          operator = expressions.shift 
-          
-          raise(SyntaxError, SyntaxHelp) unless expressions.shift.to_s =~ Syntax    
-          
-          new_condition = Condition.new($1, $2, $3)
-          new_condition.send(operator.to_sym, condition)     
-          condition = new_condition          
-        end                        
-                  
-        condition
+    private
+
+      def push_block(tag, markup)
+        block = if tag == 'else'
+          ElseCondition.new
+        else
+
+          expressions = markup.scan(ExpressionsAndOperators).reverse
+          raise(SyntaxError, SyntaxHelp) unless expressions.shift =~ Syntax
+
+          condition = Condition.new($1, $2, $3)
+
+          while not expressions.empty?
+            operator = expressions.shift
+
+            raise(SyntaxError, SyntaxHelp) unless expressions.shift.to_s =~ Syntax
+
+            new_condition = Condition.new($1, $2, $3)
+            new_condition.send(operator.to_sym, condition)
+            condition = new_condition
+          end
+
+          condition
+        end
+
+        @blocks.push(block)
+        @nodelist = block.attach(Array.new)
       end
-            
-      @blocks.push(block)      
-      @nodelist = block.attach(Array.new) 
-    end
-    
-    
+
+
   end
 
   Template.register_tag('if', If)
