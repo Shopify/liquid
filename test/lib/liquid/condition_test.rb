@@ -48,16 +48,14 @@ class ConditionTest < Test::Unit::TestCase
     @context = Liquid::Context.new
     @context['array'] = [1,2,3,4,5]
 
-    assert_evalutes_false "array", 'contains', '0'
-    assert_evalutes_true "array", 'contains', '1'
-    assert_evalutes_true "array", 'contains', '2'
-    assert_evalutes_true "array", 'contains', '3'
-    assert_evalutes_true "array", 'contains', '4'
-    assert_evalutes_true "array", 'contains', '5'
-    assert_evalutes_false "array", 'contains', '6'
-
-    assert_evalutes_false "array", 'contains', '"1"'
-
+    assert_evalutes_false "array",  'contains', '0'
+    assert_evalutes_true "array",   'contains', '1'
+    assert_evalutes_true "array",   'contains', '2'
+    assert_evalutes_true "array",   'contains', '3'
+    assert_evalutes_true "array",   'contains', '4'
+    assert_evalutes_true "array",   'contains', '5'
+    assert_evalutes_false "array",  'contains', '6'
+    assert_evalutes_false "array",  'contains', '"1"'
   end
 
   def test_contains_returns_false_for_nil_operands
@@ -94,15 +92,21 @@ class ConditionTest < Test::Unit::TestCase
     assert_equal false, condition.evaluate
   end
 
-
   def test_should_allow_custom_proc_operator
     Condition.operators['starts_with'] = Proc.new { |cond, left, right| left =~ %r{^#{right}} }
 
-    assert_evalutes_true "'bob'", 'starts_with', "'b'"
-    assert_evalutes_false "'bob'", 'starts_with', "'o'"
+    assert_evalutes_true "'bob'",   'starts_with', "'b'"
+    assert_evalutes_false "'bob'",  'starts_with', "'o'"
 
     ensure
       Condition.operators.delete 'starts_with'
+  end
+
+  def test_left_or_right_may_contain_operators
+    @context = Liquid::Context.new
+    @context['one'] = @context['another'] = "gnomeslab-and-or-liquid"
+
+    assert_evalutes_true "one", '==', "another"
   end
 
   private

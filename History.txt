@@ -1,3 +1,12 @@
+2.2.1 / 2010-08-23
+
+* Added support for literal tags
+
+2.2.0 / 2010-08-22
+
+* Compatible with Ruby 1.8.7, 1.9.1 and 1.9.2-p0
+* Merged some changed made by the community
+
 1.9.0 / 2008-03-04
 
 * Fixed gem install rake task

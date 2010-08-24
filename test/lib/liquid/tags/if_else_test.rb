@@ -150,4 +150,11 @@ class IfElseTest < Test::Unit::TestCase
   ensure
     Condition.operators.delete 'contains'
   end
+
+  def test_operators_are_ignored_unless_isolated
+    Condition.operators['contains'] = :[]
+
+    assert_template_result('yes',
+                           %({% if 'gnomeslab-and-or-liquid' contains 'gnomeslab-and-or-liquid' %}yes{% endif %}))
+  end
 end # IfElseTest
