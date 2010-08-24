@@ -1,7 +1,8 @@
 require 'test_helper'
 
 class TestFileSystem
-  def read_template_file(template_path)
+  def read_template_file(context, template_name)
+    template_path = context[template_name]
     case template_path
     when "product"
       "Product: {{ product.title }} "
@@ -34,7 +35,8 @@ class TestFileSystem
 end
 
 class OtherFileSystem
-  def read_template_file(template_path)
+  def read_template_file(context, template_name)
+    template_path = context[template_name]
     'from OtherFileSystem'
   end
 end
@@ -104,7 +106,7 @@ class IncludeTagTest < Test::Unit::TestCase
   def test_recursively_included_template_does_not_produce_endless_loop
 
     infinite_file_system = Class.new do
-      def read_template_file(template_path)
+      def read_template_file(context, template_name)
         "-{% include 'loop' %}"
       end
     end
