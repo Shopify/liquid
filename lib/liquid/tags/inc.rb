@@ -25,8 +25,8 @@ module Liquid
     end    
   
     def render(context)
-      value = context.registers[@variable] ||= 0
-      context.registers[@variable] = value + 1
+      value = context.environments.first[@variable] ||= 0
+      context.environments.first[@variable] = value + 1
       value.to_s
     end
   
