@@ -1,15 +1,16 @@
-#require 'rubygems'
-#require 'ruby-debug'
+require 'rubygems'
+require 'ruby-debug'
 
 module Liquid
   
-  # inc is used in a place where one needs to insert a counter
+  # increment is used in a place where one needs to insert a counter
   #     into a template, and needs the counter to survive across
   #     multiple instantiations of the template.
+  #     (To achieve the survival, the application must keep the context)
   #
   #     if the variable does not exist, it is created with value 0.
 
-  #   Hello: {% inc variable %}
+  #   Hello: {% increment variable %}
   #
   # gives you:
   #
@@ -17,7 +18,7 @@ module Liquid
   #    Hello: 1
   #    Hello: 2
   #
-  class Inc < Tag
+  class Increment < Tag
     def initialize(tag_name, markup, tokens)      
       @variable = markup.strip
 
@@ -33,5 +34,5 @@ module Liquid
     private
   end
   
-  Template.register_tag('inc', Inc)
+  Template.register_tag('increment', Increment)
 end
