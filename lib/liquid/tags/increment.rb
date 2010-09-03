@@ -1,6 +1,3 @@
-require 'rubygems'
-require 'ruby-debug'
-
 module Liquid
   
   # increment is used in a place where one needs to insert a counter
