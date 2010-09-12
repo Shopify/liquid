@@ -71,4 +71,10 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal '1', t.render(assigns)
     @global = nil
   end
+
+  def test_auto_filter_is_applied_to_all_variables
+    t = Template.parse(%|{{var1}} and {{var2}}|)
+    t.auto_filter('plus', '1')
+    assert_equal '2 and 3', t.render('var1' => '1', 'var2' => '2')
+  end
 end # TemplateTest

@@ -88,7 +88,7 @@ module Liquid
     #
     def render(*args)
       return '' if @root.nil?
-      
+
       context = case args.first
       when Liquid::Context
         args.shift
@@ -129,6 +129,16 @@ module Liquid
 
     def render!(*args)
       @rethrow_errors = true; render(*args)
+    end
+
+    # Applies the given filter to all variables in the document
+    #
+    def auto_filter(filter, params = nil)
+      root.nodelist.each do |node|
+        if node.respond_to?(:filters)
+          node.filters << [filter.to_sym, params]
+        end
+      end
     end
 
     private
