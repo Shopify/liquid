@@ -137,6 +137,7 @@ module Liquid
     def tokenize(source)
       source = source.source if source.respond_to?(:source)
       return [] if source.to_s.empty?
+      source.gsub!(/-(#{VariableEnd}|#{TagEnd})\n/, '\1')
       tokens = source.split(TemplateParser)
 
       # removes the rogue empty element at the beginning of the array
