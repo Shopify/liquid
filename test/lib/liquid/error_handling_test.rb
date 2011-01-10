@@ -13,6 +13,10 @@ class ErrorDrop < Liquid::Drop
     raise Liquid::SyntaxError, 'syntax error'
   end
 
+  def exception
+    raise Exception, 'exception'
+  end
+
 end
 
 class ErrorHandlingTest < Test::Unit::TestCase
@@ -64,6 +68,14 @@ class ErrorHandlingTest < Test::Unit::TestCase
       assert_equal ' Liquid error: Unknown operator =! ', template.render
       assert_equal 1, template.errors.size
       assert_equal Liquid::ArgumentError, template.errors.first.class
+    end
+  end
+
+  # Liquid should not catch Exceptions that are not subclasses of StandardError, like Interrupt and NoMemoryError
+  def test_exceptions_propagate
+    assert_raise Exception do
+      template = Liquid::Template.parse( ' {{ errors.exception }} '  )
+      template.render('errors' => ErrorDrop.new)
     end
   end
 end # ErrorHandlingTest

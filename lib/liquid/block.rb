@@ -92,7 +92,7 @@ module Liquid
       list.collect do |token|
         begin
           token.respond_to?(:render) ? token.render(context) : token
-        rescue Exception => e
+        rescue ::StandardError => e
           context.handle_error(e)
         end
       end
