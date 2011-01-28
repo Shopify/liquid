@@ -129,17 +129,17 @@ module Liquid
           false
         when 'blank'
           :blank?
-        when 'empty' # Single quoted strings
+        when 'empty'
           :empty?
-        when /^'(.*)'$/ # Double quoted strings
+        when /^'(.*)'$/ # Single quoted strings
           $1.to_s
-        when /^"(.*)"$/ # Integer and floats
+        when /^"(.*)"$/ # Double quoted strings
           $1.to_s
-        when /^(\d+)$/ # Ranges
+        when /^(\d+)$/ # Integer and floats
           $1.to_i
-        when /^\((\S+)\.\.(\S+)\)$/ # Floats
+        when /^\((\S+)\.\.(\S+)\)$/ # Ranges
           (resolve($1).to_i..resolve($2).to_i)
-        when /^(\d[\d\.]+)$/
+        when /^(\d[\d\.]+)$/ # Floats
           $1.to_f
         else
           variable(key)
