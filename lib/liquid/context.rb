@@ -86,17 +86,11 @@ module Liquid
     #   end
     #
     #   context['var]  #=> nil
-    def stack(new_scope={},&block)
-      result = nil
+    def stack(new_scope={})
       push(new_scope)
-
-      begin
-        result = yield
-      ensure
-        pop
-      end
-
-      result
+      yield
+    ensure
+      pop
     end
 
     def clear_instance_assigns
