@@ -29,10 +29,8 @@ module Liquid
 
     # called by liquid to invoke a drop
     def invoke_drop(method)
-      # for backward compatibility with Ruby 1.8
-      methods = self.class.public_instance_methods.map { |m| m.to_s }
-      if methods.include?(method.to_s)
-        send(method.to_sym)
+      if self.class.public_method_defined?(method)
+        send(method)
       else
         before_method(method)
       end
