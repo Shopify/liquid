@@ -133,9 +133,9 @@ module Liquid
         else
           case key
           when /^'(.*)'$/ # Single quoted strings
-            $1.to_s
+            $1
           when /^"(.*)"$/ # Double quoted strings
-            $1.to_s
+            $1
           when /^(\d+)$/ # Integer and floats
             $1.to_i
           when /^\((\S+)\.\.(\S+)\)$/ # Ranges
