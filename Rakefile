@@ -24,14 +24,21 @@ task :release => :gem do
   sh "gem push pkg/liquid-#{gemspec.version}.gem"
 end
 
+namespace :benchmark do 
+
+  desc "Run the liquid benchmark"
+  task :run do 
+    ruby "performance/benchmark.rb"
+  end
+end
+
+
 namespace :profile do
 
-  task :default => [:run]
-
-  desc "Run the liquid profile/perforamce coverage"
+  desc "Run the liquid profile/performance coverage"
   task :run do
 
-    ruby "performance/shopify.rb"
+    ruby "performance/profile.rb"
 
   end
 
