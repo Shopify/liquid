@@ -75,6 +75,13 @@ module Liquid
       @errors ||= []
     end
 
+    # Don't remove tags that render to nil.
+    # Returns self for easy chaining
+    def leave_missing_tags
+      @root.leave_missing_tags = true unless @root.nil?
+      self
+    end
+
     # Render takes a hash with local variables.
     #
     # if you use the same filters over and over again consider registering them globally
@@ -88,7 +95,7 @@ module Liquid
     #
     def render(*args)
       return '' if @root.nil?
-      
+
       context = case args.first
       when Liquid::Context
         args.shift
