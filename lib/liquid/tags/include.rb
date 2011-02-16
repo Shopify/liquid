@@ -27,7 +27,7 @@ module Liquid
       file_system = context.registers[:file_system] || Liquid::Template.file_system
       source  = file_system.read_template_file(context, @template_name)
       partial = Liquid::Template.parse(source)      
-      object_name = @template_name[1..-2].split('/').last
+      object_name = context[@template_name].split('/').last
       
       variable = context[@variable_name || object_name]
       

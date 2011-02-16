@@ -75,6 +75,11 @@ class IncludeTagTest < Test::Unit::TestCase
       Template.parse("{% include 'superdir/product' with products[0] %}").render( "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]  )
   end
 
+  def test_include_tag_object_variable_name_with_variable_template_name
+    assert_equal "Product: Draft 151cm ",
+      Template.parse("{% assign tpl = 'superdir/product' %}{% include tpl with products[0] %}").render( "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]  )
+  end
+
   def test_include_tag_with_local_variables
     assert_equal "Locale: test123 ",
       Template.parse("{% include 'locale_variables' echo1: 'test123' %}").render
