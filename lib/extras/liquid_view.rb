@@ -20,7 +20,8 @@ class LiquidView
   end
 
   def render(template, local_assigns = nil)
-    @view.controller.headers["Content-Type"] ||= 'text/html; charset=utf-8'
+    ### when I render text layout, it still set me html content type. so remove it.
+    # @view.controller.headers["Content-Type"] ||= 'text/html; charset=utf-8'
 
     # Rails 2.2 Template has source, but not locals
     if template.respond_to?(:source) && !template.respond_to?(:locals)
