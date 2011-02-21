@@ -11,6 +11,7 @@ module Liquid
       '==' => lambda { |cond, left, right|  cond.send(:equal_variables, left, right) },
       '!=' => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
       '<>' => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
+      '=~' => lambda { |cond, left, right|  cond.send(:match_variables, left, right) },
       '<'  => :<,
       '>'  => :>,
       '>=' => :>=,
@@ -84,6 +85,28 @@ module Liquid
       end
 
       left == right
+    end
+
+    def match_variables(left, right)
+      if left.is_a?(Symbol)
+        if right.respond_to?(left)
+          return right.send(left.to_s)
+        else
+          return nil
+        end
+      end
+
+      if right.is_a?(Symbol)
+        if left.respond_to?(right)
+          return left.send(right.to_s)
+        else
+          return nil
+        end
+      end
+
+      return nil if left.nil? or right.nil?
+
+      !!(left.to_s =~ Regexp.new(right.to_s))
     end
 
     def interpret_condition(left, right, op, context)
