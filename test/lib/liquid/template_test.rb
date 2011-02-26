@@ -74,7 +74,7 @@ class TemplateTest < Test::Unit::TestCase
 
   def test_leave_missing_tags
     template = Liquid::Template.parse( ' {{ first_name }}, {{ foo }} '  ).leave_missing_tags
-    assert_equal " {{ first_name }}, bar ",  template.render('foo' => "bar")
+    assert_equal " {{first_name}}, bar ",  template.render('foo' => "bar")
   end
 
 end # TemplateTest

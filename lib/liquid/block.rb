@@ -95,7 +95,7 @@ module Liquid
         begin
           if token.respond_to?(:render)
             r = token.render(context)
-            r.nil? && leave_missing_tags ? "{{ #{token.name} }}" : r
+            r.nil? && leave_missing_tags ? "{{#{token.name}}}" : r
           else
             token
           end
