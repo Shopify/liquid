@@ -46,6 +46,14 @@ module Liquid
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/
   LiteralShorthand            = /^(?:\{\{\{\s?)(.*?)(?:\s*\}\}\})$/
+
+  def self.init_rails
+    if defined? ActionView::Template and ActionView::Template.respond_to? :register_template_handler
+      ActionView::Template
+    else
+      ActionView::Base
+    end.register_template_handler(:liquid, LiquidView)
+  end
 end
 
 require 'liquid/drop'
@@ -67,3 +75,8 @@ require 'liquid/module_ex'
 # Load all the tags of the standard library
 #
 Dir[File.dirname(__FILE__) + '/liquid/tags/*.rb'].each { |f| require f }
+
+if defined? Rails 
+  require 'extras/liquid_view'
+  Liquid.init_rails
+end
