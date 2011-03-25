@@ -40,3 +40,35 @@ For standard use you can just pass it the content of a file and call render with
 @template = Liquid::Template.parse("hi {{name}}") # Parses and compiles the template
 @template.render( 'name' => 'tobi' )              # => "hi tobi"
 </pre>
+
+## Rails integration
+
+By default Liquid will include all helpers as Liquid filter. 
+
+<pre>
+module ApplicationHelper
+  def truncate(input, length)
+    input[0..length] + '...' 
+  end
+end
+</pre>
+
+Liquid:
+
+<pre>
+ {{ 'This is a long section of text' | truncate: 3 }} #=>   Thi... 
+</pre>
+
+And you can config it like this:
+<pre>
+LiquidView.included_helpers = [ApplicationHelper, MyLiquidHelper]
+</pre>
+
+If you want to liquid include filter, you config where you put liquid template:
+
+<pre>
+Liquid::Template.file_system = Liquid::LocalFileSystem.new(Rails.root.join("app","view","liquid")) 
+</pre>
+
+
+
