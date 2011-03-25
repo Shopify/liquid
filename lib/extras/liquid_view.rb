@@ -14,6 +14,17 @@ class LiquidView
   def self.call(template)
     "LiquidView.new(self).render(template, local_assigns)"
   end
+  
+  @@included_helpers = nil
+
+  def self.included_helpers
+    @@included_helpers 
+  end
+
+  def self.included_helpers=(modules) 
+    modules = [modules] unless modules.kind_of?(Array)
+    @@included_helpers = modules
+  end
 
   def initialize(view)
     @view = view
@@ -42,6 +53,14 @@ class LiquidView
     
     liquid = Liquid::Template.parse(source)
     liquid.render(assigns, :filters => [@view.controller.master_helper_module], :registers => {:action_view => @view, :controller => @view.controller})
+  end
+
+  def filters(master_helper_module)
+    if self.class.included_helpers.nil? 
+      [master_helper_module]
+    else 
+      self.class.included_helpers
+    end
   end
 
   def compilable?
