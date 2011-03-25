@@ -41,30 +41,56 @@ For standard use you can just pass it the content of a file and call render with
 @template.render( 'name' => 'tobi' )              # => "hi tobi"
 </pre>
 
-## Rails integration
-
-By default Liquid will include all helpers as Liquid filter. 
+## Installation
 
 <pre>
-module ApplicationHelper
+gem install liquid
+</pre>
+
+with bundler
+<pre>
+# in Gemfile
+gem 'liquid'
+</pre>
+
+Rails 2 without bundler
+
+<pre>
+# in config/environment.rb
+config.gem 'liquid'
+</pre>
+
+you can also use it as plugin:
+
+<pre>
+./script/plugin install https://github.com/tobi/liquid.git
+</pre>
+
+## Rails integration
+
+After installation, Liquid have already registered itself as Rails template engine. So you can start using templates with the .liquid file type.
+
+By default Liquid will include all helpers as Liquid filter and you can config it like this:
+
+<pre>
+LiquidView.included_helpers = [ApplicationHelper, MyLiquidHelper]
+</pre>
+
+<pre>
+module MyLiquidHelper
   def truncate(input, length)
     input[0..length] + '...' 
   end
 end
 </pre>
 
-Liquid:
+Liquid template:
 
 <pre>
  {{ 'This is a long section of text' | truncate: 3 }} #=>   Thi... 
 </pre>
 
-And you can config it like this:
-<pre>
-LiquidView.included_helpers = [ApplicationHelper, MyLiquidHelper]
-</pre>
-
-If you want to liquid include filter, you config where you put liquid template:
+Remember you can not use `render` method in liquid template, so you need use liquid build-in `include` tag, before you start use it you need config the path where you put template files.
 
 <pre>
 Liquid::Template.file_system = Liquid::LocalFileSystem.new(Rails.root.join("app","view","liquid")) 
