@@ -52,7 +52,7 @@ class LiquidView
     assigns.merge!(local_assigns.stringify_keys)
     
     liquid = Liquid::Template.parse(source)
-    liquid.render(assigns, :filters => [@view.controller.master_helper_module], :registers => {:action_view => @view, :controller => @view.controller})
+    liquid.render(assigns, :filters => filters(@view.controller.master_helper_module), :registers => {:action_view => @view, :controller => @view.controller})
   end
 
   def filters(master_helper_module)
