@@ -36,7 +36,7 @@ class ProductDrop < Liquid::Drop
 
   class CatchallDrop < Liquid::Drop
     def before_method(method)
-      return 'method: ' << method
+      return 'method: ' << method.to_s
     end
   end
 
@@ -92,6 +92,11 @@ class DropsTest < Test::Unit::TestCase
     output = Liquid::Template.parse( ' {{ product.catchall.unknown }} '  ).render('product' => ProductDrop.new)
     assert_equal ' method: unknown ', output
 
+  end
+
+  def test_integer_argument_drop
+    output = Liquid::Template.parse( ' {{ product.catchall[8] }} '  ).render('product' => ProductDrop.new)
+    assert_equal ' method: 8 ', output
   end
 
   def test_text_array_drop
