@@ -88,7 +88,7 @@ class DropsTest < Test::Unit::TestCase
 
   end
 
-  def test_text_drop
+  def test_unknown_method
     output = Liquid::Template.parse( ' {{ product.catchall.unknown }} '  ).render('product' => ProductDrop.new)
     assert_equal ' method: unknown ', output
 
