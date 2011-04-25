@@ -23,11 +23,35 @@ module Liquid
         if match[2].match(/#{FilterSeparator}\s*(.*)/)
           filters = Regexp.last_match(1).scan(FilterParser)
           filters.each do |f|
-            if matches = f.match(/\s*(\w+)/)
-              filtername = matches[1]
-              filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*(#{QuotedFragment})/).flatten
-              @filters << [filtername.to_sym, filterargs]
+            next unless f.match(/\s*\w+/)
+            filtername = nil
+            filterargs = []
+            filteropts = {}
+            Scanner.scan(f) do |s|
+              s.skip_opt_whitespace
+              filtername = s.require(/\w+/, "could not find filter name")
+              s.skip_opt_whitespace
+              if s.scan(/:/)
+                s.skip_opt_whitespace
+                begin
+                  if s.scan(TagAttributes)
+                    filteropts[s[1]] = s[2]
+                  elsif s.scan(QuotedFragment)
+                    if filteropts.empty?
+                      filterargs << s.matched
+                    else
+                      raise SyntaxError, "filter argument '#{s.matched}' must precede attributes"
+                    end
+                  else
+                    raise SyntaxError, "filter arguments could not be recognised at '#{s.rest}'"
+                  end
+                end while s.scan(/,\s*/)
+                filterargs << filteropts unless filteropts.empty?
+              elsif !s.eos?
+                raise SyntaxError, "trailing content '#{s.rest}' could not be recognised - you need to use ':' to introduce the argument list"
+              end
             end
+            @filters << [filtername.to_sym, filterargs]
           end
         end
       end
@@ -37,7 +61,7 @@ module Liquid
       return '' if @name.nil?
       @filters.inject(context[@name]) do |output, filter|
         filterargs = filter[1].to_a.collect do |a|
-         context[a]
+          resolve_argument(a, context)
         end
         begin
           output = context.invoke(filter[0], output, *filterargs)
@@ -46,5 +70,14 @@ module Liquid
         end
       end
     end
+
+    private
+      def resolve_argument(arg, context)
+        if arg.is_a?(Hash)
+          Hash[*(arg.map { |key, value| [key, context[value]] }.flatten)]
+        else
+          context[arg]
+        end
+      end
   end
 end

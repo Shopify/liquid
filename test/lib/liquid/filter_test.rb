@@ -16,6 +16,20 @@ module CanadianMoneyFilter
   end
 end
 
+module InspectFilter
+  def inspect(input, *args)
+    opts = args.last.is_a?(Hash) ? args.pop : {}
+    [
+      "input: #{input.inspect}",
+      "args:",
+      args.map { |arg| "#{arg.inspect}" }.join(", "),
+      "opts: {",
+      opts.keys.sort.map { |key| "#{key.inspect}=>#{opts[key].inspect}" }.join(", "),
+      "}"
+    ].flatten.join(" ")
+  end
+end
+
 class FiltersTest < Test::Unit::TestCase
   include Liquid
 
@@ -85,6 +99,15 @@ class FiltersTest < Test::Unit::TestCase
     @context['var'] = 1000
 
     assert_equal 1000, Variable.new("var | xyzzy").render(@context)
+  end
+
+  def test_filter_arguments
+    @context['var'] = 'input'
+    @context.add_filters(InspectFilter)
+    assert_equal 'input: "input" args: 1, "two" opts: { "three"=>3 }',
+      Variable.new("var | inspect: 1, 'two', three: 3").render(@context)
+    assert_equal 'input: "input" args: 1, 2 opts: { "a"=>1, "b"=>2, "c"=>3 }',
+      Variable.new("var | inspect: 1, 2, a: 1, b: 2, c: 3").render(@context)
   end
 end
 

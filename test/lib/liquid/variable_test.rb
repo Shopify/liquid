@@ -58,6 +58,39 @@ class VariableTest < Test::Unit::TestCase
 
   end
 
+  def test_filter_name_should_not_be_followed_by_comma
+    assert_raise(Liquid::SyntaxError) do
+      Variable.new(%! hello | things, !)
+    end
+    assert_raise(Liquid::SyntaxError) do
+      Variable.new(%! hello | things, 'world' !)
+    end
+  end
+
+  def test_filter_should_handle_attributes_only
+    var = Variable.new(%! hello | img_tag: border: '0', size: "10x10", alt: "Description" !)
+    assert_equal 'hello', var.name
+    assert_equal [[:img_tag,[{'border'=>"'0'",'size'=>'"10x10"','alt'=>'"Description"'}]]], var.filters
+  end
+
+  def test_filter_should_handle_variables_followed_by_attributes
+    var = Variable.new(%! hello | img_tag: 'Description', border: '0', size: "10x10" !)
+    assert_equal 'hello', var.name
+    assert_equal [[:img_tag,["'Description'",{'border'=>"'0'",'size'=>'"10x10"'}]]], var.filters
+  end
+
+  def test_filter_should_handle_attributes_that_are_variables
+    var = Variable.new(%! hello | img_tag: alt: desc, border: width !)
+    assert_equal 'hello', var.name
+    assert_equal [[:img_tag,[{'alt'=>"desc",'border'=>'width'}]]], var.filters
+  end
+
+  def test_filter_should_require_variables_to_precede_attributes
+    assert_raise(Liquid::SyntaxError) do
+      Variable.new(%! hello | img_tag: border: "0", 'Description', size: "10x10" !)
+    end
+  end
+
   def test_filters_without_whitespace
     var = Variable.new('hello | textileze | paragraph')
     assert_equal 'hello', var.name
