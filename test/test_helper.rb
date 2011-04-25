@@ -2,13 +2,13 @@
 extras_path = File.join File.dirname(__FILE__), 'extra'
 $LOAD_PATH.unshift(extras_path) unless $LOAD_PATH.include? extras_path
 
-require 'rubygems' unless RUBY_VERSION =~ /^(?:1.9.*)$/
+require 'rubygems' unless RUBY_VERSION >= '1.9'
 require 'test/unit'
 require 'test/unit/assertions'
 require 'caller'
 require 'breakpoint'
 require 'ruby-debug'
-require File.join File.dirname(__FILE__), '..', 'lib', 'liquid'
+require File.join(File.dirname(__FILE__), '..', 'lib', 'liquid')
 
 
 module Test
