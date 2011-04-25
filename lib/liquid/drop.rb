@@ -28,11 +28,11 @@ module Liquid
     end
 
     # called by liquid to invoke a drop
-    def invoke_drop(method)
-      if self.class.public_method_defined?(method)
-        send(method)
+    def invoke_drop(method_or_key)
+      if self.class.public_method_defined?(method_or_key.to_s.to_sym)
+        send(method_or_key.to_s.to_sym)
       else
-        before_method(method)
+        before_method(method_or_key)
       end
     end
 
