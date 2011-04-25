@@ -63,8 +63,8 @@ module Liquid
 
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
     def push(new_scope={})
-      raise StackLevelError, "Nesting too deep" if @scopes.length > 100
       @scopes.unshift(new_scope)
+      raise StackLevelError, "Nesting too deep" if @scopes.length > 100
     end
 
     # Merge a hash of variables in the current local scope
