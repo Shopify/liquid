@@ -97,6 +97,9 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal "07/16/2004", @filters.date("Fri Jul 16 01:00:00 2004", "%m/%d/%Y")
 
     assert_equal nil, @filters.date(nil, "%B")
+
+    assert_equal "07/05/2006", @filters.date(1152078955, "%m/%d/%Y")
+    assert_equal "07/05/2006", @filters.date("1152078955", "%m/%d/%Y")
   end
 
 
