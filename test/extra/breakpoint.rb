@@ -135,7 +135,7 @@ module Breakpoint
       end
 
       instance_methods.each do |method|
-        next if method[/^__.+__$/]
+        next if method[/^(__.+__|object_id)$/]
         undef_method method
       end
 
