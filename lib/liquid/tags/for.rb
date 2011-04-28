@@ -13,6 +13,8 @@ module Liquid
   #      <div {% if forloop.first %}class="first"{% endif %}>
   #        Item {{ forloop.index }}: {{ item.name }}
   #      </div>
+  #    {% else %}
+  #      There is nothing in the collection.
   #    {% endfor %}
   #
   # You can also define a limit and offset much like SQL.  Remember
