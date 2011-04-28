@@ -7,7 +7,11 @@ require 'test/unit'
 require 'test/unit/assertions'
 require 'caller'
 require 'breakpoint'
-require 'ruby-debug'
+begin
+  require 'ruby-debug'
+rescue LoadError
+  puts "Couldn't load ruby-debug. gem install ruby-debug if you need it."
+end
 require File.join(File.dirname(__FILE__), '..', 'lib', 'liquid')
 
 
