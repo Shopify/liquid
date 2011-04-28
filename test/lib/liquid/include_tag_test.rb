@@ -1,8 +1,7 @@
 require 'test_helper'
 
 class TestFileSystem
-  def read_template_file(context, template_name)
-    template_path = context[template_name]
+  def read_template_file(template_path, context)
     case template_path
     when "product"
       "Product: {{ product.title }} "
@@ -35,8 +34,7 @@ class TestFileSystem
 end
 
 class OtherFileSystem
-  def read_template_file(context, template_name)
-    template_path = context[template_name]
+  def read_template_file(template_path, context)
     'from OtherFileSystem'
   end
 end
@@ -106,7 +104,7 @@ class IncludeTagTest < Test::Unit::TestCase
   def test_recursively_included_template_does_not_produce_endless_loop
 
     infinite_file_system = Class.new do
-      def read_template_file(context, template_name)
+      def read_template_file(template_path, context)
         "-{% include 'loop' %}"
       end
     end
@@ -117,6 +115,18 @@ class IncludeTagTest < Test::Unit::TestCase
       Template.parse("{% include 'loop' %}").render!
     end
 
+  end
+
+  def test_backwards_compatability_support_for_overridden_read_template_file
+    infinite_file_system = Class.new do
+      def read_template_file(template_path) # testing only one argument here.
+        "- hi mom"
+      end
+    end
+
+    Liquid::Template.file_system = infinite_file_system.new
+
+    Template.parse("{% include 'hi_mom' %}").render!
   end
 
   def test_dynamically_choosen_template
