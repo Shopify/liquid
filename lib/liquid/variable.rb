@@ -37,7 +37,7 @@ module Liquid
       return '' if @name.nil?
       @filters.inject(context[@name]) do |output, filter|
         filterargs = filter[1].to_a.collect do |a|
-         context[a]
+          context[a]
         end
         begin
           output = context.invoke(filter[0], output, *filterargs)

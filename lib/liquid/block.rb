@@ -95,7 +95,7 @@ module Liquid
         rescue ::StandardError => e
           context.handle_error(e)
         end
-      end
+      end.join
     end
   end
 end

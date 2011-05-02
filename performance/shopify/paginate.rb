@@ -52,17 +52,17 @@ class Paginate < Liquid::Block
       hellip_break = false
       
       if page_count > 2
-        1.upto(page_count-1) do |page|          
+        1.upto(page_count-1) do |page|
         
           if current_page == page
-            pagination['parts'] << no_link(page)        
+            pagination['parts'] << no_link(page)
           elsif page == 1 
             pagination['parts'] << link(page, page)
           elsif page == page_count -1
             pagination['parts'] << link(page, page)
           elsif page <= current_page - @attributes['window_size'] or page >= current_page + @attributes['window_size']
             next if hellip_break
-            pagination['parts'] << no_link('&hellip;') 
+            pagination['parts'] << no_link('&hellip;')
             hellip_break = true
             next
           else
@@ -73,7 +73,7 @@ class Paginate < Liquid::Block
         end 
       end
       
-      render_all(@nodelist, context)      
+      render_all(@nodelist, context)
     end
   end
     
