@@ -153,7 +153,7 @@ HERE
   def test_sort_with_limit_and_offset
     assigns = {'array' => [3,2,1,5,6,8,9,7,0,4]}
     assert_template_result('23456', "{% for i in array limit:5 sort:'asc' offset:2 %}{{ i }}{%endfor%}", assigns)
-    assert_template_result('67', "{% for i in array offset:6 sort:'acs' limit:2 %}{{ i }}{%endfor%}", assigns)
+    assert_template_result('67', "{% for i in array offset:6 sort:'asc' limit:2 %}{{ i }}{%endfor%}", assigns)
     assert_template_result('76543', "{% for i in array limit:5 sort:'desc' offset:2 %}{{ i }}{%endfor%}", assigns)
     assert_template_result('32', "{% for i in array offset:6 sort:'desc' limit:2 %}{{ i }}{%endfor%}", assigns)
   end
