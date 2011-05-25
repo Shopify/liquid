@@ -68,8 +68,10 @@ module Liquid
       collection = collection.to_a if collection.is_a?(Range)
     
       return '' unless collection.respond_to?(:each) 
-      if context[@attributes['sort']] == 'true'
-        collection = collection.sort!
+      if context[@attributes['sort']] == 'asc'
+        collection = collection.sort! { |a,b| a<=>b }
+      elsif context[@attributes['sort']] == 'desc'
+        collection = collection.sort! { |a,b| b<=>a }
       end    
                                              
       from = if @attributes['offset'] == 'continue'
