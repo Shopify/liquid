@@ -127,7 +127,29 @@ HERE
     assigns = {'array' => [1,2,3,4,5,6,7,8,9,0]}
     assert_template_result('890', '{%for i in array offset:7 %}{{ i }}{%endfor%}', assigns)
   end
-
+  
+  def test_sort_only
+    assigns = {'array' => [3,2,1,5,6,8,9,7,0,4]}
+    assert_template_result('0123456789', "{% for i in array sort:'true' %}{{ i }}{%endfor%}", assigns)
+  end
+  
+  def test_sort_with_limit
+    assigns = {'array' => [3,2,1,5,6,8,9,7,0,4]}
+    assert_template_result('01234', "{% for i in array limit:5 sort:'true' %}{{ i }}{%endfor%}", assigns)
+    assert_template_result('01234', "{% for i in array sort:'true' limit:5 %}{{ i }}{%endfor%}", assigns)
+  end
+  
+  def test_sort_with_offset
+    assigns = {'array' => [3,2,1,5,6,8,9,7,0,4]}
+    assert_template_result('56789', "{% for i in array offset:5 sort:'true' %}{{ i }}{%endfor%}", assigns)
+    assert_template_result('56789', "{% for i in array sort:'true' offset:5 %}{{ i }}{%endfor%}", assigns)
+  end
+  
+  def test_sort_with_limit_and_offset
+    assigns = {'array' => [3,2,1,5,6,8,9,7,0,4]}
+    assert_template_result('23456', "{% for i in array limit:5 sort:'true' offset:2 %}{{ i }}{%endfor%}", assigns)
+    assert_template_result('67', "{% for i in array offset:6 sort:'true' limit:2 %}{{ i }}{%endfor%}", assigns)
+  end
   def test_pause_resume
     assigns = {'array' => {'items' => [1,2,3,4,5,6,7,8,9,0]}}
     markup = <<-MKUP
