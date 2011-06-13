@@ -85,7 +85,7 @@ module Liquid
       
       segment.reverse! if @reversed
 
-      result = []
+      result = ''
         
       length = segment.length            
             

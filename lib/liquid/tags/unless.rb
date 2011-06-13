@@ -13,19 +13,19 @@ module Liquid
         # First condition is interpreted backwards ( if not )
         block = @blocks.first
         unless block.evaluate(context)
-          return render_all(block.attachment, context)            
+          return render_all(block.attachment, context)
         end
         
         # After the first condition unless works just like if
         @blocks[1..-1].each do |block|
-          if block.evaluate(context)            
-            return render_all(block.attachment, context)            
+          if block.evaluate(context)
+            return render_all(block.attachment, context)
           end
-        end 
+        end
         
         ''
       end
-    end    
+    end
   end
   
 
