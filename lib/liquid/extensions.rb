@@ -43,14 +43,20 @@ class Date  # :nodoc:
   end
 end
 
-def true.to_liquid  # :nodoc:
-  self
+class TrueClass
+  def to_liquid  # :nodoc:
+    self
+  end
 end
 
-def false.to_liquid # :nodoc:
-  self
+class FalseClass
+  def to_liquid # :nodoc:
+    self
+  end
 end
 
-def nil.to_liquid # :nodoc:
-  self
+class NilClass
+  def to_liquid # :nodoc:
+    self
+  end
 end
