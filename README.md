@@ -18,7 +18,7 @@ Liquid is a template engine which I wrote for very specific requirements
 
 ## What does it look like?
 
-```
+```ruby
   <ul id="products">
     {% for product in products %}
       <li>
