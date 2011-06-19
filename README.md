@@ -18,7 +18,7 @@ Liquid is a template engine which I wrote for very specific requirements
 
 ## What does it look like?
 
-<code>
+```
   <ul id="products">
     {% for product in products %}
       <li>
@@ -29,14 +29,14 @@ Liquid is a template engine which I wrote for very specific requirements
       </li>
     {% endfor %}
   </ul>
-</code>
+```
 
 ## Howto use Liquid
 
 Liquid supports a very simple API based around the Liquid::Template class.
 For standard use you can just pass it the content of a file and call render with a parameters hash.
 
-<pre>
+```ruby
 @template = Liquid::Template.parse("hi {{name}}") # Parses and compiles the template
 @template.render( 'name' => 'tobi' )              # => "hi tobi"
-</pre>
+```
