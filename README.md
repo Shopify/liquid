@@ -18,25 +18,21 @@ Liquid is a template engine which I wrote for very specific requirements
 
 ## What does it look like?
 
-<code>
-  <ul id="products">
-    {% for product in products %}
-      <li>
-        <h2>{{product.name}}</h2>
-        Only {{product.price | price }}
-
-        {{product.description | prettyprint | paragraph }}
-      </li>
-    {% endfor %}
-  </ul>
-</code>
+    <ul id="products">
+      {% for product in products %}
+        <li>
+          <h2>{{product.name}}</h2>
+          Only {{product.price | price }}
+    
+          {{product.description | prettyprint | paragraph }}
+        </li>
+      {% endfor %}
+    </ul>
 
 ## Howto use Liquid
 
 Liquid supports a very simple API based around the Liquid::Template class.
 For standard use you can just pass it the content of a file and call render with a parameters hash.
 
-<pre>
-@template = Liquid::Template.parse("hi {{name}}") # Parses and compiles the template
-@template.render( 'name' => 'tobi' )              # => "hi tobi"
-</pre>
+    @template = Liquid::Template.parse("hi {{name}}") # Parses and compiles the template
+    @template.render( 'name' => 'tobi' )              # => "hi tobi"
