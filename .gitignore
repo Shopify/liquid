@@ -1,3 +1,4 @@
 *.gem
 *.swp
 pkg
+*.rbc
