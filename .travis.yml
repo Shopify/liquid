@@ -4,6 +4,8 @@ rvm:
   - ree
   - jruby
   - 1.8.6
+  - rbx
+  - rbx-2.0
 
 script: "rake test"
 
