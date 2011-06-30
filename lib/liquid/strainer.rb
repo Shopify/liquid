@@ -14,7 +14,7 @@ module Liquid
   # One of the strainer's responsibilities is to keep malicious method calls out
   class Strainer < parent_object #:nodoc:
     INTERNAL_METHOD = /^__/
-    @@required_methods = Set.new([:__id__, :__send__, :respond_to?, :extend, :methods, :class, :object_id])
+    @@required_methods = Set.new([:__id__, :__send__, :respond_to?, :kind_of?, :extend, :methods, :singleton_methods, :class, :object_id])
 
     # Ruby 1.9.2 introduces Object#respond_to_missing?, which is invoked by Object#respond_to?
     @@required_methods << :respond_to_missing? if Object.respond_to? :respond_to_missing?
