@@ -102,6 +102,12 @@ HERE
                            assigns)
   end
 
+  def test_for_else
+    assert_template_result('+++', '{%for item in array%}+{%else%}-{%endfor%}', 'array'=>[1,2,3])
+    assert_template_result('-',   '{%for item in array%}+{%else%}-{%endfor%}', 'array'=>[])
+    assert_template_result('-',   '{%for item in array%}+{%else%}-{%endfor%}', 'array'=>nil)
+  end
+
   def test_limiting
     assigns = {'array' => [1,2,3,4,5,6,7,8,9,0]}
     assert_template_result('12', '{%for i in array limit:2 %}{{ i }}{%endfor%}', assigns)
