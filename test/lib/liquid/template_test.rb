@@ -71,4 +71,10 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal '1', t.render(assigns)
     @global = nil
   end
+
+  def test_leave_missing_tags
+    template = Liquid::Template.parse( ' {{ first_name }}, {{ foo }} '  ).leave_missing_tags
+    assert_equal " {{first_name}}, bar ",  template.render('foo' => "bar")
+  end
+
 end # TemplateTest

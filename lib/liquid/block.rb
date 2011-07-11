@@ -6,6 +6,8 @@ module Liquid
     FullToken         = /^#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/
     ContentOfVariable = /^#{VariableStart}(.*)#{VariableEnd}$/
 
+   attr_accessor :leave_missing_tags
+
     def parse(tokens)
       @nodelist ||= []
       @nodelist.clear
@@ -91,7 +93,12 @@ module Liquid
     def render_all(list, context)
       list.collect do |token|
         begin
-          token.respond_to?(:render) ? token.render(context) : token
+          if token.respond_to?(:render)
+            r = token.render(context)
+            r.nil? && leave_missing_tags ? "{{#{token.name}}}" : r
+          else
+            token
+          end
         rescue ::StandardError => e
           context.handle_error(e)
         end
