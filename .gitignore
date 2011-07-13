@@ -3,3 +3,4 @@
 *.swp
 pkg
 *.rbc
+.rvmrc
