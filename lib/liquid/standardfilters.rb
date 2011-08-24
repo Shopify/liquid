@@ -53,6 +53,11 @@ module Liquid
       wordlist.length > l ? wordlist[0..l].join(" ") + truncate_string : input
     end
 
+    # Split input string into an array of substrings separated by given pattern.
+    def split(input, pattern)
+      input.split(pattern)
+    end
+
     def strip_html(input)
       input.to_s.gsub(/<script.*?<\/script>/, '').gsub(/<.*?>/, '')
     end
