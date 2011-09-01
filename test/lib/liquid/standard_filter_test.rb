@@ -41,7 +41,6 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_strip
     assert_equal ['12','34'], @filters.split('12~34', '~')
-    # TODO: should it remove middle spaces?
     assert_equal ['A? ',' ,Z'], @filters.split('A? ~ ~ ~ ,Z', '~ ~ ~')
     assert_equal ['A?Z'], @filters.split('A?Z', '~')
     # Regexp works although Liquid does not support.
