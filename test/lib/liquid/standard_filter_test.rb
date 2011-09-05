@@ -39,6 +39,14 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal '1234567890', @filters.truncate('1234567890')
   end
 
+  def test_strip
+    assert_equal ['12','34'], @filters.split('12~34', '~')
+    assert_equal ['A? ',' ,Z'], @filters.split('A? ~ ~ ~ ,Z', '~ ~ ~')
+    assert_equal ['A?Z'], @filters.split('A?Z', '~')
+    # Regexp works although Liquid does not support.
+    assert_equal ['A','Z'], @filters.split('AxZ', /x/)
+  end
+
   def test_escape
     assert_equal '&lt;strong&gt;', @filters.escape('<strong>')
     assert_equal '&lt;strong&gt;', @filters.h('<strong>')
