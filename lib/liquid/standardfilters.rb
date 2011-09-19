@@ -52,6 +52,13 @@ module Liquid
       l = 0 if l < 0
       wordlist.length > l ? wordlist[0..l].join(" ") + truncate_string : input
     end
+    
+    # mask the string with '*' and leave the number of characters indicated at the end, two by default
+    def mask(input, chars = 2, mask_char = '*')
+      word = input.to_s
+      return word   if word.empty?
+      mask_char * (word.size - chars.to_i) + word[(word.size - chars.to_i)..word.size]
+    end
 
     # Split input string into an array of substrings separated by given pattern.
     def split(input, pattern)
