@@ -38,6 +38,11 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal '...', @filters.truncate('1234567890', 0)
     assert_equal '1234567890', @filters.truncate('1234567890')
   end
+  
+  def test_mask
+    assert_equal '********90', @filters.mask('1234567890', 2)
+    assert_equal '------7890', @filters.mask('1234567890', 4, '-')
+  end
 
   def test_strip
     assert_equal ['12','34'], @filters.split('12~34', '~')
