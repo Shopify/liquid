@@ -43,7 +43,8 @@
 class Module
 
   def liquid_methods(*allowed_methods)
-    drop_class = eval "class #{self.to_s}::LiquidDropClass < Liquid::Drop; self; end"
+    parent_name = self.method_defined?(:to_liquid) ? self.new.to_liquid.class.name : "Liquid::Drop"
+    drop_class = eval "class #{self.to_s}::LiquidDropClass < #{parent_name}; self; end"
     define_method :to_liquid do
       drop_class.new(self)
     end

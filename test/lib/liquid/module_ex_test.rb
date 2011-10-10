@@ -30,6 +30,10 @@ class TestClassC
   end
 end
 
+class TestClassD < TestClassC
+  liquid_methods :allowedD
+end
+
 class TestClassC::LiquidDropClass
   def another_allowedC
     'another_allowedC'
@@ -43,24 +47,28 @@ class ModuleExTest < Test::Unit::TestCase
     @a = TestClassA.new
     @b = TestClassB.new
     @c = TestClassC.new
+    @d = TestClassD.new
   end
 
   def test_should_create_LiquidDropClass
     assert TestClassA::LiquidDropClass
     assert TestClassB::LiquidDropClass
     assert TestClassC::LiquidDropClass
+    assert TestClassD::LiquidDropClass
   end
 
   def test_should_respond_to_liquid
     assert @a.respond_to?(:to_liquid)
     assert @b.respond_to?(:to_liquid)
     assert @c.respond_to?(:to_liquid)
+    assert @d.respond_to?(:to_liquid)
   end
 
   def test_should_return_LiquidDropClass_object
     assert @a.to_liquid.is_a?(TestClassA::LiquidDropClass)
     assert @b.to_liquid.is_a?(TestClassB::LiquidDropClass)
     assert @c.to_liquid.is_a?(TestClassC::LiquidDropClass)
+    assert @d.to_liquid.is_a?(TestClassD::LiquidDropClass)
   end
 
   def test_should_respond_to_liquid_methods
@@ -70,6 +78,7 @@ class ModuleExTest < Test::Unit::TestCase
     assert @b.to_liquid.respond_to?(:chainedC)
     assert @c.to_liquid.respond_to?(:allowedC)
     assert @c.to_liquid.respond_to?(:another_allowedC)
+    assert @d.to_liquid.respond_to?(:allowedD)
   end
 
   def test_should_not_respond_to_restricted_methods
@@ -83,5 +92,10 @@ class ModuleExTest < Test::Unit::TestCase
     assert_equal 'another_allowedC', Liquid::Template.parse("{{ a.chainedB.chainedC.another_allowedC }}").render('a'=>@a)
     assert_equal '', Liquid::Template.parse("{{ a.restricted }}").render('a'=>@a)
     assert_equal '', Liquid::Template.parse("{{ a.unknown }}").render('a'=>@a)
+  end
+
+  def test_should_inherit_from_parent_liquid_methods
+    assert @d.to_liquid.respond_to?(:allowedC)
+    assert @d.to_liquid.respond_to?(:another_allowedC)
   end
 end # ModuleExTest
