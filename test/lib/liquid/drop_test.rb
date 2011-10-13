@@ -155,4 +155,8 @@ class DropsTest < Test::Unit::TestCase
   def test_enumerable_drop_size
     assert_equal '3', Liquid::Template.parse( '{{collection.size}}').render('collection' => EnumerableDrop.new)
   end
+
+  def test_empty_string_value_access
+    assert_equal '', Liquid::Template.parse('{{ product[value] }}').render('product' => ProductDrop.new, 'value' => '')
+  end
 end # DropsTest
