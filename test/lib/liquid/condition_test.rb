@@ -18,6 +18,7 @@ class ConditionTest < Test::Unit::TestCase
     assert_evalutes_true '2', '>=', '1'
     assert_evalutes_true '1', '<=', '2'
     assert_evalutes_true '1', '<=', '1'
+    assert_evalutes_true '1', '=~', '1'
   end
 
   def test_default_operators_evalute_false
@@ -30,6 +31,7 @@ class ConditionTest < Test::Unit::TestCase
     assert_evalutes_false '2', '>=', '4'
     assert_evalutes_false '1', '<=', '0'
     assert_evalutes_false '1', '<=', '0'
+    assert_evalutes_false '1', '=~', '='
   end
 
   def test_contains_works_on_strings
@@ -62,6 +64,18 @@ class ConditionTest < Test::Unit::TestCase
     @context = Liquid::Context.new
     assert_evalutes_false "not_assigned", 'contains', '0'
     assert_evalutes_false "0", 'contains', 'not_assigned'
+  end
+
+  def test_match_regexp
+    assert_evalutes_true "11", '=~', '"^\d+$"'
+    assert_evalutes_false "alert('javascript attack')", '=~', '"^\d+$"'
+    assert_evalutes_false "1", '=~', '"^\D+$"'
+  end
+
+  def test_match_returns_false_for_nil_operands
+    @context = Liquid::Context.new
+    assert_evalutes_false "not_assigned", '=~', "'\d+'"
+    assert_evalutes_false "0", '=~', 'not_assigned'
   end
 
   def test_or_condition
