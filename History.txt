@@ -1,3 +1,5 @@
+* Added auto_filter which allows applying a given filter to all variables in the document.
+
 2.2.1 / 2010-08-23
 
 * Added support for literal tags
