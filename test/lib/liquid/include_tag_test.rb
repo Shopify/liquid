@@ -3,7 +3,7 @@ require 'test_helper'
 class TestFileSystem
   def read_template_file(template_path, context)
     case template_path
-    when "product"
+    when "product", "superdir/product"
       "Product: {{ product.title }} "
 
     when "locale_variables"
@@ -66,6 +66,16 @@ class IncludeTagTest < Test::Unit::TestCase
 
     assert_equal "Product: Draft 151cm Product: Element 155cm ",
       Template.parse("{% include 'product' for products %}").render( "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]  )
+  end
+
+  def test_include_tag_object_variable_name
+    assert_equal "Product: Draft 151cm ",
+      Template.parse("{% include 'superdir/product' with products[0] %}").render( "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]  )
+  end
+
+  def test_include_tag_object_variable_name_with_variable_template_name
+    assert_equal "Product: Draft 151cm ",
+      Template.parse("{% assign tpl = 'superdir/product' %}{% include tpl with products[0] %}").render( "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]  )
   end
 
   def test_include_tag_with_local_variables
