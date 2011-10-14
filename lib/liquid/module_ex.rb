@@ -43,6 +43,20 @@
 class Module
 
   def liquid_methods(*allowed_methods)
+    options = (allowed_methods.last.is_a?(Hash) ? allowed_methods.pop : {})
+
+    if options[:reverse_context]
+      instance_variable_set("@#{options[:reverse_context]}", nil)
+      self.class_eval <<-EOS
+        def self.reverse_context_method() @reverse_context_method ||= "#{options[:reverse_context]}"; end
+        def #{options[:reverse_context]}() @liquid_drop.instance_variable_get("@context"); end
+      EOS
+    else
+      self.class_eval <<-EOS
+        def self.reverse_context_method() nil; end
+      EOS
+    end
+
     drop_class = eval "class #{self.to_s}::LiquidDropClass < Liquid::Drop; self; end"
     define_method :to_liquid do
       drop_class.new(self)
@@ -50,6 +64,9 @@ class Module
     drop_class.class_eval do
       def initialize(object)
         @object = object
+        if @object.class.reverse_context_method
+          @object.instance_variable_set("@liquid_drop", self)
+        end
       end
       allowed_methods.each do |sym|
         define_method sym do
