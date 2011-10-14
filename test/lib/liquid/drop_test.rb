@@ -159,4 +159,8 @@ class DropsTest < Test::Unit::TestCase
   def test_empty_string_value_access
     assert_equal '', Liquid::Template.parse('{{ product[value] }}').render('product' => ProductDrop.new, 'value' => '')
   end
+
+  def test_nil_value_access
+    assert_equal '', Liquid::Template.parse('{{ product[value] }}').render('product' => ProductDrop.new, 'value' => nil)
+  end
 end # DropsTest
