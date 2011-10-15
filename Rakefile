@@ -1,10 +1,9 @@
 #!/usr/bin/env ruby
-$:.unshift File.join(File.dirname(__FILE__), 'test') unless $:.include? File.join(File.dirname(__FILE__), 'test')
 
 require 'rubygems'
 require 'rake'
 require 'rake/testtask'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
 task :default => 'test'
 
@@ -15,21 +14,22 @@ Rake::TestTask.new(:test) do |t|
 end
 
 gemspec = eval(File.read('liquid.gemspec'))
-Rake::GemPackageTask.new(gemspec) do |pkg|
+Gem::PackageTask.new(gemspec) do |pkg|
   pkg.gem_spec = gemspec
 end
 
-desc "build the gem and release it to rubygems.org"
+desc "Build the gem and release it to rubygems.org"
 task :release => :gem do
   sh "gem push pkg/liquid-#{gemspec.version}.gem"
 end
 
-namespace :benchmark do 
+namespace :benchmark do
 
   desc "Run the liquid benchmark"
-  task :run do 
+  task :run do
     ruby "performance/benchmark.rb"
   end
+
 end
 
 
@@ -37,9 +37,7 @@ namespace :profile do
 
   desc "Run the liquid profile/performance coverage"
   task :run do
-
     ruby "performance/profile.rb"
-
   end
 
   desc "Run KCacheGrind"
