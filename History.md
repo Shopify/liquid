@@ -1,6 +1,6 @@
 # Liquid Version History
 
-## 2.3.0
+## 2.3.0 / 2011-10-16
 
 * Several speed/memory improvements
 * Numerous bug fixes
