@@ -17,9 +17,9 @@
 	
 	<body>
 
-	  <h1>{{ description | split '~' | first }}</h1>
+	  <h1>{{ description | split: '~' | first }}</h1>
 
-	  <h2>{{ description | split '~' | last }}</h2>
+	  <h2>{{ description | split: '~' | last }}</h2>
 
 	  <h2>There are currently {{products | count}} products in the {{section}} catalog</h2>
 
