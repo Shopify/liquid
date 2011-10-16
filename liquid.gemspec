@@ -2,13 +2,13 @@
 
 Gem::Specification.new do |s|
   s.name        = "liquid"
-  s.version     = "2.2.2"
+  s.version     = "2.3.0"
   s.platform    = Gem::Platform::RUBY
   s.summary     = "A secure, non-evaling end user template engine with aesthetic markup."
   s.authors     = ["Tobias Luetke"]
   s.email       = ["tobi@leetsoft.com"]
   s.homepage    = "http://www.liquidmarkup.org"
-  s.description = "A secure, non-evaling end user template engine with aesthetic markup."
+  #s.description = "A secure, non-evaling end user template engine with aesthetic markup."
 
   s.required_rubygems_version = ">= 1.3.7"
 
