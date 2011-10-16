@@ -25,7 +25,11 @@ class Servlet < LiquidServlet
   def products    
     { 'products' => products_list, 'section' => 'Snowboards', 'cool_products' => true}    
   end
-  
+
+  def description
+    "List of Products ~ This is a list of products with price and description."
+  end
+
   private
   
   def products_list
