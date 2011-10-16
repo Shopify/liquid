@@ -13,10 +13,6 @@ class ContextDrop < Liquid::Drop
     @context['forloop.index']
   end
 
-  def break
-    Breakpoint.breakpoint
-  end
-
   def before_method(method)
     return @context[method]
   end

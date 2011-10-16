@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class RawTest < Test::Unit::TestCase
+class RawTagTest < Test::Unit::TestCase
   include Liquid
 
   def test_tag_in_raw
