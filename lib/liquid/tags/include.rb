@@ -24,11 +24,11 @@ module Liquid
     end
 
     def render(context)
-      source = _read_template_from_file_system(context)
-      partial = Liquid::Template.parse(source)
-      variable = context[@variable_name || @template_name[1..-2]]
-
       context.stack do
+        source = _read_template_from_file_system(context)
+        partial = Liquid::Template.parse(source)
+        variable = context[@variable_name || @template_name[1..-2]]
+
         @attributes.each do |key, value|
           context[key] = context[value]
         end
