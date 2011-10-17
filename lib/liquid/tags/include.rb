@@ -25,8 +25,8 @@ module Liquid
 
     def render(context)
       context.stack do
-        source = _read_template_from_file_system(context)
-        partial = Liquid::Template.parse(source)
+        template = _read_template_from_file_system(context)
+        partial = Liquid::Template.parse _template_source(template)
         variable = context[@variable_name || @template_name[1..-2]]
 
         @attributes.each do |key, value|
@@ -36,16 +36,24 @@ module Liquid
         if variable.is_a?(Array)
           variable.collect do |variable|
             context[@template_name[1..-2]] = variable
-            partial.render(context)
+            _render_partial(partial, template, context)
           end
         else
           context[@template_name[1..-2]] = variable
-          partial.render(context)
+          _render_partial(partial, template, context)
         end
       end
     end
 
   private
+    def _template_source(template)
+      template
+    end
+
+    def _render_partial(partial, template, context)
+      partial.render(context)
+    end
+
     def _read_template_from_file_system(context)
       file_system = context.registers[:file_system] || Liquid::Template.file_system
 
