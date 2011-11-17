@@ -218,6 +218,10 @@ module Liquid
       to_number(input) / to_number(operand)
     end
 
+    def modulo(input, operand)
+      to_number(input) % to_number(operand)
+    end
+
     private
 
       def to_number(obj)

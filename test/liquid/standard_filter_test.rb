@@ -173,6 +173,10 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_template_result "Liquid error: divided by 0", "{{ 5 | divided_by:0 }}"
   end
 
+  def test_modulo
+    assert_template_result "1", "{{ 3 | modulo:2 }}"
+  end
+
   def test_append
     assigns = {'a' => 'bc', 'b' => 'd' }
     assert_template_result('bcd',"{{ a | append: 'd'}}",assigns)
