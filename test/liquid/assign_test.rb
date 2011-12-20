@@ -12,4 +12,10 @@ class AssignTest < Test::Unit::TestCase
                            '{% assign foo = values %}.{{ foo[1] }}.',
                            'values' => %w{foo bar baz})
   end
+  
+  def test_assign_with_filter
+    assert_template_result('.bar.',
+                           '{% assign foo = values | split: "," %}.{{ foo[1] }}.',
+                           'values' => "foo,bar,baz")
+  end
 end # AssignTest
