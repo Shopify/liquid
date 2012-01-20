@@ -75,7 +75,7 @@ module Liquid
       collection = context[@collection_name]
       collection = collection.to_a if collection.is_a?(Range)
     
-      # 1.8.7 compatibility
+      # Maintains Ruby 1.8.7 String#each behaviour on 1.9
       return render_else(context) unless collection.respond_to?(:each) or collection.is_a?(String)
                                                  
       from = if @attributes['offset'] == 'continue'
@@ -125,7 +125,7 @@ module Liquid
       index = 0      
       yielded = 0
 
-      # 1.8.7 compatibility
+      # Maintains Ruby 1.8.7 String#each behaviour on 1.9
       return [collection] if collection.is_a?(String)
 
       collection.each do |item|         

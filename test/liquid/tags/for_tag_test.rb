@@ -182,7 +182,6 @@ HERE
                 '{%for val in string limit:1%}{{val}}{%endfor%}', 
                 'string' => "test string")
 
-    fields = %w(name length index index0 rindex rindex0 first last)
     assert_template_result('val-string-1-1-0-1-0-true-true-test string', 
                 '{%for val in string%}' + 
                 '{{forloop.name}}-' + 
