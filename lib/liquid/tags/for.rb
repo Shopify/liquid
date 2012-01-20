@@ -75,8 +75,7 @@ module Liquid
       collection = context[@collection_name]
       collection = collection.to_a if collection.is_a?(Range)
     
-      # 1.8.7 compatibility
-      return render_else(context) unless collection.respond_to?(:each) or collection.is_a?(String)
+      return render_else(context) unless collection.respond_to?(:each) 
                                                  
       from = if @attributes['offset'] == 'continue'
         context.registers[:for][@name].to_i
@@ -124,10 +123,6 @@ module Liquid
       segments = []      
       index = 0      
       yielded = 0
-
-      # 1.8.7 compatibility
-      return [collection] if collection.is_a?(String)
-
       collection.each do |item|         
                 
         if to && to <= index
