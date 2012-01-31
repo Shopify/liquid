@@ -91,6 +91,7 @@ module Liquid
     def render_all(list, context)
       list.collect do |token|
         begin
+          token.force_encoding('utf-8') if token.respond_to?(:force_encoding)
           token.respond_to?(:render) ? token.render(context) : token
         rescue ::StandardError => e
           context.handle_error(e)
