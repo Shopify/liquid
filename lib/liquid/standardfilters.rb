@@ -54,6 +54,10 @@ module Liquid
     end
 
     # Split input string into an array of substrings separated by given pattern.
+    #
+    # Example:
+    #   <div class="summary">{{ post | split '//' | first }}</div>
+    #
     def split(input, pattern)
       input.split(pattern)
     end
