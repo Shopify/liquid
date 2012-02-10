@@ -126,6 +126,12 @@ class VariableResolutionTest < Test::Unit::TestCase
     assert_equal '', template.render
   end
 
+  def test_boolean_variables
+    template = Template.parse(%|{{test}}|)
+    assert_equal 'true', template.render('test' => true)
+    assert_equal 'false', template.render('test' => false)
+  end
+
   def test_hash_scoping
     template = Template.parse(%|{{ test.test }}|)
     assert_equal 'worked', template.render('test' => {'test' => 'worked'})

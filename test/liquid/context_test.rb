@@ -70,32 +70,44 @@ class ContextTest < Test::Unit::TestCase
     @context = Liquid::Context.new
   end
 
+  # TODO All applicable tests should iterate their test through these two ways 
+  # of setting variables in the context; test_variables has been converted as 
+  # an example.
+  SET_METHODS = {
+    # @scopes - this is the method the test used and represents storing items 
+    # on the scopes of the context.
+    :scopes => Proc.new {|name, value| c = Liquid::Context.new; c[name] = value; c },
+    # @environments - this is the method that Liquid::Template.render uses 
+    # with a Hash passed in
+    :environments => Proc.new {|name, value| Liquid::Context.new([{name => value}, {}]) }
+  }
   def test_variables
-    @context['string'] = 'string'
-    assert_equal 'string', @context['string']
+    SET_METHODS.each do |set_method_name, set_method|
+      @context = set_method.call('string', 'string')
+      assert_equal 'string', @context['string'], set_method_name
 
-    @context['num'] = 5
-    assert_equal 5, @context['num']
+      @context = set_method.call('num', 5)
+      assert_equal 5, @context['num'], set_method_name
 
-    @context['time'] = Time.parse('2006-06-06 12:00:00')
-    assert_equal Time.parse('2006-06-06 12:00:00'), @context['time']
+      @context = set_method.call('time', Time.parse('2006-06-06 12:00:00'))
+      assert_equal Time.parse('2006-06-06 12:00:00'), @context['time'], set_method_name
 
-    @context['date'] = Date.today
-    assert_equal Date.today, @context['date']
+      @context = set_method.call('date', Date.today)
+      assert_equal Date.today, @context['date'], set_method_name
 
-    now = DateTime.now
-    @context['datetime'] = now
-    assert_equal now, @context['datetime']
+      now = DateTime.now
+      @context = set_method.call('datetime', now)
+      assert_equal now, @context['datetime'], set_method_name
 
-    @context['bool'] = true
-    assert_equal true, @context['bool']
+      @context = set_method.call('bool', true)
+      assert_equal true, @context['bool'], set_method_name
 
-    @context['bool'] = false
-    assert_equal false, @context['bool']
+      @context = set_method.call('bool', false)
+      assert_equal false, @context['bool'], set_method_name
 
-    @context['nil'] = nil
-    assert_equal nil, @context['nil']
-    assert_equal nil, @context['nil']
+      @context = set_method.call('nil', nil)
+      assert_equal nil, @context['nil'], set_method_name
+    end
   end
 
   def test_variables_not_existing
