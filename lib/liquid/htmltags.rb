@@ -1,6 +1,6 @@
 module Liquid
   class TableRow < Block
-    Syntax = /(\w+)\s+in\s+(#{VariableSignature}+)/
+    Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/
 
     def initialize(tag_name, markup, tokens)
       if markup =~ Syntax
