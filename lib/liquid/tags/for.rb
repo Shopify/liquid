@@ -24,7 +24,19 @@ module Liquid
   #      {{ item.name }}
   #    {% end %}
   #
-  #  To reverse the for loop simply use {% for item in collection reversed %}
+  # You can also specify an order for the collection items
+  #
+  #    {% for item in collection order:ascending %}
+  #      {{ item.name }}
+  #    {% end %}
+  #
+  # You can also specify which attribute to sort by.
+  #
+  #    {% for item in collection sort_by:name order:descending %}
+  #      {{ item.name }}
+  #    {% end %}
+  #
+  # To reverse the for loop simply use {% for item in collection reversed %}
   #
   # == Available variables:
   #
@@ -80,8 +92,26 @@ module Liquid
         context[@attributes['offset']].to_i
       end
 
+      sort_property = @attributes['sort_by']
+      order_property = @attributes['order']
+
+      if sort_property || order_property
+        collection = if sort_property.nil? && (@attributes['order'] == 'ascending' || @attributes['order'] == 'descending')
+          collection.sort
+        elsif collection.first.respond_to?('[]') && !collection.first[sort_property].nil?
+          collection.sort {|a,b| a[sort_property] <=> b[sort_property] }
+        elsif collection.first.respond_to?(sort_property)
+          collection.sort {|a,b| a.send(sort_property) <=> b.send(sort_property) }
+        elsif collection.first.respond_to?(:to_liquid) && collection.first.to_liquid.respond_to?('[]') && !collection.first.to_liquid[sort_property].nil?
+          collection.sort {|a,b| "#{a.to_liquid[sort_property]}" <=> "#{b.to_liquid[sort_property]}" }
+        else
+          collection
+        end
+        collection.reverse! if @attributes['order'] == 'descending'
+      end
+
       limit = context[@attributes['limit']]
-      to    = limit ? limit.to_i + from : nil
+      to = limit ? limit.to_i + from : nil
 
       segment = Utils.slice_collection(collection, from, to)
 
@@ -149,13 +179,14 @@ module Liquid
 
       @attributes = {}
       while p.look(:id) && p.look(:colon, 1)
-        unless attribute = p.id?('limit') || p.id?('offset')
+        unless attribute = p.id?('limit') || p.id?('offset') || p.id?('order') || p.id?('sort_by')
           raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute"))
         end
         p.consume
         val = p.expression
         @attributes[attribute] = val
       end
+
       p.consume(:end_of_string)
     end
 
