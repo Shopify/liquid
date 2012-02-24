@@ -69,6 +69,19 @@ HERE
     assert_template_result('-',   '{%for item in array%}+{%else%}-{%endfor%}', 'array'=>nil)
   end
 
+  def test_sorting
+    assigns = {'array' => [1,2,3,4,5,6,7,8,9,0]}
+    assert_template_result('0123456789', '{%for i in array order:ascending %}{{ i }}{%endfor%}', assigns)
+    assert_template_result('9876543210', '{%for i in array order:descending %}{{ i }}{%endfor%}', assigns)
+    assert_template_result('765', '{%for i in array order:descending offset:2 limit:3 %}{{ i }}{%endfor%}', assigns)
+
+    assigns = {'array' => [{"name" => 'A', "count" => '3'}, {"name" => 'C', "count" => '1'}, {"name" => 'B', "count" => '2'}]}
+    assert_template_result('A|B|C|', '{%for i in array sort_by:name %}{{ i["name"] }}|{%endfor%}', assigns)
+    assert_template_result('C|B|A|', '{%for i in array sort_by:name order:descending %}{{ i["name"] }}|{%endfor%}', assigns)
+    assert_template_result('1|2|3|', '{%for i in array sort_by:count %}{{ i["count"] }}|{%endfor%}', assigns)
+    assert_template_result('A|C|B|', '{%for i in array sort_by:missing_attribute %}{{ i["name"] }}|{%endfor%}', assigns)
+  end
+
   def test_limiting
     assigns = {'array' => [1,2,3,4,5,6,7,8,9,0]}
     assert_template_result('12', '{%for i in array limit:2 %}{{ i }}{%endfor%}', assigns)
