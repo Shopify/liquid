@@ -76,7 +76,7 @@ module Liquid
       collection = collection.to_a if collection.is_a?(Range)
     
       # Maintains Ruby 1.8.7 String#each behaviour on 1.9
-      return render_else(context) unless collection.respond_to?(:each) or collection.is_a?(String)
+      return render_else(context) unless iterable?(collection)
                                                  
       from = if @attributes['offset'] == 'continue'
         context.registers[:for][@name].to_i
@@ -150,6 +150,9 @@ module Liquid
         return @else_block ? [render_all(@else_block, context)] : ''
       end
 
+      def iterable?(collection)
+        collection.respond_to?(:each) || (collection.is_a?(String) && collection != '')
+      end
   end
 
   Template.register_tag('for', For)
