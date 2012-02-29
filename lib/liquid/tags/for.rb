@@ -126,7 +126,7 @@ module Liquid
       yielded = 0
 
       # Maintains Ruby 1.8.7 String#each behaviour on 1.9
-      return [collection] if collection.is_a?(String)
+      return [collection] if non_blank_string?(collection)
 
       collection.each do |item|         
                 
@@ -151,7 +151,11 @@ module Liquid
       end
 
       def iterable?(collection)
-        collection.respond_to?(:each) || (collection.is_a?(String) && collection != '')
+        collection.respond_to?(:each) || non_blank_string?(collection)
+      end
+
+      def non_blank_string?(collection)
+        collection.is_a?(String) && collection != ''
       end
   end
 
