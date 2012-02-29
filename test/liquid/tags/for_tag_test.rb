@@ -195,4 +195,8 @@ HERE
                 '{{val}}{%endfor%}', 
                 'string' => "test string")
   end
+
+  def test_blank_string_not_iterable
+    assert_template_result('', "{% for char in characters %}I WILL NOT BE OUTPUT{% endfor %}", 'characters' => '')
+  end
 end
