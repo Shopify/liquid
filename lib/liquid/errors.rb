@@ -3,6 +3,7 @@ module Liquid
   
   class ArgumentError < Error; end
   class ContextError < Error; end
+  class VariableNotFound < Error; end
   class FilterNotFound < Error; end
   class FileSystemError < Error; end
   class StandardError < Error; end

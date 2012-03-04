@@ -102,6 +102,11 @@ class ContextTest < Test::Unit::TestCase
     assert_equal nil, @context['does_not_exist']
   end
 
+  def test_strict_variables_not_existing
+    @context.strict!
+    assert_raise(Liquid::VariableNotFound) { @context['does_not_exist'] }
+  end
+
   def test_scoping
     assert_nothing_raised do
       @context.push
@@ -328,15 +333,28 @@ class ContextTest < Test::Unit::TestCase
     assert_equal 'Hello', @context['hash["first"]']
   end
 
-  def test_first_can_appear_in_middle_of_callchain
+  def test_hash_key_which_does_not_exist
+    @context['hash'] = {'first' => 'Hello'}
 
+    assert_equal nil, @context['hash["second"]']
+    assert_equal nil, @context['hash.second']
+  end
+
+  def test_hash_key_which_does_not_exist_with_strict_variables
+    @context.strict!
+    @context['hash'] = {'first' => 'Hello'}
+
+    assert_raise(Liquid::VariableNotFound) { @context['hash["second"]'] }
+    assert_raise(Liquid::VariableNotFound) { @context['hash.second'] }
+  end
+
+  def test_first_can_appear_in_middle_of_callchain
     @context['product'] = {'variants' => [ {'title' => 'draft151cm'}, {'title' => 'element151cm'}  ]}
 
     assert_equal 'draft151cm', @context['product.variants[0].title']
     assert_equal 'element151cm', @context['product.variants[1].title']
     assert_equal 'draft151cm', @context['product.variants.first.title']
     assert_equal 'element151cm', @context['product.variants.last.title']
-
   end
 
   def test_cents

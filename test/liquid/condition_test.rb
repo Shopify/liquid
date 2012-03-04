@@ -64,6 +64,14 @@ class ConditionTest < Test::Unit::TestCase
     assert_evalutes_false "0", 'contains', 'not_assigned'
   end
 
+  def test_contains_raises_error_for_nil_operands_if_strict
+    @context = Liquid::Context.new
+    @context.strict!
+    assert_raise(VariableNotFound) do
+      assert_evalutes_false "not_assigned", 'contains', '0'
+    end
+  end
+
   def test_or_condition
     condition = Condition.new('1', '==', '2')
 

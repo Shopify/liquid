@@ -112,6 +112,10 @@ module Liquid
           context.add_filters(options[:filters])
         end
 
+        if options[:strict]
+          context.strict!
+        end
+
       when Module
         context.add_filters(args.pop)
       when Array

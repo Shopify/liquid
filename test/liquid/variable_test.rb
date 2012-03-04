@@ -126,6 +126,11 @@ class VariableResolutionTest < Test::Unit::TestCase
     assert_equal '', template.render
   end
 
+  def test_raises_exception_when_unknown_if_strict
+    template = Template.parse(%|{{ test }}|)
+    assert_raise(VariableNotFound) { template.render({}, :strict => true) }
+  end
+
   def test_hash_scoping
     template = Template.parse(%|{{ test.test }}|)
     assert_equal 'worked', template.render('test' => {'test' => 'worked'})
