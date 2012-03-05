@@ -13,19 +13,17 @@ module Liquid
   #
   #   context['bob']  #=> nil  class Context
   class Context
-    attr_reader :scopes, :errors, :strict, :registers, :environments
+    attr_reader :scopes, :errors, :registers, :environments
+    attr_accessor :rethrow_errors, :strict
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false)
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, strict = false)
       @environments   = [environments].flatten
       @scopes         = [(outer_scope || {})]
       @registers      = registers
       @errors         = []
       @rethrow_errors = rethrow_errors
+      @strict         = strict
       squash_instance_assigns_with_environments
-    end
-
-    def strict!
-      @strict = true
     end
 
     def strainer

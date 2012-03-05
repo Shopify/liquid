@@ -73,12 +73,12 @@ class IncludeTagTest < Test::Unit::TestCase
 
   def test_include_tag_with_local_variables_and_strict_variables
     assert_equal "Locale: test123 test321",
-      Template.parse("{% include 'locale_variables' echo1: 'test123', echo2: 'test321' %}").render({}, :strict => true)
+      Template.parse("{% include 'locale_variables' echo1: 'test123', echo2: 'test321' %}").render!
   end
 
   def test_include_tag_and_missing_variables_with_strict_variables
     assert_raise(VariableNotFound) do
-      Template.parse("{% include 'locale_variables' %}").render({}, :strict => true)
+      Template.parse("{% include 'locale_variables' %}").render!
     end
   end
 

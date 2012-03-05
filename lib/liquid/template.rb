@@ -93,9 +93,9 @@ module Liquid
       when Liquid::Context
         args.shift
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors)
+        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @strict)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors)
+        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @strict)
       else
         raise ArgumentError, "Expect Hash or Liquid::Context as parameter"
       end
@@ -110,10 +110,6 @@ module Liquid
 
         if options[:filters]
           context.add_filters(options[:filters])
-        end
-
-        if options[:strict]
-          context.strict!
         end
 
       when Module
@@ -133,7 +129,7 @@ module Liquid
     end
 
     def render!(*args)
-      @rethrow_errors = true; render(*args)
+      @rethrow_errors = true; @strict = true; render(*args)
     end
 
     private

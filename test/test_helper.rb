@@ -20,7 +20,7 @@ module Test
       end
 
       def assert_strict_template_result(expected, template, assigns = {}, message = nil)
-        assert_equal expected, Template.parse(template).render(assigns, :strict => true)
+        assert_equal expected, Template.parse(template).render!(assigns)
       end
 
       def assert_template_result_matches(expected, template, assigns = {}, message = nil)

@@ -128,7 +128,7 @@ class VariableResolutionTest < Test::Unit::TestCase
 
   def test_raises_exception_when_unknown_if_strict
     template = Template.parse(%|{{ test }}|)
-    assert_raise(VariableNotFound) { template.render({}, :strict => true) }
+    assert_raise(VariableNotFound) { template.render! }
   end
 
   def test_hash_scoping
