@@ -136,11 +136,11 @@ module Liquid
             $1
           when /^"(.*)"$/ # Double quoted strings
             $1
-          when /^(\d+)$/ # Integer and floats
+          when /^(-?\d+)$/ # Integer and floats
             $1.to_i
           when /^\((\S+)\.\.(\S+)\)$/ # Ranges
             (resolve($1).to_i..resolve($2).to_i)
-          when /^(\d[\d\.]+)$/ # Floats
+          when /^(-?\d[\d\.]+)$/ # Floats
             $1.to_f
           else
             variable(key)
