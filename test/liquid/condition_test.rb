@@ -18,6 +18,11 @@ class ConditionTest < Test::Unit::TestCase
     assert_evalutes_true '2', '>=', '1'
     assert_evalutes_true '1', '<=', '2'
     assert_evalutes_true '1', '<=', '1'
+    # negative numbers
+    assert_evalutes_true '1', '>', '-1'
+    assert_evalutes_true '-1', '<', '1'
+    assert_evalutes_true '1.0', '>', '-1.0'
+    assert_evalutes_true '-1.0', '<', '1.0'
   end
 
   def test_default_operators_evalute_false
