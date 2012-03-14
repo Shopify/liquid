@@ -11,10 +11,10 @@ Liquid is a template engine which was written with very specific requirements:
 ## Why you should use Liquid
 
 * You want to allow your users to edit the appearance of your application but don't want them to run **insecure code on your server**.
-* You want to render templates directly from the database
-* You like smarty (PHP) style template engines
-* You need a template engine which does HTML just as well as emails
-* You don't like the markup of your current templating engine
+* You want to render templates directly from the database.
+* You like smarty (PHP) style template engines.
+* You need a template engine which does HTML just as well as emails.
+* You don't like the markup of your current templating engine.
 
 ## What does it look like?
 
@@ -31,7 +31,7 @@ Liquid is a template engine which was written with very specific requirements:
 </ul>
 ```
 
-## Howto use Liquid
+## How to use Liquid
 
 Liquid supports a very simple API based around the Liquid::Template class.
 For standard use you can just pass it the content of a file and call render with a parameters hash.
