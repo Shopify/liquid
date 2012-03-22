@@ -172,7 +172,11 @@ module Liquid
       date = input.is_a?(String) ? Time.parse(input) : input
 
       if date.respond_to?(:strftime)
-        date.strftime(format.to_s)
+        if should_use_I18n
+          I18n.localize(date, :format => format_for_I18n(format))
+        else
+          date.strftime(format.to_s)
+        end
       else
         input
       end
@@ -232,6 +236,19 @@ module Liquid
           (obj.strip =~ /^\d+\.\d+$/) ? obj.to_f : obj.to_i
         else
           0
+        end
+      end
+
+      def should_use_I18n
+        defined? I18n
+      end
+
+      def format_for_I18n(format)
+        return if !format
+        if format.to_s.include?('%')
+          format.to_s
+        else
+          format.to_sym
         end
       end
 
