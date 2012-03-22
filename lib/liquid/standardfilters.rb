@@ -165,18 +165,27 @@ module Liquid
         return input.to_s
       end
 
-      if ((input.is_a?(String) && !/^\d+$/.match(input.to_s).nil?) || input.is_a?(Integer)) && input.to_i > 0
-        input = Time.at(input.to_i)
-      end
-
-      date = input.is_a?(String) ? Time.parse(input) : input
+      input, date = parse_date_input(input)
 
       if date.respond_to?(:strftime)
-        if should_use_I18n
-          I18n.localize(date, :format => format_for_I18n(format))
-        else
-          date.strftime(format.to_s)
-        end
+        date.strftime(format.to_s)
+      else
+        input
+      end
+    rescue => e
+      input
+    end
+
+    def I18n_date(input, format)
+
+      if format.to_s.empty?
+        return input.to_s
+      end
+
+      input, date = parse_date_input(input)
+
+      if date.respond_to?(:strftime)
+        I18n.localize(date, :format => format_for_I18n(format))
       else
         input
       end
@@ -239,17 +248,21 @@ module Liquid
         end
       end
 
-      def should_use_I18n
-        defined? I18n
-      end
-
       def format_for_I18n(format)
-        return if !format
         if format.to_s.include?('%')
           format.to_s
         else
           format.to_sym
         end
+      end
+
+      def parse_date_input(input)
+        if ((input.is_a?(String) && !/^\d+$/.match(input.to_s).nil?) || input.is_a?(Integer)) && input.to_i > 0
+           input = Time.at(input.to_i)
+        end
+        date = input.is_a?(String) ? Time.parse(input) : input
+
+        [input, date]
       end
 
   end
