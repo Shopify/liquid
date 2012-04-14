@@ -1,5 +1,11 @@
 require 'test_helper'
 
+class I18n
+  def self.localize(date, options)
+    Time.parse(date)
+  end
+end
+
 class Filters
   include Liquid::StandardFilters
 end
@@ -110,6 +116,10 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal "07/05/2006", @filters.date("1152098955", "%m/%d/%Y")
   end
 
+  def test_I18n_date
+    assert_equal '2006-07-05 10:00:00', @filters.I18n_date("2006-07-05 10:00:00", "")
+    assert_equal '2006-07-05 10:00:00', @filters.I18n_date("2006-07-05 10:00:00", nil)
+  end
 
   def test_first_last
     assert_equal 1, @filters.first([1,2,3])
