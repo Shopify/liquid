@@ -11,21 +11,21 @@ module Liquid
   #   {{ user | link }}
   #
   class Variable
-    FilterParser = /(?:#{FilterSeparator}|(?:\s*(?!(?:#{FilterSeparator}))(?:#{QuotedFragment}|\S+)\s*)+)/
+    FilterParser = /(?:#{FilterSeparator}|(?:\s*(?!(?:#{FilterSeparator}))(?:#{QuotedFragment}|\S+)\s*)+)/o
     attr_accessor :filters, :name
 
     def initialize(markup)
       @markup  = markup
       @name    = nil
       @filters = []
-      if match = markup.match(/\s*(#{QuotedFragment})(.*)/)
+      if match = markup.match(/\s*(#{QuotedFragment})(.*)/o)
         @name = match[1]
-        if match[2].match(/#{FilterSeparator}\s*(.*)/)
+        if match[2].match(/#{FilterSeparator}\s*(.*)/o)
           filters = Regexp.last_match(1).scan(FilterParser)
           filters.each do |f|
             if matches = f.match(/\s*(\w+)/)
               filtername = matches[1]
-              filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*(#{QuotedFragment})/).flatten
+              filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*(#{QuotedFragment})/o).flatten
               @filters << [filtername.to_sym, filterargs]
             end
           end
