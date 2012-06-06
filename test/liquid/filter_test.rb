@@ -75,6 +75,12 @@ class FiltersTest < Test::Unit::TestCase
     assert_equal "bla blub", Variable.new("var | strip_html").render(@context)
   end
 
+  def test_strip_html_ignore_comments_with_html
+    @context['var'] = "<!-- split and some <ul> tag --><b>bla blub</a>"
+
+    assert_equal "bla blub", Variable.new("var | strip_html").render(@context)
+  end
+
   def test_capitalize
     @context['var'] = "blub"
 
