@@ -110,7 +110,7 @@ module Liquid
             'index'   => index + 1, 
             'index0'  => index, 
             'rindex'  => length - index,
-            'rindex0' => length - index -1,
+            'rindex0' => length - index - 1,
             'first'   => (index == 0),
             'last'    => (index == length - 1) }
 
