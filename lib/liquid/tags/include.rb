@@ -1,6 +1,6 @@
 module Liquid
   class Include < Tag
-    Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/
+    Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/o
   
     def initialize(tag_name, markup, tokens)      
       if markup =~ Syntax
