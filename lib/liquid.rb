@@ -32,17 +32,17 @@ module Liquid
   VariableEnd                 = /\}\}/
   VariableIncompleteEnd       = /\}\}?/
   QuotedString                = /"[^"]*"|'[^']*'/
-  QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/
+  QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
   StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s|:,]+/
-  FirstFilterArgument         = /#{FilterArgumentSeparator}(?:#{StrictQuotedFragment})/
-  OtherFilterArgument         = /#{ArgumentSeparator}(?:#{StrictQuotedFragment})/
-  SpacelessFilter             = /^(?:'[^']+'|"[^"]+"|[^'"])*#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/
-  Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/
-  TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/
+  FirstFilterArgument         = /#{FilterArgumentSeparator}(?:#{StrictQuotedFragment})/o
+  OtherFilterArgument         = /#{ArgumentSeparator}(?:#{StrictQuotedFragment})/o
+  SpacelessFilter             = /^(?:'[^']+'|"[^"]+"|[^'"])*#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/o
+  Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/o
+  TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
   AnyStartingTag              = /\{\{|\{\%/
-  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/
-  TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/
-  VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/
+  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/o
+  TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/o
+  VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
 end
 
 require 'liquid/drop'
