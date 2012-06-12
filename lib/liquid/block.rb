@@ -89,13 +89,15 @@ module Liquid
     end
 
     def render_all(list, context)
-      list.collect do |token|
+      parts = list.collect do |token|
         begin
           token.respond_to?(:render) ? token.render(context) : token
         rescue ::StandardError => e
           context.handle_error(e)
         end
-      end.join
+      end
+
+      context.format_parts(parts)
     end
   end
 end

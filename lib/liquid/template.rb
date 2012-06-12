@@ -34,6 +34,12 @@ module Liquid
         @tags ||= {}
       end
 
+      attr_writer :formatter
+
+      def formatter
+        @formatter || lambda {|parts| parts.join }
+      end
+
       # Pass a module with filter methods which should be available
       # to all liquid views. Good for registering the standard library
       def register_filter(mod)

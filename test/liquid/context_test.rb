@@ -162,6 +162,16 @@ class ContextTest < Test::Unit::TestCase
 
   end
 
+  def test_formatter
+    Template.formatter = lambda {|parts| parts.join(":") }
+
+    output = Template.parse("foo{{x}}baz").render('x' => 'bar')
+
+    assert_equal "foo:bar:baz", output
+  ensure
+    Template.formatter = nil
+  end
+
   def test_override_global_filter
     global = Module.new do
       def notice(output)
