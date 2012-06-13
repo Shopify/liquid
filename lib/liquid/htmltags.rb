@@ -26,6 +26,7 @@ module Liquid
         collection = collection[offset.to_i..(limit.to_i + offset.to_i - 1)]
       end
 
+      collection = collection.to_a unless collection.respond_to?(:length)
       length = collection.length
 
       cols = context[@attributes['cols']].to_i
