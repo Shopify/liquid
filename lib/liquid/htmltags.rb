@@ -19,6 +19,7 @@ module Liquid
 
     def render(context)
       collection = context[@collection_name] or return ''
+      collection = collection.to_a
 
       if @attributes['limit'] or @attributes['offset']
         limit = context[@attributes['limit']] || -1
@@ -26,7 +27,6 @@ module Liquid
         collection = collection[offset.to_i..(limit.to_i + offset.to_i - 1)]
       end
 
-      collection = collection.to_a unless collection.respond_to?(:length)
       length = collection.length
 
       cols = context[@attributes['cols']].to_i
