@@ -86,10 +86,10 @@ module Liquid
         
       limit = context[@attributes['limit']]
       to    = limit ? limit.to_i + from : nil  
-          
-                       
-      segment = slice_collection_using_each(collection, from, to)      
-      
+
+
+      segment = Utils.slice_collection_using_each(collection, from, to)
+
       return render_else(context) if segment.empty?
       
       segment.reverse! if @reversed
@@ -119,30 +119,6 @@ module Liquid
       end
       result     
     end          
-        
-    def slice_collection_using_each(collection, from, to)       
-      segments = []      
-      index = 0      
-      yielded = 0
-
-      # Maintains Ruby 1.8.7 String#each behaviour on 1.9
-      return [collection] if non_blank_string?(collection)
-
-      collection.each do |item|         
-                
-        if to && to <= index
-          break
-        end
-        
-        if from <= index                               
-          segments << item
-        end                    
-                
-        index += 1
-      end    
-
-      segments
-    end
 
     private
 
@@ -151,11 +127,7 @@ module Liquid
       end
 
       def iterable?(collection)
-        collection.respond_to?(:each) || non_blank_string?(collection)
-      end
-
-      def non_blank_string?(collection)
-        collection.is_a?(String) && collection != ''
+        collection.respond_to?(:each) || Utils.non_blank_string?(collection)
       end
   end
 
