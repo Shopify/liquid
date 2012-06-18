@@ -121,7 +121,7 @@ module Liquid
     end          
 
     def slice_collection_using_each(collection, from, to)
-      Utils.slice_collection_using_each collection, from, to
+      Utils.slice_collection_using_each(collection, from, to)
     end
 
     private
