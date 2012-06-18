@@ -20,8 +20,8 @@ module Liquid
     def render(context)
       collection = context[@collection_name] or return ''
 
-      from = context[@attributes['offset']].to_i
-      to = @attributes['limit'] && from + context[@attributes['limit']].to_i - 1
+      from = @attributes['offset'] ? context[@attributes['offset']].to_i : 0
+      to = @attributes['limit'] ? from + context[@attributes['limit']].to_i - 1 : nil
 
       collection = Utils.slice_collection_using_each(collection, from, to)
 
