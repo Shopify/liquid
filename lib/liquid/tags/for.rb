@@ -86,10 +86,10 @@ module Liquid
         
       limit = context[@attributes['limit']]
       to    = limit ? limit.to_i + from : nil  
-          
-                       
-      segment = slice_collection_using_each(collection, from, to)      
-      
+
+
+      segment = Utils.slice_collection_using_each(collection, from, to)
+
       return render_else(context) if segment.empty?
       
       segment.reverse! if @reversed
@@ -119,10 +119,6 @@ module Liquid
       end
       result     
     end          
-
-    def slice_collection_using_each(collection, from, to)
-      Utils.slice_collection_using_each(collection, from, to)
-    end
 
     private
 
