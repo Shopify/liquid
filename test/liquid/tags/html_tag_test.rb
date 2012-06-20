@@ -3,6 +3,18 @@ require 'test_helper'
 class HtmlTagTest < Test::Unit::TestCase
   include Liquid
 
+  class ArrayDrop < Liquid::Drop
+    include Enumerable
+
+    def initialize(array)
+      @array = array
+    end
+
+    def each(&block)
+      @array.each(&block)
+    end
+  end
+
   def test_html_table
 
     assert_template_result("<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
@@ -35,5 +47,11 @@ class HtmlTagTest < Test::Unit::TestCase
                            "{% tablerow n in collections['frontpage'] cols:3%} {{n}} {% endtablerow %}",
                            'collections' => {'frontpage' => [1,2,3,4,5,6]})
     
+  end
+
+  def test_enumerable_drop
+    assert_template_result("<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
+                           '{% tablerow n in numbers cols:3%} {{n}} {% endtablerow %}',
+                           'numbers' => ArrayDrop.new([1,2,3,4,5,6]))
   end
 end # HtmlTagTest
