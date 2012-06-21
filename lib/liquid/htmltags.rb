@@ -21,7 +21,7 @@ module Liquid
       collection = context[@collection_name] or return ''
 
       from = @attributes['offset'] ? context[@attributes['offset']].to_i : 0
-      to = @attributes['limit'] ? from + context[@attributes['limit']].to_i - 1 : nil
+      to = @attributes['limit'] ? from + context[@attributes['limit']].to_i : nil
 
       collection = Utils.slice_collection_using_each(collection, from, to)
 
