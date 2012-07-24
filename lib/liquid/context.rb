@@ -41,6 +41,10 @@ module Liquid
       end
     end
 
+    def format_parts(parts)
+      Template.formatter.call(parts)
+    end
+
     def handle_error(e)
       errors.push(e)
       raise if @rethrow_errors
