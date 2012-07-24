@@ -19,7 +19,7 @@ module Liquid
     # Ruby 1.9.2 introduces Object#respond_to_missing?, which is invoked by Object#respond_to?
     @@required_methods << :respond_to_missing? if Object.respond_to? :respond_to_missing?
 
-    @@filters = {}
+    @@filters = []
 
     def initialize(context)
       @context = context
@@ -27,12 +27,12 @@ module Liquid
 
     def self.global_filter(filter)
       raise ArgumentError, "Passed filter is not a module" unless filter.is_a?(Module)
-      @@filters[filter.name] = filter
+      @@filters << filter
     end
 
     def self.create(context)
-      strainer = Strainer.new(context)
-      @@filters.each { |k,m| strainer.extend(m) }
+      strainer = self.new(context)
+      @@filters.each { |filter| strainer.extend(filter) }
       strainer
     end
 
