@@ -14,13 +14,15 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments
+    attr_accessor :rethrow_errors, :strict
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false)
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, strict = false)
       @environments   = [environments].flatten
       @scopes         = [(outer_scope || {})]
       @registers      = registers
       @errors         = []
       @rethrow_errors = rethrow_errors
+      @strict         = strict
       squash_instance_assigns_with_environments
     end
 
@@ -48,6 +50,8 @@ module Liquid
       case e
       when SyntaxError
         "Liquid syntax error: #{e.message}"
+      when VariableNotFound
+        raise e
       else
         "Liquid error: #{e.message}"
       end
@@ -154,7 +158,8 @@ module Liquid
 
         if scope.nil?
           @environments.each do |e|
-            if variable = lookup_and_evaluate(e, key)
+            if e.has_key?(key) || e[key].is_a?(Proc)
+              variable = lookup_and_evaluate(e, key)
               scope = e
               break
             end
@@ -162,6 +167,7 @@ module Liquid
         end
 
         scope     ||= @environments.last || @scopes.last
+        handle_not_found(key) unless scope.has_key?(key)
         variable  ||= lookup_and_evaluate(scope, key)
 
         variable = variable.to_liquid
@@ -204,13 +210,14 @@ module Liquid
               # Some special cases. If the part wasn't in square brackets and
               # no key with the same name was found we interpret following calls
               # as commands and call them on the current object
-            elsif !part_resolved and object.respond_to?(part) and ['size', 'first', 'last'].include?(part)
+            elsif !part_resolved and object.respond_to?(part) and ['size', 'first', 'last', 'empty?'].include?(part)
 
               object = object.send(part.intern).to_liquid
 
               # No key was present with the desired value and it wasn't one of the directly supported
               # keywords either. The only thing we got left is to return nil
             else
+              handle_not_found(markup)
               return nil
             end
 
@@ -240,6 +247,10 @@ module Liquid
           end
         end
       end # squash_instance_assigns_with_environments
+
+      def handle_not_found(variable)
+        raise VariableNotFound.new(variable) if @strict
+      end
   end # Context
 
 end # Liquid

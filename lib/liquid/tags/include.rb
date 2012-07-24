@@ -26,13 +26,18 @@ module Liquid
     def render(context)
       source = _read_template_from_file_system(context)
       partial = Liquid::Template.parse(source)
-      variable = context[@variable_name || @template_name[1..-2]]
+
+      begin
+        variable = context[@variable_name || @template_name[1..-2]]
+      rescue VariableNotFound
+        variable = nil
+      end
       
       context.stack do
         @attributes.each do |key, value|
           context[key] = context[value]
         end
-
+        
         if variable.is_a?(Array)
           variable.collect do |variable|
             context[@template_name[1..-2]] = variable

@@ -30,6 +30,12 @@ class IfElseTagTest < Test::Unit::TestCase
     assert_template_result('',     '{% if a or b or c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)
   end
 
+  def test_if_or_with_strict_variables
+    assert_strict_template_result('',     '{% if a or b %} YES {% endif %}', 'a' => false, 'b' => false)
+    assert_strict_template_result(' YES ','{% if a or b or c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => true)
+    assert_strict_template_result('',     '{% if a or b or c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)
+  end
+
   def test_if_or_with_operators
     assert_template_result(' YES ','{% if a == true or b == true %} YES {% endif %}', 'a' => true, 'b' => true)
     assert_template_result(' YES ','{% if a == true or b == false %} YES {% endif %}', 'a' => true, 'b' => true)
@@ -67,6 +73,12 @@ class IfElseTagTest < Test::Unit::TestCase
 
   def test_hash_miss_generates_false
     assert_template_result('','{% if foo.bar %} NO {% endif %}', 'foo' => {})
+  end
+
+  def test_hash_miss_raises_error_if_strict
+    assert_raise(VariableNotFound) do
+      assert_strict_template_result('','{% if foo.bar %} NO {% endif %}', 'foo' => {})
+    end
   end
 
   def test_if_from_variable

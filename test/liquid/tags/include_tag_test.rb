@@ -51,7 +51,6 @@ class IncludeTagTest < Test::Unit::TestCase
       Template.parse("{% include 'pick_a_source' %}").render({}, :registers => {:file_system => OtherFileSystem.new})
   end
 
-
   def test_include_tag_with
     assert_equal "Product: Draft 151cm ",
       Template.parse("{% include 'product' with products[0] %}").render( "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]  )
@@ -63,7 +62,6 @@ class IncludeTagTest < Test::Unit::TestCase
   end
 
   def test_include_tag_for
-
     assert_equal "Product: Draft 151cm Product: Element 155cm ",
       Template.parse("{% include 'product' for products %}").render( "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]  )
   end
@@ -71,6 +69,17 @@ class IncludeTagTest < Test::Unit::TestCase
   def test_include_tag_with_local_variables
     assert_equal "Locale: test123 ",
       Template.parse("{% include 'locale_variables' echo1: 'test123' %}").render
+  end
+
+  def test_include_tag_with_local_variables_and_strict_variables
+    assert_equal "Locale: test123 test321",
+      Template.parse("{% include 'locale_variables' echo1: 'test123', echo2: 'test321' %}").render!
+  end
+
+  def test_include_tag_and_missing_variables_with_strict_variables
+    assert_raise(VariableNotFound) do
+      Template.parse("{% include 'locale_variables' %}").render!
+    end
   end
 
   def test_include_tag_with_multiple_local_variables

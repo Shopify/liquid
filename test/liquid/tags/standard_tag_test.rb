@@ -71,6 +71,13 @@ class StandardTagTest < Test::Unit::TestCase
                            assigns)
   end
 
+  def test_capture_with_strict
+    assigns = {'var' => 'content' }
+    assert_strict_template_result('content foo content foo ',
+                           '{% capture var2 %}{{ var }} foo {% endcapture %}{{ var2 }}{{ var2 }}',
+                           assigns)
+  end
+
   def test_capture_detects_bad_syntax
     assert_raise(SyntaxError) do
       assert_template_result('content foo content foo ',
@@ -160,8 +167,8 @@ class StandardTagTest < Test::Unit::TestCase
 
   def test_case_on_length_with_else
     assert_template_result('else',
-                           '{% case a.empty? %}{% when true %}true{% when false %}false{% else %}else{% endcase %}',
-                           {})
+                           '{% case a %}{% when true %}true{% when false %}false{% else %}else{% endcase %}',
+                           'a' => nil)
 
     assert_template_result('false',
                            '{% case false %}{% when true %}true{% when false %}false{% else %}else{% endcase %}',
@@ -172,7 +179,7 @@ class StandardTagTest < Test::Unit::TestCase
                            {})
 
     assert_template_result('else',
-                           '{% case NULL %}{% when true %}true{% when false %}false{% else %}else{% endcase %}',
+                           '{% case null %}{% when true %}true{% when false %}false{% else %}else{% endcase %}',
                            {})
   end
 
