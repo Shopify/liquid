@@ -9,7 +9,7 @@ task :default => 'test'
 
 Rake::TestTask.new(:test) do |t|
   t.libs << '.' << 'lib' << 'test'
-  t.pattern = 'test/liquid/**/*_test.rb'
+  t.test_files = FileList['test/liquid/**/*_test.rb']
   t.verbose = false
 end
 
