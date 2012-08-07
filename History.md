@@ -8,7 +8,7 @@
 * Ruby 1.8, 1.9, and Rubinius compatibility fixes
 * Add support for `quoted['references']` in `tablerow`
 * Add support for Enumerable to `tablerow`
-* `strip\_html` filter removes html comments
+* `strip_html` filter removes html comments
 
 
 ## 2.3.0 / 2011-10-16
