@@ -1,5 +1,16 @@
 # Liquid Version History
 
+## 2.4.0 / 2012-08-03
+
+* Performance improvements
+* Allow filters in `assign`
+* Add `modulo` filter
+* Ruby 1.8, 1.9, and Rubinius compatibility fixes
+* Add support for `quoted['references']` in `tablerow`
+* Add support for Enumerable to `tablerow`
+* `strip\_html` filter removes html comments
+
+
 ## 2.3.0 / 2011-10-16
 
 * Several speed/memory improvements
