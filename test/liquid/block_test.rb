@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class VariableTest < Test::Unit::TestCase
+class BlockTest < Test::Unit::TestCase
   include Liquid
 
   def test_blankspace
