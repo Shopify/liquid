@@ -168,6 +168,19 @@ HERE
       assert_template_result(expected,markup,assigns)
   end
 
+  def test_break
+    assigns = {'array' => {'items' => [1,2,3,4,5,6,7,8,9,10]}}
+    markup = '{% for i in array.items %}{{ i }}{% if i > 3 %}{% break %}{% endif %}{% endfor %}'
+    expected = "123"
+    assert_template_result(expected,markup,assigns)
+  end
+
+  def test_continue
+    assigns = {'array' => {'items' => [1,2,3,4,5]}}
+    markup = '{% for i in array.items %}{% if i == 3 %}{% continue %}{% else %}{{ i }}{% endif %}{% endfor %}'
+    expected = "1245"
+    assert_template_result(expected,markup,assigns)
+  end
 
   def test_for_tag_string
     # ruby 1.8.7 "String".each => Enumerator with single "String" element.
