@@ -114,19 +114,14 @@ module Liquid
             'first'   => (index == 0),
             'last'    => (index == length - 1) }
 
-          rendered = render_all(@for_block, context)
+          result << render_all(@for_block, context)
 
-          if context.errors.last.is_a? BreakInterrupt
-            context.errors.pop
-            break
+          # Handle any interrupts if they exist.
+          if context.has_interrupt?
+            interrupt = context.pop_interrupt
+            break if interrupt.is_a? BreakInterrupt
+            next if interrupt.is_a? ContinueInterrupt
           end
-
-          if context.errors.last.is_a? ContinueInterrupt
-            context.errors.pop 
-            next
-          end
-
-          result << rendered
         end
       end
       result     

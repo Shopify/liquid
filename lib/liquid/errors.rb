@@ -8,9 +8,4 @@ module Liquid
   class StandardError < Error; end
   class SyntaxError < Error; end
   class StackLevelError < Error; end
-
-
-  class Interrupt < Error; end
-  class BreakInterrupt < Interrupt; end
-  class ContinueInterrupt < Interrupt; end
 end

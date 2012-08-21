@@ -9,15 +9,12 @@ module Liquid
   #      {% endif %}
   #    {% endfor %}
   # 
-  class Break < Tag
+  class Break < Tag 
 
-    ##
-    # Add an interrupt to context errors so a for loop can check
-    # for interrupts. 
-    def render(context)
-      context.handle_error(BreakInterrupt.new)
+    def interrupt
+      BreakInterrupt.new
     end
-    
+
   end
 
   Template.register_tag('break', Break)

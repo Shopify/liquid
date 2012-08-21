@@ -11,13 +11,10 @@ module Liquid
   # 
   class Continue < Tag
 
-    ##
-    # Add an interrupt to context errors so a for loop can check
-    # for interrupts. 
-    def render(context)
-      context.handle_error(ContinueInterrupt.new)
+    def interrupt
+      ContinueInterrupt.new
     end
-    
+
   end
 
   Template.register_tag('continue', Continue)
