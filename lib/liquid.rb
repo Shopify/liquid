@@ -48,6 +48,7 @@ end
 require 'liquid/drop'
 require 'liquid/extensions'
 require 'liquid/errors'
+require 'liquid/interrupts'
 require 'liquid/strainer'
 require 'liquid/context'
 require 'liquid/tag'

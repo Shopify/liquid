@@ -69,7 +69,7 @@ module Liquid
       @nodelist = @else_block = []
     end
   
-    def render(context)        
+    def render(context)       
       context.registers[:for] ||= Hash.new(0)
     
       collection = context[@collection_name]
@@ -101,8 +101,8 @@ module Liquid
       # Store our progress through the collection for the continue flag
       context.registers[:for][@name] = from + segment.length
               
-      context.stack do 
-        segment.each_with_index do |item, index|     
+      context.stack do
+        segment.each_with_index do |item, index|
           context[@variable_name] = item
           context['forloop'] = {
             'name'    => @name,
@@ -115,6 +115,13 @@ module Liquid
             'last'    => (index == length - 1) }
 
           result << render_all(@for_block, context)
+
+          # Handle any interrupts if they exist.
+          if context.has_interrupt?
+            interrupt = context.pop_interrupt
+            break if interrupt.is_a? BreakInterrupt
+            next if interrupt.is_a? ContinueInterrupt
+          end
         end
       end
       result     

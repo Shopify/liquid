@@ -22,6 +22,8 @@ module Liquid
       @errors         = []
       @rethrow_errors = rethrow_errors
       squash_instance_assigns_with_environments
+
+      @interrupts = []
     end
 
     def strainer
@@ -39,6 +41,21 @@ module Liquid
         raise ArgumentError, "Expected module but got: #{f.class}" unless f.is_a?(Module)
         strainer.extend(f)
       end
+    end
+
+    # are there any not handled interrupts?
+    def has_interrupt?
+      !@interrupts.empty?
+    end
+
+    # push an interrupt to the stack. this interrupt is considered not handled.
+    def push_interrupt(e)
+      @interrupts.push(e)
+    end
+
+    # pop an interrupt from the stack
+    def pop_interrupt
+      @interrupts.pop
     end
 
     def handle_error(e)
