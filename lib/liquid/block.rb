@@ -3,6 +3,7 @@ module Liquid
   class Block < Tag
     IsTag             = /^#{TagStart}/o
     IsVariable        = /^#{VariableStart}/o
+    IsComment         = /^#{CommentStart}/o
     FullToken         = /^#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/o
     ContentOfVariable = /^#{VariableStart}(.*)#{VariableEnd}$/o
 
@@ -13,6 +14,8 @@ module Liquid
       while token = tokens.shift
 
         case token
+        when IsComment
+          # do nothing, it's a comment.
         when IsTag
           if token =~ FullToken
 
