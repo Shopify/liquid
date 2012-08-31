@@ -31,4 +31,14 @@ class CommentTagTest < Test::Unit::TestCase
     assert_template_result(expected, markup, assigns)
   end
 
+  def test_comment_new_format_multiline
+    assigns = {}
+    markup = "{*
+  multi-line comment test. 
+*}"
+    expected = ''
+    
+    assert_template_result(expected, markup, assigns)
+  end
+
 end

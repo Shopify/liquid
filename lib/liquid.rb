@@ -26,8 +26,8 @@ module Liquid
   VariableAttributeSeparator  = '.'
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
-  CommentStart                = /\{\*/
-  CommentEnd                  = /\*\}/
+  CommentStart                = /\{\*\s*\n*/
+  CommentEnd                  = /\s*\n*\*\}/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
   VariableSegment             = /[\w\-]/
   VariableStart               = /\{\{/
