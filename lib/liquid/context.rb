@@ -204,8 +204,10 @@ module Liquid
         end
 
         if object = find_variable(first_part)
+          i = 0
+          while i < parts.length
+            part = parts[i]
 
-          parts.each do |part|
             part = resolve($1) if part_resolved = (part =~ square_bracketed)
 
             # If object is a hash- or array-like object we look for the
@@ -216,7 +218,13 @@ module Liquid
 
               # if its a proc we will replace the entry with the proc
               res = lookup_and_evaluate(object, part)
-              object = res.to_liquid
+
+              if i+1 < parts.length && res.respond_to?(next_part = parts[i+1]) && ['size', 'first', 'last'].include?(next_part)
+                object = res.send(next_part.intern).to_liquid
+                i+=1
+              else
+                object = res.to_liquid
+              end
 
               # Some special cases. If the part wasn't in square brackets and
               # no key with the same name was found we interpret following calls
@@ -233,6 +241,8 @@ module Liquid
 
             # If we are dealing with a drop here we have to
             object.context = self if object.respond_to?(:context=)
+
+            i+=1
           end
         end
 
