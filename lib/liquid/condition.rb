@@ -64,6 +64,18 @@ module Liquid
       "#<Condition #{[@left, @operator, @right].compact.join(' ')}>"
     end
 
+    def to_markup(context)
+      left = context[@left] || @left
+      left = left.base if Liquid::Defer === left
+      right = context[@right] || @right
+      right = right.base if Liquid::Defer === right
+      markup = [left, @operator, right].compact.join(' ')
+      if @child_condition
+        markup = "(#{markup} #{@child_relation} #{@child_condition.to_markup(context)})"
+      end
+      markup
+    end
+
     private
 
     def equal_variables(left, right)
@@ -86,13 +98,18 @@ module Liquid
       left == right
     end
 
+    MustBeDeferred = Class.new(StandardError)
     def interpret_condition(left, right, op, context)
+      left, right = context[left], context[right]
+
+      if Liquid::Defer === left || Liquid::Defer === right
+        raise MustBeDeferred
+      end
+
       # If the operator is empty this means that the decision statement is just
       # a single variable. We can just poll this variable from the context and
       # return this as the result.
-      return context[left] if op == nil
-
-      left, right = context[left], context[right]
+      return left if op == nil
 
       operation = self.class.operators[op] || raise(ArgumentError.new("Unknown operator #{op}"))
 

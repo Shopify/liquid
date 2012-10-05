@@ -41,6 +41,8 @@ module Liquid
         end
         ''
       end
+    rescue Condition::MustBeDeferred
+      render_deferred(context)
     end
 
     private
@@ -72,6 +74,26 @@ module Liquid
         @nodelist = block.attach(Array.new)
       end
 
+      def render_deferred(context)
+        first, out = true, ""
+        @blocks.each do |block|
+          if first
+            first = false
+            tag_name = @tag_name
+          elsif ElseCondition === block
+            tag_name = 'else'
+          else
+            tag_name = 'elsif'
+          end
+          out << "{%#{tag_name} #{block.to_markup(context)}%}"
+          context.stack do
+            out << render_all(block.attachment, context)
+          end
+        end
+
+        out << "{%end#{@tag_name}%}"
+        out
+      end
 
   end
 

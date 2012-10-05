@@ -46,6 +46,7 @@ module Liquid
 end
 
 require 'liquid/drop'
+require 'liquid/defer'
 require 'liquid/extensions'
 require 'liquid/errors'
 require 'liquid/strainer'

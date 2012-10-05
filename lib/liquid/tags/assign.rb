@@ -23,8 +23,14 @@ module Liquid
     end
   
     def render(context)
-       context.scopes.last[@to] = @from.render(context)
-       ''
+      if Liquid::Defer === (x=context[@from.name])
+        to = context[@from.name] || @from.name
+        to = to.base if Liquid::Defer === to
+        context.scopes.last[@to] = Liquid::Defer.new(@from.markup_with_name(to))
+      else
+        context.scopes.last[@to] = @from.render(context)
+      end
+      ''
     end 
   
   end  
