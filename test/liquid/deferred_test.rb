@@ -97,13 +97,8 @@ class DeferredTest < Test::Unit::TestCase
 
   def test_ifchanged
     t = Template.new(intermediate: true)
-    # this one is actually super difficult to get really truly right
-    # with the current liquid evaluation model, but it's such a weird usecase
-    # to use ifchanged on a deferred value that it's actually unlikely to ever
-    # come up, I think, and the 'accidental' behaviour seems completely reasonable,
-    # unless you actively try to exploit it.
-    act = '{%ifchanged %}{{a}}{%endifchanged%}'
-    exp = '{{val}}'
+    act = '{%ifchanged%}{{a}}{%endifchanged%}'
+    exp = '{%ifchanged%}{{val}}{%endifchanged%}'
     assert_equal exp, t.parse(act).render('a' => Liquid::Defer.new('val'))
   end
 

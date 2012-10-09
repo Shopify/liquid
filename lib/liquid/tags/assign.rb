@@ -38,7 +38,6 @@ module Liquid
         context.scopes.last[@to] = @from.render(context)
       end
       return '' unless context.intermediate
-      "{% assign #{@to} = #{resolved.inspect} %}"
     end 
   
   end  
