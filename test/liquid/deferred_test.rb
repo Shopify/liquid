@@ -88,7 +88,7 @@ class DeferredTest < Test::Unit::TestCase
     assert_equal exp, t.parse(act).render('a' => Liquid::Defer.new('val'))
   end
 
-  def test_assignment
+  def test_deferred_assignment
     t = Template.new(intermediate: true)
     act = '{%if a%}{%assign color = "red"%}{%else%}{%assign color = "green"%}{%endif%}{{color}}'
     exp = "{%if val%}{% assign color = \"red\" %}{%else %}{% assign color = \"green\" %}{%endif%}{{color}}"
