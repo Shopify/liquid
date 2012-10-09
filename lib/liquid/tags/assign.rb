@@ -23,14 +23,22 @@ module Liquid
     end
   
     def render(context)
-      if Liquid::Defer === (x=context[@from.name])
-        to = context[@from.name] || @from.name
-        to = to.base if Liquid::Defer === to
-        context.scopes.last[@to] = Liquid::Defer.new(@from.markup_with_name(to))
+      if context['__defer_assignment__']
+        resolved = context[@from.name] || @from.name
+        resolved = resolved.base if Liquid::Defer === resolved
+
+        context.scopes.last[@to] = Liquid::Defer.new(@to)
+
+        return "{% assign #{@to} = #{resolved.inspect} %}"
+      elsif Liquid::Defer === (x=context[@from.name])
+        resolved = context[@from.name] || @from.name
+        resolved = resolved.base if Liquid::Defer === resolved
+        context.scopes.last[@to] = Liquid::Defer.new(@from.markup_with_name(resolved))
       else
         context.scopes.last[@to] = @from.render(context)
       end
-      ''
+      return '' unless context.intermediate
+      "{% assign #{@to} = #{resolved.inspect} %}"
     end 
   
   end  

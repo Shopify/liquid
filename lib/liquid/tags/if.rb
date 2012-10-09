@@ -87,6 +87,7 @@ module Liquid
           end
           out << "{%#{tag_name} #{block.to_markup(context)}%}"
           context.stack do
+            context['__defer_assignment__'] = true
             out << render_all(block.attachment, context)
           end
         end
