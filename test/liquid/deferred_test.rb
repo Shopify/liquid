@@ -102,4 +102,11 @@ class DeferredTest < Test::Unit::TestCase
     assert_equal exp, t.parse(act).render('a' => Liquid::Defer.new('val'))
   end
 
+  def test_capture
+    t = Template.new(intermediate: true)
+    act = '{%if a%}{%capture z%}true-{{a}}{%endcapture%}{%else%}{%capture z%}false-{{a}}{%endcapture%}{%endif%}{{z | f}}'
+    exp = '{%if val%}{%capture z%}true-{{val}}{%endcapture%}{%else %}{%capture z%}false-{{val}}{%endcapture%}{%endif%}{{z | f}}'
+    assert_equal exp, t.parse(act).render('a' => Liquid::Defer.new('val'))
+  end
+
 end # DeferredTest

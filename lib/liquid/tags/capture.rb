@@ -26,6 +26,10 @@ module Liquid
 
     def render(context)
       output = super
+      if context['__defer_assignment__']
+        context.scopes.last[@to] = Liquid::Defer.new(@to)
+        return "{%capture #{@to}%}#{output}{%endcapture%}"
+      end
       context.scopes.last[@to] = output
       ''
     end
