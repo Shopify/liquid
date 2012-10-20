@@ -27,7 +27,7 @@ namespace :benchmark do
 
   desc "Run the liquid benchmark"
   task :run do
-    ruby "performance/benchmark.rb"
+    ruby "./performance/benchmark.rb"
   end
 
 end
@@ -37,12 +37,12 @@ namespace :profile do
 
   desc "Run the liquid profile/performance coverage"
   task :run do
-    ruby "performance/profile.rb"
+    ruby "./performance/profile.rb"
   end
 
   desc "Run KCacheGrind"
   task :grind => :run  do
-    system "kcachegrind /tmp/liquid.rubyprof_calltreeprinter.txt"
+    system "qcachegrind /tmp/liquid.rubyprof_calltreeprinter.txt"
   end
 
 end
