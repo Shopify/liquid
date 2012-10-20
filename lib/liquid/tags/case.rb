@@ -42,6 +42,26 @@ module Liquid
         end
         output
       end          
+    rescue Condition::MustBeDeferred
+      switch = context[@blocks.first.left] || @markup
+      if Liquid::Defer === switch
+        switch = switch.base
+      end
+      first, out = true, "{%case #{switch}%}"
+      @blocks.each do |block|
+        tag_name = (ElseCondition === block) ? 'else' : 'when'
+        val = context[block.right] || block.right
+        if Liquid::Defer === val
+          val = val.base
+        end
+        out << "{%#{tag_name} #{val}%}"
+        context.stack do
+          out << render_all(block.attachment, context)
+        end
+      end
+
+      out << "{%end#{@tag_name}%}"
+      out
     end
     
     private

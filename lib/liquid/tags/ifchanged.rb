@@ -5,7 +5,11 @@ module Liquid
       context.stack do 
         
         output = render_all(@nodelist, context)
-        
+
+        if context.intermediate
+          return "{%ifchanged%}#{output}{%endifchanged%}"
+        end
+
         if output != context.registers[:ifchanged]
           context.registers[:ifchanged] = output
           output

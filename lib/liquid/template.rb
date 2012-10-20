@@ -15,6 +15,7 @@ module Liquid
   #
   class Template
     attr_accessor :root
+    attr_reader :intermediate
     @@file_system = BlankFileSystem.new
 
     class << self
@@ -49,7 +50,8 @@ module Liquid
     end
 
     # creates a new <tt>Template</tt> from an array of tokens. Use <tt>Template.parse</tt> instead
-    def initialize
+    def initialize(opts={})
+      @intermediate = opts.delete(:intermediate)
     end
 
     # Parse source code.
@@ -93,9 +95,9 @@ module Liquid
       when Liquid::Context
         args.shift
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors)
+        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @intermediate)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors)
+        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @intermediate)
       else
         raise ArgumentError, "Expect Hash or Liquid::Context as parameter"
       end

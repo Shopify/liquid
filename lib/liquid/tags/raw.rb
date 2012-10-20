@@ -14,6 +14,15 @@ module Liquid
         @nodelist << token if not token.empty?
       end
     end
+
+    def render(context)
+      if context.intermediate
+        @nodelist.unshift("{%raw%}")
+        @nodelist << "{%endraw%}"
+      end
+      super
+    end
+
   end
 
   Template.register_tag('raw', Raw)

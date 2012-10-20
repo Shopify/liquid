@@ -25,6 +25,8 @@ module Liquid
         
         ''
       end
+    rescue Condition::MustBeDeferred
+      render_deferred(context)
     end
   end
   

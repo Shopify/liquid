@@ -27,6 +27,9 @@ module Liquid
   
     def render(context)
       value = context.environments.first[@variable] ||= 0
+      if Liquid::Defer === value
+        return "{%decrement #{value.base}%}"
+      end
       value = value - 1
       context.environments.first[@variable] = value
       value.to_s

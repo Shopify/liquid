@@ -35,6 +35,9 @@ module Liquid
 
     def render(context)
       return '' if @name.nil?
+      if context.intermediate && Liquid::Defer === (x=context[@name])
+        return "{{#{markup_with_name(x.base)}}}"
+      end
       @filters.inject(context[@name]) do |output, filter|
         filterargs = filter[1].to_a.collect do |a|
           context[a]
@@ -46,5 +49,14 @@ module Liquid
         end
       end
     end
+
+    def markup_with_name(new_name)
+      if @markup =~ /\|/
+        return @markup.sub(/.*?\|/, "#{new_name} |")
+      else
+        return new_name
+      end
+    end
+
   end
 end
