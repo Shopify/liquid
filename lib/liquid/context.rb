@@ -1,5 +1,6 @@
 module Liquid
 
+  
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
   #   context['variable'] = 'testing'
@@ -128,13 +129,6 @@ module Liquid
     end
 
     private
-      LITERALS = {
-        nil => nil, 'nil' => nil, 'null' => nil, '' => nil,
-        'true'  => true,
-        'false' => false,
-        'blank' => :blank?,
-        'empty' => :empty?
-      }
 
       # Look up variable, either resolve directly after considering the name. We can directly handle
       # Strings, digits, floats and booleans (true,false).
@@ -144,25 +138,42 @@ module Liquid
       #
       # Example:
       #   products == empty #=> products.empty?
-      def resolve(key)
-        if LITERALS.key?(key)
-          LITERALS[key]
-        else
-          case key
-          when /^'(.*)'$/ # Single quoted strings
-            $1
-          when /^"(.*)"$/ # Double quoted strings
-            $1
-          when /^(-?\d+)$/ # Integer and floats
-            $1.to_i
-          when /^\((\S+)\.\.(\S+)\)$/ # Ranges
-            (resolve($1).to_i..resolve($2).to_i)
-          when /^(-?\d[\d\.]+)$/ # Floats
-            $1.to_f
-          else
-            variable(key)
+      def resolve(key)        
+        case key
+        when nil, ""
+          return nil
+        when "blank?"
+          return :blank
+        when "empty?"
+          return :empty
+        end
+
+        puts "resolve(#{key})"
+        
+        result = Parser.parse(key)   
+        stack = []
+
+        result.each do |(sym, value)|          
+          case sym
+          when :identifier
+            stack.push value
+          when :lookup
+            left = stack.pop
+            stack.push find_variable(left)
+          when :range
+            right = stack.pop.to_i
+            left  = stack.pop.to_i
+            stack.push (left..right)
+          when :call
+            parent = stack.pop
+            key = stack.pop
+            stack.push lookup_and_evaluate(parent, key)
+          else 
+            raise "unknown #{sym}"
           end
         end
+
+        return stack.first
       end
 
       # Fetches an object starting at the local scope and then moving up the hierachy
@@ -257,6 +268,7 @@ module Liquid
           end
         end
       end # squash_instance_assigns_with_environments
+
   end # Context
 
 end # Liquid

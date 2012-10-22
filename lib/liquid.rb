@@ -62,6 +62,7 @@ require 'liquid/standardfilters'
 require 'liquid/condition'
 require 'liquid/module_ex'
 require 'liquid/utils'
+require 'liquid/parser'
 
 # Load all the tags of the standard library
 #
