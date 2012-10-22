@@ -22,8 +22,6 @@ module Liquid
   class Drop
     attr_writer :context
 
-    BLANK = ''
-
     # Catch all for the method
     def before_method(method)
       nil
@@ -31,7 +29,7 @@ module Liquid
 
     # called by liquid to invoke a drop
     def invoke_drop(method_or_key)
-      if method_or_key && method_or_key != BLANK && self.class.public_method_defined?(method_or_key.to_s.to_sym)
+      if method_or_key && !method_or_key.empty? && self.class.public_method_defined?(method_or_key.to_s.to_sym)
         send(method_or_key.to_s.to_sym)
       else
         before_method(method_or_key)
