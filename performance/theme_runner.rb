@@ -23,7 +23,7 @@ class ThemeRunner
 
       theme_path = File.dirname(test) + '/theme.liquid'
 
-      [File.read(test), (File.file?(theme_path) ? File.read(theme_path) : nil), test]
+      [Liquid::Template.parse(File.read(test)), File.file?(theme_path) ? Liquid::Template.parse(File.read(theme_path)) : nil, test]
     end.compact
   end  
 
@@ -53,11 +53,17 @@ class ThemeRunner
   end
 
 
+<<<<<<< HEAD
   def run_profile
     RubyProf.measure_mode = RubyProf::WALL_TIME
+=======
+  def run(profile = false)
+    RubyProf.measure_mode = RubyProf::WALL_TIME if profile 
+>>>>>>> wip
 
     # Dup assigns because will make some changes to them
     assigns = Database.tables.dup
+    assigns['page_title'] = 'Page title'
 
     @tests.each do |liquid, layout, template_name|
 
@@ -66,16 +72,17 @@ class ThemeRunner
       page_template = File.basename(template_name, File.extname(template_name))
 
       unless @started
-        RubyProf.start
-        RubyProf.pause
+        if profile 
+          RubyProf.start
+          RubyProf.pause
+        end
         @started = true
       end
 
-      html = nil
-
-      RubyProf.resume
-      html = compile_and_render(liquid, layout, assigns, page_template) 
-      RubyProf.pause
+      assigns['template'] = page_template
+      RubyProf.resume if profile 
+      html = render(liquid, layout, assigns) 
+      RubyProf.pause if profile 
       
 
       # return the result and the MD5 of the content, this can be used to detect regressions between liquid version
@@ -85,19 +92,15 @@ class ThemeRunner
       # File.open("/tmp/#{File.basename(template_name)}.html", "w+") { |fp| fp <<html}
     end
 
-    RubyProf.stop
+    RubyProf.stop if profile 
   end
 
-  def compile_and_render(template, layout, assigns, page_template)    
-    tmpl = Liquid::Template.new
-    tmpl.assigns['page_title'] = 'Page title'
-    tmpl.assigns['template'] = page_template
-
-    content_for_layout = tmpl.parse(template).render(assigns)
+  def render(template, layout, assigns)    
+    content_for_layout = template.render(assigns)
 
     if layout
       assigns['content_for_layout'] = content_for_layout      
-      tmpl.parse(layout).render(assigns)
+      layout.render(assigns)
     else
       content_for_layout
     end    

@@ -7,6 +7,11 @@ require 'rubygems/package_task'
 
 task :default => 'test'
 
+task :ragel do
+  sh "find . -name '*.rl' | xargs ragel -R"
+end
+
+
 Rake::TestTask.new(:test) do |t|
   t.libs << '.' << 'lib' << 'test'
   t.test_files = FileList['test/liquid/**/*_test.rb']

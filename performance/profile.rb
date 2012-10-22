@@ -9,11 +9,9 @@ puts 'Running profiler...'
 results  = profiler.run_profile
 
 puts 'Success'
-puts
 
-[RubyProf::FlatPrinter, RubyProf::GraphPrinter, RubyProf::GraphHtmlPrinter, RubyProf::CallTreePrinter].each do |klass|
-  filename = (ENV['TMP'] || '/tmp') + (klass.name.include?('Html') ? "/liquid.#{klass.name.downcase}.html" : "/callgrind.liquid.#{klass.name.downcase}.txt")
-  filename.gsub!(/:+/, '_')
-  File.open(filename, "w+") { |fp| klass.new(results).print(fp, :print_file => true) }
-  $stderr.puts "wrote #{klass.name} output to #{filename}"
+filename = (ENV['TMP'] || '/tmp') + "/callgrind.liquid.txt"
+File.open(filename, "w+") do |fp| 
+  RubyProf::CallTreePrinter.new(results).print(fp, :print_file => true) 
 end
+$stderr.puts "wrote RubyProf::CallTreePrinter output to #{filename}"
