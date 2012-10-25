@@ -142,38 +142,63 @@ module Liquid
         case key
         when nil, ""
           return nil
-        when "blank?"
-          return :blank
-        when "empty?"
-          return :empty
+        when "blank"
+          return :blank?
+        when "empty"
+          return :empty?
         end
-
-        puts "resolve(#{key})"
         
         result = Parser.parse(key)   
         stack = []
 
         result.each do |(sym, value)|          
+
           case sym
-          when :identifier
+          when :id
             stack.push value
           when :lookup
             left = stack.pop
-            stack.push find_variable(left)
+            value = find_variable(left)
+            
+            stack.push(harden(value))
           when :range
             right = stack.pop.to_i
             left  = stack.pop.to_i
+            
             stack.push (left..right)
+          when :buildin
+            left = stack.pop
+            value = invoke_buildin(left, value)
+            
+            stack.push(harden(value))
           when :call
-            parent = stack.pop
-            key = stack.pop
-            stack.push lookup_and_evaluate(parent, key)
+            left = stack.pop
+            right = stack.pop
+            value = lookup_and_evaluate(right, left)
+
+            stack.push(harden(value))
           else 
             raise "unknown #{sym}"
           end
         end
 
         return stack.first
+      end
+
+      def invoke_buildin(obj, key)
+        # as weird as this is, liquid unit tests demand that we prioritize hash lookups 
+        # to buildins. So if we got a hash and it has a :first element we need to call that 
+        # instead of sending the first message...
+
+        if obj.respond_to?(:has_key?) && obj.has_key?(key)
+          return lookup_and_evaluate(obj, key)
+        end
+
+        if obj.respond_to?(key) 
+          return obj.send(key)
+        else
+          return nil    
+        end
       end
 
       # Fetches an object starting at the local scope and then moving up the hierachy
@@ -192,71 +217,35 @@ module Liquid
         scope     ||= @environments.last || @scopes.last
         variable  ||= lookup_and_evaluate(scope, key)
 
-        variable = variable.to_liquid
-        variable.context = self if variable.respond_to?(:context=)
-
         return variable
       end
 
-      # Resolves namespaced queries gracefully.
-      #
-      # Example
-      #  @context['hash'] = {"name" => 'tobi'}
-      #  assert_equal 'tobi', @context['hash.name']
-      #  assert_equal 'tobi', @context['hash["name"]']
-      def variable(markup)
-        parts = markup.scan(VariableParser)
-        square_bracketed = /^\[(.*)\]$/
-
-        first_part = parts.shift
-
-        if first_part =~ square_bracketed
-          first_part = resolve($1)
-        end
-
-        if object = find_variable(first_part)
-
-          parts.each do |part|
-            part = resolve($1) if part_resolved = (part =~ square_bracketed)
-
-            # If object is a hash- or array-like object we look for the
-            # presence of the key and if its available we return it
-            if object.respond_to?(:[]) and
-              ((object.respond_to?(:has_key?) and object.has_key?(part)) or
-               (object.respond_to?(:fetch) and part.is_a?(Integer)))
-
-              # if its a proc we will replace the entry with the proc
-              res = lookup_and_evaluate(object, part)
-              object = res.to_liquid
-
-              # Some special cases. If the part wasn't in square brackets and
-              # no key with the same name was found we interpret following calls
-              # as commands and call them on the current object
-            elsif !part_resolved and object.respond_to?(part) and ['size', 'first', 'last'].include?(part)
-
-              object = object.send(part.intern).to_liquid
-
-              # No key was present with the desired value and it wasn't one of the directly supported
-              # keywords either. The only thing we got left is to return nil
-            else
-              return nil
-            end
-
-            # If we are dealing with a drop here we have to
-            object.context = self if object.respond_to?(:context=)
-          end
-        end
-
-        object
-      end # variable
-
       def lookup_and_evaluate(obj, key)
-        if (value = obj[key]).is_a?(Proc) && obj.respond_to?(:[]=)
-          obj[key] = (value.arity == 0) ? value.call : value.call(self)
-        else
-          value
+        return nil unless obj.respond_to?(:[])
+        
+        if obj.is_a?(Array)
+          return nil unless key.is_a?(Integer)
         end
-      end # lookup_and_evaluate
+
+        value = obj[key]
+
+        case value
+        when Proc
+          # call the proc
+          value = (value.arity == 0) ? value.call : value.call(self)
+
+          # memozie if possible
+          obj[key] = value if obj.respond_to?(:[]=)
+        end
+
+        value
+      end
+
+      def harden(value)
+        value = value.to_liquid
+        value.context = self if value.respond_to?(:context=)
+        return value
+      end
 
       def squash_instance_assigns_with_environments
         @scopes.last.each_key do |k|

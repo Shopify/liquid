@@ -8,7 +8,7 @@ require 'rubygems/package_task'
 task :default => 'test'
 
 task :ragel do
-  sh "find . -name '*.rl' | xargs ragel -R"
+  sh "find . -name '*.rl' | xargs ragel -R -F1"
 end
 
 
