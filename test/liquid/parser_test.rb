@@ -53,14 +53,37 @@ class ParserTest < Test::Unit::TestCase
     assert_equal [[:id, "variable"], [:lookup, nil], [:lookup, nil]], Parser.parse('[variable]')
   end
 
-  # def test_descent
-#   assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "variable2"], [:call, nil]], Parser.parse('variable1.varible2')
-  # end
+  def test_descent
+    assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "variable2"], [:call, nil]], Parser.parse('variable1.variable2')
+    assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "variable2"], [:call, nil], [:id, "variable3"], [:call, nil]], Parser.parse('variable1.variable2.variable3')
+  end
 
-  # def test_descent_hash
-  #   assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "variable2"], [:call, nil]], Parser.parse('variable1["varible2"]')  
-  #   assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "variable2"], [:lookup, "variable2"], [:call, nil]], Parser.parse('variable1[varible2]')
-  # end
+  def test_descent_hash
+    assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "variable2"], [:call, nil]], Parser.parse('variable1["variable2"]')  
+    assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "variable2"], [:lookup, nil], [:call, nil]], Parser.parse('variable1[variable2]')
+  end
+
+  def test_buildin 
+    assert_equal [[:id, "first"], [:lookup, nil]], Parser.parse('first')  
+
+    assert_equal [[:id, "var"], [:lookup, nil], [:buildin, "first"]], Parser.parse('var.first')
+    assert_equal [[:id, "var"], [:lookup, nil], [:buildin, "last"]], Parser.parse('var.last')
+    assert_equal [[:id, "var"], [:lookup, nil], [:buildin, "size"]], Parser.parse('var.size')
+
+  end
+
+  def test_descent_hash_descent
+    assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "test1"], [:lookup, nil], [:id, "test2"], [:call, nil], [:call, nil]], 
+      Parser.parse('variable1[test1.test2]'), "resolove: variable1[test1.test2]"
+
+    # assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "test1"], [:lookup, nil], [:id, "test2"], [:call, nil], [:call, nil]], 
+    #   Parser.parse('variable1[test1["test2"]]'), 'resolove: variable1[test1["test2"]]'
+
+    # assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "test1"], [:lookup, nil], [:id, "test2"], [:lookup, nil], [:call, nil], [:call, nil]], 
+    #   Parser.parse('variable1[test1[test2]]'), "resolove: variable1[test1[test2]]"
+
+  end
+
 
 
 end
