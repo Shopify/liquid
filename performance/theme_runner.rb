@@ -27,8 +27,33 @@ class ThemeRunner
     end.compact
   end  
 
+  def compile
+    # Dup assigns because will make some changes to them
 
-  def run()
+    @tests.each do |liquid, layout, template_name|
+
+      tmpl = Liquid::Template.new
+      tmpl.parse(liquid)
+      tmpl = Liquid::Template.new
+      tmpl.parse(layout)
+    end
+  end
+
+   def run
+    # Dup assigns because will make some changes to them
+    assigns = Database.tables.dup
+
+    @tests.each do |liquid, layout, template_name|
+
+      # Compute page_tempalte outside of profiler run, uninteresting to profiler
+      page_template = File.basename(template_name, File.extname(template_name))
+      compile_and_render(liquid, layout, assigns, page_template) 
+       
+    end
+  end
+
+
+  def run_profile
     RubyProf.measure_mode = RubyProf::WALL_TIME
 
     # Dup assigns because will make some changes to them
