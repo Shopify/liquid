@@ -1,0 +1,22 @@
+have_library: checking for main() in -lc... -------------------- yes
+
+"/usr/bin/gcc-4.2 -o conftest -I/Users/tobi/.rbenv/versions/1.9.3-p194-perf/include/ruby-1.9.1/x86_64-darwin12.0.0 -I/Users/tobi/.rbenv/versions/1.9.3-p194-perf/include/ruby-1.9.1/ruby/backward -I/Users/tobi/.rbenv/versions/1.9.3-p194-perf/include/ruby-1.9.1 -I. -I'/Users/tobi/.rbenv/versions/1.9.3-p194-perf/include'  -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE  -I'/Users/tobi/.rbenv/versions/1.9.3-p194-perf/include'   -O3 -ggdb -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wshorten-64-to-32 -Wimplicit-function-declaration  -pipe conftest.c  -L. -L/Users/tobi/.rbenv/versions/1.9.3-p194-perf/lib -L. -L'/Users/tobi/.rbenv/versions/1.9.3-p194-perf/lib'  -L/usr/local/lib     -lruby-static  -lpthread -ldl -lobjc "
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main() {return 0;}
+/* end */
+
+"/usr/bin/gcc-4.2 -o conftest -I/Users/tobi/.rbenv/versions/1.9.3-p194-perf/include/ruby-1.9.1/x86_64-darwin12.0.0 -I/Users/tobi/.rbenv/versions/1.9.3-p194-perf/include/ruby-1.9.1/ruby/backward -I/Users/tobi/.rbenv/versions/1.9.3-p194-perf/include/ruby-1.9.1 -I. -I'/Users/tobi/.rbenv/versions/1.9.3-p194-perf/include'  -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE  -I'/Users/tobi/.rbenv/versions/1.9.3-p194-perf/include'   -O3 -ggdb -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wshorten-64-to-32 -Wimplicit-function-declaration  -pipe conftest.c  -L. -L/Users/tobi/.rbenv/versions/1.9.3-p194-perf/lib -L. -L'/Users/tobi/.rbenv/versions/1.9.3-p194-perf/lib'  -L/usr/local/lib     -lruby-static -lc  -lpthread -ldl -lobjc "
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: /*top*/
+4: int main() {return 0;}
+5: int t() { void ((*volatile p)()); p = (void ((*)()))main; return 0; }
+/* end */
+
+--------------------
+

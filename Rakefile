@@ -2,17 +2,50 @@
 
 require 'rubygems'
 require 'rake'
+require 'rake/clean'
+require 'fileutils'
 require 'rake/testtask'
 require 'rubygems/package_task'
 
-task :default => 'test'
+task :default => [:compile, :test]
 
 task :ragel do
-  sh "find . -name '*.rl' | xargs ragel -R -F1"
+  sh "find . -name '*.rl' | xargs ragel -C -G2"
 end
 
+task :compile => [:ragel, :liquid_ext]
 
-Rake::TestTask.new(:test) do |t|
+extension = "liquid_ext"
+ext = "ext/liquid"
+ext_so = "#{ext}/#{extension}.#{RbConfig::CONFIG['DLEXT']}"
+ext_files = FileList[
+  "#{ext}/*.c",
+  "#{ext}/*.h",
+  "#{ext}/*.rl",
+  "#{ext}/extconf.rb",
+  "#{ext}/Makefile",
+  "lib"
+]
+
+task "lib" do
+  directory "lib"
+end
+
+desc "Builds just the #{extension} extension"
+task extension.to_sym => [:ragel, "#{ext}/Makefile", ext_so ]
+
+file "#{ext}/Makefile" => ["#{ext}/extconf.rb"] do
+  Dir.chdir(ext) do ruby "extconf.rb" end
+end
+
+file ext_so => ext_files do
+  Dir.chdir(ext) do
+    sh "make"
+  end
+  cp ext_so, "lib"
+end
+
+Rake::TestTask.new(:test => [:ragel, 'liquid_ext']) do |t|
   t.libs << '.' << 'lib' << 'test'
   t.test_files = FileList['test/liquid/**/*_test.rb']
   t.verbose = false
