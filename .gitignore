@@ -4,3 +4,5 @@
 pkg
 *.rbc
 .rvmrc
+*.o
+*.bundle
