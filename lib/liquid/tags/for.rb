@@ -50,7 +50,8 @@ module Liquid
       if markup =~ Syntax
         @variable_name = $1
         @collection_name = $2
-        @name = "#{$1}-#{$2}"           
+        @name = "#{$1}-#{$2}"         
+        @idx = "#{@name}-i"
         @reversed = $3             
         @attributes = {}
         markup.scan(TagAttributes) do |key, value|
@@ -87,14 +88,13 @@ module Liquid
       limit = context[@attributes['limit']]
       to    = limit ? limit.to_i + from : nil  
 
-
       segment = Utils.slice_collection_using_each(collection, from, to)
 
       return render_else(context) if segment.empty?
       
       segment.reverse! if @reversed
 
-      result = ''
+      result = []
         
       length = segment.length            
             
@@ -102,17 +102,10 @@ module Liquid
       context.registers[:for][@name] = from + segment.length
               
       context.stack do
+        context['forloop'] = lambda { Forloop.new(@name, @idx, length) }
         segment.each_with_index do |item, index|
+          context.registers[:for][@idx] = index
           context[@variable_name] = item
-          context['forloop'] = {
-            'name'    => @name,
-            'length'  => length,
-            'index'   => index + 1, 
-            'index0'  => index, 
-            'rindex'  => length - index,
-            'rindex0' => length - index - 1,
-            'first'   => (index == 0),
-            'last'    => (index == length - 1) }
 
           result << render_all(@for_block, context)
 
@@ -128,6 +121,39 @@ module Liquid
     end          
 
     private
+
+      class Forloop < Liquid::Drop
+        attr_accessor :name, :length
+
+        def initialize(name, idx, length)
+          @name, @idx, @length = name, idx, length
+        end
+
+        def index
+          @context.registers[:for][@idx] + 1
+        end
+
+        def index0
+          @context.registers[:for][@idx]
+        end
+
+        def rindex
+          length - @context.registers[:for][@idx]
+        end
+
+        def rindex0
+          length - @context.registers[:for][@idx] - 1
+        end
+
+        def first
+          (@context.registers[:for][@idx] == 0)
+        end
+
+        def last
+          (@context.registers[:for][@idx] == length - 1)
+        end
+      end
+
 
       def render_else(context)
         return @else_block ? [render_all(@else_block, context)] : ''

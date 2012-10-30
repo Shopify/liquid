@@ -115,75 +115,75 @@ module Liquid
       @scopes[0] = {}
     end
 
+
+    # Look up variable, either resolve directly after considering the name. We can directly handle
+    # Strings, digits, floats and booleans (true,false).
+    # If no match is made we lookup the variable in the current scope and
+    # later move up to the parent blocks to see if we can resolve the variable somewhere up the tree.
+    # Some special keywords return symbols. Those symbols are to be called on the rhs object in expressions
+    #
+    # Example:
+    #   products == empty #=> products.empty?
+    def resolve(key)        
+      case key
+      when nil, ""
+        return nil
+      when "blank"
+        return :blank?
+      when "empty"
+        return :empty?
+      end
+      
+      result = Parser.parse(key)   
+      stack = []
+
+      result.each do |(sym, value)|          
+
+        case sym
+        when :id
+          stack.push value
+        when :lookup
+          left = stack.pop
+          value = find_variable(left)
+          
+          stack.push(harden(value))
+        when :range
+          right = stack.pop.to_i
+          left  = stack.pop.to_i
+          
+          stack.push (left..right)
+        when :buildin
+          left = stack.pop
+          value = invoke_buildin(left, value)
+          
+          stack.push(harden(value))
+        when :call
+          left = stack.pop
+          right = stack.pop
+          value = lookup_and_evaluate(right, left)
+
+          stack.push(harden(value))
+        else 
+          raise "unknown #{sym}"
+        end
+      end
+
+      return stack.first
+    end
+
+
     # Only allow String, Numeric, Hash, Array, Proc, Boolean or <tt>Liquid::Drop</tt>
     def []=(key, value)
       @scopes[0][key] = value
-    end
-
-    def [](key)
-      resolve(key)
     end
 
     def has_key?(key)
       resolve(key) != nil
     end
 
+    alias_method :[], :resolve
+
     private
-
-      # Look up variable, either resolve directly after considering the name. We can directly handle
-      # Strings, digits, floats and booleans (true,false).
-      # If no match is made we lookup the variable in the current scope and
-      # later move up to the parent blocks to see if we can resolve the variable somewhere up the tree.
-      # Some special keywords return symbols. Those symbols are to be called on the rhs object in expressions
-      #
-      # Example:
-      #   products == empty #=> products.empty?
-      def resolve(key)        
-        case key
-        when nil, ""
-          return nil
-        when "blank"
-          return :blank?
-        when "empty"
-          return :empty?
-        end
-        
-        result = Parser.parse(key)   
-        stack = []
-
-        result.each do |(sym, value)|          
-
-          case sym
-          when :id
-            stack.push value
-          when :lookup
-            left = stack.pop
-            value = find_variable(left)
-            
-            stack.push(harden(value))
-          when :range
-            right = stack.pop.to_i
-            left  = stack.pop.to_i
-            
-            stack.push (left..right)
-          when :buildin
-            left = stack.pop
-            value = invoke_buildin(left, value)
-            
-            stack.push(harden(value))
-          when :call
-            left = stack.pop
-            right = stack.pop
-            value = lookup_and_evaluate(right, left)
-
-            stack.push(harden(value))
-          else 
-            raise "unknown #{sym}"
-          end
-        end
-
-        return stack.first
-      end
 
       def invoke_buildin(obj, key)
         # as weird as this is, liquid unit tests demand that we prioritize hash lookups 
@@ -229,8 +229,7 @@ module Liquid
 
         value = obj[key]
 
-        case value
-        when Proc
+        if value.is_a?(Proc)      
           # call the proc
           value = (value.arity == 0) ? value.call : value.call(self)
 
