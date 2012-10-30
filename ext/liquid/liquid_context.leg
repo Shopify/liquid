@@ -1,0 +1,47 @@
+
+%{ 
+#include <ruby.h>
+
+#define YYSTYPE VALUE
+#define YY_CTX_LOCAL
+#define YY_CTX_MEMBERS VALUE rb_tokens; char *p; int p_len;
+#define YY_DEBUG
+
+#define YY_INPUT(buf, result, max_size) { \
+    result = ctx->p_len;  \
+    if (result>0 || EOF == ctx->p[0]) { \
+      if (max_size < result) { result = max_size; } \
+      strncpy(buf, ctx->p, result); \
+      buf[result] = '\0'; \
+      yyprintf((stderr, "\nREFILLING %d chars now:<%s>", result, buf));      \
+      ctx->p += result; ctx->p_len -= result; \
+      yyprintf((stderr, "\nREFILLING DONE size left: %d <%s>", ctx->p_len, ctx->p));      \
+    } \
+  }
+%}
+
+grammar  = <.+> { }
+
+%% 
+
+VALUE liquid_context_parse_impl(VALUE self, VALUE text) {
+  char *p; 
+  int len; 
+  yycontext ctx;  
+
+  memset(&ctx, 0, sizeof(yycontext));
+  ctx.p = RSTRING_PTR(text);  
+  ctx.p_len = (int) RSTRING_LEN(text);
+  ctx.rb_tokens = rb_ary_new();
+
+  yyprintf((stderr, "About to start: %s %d\n", ctx.p, ctx.p_len));
+  
+  //while(yyparse(&ctx))
+  //  ;
+  
+  yyparse(&ctx);
+  yyparse(&ctx);
+  yyparse(&ctx);
+
+  return ctx.rb_tokens;
+}
