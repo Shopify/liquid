@@ -2,6 +2,10 @@
 %{ 
 #include <ruby.h>
 
+#define EMIT(sym, data) rb_ary_push(ctx->rb_tokens, rb_ary_new3(2, ID2SYM(rb_intern(sym)), data))  
+#define yy_rb_str rb_str_new(yytext, yyleng)
+
+
 #define YYSTYPE VALUE
 #define YY_CTX_LOCAL
 #define YY_CTX_MEMBERS VALUE rb_tokens; char *p; int p_len;
@@ -20,8 +24,32 @@
   }
 %}
 
-grammar  = <.+> { }
+grammar  = primary
+         ; 
 
+
+primary  = ( v:const             
+           | v:string               
+           | v:numeric
+           ) { EMIT(:id, v); } 
+         ;
+
+
+string = ['] < ( !['] .  )* > ['] 
+       | ["] < ( !["] .  )* > ["] 
+       ;
+
+numeric = <'-'? DIGIT+>             { $$ = rb_funcall(rb_cObject, rb_intern("Integer"), 1, yy_rb_str); }
+        | <'-'? DIGIT'.'DIGIT+>     { $$ = rb_funcall(rb_cObject, rb_intern("Float"), 1, yy_rb_str); }
+
+
+const   = 'true'    { $$ = Qnil; }
+        | 'false'   { $$ = Qfalse; }
+        | 'nil'     { $$ = Qnil; }
+        | 'null'    { $$ = Qnil; }
+        ;
+
+DIGIT = [0-9];
 %% 
 
 VALUE liquid_context_parse_impl(VALUE self, VALUE text) {
