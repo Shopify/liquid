@@ -80,7 +80,7 @@ namespace :profile do
 
   desc "Run KCacheGrind"
   task :grind => :run  do
-    system "qcachegrind /tmp/liquid.rubyprof_calltreeprinter.txt"
+    system "qcachegrind /tmp//callgrind.liquid.txt"
   end
 
 end

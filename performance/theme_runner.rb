@@ -31,7 +31,6 @@ class ThemeRunner
     # Dup assigns because will make some changes to them
 
     @tests.each do |liquid, layout, template_name|
-
       tmpl = Liquid::Template.new
       tmpl.parse(liquid)
       tmpl = Liquid::Template.new
@@ -54,7 +53,7 @@ class ThemeRunner
 
 
   def run_profile
-    RubyProf.measure_mode = RubyProf::WALL_TIME
+    RubyProf.measure_mode = RubyProf::PROCESS_TIME
 
     # Dup assigns because will make some changes to them
     assigns = Database.tables.dup

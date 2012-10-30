@@ -109,7 +109,7 @@ module Liquid
         end
       end
 
-      output.join
+      output
     end
   end
 end

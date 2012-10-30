@@ -121,8 +121,7 @@ module Liquid
       begin
         # render the nodelist.
         # for performance reasons we get a array back here. join will make a string out of it
-        result = @root.render(context)
-        result.respond_to?(:join) ? result.join : result
+        @root.render(context).join        
       ensure
         @errors = context.errors
       end

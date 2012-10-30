@@ -6,6 +6,8 @@ module Liquid
       if markup =~ Syntax
         @variable_name = $1
         @collection_name = $2
+        @idx_i = "#{$1}-#{$2}-i"
+        @idx_col = "#{$1}-#{$2}-c"
         @attributes = {}
         markup.scan(TagAttributes) do |key, value|
           @attributes[key] = value
@@ -18,6 +20,8 @@ module Liquid
     end
 
     def render(context)
+      context.registers[:tablerowloop] ||= Hash.new(0)
+
       collection = context[@collection_name] or return ''
 
       from = @attributes['offset'] ? context[@attributes['offset']].to_i : 0
@@ -32,26 +36,15 @@ module Liquid
       row = 1
       col = 0
 
-      result = "<tr class=\"row1\">\n"
+      result = ["<tr class=\"row1\">\n"]
       context.stack do
 
+        context.registers[:tablerowloop][@idx]
+        context['tablerowloop'] = lambda { Tablerowloop.new(@idx_i, @idx_col, length) }
         collection.each_with_index do |item, index|
-          context[@variable_name] = item
-          context['tablerowloop'] = {
-            'length'  => length,
-            'index'   => index + 1,
-            'index0'  => index,
-            'col'     => col + 1,
-            'col0'    => col,
-            'index0'  => index,
-            'rindex'  => length - index,
-            'rindex0' => length - index - 1,
-            'first'   => (index == 0),
-            'last'    => (index == length - 1),
-            'col_first' => (col == 0),
-            'col_last'  => (col == cols - 1)
-          }
-
+          context.registers[:tablerowloop][@idx_i] = index
+          context.registers[:tablerowloop][@idx_col] = col
+          context[@variable_name] = item          
 
           col += 1
 
@@ -68,6 +61,58 @@ module Liquid
       result << "</tr>\n"
       result
     end
+
+
+
+    private
+
+      class Tablerowloop < Liquid::Drop
+        attr_accessor :length
+
+        def initialize(idx_i, idx_col, length)
+          @idx_i, @idx_col, @length = idx_i, idx_col, length
+        end
+
+        def index
+          @context.registers[:tablerowloop][@idx_i] + 1
+        end
+
+        def index0
+          @context.registers[:tablerowloop][@idx_i]
+        end
+
+        def rindex
+          length - @context.registers[:tablerowloop][@idx_i]
+        end
+
+        def rindex0
+          length - @context.registers[:tablerowloop][@idx_i] - 1
+        end
+
+        def first
+          (@context.registers[:tablerowloop][@idx_i] == 0)
+        end
+
+        def last
+          (@context.registers[:tablerowloop][@idx_i] == length - 1)
+        end
+
+        def col
+          @context.registers[:tablerowloop][@idx_col] + 1
+        end
+
+        def col0
+          @context.registers[:tablerowloop][@idx_col]
+        end
+
+        def col_first
+          (@context.registers[:tablerowloop][@idx_col] == 0)
+        end
+
+        def col_last
+          (@context.registers[:tablerowloop][@idx_col] == cols - 1)
+        end
+      end
   end
 
   Template.register_tag('tablerow', TableRow)
