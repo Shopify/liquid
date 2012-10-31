@@ -1,15 +1,19 @@
 
 %{ 
+//uncomment to get more debug instrumentation
+//
+//#define YY_DEBUG 
+
 #include <ruby.h>
 
-#define EMIT(sym, data) rb_ary_push(ctx->rb_tokens, rb_ary_new3(2, ID2SYM(rb_intern(sym)), data))  
-#define yy_rb_str rb_str_new(yytext, yyleng)
+#define EMIT(sym, data) \
+  rb_ary_push(ctx->rb_tokens, rb_ary_new3(2, ID2SYM(rb_intern(sym)), data)); 
 
+#define yy_rb_str rb_str_new(yytext, yyleng)
 
 #define YYSTYPE VALUE
 #define YY_CTX_LOCAL
 #define YY_CTX_MEMBERS VALUE rb_tokens; char *p; int p_len;
-#define YY_DEBUG
 
 #define YY_INPUT(buf, result, max_size) { \
     result = ctx->p_len;  \
@@ -25,31 +29,57 @@
 %}
 
 grammar  = primary
+         | entity
+         | range
+         | hash { EMIT("lookup", Qnil); }
          ; 
 
+hash     = '[' (primary|entity) ']';
 
-primary  = ( v:const             
-           | v:string               
-           | v:numeric
-           ) { EMIT(:id, v); } 
+primary  = var:const     { EMIT("id", var); }
+         | var:string    { EMIT("id", var); } 
+         | var:numeric   { EMIT("id", var); } 
          ;
 
+accessors = hash         { EMIT("call", Qnil); }
+          | '.first'     { EMIT("buildin", rb_str_new2("first")); }
+          | '.last'      { EMIT("buildin", rb_str_new2("last")); }
+          | '.size'      { EMIT("buildin", rb_str_new2("size")); }          
+          | '.' <identifier>   { EMIT("id", yy_rb_str); EMIT("call", Qnil); } 
+          ;
 
-string = ['] < ( !['] .  )* > ['] 
-       | ["] < ( !["] .  )* > ["] 
+entity  = <identifier>   { EMIT("id", yy_rb_str); EMIT("lookup", Qnil); } 
+          accessors* 
+        ;
+
+rangelet = var:integer   { EMIT("id", var); }
+         | entity 
+         ;
+
+range    = '(' rangelet '..' rangelet ')' { EMIT("range", Qnil); } 
+
+
+string = ['] < ( !['] .  )* > [']  { $$ = yy_rb_str; }
+       | ["] < ( !["] .  )* > ["]  { $$ = yy_rb_str; }
        ;
 
-numeric = <'-'? DIGIT+>             { $$ = rb_funcall(rb_cObject, rb_intern("Integer"), 1, yy_rb_str); }
-        | <'-'? DIGIT'.'DIGIT+>     { $$ = rb_funcall(rb_cObject, rb_intern("Float"), 1, yy_rb_str); }
+numeric = float
+        | integer
+        ;
+
+float = <'-'? digit'.'digit+>     { $$ = rb_funcall(rb_cObject, rb_intern("Float"), 1, yy_rb_str); }
+integer = <'-'? digit+>           { $$ = rb_funcall(rb_cObject, rb_intern("Integer"), 1, yy_rb_str); }
 
 
-const   = 'true'    { $$ = Qnil; }
+const   = "true"    { $$ = Qtrue; }
         | 'false'   { $$ = Qfalse; }
         | 'nil'     { $$ = Qnil; }
         | 'null'    { $$ = Qnil; }
         ;
 
-DIGIT = [0-9];
+digit = [0-9];
+identifier = [a-zA-Z][a-zA-Z0-9_\-]+;
+
 %% 
 
 VALUE liquid_context_parse_impl(VALUE self, VALUE text) {
@@ -65,10 +95,8 @@ VALUE liquid_context_parse_impl(VALUE self, VALUE text) {
   yyprintf((stderr, "About to start: %s %d\n", ctx.p, ctx.p_len));
   
   //while(yyparse(&ctx))
-  //  ;
+  // ;
   
-  yyparse(&ctx);
-  yyparse(&ctx);
   yyparse(&ctx);
 
   return ctx.rb_tokens;
