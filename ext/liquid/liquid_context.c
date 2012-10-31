@@ -561,7 +561,7 @@ YY_RULE(int) yy_rangelet(yycontext *ctx)
 }
 YY_RULE(int) yy_identifier(yycontext *ctx)
 {  int yypos0= ctx->pos, yythunkpos0= ctx->thunkpos;
-  yyprintf((stderr, "%s\n", "identifier"));  if (!yymatchClass(ctx, (unsigned char *)"\000\000\000\000\000\000\000\000\376\377\377\007\376\377\377\007\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000")) goto l15;  if (!yymatchClass(ctx, (unsigned char *)"\000\000\000\000\000\040\377\003\376\377\377\207\376\377\377\007\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000")) goto l15;
+  yyprintf((stderr, "%s\n", "identifier"));  if (!yymatchClass(ctx, (unsigned char *)"\000\000\000\000\000\000\000\000\376\377\377\007\376\377\377\007\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000")) goto l15;
   l16:;	
   {  int yypos17= ctx->pos, yythunkpos17= ctx->thunkpos;  if (!yymatchClass(ctx, (unsigned char *)"\000\000\000\000\000\040\377\003\376\377\377\207\376\377\377\007\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000")) goto l17;  goto l16;
   l17:;	  ctx->pos= yypos17; ctx->thunkpos= yythunkpos17;

@@ -42,6 +42,7 @@ class ParserTest < Test::Unit::TestCase
   def test_lookups
     assert_equal [[:id, "variable"], [:lookup, nil]], Parser.parse('variable')
     assert_equal [[:id, "underscored_variable"], [:lookup, nil]], Parser.parse('underscored_variable')
+    assert_equal [[:id, "c"], [:lookup, nil]], Parser.parse('c')
   end
 
   def test_global_hash
