@@ -56,6 +56,9 @@ class ParserTest < Test::Unit::TestCase
   def test_descent
     assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "variable2"], [:call, nil]], Parser.parse('variable1.variable2')
     assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "variable2"], [:call, nil], [:id, "variable3"], [:call, nil]], Parser.parse('variable1.variable2.variable3')
+    assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "under_score"], [:call, nil]], Parser.parse('variable1.under_score')
+    assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "question?"], [:call, nil]], Parser.parse('variable1.question?')    
+    assert_equal [[:id, "variable1"], [:lookup, nil], [:id, "exclaimation!"], [:call, nil]], Parser.parse('variable1.exclaimation!')    
   end
 
   def test_descent_hash
