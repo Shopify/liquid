@@ -168,6 +168,7 @@ module Liquid
       # Fetches an object starting at the local scope and then moving up the hierachy
       def find_variable(key)
         scope = @scopes.find { |s| s.has_key?(key) }
+        variable = nil
 
         if scope.nil?
           @environments.each do |e|
