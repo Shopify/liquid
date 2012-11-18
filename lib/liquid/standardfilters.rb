@@ -180,7 +180,7 @@ module Liquid
       else
         input
       end
-    rescue => e
+    rescue
       input
     end
 
