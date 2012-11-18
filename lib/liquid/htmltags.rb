@@ -57,7 +57,7 @@ module Liquid
 
           result << "<td class=\"col#{col}\">" << render_all(@nodelist, context) << '</td>'
 
-          if col == cols and not (index == length - 1)
+          if col == cols and (index != length - 1)
             col  = 0
             row += 1
             result << "</tr>\n<tr class=\"row#{row}\">"
