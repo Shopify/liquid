@@ -1,0 +1,61 @@
+eo:
+  date:
+    abbr_day_names:
+    - dim
+    - lun
+    - mar
+    - mer
+    - ĵaŭ
+    - ven
+    - sam
+    abbr_month_names:
+    -
+    - jan.
+    - feb.
+    - mar.
+    - apr.
+    - majo
+    - jun.
+    - jul.
+    - aŭg.
+    - sep.
+    - okt.
+    - nov.
+    - dec.
+    day_names:
+    - dimanĉo
+    - lundo
+    - mardo
+    - merkredo
+    - ĵaŭdo
+    - vendredo
+    - sabato
+    formats:
+      default: ! '%Y/%m/%d'
+      long: ! '%e %B %Y'
+      short: ! '%e %b'
+    month_names:
+    -
+    - januaro
+    - februaro
+    - marto
+    - aprilo
+    - majo
+    - junio
+    - julio
+    - aŭgusto
+    - septembro
+    - oktobro
+    - novembro
+    - decembro
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: am
+    formats:
+      default: ! '%d %B %Y %H:%M:%S'
+      long: ! '%A %d %B %Y %H:%M'
+      short: ! '%d %b %H:%M'
+    pm: pm

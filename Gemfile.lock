@@ -1,0 +1,16 @@
+PATH
+  remote: .
+  specs:
+    liquid (2.5.0)
+      i18n
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    i18n (0.6.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  liquid!

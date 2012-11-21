@@ -175,8 +175,8 @@ module Liquid
 
       date = input.is_a?(String) ? Time.parse(input) : input
 
-      if date.respond_to?(:strftime)
-        date.strftime(format.to_s)
+      if date.is_a?(Time)
+        I18n.l(date, :format => format).to_s
       else
         input
       end

@@ -110,6 +110,26 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal "07/05/2006", @filters.date("1152098955", "%m/%d/%Y")
   end
 
+  def test_translated_date
+    I18n.with_locale(:fr) do
+      assert_equal 'mai', @filters.date(Time.parse("2006-05-05 10:00:00"), "%B")
+      assert_equal 'juin', @filters.date(Time.parse("2006-06-05 10:00:00"), "%B")
+      assert_equal 'juillet', @filters.date(Time.parse("2006-07-05 10:00:00"), "%B")
+
+      assert_equal 'mai', @filters.date("2006-05-05 10:00:00", "%B")
+      assert_equal 'juin', @filters.date("2006-06-05 10:00:00", "%B")
+      assert_equal 'juillet', @filters.date("2006-07-05 10:00:00", "%B")
+
+      assert_equal '2006-07-05 10:00:00', @filters.date("2006-07-05 10:00:00", "")
+      assert_equal '2006-07-05 10:00:00', @filters.date("2006-07-05 10:00:00", "")
+      assert_equal '2006-07-05 10:00:00', @filters.date("2006-07-05 10:00:00", "")
+      assert_equal '2006-07-05 10:00:00', @filters.date("2006-07-05 10:00:00", nil)
+
+      assert_equal '07/05/2006', @filters.date("2006-07-05 10:00:00", "%m/%d/%Y")
+
+      assert_equal "07/16/2004", @filters.date("Fri Jul 16 01:00:00 2004", "%m/%d/%Y")
+    end
+  end
 
   def test_first_last
     assert_equal 1, @filters.first([1,2,3])

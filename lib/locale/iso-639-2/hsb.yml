@@ -1,0 +1,214 @@
+hsb:
+  date:
+    abbr_day_names:
+    - Nj
+    - Pó
+    - Wu
+    - Sr
+    - Št
+    - Pj
+    - So
+    abbr_month_names:
+    - 
+    - jan
+    - feb
+    - měr
+    - apr
+    - mej
+    - jun
+    - jul
+    - awg
+    - sep
+    - okt
+    - now
+    - dec
+    day_names:
+    - njedźela
+    - póndźela
+    - wutora
+    - srjeda
+    - štwórtk
+    - pjatk
+    - sobota
+    formats:
+      default: ! '%d. %m. %Y'
+      long: ! '%d. %B %Y'
+      short: ! '%d %b'
+    month_names:
+    - 
+    - Januar
+    - Februar
+    - Měrc
+    - Apryl
+    - Meja
+    - Junij
+    - Julij
+    - Awgust
+    - September
+    - Oktober
+    - Nowember
+    - December
+    order:
+    - :day
+    - :month
+    - :year
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        few: něhdźe %{count} hodźinami
+        one: něhdźe 1 hodźinu
+        other: něhdźe %{count} hodźinami
+        two: něhdźe %{count} hodźinomaj
+      about_x_months:
+        few: něhdźe %{count} měsacami
+        one: něhdźe 1 měsacom
+        other: něhdźe %{count} měsacami
+        two: něhdźe %{count} měsacomaj
+      about_x_years:
+        few: něhdźe %{count} lětami
+        one: něhdźe 1 lětom
+        other: něhdźe %{count} lětami
+        two: něhdźe %{count} lětomaj
+      half_a_minute: poł mjeńšiny
+      less_than_x_minutes:
+        few: mjenje hač %{count} mjeńšinami
+        one: mjenje hač 1 mjeńšinu
+        other: mjenje hač %{count} mjeńšinami
+        two: mjenje hač %{count} mjeńšinomaj
+      less_than_x_seconds:
+        few: mjenje hač %{count} sekundami
+        one: mjenje hač 1 sekundu
+        other: mjenje hač %{count} sekundami
+        two: mjenje hač %{count} sekundomaj
+      over_x_years:
+        few: přez %{count} lětami
+        one: přez 1 lětom
+        other: přez %{count} lětami
+        two: přez %{count} lětomaj
+      x_days:
+        few: ! '%{count} dnjemi'
+        one: 1 dnjom
+        other: ! '%{count} dnjemi'
+        two: ! '%{count} dnjomaj'
+      x_minutes:
+        few: ! '%{count} mjeńšinami'
+        one: 1 mjeńšinu
+        other: ! '%{count} mjeńšinami'
+        two: ! '%{count} mjeńšinomaj'
+      x_months:
+        few: ! '%{count} měsacami'
+        one: 1 měsacom
+        other: ! '%{count} měsacami'
+        two: ! '%{count} měsacomaj'
+      x_seconds:
+        few: ! '%{count} sekundami'
+        one: 1 sekundu
+        other: ! '%{count} sekundami'
+        two: ! '%{count} sekundomaj'
+  errors: &errors
+    format: ! '%{attribute} %{message}'
+    messages:
+      accepted: dyrbi so wobkrućić
+      blank: je trěbny
+      confirmation: njebu wobkrućene
+      empty: njesmě prózdny być
+      equal_to: dyrbi runja %{count} być
+      even: dyrbi runa ličba być
+      exclusion: njesteji k dispoziciji
+      greater_than: dyrbi wjetši hač %{count} być
+      greater_than_or_equal_to: dyrbi wjetši abo runja %{count} być
+      inclusion: njeje płaćiwa hódnota
+      invalid: njeje płaćiwy
+      less_than: dyrbi mjenje hač %{count} być
+      less_than_or_equal_to: dyrbi mjenje abo runja %{count} być
+      not_a_number: njeje ličba
+      odd: dyrbi njeruna ličby być
+      taken: je hižo w datowej bance
+      too_long:
+        few: je předołhi (maks. %{count} znamješka)
+        one: je předołhi (maks. 1 znamješko)
+        other: je předołhi (maks. %{count} znamješkow)
+        two: je předołhi (maks. %{count} znamješce)
+      too_short:
+        few: je překrótki (min. %{count} znamješka)
+        one: je překrótki (min. 1 znamješko)
+        other: je překrótki (min. %{count} znamješkow)
+        two: je překrótki (min. %{count} znamješće)
+      wrong_length:
+        few: nima prawu dołhosć (%{count} znamješka wočakowane)
+        one: nima prawu dołhosć (1 znamješko wočakowane)
+        other: nima prawu dołhosć (%{count} znamješkow wočakowanych)
+        two: nima prawu dołhosć (%{count} znamješce wočakowanej)
+    template:
+      body: ! 'Prošu přepruwuj slědowace pola:'
+      header:
+        few: Při składowanju objekta %{model} je k %{count} zmylkam dóšło a njebě
+          móžno składować
+        one: Při składowanju objekta %{model} je k zmylkej dóšło a njebě móžno składować
+        other: Při składowanju objekta %{model} je k %{count} zmylkam dóšło a njebě
+          móžno składować
+        two: Při składowanju objekta %{model} je k %{count} zmylkam dóšło a njebě
+          móžno składować
+  number:
+    currency:
+      format:
+        delimiter: ! ' '
+        format: ! '%n %u'
+        precision: 2
+        separator: ! ','
+        significant: false
+        strip_insignificant_zeros: false
+        unit: €
+    format:
+      delimiter: .
+      precision: 3
+      separator: ! ','
+      significant: false
+      strip_insignificant_zeros: false
+    human:
+      decimal_units:
+        format: ! '%n %u'
+        units:
+          unit: ''
+      format:
+        delimiter: ''
+        precision: 1
+        significant: true
+        strip_insignificant_zeros: true
+      storage_units:
+        format: ! '%n %u'
+        units:
+          byte:
+            few: bajty
+            one: bajt
+            other: bajtow
+            two: bajtaj
+          gb: GB
+          kb: KB
+          mb: MB
+          tb: TB
+    percentage:
+      format:
+        delimiter: ''
+    precision:
+      format:
+        delimiter: ''
+  support:
+    array:
+      last_word_connector: ! ' a '
+      two_words_connector: ! ' a '
+      words_connector: ! ', '
+  time:
+    am: dopołdnja
+    formats:
+      default: ! '%A, %d. %B %Y, %H:%M hodź'
+      long: ! '%A, %d. %B %Y, %H:%M hodź.'
+      short: ! '%d. %B, %H:%M hodź.'
+    pm: popołdnju
+  # remove these aliases after 'activemodel' and 'activerecord' namespaces are removed from Rails repository
+  activemodel:
+    errors:
+      <<: *errors
+  activerecord:
+    errors:
+      <<: *errors

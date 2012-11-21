@@ -1,0 +1,61 @@
+he:
+  date:
+    abbr_day_names:
+    - א
+    - ב
+    - ג
+    - ד
+    - ה
+    - ו
+    - ש
+    abbr_month_names:
+    -
+    - יאנ
+    - פבר
+    - מרץ
+    - אפר
+    - מאי
+    - יונ
+    - יול
+    - אוג
+    - ספט
+    - אוק
+    - נוב
+    - דצמ
+    day_names:
+    - ראשון
+    - שני
+    - שלישי
+    - רביעי
+    - חמישי
+    - שישי
+    - שבת
+    formats:
+      default: ! '%d-%m-%Y'
+      long: ! '%e ב%B, %Y'
+      short: ! '%e %b'
+    month_names:
+    -
+    - ינואר
+    - פברואר
+    - מרץ
+    - אפריל
+    - מאי
+    - יוני
+    - יולי
+    - אוגוסט
+    - ספטמבר
+    - אוקטובר
+    - נובמבר
+    - דצמבר
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: am
+    formats:
+      default: ! '%a %d %b %H:%M:%S %Z %Y'
+      long: ! '%d ב%B, %Y %H:%M'
+      short: ! '%d %b %H:%M'
+    pm: pm

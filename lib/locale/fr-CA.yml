@@ -1,0 +1,61 @@
+fr-CA:
+  date:
+    abbr_day_names:
+    - dim
+    - lun
+    - mar
+    - mer
+    - jeu
+    - ven
+    - sam
+    abbr_month_names:
+    -
+    - jan.
+    - fév.
+    - mar.
+    - avr.
+    - mai
+    - juin
+    - juil.
+    - août
+    - sept.
+    - oct.
+    - nov.
+    - déc.
+    day_names:
+    - dimanche
+    - lundi
+    - mardi
+    - mercredi
+    - jeudi
+    - vendredi
+    - samedi
+    formats:
+      default: ! '%Y-%m-%d'
+      long: ! '%d %B %Y'
+      short: ! '%y-%m-%d'
+    month_names:
+    -
+    - janvier
+    - février
+    - mars
+    - avril
+    - mai
+    - juin
+    - juillet
+    - août
+    - septembre
+    - octobre
+    - novembre
+    - décembre
+    order:
+    - :year
+    - :month
+    - :day
+  time:
+    am: am
+    formats:
+      default: ! '%H:%M:%S'
+      long: ! '%A %d %B %Y %H:%M'
+      short: ! '%H:%M'
+    pm: pm

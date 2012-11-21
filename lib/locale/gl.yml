@@ -1,0 +1,61 @@
+gl:
+  date:
+    abbr_day_names:
+    - Dom
+    - Lun
+    - Mar
+    - Mer
+    - Xov
+    - Ven
+    - Sab
+    abbr_month_names:
+    -
+    - Xan
+    - Feb
+    - Mar
+    - Abr
+    - Mai
+    - Xuñ
+    - Xul
+    - Ago
+    - Set
+    - Out
+    - Nov
+    - Dec
+    day_names:
+    - Domingo
+    - Luns
+    - Martes
+    - Mércores
+    - Xoves
+    - Venres
+    - Sábado
+    formats:
+      default: ! '%e/%m/%Y'
+      long: ! '%A %e de %B de %Y'
+      short: ! '%e %b'
+    month_names:
+    -
+    - Xaneiro
+    - Febreiro
+    - Marzo
+    - Abril
+    - Maio
+    - Xuño
+    - Xullo
+    - Agosto
+    - Setembro
+    - Outubro
+    - Novembro
+    - Decembro
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: ''
+    formats:
+      default: ! '%A, %e de %B de %Y ás %H:%M'
+      long: ! '%A %e de %B de %Y ás %H:%M'
+      short: ! '%e/%m, %H:%M'
+    pm: ''

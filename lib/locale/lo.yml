@@ -1,0 +1,61 @@
+lo:
+  date:
+    abbr_day_names:
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    abbr_month_names:
+    -
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    day_names:
+    - ອາທິດ
+    - ຈັນ
+    - ອັງຄານ
+    - ພຸດ
+    - ພະຫັດ
+    - ສຸກ
+    - ເສົາ
+    formats:
+      default: ! '%d-%m-%Y'
+      long: ! '%e %B %Y'
+      short: ! '%e %b'
+    month_names:
+    -
+    - ມັງກອນ
+    - ກຸມພາ
+    - ມີນາ
+    - ເມສາ
+    - ພຶດສະພາ
+    - ມິຖຸນາ
+    - ກໍລະກົດ
+    - ສິງຫາ
+    - ກັນຍາ
+    - ຕຸລາ
+    - ພະຈິກ
+    - ທັນວາ
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: ''
+    formats:
+      default: ! '%a %d %b %Y %H:%M:%S %z'
+      long: ! '%d %B %Y %H:%M น.'
+      short: ! '%d %b %H:%M น.'
+    pm: ''

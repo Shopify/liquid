@@ -1,0 +1,61 @@
+et:
+  date:
+    abbr_day_names:
+    - P
+    - E
+    - T
+    - K
+    - N
+    - R
+    - L
+    abbr_month_names:
+    -
+    - jaan.
+    - veebr.
+    - märts
+    - apr.
+    - mai
+    - juuni
+    - juuli
+    - aug.
+    - sept.
+    - okt.
+    - nov.
+    - dets.
+    day_names:
+    - pühapäev
+    - esmaspäev
+    - teisipäev
+    - kolmapäev
+    - neljapäev
+    - reede
+    - laupäev
+    formats:
+      default: ! '%d.%m.%Y'
+      long: ! '%d. %B %Y'
+      short: ! '%d.%m.%y'
+    month_names:
+    -
+    - jaanuar
+    - veebruar
+    - märts
+    - aprill
+    - mai
+    - juuni
+    - juuli
+    - august
+    - september
+    - oktoober
+    - november
+    - detsember
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: enne lõunat
+    formats:
+      default: ! '%d. %B %Y, %H:%M'
+      long: ! '%a, %d. %b %Y, %H:%M:%S %z'
+      short: ! '%d.%m.%y, %H:%M'
+    pm: pärast lõunat

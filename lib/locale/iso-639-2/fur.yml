@@ -1,0 +1,199 @@
+fur:
+  date:
+    abbr_day_names:
+    - dom
+    - lun
+    - mar
+    - mie
+    - joi
+    - vin
+    - sab
+    abbr_month_names:
+    - 
+    - Zen
+    - Fev
+    - Mar
+    - Avr
+    - Mai
+    - Jug
+    - Lui
+    - Avo
+    - Set
+    - Otu
+    - Nov
+    - Dic
+    day_names:
+    - domenie
+    - lunis
+    - martars
+    - miercus
+    - joibe
+    - vinars
+    - sabide
+    formats:
+      default: ! '%d-%m-%Y'
+      long: ! '%d di %B dal %Y'
+      short: ! '%d di %b'
+    month_names:
+    - 
+    - Zenâr
+    - Fevrâr
+    - Març
+    - Avrîl
+    - Mai
+    - Jugn
+    - Lui
+    - Avost
+    - Setembar
+    - Otubar
+    - Novembar
+    - Dicembar
+    order:
+    - :day
+    - :month
+    - :year
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        one: cirche une ore
+        other: cirche %{count} oris
+      about_x_months:
+        one: cirche un mês
+        other: cirche %{count} mês
+      about_x_years:
+        one: cirche un an
+        other: cirche %{count} agns
+      almost_x_years:
+        one: cuasi un an
+        other: cuasi %{count} agns
+      half_a_minute: mieç minût
+      less_than_x_minutes:
+        one: mancul di un minût
+        other: mancul di %{count} minûts
+      less_than_x_seconds:
+        one: mancul di un secont
+        other: mancul di %{count} seconts
+      over_x_years:
+        one: plui di un an
+        other: plui di %{count} agns
+      x_days:
+        one: 1 zornade
+        other: ! '%{count} zornadis'
+      x_minutes:
+        one: 1 minût
+        other: ! '%{count} minûts'
+      x_months:
+        one: 1 mês
+        other: ! '%{count} mês'
+      x_seconds:
+        one: 1 secont
+        other: ! '%{count} seconts'
+    prompts:
+      day: Zornade
+      hour: Ore
+      minute: Minût
+      month: Mês
+      second: Secont
+      year: An
+  errors: &errors
+    format: ! '%{attribute} %{message}'
+    messages:
+      accepted: al à di jessi acetât
+      blank: nol pues jessi lassât in blanc
+      confirmation: nol è compagn de conferme
+      empty: nol pues jessi vueit
+      equal_to: al à di jessi compagn di %{count}
+      even: al à di jessi pâr
+      exclusion: al è riservât
+      greater_than: al à di jessi plui grant di %{count}
+      greater_than_or_equal_to: al à di jessi plui grant o compagn di %{count}
+      inclusion: nol è includût te liste
+      invalid: nol è valit
+      less_than: al à di jessi mancul di %{count}
+      less_than_or_equal_to: al à di jessi mancul o compagn di %{count}
+      not_a_number: nol è un numar
+      not_an_integer: al à di jessi un numar intîr
+      odd: al à di jessi dispar
+      record_invalid: ! 'Convalide falide: %{errors}'
+      taken: al è za doprât
+      too_long: al è masse lunc (il massim al è %{count} letaris)
+      too_short: al è masse curt (il minim al è %{count} letaris)
+      wrong_length: nol à la lungjece juste (al à di jessi di %{count} letaris)
+    template:
+      body: ! 'Torne par plasê a controlâ i cjamps ca sot:'
+      header:
+        one: ! 'No si pues salvâ chest %{model}: 1 erôr'
+        other: ! 'No si pues salvâ chest %{model}: %{count} erôrs.'
+  helpers:
+    select:
+      prompt: Sielç par plasê
+    submit:
+      create: Cree %{model}
+      submit: Salve %{model}
+      update: Inzorne %{model}
+  number:
+    currency:
+      format:
+        delimiter: .
+        format: ! '%n %u'
+        precision: 2
+        separator: ! ','
+        significant: false
+        strip_insignificant_zeros: false
+        unit: €
+    format:
+      delimiter: .
+      precision: 3
+      separator: ! ','
+      significant: false
+      strip_insignificant_zeros: false
+    human:
+      decimal_units:
+        format: ! '%n %u'
+        units:
+          billion: bilion
+          million: milion
+          quadrillion: cuadrilion
+          thousand: miâr
+          trillion: trilion
+          unit: ''
+      format:
+        delimiter: ''
+        precision: 1
+        significant: true
+        strip_insignificant_zeros: true
+      storage_units:
+        format: ! '%n %u'
+        units:
+          byte:
+            one: Byte
+            other: Byte
+          gb: Gb
+          kb: Kb
+          mb: Mb
+          tb: Tb
+    percentage:
+      format:
+        delimiter: ''
+    precision:
+      format:
+        delimiter: ''
+  support:
+    array:
+      last_word_connector: ! ' e '
+      two_words_connector: ! ' e '
+      words_connector: ! ', '
+  time:
+    am: am
+    formats:
+      default: ! '%a %d di %b dal %Y, %H:%M:%S %z'
+      long: ! '%d di %B dal %Y %H:%M'
+      short: ! '%d di %b %H:%M'
+    pm: pm
+  # remove these aliases after 'activemodel' and 'activerecord' namespaces are removed from Rails repository
+  activemodel:
+    errors:
+      <<: *errors
+  activerecord:
+    errors:
+      <<: *errors

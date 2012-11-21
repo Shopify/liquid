@@ -1,0 +1,61 @@
+az:
+  date:
+    abbr_day_names:
+    - B.
+    - B.E.
+    - Ç.A.
+    - Ç.
+    - C.A.
+    - C.
+    - Ş.
+    abbr_month_names:
+    -
+    - Yan
+    - Fev
+    - Mar
+    - Apr
+    - May
+    - İyn
+    - İyl
+    - Avq
+    - Sen
+    - Okt
+    - Noy
+    - Dek
+    day_names:
+    - Bazar
+    - Bazar ertəsi
+    - Çərşənbə axşamı
+    - Çərşənbə
+    - Cümə axşamı
+    - Cümə
+    - Şənbə
+    formats:
+      default: ! '%d.%m.%Y'
+      long: ! '%d %B %Y'
+      short: ! '%d %b'
+    month_names:
+    -
+    - Yanvar
+    - Fevral
+    - Mart
+    - Aprel
+    - May
+    - İyun
+    - İyul
+    - Avqust
+    - Sentyabr
+    - Oktyabr
+    - Noyabr
+    - Dekabr
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: günortaya qədər
+    formats:
+      default: ! '%a, %d %b %Y, %H:%M:%S %z'
+      long: ! '%d %B %Y, %H:%M'
+      short: ! '%d %b, %H:%M'
+    pm: günortadan sonra

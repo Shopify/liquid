@@ -1,0 +1,61 @@
+da:
+  date:
+    abbr_day_names:
+    - søn
+    - man
+    - tir
+    - ons
+    - tor
+    - fre
+    - lør
+    abbr_month_names:
+    -
+    - jan
+    - feb
+    - mar
+    - apr
+    - maj
+    - jun
+    - jul
+    - aug
+    - sep
+    - okt
+    - nov
+    - dec
+    day_names:
+    - søndag
+    - mandag
+    - tirsdag
+    - onsdag
+    - torsdag
+    - fredag
+    - lørdag
+    formats:
+      default: ! '%d.%m.%Y'
+      long: ! '%e. %B %Y'
+      short: ! '%e. %b %Y'
+    month_names:
+    -
+    - januar
+    - februar
+    - marts
+    - april
+    - maj
+    - juni
+    - juli
+    - august
+    - september
+    - oktober
+    - november
+    - december
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: ''
+    formats:
+      default: ! '%e. %B %Y, %H.%M'
+      long: ! '%A d. %e. %B %Y, %H.%M'
+      short: ! '%e. %b %Y, %H.%M'
+    pm: ''

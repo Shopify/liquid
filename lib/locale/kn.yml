@@ -1,0 +1,61 @@
+kn:
+  date:
+    abbr_day_names:
+    - ರವಿ
+    - ಸೋಮ
+    - ಮಂಗಳ
+    - ಬುಧ
+    - ಗುರು
+    - ಶುಕ್ರ
+    - ಶನಿ
+    abbr_month_names:
+    -
+    - Jan
+    - Feb
+    - Mar
+    - Apr
+    - May
+    - Jun
+    - Jul
+    - Aug
+    - Sep
+    - Oct
+    - Nov
+    - Dec
+    day_names:
+    - ರವಿವಾರ
+    - ಸೋಮವಾರ
+    - ಮಂಗಳವಾರ
+    - ಬುಧವಾರ
+    - ಗುರುವಾರ
+    - ಶುಕ್ರವಾರ
+    - ಶನಿವಾರ
+    formats:
+      default: ! '%Y-%m-%d'
+      long: ! '%B %d, %Y'
+      short: ! '%b %d'
+    month_names:
+    -
+    - ಜನವರಿ
+    - ಫೆಬ್ರವರಿ
+    - ಮಾರ್ಚ್
+    - ಏಪ್ರಿಲ್
+    - ಮೇ
+    - ಜೂನ್
+    - ಜುಲೈ
+    - ಆಗಸ್ಟ್
+    - ಸೆಪ್ಟೆಂಬರ್
+    - ಅಕ್ಟೋಬರ್
+    - ನವಂಬರ್
+    - ಡಿಸೆಂಬರ್
+    order:
+    - :year
+    - :month
+    - :day
+  time:
+    am: ಪ್ರಾತಃಕಾಲ
+    formats:
+      default: ! '%a, %d %b %Y %H:%M:%S %z'
+      long: ! '%B %d, %Y %H:%M'
+      short: ! '%d %b %H:%M'
+    pm: ಅಪರನ್ನಃ

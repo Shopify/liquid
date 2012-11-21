@@ -1,0 +1,61 @@
+hu:
+  date:
+    abbr_day_names:
+    - v.
+    - h.
+    - k.
+    - sze.
+    - cs.
+    - p.
+    - szo.
+    abbr_month_names:
+    -
+    - jan.
+    - febr.
+    - márc.
+    - ápr.
+    - máj.
+    - jún.
+    - júl.
+    - aug.
+    - szept.
+    - okt.
+    - nov.
+    - dec.
+    day_names:
+    - vasárnap
+    - hétfő
+    - kedd
+    - szerda
+    - csütörtök
+    - péntek
+    - szombat
+    formats:
+      default: ! '%Y.%m.%d.'
+      long: ! '%Y. %B %e.'
+      short: ! '%b %e.'
+    month_names:
+    -
+    - január
+    - február
+    - március
+    - április
+    - május
+    - június
+    - július
+    - augusztus
+    - szeptember
+    - október
+    - november
+    - december
+    order:
+    - :year
+    - :month
+    - :day
+  time:
+    am: de.
+    formats:
+      default: ! '%Y. %b %e., %H:%M'
+      long: ! '%Y. %B %e., %A, %H:%M'
+      short: ! '%b %e., %H:%M'
+    pm: du.

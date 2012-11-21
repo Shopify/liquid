@@ -1,0 +1,210 @@
+csb:
+  date:
+    abbr_day_names:
+    - nie
+    - pòn
+    - wtó
+    - str
+    - czw
+    - pią
+    - sob
+    abbr_month_names:
+    - 
+    - stë
+    - gro
+    - str
+    - łżë
+    - môj
+    - cze
+    - lëp
+    - zél
+    - séw
+    - ruj
+    - lës
+    - gòd
+    day_names:
+    - niedzela
+    - pòniedzôłk
+    - wtórk
+    - strzoda
+    - czwiôrtk
+    - piątk
+    - sobòta
+    formats:
+      default: ! '%d-%m-%Y'
+      long: ! '%B %d, %Y'
+      short: ! '%d %b'
+    month_names:
+    - 
+    - stëcznik
+    - gromicznik
+    - strëmiannik
+    - łżëkwiôt
+    - môj
+    - czerwińc
+    - lëpińc
+    - zélnik
+    - séwnik
+    - rujan
+    - lëstopadnik
+    - gòdnik
+    order:
+    - :day
+    - :month
+    - :year
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        few: kòle %{count} gòdzën
+        one: kòle gòdzënë
+        other: kòle %{count} gòdzën
+      about_x_months:
+        few: kòle %{count} miesąców
+        one: kòle miesąca
+        other: kòle %{count} miesąców
+      about_x_years:
+        few: kòle %{count} lat
+        one: kòle rokù
+        other: kòle %{count} lat
+      almost_x_years:
+        few: wnet %{count} lata
+        one: wnet rok
+        other: wnet %{count} lat
+      half_a_minute: pół minutë
+      less_than_x_minutes:
+        few: mni jak %{count} minutë
+        one: mni jak minuta
+        other: mni jak %{count} minutów
+      less_than_x_seconds:
+        few: mni jak %{count} sekùndë
+        one: mni jak sekùnda
+        other: mni jak %{count} sekùndów
+      over_x_years:
+        few: wicy jak %{count} lata
+        one: wicy jak rok
+        other: wicy jak %{count} lat
+      x_days:
+        few: ! '%{count} dni'
+        one: 1 dzéń
+        other: ! '%{count} dniów'
+      x_minutes:
+        few: ! '%{count} minutë'
+        one: 1 minuta
+        other: ! '%{count} minutów'
+      x_months:
+        few: ! '%{count} miesiące'
+        one: 1 miesąc
+        other: ! '%{count} miesięców'
+      x_seconds:
+        few: ! '%{count} sekùndë'
+        one: 1 sekùnda
+        other: ! '%{count} sekùndów'
+    prompts:
+      day: Dzéń
+      hour: Gòdzëna
+      minute: Minuta
+      month: Miesiąc
+      second: Sekunda
+      year: Rok
+  errors: &errors
+    format: ! '%{attribute} %{message}'
+    messages:
+      accepted: mùszi bëc zaakceptowóné
+      blank: ni mòże bëc pùsté
+      confirmation: nie zgòdzô sã z pòcwierdzenim
+      empty: ni mòżé bëc pùsté
+      equal_to: mùszi bëc równe %{count}
+      even: mùszé bëc parzësté
+      exclusion: je zarezerwowóné
+      greater_than: mùszi bëc wikszé òd %{count}
+      greater_than_or_equal_to: mùszi bëc wikszé abò równé %{count}
+      inclusion: ni ma na lësce dopùszczalnëch wôrtnotów
+      invalid: je zmiłkòwé
+      less_than: mùszi bëc mniszé òd %{count}
+      less_than_or_equal_to: mùszi bëc mniszé abò równé %{count}
+      not_a_number: nie je lëczbą
+      not_an_integer: muszi bëc całowną lëczbą
+      odd: mùszi bëc nieparzësté
+      record_invalid: ! 'Negatiwné sprôwdzenié pòprawnoscë: %{errors}'
+      taken: je ju zajãté
+      too_long: je za dłëdżé (maksymalno %{count} znaków)
+      too_short: je za krótczé (przënômni %{count} znaków)
+      wrong_length: mô lëchą długòtã (bë mùsza miec %{count} znaków)
+    template:
+      body: ! 'Fele tikają sã nëch pól:'
+      header:
+        one: ! '%{model} nie òstôł zachòwóny przez jedną felã'
+        other: ! '%{model} nie òstôł zachòwóny przez %{count} felów'
+  helpers:
+    select:
+      prompt: Proszã wëbrac
+    submit:
+      create: Ùsôdzë %{model}
+      submit: Zapiszë %{model}
+      update: Aktualizëjë %{model}
+  number:
+    currency:
+      format:
+        delimiter: ! ' '
+        format: ! '%u %n'
+        precision: 2
+        separator: ! ','
+        significant: false
+        strip_insignificant_zeros: true
+        unit: PLN
+    format:
+      delimiter: ! ' '
+      precision: 3
+      separator: ! ','
+      significant: false
+      strip_insignificant_zeros: false
+    human:
+      decimal_units:
+        format: ! '%n %u'
+        units:
+          billion: Miliard
+          million: Milión
+          quadrillion: Biliard
+          thousand: Tësąc
+          trillion: Bilión
+          unit: ''
+      format:
+        delimiter: ''
+        precision: 3
+        significant: true
+        strip_insignificant_zeros: true
+      storage_units:
+        format: ! '%n %u'
+        units:
+          byte:
+            one: bajt
+            other: bajtë
+          gb: GB
+          kb: KB
+          mb: MB
+          tb: TB
+    percentage:
+      format:
+        delimiter: ''
+    precision:
+      format:
+        delimiter: ''
+  support:
+    array:
+      last_word_connector: ! ' a téż '
+      two_words_connector: ! ' ë '
+      words_connector: ! ', '
+  time:
+    am: przed pôłnim
+    formats:
+      default: ! '%a, %d %b %Y %H:%M:%S %z'
+      long: ! '%B %d, %Y %H:%M'
+      short: ! '%d %b %H:%M'
+    pm: pò pôłnim
+  # remove these aliases after 'activemodel' and 'activerecord' namespaces are removed from Rails repository
+  activemodel:
+    errors:
+      <<: *errors
+  activerecord:
+    errors:
+      <<: *errors
