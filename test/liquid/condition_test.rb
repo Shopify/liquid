@@ -10,26 +10,64 @@ class ConditionTest < Test::Unit::TestCase
 
   def test_default_operators_evalute_true
     assert_evalutes_true '1', '==', '1'
+    assert_evalutes_true "'1'", '==', '1'
+    assert_evalutes_true "'alpha'", '==', "'alpha'"
+    assert_evalutes_true "'true'", '==', "true"
+    assert_evalutes_true "true", '==', "true"
     assert_evalutes_true '1', '!=', '2'
+    assert_evalutes_true "'alpha'", '!=', "'beta'"
+    assert_evalutes_true "'false'", '!=', "true"
+    assert_evalutes_true "false", '!=', "true"
     assert_evalutes_true '1', '<>', '2'
+    assert_evalutes_true "'alpha'", '<>', "'beta'"
+    assert_evalutes_true "'false'", '<>', "true"
+    assert_evalutes_true "false", '<>', "true"
     assert_evalutes_true '1', '<', '2'
+    assert_evalutes_true "'1'", '<', '2'
+    assert_evalutes_true "'alpha'", '<', "'beta'"
     assert_evalutes_true '2', '>', '1'
+    assert_evalutes_true "'2'", '>', '1'
+    assert_evalutes_true "'3'", '<', "'10'"
+    assert_evalutes_true "'10'", '>', "'3'"
+    assert_evalutes_true "'beta'", '>', "'alpha'"
     assert_evalutes_true '1', '>=', '1'
     assert_evalutes_true '2', '>=', '1'
+    assert_evalutes_true "'1'", '>=', '1'
+    assert_evalutes_true "'2'", '>=', '1'
     assert_evalutes_true '1', '<=', '2'
     assert_evalutes_true '1', '<=', '1'
+    assert_evalutes_true "'1'", '<=', '2'
+    assert_evalutes_true "'1'", '<=', '1'
   end
 
   def test_default_operators_evalute_false
     assert_evalutes_false '1', '==', '2'
+    assert_evalutes_false "'alpha'", '==', "'beta'"
+    assert_evalutes_false "'false'", '==', "true"
     assert_evalutes_false '1', '!=', '1'
+    assert_evalutes_false "'alpha'", '!=', "'alpha'"
+    assert_evalutes_false "'true'", '!=', "true"
+    assert_evalutes_false "'1'", '!=', '1'
     assert_evalutes_false '1', '<>', '1'
+    assert_evalutes_false "'alpha'", '<>', "'alpha'"
+    assert_evalutes_false "'true'", '<>', "true"
+    assert_evalutes_false "'1'", '<>', '1'
     assert_evalutes_false '1', '<', '0'
     assert_evalutes_false '2', '>', '4'
+    assert_evalutes_false "'1'", '<', '0'
+    assert_evalutes_false "'2'", '>', '4'
+    assert_evalutes_false "'10'", '<', "'3'"
+    assert_evalutes_false "'3'", '>', "'10'"
+    assert_evalutes_false "'alpha'", '>', "'beta'"
+    assert_evalutes_false "'beta'", '<', "'alpha'"
     assert_evalutes_false '1', '>=', '3'
     assert_evalutes_false '2', '>=', '4'
+    assert_evalutes_false "'1'", '>=', '3'
+    assert_evalutes_false '2', '>=', "'4'"
     assert_evalutes_false '1', '<=', '0'
     assert_evalutes_false '1', '<=', '0'
+    assert_evalutes_false "'1'", '<=', '0'
+    assert_evalutes_false '1', '<=', "'0'"
   end
 
   def test_contains_works_on_strings
