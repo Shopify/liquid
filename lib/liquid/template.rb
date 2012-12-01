@@ -30,6 +30,8 @@ module Liquid
         tags[name.to_s] = klass
       end
 
+      alias_method :register_block, :register_tag
+
       def tags
         @tags ||= {}
       end
