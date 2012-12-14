@@ -102,12 +102,12 @@ class ConditionTest < Test::Unit::TestCase
     assert_evalutes_false "0", 'contains', 'not_assigned'
   end
 
-  def test_contains_raises_error_for_nil_operands_if_strict
+  def test_contains_doesnt_raise_error_for_nil_operands_if_strict
+    # Strict should only apply to displaying variables
+    # rather than throwing errors when in conditions.
     @context = Liquid::Context.new
     @context.strict = true
-    assert_raise(VariableNotFound) do
-      assert_evalutes_false "not_assigned", 'contains', '0'
-    end
+    assert_evalutes_false "not_assigned", 'contains', '0'
   end
 
   def test_or_condition

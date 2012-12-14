@@ -90,9 +90,9 @@ module Liquid
       # If the operator is empty this means that the decision statement is just
       # a single variable. We can just poll this variable from the context and
       # return this as the result.
-      return context[left] if op == nil
+      return safe_variable_lookup(context, left) if op == nil
 
-      left, right = context[left], context[right]
+      left, right = safe_variable_lookup(context, left), safe_variable_lookup(context, right)
 
       if integers?(left, right)
         left  = left.to_i
@@ -124,6 +124,14 @@ module Liquid
 
     def strings?(a, b)
       a.to_s.to_s == a && b.to_s == b
+    end
+
+    def safe_variable_lookup(context, name)
+      begin
+        context[name]
+      rescue Liquid::VariableNotFound => e
+        nil
+      end
     end
   end
 

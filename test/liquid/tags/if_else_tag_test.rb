@@ -75,10 +75,8 @@ class IfElseTagTest < Test::Unit::TestCase
     assert_template_result('','{% if foo.bar %} NO {% endif %}', 'foo' => {})
   end
 
-  def test_hash_miss_raises_error_if_strict
-    assert_raise(VariableNotFound) do
-      assert_strict_template_result('','{% if foo.bar %} NO {% endif %}', 'foo' => {})
-    end
+  def test_hash_miss_doesnt_raise_error_if_strict
+    assert_strict_template_result('','{% if foo.bar %} NO {% endif %}', 'foo' => {})
   end
 
   def test_if_from_variable
