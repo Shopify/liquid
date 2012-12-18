@@ -11,7 +11,7 @@ module Liquid
   #   {{ user | link }}
   #
   class Variable
-    FilterParser = /(?:#{FilterSeparator}|(?:\s*(?!(?:#{FilterSeparator}))(?:#{QuotedFragment}|\S+)\s*)+)/o
+    FilterParser = /(?:#{FilterSeparator}|(?:\s*(?:#{QuotedFragment}|#{ArgumentSeparator})\s*)+)/o
     attr_accessor :filters, :name
 
     def initialize(markup)
