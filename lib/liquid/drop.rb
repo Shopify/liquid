@@ -20,9 +20,10 @@ module Liquid
   # Your drop can either implement the methods sans any parameters or implement the before_method(name) method which is a
   # catch all.
   class Drop
-    attr_writer :context
-
     EMPTY_STRING = ''.freeze
+    METHOD_BLACKLIST = [:dup, :clone, :singleton_class, :eval, :class_eval, :`, :inspect]
+
+    attr_writer :context
 
     # Catch all for the method
     def before_method(method)
@@ -47,5 +48,9 @@ module Liquid
     end
 
     alias :[] :invoke_drop
+
+    METHOD_BLACKLIST.each do |blacklisted|
+      define_method(blacklisted) {nil}
+    end
   end
 end
