@@ -66,6 +66,10 @@ class VariableTest < Test::Unit::TestCase
     var = Variable.new('hello|textileze|paragraph')
     assert_equal 'hello', var.name
     assert_equal [[:textileze,[]], [:paragraph,[]]], var.filters
+
+    var = Variable.new("hello|replace:'foo','bar'|textileze")
+    assert_equal 'hello', var.name
+    assert_equal [[:replace, ["'foo'", "'bar'"]], [:textileze, []]], var.filters
   end
 
   def test_symbol
