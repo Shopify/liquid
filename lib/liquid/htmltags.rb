@@ -1,6 +1,6 @@
 module Liquid
   class TableRow < Block
-    Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
+    Syntax = /(#{WordRegex}+)\s+in\s+(#{QuotedFragment}+)/o
 
     def initialize(tag_name, markup, tokens)
       if markup =~ Syntax

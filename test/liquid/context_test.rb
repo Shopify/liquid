@@ -98,6 +98,11 @@ class ContextTest < Test::Unit::TestCase
     assert_equal nil, @context['nil']
   end
 
+  def test_utf8_variables
+    @context["chinese\u6000variable"] = 'chinese'
+    assert_equal 'chinese', @context["chinese\u6000variable"]
+  end
+
   def test_variables_not_existing
     assert_equal nil, @context['does_not_exist']
   end
