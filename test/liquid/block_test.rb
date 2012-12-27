@@ -51,6 +51,14 @@ class BlockTest < Test::Unit::TestCase
     end
   end
 
+  def test_with_custom_utf8_tag
+    Liquid::Template.register_tag("testtag\u6000", Block)
+
+    assert_nothing_thrown do
+      template = Liquid::Template.parse( "{% testtag\u6000 something\u6000 %} {% endtesttag\u6000 %}")
+    end
+  end
+
   private
     def block_types(nodelist)
       nodelist.collect { |node| node.class }
