@@ -189,10 +189,10 @@ class ContextTest < Test::Unit::TestCase
     end
 
     context = Context.new
-    methods_before = context.strainer.methods.map { |method| method.to_s }
+    assert_equal "Wookie", context.invoke("hi", "Wookie")
+
     context.add_filters(filter)
-    methods_after = context.strainer.methods.map { |method| method.to_s }
-    assert_equal (methods_before + ["hi"]).sort, methods_after.sort
+    assert_equal "Wookie hi!", context.invoke("hi", "Wookie")
   end
 
   def test_add_item_in_outer_scope

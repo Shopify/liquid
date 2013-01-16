@@ -3,23 +3,57 @@ require 'test_helper'
 class StrainerTest < Test::Unit::TestCase
   include Liquid
 
-  def test_strainer
-    strainer = Strainer.create(nil)
-    assert_equal false, strainer.respond_to?('__test__')
-    assert_equal false, strainer.respond_to?('test')
-    assert_equal false, strainer.respond_to?('instance_eval')
-    assert_equal false, strainer.respond_to?('__send__')
-    assert_equal true, strainer.respond_to?('size') # from the standard lib
+  module AccessScopeFilters
+    def public_filter
+      "public"
+    end
+
+    def private_filter
+      "private"
+    end
+    private :private_filter
   end
 
-  def test_should_respond_to_two_parameters
-    strainer = Strainer.create(nil)
-    assert_equal true, strainer.respond_to?('size', false)
+  module TestingFilter
+    def test1
+      "test1"
+    end
+
+    def test2
+      "test2"
+    end
   end
 
-  # Asserts that Object#respond_to_missing? is not being undefined in Ruby versions where it has been implemented
-  # Currently this method is only present in Ruby v1.9.2, or higher
-  def test_object_respond_to_missing
-    assert_equal Object.respond_to?(:respond_to_missing?), Strainer.create(nil).respond_to?(:respond_to_missing?)
+  Strainer.global_filter(AccessScopeFilters)
+  Strainer.global_filter(TestingFilter)
+
+  def test_strainer_only_invokes_public_filter_methods
+    strainer = Strainer.create(nil)
+    assert_equal "public", strainer.invoke("public_filter")
   end
+
+  def test_strainer_returns_nil_if_no_filter_method_found
+    strainer = Strainer.create(nil)
+    assert_nil strainer.invoke("private_filter")
+    assert_nil strainer.invoke("undef_the_filter")
+  end
+
+  def test_strainer_returns_first_argument_if_no_method_and_arguments_given
+    strainer = Strainer.create(nil)
+    assert_equal "password", strainer.invoke("undef_the_method", "password")
+  end
+
+  def test_strainer_allows_multiple_filters
+    strainer = Strainer.create(nil)
+    assert_equal "test1", strainer.invoke("test1")
+    assert_equal "test2", strainer.invoke("test2")
+  end
+
+  def test_strainer_only_allows_methods_defined_in_filters
+    strainer = Strainer.create(nil)
+    assert_equal "1 + 1", strainer.invoke("instance_eval", "1 + 1")
+    assert_equal "puts",  strainer.invoke("__send__", "puts", "Hi Mom")
+    assert_equal "has_method?", strainer.invoke("invoke", "has_method?", "invoke")
+  end
+
 end # StrainerTest

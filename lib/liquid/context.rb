@@ -71,11 +71,7 @@ module Liquid
     end
 
     def invoke(method, *args)
-      if strainer.respond_to?(method)
-        strainer.__send__(method, *args)
-      else
-        args.first
-      end
+      strainer.invoke(method, *args)
     end
 
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
