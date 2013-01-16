@@ -31,7 +31,7 @@ module Liquid
 
     # called by liquid to invoke a drop
     def invoke_drop(method_or_key)
-      if method_or_key && method_or_key != EMPTY_STRING && self.class.public_method_defined?(method_or_key.to_s)
+      if method_or_key && method_or_key != EMPTY_STRING && drop_method_defined?(method_or_key.to_s)
         send(method_or_key.to_s)
       else
         before_method(method_or_key)
@@ -47,5 +47,12 @@ module Liquid
     end
 
     alias :[] :invoke_drop
+
+    private
+
+    # Check for method existence without invoking respond_to?, which creates symbols
+    def drop_method_defined?(method_name)
+      self.class.public_instance_methods.any? {|method| method.to_s == method_name }
+    end
   end
 end
