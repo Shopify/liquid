@@ -56,4 +56,16 @@ class ParsingQuirksTest < Test::Unit::TestCase
     end
   end
 
+  def test_error_on_variables_with_escaped_quotes
+    text = 'test \" escaping'
+    template = Template.parse("{{ \"#{text}\" }}")
+
+    assert_equal text, template.render
+
+    text = 'test \\\' escaping'
+    template = Template.parse("{{ '#{text}' }}")
+
+    assert_equal text, template.render
+  end
+
 end # ParsingQuirksTest

@@ -30,7 +30,7 @@ module Liquid
   VariableSegment             = /[\w\-]/
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
-  QuotedString                = /"[^"]*"|'[^']*'/
+  QuotedString                = /(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
   StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s|:,]+/
   FirstFilterArgument         = /#{FilterArgumentSeparator}(?:#{StrictQuotedFragment})/o
