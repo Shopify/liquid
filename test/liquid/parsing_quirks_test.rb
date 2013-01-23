@@ -49,4 +49,11 @@ class ParsingQuirksTest < Test::Unit::TestCase
     markup = "false || true"
     assert_template_result('',"{% if #{markup} %} YES {% endif %}")
   end
+
+  def test_error_on_variables_containing_curly_bracket
+    assert_nothing_raised do
+      Template.parse("{{ '{test}' }}")
+    end
+  end
+
 end # ParsingQuirksTest
