@@ -39,7 +39,7 @@ module Liquid
   Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/o
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
   AnyStartingTag              = /\{\{|\{\%/
-  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableEnd}/o
+  PartialTemplateParser       = /#{TagStart}(?:#{QuotedString}|.*?)*#{TagEnd}|#{VariableStart}(?:#{QuotedString}|.*?)*#{VariableEnd}/o
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/o
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
 end

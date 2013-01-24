@@ -56,7 +56,38 @@ class ParsingQuirksTest < Test::Unit::TestCase
     end
   end
 
-  def test_error_on_variables_with_escaped_quotes
+  def test_variables_containing_single_curly_bracket
+    text = '{test}'
+
+    template = ''
+    assert_nothing_raised do
+      template = Template.parse("{{ '#{text}' }}")
+    end
+
+    assert_equal text, template.render
+  end
+
+  def test_variables_containing_double_curly_bracket
+
+    text = "{\"foo\":{\"bar\":\"rab\"}}"
+    template = ''
+    assert_nothing_raised do
+      template = Template.parse("{{ '#{text}' }}")
+    end
+
+    assert_equal text, template.render
+
+
+    text = "{{fancy{{\\'user\\'}}name}}"
+    template = ''
+    assert_nothing_raised do
+      template = Template.parse("{{ '#{text}' | remove:'{{just{{CurlyBrackets}}Again}}' }}")
+    end
+
+    assert_equal text, template.render
+  end
+
+  def test_variables_with_escaped_quotes
     text = 'test \" escaping'
     template = Template.parse("{{ \"#{text}\" }}")
 
