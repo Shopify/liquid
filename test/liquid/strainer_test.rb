@@ -14,22 +14,21 @@ class StrainerTest < Test::Unit::TestCase
     private :private_filter
   end
 
-  module TestingFilter
-    def test1
-      "test1"
-    end
-
-    def test2
-      "test2"
-    end
-  end
-
   Strainer.global_filter(AccessScopeFilters)
-  Strainer.global_filter(TestingFilter)
+
+  def test_strainer
+    strainer = Strainer.create(nil)
+    assert_equal 5, strainer.invoke('size', 'input')
+    assert_equal "public", strainer.invoke("public_filter")
+  end
 
   def test_strainer_only_invokes_public_filter_methods
     strainer = Strainer.create(nil)
-    assert_equal "public", strainer.invoke("public_filter")
+    assert_equal false, strainer.invokable?('__test__')
+    assert_equal false, strainer.invokable?('test')
+    assert_equal false, strainer.invokable?('instance_eval')
+    assert_equal false, strainer.invokable?('__send__')
+    assert_equal true, strainer.invokable?('size') # from the standard lib
   end
 
   def test_strainer_returns_nil_if_no_filter_method_found
@@ -41,12 +40,6 @@ class StrainerTest < Test::Unit::TestCase
   def test_strainer_returns_first_argument_if_no_method_and_arguments_given
     strainer = Strainer.create(nil)
     assert_equal "password", strainer.invoke("undef_the_method", "password")
-  end
-
-  def test_strainer_allows_multiple_filters
-    strainer = Strainer.create(nil)
-    assert_equal "test1", strainer.invoke("test1")
-    assert_equal "test2", strainer.invoke("test2")
   end
 
   def test_strainer_only_allows_methods_defined_in_filters

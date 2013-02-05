@@ -115,6 +115,13 @@ class DropsTest < Test::Unit::TestCase
     assert_equal '  ', output
   end
 
+  def test_object_methods_not_allowed
+    [:dup, :clone, :singleton_class, :eval, :class_eval, :inspect].each do |method|
+      output = Liquid::Template.parse(" {{ product.#{method} }} ").render('product' => ProductDrop.new)
+      assert_equal '  ', output
+    end
+  end
+
   def test_scope
     assert_equal '1', Liquid::Template.parse( '{{ context.scopes }}'  ).render('context' => ContextDrop.new)
     assert_equal '2', Liquid::Template.parse( '{%for i in dummy%}{{ context.scopes }}{%endfor%}'  ).render('context' => ContextDrop.new, 'dummy' => [1])

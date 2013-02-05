@@ -1,3 +1,5 @@
+require 'set'
+
 module Liquid
 
   # A drop in liquid is a class which allows you to export DOM like things to liquid.
@@ -31,8 +33,8 @@ module Liquid
 
     # called by liquid to invoke a drop
     def invoke_drop(method_or_key)
-      if method_or_key && method_or_key != EMPTY_STRING && drop_method_defined?(method_or_key.to_s)
-        send(method_or_key.to_s)
+      if method_or_key && method_or_key != EMPTY_STRING && self.class.invokable?(method_or_key)
+        send(method_or_key)
       else
         before_method(method_or_key)
       end
@@ -51,8 +53,9 @@ module Liquid
     private
 
     # Check for method existence without invoking respond_to?, which creates symbols
-    def drop_method_defined?(method_name)
-      self.class.public_instance_methods.any? {|method| method.to_s == method_name }
+    def self.invokable?(method_name)
+      @invokable_methods ||= Set.new((public_instance_methods - Liquid::Drop.public_instance_methods).map(&:to_s))
+      @invokable_methods.include?(method_name.to_s)
     end
   end
 end

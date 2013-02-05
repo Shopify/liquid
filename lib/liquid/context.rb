@@ -39,6 +39,7 @@ module Liquid
 
       filters.each do |f|
         raise ArgumentError, "Expected module but got: #{f.class}" unless f.is_a?(Module)
+        Strainer.add_known_filter(f)
         strainer.extend(f)
       end
     end

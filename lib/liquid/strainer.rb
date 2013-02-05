@@ -2,19 +2,15 @@ require 'set'
 
 module Liquid
 
-  parent_object = if defined? BlankObject
-    BlankObject
-  else
-    Object
-  end
-
   # Strainer is the parent class for the filters system.
   # New filters are mixed into the strainer class which is then instantiated for each liquid template render run.
   #
   # The Strainer only allows method calls defined in filters given to it via Strainer.global_filter,
   # Context#add_filters or Template.register_filter
-  class Strainer < parent_object #:nodoc:
+  class Strainer #:nodoc:
     @@filters = {}
+    @@known_filters = Set.new
+    @@known_methods = Set.new
 
     def initialize(context)
       @context = context
@@ -22,7 +18,18 @@ module Liquid
 
     def self.global_filter(filter)
       raise ArgumentError, "Passed filter is not a module" unless filter.is_a?(Module)
+      add_known_filter(filter)
       @@filters[filter.name] = filter
+    end
+
+    def self.add_known_filter(filter)
+      unless @@known_filters.include?(filter)
+        @@method_blacklist ||= Set.new(Strainer.instance_methods.map(&:to_s))
+        new_methods = filter.instance_methods.map(&:to_s)
+        new_methods.reject!{ |m| @@method_blacklist.include?(m) }
+        @@known_methods.merge(new_methods)
+        @@known_filters.add(filter)
+      end
     end
 
     def self.create(context)
@@ -32,21 +39,15 @@ module Liquid
     end
 
     def invoke(method, *args)
-      if has_method?(method)
+      if invokable?(method)
         send(method, *args)
       else
         args.first
       end
     end
 
-    private
-
-    def has_method?(method)
-      methods_to_check = self.methods - self.class.public_instance_methods
-      methods_to_check.any? do |instance_method|
-        instance_method.to_s == method.to_s
-      end
+    def invokable?(method)
+      @@known_methods.include?(method.to_s) && respond_to?(method)
     end
-
   end
 end
