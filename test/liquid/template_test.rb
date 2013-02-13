@@ -1,5 +1,15 @@
 require 'test_helper'
 
+class TemplateContextDrop < Liquid::Drop
+  def before_method(method)
+    method
+  end
+
+  def foo
+    'foo'
+  end
+end
+
 class TemplateTest < Test::Unit::TestCase
   include Liquid
 
@@ -119,5 +129,12 @@ class TemplateTest < Test::Unit::TestCase
     assert t.resource_limits[:assign_score_current] > 0
     assert t.resource_limits[:render_score_current] > 0
     assert t.resource_limits[:render_length_current] > 0
+  end
+
+  def test_can_use_drop_as_context
+    t = Template.new
+    drop = TemplateContextDrop.new
+    assert_equal 'foo', t.parse('{{foo}}').render(drop)
+    assert_equal 'bar', t.parse('{{bar}}').render(drop)
   end
 end # TemplateTest
