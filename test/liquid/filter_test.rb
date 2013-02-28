@@ -16,6 +16,12 @@ module CanadianMoneyFilter
   end
 end
 
+module SubstituteFilter
+  def substitute(input, params={})
+    input % Hash[params.map{|k,v| [k.to_sym, v] }]
+  end
+end
+
 class FiltersTest < Test::Unit::TestCase
   include Liquid
 
@@ -91,6 +97,13 @@ class FiltersTest < Test::Unit::TestCase
     @context['var'] = 1000
 
     assert_equal 1000, Variable.new("var | xyzzy").render(@context)
+  end
+
+  def test_filter_with_keyword_arguments
+    @context['surname'] = 'john'
+    @context.add_filters(SubstituteFilter)
+    output = Variable.new(%! 'hello %{first_name}, %{last_name}' | substitute: first_name: surname, last_name: 'doe' !).render(@context)
+    assert_equal 'hello john, doe', output
   end
 end
 
