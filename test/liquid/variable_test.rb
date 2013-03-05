@@ -107,6 +107,12 @@ class VariableTest < Test::Unit::TestCase
     var = Variable.new(%| test.test |)
     assert_equal 'test.test', var.name
   end
+
+  def test_filter_with_keyword_arguments
+    var = Variable.new(%! hello | things: greeting: "world", farewell: 'goodbye'!)
+    assert_equal 'hello', var.name
+    assert_equal [['things',["greeting: \"world\"","farewell: 'goodbye'"]]], var.filters
+  end
 end
 
 
