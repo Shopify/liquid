@@ -26,7 +26,7 @@ module Liquid
             if matches = f.match(/\s*(\w+)(?:\s*#{FilterArgumentSeparator}(.*))?/)
               filtername = matches[1]
               filterargs = matches[2].to_s.scan(/(?:\A|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
-              @filters << [filtername.to_sym, filterargs]
+              @filters << [filtername, filterargs]
             end
           end
         end
