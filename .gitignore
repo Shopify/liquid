@@ -6,3 +6,5 @@ pkg
 .rvmrc
 *.o
 *.bundle
+ext/liquid/Makefile
+
