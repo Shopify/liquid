@@ -13,9 +13,12 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.7"
 
   s.test_files  = Dir.glob("{test}/**/*")
-  s.files       = Dir.glob("{lib}/**/*") + %w(MIT-LICENSE README.md)
+  s.files       = Dir.glob("{lib}/**/*") +
+                  Dir.glob("{ext}/**/*") + %w(MIT-LICENSE README.md)
+
+  s.extensions = ['ext/liquid/extconf.rb']
 
   s.extra_rdoc_files  = ["History.md", "README.md"]
 
-  s.require_path = "lib"
+  s.require_paths = ["lib", "ext"]
 end
