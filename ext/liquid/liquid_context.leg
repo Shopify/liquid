@@ -67,7 +67,7 @@ numeric = float
         | integer
         ;
 
-float = <'-'? digit'.'digit+>     { $$ = rb_funcall(rb_cObject, rb_intern("Float"), 1, yy_rb_str); }
+float = <'-'? digit+'.'digit+>     { $$ = rb_funcall(rb_cObject, rb_intern("Float"), 1, yy_rb_str); }
 integer = <'-'? digit+>           { $$ = rb_funcall(rb_cObject, rb_intern("Integer"), 1, yy_rb_str); }
 
 
