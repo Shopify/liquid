@@ -7,4 +7,5 @@ pkg
 *.o
 *.bundle
 ext/liquid/Makefile
+ext/liquid/liquid_context.c
 
