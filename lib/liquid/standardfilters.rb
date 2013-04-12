@@ -42,7 +42,8 @@ module Liquid
       if input.nil? then return end
       l = length.to_i - truncate_string.length
       l = 0 if l < 0
-      input.length > length.to_i ? input[0...l] + truncate_string : input
+      a=0
+      input.length > length.to_i ? input.chars.take_while{|c| (a += c.bytes.to_a.length) <= length }.join + truncate_string : input
     end
 
     def truncatewords(input, words = 15, truncate_string = "...")
