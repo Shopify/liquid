@@ -39,6 +39,7 @@ module Liquid
 
       filters.each do |f|
         raise ArgumentError, "Expected module but got: #{f.class}" unless f.is_a?(Module)
+        Strainer.add_known_filter(f)
         strainer.extend(f)
       end
     end
@@ -71,11 +72,7 @@ module Liquid
     end
 
     def invoke(method, *args)
-      if strainer.respond_to?(method)
-        strainer.__send__(method, *args)
-      else
-        args.first
-      end
+      strainer.invoke(method, *args)
     end
 
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead

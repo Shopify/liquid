@@ -38,4 +38,27 @@ class SecurityTest < Test::Unit::TestCase
 
     assert_equal expected, Template.parse(text).render(@assigns, :filters => SecurityFilter)
   end
+
+  def test_does_not_add_filters_to_symbol_table
+    current_symbols = Symbol.all_symbols
+
+    test = %( {{ "some_string" | a_bad_filter }} )
+
+    template = Template.parse(test)
+    assert_equal [], (Symbol.all_symbols - current_symbols)
+
+    template.render
+    assert_equal [], (Symbol.all_symbols - current_symbols)
+  end
+
+  def test_does_not_add_drop_methods_to_symbol_table
+    current_symbols = Symbol.all_symbols
+
+    drop = Drop.new
+    drop.invoke_drop("custom_method_1")
+    drop.invoke_drop("custom_method_2")
+    drop.invoke_drop("custom_method_3")
+
+    assert_equal [], (Symbol.all_symbols - current_symbols)
+  end
 end # SecurityTest

@@ -1,5 +1,13 @@
 # Liquid Version History
 
+## 2.5.0 / 2013-03-06
+
+* Prevent Object methods from being called on drops
+* Avoid symbol injection from liquid
+* Added break and continue statements
+* Fix filter parser for args without space separators
+* Add support for filter keyword arguments
+
 ## 2.4.0 / 2012-08-03
 
 * Performance improvements
