@@ -25,6 +25,11 @@ HERE
     assert_template_result(expected,template,'array' => [1,2,3])
   end
 
+  def test_utf8_for
+    assigns = {"array\u6000chinese" => [1,2,3]}
+    assert_template_result('123', "{% for item\u6000chinese in array\u6000chinese %}{{ item\u6000chinese }}{% endfor %}", assigns)
+  end
+
   def test_for_reversed
     assigns = {'array' => [ 1, 2, 3] }
     assert_template_result('321','{%for item in array reversed %}{{item}}{%endfor%}',assigns)
