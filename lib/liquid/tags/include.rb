@@ -24,7 +24,7 @@ module Liquid
     end
     
     def render(context)
-      partial = _load_cached_partial(context)
+      partial = load_cached_partial(context)
       variable = context[@variable_name || @template_name[1..-2]]
       
       context.stack do
@@ -45,21 +45,21 @@ module Liquid
     end
    
     private
-      def _load_cached_partial(context)
+      def load_cached_partial(context)
         cached_partials = context.registers[:cached_partials] || {}
         template_name = context[@template_name]
 
         if cached = cached_partials[template_name]
           return cached
         end
-        source = _read_template_from_file_system(context)
+        source = read_template_from_file_system(context)
         partial = Liquid::Template.parse(source)
         cached_partials[template_name] = partial
         context.registers[:cached_partials] = cached_partials
         partial
       end
 
-      def _read_template_from_file_system(context)
+      def read_template_from_file_system(context)
         file_system = context.registers[:file_system] || Liquid::Template.file_system
       
         # make read_template_file call backwards-compatible.
