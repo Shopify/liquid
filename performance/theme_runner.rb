@@ -14,6 +14,17 @@ require File.dirname(__FILE__) + '/shopify/liquid'
 require File.dirname(__FILE__) + '/shopify/database.rb'
 
 class ThemeRunner
+  class FileSystem
+
+    def initialize(path)
+      @path = path
+    end
+
+    # Called by Liquid to retrieve a template file
+    def read_template_file(template_path, context)
+      File.read(@path + '/' + template_path + '.liquid')
+    end
+  end
 
   # Load all templates into memory, do this now so that 
   # we don't profile IO. 
@@ -47,7 +58,7 @@ class ThemeRunner
 
       # Compute page_tempalte outside of profiler run, uninteresting to profiler
       page_template = File.basename(template_name, File.extname(template_name))
-      compile_and_render(liquid, layout, assigns, page_template) 
+      compile_and_render(liquid, layout, assigns, page_template, template_name)
        
     end
   end
@@ -74,7 +85,7 @@ class ThemeRunner
       html = nil
 
       RubyProf.resume
-      html = compile_and_render(liquid, layout, assigns, page_template) 
+      html = compile_and_render(liquid, layout, assigns, page_template, template_file)
       RubyProf.pause
       
 
@@ -88,10 +99,11 @@ class ThemeRunner
     RubyProf.stop
   end
 
-  def compile_and_render(template, layout, assigns, page_template)    
+  def compile_and_render(template, layout, assigns, page_template, template_file)
     tmpl = Liquid::Template.new
     tmpl.assigns['page_title'] = 'Page title'
     tmpl.assigns['template'] = page_template
+    tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(File.dirname(template_file))
 
     content_for_layout = tmpl.parse(template).render(assigns)
 
