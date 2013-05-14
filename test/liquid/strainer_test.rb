@@ -49,4 +49,15 @@ class StrainerTest < Test::Unit::TestCase
     assert_equal "has_method?", strainer.invoke("invoke", "has_method?", "invoke")
   end
 
+  def test_strainer_uses_a_class_cache_to_avoid_method_cache_invalidation
+    a, b = Module.new, Module.new
+    strainer = Strainer.create(nil, [a,b])
+    assert_kind_of Strainer, strainer
+    assert_kind_of a, strainer
+    assert_kind_of b, strainer
+    Strainer.class_variable_get(:@@filters).values.each do |m|
+      assert_kind_of m, strainer
+    end
+  end
+
 end # StrainerTest

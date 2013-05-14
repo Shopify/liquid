@@ -25,6 +25,7 @@ module Liquid
       squash_instance_assigns_with_environments
 
       @interrupts = []
+      @filters = []
     end
 
     def resource_limits_reached?
@@ -34,7 +35,7 @@ module Liquid
     end
 
     def strainer
-      @strainer ||= Strainer.create(self)
+      @strainer ||= Strainer.create(self, @filters)
     end
 
     # Adds filters to this context.
@@ -43,11 +44,20 @@ module Liquid
     # for that
     def add_filters(filters)
       filters = [filters].flatten.compact
-
       filters.each do |f|
         raise ArgumentError, "Expected module but got: #{f.class}" unless f.is_a?(Module)
         Strainer.add_known_filter(f)
-        strainer.extend(f)
+      end
+
+      # If strainer is already setup then there's no choice but to use a runtime
+      # extend call. If strainer is not yet created, we can utilize strainers
+      # cached class based API, which avoids busting the method cache.
+      if @strainer
+        filters.each do |f|
+          strainer.extend(f)
+        end
+      else
+        @filters.concat filters
       end
     end
 

@@ -11,6 +11,11 @@ module Liquid
     @@filters = []
     @@known_filters = Set.new
     @@known_methods = Set.new
+    @@strainer_class_cache = Hash.new do |hash, filters|
+      hash[filters] = Class.new(Strainer) do
+        filters.each { |f| include f }
+      end
+    end
 
     def initialize(context)
       @context = context
@@ -32,10 +37,13 @@ module Liquid
       end
     end
 
-    def self.create(context)
-      strainer = Strainer.new(context)
-      @@filters.each { |m| strainer.extend(m) }
-      strainer
+    def self.strainer_class_cache
+      @@strainer_class_cache
+    end
+
+    def self.create(context, filters = nil)
+      filters = @@filters.values + (filters || [])
+      strainer_class_cache[filters].new(context)
     end
 
     def invoke(method, *args)
