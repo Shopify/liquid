@@ -8,7 +8,7 @@ module Liquid
   # The Strainer only allows method calls defined in filters given to it via Strainer.global_filter,
   # Context#add_filters or Template.register_filter
   class Strainer #:nodoc:
-    @@filters = {}
+    @@filters = []
     @@known_filters = Set.new
     @@known_methods = Set.new
 
@@ -19,7 +19,7 @@ module Liquid
     def self.global_filter(filter)
       raise ArgumentError, "Passed filter is not a module" unless filter.is_a?(Module)
       add_known_filter(filter)
-      @@filters[filter.name] = filter
+      @@filters << filter unless @@filters.include?(filter)
     end
 
     def self.add_known_filter(filter)
@@ -34,7 +34,7 @@ module Liquid
 
     def self.create(context)
       strainer = Strainer.new(context)
-      @@filters.each { |k,m| strainer.extend(m) }
+      @@filters.each { |m| strainer.extend(m) }
       strainer
     end
 
