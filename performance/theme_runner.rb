@@ -85,7 +85,7 @@ class ThemeRunner
       html = nil
 
       RubyProf.resume
-      html = compile_and_render(liquid, layout, assigns, page_template, template_file)
+      html = compile_and_render(liquid, layout, assigns, page_template, template_name)
       RubyProf.pause
       
 
