@@ -7,10 +7,6 @@ class CaptureTest < Test::Unit::TestCase
     assert_template_result("test string", "{% capture 'var' %}test string{% endcapture %}{{var}}", {})
   end
 
-  def test_captures_block_content_in_utf8_variable
-    assert_template_result("test string", "{% capture var\u6000 %}test string{% endcapture %}{{var\u6000}}", {})
-  end
-
   def test_capture_to_variable_from_outer_scope_if_existing
     template_source = <<-END_TEMPLATE
     {% assign var = '' %}
