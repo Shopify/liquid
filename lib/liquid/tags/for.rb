@@ -44,7 +44,7 @@ module Liquid
   # forloop.last:: Returns true if the item is the last item.
   #
   class For < Block                                             
-    Syntax = /(#{WordRegex}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/ou
+    Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
   
     def initialize(tag_name, markup, tokens)
       if markup =~ Syntax

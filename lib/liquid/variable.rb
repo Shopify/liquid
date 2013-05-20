@@ -23,7 +23,7 @@ module Liquid
         if match[2].match(/#{FilterSeparator}\s*(.*)/o)
           filters = Regexp.last_match(1).scan(FilterParser)
           filters.each do |f|
-            if matches = f.match(/\s*(#{WordRegex}+)(?:\s*#{FilterArgumentSeparator}(.*))?/)
+            if matches = f.match(/\s*(\w+)(?:\s*#{FilterArgumentSeparator}(.*))?/)
               filtername = matches[1]
               filterargs = matches[2].to_s.scan(/(?:\A|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
               @filters << [filtername, filterargs]

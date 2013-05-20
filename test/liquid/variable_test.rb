@@ -50,12 +50,6 @@ class VariableTest < Test::Unit::TestCase
     assert_equal [["things",["\"%Y, okay?\"","'the other one'"]]], var.filters
   end
 
-  def test_utf8_filters
-    var = Variable.new("foo | chinese\u6000filter: value\u6000")
-    assert_equal 'foo', var.name
-    assert_equal [["chinese\u6000filter",["value\u6000"]]], var.filters
-  end
-
   def test_filter_with_date_parameter
 
     var = Variable.new(%! '2006-06-06' | date: "%m/%d/%Y"!)
