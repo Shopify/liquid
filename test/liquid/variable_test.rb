@@ -113,6 +113,12 @@ class VariableTest < Test::Unit::TestCase
     assert_equal 'hello', var.name
     assert_equal [['things',["greeting: \"world\"","farewell: 'goodbye'"]]], var.filters
   end
+
+  def test_lax_filter_argument_parsing
+    var = Variable.new(%! number_of_comments | pluralize: 'comment': 'comments' !)
+    assert_equal 'number_of_comments', var.name
+    assert_equal [['pluralize',["'comment'","'comments'"]]], var.filters
+  end
 end
 
 
