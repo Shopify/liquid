@@ -20,15 +20,14 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module Liquid
-  WordRegex                   = RUBY_VERSION < "1.9" ? '\w' : '[[:word:]]'
   FilterSeparator             = /\|/
   ArgumentSeparator           = ','
   FilterArgumentSeparator     = ':'
   VariableAttributeSeparator  = '.'
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
-  VariableSignature           = /\(?[#{WordRegex}\-\.\[\]]\)?/o
-  VariableSegment             = /[#{WordRegex}\-]/o
+  VariableSignature           = /\(?[\w\-\.\[\]]\)?/
+  VariableSegment             = /[\w\-]/
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
   VariableIncompleteEnd       = /\}\}?/
@@ -39,7 +38,7 @@ module Liquid
   OtherFilterArgument         = /#{ArgumentSeparator}(?:#{StrictQuotedFragment})/o
   SpacelessFilter             = /^(?:'[^']+'|"[^"]+"|[^'"])*#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/o
   Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/o
-  TagAttributes               = /(#{WordRegex}+)\s*\:\s*(#{QuotedFragment})/o
+  TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
   AnyStartingTag              = /\{\{|\{\%/
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/o
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/o
