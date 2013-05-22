@@ -2,10 +2,10 @@ module Liquid
   class Include < Tag
     Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/o
   
-    def initialize(tag_name, markup, tokens)      
+    def initialize(tag_name, markup, tokens)
       if markup =~ Syntax
 
-        @template_name = $1        
+        @template_name = $1
         @variable_name = $3
         @attributes    = {}
 
@@ -24,8 +24,7 @@ module Liquid
     end
     
     def render(context)
-      source = _read_template_from_file_system(context)
-      partial = Liquid::Template.parse(source)
+      partial = load_cached_partial(context)
       variable = context[@variable_name || @template_name[1..-2]]
       
       context.stack do
@@ -46,7 +45,21 @@ module Liquid
     end
    
     private
-      def _read_template_from_file_system(context)
+      def load_cached_partial(context)
+        cached_partials = context.registers[:cached_partials] || {}
+        template_name = context[@template_name]
+
+        if cached = cached_partials[template_name]
+          return cached
+        end
+        source = read_template_from_file_system(context)
+        partial = Liquid::Template.parse(source)
+        cached_partials[template_name] = partial
+        context.registers[:cached_partials] = cached_partials
+        partial
+      end
+
+      def read_template_from_file_system(context)
         file_system = context.registers[:file_system] || Liquid::Template.file_system
       
         # make read_template_file call backwards-compatible.
