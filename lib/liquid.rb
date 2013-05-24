@@ -24,8 +24,8 @@ module Liquid
   ArgumentSeparator           = ','
   FilterArgumentSeparator     = ':'
   VariableAttributeSeparator  = '.'
-  TagStart                    = /\{\%/
-  TagEnd                      = /\%\}\s*/
+  TagStart                    = /[ \t\r\f]*\{\%/
+  TagEnd                      = /\%\}[ \t\r\f]*\n?/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
   VariableSegment             = /[\w\-]/
   VariableStart               = /\{\{/
