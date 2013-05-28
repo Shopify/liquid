@@ -6,7 +6,7 @@ class TemplateContextDrop < Liquid::Drop
   end
 
   def foo
-    'foo'
+    'fizzbuzz'
   end
 end
 
@@ -134,7 +134,7 @@ class TemplateTest < Test::Unit::TestCase
   def test_can_use_drop_as_context
     t = Template.new
     drop = TemplateContextDrop.new
-    assert_equal 'foo', t.parse('{{foo}}').render(drop)
+    assert_equal 'fizzbuzz', t.parse('{{foo}}').render(drop)
     assert_equal 'bar', t.parse('{{bar}}').render(drop)
   end
 end # TemplateTest
