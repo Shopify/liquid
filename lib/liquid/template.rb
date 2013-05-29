@@ -14,7 +14,7 @@ module Liquid
   #   template.render('user_name' => 'bob')
   #
   class Template
-    attr_accessor :root
+    attr_accessor :root, :timeout
     @@file_system = BlankFileSystem.new
 
     class << self
@@ -88,14 +88,19 @@ module Liquid
     #
     def render(*args)
       return '' if @root.nil?
-      
+
+      if @timeout
+        raise StandardError, "Speedytime gem not loaded" unless defined?(Speedytime)
+        deadline = Time.now.to_f + @timeout
+      end
+
       context = case args.first
       when Liquid::Context
         args.shift
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @deadline)
+        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, deadline)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @deadline)
+        Context.new(assigns, instance_assigns, registers, @rethrow_errors, deadline)
       else
         raise ArgumentError, "Expect Hash or Liquid::Context as parameter"
       end
@@ -126,12 +131,6 @@ module Liquid
       ensure
         @errors = context.errors
       end
-    end
-
-    def render_with_timeout(deadline, *args)
-      raise StandardError, "Speedytime gem not loaded" unless defined?(Speedytime)
-      @deadline = Time.now.to_f + deadline
-      render(*args)
     end
 
     def render!(*args)

@@ -22,6 +22,7 @@ module Liquid
       @errors         = []
       @rethrow_errors = rethrow_errors
       @deadline       = deadline
+
       squash_instance_assigns_with_environments
       @interrupts = []
     end
