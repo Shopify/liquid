@@ -130,7 +130,7 @@ module Liquid
 
     def render_with_timeout(deadline, *args)
       raise StandardError, "Speedytime gem not loaded" unless defined?(Speedytime)
-      @deadline = Time.now.to_i + deadline
+      @deadline = Time.now.to_f + deadline
       render(*args)
     end
 

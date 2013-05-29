@@ -103,7 +103,7 @@ module Liquid
             break
           end
 
-          raise Liquid::TimeoutError if context.deadline && context.deadline < Speedytime.current
+          raise Liquid::TimeoutError if context.deadline && context.deadline < Speedytime.current_f
           output << (token.respond_to?(:render) ? token.render(context) : token)
         rescue ::StandardError => e
           output << (context.handle_error(e))
