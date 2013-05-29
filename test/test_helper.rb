@@ -2,6 +2,8 @@
 
 require 'test/unit'
 require 'test/unit/assertions'
+require "speedytime"
+
 begin
   require 'ruby-debug'
 rescue LoadError

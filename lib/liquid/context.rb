@@ -13,16 +13,17 @@ module Liquid
   #
   #   context['bob']  #=> nil  class Context
   class Context
-    attr_reader :scopes, :errors, :registers, :environments
+    attr_reader :scopes, :errors, :registers, :environments, :deadline
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false)
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, deadline = nil)
       @environments   = [environments].flatten
       @scopes         = [(outer_scope || {})]
       @registers      = registers
       @errors         = []
       @rethrow_errors = rethrow_errors
-      squash_instance_assigns_with_environments
+      @deadline       = deadline
 
+      squash_instance_assigns_with_environments
       @interrupts = []
     end
 
