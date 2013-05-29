@@ -8,4 +8,5 @@ module Liquid
   class StandardError < Error; end
   class SyntaxError < Error; end
   class StackLevelError < Error; end
+  class TimeoutError < Error; end
 end

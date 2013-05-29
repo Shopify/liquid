@@ -71,4 +71,10 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal '1', t.render(assigns)
     @global = nil
   end
+
+  def test_liquid_deadline
+    template = "{% for i in (1..3) %}{{ foo }}{% endfor %}"
+    assert_equal "Liquid error: Liquid::TimeoutError", Template.new.parse(template).render_with_deadline(Time.now - 100, { "foo" => "bar" })
+    assert_equal "barbarbar", Template.new.parse(template).render_with_deadline(Time.now + 100, { "foo" => "bar" })
+  end
 end # TemplateTest

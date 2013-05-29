@@ -93,9 +93,9 @@ module Liquid
       when Liquid::Context
         args.shift
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors)
+        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @deadline)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors)
+        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @deadline)
       else
         raise ArgumentError, "Expect Hash or Liquid::Context as parameter"
       end
@@ -126,6 +126,11 @@ module Liquid
       ensure
         @errors = context.errors
       end
+    end
+
+    def render_with_deadline(deadline, *args)
+      @deadline = deadline
+      render(*args)
     end
 
     def render!(*args)
