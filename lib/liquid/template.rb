@@ -87,8 +87,18 @@ module Liquid
     #    filters and tags and might be useful to integrate liquid more with its host application
     #
     def render(*args)
+      render_without_timeout(*args)
+    end
+
+    def render_with_timeout(seconds, *args)
+      Timeout::timeout(seconds, Liquid::TimeoutError) do
+        render_without_timeout(*args)
+      end
+    end
+
+    def render_without_timeout(*args)
       return '' if @root.nil?
-      
+
       context = case args.first
       when Liquid::Context
         args.shift

@@ -71,4 +71,8 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal '1', t.render(assigns)
     @global = nil
   end
+
+  def test_render_with_timeout
+    assert_equal "Liquid error: execution expired", Template.new.parse("{{foo}}").render_with_timeout(0.1, {'foo' => lambda { sleep 5 }})
+  end
 end # TemplateTest

@@ -2,6 +2,7 @@
 
 require 'test/unit'
 require 'test/unit/assertions'
+require "timeout"
 begin
   require 'ruby-debug'
 rescue LoadError
