@@ -14,7 +14,7 @@ module Liquid
   #   template.render('user_name' => 'bob')
   #
   class Template
-    attr_accessor :root
+    attr_accessor :root, :resource_limits
     @@file_system = BlankFileSystem.new
 
     class << self
@@ -93,9 +93,9 @@ module Liquid
       when Liquid::Context
         args.shift
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors)
+        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors)
+        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
       else
         raise ArgumentError, "Expect Hash or Liquid::Context as parameter"
       end
