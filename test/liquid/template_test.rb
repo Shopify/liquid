@@ -112,4 +112,12 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal "Liquid error: Memory limits exceeded", t.render()
     assert t.resource_limits[:reached]
   end
+
+  def test_resource_limits_hash_in_template_gets_updated_even_if_no_limits_are_set
+    t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
+    t.render()
+    assert t.resource_limits[:assign_score_current] > 0
+    assert t.resource_limits[:render_score_current] > 0
+    assert t.resource_limits[:render_length_current] > 0
+  end
 end # TemplateTest

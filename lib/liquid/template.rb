@@ -50,6 +50,7 @@ module Liquid
 
     # creates a new <tt>Template</tt> from an array of tokens. Use <tt>Template.parse</tt> instead
     def initialize
+      @resource_limits = {}
     end
 
     # Parse source code.
@@ -88,7 +89,7 @@ module Liquid
     #
     def render(*args)
       return '' if @root.nil?
-      
+
       context = case args.first
       when Liquid::Context
         args.shift
