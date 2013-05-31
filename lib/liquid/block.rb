@@ -108,9 +108,9 @@ module Liquid
 
           token_output = (token.respond_to?(:render) ? token.render(context) : token)
           context.resource_limits[:render_length_current] += (token_output.respond_to?(:length) ? token_output.length : 1)
-          raise Liquid::MemoryError, context.resource_limits if context.resource_limits_reached?
+          raise MemoryError.new("Memory limits exceeded") if context.resource_limits_reached?
           output << token_output
-        rescue Liquid::MemoryError => e
+        rescue MemoryError => e
           raise e
         rescue ::StandardError => e
           output << (context.handle_error(e))

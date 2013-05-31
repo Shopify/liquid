@@ -120,9 +120,11 @@ module Liquid
 
       begin
         # render the nodelist.
-        # for performance reasons we get a array back here. join will make a string out of it
+        # for performance reasons we get an array back here. join will make a string out of it.
         result = @root.render(context)
         result.respond_to?(:join) ? result.join : result
+      rescue Liquid::MemoryError => e
+        context.handle_error(e)
       ensure
         @errors = context.errors
       end

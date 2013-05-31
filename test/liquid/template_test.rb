@@ -72,26 +72,39 @@ class TemplateTest < Test::Unit::TestCase
     @global = nil
   end
 
-  def test_resource_limits
+  def test_resource_limits_render_length
     t = Template.parse("0123456789")
     t.resource_limits = { :render_length_limit => 5 }
-    assert_raises(Liquid::MemoryError) { t.render() }
+    assert_equal "Liquid error: Memory limits exceeded", t.render()
     t.resource_limits = { :render_length_limit => 10 }
     assert_equal "0123456789", t.render()
     assert_not_nil t.resource_limits[:render_length_current]
+  end
 
+  def test_resource_limits_render_score
+    t = Template.parse("{% for a in (1..10) %} {% for a in (1..10) %} foo {% endfor %} {% endfor %}")
+    t.resource_limits = { :render_score_limit => 50 }
+    assert_equal "Liquid error: Memory limits exceeded", t.render()
     t = Template.parse("{% for a in (1..100) %} foo {% endfor %}")
     t.resource_limits = { :render_score_limit => 50 }
-    assert_raises(Liquid::MemoryError) { t.render() }
+    assert_equal "Liquid error: Memory limits exceeded", t.render()
     t.resource_limits = { :render_score_limit => 200 }
     assert_equal (" foo " * 100), t.render()
     assert_not_nil t.resource_limits[:render_score_current]
+  end
 
+  def test_resource_limits_assign_score
     t = Template.parse("{% assign foo = 42 %}{% assign bar = 23 %}")
     t.resource_limits = { :assign_score_limit => 1 }
-    assert_raises(Liquid::MemoryError) { t.render() }
+    assert_equal "Liquid error: Memory limits exceeded", t.render()
     t.resource_limits = { :assign_score_limit => 2 }
     assert_equal "", t.render()
     assert_not_nil t.resource_limits[:assign_score_current]
+  end
+
+  def test_resource_limits_aborts_rendering_after_first_error
+    t = Template.parse("{% for a in (1..100) %} foo1 {% endfor %} bar {% for a in (1..100) %} foo2 {% endfor %}")
+    t.resource_limits = { :render_score_limit => 50 }
+    assert_equal "Liquid error: Memory limits exceeded", t.render()
   end
 end # TemplateTest
