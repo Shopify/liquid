@@ -23,8 +23,10 @@ module Liquid
     end
   
     def render(context)
-       context.scopes.last[@to] = @from.render(context)
-       ''
+      val = @from.render(context)
+      context.scopes.last[@to] = val
+      context.resource_limits[:assign_score_current] += (val.respond_to?(:length) ? val.length : 1)
+      ''
     end 
   
   end  
