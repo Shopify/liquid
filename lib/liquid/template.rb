@@ -14,7 +14,7 @@ module Liquid
   #   template.render('user_name' => 'bob')
   #
   class Template
-    attr_accessor :root
+    attr_accessor :root, :resource_limits
     @@file_system = BlankFileSystem.new
 
     class << self
@@ -50,6 +50,7 @@ module Liquid
 
     # creates a new <tt>Template</tt> from an array of tokens. Use <tt>Template.parse</tt> instead
     def initialize
+      @resource_limits = {}
     end
 
     # Parse source code.
@@ -88,14 +89,14 @@ module Liquid
     #
     def render(*args)
       return '' if @root.nil?
-      
+
       context = case args.first
       when Liquid::Context
         args.shift
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors)
+        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors)
+        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
       else
         raise ArgumentError, "Expect Hash or Liquid::Context as parameter"
       end
@@ -120,9 +121,11 @@ module Liquid
 
       begin
         # render the nodelist.
-        # for performance reasons we get a array back here. join will make a string out of it
+        # for performance reasons we get an array back here. join will make a string out of it.
         result = @root.render(context)
         result.respond_to?(:join) ? result.join : result
+      rescue Liquid::MemoryError => e
+        context.handle_error(e)
       ensure
         @errors = context.errors
       end

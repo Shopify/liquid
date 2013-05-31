@@ -13,17 +13,24 @@ module Liquid
   #
   #   context['bob']  #=> nil  class Context
   class Context
-    attr_reader :scopes, :errors, :registers, :environments
+    attr_reader :scopes, :errors, :registers, :environments, :resource_limits
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false)
-      @environments   = [environments].flatten
-      @scopes         = [(outer_scope || {})]
-      @registers      = registers
-      @errors         = []
-      @rethrow_errors = rethrow_errors
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = {})
+      @environments    = [environments].flatten
+      @scopes          = [(outer_scope || {})]
+      @registers       = registers
+      @errors          = []
+      @rethrow_errors  = rethrow_errors
+      @resource_limits = (resource_limits || {}).merge!({ :render_score_current => 0, :assign_score_current => 0 })
       squash_instance_assigns_with_environments
 
       @interrupts = []
+    end
+
+    def resource_limits_reached?
+      (@resource_limits[:render_length_limit] && @resource_limits[:render_length_current] > @resource_limits[:render_length_limit]) ||
+      (@resource_limits[:render_score_limit]  && @resource_limits[:render_score_current]  > @resource_limits[:render_score_limit] ) ||
+      (@resource_limits[:assign_score_limit]  && @resource_limits[:assign_score_current]  > @resource_limits[:assign_score_limit] )
     end
 
     def strainer

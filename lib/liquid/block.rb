@@ -90,6 +90,9 @@ module Liquid
 
     def render_all(list, context)
       output = []
+      context.resource_limits[:render_length_current] = 0
+      context.resource_limits[:render_score_current] += list.length
+
       list.each do |token|
         # Break out if we have any unhanded interrupts.
         break if context.has_interrupt?
@@ -103,7 +106,15 @@ module Liquid
             break
           end
 
-          output << (token.respond_to?(:render) ? token.render(context) : token)
+          token_output = (token.respond_to?(:render) ? token.render(context) : token)
+          context.resource_limits[:render_length_current] += (token_output.respond_to?(:length) ? token_output.length : 1)
+          if context.resource_limits_reached?
+            context.resource_limits[:reached] = true
+            raise MemoryError.new("Memory limits exceeded")
+          end
+          output << token_output
+        rescue MemoryError => e
+          raise e
         rescue ::StandardError => e
           output << (context.handle_error(e))
         end
