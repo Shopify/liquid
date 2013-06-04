@@ -119,9 +119,9 @@ class StandardFiltersTest < Test::Unit::TestCase
   end
 
   def test_replace
-    assert_equal 'b b b b', @filters.replace("a a a a", 'a', 'b')
-    assert_equal 'b a a a', @filters.replace_first("a a a a", 'a', 'b')
-    assert_template_result 'b a a a', "{{ 'a a a a' | replace_first: 'a', 'b' }}"
+    assert_equal '2 2 2 2', @filters.replace('1 1 1 1', '1', 2)
+    assert_equal '2 1 1 1', @filters.replace_first('1 1 1 1', '1', 2)
+    assert_template_result '2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}"
   end
 
   def test_remove
