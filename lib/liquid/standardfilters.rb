@@ -107,12 +107,12 @@ module Liquid
 
     # Replace occurrences of a string with another
     def replace(input, string, replacement = '')
-      input.to_s.gsub(string, replacement)
+      input.to_s.gsub(string, replacement.to_s)
     end
 
     # Replace the first occurrences of a string with another
     def replace_first(input, string, replacement = '')
-      input.to_s.sub(string, replacement)
+      input.to_s.sub(string, replacement.to_s)
     end
 
     # remove a substring
