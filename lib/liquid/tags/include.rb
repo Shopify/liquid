@@ -80,12 +80,16 @@ module Liquid
         # make read_template_file call backwards-compatible.
         case file_system.method(:read_template_file).arity
         when 1
-          file_system.read_template_file(context[@template_name])
+          file_system.read_template_file(template_file_name(context))
         when 2
-          file_system.read_template_file(context[@template_name], context)
+          file_system.read_template_file(template_file_name(context), context)
         else
           raise ArgumentError, "file_system.read_template_file expects two parameters: (template_name, context)"
         end
+      end
+      
+      def template_file_name(context)
+        context[@template_name]
       end
   end
 
