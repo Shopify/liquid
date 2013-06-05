@@ -48,8 +48,8 @@ module Liquid
         end
 
         if variable.is_a?(Array)
-          variable.collect do |variable|
-            context[@template_name[1..-2]] = variable
+          variable.collect do |var|
+            context[@template_name[1..-2]] = var
             partial.render(context)
           end
         else
