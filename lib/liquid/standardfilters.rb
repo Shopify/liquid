@@ -90,6 +90,12 @@ module Liquid
       end
     end
 
+    # Reverse the elements of an array
+    def reverse(input)
+      ary = [input].flatten
+      ary.reverse
+    end
+
     # map/collect on a given property
     def map(input, property)
       ary = [input].flatten

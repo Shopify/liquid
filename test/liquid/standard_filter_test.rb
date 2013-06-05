@@ -80,6 +80,10 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal [{"a" => 1}, {"a" => 2}, {"a" => 3}, {"a" => 4}], @filters.sort([{"a" => 4}, {"a" => 3}, {"a" => 1}, {"a" => 2}], "a")
   end
 
+  def test_reverse
+    assert_equal [4,3,2,1], @filters.reverse([1,2,3,4])
+  end
+
   def test_map
     assert_equal [1,2,3,4], @filters.map([{"a" => 1}, {"a" => 2}, {"a" => 3}, {"a" => 4}], 'a')
     assert_template_result 'abc', "{{ ary | map:'foo' | map:'bar' }}",
