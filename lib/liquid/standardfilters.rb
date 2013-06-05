@@ -1,4 +1,5 @@
 require 'cgi'
+require 'bigdecimal'
 
 module Liquid
 
@@ -210,41 +211,47 @@ module Liquid
 
     # addition
     def plus(input, operand)
-      to_number(input) + to_number(operand)
+      apply_operation(input, operand, :+)
     end
 
     # subtraction
     def minus(input, operand)
-      to_number(input) - to_number(operand)
+      apply_operation(input, operand, :-)
     end
 
     # multiplication
     def times(input, operand)
-      to_number(input) * to_number(operand)
+      apply_operation(input, operand, :*)
     end
 
     # division
     def divided_by(input, operand)
-      to_number(input) / to_number(operand)
+      apply_operation(input, operand, :/)
     end
 
     def modulo(input, operand)
-      to_number(input) % to_number(operand)
+      apply_operation(input, operand, :%)
     end
 
     private
 
-      def to_number(obj)
-        case obj
-        when Numeric
-          obj
-        when String
-          (obj.strip =~ /^\d+\.\d+$/) ? obj.to_f : obj.to_i
-        else
-          0
-        end
+    def to_number(obj)
+      case obj
+      when Float
+        BigDecimal.new(obj.to_s)
+      when Numeric
+        obj
+      when String
+        (obj.strip =~ /^\d+\.\d+$/) ? BigDecimal.new(obj) : obj.to_i
+      else
+        0
       end
+    end
 
+    def apply_operation(input, operand, operation)
+      result = to_number(input).send(operation, to_number(operand))
+      result.is_a?(BigDecimal) ? result.to_f : result
+    end
   end
 
   Template.register_filter(StandardFilters)
