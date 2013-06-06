@@ -8,6 +8,10 @@ class TemplateContextDrop < Liquid::Drop
   def foo
     'fizzbuzz'
   end
+
+  def baz
+    @context.registers['lulz']
+  end
 end
 
 class TemplateTest < Test::Unit::TestCase
@@ -133,8 +137,10 @@ class TemplateTest < Test::Unit::TestCase
 
   def test_can_use_drop_as_context
     t = Template.new
+    t.registers['lulz'] = 'haha'
     drop = TemplateContextDrop.new
     assert_equal 'fizzbuzz', t.parse('{{foo}}').render(drop)
     assert_equal 'bar', t.parse('{{bar}}').render(drop)
+    assert_equal 'haha', t.parse("{{baz}}").render(drop)
   end
 end # TemplateTest
