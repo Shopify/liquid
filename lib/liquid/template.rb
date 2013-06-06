@@ -97,7 +97,7 @@ module Liquid
         drop = args.shift
         drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors)
+        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
       when nil
         Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
       else
