@@ -19,6 +19,10 @@ module Liquid
       super
     end
 
+    def nodelist
+      @blocks.map(&:attachment).flatten
+    end
+
     def unknown_tag(tag, markup, tokens)
       if ['elsif', 'else'].include?(tag)
         push_block(tag, markup)
