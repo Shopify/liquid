@@ -140,6 +140,7 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_strip_newlines
     assert_template_result 'abc', "{{ source | strip_newlines }}", 'source' => "a\nb\nc"
+    assert_template_result 'abc', "{{ source | strip_newlines }}", 'source' => "a\r\nb\nc"
   end
 
   def test_newlines_to_br
