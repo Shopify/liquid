@@ -281,4 +281,17 @@ HERE
   def test_blank_string_not_iterable
     assert_template_result('', "{% for char in characters %}I WILL NOT BE OUTPUT{% endfor %}", 'characters' => '')
   end
+
+  def test_bad_variable_naming_in_for_loop
+    assert_raise(Liquid::SyntaxError) do
+      Liquid::Template.parse('{% for a/b in x %}{% endfor %}')
+    end
+  end
+
+  def test_spacing_with_variable_naming_in_for_loop
+    expected = '12345'
+    template = '{% for       item   in   items %}{{item}}{% endfor %}'
+    assigns  = {'items' => [1,2,3,4,5]}
+    assert_template_result(expected, template, assigns)
+  end
 end
