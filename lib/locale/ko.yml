@@ -1,0 +1,61 @@
+ko:
+  date:
+    abbr_day_names:
+    - 일
+    - 월
+    - 화
+    - 수
+    - 목
+    - 금
+    - 토
+    abbr_month_names:
+    -
+    - 1월
+    - 2월
+    - 3월
+    - 4월
+    - 5월
+    - 6월
+    - 7월
+    - 8월
+    - 9월
+    - 10월
+    - 11월
+    - 12월
+    day_names:
+    - 일요일
+    - 월요일
+    - 화요일
+    - 수요일
+    - 목요일
+    - 금요일
+    - 토요일
+    formats:
+      default: ! '%Y/%m/%d'
+      long: ! '%Y년 %m월 %d일 (%a)'
+      short: ! '%m/%d'
+    month_names:
+    -
+    - 1월
+    - 2월
+    - 3월
+    - 4월
+    - 5월
+    - 6월
+    - 7월
+    - 8월
+    - 9월
+    - 10월
+    - 11월
+    - 12월
+    order:
+    - :year
+    - :month
+    - :day
+  time:
+    am: 오전
+    formats:
+      default: ! '%Y/%m/%d %H:%M:%S'
+      long: ! '%Y년 %B월 %d일, %H시 %M분 %S초 %Z'
+      short: ! '%y/%m/%d %H:%M'
+    pm: 오후

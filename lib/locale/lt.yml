@@ -1,0 +1,61 @@
+lt:
+  date:
+    abbr_day_names:
+    - Sek
+    - Pir
+    - Ant
+    - Tre
+    - Ket
+    - Pen
+    - Šeš
+    abbr_month_names:
+    -
+    - Sau
+    - Vas
+    - Kov
+    - Bal
+    - Geg
+    - Bir
+    - Lie
+    - Rgp
+    - Rgs
+    - Spa
+    - Lap
+    - Grd
+    day_names:
+    - sekmadienis
+    - pirmadienis
+    - antradienis
+    - trečiadienis
+    - ketvirtadienis
+    - penktadienis
+    - šeštadienis
+    formats:
+      default: ! '%Y-%m-%d'
+      long: ! '%B %d, %Y'
+      short: ! '%b %d'
+    month_names:
+    -
+    - sausio
+    - vasario
+    - kovo
+    - balandžio
+    - gegužės
+    - birželio
+    - liepos
+    - rugpjūčio
+    - rugsėjo
+    - spalio
+    - lapkričio
+    - gruodžio
+    order:
+    - :year
+    - :month
+    - :day
+  time:
+    am: am
+    formats:
+      default: ! '%a, %d %b %Y %H:%M:%S %z'
+      long: ! '%B %d, %Y %H:%M'
+      short: ! '%d %b %H:%M'
+    pm: pm

@@ -1,0 +1,62 @@
+# maintainer: Ivan Stana <stiipa@centrum.sk>
+sk:
+  date:
+    abbr_day_names:
+    - Ne
+    - Po
+    - Ut
+    - St
+    - Št
+    - Pi
+    - So
+    abbr_month_names:
+    -
+    - Jan
+    - Feb
+    - Mar
+    - Apr
+    - Máj
+    - Jún
+    - Júl
+    - Aug
+    - Sep
+    - Okt
+    - Nov
+    - Dec
+    day_names:
+    - Nedeľa
+    - Pondelok
+    - Utorok
+    - Streda
+    - Štvrtok
+    - Piatok
+    - Sobota
+    formats:
+      default: ! '%d.%m.%Y'
+      long: ! '%d. %B %Y'
+      short: ! '%d %b'
+    month_names:
+    -
+    - Január
+    - Február
+    - Marec
+    - Apríl
+    - Máj
+    - Jún
+    - Júl
+    - August
+    - September
+    - Október
+    - November
+    - December
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: dopoludnia
+    formats:
+      default: ! '%a %d. %B %Y %H:%M %z'
+      long: ! '%A %d. %B %Y %H:%M'
+      short: ! '%d.%m. %H:%M'
+    pm: popoludní

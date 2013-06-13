@@ -1,0 +1,61 @@
+cy:
+  date:
+    abbr_day_names:
+    - Sul
+    - Llun
+    - Maw
+    - Mer
+    - Iau
+    - Gwe
+    - Sad
+    abbr_month_names:
+    -
+    - Ion
+    - Chw
+    - Maw
+    - Ebr
+    - Mai
+    - Meh
+    - Gor
+    - Awst
+    - Med
+    - Hyd
+    - Tach
+    - Rha
+    day_names:
+    - Dydd Sul
+    - Dydd Llun
+    - Dydd Mawrth
+    - Dydd Mercher
+    - Dydd Iau
+    - Dydd Gwener
+    - Dydd Sadwrn
+    formats:
+      default: ! '%d-%m-%Y'
+      long: ! '%B %d, %Y'
+      short: ! '%b %d'
+    month_names:
+    -
+    - mis Ionawr
+    - mis Chwefror
+    - mis Mawrth
+    - mis Ebrill
+    - mis Mai
+    - mis Mehefin
+    - mis Gorffennaf
+    - mis Awst
+    - mis Medi
+    - mis Hydref
+    - mis Tachwedd
+    - mis Rhagfyr
+    order:
+    - :year
+    - :month
+    - :day
+  time:
+    am: yb
+    formats:
+      default: ! '%a, %d %b %Y %H:%M:%S %z'
+      long: ! '%B %d, %Y %H:%M'
+      short: ! '%d %b %H:%M'
+    pm: yh

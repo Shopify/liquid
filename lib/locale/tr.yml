@@ -1,0 +1,61 @@
+tr:
+  date:
+    abbr_day_names:
+    - Pzr
+    - Pzt
+    - Sal
+    - Çrş
+    - Prş
+    - Cum
+    - Cts
+    abbr_month_names:
+    -
+    - Oca
+    - Şub
+    - Mar
+    - Nis
+    - May
+    - Haz
+    - Tem
+    - Ağu
+    - Eyl
+    - Eki
+    - Kas
+    - Ara
+    day_names:
+    - Pazar
+    - Pazartesi
+    - Salı
+    - Çarşamba
+    - Perşembe
+    - Cuma
+    - Cumartesi
+    formats:
+      default: ! '%d.%m.%Y'
+      long: ! '%e %B %Y, %A'
+      short: ! '%e %b'
+    month_names:
+    -
+    - Ocak
+    - Şubat
+    - Mart
+    - Nisan
+    - Mayıs
+    - Haziran
+    - Temmuz
+    - Ağustos
+    - Eylül
+    - Ekim
+    - Kasım
+    - Aralık
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: öğleden önce
+    formats:
+      default: ! '%a %d.%b.%y %H:%M'
+      long: ! '%e %B %Y, %A, %H:%M'
+      short: ! '%e %B, %H:%M'
+    pm: öğleden sonra

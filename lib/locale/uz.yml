@@ -1,0 +1,61 @@
+uz:
+  date:
+    abbr_day_names:
+    - Ya
+    - Du
+    - Sh
+    - Ch
+    - Pa
+    - Ju
+    - Sh
+    abbr_month_names:
+    -
+    - yan.
+    - fev.
+    - mart
+    - apr.
+    - may
+    - iyun
+    - iyul
+    - avg.
+    - sen.
+    - okt.
+    - noy.
+    - dek.
+    day_names:
+    - yakshanba
+    - dushanba
+    - seshanbe
+    - chorshanba
+    - payshanba
+    - juma
+    - shanba
+    formats:
+      default: ! '%d.%m.%Y'
+      long: ! '%d %B %Y'
+      short: ! '%d %b'
+    month_names:
+    -
+    - yanvar
+    - fevral
+    - mart
+    - aprel
+    - may
+    - iyun
+    - iyul
+    - avgust
+    - sentyabr
+    - oktyabr
+    - noyabr
+    - dekabr
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: ertalab
+    formats:
+      default: ! '%a, %d %b %Y, %H:%M:%S %z'
+      long: ! '%d %B %Y, %H:%M'
+      short: ! '%d %b, %H:%M'
+    pm: kechasi

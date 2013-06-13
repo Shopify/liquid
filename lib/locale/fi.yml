@@ -1,0 +1,61 @@
+fi:
+  date:
+    abbr_day_names:
+    - su
+    - ma
+    - ti
+    - ke
+    - to
+    - pe
+    - la
+    abbr_month_names:
+    -
+    - tammi
+    - helmi
+    - maalis
+    - huhti
+    - touko
+    - kesä
+    - heinä
+    - elo
+    - syys
+    - loka
+    - marras
+    - joulu
+    day_names:
+    - sunnuntai
+    - maanantai
+    - tiistai
+    - keskiviikko
+    - torstai
+    - perjantai
+    - lauantai
+    formats:
+      default: ! '%e. %Bta %Y'
+      long: ! '%A %e. %Bta %Y'
+      short: ! '%e.%m.%Y'
+    month_names:
+    -
+    - tammikuu
+    - helmikuu
+    - maaliskuu
+    - huhtikuu
+    - toukokuu
+    - kesäkuu
+    - heinäkuu
+    - elokuu
+    - syyskuu
+    - lokakuu
+    - marraskuu
+    - joulukuu
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: aamupäivä
+    formats:
+      default: ! '%A %e. %Bta %Y %H:%M:%S %z'
+      long: ! '%e. %Bta %Y %H.%M'
+      short: ! '%e.%m. %H.%M'
+    pm: iltapäivä

@@ -62,6 +62,9 @@ require 'liquid/standardfilters'
 require 'liquid/condition'
 require 'liquid/module_ex'
 require 'liquid/utils'
+require 'rubygems' if RUBY_VERSION < '1.9'
+
+autoload :I18n, "liquid/i18n"
 
 # Load all the tags of the standard library
 #

@@ -1,0 +1,61 @@
+hr:
+  date:
+    abbr_day_names:
+    - Ned
+    - Pon
+    - Uto
+    - Sri
+    - Čet
+    - Pet
+    - Sub
+    abbr_month_names:
+    -
+    - Sij
+    - Vel
+    - Ožu
+    - Tra
+    - Svi
+    - Lip
+    - Srp
+    - Kol
+    - Ruj
+    - Lis
+    - Stu
+    - Pro
+    day_names:
+    - Nedjelja
+    - Ponedjeljak
+    - Utorak
+    - Srijeda
+    - Četvrtak
+    - Petak
+    - Subota
+    formats:
+      default: ! '%d.%m.%Y.'
+      long: ! '%B %e, %Y'
+      short: ! '%e %b'
+    month_names:
+    -
+    - Siječanj
+    - Veljača
+    - Ožujak
+    - Travanj
+    - Svibanj
+    - Lipanj
+    - Srpanj
+    - Kolovoz
+    - Rujan
+    - Listopad
+    - Studeni
+    - Prosinac
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: AM
+    formats:
+      default: ! '%a %b %d %H:%M:%S %Z %Y'
+      long: ! '%B %d, %Y %H:%M'
+      short: ! '%d %b %H:%M'
+    pm: PM

@@ -1,0 +1,61 @@
+eu:
+  date:
+    abbr_day_names:
+    - Igan
+    - Astel
+    - Astear
+    - Asteaz
+    - Oste
+    - Osti
+    - Lar
+    abbr_month_names:
+    -
+    - Urt
+    - Ots
+    - Mar
+    - Api
+    - Mai
+    - Eka
+    - Uzt
+    - Abu
+    - Ira
+    - Urr
+    - Aza
+    - Aben
+    day_names:
+    - Igandea
+    - Astelehena
+    - Asteartea
+    - Asteazkena
+    - Osteguna
+    - Ostirala
+    - Larunbata
+    formats:
+      default: ! '%Y/%m/%e'
+      long: ! '%Y(e)ko %Bk %e'
+      short: ! '%b %e'
+    month_names:
+    -
+    - Urtarrila
+    - Otsaila
+    - Martxoa
+    - Apirila
+    - Maiatza
+    - Ekaina
+    - Uztaila
+    - Abuztua
+    - Iraila
+    - Urria
+    - Azaroa
+    - Abendua
+    order:
+    - :year
+    - :month
+    - :day
+  time:
+    am: am
+    formats:
+      default: ! '%A, %Y(e)ko %Bren %e %H:%M:%S %z'
+      long: ! '%Y(e)ko %Bren %e,  %H:%M'
+      short: ! '%b %e, %H:%M'
+    pm: pm

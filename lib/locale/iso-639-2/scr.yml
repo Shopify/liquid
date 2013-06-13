@@ -1,0 +1,186 @@
+scr:
+  date:
+    abbr_day_names:
+    - Ned
+    - Pon
+    - Uto
+    - Sre
+    - Čet
+    - Pet
+    - Sub
+    abbr_month_names:
+    - 
+    - Jan
+    - Feb
+    - Mar
+    - Apr
+    - Maj
+    - Jun
+    - Jul
+    - Avg
+    - Sep
+    - Okt
+    - Nov
+    - Dec
+    day_names:
+    - Nedelja
+    - Ponedeljak
+    - Utorak
+    - Sreda
+    - Četvrtak
+    - Petak
+    - Subota
+    formats:
+      default: ! '%d/%m/%Y'
+      long: ! '%B %e, %Y'
+      short: ! '%e %b'
+    month_names:
+    - 
+    - Januar
+    - Februar
+    - Mart
+    - April
+    - Maj
+    - Jun
+    - Jul
+    - Avgust
+    - Septembar
+    - Oktobar
+    - Novembar
+    - Decembar
+    order:
+    - :day
+    - :month
+    - :year
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        one: oko %{count} sat
+        few: oko %{count} sata
+        many: oko %{count} sati
+        other: oko %{count} sati
+      about_x_months:
+        one: oko %{count} mesec
+        few: oko %{count} meseca
+        many: oko %{count} meseci
+        other: oko %{count} meseci
+      about_x_years:
+        one: oko %{count} godine
+        few: oko %{count} godine
+        many: oko %{count} godine
+        other: oko %{count} godine
+      half_a_minute: pola minute
+      less_than_x_minutes:
+        one: manje od %{count} minut
+        few: manje od %{count} minuta
+        many: manje od %{count} minuta
+        other: manje od %{count} minuta
+        zero: manje od minuta
+      less_than_x_seconds:
+        few: manje od %{count} sekunde
+        one: manje od %{count} sekund
+        many: manje od %{count} sekundi
+        other: manje od %{count} sekundi
+        zero: manje od %{count} sekunde
+      over_x_years:
+        one: preko %{count} godine
+        few: preko %{count} godine
+        many: preko %{count} godine
+        other: preko %{count} godine
+      x_days:
+        one: ! '%{count} dan'
+        few: ! '%{count} dana'
+        many: ! '%{count} dana'
+        other: ! '%{count} dana'
+      x_minutes:
+        one: ! '%{count} minut'
+        few: ! '%{count} minuta'
+        many: ! '%{count} minuta'
+        other: ! '%{count} minuta'
+      x_months:
+        one: ! '%{count} mesec'
+        few: ! '%{count} meseca'
+        many: ! '%{count} meseci'
+        other: ! '%{count} meseci'
+      x_seconds:
+        one: ! '%{count} sekunda'
+        few: ! '%{count} sekunde'
+        many: ! '%{count} sekundi'
+        other: ! '%{count} sekundi'
+  errors: &errors
+    format: ! '%{attribute} %{message}'
+    messages:
+      accepted: mora biti prihvaćen
+      blank: mora biti dat
+      confirmation: se ne slaže sa svojom potvrdom
+      empty: mora biti dat
+      equal_to: mora biti jednako %{count}
+      even: mora biti parno
+      exclusion: nije dostupno
+      greater_than: mora biti veće od %{count}
+      greater_than_or_equal_to: mora biti veće ili jednako %{count}
+      inclusion: nije u listi
+      invalid: nije ispravan
+      less_than: mora biti manje od %{count}
+      less_than_or_equal_to: mora biti manje ili jednako %{count}
+      not_a_number: nije broj
+      odd: mora biti neparno
+      taken: je zauzeto
+      too_long: je predugačak (ne više od %{count} karaktera)
+      too_short: je prekratak (ne manje od %{count} karaktera)
+      wrong_length: nije odgovarajuće dužine (mora imati %{count} karaktera)
+    template:
+      body: ! 'Molim Vas da proverite sledeća polja:'
+      header:
+        one: ! 'Nisam uspeo sačuvati %{model}: %{count} greška.'
+        few: ! 'Nisam uspeo sačuvati %{model}: %{count} greške.'
+        many: ! 'Nisam uspeo sačuvati %{model}: %{count} greški.'
+        other: ! 'Nisam uspeo sačuvati %{model}: %{count} greški.'
+  number:
+    currency:
+      format:
+        delimiter: ! ','
+        format: ! '%n %u'
+        precision: 2
+        separator: .
+        significant: false
+        strip_insignificant_zeros: false
+        unit: DIN
+    format:
+      delimiter: .
+      precision: 3
+      separator: ! ','
+      significant: false
+      strip_insignificant_zeros: false
+    human:
+      decimal_units:
+        format: ! '%n %u'
+        units:
+          unit: ''
+      format:
+        delimiter: ''
+        precision: 3
+        significant: true
+        strip_insignificant_zeros: true
+      storage_units:
+        format: ! '%n %u'
+    percentage:
+      format:
+        delimiter: ''
+    precision:
+      format:
+        delimiter: ''
+  time:
+    am: AM
+    formats:
+      default: ! '%a %b %d %H:%M:%S %Z %Y'
+      long: ! '%B %d, %Y %H:%M'
+      short: ! '%d %b %H:%M'
+    pm: PM
+  # remove these aliases after 'activemodel' and 'activerecord' namespaces are removed from Rails repository
+  activemodel:
+    errors:
+      <<: *errors
+  activerecord:
+    errors:
+      <<: *errors

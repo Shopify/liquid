@@ -1,0 +1,61 @@
+rm:
+  date:
+    abbr_day_names:
+    - du
+    - gli
+    - ma
+    - me
+    - gie
+    - ve
+    - so
+    abbr_month_names:
+    -
+    - schan
+    - favr
+    - mars
+    - avr
+    - matg
+    - zercl
+    - fan
+    - avust
+    - sett
+    - oct
+    - nov
+    - dec
+    day_names:
+    - dumengia
+    - glindesdi
+    - mardi
+    - mesemna
+    - gievgia
+    - venderdi
+    - sonda
+    formats:
+      default: ! '%d.%m.%Y'
+      long: ! '%e. %B %Y'
+      short: ! '%e. %b'
+    month_names:
+    -
+    - schaner
+    - favrer
+    - mars
+    - avrigl
+    - matg
+    - zercladur
+    - fanadur
+    - avust
+    - settember
+    - october
+    - november
+    - december
+    order:
+    - :day
+    - :month
+    - :year
+  time:
+    am: avantmezdi
+    formats:
+      default: ! '%A, %d. %B %Y, %H:%M Uhr'
+      long: ! '%A, %d. %B %Y, %H:%M Uhr'
+      short: ! '%d. %B, %H:%M Uhr'
+    pm: suentermezdi
