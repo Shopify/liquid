@@ -9,7 +9,16 @@ class RawTagTest < Test::Unit::TestCase
   end
 
   def test_output_in_raw
-    assert_template_result '{{ test }}',
-                           '{% raw %}{{ test }}{% endraw %}'
+    assert_template_result '{{ test }}', '{% raw %}{{ test }}{% endraw %}'
+  end
+
+  def test_open_tag_in_raw
+    assert_template_result ' Foobar {% invalid ', '{% raw %} Foobar {% invalid {% endraw %}'
+    assert_template_result ' Foobar invalid %} ', '{% raw %} Foobar invalid %} {% endraw %}'
+    assert_template_result ' Foobar {{ invalid ', '{% raw %} Foobar {{ invalid {% endraw %}'
+    assert_template_result ' Foobar invalid }} ', '{% raw %} Foobar invalid }} {% endraw %}'
+    assert_template_result ' Foobar {% invalid {% {% endraw ', '{% raw %} Foobar {% invalid {% {% endraw {% endraw %}'
+    assert_template_result ' Foobar {% {% {% ', '{% raw %} Foobar {% {% {% {% endraw %}'
+    assert_template_result ' test {% raw %} {% endraw %}', '{% raw %} test {% raw %} {% {% endraw %}endraw %}'
   end
 end
