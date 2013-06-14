@@ -1,8 +1,12 @@
 # encoding: utf-8
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
+require "liquid/version"
 
 Gem::Specification.new do |s|
   s.name        = "liquid"
-  s.version     = "2.5.0"
+  s.version     = Liquid::VERSION
   s.platform    = Gem::Platform::RUBY
   s.summary     = "A secure, non-evaling end user template engine with aesthetic markup."
   s.authors     = ["Tobias Luetke"]
