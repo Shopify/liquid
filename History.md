@@ -1,12 +1,20 @@
 # Liquid Version History
 
-## 2.6.0 / Master branch
+## 2.6.0 / Master branch (not yet released)
 
-* Add reverse filter
+* ...
+* Bugfix for #150: 'for' parsing bug [Peter Schröder, phoet]
+* Bugfix for #126: Strip CRLF in strip_newline [Peter Schröder, phoet]
+* Allow a Liquid::Drop to be passed into Template#render [Daniel Huckstep, darkhelmet]
+* Resource limits [Florian Weingarten, fw42]
+* Add reverse filter [Jay Strybis, unreal]
 * Add utf-8 support
-* Cache for partials
-* Avoid warnings in Ruby 1.9.3
-* Use of BigDecimal on filters to have better precision
+* Use array instead of Hash to keep the registered filters [Tasos Stathopoulos, astathopoulos]
+* Cache tokenized partial templates [Tom Burns, boourns]
+* Avoid warnings in Ruby 1.9.3 [Marcus Stollsteimer, stomar]
+* Better documentation for 'include' tag (closes #163) [Peter Schröder, phoet]
+* Use of BigDecimal on filters to have better precision (closes #155) [Arthur Nogueira Neves, arthurnn]
+
 
 ## 2.5.0 / 2013-03-06
 
@@ -15,6 +23,7 @@
 * Added break and continue statements
 * Fix filter parser for args without space separators
 * Add support for filter keyword arguments
+
 
 ## 2.4.0 / 2012-08-03
 
