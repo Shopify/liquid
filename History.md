@@ -1,5 +1,13 @@
 # Liquid Version History
 
+## 2.6.0 / Master branch
+
+* Add reverse filter
+* Add utf-8 support
+* Cache for partials
+* Avoid warnings in Ruby 1.9.3
+* Use of BigDecimal on filters to have better precision
+
 ## 2.5.0 / 2013-03-06
 
 * Prevent Object methods from being called on drops
