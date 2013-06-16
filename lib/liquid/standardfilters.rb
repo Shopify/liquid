@@ -180,6 +180,10 @@ module Liquid
         input = Time.at(input.to_i)
       end
 
+      if input == 'now'
+        input = Time.now()
+      end
+
       date = input.is_a?(String) ? Time.parse(input) : input
 
       if date.respond_to?(:strftime)
