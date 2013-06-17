@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'test_helper'
 
 class Filters
@@ -37,6 +39,7 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal '1234567890', @filters.truncate('1234567890', 20)
     assert_equal '...', @filters.truncate('1234567890', 0)
     assert_equal '1234567890', @filters.truncate('1234567890')
+    assert_equal "测试...", @filters.truncate("测试测试测试测试", 5)
   end
 
   def test_strip
@@ -61,6 +64,7 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal 'one two...', @filters.truncatewords('one two three', 2)
     assert_equal 'one two three', @filters.truncatewords('one two three')
     assert_equal 'Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221;...', @filters.truncatewords('Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221; x 16&#8221; x 10.5&#8221; high) with cover.', 15)
+    assert_equal "测试测试测试测试", @filters.truncatewords('测试测试测试测试', 5)
   end
 
   def test_strip_html

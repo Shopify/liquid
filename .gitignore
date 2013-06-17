@@ -4,3 +4,4 @@
 pkg
 *.rbc
 .rvmrc
+.ruby-version
