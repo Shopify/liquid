@@ -65,14 +65,13 @@ module Liquid
     end
 
     def strip_html(input)
-      input.to_s.gsub(/<script.*?<\/script>/, '').gsub(/<!--.*?-->/, '').gsub(/<.*?>/, '')
+      input.to_s.gsub(/<script.*?<\/script>/m, '').gsub(/<!--.*?-->/m, '').gsub(/<.*?>/m, '')
     end
 
     # Remove all newlines from the string
     def strip_newlines(input)
       input.to_s.gsub(/\r?\n/, '')
     end
-
 
     # Join elements of the array with certain character between them
     def join(input, glue = ' ')
