@@ -3,6 +3,7 @@
 ## 2.6.0 / Master branch (not yet released)
 
 * ...
+* Bugfix for #106: fix example servlet [gnowoel]
 * Bugfix for #97: strip_html filter supports multi-line tags [Jo Liss, joliss]
 * Bugfix for #114: strip_html filter supports style tags [James Allardice, jamesallardice]
 * Bugfix for #117: 'now' support for date filter in Ruby 1.9 [Notre Dame Webgroup, ndwebgroup]
