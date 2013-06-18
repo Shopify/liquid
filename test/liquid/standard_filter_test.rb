@@ -72,6 +72,7 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal 'test', @filters.strip_html("<div id='test'>test</div>")
     assert_equal '', @filters.strip_html("<script type='text/javascript'>document.write('some stuff');</script>")
     assert_equal 'test', @filters.strip_html("<div\nclass='multiline'>test</div>")
+    assert_equal 'test', @filters.strip_html("<!-- foo bar \n test -->test")
     assert_equal '', @filters.strip_html(nil)
   end
 
