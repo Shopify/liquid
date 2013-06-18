@@ -3,6 +3,9 @@
 ## 2.6.0 / Master branch (not yet released)
 
 * ...
+* Bugfix for #97: strip_html filter supports multi-line tags [Jo Liss, joliss]
+* Bugfix for #114: strip_html filter supports style tags [James Allardice, jamesallardice]
+* Bugfix for #117: 'now' support for date filter in Ruby 1.9 [Notre Dame Webgroup, ndwebgroup]
 * Bugfix for #166: truncate filter on UTF-8 strings with Ruby 1.8 [Florian Weingarten, fw42]
 * Bugfix for #204: 'raw' parsing bug [Florian Weingarten, fw42]
 * Bugfix for #150: 'for' parsing bug [Peter Schröder, phoet]
