@@ -3,6 +3,7 @@
 ## 2.6.0 / Master branch (not yet released)
 
 * ...
+* Bugfix for #166: truncate filter on UTF-8 strings with Ruby 1.8 [Florian Weingarten, fw42]
 * Bugfix for #204: 'raw' parsing bug [Florian Weingarten, fw42]
 * Bugfix for #150: 'for' parsing bug [Peter Schröder, phoet]
 * Bugfix for #126: Strip CRLF in strip_newline [Peter Schröder, phoet]
