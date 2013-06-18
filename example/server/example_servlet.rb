@@ -23,11 +23,7 @@ class Servlet < LiquidServlet
   end
   
   def products    
-    { 'products' => products_list, 'section' => 'Snowboards', 'cool_products' => true}    
-  end
-
-  def description
-    "List of Products ~ This is a list of products with price and description."
+    { 'products' => products_list, 'description' => description, 'section' => 'Snowboards', 'cool_products' => true}    
   end
 
   private
@@ -36,6 +32,10 @@ class Servlet < LiquidServlet
     [{'name' => 'Arbor Draft', 'price' => 39900, 'description' => 'the *arbor draft* is a excellent product' },
     {'name' => 'Arbor Element', 'price' => 40000, 'description' => 'the *arbor element* rocks for freestyling'},
     {'name' => 'Arbor Diamond', 'price' => 59900, 'description' => 'the *arbor diamond* is a made up product because im obsessed with arbor and have no creativity'}]
+  end
+  
+  def description
+    "List of Products ~ This is a list of products with price and description."
   end
   
 end
