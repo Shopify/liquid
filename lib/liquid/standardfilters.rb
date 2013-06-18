@@ -180,7 +180,16 @@ module Liquid
         input = Time.at(input.to_i)
       end
 
-      date = input.is_a?(String) ? Time.parse(input) : input
+      date = if input.is_a?(String)
+        case input.downcase
+        when 'now', 'today'
+          Time.now
+        else
+          Time.parse(input)
+        end
+      else
+        input
+      end
 
       if date.respond_to?(:strftime)
         date.strftime(format.to_s)
