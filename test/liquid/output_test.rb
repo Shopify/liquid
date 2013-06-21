@@ -113,4 +113,17 @@ class OutputTest < Test::Unit::TestCase
 
     assert_equal expected, Template.parse(text).render(@assigns, :filters => [FunnyFilter])
   end
+
+  def test_trim_mode
+    text = %[
+      abc:
+      {{- best_cars -}}
+      :def
+    ].gsub(/^      /, '')
+    expected = %[
+      abc:bmw:def
+    ].gsub(/^      /, '')
+    
+    assert_equal expected, Template.parse(text).render(@assigns)
+  end
 end # OutputTest
