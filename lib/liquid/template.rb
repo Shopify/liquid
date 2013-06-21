@@ -144,7 +144,11 @@ module Liquid
     def tokenize(source)
       source = source.source if source.respond_to?(:source)
       return [] if source.to_s.empty?
-      tokens = source.split(TemplateParser)
+      tokens = source.gsub(/[ \t]*\{\%-/, '{%').
+                      gsub(/-\%\}[ \t]*\r?\n?/, '%}').
+                      gsub(/\r?\n?[ \t]*\{\{-/, '{{').
+                      gsub(/-\}\}[ \t]*\r?\n?[ \t]*/, '}}').
+                      split(TemplateParser)
 
       # removes the rogue empty element at the beginning of the array
       tokens.shift if tokens[0] and tokens[0].empty?
