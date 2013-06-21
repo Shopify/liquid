@@ -29,8 +29,8 @@ module Liquid
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
   VariableSegment             = /[\w\-]/
   VariableStart               = /(?:\r?\n?[ \t]*\{\{-|\{\{)/
-  VariableEnd                 = /(?:-\}\}\r?\n?[ \t]*|\}\})/
-  VariableIncompleteEnd       = /(?:-\}\}?\r?\n?[ \t]*|\}\}?)/
+  VariableEnd                 = /(?:-\}\}[ \t]*\r?\n?[ \t]*|\}\})/
+  VariableIncompleteEnd       = /(?:-\}\}?[ \t]*\r?\n?[ \t]*|\}\}?)/
   QuotedString                = /"[^"]*"|'[^']*'/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
   StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s|:,]+/
