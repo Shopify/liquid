@@ -22,5 +22,5 @@
 * If it makes sense, add tests for your code and run a performance benchmark
 * Make sure all tests pass
 * Create a pull request
-* In the description, ping one of [@boourns](https://github.com/boourns), [@fw42](https://github.com/fw42), [@camilo](https://github.com/camilo), or [@dylanahsmith](https://github.com/dylanahsmith) and ask for a code review.
+* In the description, ping one of [@boourns](https://github.com/boourns), [@fw42](https://github.com/fw42), [@camilo](https://github.com/camilo), [@dylanahsmith](https://github.com/dylanahsmith), or [@arthurnn](https://github.com/arthurnn) and ask for a code review.
 
