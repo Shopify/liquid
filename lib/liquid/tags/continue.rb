@@ -8,7 +8,7 @@ module Liquid
   #        {% continue %}
   #      {% endif %}
   #    {% endfor %}
-  # 
+  #
   class Continue < Tag
 
     def interrupt

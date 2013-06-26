@@ -8,8 +8,8 @@ module Liquid
   #        {% break %}
   #      {% endif %}
   #    {% endfor %}
-  # 
-  class Break < Tag 
+  #
+  class Break < Tag
 
     def interrupt
       BreakInterrupt.new
