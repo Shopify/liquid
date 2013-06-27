@@ -45,6 +45,7 @@ module Liquid
   #
   class For < Block
     Syntax = /\A(\w+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
+    NonWhitespace = /[^\s]/m
 
     def initialize(tag_name, markup, tokens)
       if markup =~ Syntax
@@ -125,6 +126,35 @@ module Liquid
         end
       end
       result
+    end
+
+    def has_output?(nodes)
+      return false if nodes.nil?
+      nodes.each do |node|
+        if node.is_a?(String) && !NonWhitespace.match(node).nil?
+          return true
+        elsif node.is_a?(Liquid::Variable)
+          return true
+        elsif !node.is_a?(Liquid::Capture) && !node.is_a?(Liquid::Include) && node.respond_to?(:nodelist)
+          if has_output?(node.nodelist)
+            return true
+          end
+        end
+      end
+      return false
+    end
+
+    def strip_whitespace_nodes(nodes)
+      return false if nodes.nil?
+      nodes.reject! { |node| node.is_a?(String) and NonWhitespace.match(node).nil? }
+      nodes.each { | node| node.respond_to?(:nodelist) and strip_whitespace_nodes(node.nodelist) }
+    end
+
+    def parse(tokens)
+      super
+      if !has_output?(@nodelist)
+        strip_whitespace_nodes(@nodelist)
+      end
     end
 
     private
