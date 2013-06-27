@@ -2,7 +2,7 @@
 # This library is free software. It may be used, redistributed and/or modified
 # under the same terms as Ruby itself
 #
-# This extension is usesd in order to expose the object of the implementing class
+# This extension is used in order to expose the object of the implementing class
 # to liquid as it were a Drop. It also limits the liquid-callable methods of the instance
 # to the allowed method passed with the liquid_methods call
 # Example:

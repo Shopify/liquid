@@ -5,7 +5,7 @@ module Liquid
       parse(tokens)
     end
 
-    # There isn't a real delimter
+    # There isn't a real delimiter
     def block_delimiter
       []
     end

@@ -11,12 +11,12 @@ module Liquid
       input.respond_to?(:size) ? input.size : 0
     end
 
-    # convert a input string to DOWNCASE
+    # convert an input string to DOWNCASE
     def downcase(input)
       input.to_s.downcase
     end
 
-    # convert a input string to UPCASE
+    # convert an input string to UPCASE
     def upcase(input)
       input.to_s.upcase
     end
