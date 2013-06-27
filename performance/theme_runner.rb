@@ -1,10 +1,10 @@
 # This profiler run simulates Shopify.
 # We are looking in the tests directory for liquid files and render them within the designated layout file.
-# We will also export a substantial database to liquid which the templates can render values of. 
+# We will also export a substantial database to liquid which the templates can render values of.
 # All this is to make the benchmark as non syntetic as possible. All templates and tests are lifted from
-# direct real-world usage and the profiler measures code that looks very similar to the way it looks in 
-# Shopify which is likely the biggest user of liquid in the world which something to the tune of several 
-# million Template#render calls a day. 
+# direct real-world usage and the profiler measures code that looks very similar to the way it looks in
+# Shopify which is likely the biggest user of liquid in the world which something to the tune of several
+# million Template#render calls a day.
 
 require 'rubygems'
 require 'active_support'
@@ -26,8 +26,8 @@ class ThemeRunner
     end
   end
 
-  # Load all templates into memory, do this now so that 
-  # we don't profile IO. 
+  # Load all templates into memory, do this now so that
+  # we don't profile IO.
   def initialize
     @tests = Dir[File.dirname(__FILE__) + '/tests/**/*.liquid'].collect do |test|
       next if File.basename(test) == 'theme.liquid'
@@ -36,7 +36,7 @@ class ThemeRunner
 
       [File.read(test), (File.file?(theme_path) ? File.read(theme_path) : nil), test]
     end.compact
-  end  
+  end
 
   def compile
     # Dup assigns because will make some changes to them
@@ -59,7 +59,7 @@ class ThemeRunner
       # Compute page_tempalte outside of profiler run, uninteresting to profiler
       page_template = File.basename(template_name, File.extname(template_name))
       compile_and_render(liquid, layout, assigns, page_template, template_name)
-       
+
     end
   end
 
@@ -87,11 +87,11 @@ class ThemeRunner
       RubyProf.resume
       html = compile_and_render(liquid, layout, assigns, page_template, template_name)
       RubyProf.pause
-      
+
 
       # return the result and the MD5 of the content, this can be used to detect regressions between liquid version
       $stdout.puts "* rendered template %s, content: %s" % [template_name, Digest::MD5.hexdigest(html)]
- 
+
       # Uncomment to dump html files to /tmp so that you can inspect for errors
       # File.open("/tmp/#{File.basename(template_name)}.html", "w+") { |fp| fp <<html}
     end
@@ -108,11 +108,11 @@ class ThemeRunner
     content_for_layout = tmpl.parse(template).render(assigns)
 
     if layout
-      assigns['content_for_layout'] = content_for_layout      
+      assigns['content_for_layout'] = content_for_layout
       tmpl.parse(layout).render(assigns)
     else
       content_for_layout
-    end    
+    end
   end
 end
 

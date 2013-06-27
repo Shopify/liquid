@@ -187,16 +187,16 @@ HERE
     expected = "1234"
     assert_template_result(expected,markup,assigns)
 
-    # tests to ensure it only breaks out of the local for loop 
+    # tests to ensure it only breaks out of the local for loop
     # and not all of them.
     assigns = {'array' => [[1,2],[3,4],[5,6]] }
-    markup = '{% for item in array %}' + 
-               '{% for i in item %}' + 
-                 '{% if i == 1 %}' + 
-                   '{% break %}' + 
-                 '{% endif %}' + 
-                 '{{ i }}' + 
-               '{% endfor %}' + 
+    markup = '{% for item in array %}' +
+               '{% for i in item %}' +
+                 '{% if i == 1 %}' +
+                   '{% break %}' +
+                 '{% endif %}' +
+                 '{{ i }}' +
+               '{% endfor %}' +
              '{% endfor %}'
     expected = '3456'
     assert_template_result(expected, markup, assigns)
@@ -213,15 +213,15 @@ HERE
 
     markup = '{% for i in array.items %}{% continue %}{% endfor %}'
     expected = ""
-    assert_template_result(expected,markup,assigns) 
+    assert_template_result(expected,markup,assigns)
 
     markup = '{% for i in array.items %}{{ i }}{% continue %}{% endfor %}'
     expected = "12345"
-    assert_template_result(expected,markup,assigns) 
+    assert_template_result(expected,markup,assigns)
 
     markup = '{% for i in array.items %}{% continue %}{{ i }}{% endfor %}'
     expected = ""
-    assert_template_result(expected,markup,assigns) 
+    assert_template_result(expected,markup,assigns)
 
     markup = '{% for i in array.items %}{% if i > 3 %}{% continue %}{% endif %}{{ i }}{% endfor %}'
     expected = "123"
@@ -233,13 +233,13 @@ HERE
 
     # tests to ensure it only continues the local for loop and not all of them.
     assigns = {'array' => [[1,2],[3,4],[5,6]] }
-    markup = '{% for item in array %}' + 
-               '{% for i in item %}' + 
-                 '{% if i == 1 %}' + 
-                   '{% continue %}' + 
-                 '{% endif %}' + 
-                 '{{ i }}' + 
-               '{% endfor %}' + 
+    markup = '{% for item in array %}' +
+               '{% for i in item %}' +
+                 '{% if i == 1 %}' +
+                   '{% continue %}' +
+                 '{% endif %}' +
+                 '{{ i }}' +
+               '{% endfor %}' +
              '{% endfor %}'
     expected = '23456'
     assert_template_result(expected, markup, assigns)
@@ -253,28 +253,28 @@ HERE
 
   def test_for_tag_string
     # ruby 1.8.7 "String".each => Enumerator with single "String" element.
-    # ruby 1.9.3 no longer supports .each on String though we mimic 
+    # ruby 1.9.3 no longer supports .each on String though we mimic
     # the functionality for backwards compatibility
 
-    assert_template_result('test string', 
-                '{%for val in string%}{{val}}{%endfor%}', 
+    assert_template_result('test string',
+                '{%for val in string%}{{val}}{%endfor%}',
                 'string' => "test string")
 
-    assert_template_result('test string', 
-                '{%for val in string limit:1%}{{val}}{%endfor%}', 
+    assert_template_result('test string',
+                '{%for val in string limit:1%}{{val}}{%endfor%}',
                 'string' => "test string")
 
-    assert_template_result('val-string-1-1-0-1-0-true-true-test string', 
-                '{%for val in string%}' + 
-                '{{forloop.name}}-' + 
-                '{{forloop.index}}-' + 
-                '{{forloop.length}}-' + 
-                '{{forloop.index0}}-' + 
-                '{{forloop.rindex}}-' + 
-                '{{forloop.rindex0}}-' + 
-                '{{forloop.first}}-' + 
-                '{{forloop.last}}-' + 
-                '{{val}}{%endfor%}', 
+    assert_template_result('val-string-1-1-0-1-0-true-true-test string',
+                '{%for val in string%}' +
+                '{{forloop.name}}-' +
+                '{{forloop.index}}-' +
+                '{{forloop.length}}-' +
+                '{{forloop.index0}}-' +
+                '{{forloop.rindex}}-' +
+                '{{forloop.rindex0}}-' +
+                '{{forloop.first}}-' +
+                '{{forloop.last}}-' +
+                '{{val}}{%endfor%}',
                 'string' => "test string")
   end
 
