@@ -19,8 +19,8 @@ module Liquid
       ''
     end
 
-    def self.blank?
-      true
+    def blank?
+      @blank || true
     end
   end # Tag
 end # Tag

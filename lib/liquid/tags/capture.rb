@@ -31,7 +31,7 @@ module Liquid
       ''
     end
 
-    def self.blank?
+    def blank?
       true
     end
   end

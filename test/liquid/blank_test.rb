@@ -61,6 +61,10 @@ class BlankTest < Test::Unit::TestCase
     assert_template_result(body*(N+1), wrap(body))
   end
 
+  def test_increment_is_not_blank
+    assert_template_result(" 0"*2*(N+1), wrap("{% assign foo = 0 %} {% increment foo %} {% decrement foo %}"))
+  end
+
   def test_raw_is_not_blank
     assert_template_result("  "*(N+1), wrap(" {% raw %} {% endraw %}"))
   end

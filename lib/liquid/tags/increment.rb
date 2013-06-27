@@ -28,7 +28,9 @@ module Liquid
       value.to_s
     end
   
-    private
+    def blank?
+      false
+    end
   end
   
   Template.register_tag('increment', Increment)
