@@ -30,6 +30,10 @@ module Liquid
       context.resource_limits[:assign_score_current] += (output.respond_to?(:length) ? output.length : 1)
       ''
     end
+
+    def self.blank?
+      true
+    end
   end
 
   Template.register_tag('capture', Capture)

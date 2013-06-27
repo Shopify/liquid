@@ -1,17 +1,22 @@
 module Liquid
-
   class Block < Tag
+    attr_reader :blank
+
     IsTag             = /^#{TagStart}/o
     IsVariable        = /^#{VariableStart}/o
     FullToken         = /^#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/o
     ContentOfVariable = /^#{VariableStart}(.*)#{VariableEnd}$/o
 
+    def self.blank?
+      false
+    end
+
     def parse(tokens)
+      @blank = true
       @nodelist ||= []
       @nodelist.clear
 
       while token = tokens.shift
-
         case token
         when IsTag
           if token =~ FullToken
@@ -20,12 +25,15 @@ module Liquid
             # proceed
             if block_delimiter == $1
               end_tag
+              @blank = true if self.class.blank?
               return
             end
 
             # fetch the tag from registered blocks
             if tag = Template.tags[$1]
-              @nodelist << tag.new($1, $2, tokens)
+              new_tag = tag.new($1, $2, tokens)
+              @blank = false if new_tag.is_a?(Block) && !new_tag.blank
+              @nodelist << new_tag
             else
               # this tag is not registered with the system
               # pass it to the current block for special handling or error reporting
@@ -36,10 +44,12 @@ module Liquid
           end
         when IsVariable
           @nodelist << create_variable(token)
+          @blank = false
         when ''
           # pass
         else
           @nodelist << token
+          @blank = false unless token =~ /\A\s*\z/
         end
       end
 
@@ -112,7 +122,9 @@ module Liquid
             context.resource_limits[:reached] = true
             raise MemoryError.new("Memory limits exceeded")
           end
-          output << token_output
+          unless token.respond_to?(:blank) && token.blank
+            output << token_output
+          end
         rescue MemoryError => e
           raise e
         rescue ::StandardError => e
