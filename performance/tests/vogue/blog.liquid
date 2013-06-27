@@ -8,16 +8,16 @@
       <h3 class="article-head-title">
         <a href="{{article.url}}">{{ article.title }}</a>
       </h3>
-      
+
       <p>
       {% if blog.comments_enabled? %}
         <a href="{{article.url}}#comments">{{ article.comments_count }} comments</a>
-        &mdash; 
+        &mdash;
       {% endif %}
       posted {{ article.created_at | date: "%Y %h" }} by {{ article.author }}</p>
       <div class="article-body textile">
         {{ article.content }}
-      </div>    
+      </div>
     </div>
   {% endfor %}
 
