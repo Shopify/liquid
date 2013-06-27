@@ -99,7 +99,7 @@ module Liquid
 
         begin
           # If we get an Interrupt that means the block must stop processing. An
-          # Interrupt is any command that stops block execution such as {% break %} 
+          # Interrupt is any command that stops block execution such as {% break %}
           # or {% continue %}
           if token.is_a? Continue or token.is_a? Break
             context.push_interrupt(token.interrupt)

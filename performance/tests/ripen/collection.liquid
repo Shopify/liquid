@@ -15,12 +15,12 @@
       <div class="prod-list-description">
         <h3><a href="{{product.url}}">{{product.title}}</a></h3>
         <p>{{ product.description | strip_html | truncatewords: 35 }}</p>
-  	  <p class="prd-price">{{ product.price_min | money }}{% if product.price_varies %} - {{ product.price_max | money }}{% endif %}</p>
+      <p class="prd-price">{{ product.price_min | money }}{% if product.price_varies %} - {{ product.price_max | money }}{% endif %}</p>
      </div>
     </li>
     {% endfor %}
 </ul>
-  
+
 <div id="pagination">
   {{ paginate | default_pagination }}
 </div>

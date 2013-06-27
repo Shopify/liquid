@@ -10,24 +10,24 @@
       <h3 class="title">
         <a href="{{article.url}}">{{ article.title }}</a>
       </h3>
-  		<h4 class="date">Posted on {{ article.created_at | date: "%B %d, '%y" }} by {{ article.author }}.</h4>
+      <h4 class="date">Posted on {{ article.created_at | date: "%B %d, '%y" }} by {{ article.author }}.</h4>
       </div>
-    
+
       <div class="article-body textile">
         {{ article.content | strip_html | truncate: 250 }}
       </div>
-      
+
       {% if blog.comments_enabled? %}
         <p style="text-align: right"><a href="{{article.url}}#comments">{{ article.comments_count }} comments</a></p>
-      {% endif %}    
+      {% endif %}
     </div>
-  
+
     {% endfor %}
-    
+
     <div id="pagination">
       {{ paginate | default_pagination }}
     </div>
 
   {% endpaginate %}
-  
+
 </div>
