@@ -128,14 +128,18 @@ module Liquid
       result
     end
 
+    def should_process_child_nodes?(node)
+      !node.is_a?(Liquid::Capture) && !node.is_a?(Liquid::For) && node.respond_to?(:nodelist)
+    end
+
     def has_output?(nodes)
       return false if nodes.nil?
       nodes.each do |node|
         if node.is_a?(String) && !NonWhitespace.match(node).nil?
           return true
-        elsif node.is_a?(Liquid::Variable)
+        elsif node.is_a?(Liquid::Variable) || node.is_a?(Liquid::Include)
           return true
-        elsif !node.is_a?(Liquid::Capture) && !node.is_a?(Liquid::Include) && node.respond_to?(:nodelist)
+        elsif should_process_child_nodes?(node)
           if has_output?(node.nodelist)
             return true
           end
@@ -147,7 +151,7 @@ module Liquid
     def strip_whitespace_nodes(nodes)
       return false if nodes.nil?
       nodes.reject! { |node| node.is_a?(String) and NonWhitespace.match(node).nil? }
-      nodes.each { | node| node.respond_to?(:nodelist) and strip_whitespace_nodes(node.nodelist) }
+      nodes.each { |node| should_process_child_nodes?(node) and strip_whitespace_nodes(node.nodelist) }
     end
 
     def parse(tokens)
