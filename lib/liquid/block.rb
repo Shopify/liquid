@@ -1,7 +1,5 @@
 module Liquid
   class Block < Tag
-    attr_reader :blank
-
     IsTag             = /^#{TagStart}/o
     IsVariable        = /^#{VariableStart}/o
     FullToken         = /^#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/o
@@ -31,7 +29,7 @@ module Liquid
             # fetch the tag from registered blocks
             if tag = Template.tags[$1]
               new_tag = tag.new($1, $2, tokens)
-              @blank = false unless new_tag.blank?
+              @blank &&= new_tag.blank?
               @nodelist << new_tag
             else
               # this tag is not registered with the system
@@ -48,7 +46,7 @@ module Liquid
           # pass
         else
           @nodelist << token
-          @blank = false unless token =~ /\A\s*\z/
+          @blank &&= (token =~ /\A\s*\z/)
         end
       end
 
@@ -121,7 +119,7 @@ module Liquid
             context.resource_limits[:reached] = true
             raise MemoryError.new("Memory limits exceeded")
           end
-          unless token.respond_to?(:blank) && token.blank
+          unless token.is_a?(Block) && token.blank?
             output << token_output
           end
         rescue MemoryError => e
