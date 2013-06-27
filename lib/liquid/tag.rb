@@ -23,4 +23,4 @@ module Liquid
 
   end # Tag
 
-end # Tag
+end # Liquid
