@@ -1,7 +1,5 @@
 module Liquid
-
   class Tag
-
     attr_accessor :nodelist
 
     def initialize(tag_name, markup, tokens)
@@ -21,6 +19,8 @@ module Liquid
       ''
     end
 
+    def blank?
+      @blank || true
+    end
   end # Tag
-
 end # Liquid

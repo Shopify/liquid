@@ -62,7 +62,6 @@ module Liquid
     end
 
     def record_else_condition(markup)
-
       if not markup.strip.empty?
         raise SyntaxError.new("Syntax Error in tag 'case' - Valid else condition: {% else %} (no parameters) ")
       end
@@ -71,8 +70,6 @@ module Liquid
       block.attach(@nodelist)
       @blocks << block
     end
-
-
   end
 
   Template.register_tag('case', Case)
