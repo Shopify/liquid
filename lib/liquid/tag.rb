@@ -23,4 +23,4 @@ module Liquid
       @blank || true
     end
   end # Tag
-end # Tag
+end # Liquid

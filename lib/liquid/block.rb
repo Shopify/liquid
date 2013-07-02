@@ -19,7 +19,7 @@ module Liquid
         when IsTag
           if token =~ FullToken
 
-            # if we found the proper block delimitor just end parsing here and let the outer block
+            # if we found the proper block delimiter just end parsing here and let the outer block
             # proceed
             if block_delimiter == $1
               end_tag
@@ -50,8 +50,8 @@ module Liquid
         end
       end
 
-      # Make sure that its ok to end parsing in the current block.
-      # Effectively this method will throw and exception unless the current block is
+      # Make sure that it's ok to end parsing in the current block.
+      # Effectively this method will throw an exception unless the current block is
       # of type Document
       assert_missing_delimitation!
     end
