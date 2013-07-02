@@ -1,5 +1,11 @@
 require 'test_helper'
 
+class BlankTestFileSystem
+  def read_template_file(template_path, context)
+    template_path
+  end
+end
+
 class BlankTest < Test::Unit::TestCase
   include Liquid
   N = 10
@@ -76,5 +82,12 @@ class BlankTest < Test::Unit::TestCase
   def test_variables_are_not_blank
     assert_template_result("  "*(N+1), wrap(' {{ "" }} '))
     assert_template_result(" "*(N+1), wrap("{% assign foo = ' ' %}{{ foo }}"))
+  end
+
+  def test_include_is_blank
+    Liquid::Template.file_system = BlankTestFileSystem.new
+    assert_equal "foobar"*(N+1), Template.parse(wrap("{% include 'foobar' %}")).render()
+    assert_equal " foobar "*(N+1), Template.parse(wrap("{% include ' foobar ' %}")).render()
+    assert_equal "   ", Template.parse(" {% include ' ' %} ").render()
   end
 end
