@@ -1,5 +1,4 @@
 module Liquid
-
   # Cycle is usually used within a loop to alternate between values, like colors or DOM classes.
   #
   #   {% for item in items %}
@@ -44,15 +43,17 @@ module Liquid
       end
     end
 
-    private
+    def blank?
+      false
+    end
 
+    private
     def variables_from_string(markup)
       markup.split(',').collect do |var|
         var =~ /\s*(#{QuotedFragment})\s*/o
         $1 ? $1 : nil
       end.compact
     end
-
   end
 
   Template.register_tag('cycle', Cycle)
