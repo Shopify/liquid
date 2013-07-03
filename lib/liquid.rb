@@ -26,11 +26,14 @@ module Liquid
   VariableAttributeSeparator  = '.'
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
+  TagEndTrim                  = /-#{TagEnd}\n?/o
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
   VariableSegment             = /[\w\-]/
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
+  VariableEndTrim             = /-#{VariableEnd}\n?/o
   VariableIncompleteEnd       = /\}\}?/
+  VariableIncompleteEndTrim   = /-#{VariableIncompleteEnd}\n?/o
   QuotedString                = /"[^"]*"|'[^']*'/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
   StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s|:,]+/
@@ -40,7 +43,7 @@ module Liquid
   Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/o
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
   AnyStartingTag              = /\{\{|\{\%/
-  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/o
+  PartialTemplateParser       = /#{TagStart}.*?(?:#{TagEndTrim}|#{TagEnd})|#{VariableStart}.*?(?:#{VariableIncompleteEndTrim}|#{VariableIncompleteEnd})/o
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/o
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
 end
