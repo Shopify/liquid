@@ -72,16 +72,11 @@ class BlankTest < Test::Unit::TestCase
   end
 
   def test_cycle_is_not_blank
-    assert_template_result("12"*((N+1)/2)+"1", wrap("{% cycle '1', '2' %}"))
+    assert_template_result("  "*((N+1)/2)+" ", wrap("{% cycle ' ', ' ' %}"))
   end
 
   def test_raw_is_not_blank
     assert_template_result("  "*(N+1), wrap(" {% raw %} {% endraw %}"))
-  end
-
-  def test_variables_are_not_blank
-    assert_template_result("  "*(N+1), wrap(' {{ "" }} '))
-    assert_template_result(" "*(N+1), wrap("{% assign foo = ' ' %}{{ foo }}"))
   end
 
   def test_include_is_blank
@@ -94,5 +89,6 @@ class BlankTest < Test::Unit::TestCase
   def test_case_is_blank
     assert_template_result("", wrap(" {% assign foo = 'bar' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "))
     assert_template_result("", wrap(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "))
+    assert_template_result("   x  "*(N+1), wrap(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} x {% endcase %} "))
   end
 end
