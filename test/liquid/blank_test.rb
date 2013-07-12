@@ -6,6 +6,10 @@ class BlankTestFileSystem
   end
 end
 
+def assert_stripped_template_result(expected, template, assigns = {}, message = nil)
+  assert_template_result(expected, template, assigns, message, { :strip_whitespace => true })
+end
+
 class BlankTest < Test::Unit::TestCase
   include Liquid
   N = 10
@@ -22,61 +26,67 @@ class BlankTest < Test::Unit::TestCase
     wrap_in_for(body) + wrap_in_if(body)
   end
 
+  def test_stripping_turned_off_by_default
+   assert_template_result(" "*N, wrap_in_for(" "))
+   assert_template_result(" \n "*N, wrap_in_for(" \n "))
+  end
+
   def test_loops_are_blank
-    assert_template_result("", wrap_in_for(" "))
+    assert_stripped_template_result("", wrap_in_for(" "))
+    assert_stripped_template_result("", wrap_in_for(" \r \n \t "))
   end
 
   def test_if_else_are_blank
-    assert_template_result("", "{% if true %} {% elsif false %} {% else %} {% endif %}")
+    assert_stripped_template_result("", "{% if true %} {% elsif false %} {% else %} {% endif %}")
   end
 
   def test_unless_is_blank
-    assert_template_result("", wrap("{% unless true %} {% endunless %}"))
-  end
-
-  def test_mark_as_blank_only_during_parsing
-    assert_template_result(" "*(N+1), wrap(" {% if false %} this never happens, but still, this block is not blank {% endif %}"))
+    assert_stripped_template_result("", wrap("{% unless true %} {% endunless %}"))
   end
 
   def test_comments_are_blank
-    assert_template_result("", wrap(" {% comment %} whatever {% endcomment %} "))
+    assert_stripped_template_result("", wrap(" {% comment %} whatever {% endcomment %} "))
   end
 
   def test_captures_are_blank
-    assert_template_result("", wrap(" {% capture foo %} whatever {% endcapture %} "))
+    assert_stripped_template_result("", wrap(" {% capture foo %} whatever {% endcapture %} "))
   end
 
-  def test_nested_blocks_are_blank_but_only_if_all_children_are
-    assert_template_result("", wrap(wrap(" ")))
-    assert_template_result("\n       but this is not "*(N+1),
-      wrap(%q{{% if true %} {% comment %} this is blank {% endcomment %} {% endif %}
-      {% if true %} but this is not {% endif %}}))
+  def test_nested_blocks_are_blank
+    assert_stripped_template_result("", wrap(wrap(" ")))
+  end
+
+  def test_mixing_parse_and_render_stripping
+    assert_stripped_template_result("        test\n      "*(N+1), wrap(
+      %q{
+        test
+        {% if true %} {% comment %} this is blank {% endcomment %} {% endif %}
+        {% if false %} and this is empty during rendering {% endif %}
+      }
+      )
+    )
   end
 
   def test_assigns_are_blank
-    assert_template_result("", wrap(' {% assign foo = "bar" %} '))
+    assert_stripped_template_result("", wrap(' {% assign foo = "bar" %} '))
   end
 
   def test_whitespace_is_blank
-    assert_template_result("", wrap(" "))
-    assert_template_result("", wrap("\t"))
+    assert_stripped_template_result("", wrap(" "))
+    assert_stripped_template_result("", wrap("\t"))
   end
 
   def test_whitespace_is_not_blank_if_other_stuff_is_present
     body = "     x "
-    assert_template_result(body*(N+1), wrap(body))
+    assert_stripped_template_result(body*(N+1), wrap(body))
   end
 
   def test_increment_is_not_blank
-    assert_template_result(" 0"*2*(N+1), wrap("{% assign foo = 0 %} {% increment foo %} {% decrement foo %}"))
-  end
-
-  def test_cycle_is_not_blank
-    assert_template_result("  "*((N+1)/2)+" ", wrap("{% cycle ' ', ' ' %}"))
+    assert_stripped_template_result(" 0"*2*(N+1), wrap("{% assign foo = 0 %} {% increment foo %} {% decrement foo %}"))
   end
 
   def test_raw_is_not_blank
-    assert_template_result("  "*(N+1), wrap(" {% raw %} {% endraw %}"))
+    assert_stripped_template_result("  "*(N+1), wrap(" {% raw %} {% endraw %}"))
   end
 
   def test_include_is_blank
@@ -87,8 +97,16 @@ class BlankTest < Test::Unit::TestCase
   end
 
   def test_case_is_blank
-    assert_template_result("", wrap(" {% assign foo = 'bar' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "))
-    assert_template_result("", wrap(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "))
-    assert_template_result("   x  "*(N+1), wrap(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} x {% endcase %} "))
+    assert_stripped_template_result("", wrap(" {% assign foo = 'bar' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "))
+    assert_stripped_template_result("", wrap(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "))
+    assert_stripped_template_result("   x  "*(N+1), wrap(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} x {% endcase %} "))
+  end
+
+  def test_remove_whitespace_from_blocks_also_during_rendering
+    assert_stripped_template_result("", wrap(" {% if false %} this block is not marked as blank during parsing, but empty during rendering {% endif %}"))
+  end
+
+  def test_remove_whitespace_lines_mixed_in_with_non_whitespace_lines
+    assert_stripped_template_result("foo\nbar\n test\n"*(N+1), wrap("foo\n\n\t\n  \nbar\n \r\n test\n"))
   end
 end

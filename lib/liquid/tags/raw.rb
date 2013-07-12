@@ -16,6 +16,13 @@ module Liquid
         @nodelist << token if not token.empty?
       end
     end
+
+    def render(context)
+      output = super
+      hash = "liquid-#{output.hash.to_s(16)}"
+      context.replacements[hash] = output
+      hash
+    end
   end
 
   Template.register_tag('raw', Raw)

@@ -119,7 +119,8 @@ module Liquid
             context.resource_limits[:reached] = true
             raise MemoryError.new("Memory limits exceeded")
           end
-          unless token.is_a?(Block) && token.blank?
+
+          unless token.is_a?(Block) && (context.registers[:strip_whitespace] && (token.blank? || token_output =~ /\A\s*\z/))
             output << token_output
           end
         rescue MemoryError => e
@@ -129,7 +130,12 @@ module Liquid
         end
       end
 
-      output.join
+      output = output.join
+      if context.registers[:strip_whitespace]
+        output.gsub(/^[\t\s]*(\r?\n)+/, "")
+      else
+        output
+      end
     end
   end
 end
