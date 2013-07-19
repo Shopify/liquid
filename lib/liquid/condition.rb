@@ -99,7 +99,11 @@ module Liquid
       if operation.respond_to?(:call)
         operation.call(self, left, right)
       elsif left.respond_to?(operation) and right.respond_to?(operation)
-        left.send(operation, right)
+        if left.class == right.class || (left.is_a?(Numeric) && right.is_a?(Numeric))
+          left.send(operation, right)
+        else 
+          raise(ArgumentError.new("Invalid comparison #{left.class} #{left} with #{right.class} #{right} using #{op}"))
+        end
       else
         nil
       end
