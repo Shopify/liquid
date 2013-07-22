@@ -142,6 +142,34 @@ class IfElseTagTest < Test::Unit::TestCase
     assert_raise(SyntaxError) { assert_template_result('', '{% if %}') }
   end
 
+  def test_argument_error_raised
+    raisable_operators = %w(> < >= <=)
+    
+    assert_argument_error_raised(raisable_operators, "'string'", 1.123) #string vs float
+    assert_argument_error_raised(raisable_operators, "'string'", 1) #string vs int
+  end
+
+  def test_argument_error_nothing_raised
+    raisable_operators = %w(> < >= <=)
+
+    assert_argument_error_nothing_raised(raisable_operators, "'string'", "'string'") #string vs string
+    assert_argument_error_nothing_raised(raisable_operators, 1, 2) # int vs int
+    assert_argument_error_nothing_raised(raisable_operators, 1, 2.123) # int vs float
+    assert_argument_error_nothing_raised(raisable_operators, 1.123, 2.123) # float vs float
+    assert_argument_error_nothing_raised(raisable_operators, nil, 2.123) # nil vs float
+    assert_argument_error_nothing_raised(raisable_operators, nil, 2) # nil vs int
+    assert_argument_error_nothing_raised(raisable_operators, "'string'", nil) # string vs nil
+  end
+
+  def test_argument_error_never_raised
+    not_raisable_operators = %w(== != <> contains)
+
+    assert_argument_error_nothing_raised(not_raisable_operators, "'string'", "'string'") #string vs string
+    assert_argument_error_nothing_raised(not_raisable_operators, 1, "'string'") #int vs string
+    assert_argument_error_nothing_raised(not_raisable_operators, 1.234, "'string'") #float vs int
+    assert_argument_error_nothing_raised(not_raisable_operators, nil, 2) # nil vs int
+  end
+
   def test_if_with_custom_condition
     Condition.operators['contains'] = :[]
 
@@ -157,4 +185,19 @@ class IfElseTagTest < Test::Unit::TestCase
     assert_template_result('yes',
                            %({% if 'gnomeslab-and-or-liquid' contains 'gnomeslab-and-or-liquid' %}yes{% endif %}))
   end
+
+  private 
+
+    def assert_argument_error_raised(operators, left, right)
+      operators.each do |operator|
+        assert_raise(ArgumentError){ assert_template_result!('', "{% if #{left} #{operator} #{right} %}{% endif %}") }
+      end
+    end
+
+    def assert_argument_error_nothing_raised(operators, left, right)
+      operators.each do |operator|
+        assert_nothing_raised(ArgumentError){ assert_template_result!('', "{% if #{left} #{operator} #{right} %}{% endif %}") }
+      end
+    end
+
 end # IfElseTest

@@ -102,7 +102,7 @@ module Liquid
         if left.class == right.class || (left.is_a?(Numeric) && right.is_a?(Numeric))
           left.send(operation, right)
         else 
-          raise(ArgumentError.new("Invalid comparison #{left.class} #{left} with #{right.class} #{right} using #{op}"))
+          raise(ArgumentError.new("Invalid comparison #{left.class} #{left} with #{right.class} #{right} using operator #{op}"))
         end
       else
         nil
