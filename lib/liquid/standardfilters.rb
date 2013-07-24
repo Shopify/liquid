@@ -93,10 +93,8 @@ module Liquid
     # map/collect on a given property
     def map(input, property)
       ary = [input].flatten
-      if ary.first.respond_to?('[]') and !ary.first[property].nil?
-        ary.map {|e| e[property] }
-      elsif ary.first.respond_to?(property)
-        ary.map {|e| e.send(property) }
+      ary.map do |e|
+        e.respond_to?('[]') ? e[property] : nil
       end
     end
 
