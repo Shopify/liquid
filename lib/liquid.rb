@@ -46,6 +46,8 @@ module Liquid
 end
 
 require "liquid/version"
+require 'liquid/parser'
+require 'liquid/lexer'
 require 'liquid/drop'
 require 'liquid/extensions'
 require 'liquid/errors'
