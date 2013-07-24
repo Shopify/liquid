@@ -8,6 +8,7 @@ module Liquid
     end
 
     def tokenize(input)
+      # "foo.bar | filter: baz, qux" becomes ["foo", ".", "bar", "|", "filter", ":", "baz", ",", "qux"]
       input.split(/\b/).map {|tok| tok.strip}
     end
   end
