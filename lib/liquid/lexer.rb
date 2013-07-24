@@ -21,7 +21,9 @@ module Liquid
       '|' => :pipe,
       '.' => :dot,
       ':' => :colon,
-      ',' => :comma
+      ',' => :comma,
+      '[' => :open_square,
+      ']' => :close_square
     }
     IDENTIFIER = /[\w\-]+/
     SINGLE_STRING_LITERAL = /'[^\']*'/
@@ -56,7 +58,7 @@ module Liquid
       else
         c = @ss.getch
         if s = SPECIALS[c]
-          return Token[s]
+          return Token[s,c]
         end
 
         raise SyntaxError, "Unexpected character #{c}."
