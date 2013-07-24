@@ -97,6 +97,11 @@ class StandardFiltersTest < Test::Unit::TestCase
       'ary' => [{'foo' => {'bar' => 'a'}}, {'foo' => {'bar' => 'b'}}, {'foo' => {'bar' => 'c'}}]
   end
 
+  def test_map_doesnt_call_arbitrary_stuff
+    assert_equal "", Liquid::Template.parse('{{ "foo" | map: "__id__" }}').render
+    assert_equal "", Liquid::Template.parse('{{ "foo" | map: "inspect" }}').render
+  end
+
   def test_date
     assert_equal 'May', @filters.date(Time.parse("2006-05-05 10:00:00"), "%B")
     assert_equal 'June', @filters.date(Time.parse("2006-06-05 10:00:00"), "%B")
