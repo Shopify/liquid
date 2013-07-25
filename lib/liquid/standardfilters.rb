@@ -94,7 +94,13 @@ module Liquid
     def map(input, property)
       ary = [input].flatten
       ary.map do |e|
-        e.respond_to?('[]') ? e[property] : nil
+        if e.respond_to?(:to_liquid)
+          e = e.to_liquid
+        end
+
+        if e.respond_to?('[]')
+          e[property]
+        end
       end
     end
 

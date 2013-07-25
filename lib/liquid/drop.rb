@@ -54,7 +54,7 @@ module Liquid
 
     # Check for method existence without invoking respond_to?, which creates symbols
     def self.invokable?(method_name)
-      @invokable_methods ||= Set.new((public_instance_methods - Liquid::Drop.public_instance_methods).map(&:to_s))
+      @invokable_methods ||= Set.new(["to_liquid"] + (public_instance_methods - Liquid::Drop.public_instance_methods).map(&:to_s))
       @invokable_methods.include?(method_name.to_s)
     end
   end

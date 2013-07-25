@@ -86,6 +86,11 @@ class DropsTest < Test::Unit::TestCase
     assert_equal "", Liquid::Template.parse('{{ product | map: "whatever" }}').render('product' => ProductDrop.new)
   end
 
+  def test_drops_respond_to_to_liquid
+    assert_equal "text1", Liquid::Template.parse("{{ product.to_liquid.texts.text }}").render('product' => ProductDrop.new)
+    assert_equal "text1", Liquid::Template.parse('{{ product | map: "to_liquid" | map: "texts" | map: "text" }}').render('product' => ProductDrop.new)
+  end
+
   def test_text_drop
     output = Liquid::Template.parse( ' {{ product.texts.text }} '  ).render('product' => ProductDrop.new)
     assert_equal ' text1 ', output
