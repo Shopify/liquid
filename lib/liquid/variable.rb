@@ -18,6 +18,10 @@ module Liquid
       @markup  = markup
       @name    = nil
       @filters = []
+      parse(markup)
+    end
+
+    def old_parse(markup)
       if match = markup.match(/\s*(#{QuotedFragment})(.*)/o)
         @name = match[1]
         if match[2].match(/#{FilterSeparator}\s*(.*)/o)
@@ -31,6 +35,28 @@ module Liquid
           end
         end
       end
+    end
+
+    def parse(markup)
+      p = Parser.new(markup)
+      # Could be just filters with no input
+      @name = p.look(:pipe) ? '' : p.expression
+      while p.consume?(:pipe)
+        filtername = p.consume(:id)
+        filterargs = p.consume?(:colon) ? parse_filterargs(p) : []
+        @filters << [filtername, filterargs]
+      end
+      p.consume(:end_of_string)
+    end
+
+    def parse_filterargs(p)
+      # first argument
+      filterargs = [p.argument]
+      # followed by comma separated others
+      while p.consume?(:comma)
+        filterargs << p.argument
+      end
+      filterargs
     end
 
     def render(context)

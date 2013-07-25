@@ -31,9 +31,11 @@ class ParsingQuirksTest < Test::Unit::TestCase
 
   def test_error_on_empty_filter
     assert_nothing_raised do
-      Template.parse("{{test |a|b|}}")
       Template.parse("{{test}}")
-      Template.parse("{{|test|}}")
+      Template.parse("{{|test}}")
+    end
+    assert_raise(SyntaxError) do
+      Template.parse("{{test |a|b|}}")
     end
   end
 

@@ -14,6 +14,10 @@ module Liquid
       out << ": \'#{@contents}\'" if contents
       out << '>'
     end
+
+    def to_s
+      self.inspect
+    end
   end
 
   class Lexer
@@ -40,7 +44,10 @@ module Liquid
 
       loop do
         tok = next_token
-        return @output unless tok
+        unless tok
+          @output << Token[:end_of_string]
+          return @output
+        end
         @output << tok
       end
     end
