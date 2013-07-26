@@ -101,10 +101,10 @@ module Liquid
     def map(input, property)
       ary = if input.is_a?(Array)
         input.flatten
-      elsif !input.class.include?(Enumerable)
-        [input].flatten
-      else
+      elsif input.kind_of?(Enumerable)
         input
+      else
+        [input].flatten
       end
 
       ary.map do |e|
