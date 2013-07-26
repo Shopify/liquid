@@ -29,7 +29,7 @@ module Liquid
       '[' => :open_square,
       ']' => :close_square
     }
-    IDENTIFIER = /[\w\-?]+/
+    IDENTIFIER = /[\w\-?!]+/
     SINGLE_STRING_LITERAL = /'[^\']*'/
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
     INTEGER_LITERAL = /-?\d+/
