@@ -45,11 +45,4 @@ class LexerTest < Test::Unit::TestCase
       Lexer.new("%").tokenize
     end
   end
-
-  def test_next_token
-    l = Lexer.new('hi 5.0')
-    assert_equal [:id, 'hi'], l.next_token
-    assert_equal [:float, '5.0'], l.next_token
-    assert_nil l.next_token
-  end
 end
