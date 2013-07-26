@@ -45,7 +45,7 @@ module Liquid
         block = if tag == 'else'
           ElseCondition.new
         else
-          old_parse(markup)
+          parse_condition(markup)
         end
 
         @blocks.push(block)
@@ -81,12 +81,19 @@ module Liquid
           new_cond.send(op.to_sym, condition)
           condition = new_cond
         end
+        p.consume(:end_of_string)
 
         condition
       end
 
       def parse_comparison(p)
-        
+        a = p.expression
+        if op = p.consume?(:comparison)
+          b = p.expression
+          Condition.new(a, op, b)
+        else
+          Condition.new(a)
+        end
       end
   end
 

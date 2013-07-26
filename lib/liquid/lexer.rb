@@ -29,11 +29,12 @@ module Liquid
       '[' => :open_square,
       ']' => :close_square
     }
-    IDENTIFIER = /[\w\-]+/
+    IDENTIFIER = /[\w\-?]+/
     SINGLE_STRING_LITERAL = /'[^\']*'/
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
     INTEGER_LITERAL = /-?\d+/
     FLOAT_LITERAL = /-?\d+(?:\.\d+)?/
+    COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains/
 
     def initialize(input)
       @ss = StringScanner.new(input)
@@ -57,19 +58,24 @@ module Liquid
       return if @ss.eos?
       
       case
+      when t = @ss.scan(COMPARISON_OPERATOR) then Token[:comparison, t]
       when t = @ss.scan(IDENTIFIER) then Token[:id, t]
       when t = @ss.scan(SINGLE_STRING_LITERAL) then Token[:string, t]
       when t = @ss.scan(DOUBLE_STRING_LITERAL) then Token[:string, t]
       when t = @ss.scan(INTEGER_LITERAL) then Token[:integer, t]
       when t = @ss.scan(FLOAT_LITERAL) then Token[:float, t]
       else
-        c = @ss.getch
-        if s = SPECIALS[c]
-          return Token[s,c]
-        end
-
-        raise SyntaxError, "Unexpected character #{c}."
+        lex_specials
       end
+    end
+
+    def lex_specials
+      c = @ss.getch
+      if s = SPECIALS[c]
+        return Token[s,c]
+      end
+
+      raise SyntaxError, "Unexpected character #{c}."
     end
 
     def consume_whitespace

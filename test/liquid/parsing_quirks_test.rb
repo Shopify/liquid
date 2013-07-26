@@ -40,15 +40,20 @@ class ParsingQuirksTest < Test::Unit::TestCase
   end
 
   def test_meaningless_parens
-    assigns = {'b' => 'bar', 'c' => 'baz'}
-    markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
-    assert_template_result(' YES ',"{% if #{markup} %} YES {% endif %}", assigns)
+    assert_raise(SyntaxError) do
+      markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
+      Template.parse("{% if #{markup} %} YES {% endif %}")
+    end
   end
 
   def test_unexpected_characters_silently_eat_logic
-    markup = "true && false"
-    assert_template_result(' YES ',"{% if #{markup} %} YES {% endif %}")
-    markup = "false || true"
-    assert_template_result('',"{% if #{markup} %} YES {% endif %}")
+    assert_raise(SyntaxError) do
+      markup = "true && false"
+      Template.parse("{% if #{markup} %} YES {% endif %}")
+    end
+    assert_raise(SyntaxError) do
+      markup = "false || true"
+      Template.parse("{% if #{markup} %} YES {% endif %}")
+    end
   end
 end # ParsingQuirksTest
