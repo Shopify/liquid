@@ -1,3 +1,4 @@
+require "strscan"
 module Liquid
   class Token
     attr_accessor :type, :contents
