@@ -14,11 +14,11 @@ module Liquid
 
     def consume(type = nil)
       token = @tokens[@p]
-      if type && token.type != type
+      if type && token[0] != type
         raise SyntaxError, "Expected #{type} but found #{@tokens[@p]}"
       end
       @p += 1
-      token.contents
+      token[1]
     end
 
     # Only consumes the token if it matches the type
@@ -26,35 +26,35 @@ module Liquid
     # or false otherwise.
     def consume?(type)
       token = @tokens[@p]
-      return false unless token && token.type == type
+      return false unless token && token[0] == type
       @p += 1
-      token.contents
+      token[1]
     end
 
     # Like consume? Except for an :id token of a certain name
     def id?(str)
       token = @tokens[@p]
-      return false unless token && token.type == :id
-      return false unless token.contents == str
+      return false unless token && token[0] == :id
+      return false unless token[1] == str
       @p += 1
-      token.contents
+      token[1]
     end
 
     def look(type, ahead = 0)
       tok = @tokens[@p + ahead]
       return false unless tok
-      tok.type == type
+      tok[0] == type
     end
 
     # === General Liquid parsing functions ===
 
     def expression
       token = @tokens[@p]
-      if token.type == :id
+      if token[0] == :id
         variable_signature
-      elsif [:string, :integer, :float].include? token.type
+      elsif [:string, :integer, :float].include? token[0]
         consume
-        token.contents
+        token[1]
       else
         raise SyntaxError, "#{token} is not a valid expression."
       end
