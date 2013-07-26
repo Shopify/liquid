@@ -94,11 +94,12 @@ module Liquid
     def map(input, property)
       ary = [input].flatten
       ary.map do |e|
-        if e.respond_to?(:to_liquid)
-          e = e.to_liquid
-        end
+        e = e.call if e.is_a?(Proc)
+        e = e.to_liquid if e.respond_to?(:to_liquid)
 
-        if e.respond_to?('[]')
+        if property == "to_liquid"
+          e
+        elsif e.respond_to?(:[])
           e[property]
         end
       end
