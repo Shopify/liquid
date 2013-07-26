@@ -6,6 +6,27 @@ class Filters
   include Liquid::StandardFilters
 end
 
+class TestThing
+  def initialize
+    @foo = 0
+  end
+
+  def to_s
+    "woot: #{@foo}"
+  end
+
+  def to_liquid
+    @foo += 1
+    self
+  end
+end
+
+class TestDrop < Liquid::Drop
+  def test
+    "testfoo"
+  end
+end
+
 class StandardFiltersTest < Test::Unit::TestCase
   include Liquid
 
@@ -100,6 +121,18 @@ class StandardFiltersTest < Test::Unit::TestCase
   def test_map_doesnt_call_arbitrary_stuff
     assert_equal "", Liquid::Template.parse('{{ "foo" | map: "__id__" }}').render
     assert_equal "", Liquid::Template.parse('{{ "foo" | map: "inspect" }}').render
+  end
+
+  def test_map_calls_to_liquid
+    t = TestThing.new
+    assert_equal "woot: 1", Liquid::Template.parse('{{ foo }}').render("foo" => t)
+  end
+
+  def test_map_over_proc
+    drop = TestDrop.new
+    p = Proc.new{ drop }
+    templ = '{{ procs | map: "test" }}'
+    assert_equal "testfoo", Liquid::Template.parse(templ).render("procs" => [p])
   end
 
   def test_date
