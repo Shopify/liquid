@@ -73,6 +73,14 @@ class VariableTest < Test::Unit::TestCase
   end
 
   def test_symbol
+    with_lax_parsing do
+      var = Variable.new("http://disney.com/logo.gif | image: 'med' ")
+      assert_equal "http://disney.com/logo.gif", var.name
+      assert_equal [["image",["'med'"]]], var.filters
+    end
+  end
+
+  def test_string_to_filter
     var = Variable.new("'http://disney.com/logo.gif' | image: 'med' ")
     assert_equal "'http://disney.com/logo.gif'", var.name
     assert_equal [["image",["'med'"]]], var.filters
@@ -112,6 +120,14 @@ class VariableTest < Test::Unit::TestCase
     var = Variable.new(%! hello | things: greeting: "world", farewell: 'goodbye'!)
     assert_equal 'hello', var.name
     assert_equal [['things',["greeting: \"world\"","farewell: 'goodbye'"]]], var.filters
+  end
+
+  def test_lax_filter_argument_parsing
+    with_lax_parsing do
+      var = Variable.new(%! number_of_comments | pluralize: 'comment': 'comments' !)
+      assert_equal 'number_of_comments', var.name
+      assert_equal [['pluralize',["'comment'","'comments'"]]], var.filters
+    end
   end
 
   def test_strict_filter_argument_parsing
