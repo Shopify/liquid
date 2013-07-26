@@ -31,6 +31,15 @@ module Liquid
       token.contents
     end
 
+    # Like consume? Except for an :id token of a certain name
+    def id?(str)
+      token = @tokens[@p]
+      return false unless token && token.type == :id
+      return false unless token.contents == str
+      @p += 1
+      token.contents
+    end
+
     def cur_token()
       tok = @tokens[@p]
       raise SyntaxError, 'Expected more input.' unless tok
