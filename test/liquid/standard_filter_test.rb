@@ -27,6 +27,14 @@ class TestDrop < Liquid::Drop
   end
 end
 
+class TestEnumerable < Liquid::Drop
+  include Enumerable
+
+  def each(&block)
+    [ { "foo" => 1 }, { "foo" => 2 }, { "foo" => 3 } ].each(&block)
+  end
+end
+
 class StandardFiltersTest < Test::Unit::TestCase
   include Liquid
 
@@ -133,6 +141,10 @@ class StandardFiltersTest < Test::Unit::TestCase
     p = Proc.new{ drop }
     templ = '{{ procs | map: "test" }}'
     assert_equal "testfoo", Liquid::Template.parse(templ).render("procs" => [p])
+  end
+
+  def test_map_works_on_enumerables
+    assert_equal "123", Liquid::Template.parse('{{ foo | map: "foo" }}').render!("foo" => TestEnumerable.new)
   end
 
   def test_date
