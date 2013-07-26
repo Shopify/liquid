@@ -17,11 +17,24 @@ module Liquid
     def initialize(markup)
       @markup  = markup
       @name    = nil
-      @filters = []
-      parse(markup)
+      @warning = nil
+      
+
+      case Template.error_mode
+      when :strict then strict_parse(markup)
+      when :lax    then lax_parse(markup)
+      when :warn
+        begin
+          strict_parse(markup)
+        rescue SyntaxError => e
+          @warning = e
+          lax_parse(markup)
+        end
+      end
     end
 
-    def old_parse(markup)
+    def lax_parse(markup)
+      @filters = []
       if match = markup.match(/\s*(#{QuotedFragment})(.*)/o)
         @name = match[1]
         if match[2].match(/#{FilterSeparator}\s*(.*)/o)
@@ -37,7 +50,8 @@ module Liquid
       end
     end
 
-    def parse(markup)
+    def strict_parse(markup)
+      @filters = []
       p = Parser.new(markup)
       # Could be just filters with no input
       @name = p.look(:pipe) ? '' : p.expression
@@ -61,6 +75,7 @@ module Liquid
 
     def render(context)
       return '' if @name.nil?
+      context.errors << @warning if @warning
       @filters.inject(context[@name]) do |output, filter|
         filterargs = []
         keyword_args = {}

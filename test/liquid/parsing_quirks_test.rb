@@ -30,6 +30,7 @@ class ParsingQuirksTest < Test::Unit::TestCase
   end
 
   def test_error_on_empty_filter
+    Template.error_mode = :strict
     assert_nothing_raised do
       Template.parse("{{test}}")
       Template.parse("{{|test}}")
@@ -40,6 +41,7 @@ class ParsingQuirksTest < Test::Unit::TestCase
   end
 
   def test_meaningless_parens
+    Template.error_mode = :strict
     assert_raise(SyntaxError) do
       markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
       Template.parse("{% if #{markup} %} YES {% endif %}")
@@ -47,6 +49,7 @@ class ParsingQuirksTest < Test::Unit::TestCase
   end
 
   def test_unexpected_characters_silently_eat_logic
+    Template.error_mode = :strict
     assert_raise(SyntaxError) do
       markup = "true && false"
       Template.parse("{% if #{markup} %} YES {% endif %}")

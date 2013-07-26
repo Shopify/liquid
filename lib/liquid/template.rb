@@ -34,6 +34,18 @@ module Liquid
         @tags ||= {}
       end
 
+      # Sets how strict the parser should be.
+      # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
+      # :warn is the default and will give deprecation warnings when invalid syntax is used.
+      # :strict will enforce correct syntax.
+      def error_mode=(mode)
+        @error_mode = mode
+      end
+
+      def error_mode
+        @error_mode || :warn
+      end
+
       # Pass a module with filter methods which should be available
       # to all liquid views. Good for registering the standard library
       def register_filter(mod)

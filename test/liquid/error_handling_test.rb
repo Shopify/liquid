@@ -63,6 +63,7 @@ class ErrorHandlingTest < Test::Unit::TestCase
   end
 
   def test_unrecognized_operator
+    Template.error_mode = :strict
     assert_raise(SyntaxError) do
       Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ')
     end

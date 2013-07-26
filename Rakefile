@@ -30,6 +30,10 @@ namespace :benchmark do
     ruby "./performance/benchmark.rb"
   end
 
+  desc "Run the liquid benchmark with lax parsing"
+  task :lax do
+    ruby "./performance/benchmark.rb lax"
+  end
 end
 
 

@@ -29,6 +29,7 @@ module Liquid
     end
 
     def render(context)
+      context.errors += @warnings if @warnings
       context.stack do
         @blocks.each do |block|
           if block.evaluate(context)
@@ -52,7 +53,22 @@ module Liquid
         @nodelist = block.attach(Array.new)
       end
 
-      def old_parse(markup)
+      def parse_condition(markup)
+        case Template.error_mode
+        when :strict then strict_parse(markup)
+        when :lax    then lax_parse(markup)
+        when :warn
+          begin
+            return strict_parse(markup)
+          rescue SyntaxError => e
+            @warnings ||= []
+            @warnings << e
+            return lax_parse(markup)
+          end
+        end
+      end
+
+      def lax_parse(markup)
         expressions = markup.scan(ExpressionsAndOperators).reverse
         raise(SyntaxError, SyntaxHelp) unless expressions.shift =~ Syntax
 
@@ -71,7 +87,7 @@ module Liquid
         condition
       end
 
-      def parse_condition(markup)
+      def strict_parse(markup)
         p = Parser.new(markup)
 
         condition = parse_comparison(p)
