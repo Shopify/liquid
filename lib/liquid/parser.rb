@@ -40,12 +40,6 @@ module Liquid
       token.contents
     end
 
-    def cur_token()
-      tok = @tokens[@p]
-      raise SyntaxError, 'Expected more input.' unless tok
-      tok
-    end
-
     def look(type, ahead = 0)
       tok = @tokens[@p + ahead]
       return false unless tok
@@ -55,7 +49,7 @@ module Liquid
     # === General Liquid parsing functions ===
 
     def expression
-      token = cur_token
+      token = @tokens[@p]
       if token.type == :id
         variable_signature
       elsif [:string, :integer, :float].include? token.type
