@@ -18,6 +18,11 @@ module Liquid
     def to_s
       self.inspect
     end
+
+    def ==(other)
+      return unless other && other.respond_to?(:type) && other.respond_to?(:contents)
+      @type == other.type && @contents == other.contents
+    end
   end
 
   class Lexer
@@ -33,7 +38,7 @@ module Liquid
     SINGLE_STRING_LITERAL = /'[^\']*'/
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
     INTEGER_LITERAL = /-?\d+/
-    FLOAT_LITERAL = /-?\d+(?:\.\d+)?/
+    FLOAT_LITERAL = /-?\d+\.\d+/
     COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains/
 
     def initialize(input)
@@ -59,16 +64,17 @@ module Liquid
       
       case
       when t = @ss.scan(COMPARISON_OPERATOR) then Token[:comparison, t]
-      when t = @ss.scan(IDENTIFIER) then Token[:id, t]
       when t = @ss.scan(SINGLE_STRING_LITERAL) then Token[:string, t]
       when t = @ss.scan(DOUBLE_STRING_LITERAL) then Token[:string, t]
-      when t = @ss.scan(INTEGER_LITERAL) then Token[:integer, t]
       when t = @ss.scan(FLOAT_LITERAL) then Token[:float, t]
+      when t = @ss.scan(INTEGER_LITERAL) then Token[:integer, t]
+      when t = @ss.scan(IDENTIFIER) then Token[:id, t]
       else
         lex_specials
       end
     end
 
+    protected
     def lex_specials
       c = @ss.getch
       if s = SPECIALS[c]
