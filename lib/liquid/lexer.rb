@@ -29,17 +29,11 @@ module Liquid
       '[' => :open_square,
       ']' => :close_square
     }
-
-    MATCHERS = {
-      /([\w\-]+)/ => :id,
-      /('[^\']*')/ => :string,
-      /("[^\"]*")/ => :string,
-      /(-?\d+)/ => :integer,
-      /(-?\d+(?:\.\d+)?)/ => :float
-    }
-    MATCHER_REGEX = Regexp.union(MATCHERS.keys)
-    MATCHER_TOKENS = MATCHERS.values
-
+    IDENTIFIER = /[\w\-]+/
+    SINGLE_STRING_LITERAL = /'[^\']*'/
+    DOUBLE_STRING_LITERAL = /"[^\"]*"/
+    INTEGER_LITERAL = /-?\d+/
+    FLOAT_LITERAL = /-?\d+(?:\.\d+)?/
 
     def initialize(input)
       @ss = StringScanner.new(input)
@@ -61,24 +55,21 @@ module Liquid
     def next_token
       consume_whitespace
       return if @ss.eos?
-
-      tok_contents = @ss.scan(MATCHER_REGEX)
-      tok_type = nil
-      MATCHER_TOKENS.each_with_index do |type, i|
-        if @ss[i+1]
-          tok_type = type
-          break
-        end
-      end
-
-      return Token[tok_type, tok_contents] if tok_type
       
-      c = @ss.getch
-      if s = SPECIALS[c]
-        return Token[s,c]
-      end
+      case
+      when t = @ss.scan(IDENTIFIER) then Token[:id, t]
+      when t = @ss.scan(SINGLE_STRING_LITERAL) then Token[:string, t]
+      when t = @ss.scan(DOUBLE_STRING_LITERAL) then Token[:string, t]
+      when t = @ss.scan(INTEGER_LITERAL) then Token[:integer, t]
+      when t = @ss.scan(FLOAT_LITERAL) then Token[:float, t]
+      else
+        c = @ss.getch
+        if s = SPECIALS[c]
+          return Token[s,c]
+        end
 
-      raise SyntaxError, "Unexpected character #{c}."
+        raise SyntaxError, "Unexpected character #{c}."
+      end
     end
 
     def consume_whitespace
