@@ -46,26 +46,11 @@ module Liquid
         block = if tag == 'else'
           ElseCondition.new
         else
-          parse_condition(markup)
+          switch_parse(markup)
         end
 
         @blocks.push(block)
         @nodelist = block.attach(Array.new)
-      end
-
-      def parse_condition(markup)
-        case Template.error_mode
-        when :strict then strict_parse(markup)
-        when :lax    then lax_parse(markup)
-        when :warn
-          begin
-            return strict_parse(markup)
-          rescue SyntaxError => e
-            @warnings ||= []
-            @warnings << e
-            return lax_parse(markup)
-          end
-        end
       end
 
       def lax_parse(markup)
