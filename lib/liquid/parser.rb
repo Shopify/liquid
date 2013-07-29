@@ -50,13 +50,20 @@ module Liquid
 
     def expression
       token = @tokens[@p]
-      if token[0] == :id
+      str = if token[0] == :id
         variable_signature
       elsif [:string, :number].include? token[0]
         consume
         token[1]
       else
         raise SyntaxError, "#{token} is not a valid expression."
+      end
+
+      if look(:dot) && look(:dot, 1)
+        @p += 2
+        str + expression
+      else
+        str
       end
     end
 
