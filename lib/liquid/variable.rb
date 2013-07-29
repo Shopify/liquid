@@ -12,6 +12,7 @@ module Liquid
   #
   class Variable
     FilterParser = /(?:#{FilterSeparator}|(?:\s*(?:#{QuotedFragment}|#{ArgumentSeparator})\s*)+)/o
+    EasyParse = /^ *(\w+(?:\.\w+)*) *$/
     attr_accessor :filters, :name
 
     def initialize(markup)
@@ -51,6 +52,12 @@ module Liquid
     end
 
     def strict_parse(markup)
+      # Very simple valid cases
+      if markup =~ EasyParse
+        @name = $1
+        return
+      end
+
       @filters = []
       p = Parser.new(markup)
       # Could be just filters with no input
