@@ -55,6 +55,7 @@ module Liquid
       # Very simple valid cases
       if markup =~ EasyParse
         @name = $1
+        @filters = []
         return
       end
 
