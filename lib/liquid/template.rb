@@ -43,7 +43,7 @@ module Liquid
       end
 
       def error_mode
-        @error_mode || :warn
+        @error_mode || :lax
       end
 
       # Pass a module with filter methods which should be available

@@ -14,6 +14,6 @@ puts
 [RubyProf::FlatPrinter, RubyProf::GraphHtmlPrinter, RubyProf::CallTreePrinter, RubyProf::DotPrinter].each do |klass|
   filename = (ENV['TMP'] || '/tmp') + (klass.name.include?('Html') ? "/liquid.#{klass.name.downcase}.html" : "/callgrind.liquid.#{klass.name.downcase}.txt")
   filename.gsub!(/:+/, '_')
-  File.open(filename, "w+") { |fp| klass.new(results).print(fp, :print_file => true) }
+  File.open(filename, "w+") { |fp| klass.new(results).print(fp, :print_file => true, :min_percent => 3) }
   $stderr.puts "wrote #{klass.name} output to #{filename}"
 end
