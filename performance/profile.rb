@@ -11,7 +11,7 @@ results  = profiler.run_profile
 puts 'Success'
 puts
 
-[RubyProf::FlatPrinter, RubyProf::GraphPrinter, RubyProf::GraphHtmlPrinter, RubyProf::CallTreePrinter].each do |klass|
+[RubyProf::FlatPrinter, RubyProf::GraphHtmlPrinter, RubyProf::CallTreePrinter, RubyProf::DotPrinter].each do |klass|
   filename = (ENV['TMP'] || '/tmp') + (klass.name.include?('Html') ? "/liquid.#{klass.name.downcase}.html" : "/callgrind.liquid.#{klass.name.downcase}.txt")
   filename.gsub!(/:+/, '_')
   File.open(filename, "w+") { |fp| klass.new(results).print(fp, :print_file => true) }
