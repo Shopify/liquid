@@ -7,7 +7,9 @@ module Liquid
       ':' => :colon,
       ',' => :comma,
       '[' => :open_square,
-      ']' => :close_square
+      ']' => :close_square,
+      '(' => :open_round,
+      ')' => :close_round
     }
     IDENTIFIER = /[\w\-?!]+/
     SINGLE_STRING_LITERAL = /'[^\']*'/
