@@ -47,4 +47,22 @@ For standard use you can just pass it the content of a file and call render with
 @template.render('name' => 'tobi')                # => "hi tobi"
 ```
 
+### Error Modes
+
+Setting the error mode of Liquid lets you specify how strictly you want your templates to be interpreted.
+Normally the parser is very lax and will accept almost anything without error. Unfortunately this can make
+it very hard to debug and can lead to unexpected behaviour. 
+
+Liquid also comes with a stricter parser that can be used when editing templates to give better error messages
+when templates are invalid. You can enable this new parser like this:
+
+```ruby
+Liquid::Template.error_mode = :strict # Raises a SyntaxError when invalid syntax is used
+Liquid::Template.error_mode = :warn # Adds errors to template.errors but continues as normal
+Liquid::Template.error_mode = :lax # The default mode, accepts almost anything.
+```
+
+It is recommended that you enable `:strict` or `:warn` mode on new apps to stop invalid templates from being created.
+It is also recommended that you use it in the template editors of existing apps to give editors better error messages.
+
 [![Build Status](https://secure.travis-ci.org/Shopify/liquid.png)](http://travis-ci.org/Shopify/liquid)
