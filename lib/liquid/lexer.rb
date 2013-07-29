@@ -2,12 +2,9 @@ require "strscan"
 module Liquid
   class Token
     attr_accessor :type, :contents
-    def initialize(*args)
-      @type, @contents = args
-    end
-
-    def self.[](*args)
-      Token.new(*args)
+    def initialize(type, contents = nil)
+      @type = type
+      @contents = contents
     end
 
     def inspect
@@ -52,7 +49,7 @@ module Liquid
       loop do
         tok = next_token
         unless tok
-          @output << Token[:end_of_string]
+          @output << Token.new(:end_of_string)
           return @output
         end
         @output << tok
@@ -64,12 +61,12 @@ module Liquid
       return if @ss.eos?
       
       case
-      when t = @ss.scan(COMPARISON_OPERATOR) then Token[:comparison, t]
-      when t = @ss.scan(SINGLE_STRING_LITERAL) then Token[:string, t]
-      when t = @ss.scan(DOUBLE_STRING_LITERAL) then Token[:string, t]
-      when t = @ss.scan(FLOAT_LITERAL) then Token[:float, t]
-      when t = @ss.scan(INTEGER_LITERAL) then Token[:integer, t]
-      when t = @ss.scan(IDENTIFIER) then Token[:id, t]
+      when t = @ss.scan(COMPARISON_OPERATOR) then Token.new(:comparison, t)
+      when t = @ss.scan(SINGLE_STRING_LITERAL) then Token.new(:string, t)
+      when t = @ss.scan(DOUBLE_STRING_LITERAL) then Token.new(:string, t)
+      when t = @ss.scan(FLOAT_LITERAL) then Token.new(:float, t)
+      when t = @ss.scan(INTEGER_LITERAL) then Token.new(:integer, t)
+      when t = @ss.scan(IDENTIFIER) then Token.new(:id, t)
       else
         lex_specials
       end
@@ -79,7 +76,7 @@ module Liquid
     def lex_specials
       c = @ss.getch
       if s = SPECIALS[c]
-        return Token[s,c]
+        return Token.new(s,c)
       end
 
       raise SyntaxError, "Unexpected character #{c}."
