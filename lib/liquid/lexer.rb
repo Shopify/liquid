@@ -12,8 +12,7 @@ module Liquid
     IDENTIFIER = /[\w\-?!]+/
     SINGLE_STRING_LITERAL = /'[^\']*'/
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
-    INTEGER_LITERAL = /-?\d+/
-    FLOAT_LITERAL = /-?\d+\.\d+/
+    NUMBER_LITERAL = /-?\d+(\.\d+)?/
     COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains/
 
     def initialize(input)
@@ -31,8 +30,7 @@ module Liquid
         when t = @ss.scan(COMPARISON_OPERATOR) then [:comparison, t]
         when t = @ss.scan(SINGLE_STRING_LITERAL) then [:string, t]
         when t = @ss.scan(DOUBLE_STRING_LITERAL) then [:string, t]
-        when t = @ss.scan(FLOAT_LITERAL) then [:float, t]
-        when t = @ss.scan(INTEGER_LITERAL) then [:integer, t]
+        when t = @ss.scan(NUMBER_LITERAL) then [:number, t]
         when t = @ss.scan(IDENTIFIER) then [:id, t]
         else
           c = @ss.getch

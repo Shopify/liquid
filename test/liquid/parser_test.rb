@@ -7,13 +7,13 @@ class ParserTest < Test::Unit::TestCase
     p = Parser.new("wat: 7")
     assert_equal 'wat', p.consume(:id)
     assert_equal ':', p.consume(:colon)
-    assert_equal '7', p.consume(:integer)
+    assert_equal '7', p.consume(:number)
   end
 
   def test_jump
     p = Parser.new("wat: 7")
     p.jump(2)
-    assert_equal '7', p.consume(:integer)
+    assert_equal '7', p.consume(:number)
   end
 
   def test_consume?
@@ -21,14 +21,14 @@ class ParserTest < Test::Unit::TestCase
     assert_equal 'wat', p.consume?(:id)
     assert_equal false, p.consume?(:dot)
     assert_equal ':', p.consume(:colon)
-    assert_equal '7', p.consume?(:integer)
+    assert_equal '7', p.consume?(:number)
   end
 
   def test_id?
     p = Parser.new("wat 6 Peter Hegemon")
     assert_equal 'wat', p.id?('wat')
     assert_equal false, p.id?('endgame')
-    assert_equal '6', p.consume(:integer)
+    assert_equal '6', p.consume(:number)
     assert_equal 'Peter', p.id?('Peter')
     assert_equal false, p.id?('Achilles')
   end
@@ -37,10 +37,10 @@ class ParserTest < Test::Unit::TestCase
     p = Parser.new("wat 6 Peter Hegemon")
     assert_equal true, p.look(:id)
     assert_equal 'wat', p.consume(:id)
-    assert_equal false, p.look(:float)
-    assert_equal true, p.look(:integer)
+    assert_equal false, p.look(:comparison)
+    assert_equal true, p.look(:number)
     assert_equal true, p.look(:id, 1)
-    assert_equal false, p.look(:float, 1)
+    assert_equal false, p.look(:number, 1)
   end
 
   def test_expressions

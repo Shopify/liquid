@@ -10,12 +10,12 @@ class LexerTest < Test::Unit::TestCase
 
   def test_integer
     tokens = Lexer.new('hi 50').tokenize
-    assert_equal [[:id,'hi'], [:integer, '50'], [:end_of_string]], tokens
+    assert_equal [[:id,'hi'], [:number, '50'], [:end_of_string]], tokens
   end
 
   def test_float
     tokens = Lexer.new('hi 5.0').tokenize
-    assert_equal [[:id,'hi'], [:float, '5.0'], [:end_of_string]], tokens
+    assert_equal [[:id,'hi'], [:number, '5.0'], [:end_of_string]], tokens
   end
 
   def test_comparison

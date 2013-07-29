@@ -52,7 +52,7 @@ module Liquid
       token = @tokens[@p]
       if token[0] == :id
         variable_signature
-      elsif [:string, :integer, :float].include? token[0]
+      elsif [:string, :number].include? token[0]
         consume
         token[1]
       else
