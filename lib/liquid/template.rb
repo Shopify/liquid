@@ -53,9 +53,9 @@ module Liquid
       end
 
       # creates a new <tt>Template</tt> object from liquid source code
-      def parse(source)
+      def parse(source, options = {})
         template = Template.new
-        template.parse(source)
+        template.parse(source, options)
         template
       end
     end
@@ -67,8 +67,8 @@ module Liquid
 
     # Parse source code.
     # Returns self for easy chaining
-    def parse(source)
-      @root = Document.new(tokenize(source))
+    def parse(source, options = {})
+      @root = Document.new(tokenize(source), options)
       self
     end
 

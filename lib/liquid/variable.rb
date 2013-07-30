@@ -15,13 +15,14 @@ module Liquid
     EasyParse = /^ *(\w+(?:\.\w+)*) *$/
     attr_accessor :filters, :name
 
-    def initialize(markup)
+    def initialize(markup, options = {})
       @markup  = markup
       @name    = nil
       @warning = nil
+      @options = options || {}
       
 
-      case Template.error_mode
+      case @options[:error_mode] || Template.error_mode
       when :strict then strict_parse(markup)
       when :lax    then lax_parse(markup)
       when :warn

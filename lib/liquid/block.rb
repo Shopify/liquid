@@ -28,7 +28,9 @@ module Liquid
 
             # fetch the tag from registered blocks
             if tag = Template.tags[$1]
-              new_tag = tag.new($1, $2, tokens)
+              new_tag = tag.allocate
+              new_tag.options = @options || {}
+              new_tag.send(:initialize, $1, $2, tokens)
               @blank &&= new_tag.blank?
               @nodelist << new_tag
             else
@@ -80,7 +82,7 @@ module Liquid
 
     def create_variable(token)
       token.scan(ContentOfVariable) do |content|
-        return Variable.new(content.first)
+        return Variable.new(content.first, @options)
       end
       raise SyntaxError.new("Variable '#{token}' was not properly terminated with regexp: #{VariableEnd.inspect} ")
     end

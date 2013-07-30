@@ -30,7 +30,6 @@ class ParsingQuirksTest < Test::Unit::TestCase
   end
 
   def test_error_on_empty_filter
-    Template.error_mode = :strict
     assert_nothing_raised do
       Template.parse("{{test}}")
       Template.parse("{{|test}}")
@@ -41,7 +40,6 @@ class ParsingQuirksTest < Test::Unit::TestCase
   end
 
   def test_meaningless_parens_error
-    Template.error_mode = :strict
     assert_raise(SyntaxError) do
       markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
       Template.parse("{% if #{markup} %} YES {% endif %}")
@@ -49,7 +47,6 @@ class ParsingQuirksTest < Test::Unit::TestCase
   end
 
   def test_unexpected_characters_syntax_error
-    Template.error_mode = :strict
     assert_raise(SyntaxError) do
       markup = "true && false"
       Template.parse("{% if #{markup} %} YES {% endif %}")
@@ -61,12 +58,10 @@ class ParsingQuirksTest < Test::Unit::TestCase
   end
 
   def test_no_error_on_lax_empty_filter
-    with_lax_parsing do
-      assert_nothing_raised do
-        Template.parse("{{test |a|b|}}")
-        Template.parse("{{test}}")
-        Template.parse("{{|test|}}")
-      end
+    assert_nothing_raised do
+      Template.parse("{{test |a|b|}}", :error_mode => :lax)
+      Template.parse("{{test}}", :error_mode => :lax)
+      Template.parse("{{|test|}}", :error_mode => :lax)
     end
   end
 

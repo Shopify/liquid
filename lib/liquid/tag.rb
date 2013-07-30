@@ -1,10 +1,11 @@
 module Liquid
   class Tag
-    attr_accessor :nodelist
+    attr_accessor :nodelist, :options
 
     def initialize(tag_name, markup, tokens)
       @tag_name   = tag_name
       @markup     = markup
+      @options    ||= {} # needs || because might be set before initialize
       parse(tokens)
     end
 
@@ -24,7 +25,7 @@ module Liquid
     end
 
     def switch_parse(markup)
-      case Template.error_mode
+      case @options[:error_mode] || Template.error_mode
       when :strict then strict_parse(markup)
       when :lax    then lax_parse(markup)
       when :warn

@@ -70,13 +70,11 @@ class ErrorHandlingTest < Test::Unit::TestCase
   end
   
   def test_lax_unrecognized_operator
-    with_lax_parsing do
-      assert_nothing_raised do
-        template = Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ')
-        assert_equal ' Liquid error: Unknown operator =! ', template.render
-        assert_equal 1, template.errors.size
-        assert_equal Liquid::ArgumentError, template.errors.first.class
-      end
+    assert_nothing_raised do
+      template = Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ', :error_mode => :lax)
+      assert_equal ' Liquid error: Unknown operator =! ', template.render
+      assert_equal 1, template.errors.size
+      assert_equal Liquid::ArgumentError, template.errors.first.class
     end
   end
 
