@@ -2,6 +2,13 @@ module Liquid
   class Tag
     attr_accessor :nodelist, :options
 
+    def self.new_with_options(tag_name, markup, tokens, options)
+      new_tag = self.allocate
+      new_tag.options = options
+      new_tag.send(:initialize, tag_name, markup, tokens)
+      new_tag
+    end
+
     def initialize(tag_name, markup, tokens)
       @tag_name   = tag_name
       @markup     = markup

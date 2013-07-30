@@ -28,9 +28,7 @@ module Liquid
 
             # fetch the tag from registered blocks
             if tag = Template.tags[$1]
-              new_tag = tag.allocate
-              new_tag.options = @options || {}
-              new_tag.send(:initialize, $1, $2, tokens)
+              new_tag = tag.new_with_options($1, $2, tokens, @options || {})
               @blank &&= new_tag.blank?
               @nodelist << new_tag
             else
