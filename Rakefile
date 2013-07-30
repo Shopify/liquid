@@ -27,7 +27,7 @@ namespace :benchmark do
 
   desc "Run the liquid benchmark"
   task :run do
-    ruby "./performance/benchmark.rb"
+    ruby "./performance/benchmark.rb strict"
   end
 
   desc "Run the liquid benchmark with lax parsing"
