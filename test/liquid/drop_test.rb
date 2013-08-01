@@ -63,6 +63,22 @@ class EnumerableDrop < Liquid::Drop
     3
   end
 
+  def first
+    1
+  end
+
+  def count
+    3
+  end
+
+  def min
+    1
+  end
+
+  def max
+    3
+  end
+
   def each
     yield 1
     yield 2
@@ -200,11 +216,15 @@ class DropsTest < Test::Unit::TestCase
     [ :count, :max ].each do |method|
       assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => RealEnumerableDrop.new)
       assert_equal "3", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => RealEnumerableDrop.new)
+      assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => EnumerableDrop.new)
+      assert_equal "3", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => EnumerableDrop.new)
     end
 
     [ :min, :first ].each do |method|
       assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => RealEnumerableDrop.new)
       assert_equal "1", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => RealEnumerableDrop.new)
+      assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => EnumerableDrop.new)
+      assert_equal "1", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => EnumerableDrop.new)
     end
   end
 
