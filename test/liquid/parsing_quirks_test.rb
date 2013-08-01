@@ -34,26 +34,32 @@ class ParsingQuirksTest < Test::Unit::TestCase
       Template.parse("{{test}}")
       Template.parse("{{|test}}")
     end
-    assert_raise(SyntaxError) do
-      Template.parse("{{test |a|b|}}")
+    with_error_mode(:strict) do
+      assert_raise(SyntaxError) do
+        Template.parse("{{test |a|b|}}")
+      end
     end
   end
 
   def test_meaningless_parens_error
-    assert_raise(SyntaxError) do
-      markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
-      Template.parse("{% if #{markup} %} YES {% endif %}")
+    with_error_mode(:strict) do
+      assert_raise(SyntaxError) do
+        markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
+        Template.parse("{% if #{markup} %} YES {% endif %}")
+      end
     end
   end
 
   def test_unexpected_characters_syntax_error
-    assert_raise(SyntaxError) do
-      markup = "true && false"
-      Template.parse("{% if #{markup} %} YES {% endif %}")
-    end
-    assert_raise(SyntaxError) do
-      markup = "false || true"
-      Template.parse("{% if #{markup} %} YES {% endif %}")
+    with_error_mode(:strict) do
+      assert_raise(SyntaxError) do
+        markup = "true && false"
+        Template.parse("{% if #{markup} %} YES {% endif %}")
+      end
+      assert_raise(SyntaxError) do
+        markup = "false || true"
+        Template.parse("{% if #{markup} %} YES {% endif %}")
+      end
     end
   end
 
@@ -66,7 +72,7 @@ class ParsingQuirksTest < Test::Unit::TestCase
   end
 
   def test_meaningless_parens_lax
-    with_lax_parsing do
+    with_error_mode(:lax) do
       assigns = {'b' => 'bar', 'c' => 'baz'}
       markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
       assert_template_result(' YES ',"{% if #{markup} %} YES {% endif %}", assigns)
@@ -74,7 +80,7 @@ class ParsingQuirksTest < Test::Unit::TestCase
   end
 
   def test_unexpected_characters_silently_eat_logic_lax
-    with_lax_parsing do
+    with_error_mode(:lax) do
       markup = "true && false"
       assert_template_result(' YES ',"{% if #{markup} %} YES {% endif %}")
       markup = "false || true"

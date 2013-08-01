@@ -9,7 +9,15 @@ rescue LoadError
 end
 require File.join(File.dirname(__FILE__), '..', 'lib', 'liquid')
 
-Liquid::Template.error_mode = :strict
+mode = :strict
+if ARGV.last == 'lax'
+  puts "-- LAX ERROR MODE"
+  ARGV.pop
+  mode = :lax
+else
+  puts "-- STRICT ERROR MODE"
+end
+Liquid::Template.error_mode = mode
 
 
 module Test
@@ -27,10 +35,11 @@ module Test
         assert_match expected, Template.parse(template).render(assigns)
       end
 
-      def with_lax_parsing
-        Liquid::Template.error_mode = :lax
+      def with_error_mode(mode)
+        old_mode = Liquid::Template.error_mode
+        Liquid::Template.error_mode = mode
         yield
-        Liquid::Template.error_mode = :strict
+        Liquid::Template.error_mode = old_mode
       end
     end # Assertions
   end # Unit

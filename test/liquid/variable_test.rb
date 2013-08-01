@@ -127,8 +127,10 @@ class VariableTest < Test::Unit::TestCase
   end
 
   def test_strict_filter_argument_parsing
-    assert_raises(SyntaxError) do
-      Variable.new(%! number_of_comments | pluralize: 'comment': 'comments' !)
+    with_error_mode(:strict) do
+      assert_raises(SyntaxError) do
+        Variable.new(%! number_of_comments | pluralize: 'comment': 'comments' !)
+      end
     end
   end
 end
