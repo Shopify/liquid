@@ -44,8 +44,6 @@ module Liquid
       tok[0] == type
     end
 
-    # === General Liquid parsing functions ===
-
     def expression
       token = @tokens[@p]
       if token[0] == :id

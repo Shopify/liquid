@@ -62,6 +62,12 @@ Liquid::Template.error_mode = :warn # Adds errors to template.errors but continu
 Liquid::Template.error_mode = :lax # The default mode, accepts almost anything.
 ```
 
+If you want to set the error mode only on specific templates you can pass `:error_mode` as an option to `parse`:
+```ruby
+Liquid::Template.parse(source, :error_mode => :strict)
+```
+This is useful for doing things like enabling strict mode only in the theme editor.
+
 It is recommended that you enable `:strict` or `:warn` mode on new apps to stop invalid templates from being created.
 It is also recommended that you use it in the template editors of existing apps to give editors better error messages.
 
