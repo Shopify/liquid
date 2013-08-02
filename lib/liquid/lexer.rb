@@ -50,15 +50,5 @@ module Liquid
         @output << tok
       end
     end
-
-    protected
-    def lex_specials
-      c = @ss.getch
-      if s = SPECIALS[c]
-        return Token.new(s,c)
-      end
-
-      raise SyntaxError, "Unexpected character #{c}."
-    end
   end
 end
