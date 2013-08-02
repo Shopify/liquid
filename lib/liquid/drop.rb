@@ -59,7 +59,7 @@ module Liquid
         blacklist = (Liquid::Drop.public_instance_methods + [:each]).map(&:to_s)
         if include?(Enumerable)
           blacklist += Enumerable.public_instance_methods.map(&:to_s)
-          blacklist -= [:sort, :count, :first, :min, :max].map(&:to_s)
+          blacklist -= [:sort, :count, :first, :min, :max, :include?].map(&:to_s)
         end
         whitelist = [:to_liquid] + (public_instance_methods.map(&:to_s) - blacklist.map(&:to_s))
         @invokable_methods = Set.new(whitelist.map(&:to_s))

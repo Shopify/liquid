@@ -220,6 +220,8 @@ class DropsTest < Test::Unit::TestCase
       assert_equal "3", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => EnumerableDrop.new)
     end
 
+    assert_equal "yes", Liquid::Template.parse("{% if collection contains 3 %}yes{% endif %}").render('collection' => RealEnumerableDrop.new)
+
     [ :min, :first ].each do |method|
       assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => RealEnumerableDrop.new)
       assert_equal "1", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => RealEnumerableDrop.new)
