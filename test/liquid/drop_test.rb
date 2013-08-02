@@ -55,9 +55,42 @@ class ProductDrop < Liquid::Drop
 end
 
 class EnumerableDrop < Liquid::Drop
+  def before_method(method)
+    method
+  end
 
   def size
     3
+  end
+
+  def first
+    1
+  end
+
+  def count
+    3
+  end
+
+  def min
+    1
+  end
+
+  def max
+    3
+  end
+
+  def each
+    yield 1
+    yield 2
+    yield 3
+  end
+end
+
+class RealEnumerableDrop < Liquid::Drop
+  include Enumerable
+
+  def before_method(method)
+    method
   end
 
   def each
@@ -168,6 +201,33 @@ class DropsTest < Test::Unit::TestCase
 
   def test_enumerable_drop_size
     assert_equal '3', Liquid::Template.parse( '{{collection.size}}').render('collection' => EnumerableDrop.new)
+  end
+
+  def test_enumerable_drop_will_invoke_before_method_for_clashing_method_names
+    ["select", "each", "map", "cycle"].each do |method|
+      assert_equal method.to_s, Liquid::Template.parse("{{collection.#{method}}}").render('collection' => EnumerableDrop.new)
+      assert_equal method.to_s, Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => EnumerableDrop.new)
+      assert_equal method.to_s, Liquid::Template.parse("{{collection.#{method}}}").render('collection' => RealEnumerableDrop.new)
+      assert_equal method.to_s, Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => RealEnumerableDrop.new)
+    end
+  end
+
+  def test_some_enumerable_methods_still_get_invoked
+    [ :count, :max ].each do |method|
+      assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => RealEnumerableDrop.new)
+      assert_equal "3", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => RealEnumerableDrop.new)
+      assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => EnumerableDrop.new)
+      assert_equal "3", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => EnumerableDrop.new)
+    end
+
+    assert_equal "yes", Liquid::Template.parse("{% if collection contains 3 %}yes{% endif %}").render('collection' => RealEnumerableDrop.new)
+
+    [ :min, :first ].each do |method|
+      assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => RealEnumerableDrop.new)
+      assert_equal "1", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => RealEnumerableDrop.new)
+      assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => EnumerableDrop.new)
+      assert_equal "1", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => EnumerableDrop.new)
+    end
   end
 
   def test_empty_string_value_access
