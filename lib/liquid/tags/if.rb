@@ -46,7 +46,7 @@ module Liquid
         block = if tag == 'else'
           ElseCondition.new
         else
-          switch_parse(markup)
+          parse_with_selected_parser(markup)
         end
 
         @blocks.push(block)
@@ -79,7 +79,7 @@ module Liquid
 
         while op = (p.id?('and') || p.id?('or'))
           new_cond = parse_comparison(p)
-          new_cond.send(op.to_sym, condition)
+          new_cond.send(op, condition)
           condition = new_cond
         end
         p.consume(:end_of_string)

@@ -3,14 +3,8 @@ module Liquid
     attr_accessor :nodelist, :options
 
     def self.new_with_options(tag_name, markup, tokens, options)
-      # Forgive me Matz for I have sinned.
-      # I have forsaken the holy idioms of Ruby and used Class#allocate.
-      # I fulfilled my mandate by maintaining API compatibility and performance,
-      # even though it may displease your Lordship.
-      #
-      # In all seriousness though, I can prove to a reasonable degree of certainty
-      # that setting options before calling initialize is required to maintain API compatibility.
-      # I tried doing it without it and not only did I break compatibility, it was much slower.
+      # Forgive me Matz for I have sinned. I know this code is weird
+      # but it was necessary to maintain API compatibility.
       new_tag = self.allocate
       new_tag.options = options
       new_tag.send(:initialize, tag_name, markup, tokens)
@@ -39,7 +33,7 @@ module Liquid
       @blank || true
     end
 
-    def switch_parse(markup)
+    def parse_with_selected_parser(markup)
       case @options[:error_mode] || Template.error_mode
       when :strict then strict_parse(markup)
       when :lax    then lax_parse(markup)

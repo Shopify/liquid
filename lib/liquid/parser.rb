@@ -1,6 +1,4 @@
 module Liquid
-  # This class is used by tags to parse themselves
-  # it provides helpers and encapsulates state
   class Parser
     def initialize(input)
       l = Lexer.new(input)
@@ -54,7 +52,6 @@ module Liquid
         variable_signature
       elsif [:string, :number].include? token[0]
         consume
-        token[1]
       elsif token.first == :open_round
         consume
         first = expression
