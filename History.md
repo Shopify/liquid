@@ -6,6 +6,7 @@ The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are
 ## 2.6.0 / Master branch (not yet released)
 
 * ...
+* Fix clashing method names in enumerable drops, see #238 [Florian Weingarten, fw42]
 * Make map filter work on enumerable drops, see #233 [Florian Weingarten, fw42]
 * Fix security issue with map filter, see #230, #232, #234, #237 [Florian Weingarten, fw42]
 * Improved whitespace stripping for blank blocks, related to #216 [Florian Weingarten, fw42]
