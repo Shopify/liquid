@@ -1,4 +1,5 @@
 module Liquid
+
   # If is the conditional block
   #
   #   {% if user.admin %}
@@ -9,6 +10,7 @@ module Liquid
   #
   #    There are {% if count < 5 %} less {% else %} more {% endif %} items than you need.
   #
+  #
   class If < Block
     SyntaxHelp = "Syntax Error in tag 'if' - Valid syntax: if [expression]"
     Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
@@ -16,7 +18,9 @@ module Liquid
 
     def initialize(tag_name, markup, tokens)
       @blocks = []
+
       push_block('if', markup)
+
       super
     end
 
@@ -67,6 +71,8 @@ module Liquid
         @blocks.push(block)
         @nodelist = block.attach(Array.new)
       end
+
+
   end
 
   Template.register_tag('if', If)

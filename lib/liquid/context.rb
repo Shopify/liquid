@@ -14,6 +14,7 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
+    attr_accessor :replacements
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = {})
       @environments    = [environments].flatten
@@ -22,6 +23,7 @@ module Liquid
       @errors          = []
       @rethrow_errors  = rethrow_errors
       @resource_limits = (resource_limits || {}).merge!({ :render_score_current => 0, :assign_score_current => 0 })
+      @replacements    = {}
       squash_instance_assigns_with_environments
 
       @interrupts = []
