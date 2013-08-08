@@ -15,6 +15,10 @@ class TestThing
     "woot: #{@foo}"
   end
 
+  def [](whatever)
+    to_s
+  end
+
   def to_liquid
     @foo += 1
     self
@@ -133,7 +137,12 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_map_calls_to_liquid
     t = TestThing.new
-    assert_equal "woot: 1", Liquid::Template.parse('{{ foo }}').render("foo" => t)
+    assert_equal "woot: 1", Liquid::Template.parse('{{ foo | map: "whatever" }}').render("foo" => [t])
+  end
+
+  def test_sort_calls_to_liquid
+    t = TestThing.new
+    assert_equal "woot: 1", Liquid::Template.parse('{{ foo | sort: "whatever" }}').render("foo" => [t])
   end
 
   def test_map_over_proc
