@@ -31,7 +31,7 @@ class TestEnumerable < Liquid::Drop
   include Enumerable
 
   def each(&block)
-    [ { "foo" => 1 }, { "foo" => 2 }, { "foo" => 3 } ].each(&block)
+    [ { "foo" => 1, "bar" => 2 }, { "foo" => 2, "bar" => 1 }, { "foo" => 3, "bar" => 3 } ].each(&block)
   end
 end
 
@@ -145,6 +145,10 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_map_works_on_enumerables
     assert_equal "123", Liquid::Template.parse('{{ foo | map: "foo" }}').render!("foo" => TestEnumerable.new)
+  end
+
+  def test_sort_works_on_enumerables
+    assert_equal "213", Liquid::Template.parse('{{ foo | sort: "bar" | map: "foo" }}').render!("foo" => TestEnumerable.new)
   end
 
   def test_date

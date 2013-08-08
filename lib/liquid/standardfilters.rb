@@ -81,7 +81,7 @@ module Liquid
     # Sort elements of the array
     # provide optional property with which to sort an array of hashes or drops
     def sort(input, property = nil)
-      ary = [input].flatten
+      ary = flatten_if_necessary(input)
       if property.nil?
         ary.sort
       elsif ary.first.respond_to?('[]') and !ary.first[property].nil?
@@ -99,15 +99,7 @@ module Liquid
 
     # map/collect on a given property
     def map(input, property)
-      ary = if input.is_a?(Array)
-        input.flatten
-      elsif input.kind_of?(Enumerable)
-        input
-      else
-        [input].flatten
-      end
-
-      ary.map do |e|
+      flatten_if_necessary(input).map do |e|
         e = e.call if e.is_a?(Proc)
         e = e.to_liquid if e.respond_to?(:to_liquid)
 
@@ -255,6 +247,16 @@ module Liquid
     end
 
     private
+
+    def flatten_if_necessary(input)
+      if input.is_a?(Array)
+        input.flatten
+      elsif input.kind_of?(Enumerable)
+        input
+      else
+        [input].flatten
+      end
+    end
 
     def to_number(obj)
       case obj
