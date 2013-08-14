@@ -92,13 +92,13 @@ module Liquid
 
     # Join elements of the array with certain character between them
     def join(input, glue = ' '.freeze)
-      [input].flatten.join(glue)
+      Array(input).join(glue)
     end
 
     # Sort elements of the array
     # provide optional property with which to sort an array of hashes or drops
     def sort(input, property = nil)
-      ary = flatten_if_necessary(input)
+      ary = map_input(input)
       if property.nil?
         ary.sort
       elsif ary.first.respond_to?('[]'.freeze) and !ary.first[property].nil?
@@ -110,13 +110,13 @@ module Liquid
 
     # Reverse the elements of an array
     def reverse(input)
-      ary = [input].flatten
+      ary = Array(input)
       ary.reverse
     end
 
     # map/collect on a given property
     def map(input, property)
-      flatten_if_necessary(input).map do |e|
+      map_input(input).map do |e|
         e = e.call if e.is_a?(Proc)
 
         if property == "to_liquid".freeze
@@ -265,13 +265,11 @@ module Liquid
 
     private
 
-    def flatten_if_necessary(input)
-      ary = if input.is_a?(Array)
-        input.flatten
-      elsif input.is_a?(Enumerable) && !input.is_a?(Hash)
+    def map_input(input)
+      ary = if input.is_a?(Array) || input.kind_of?(Enumerable)
         input
       else
-        [input].flatten
+        Array(input)
       end
       ary.map{ |e| e.respond_to?(:to_liquid) ? e.to_liquid : e }
     end
