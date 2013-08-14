@@ -15,6 +15,10 @@ class TestThing
     "woot: #{@foo}"
   end
 
+  def [](whatever)
+    to_s
+  end
+
   def to_liquid
     @foo += 1
     self
@@ -31,7 +35,7 @@ class TestEnumerable < Liquid::Drop
   include Enumerable
 
   def each(&block)
-    [ { "foo" => 1 }, { "foo" => 2 }, { "foo" => 3 } ].each(&block)
+    [ { "foo" => 1, "bar" => 2 }, { "foo" => 2, "bar" => 1 }, { "foo" => 3, "bar" => 3 } ].each(&block)
   end
 end
 
@@ -133,7 +137,12 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_map_calls_to_liquid
     t = TestThing.new
-    assert_equal "woot: 1", Liquid::Template.parse('{{ foo }}').render("foo" => t)
+    assert_equal "woot: 1", Liquid::Template.parse('{{ foo | map: "whatever" }}').render("foo" => [t])
+  end
+
+  def test_sort_calls_to_liquid
+    t = TestThing.new
+    assert_equal "woot: 1", Liquid::Template.parse('{{ foo | sort: "whatever" }}').render("foo" => [t])
   end
 
   def test_map_over_proc
@@ -145,6 +154,10 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_map_works_on_enumerables
     assert_equal "123", Liquid::Template.parse('{{ foo | map: "foo" }}').render!("foo" => TestEnumerable.new)
+  end
+
+  def test_sort_works_on_enumerables
+    assert_equal "213", Liquid::Template.parse('{{ foo | sort: "bar" | map: "foo" }}').render!("foo" => TestEnumerable.new)
   end
 
   def test_date
