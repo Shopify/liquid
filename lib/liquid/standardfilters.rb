@@ -98,7 +98,7 @@ module Liquid
     # Sort elements of the array
     # provide optional property with which to sort an array of hashes or drops
     def sort(input, property = nil)
-      ary = map_input(input)
+      ary = InputIterator.new(input).to_a
       if property.nil?
         ary.sort
       elsif ary.first.respond_to?('[]'.freeze) and !ary.first[property].nil?
@@ -116,7 +116,7 @@ module Liquid
 
     # map/collect on a given property
     def map(input, property)
-      map_input(input).map do |e|
+      InputIterator.new(input).map do |e|
         e = e.call if e.is_a?(Proc)
 
         if property == "to_liquid".freeze
@@ -265,15 +265,6 @@ module Liquid
 
     private
 
-    def map_input(input)
-      ary = if input.is_a?(Array) || input.kind_of?(Enumerable)
-        input
-      else
-        Array(input)
-      end
-      ary.map{ |e| e.respond_to?(:to_liquid) ? e.to_liquid : e }
-    end
-
     def to_number(obj)
       case obj
       when Float
@@ -307,6 +298,25 @@ module Liquid
     def apply_operation(input, operand, operation)
       result = to_number(input).send(operation, to_number(operand))
       result.is_a?(BigDecimal) ? result.to_f : result
+    end
+
+    class InputIterator
+      include Enumerable
+
+      def initialize(input)
+        @input =
+          if input.is_a?(Array) || input.kind_of?(Enumerable)
+            input
+          else
+            Array(input)
+          end
+      end
+
+      def each
+        @input.each do |e|
+          yield(e.respond_to?(:to_liquid) ? e.to_liquid : e)
+        end
+      end
     end
   end
 
