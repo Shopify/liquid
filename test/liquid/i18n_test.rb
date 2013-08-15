@@ -34,4 +34,12 @@ class I18nTest < Test::Unit::TestCase
   def test_sets_default_path_to_en
     assert_equal I18n::DEFAULT_LOCALE, I18n.new.path
   end
+
+  def test_escaping_of_symbols
+    assert_equal "do replaced! not :gsub", @i18n.send(:interpolate, 
+                            'do :replace not \\:gsub',
+                            {
+                              :replace => "replaced!"
+                            })
+  end
 end

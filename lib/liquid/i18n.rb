@@ -24,9 +24,10 @@ module Liquid
 
     private
     def interpolate(name, vars)
-      name.gsub(/:(\w+)/) do
-        vars[$1.to_sym] or raise TranslationError, translate("errors.i18n.undefined_interpolation", :key => $1, :name => name)
-      end
+      name.gsub(/([^\\]):(\w+)/) {
+        raise TranslationError, translate("errors.i18n.undefined_interpolation", :key => $1, :name => name) unless vars[$2.to_sym]
+        "#{$1}#{vars[$2.to_sym]}"
+      }.gsub("\\:", ":")
     end
 
     def deep_fetch_translation(name)
