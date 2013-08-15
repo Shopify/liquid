@@ -2,10 +2,14 @@ require 'yaml'
 
 module Liquid
   class I18n
+    DEFAULT_LOCALE = File.join(File.expand_path(File.dirname(__FILE__)), "locales", "en.yml")
+
     class TranslationError < StandardError
     end
+    
+    attr_reader :path
 
-    def initialize(path)
+    def initialize(path = DEFAULT_LOCALE)
       @path = path
     end
 
@@ -14,15 +18,8 @@ module Liquid
     end
     alias_method :t, :translate
 
-    class << self
-      def translate(name, vars = {})
-        @@global.translate(name, vars)
-      end
-      alias_method :t, :translate
-
-      def global=(translator)
-        @@global = translator
-      end
+    def locale
+      @locale ||= YAML.load_file(@path)
     end
 
     private
@@ -36,10 +33,6 @@ module Liquid
       name.split('.').reduce(locale) do |level, cur|
         level[cur] or raise TranslationError, translate("errors.i18n.unknown_translation", :name => name)
       end
-    end
-
-    def locale
-      @locale ||= YAML.load_file(@path)
     end
   end
 end

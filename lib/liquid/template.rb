@@ -61,7 +61,8 @@ module Liquid
     end
 
     # creates a new <tt>Template</tt> from an array of tokens. Use <tt>Template.parse</tt> instead
-    def initialize
+    def initialize(options = {})
+      registers[:locale] = I18n.new(options[:locale]) || I18n.new
       @resource_limits = {}
     end
 
@@ -119,7 +120,7 @@ module Liquid
       when nil
         Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
       else
-        raise ArgumentError, I18n.translate("errors.template.argument_hash_or_context")
+        raise ArgumentError, registers[:locale].translate("errors.template.argument_hash_or_context")
       end
 
       case args.last

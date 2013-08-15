@@ -143,4 +143,18 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal 'bar', t.parse('{{bar}}').render(drop)
     assert_equal 'haha', t.parse("{{baz}}").render(drop)
   end
-end # TemplateTest
+
+  def test_sets_default_localization_in_context
+    t = Template.new(:locale => fixture("en_locale.yml"))
+
+    assert_instance_of I18n, t.registers[:locale]
+    assert_equal fixture("en_locale.yml"), t.registers[:locale].path
+  end
+
+  def test_sets_default_localization_in_context_with_quick_initialization
+    t = Template.parse('{{foo}}', :locale => fixture("en_locale.yml"))
+
+    assert_instance_of I18n, t.registers[:locale]
+    assert_equal fixture("en_locale.yml"), t.registers[:locale].path
+  end
+end
