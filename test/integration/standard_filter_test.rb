@@ -7,6 +7,8 @@ class Filters
 end
 
 class TestThing
+  attr_reader :foo
+
   def initialize
     @foo = 0
   end
@@ -149,7 +151,8 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_sort_calls_to_liquid
     t = TestThing.new
-    assert_template_result "woot: 1", '{{ foo | sort: "whatever" }}', "foo" => [t]
+    Liquid::Template.parse('{{ foo | sort: "whatever" }}').render("foo" => [t])
+    assert t.foo > 0
   end
 
   def test_map_over_proc

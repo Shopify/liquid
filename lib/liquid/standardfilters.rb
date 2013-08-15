@@ -98,7 +98,7 @@ module Liquid
     # Sort elements of the array
     # provide optional property with which to sort an array of hashes or drops
     def sort(input, property = nil)
-      ary = InputIterator.new(input).to_a
+      ary = InputIterator.new(input)
       if property.nil?
         ary.sort
       elsif ary.first.respond_to?('[]'.freeze) and !ary.first[property].nil?
