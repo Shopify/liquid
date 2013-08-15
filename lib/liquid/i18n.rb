@@ -1,5 +1,4 @@
 require 'yaml'
-require 'delegate'
 
 module Liquid
   class I18n
