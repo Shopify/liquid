@@ -3,8 +3,12 @@ require 'test_helper'
 class I18nTest < Test::Unit::TestCase
   include Liquid
 
+  def en_locale_path
+    File.join(File.expand_path(File.dirname(__FILE__)), "..", "fixtures", "en_locale.yml")
+  end
+
   def setup
-    @i18n = I18n.new("./test/fixtures/en_locale.yml")
+    @i18n = I18n.new en_locale_path
   end
 
   def test_simple_translate_string
