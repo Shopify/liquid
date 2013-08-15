@@ -1,0 +1,9 @@
+---
+  errors:
+    i18n:
+      unknown_translation: "Translation for :name does not exist in locale"
+      undefined_interpolation: "Undefined key :key for interpolation in translation :name"
+    template:
+      argument_hash_or_context: "Expect Hash or Liquid::Context as parameter"
+    syntax_error:
+      tag_termination: "Tag ':token' was not properly terminated with regexp: :inspection"

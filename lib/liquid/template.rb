@@ -119,7 +119,7 @@ module Liquid
       when nil
         Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
       else
-        raise ArgumentError, "Expect Hash or Liquid::Context as parameter"
+        raise ArgumentError, I18n.translate("errors.template.argument_hash_or_context")
       end
 
       case args.last
