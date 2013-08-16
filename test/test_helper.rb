@@ -10,13 +10,9 @@ end
 require File.join(File.dirname(__FILE__), '..', 'lib', 'liquid')
 
 mode = :strict
-if ARGV.last == 'lax'
-  puts "-- LAX ERROR MODE"
-  ARGV.pop
-  ARGV.compact! # because things break on Rubinius otherwise
-  mode = :lax
-else
-  puts "-- STRICT ERROR MODE"
+if env_mode = ENV['LIQUID_PARSER_MODE']
+  puts "-- #{env_mode.upcase} ERROR MODE"
+  mode = env_mode.to_sym
 end
 Liquid::Template.error_mode = mode
 

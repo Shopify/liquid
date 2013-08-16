@@ -7,14 +7,8 @@ require 'rubygems/package_task'
 
 task :default => 'test'
 
-Rake::TestTask.new(:lax_test) do |t|
-  t.libs << '.' << 'lib' << 'test'
-  t.test_files = FileList['test/liquid/**/*_test.rb']
-  t.options = 'lax'
-  t.verbose = false
-end
-
-Rake::TestTask.new(:strict_test) do |t|
+desc 'run test suite with default parser'
+Rake::TestTask.new(:base_test) do |t|
   t.libs << '.' << 'lib' << 'test'
   t.test_files = FileList['test/liquid/**/*_test.rb']
   t.verbose = false
@@ -22,8 +16,11 @@ end
 
 desc 'runs test suite with both strict and lax parsers'
 task :test do
-  Rake::Task['lax_test'].invoke
-  Rake::Task['strict_test'].invoke
+  ENV['LIQUID_PARSER_MODE'] = 'lax'
+  Rake::Task['base_test'].invoke
+  ENV['LIQUID_PARSER_MODE'] = 'strict'
+  Rake::Task['base_test'].reenable
+  Rake::Task['base_test'].invoke
 end
 
 gemspec = eval(File.read('liquid.gemspec'))
