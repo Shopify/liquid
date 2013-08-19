@@ -29,7 +29,7 @@ module Liquid
     end
 
     def render(context)
-      context.errors += @warnings if @warnings
+      context.errors.concat(@warnings) if @warnings
       context.stack do
         @blocks.each do |block|
           if block.evaluate(context)

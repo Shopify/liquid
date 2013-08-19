@@ -14,6 +14,12 @@ Rake::TestTask.new(:base_test) do |t|
   t.verbose = false
 end
 
+desc 'run test suite with warn error mode'
+task :warn_test do
+  ENV['LIQUID_PARSER_MODE'] = 'warn'
+  Rake::Task['base_test'].invoke
+end
+
 desc 'runs test suite with both strict and lax parsers'
 task :test do
   ENV['LIQUID_PARSER_MODE'] = 'lax'

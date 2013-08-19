@@ -58,6 +58,7 @@ module Liquid
     end
 
     def render(context)
+      context.errors.concat(@warnings) if @warnings
       context.registers[:for] ||= Hash.new(0)
 
       collection = context[@collection_name]
