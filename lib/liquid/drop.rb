@@ -44,6 +44,10 @@ module Liquid
       true
     end
 
+    def inspect
+      self.class.to_s
+    end
+
     def to_liquid
       self
     end
