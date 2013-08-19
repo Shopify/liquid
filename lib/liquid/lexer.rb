@@ -39,7 +39,7 @@ module Liquid
           if s = SPECIALS[c]
             [s,c]
           else
-            raise SyntaxError, "Unexpected character #{c}."
+            raise SyntaxError, "Unexpected character #{c}"
           end
         end
 

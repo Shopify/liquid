@@ -59,7 +59,7 @@ module Liquid
         consume(:close_round)
         "(#{first}..#{last})"
       else
-        raise SyntaxError, "#{token} is not a valid expression."
+        raise SyntaxError, "#{token} is not a valid expression"
       end
     end
 
