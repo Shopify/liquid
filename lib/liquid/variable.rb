@@ -70,6 +70,9 @@ module Liquid
         @filters << [filtername, filterargs]
       end
       p.consume(:end_of_string)
+    rescue SyntaxError => e
+      e.message << " in \"{{#{markup}}}\""
+      raise e
     end
 
     def parse_filterargs(p)

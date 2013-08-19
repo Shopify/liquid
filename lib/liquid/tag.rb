@@ -35,17 +35,25 @@ module Liquid
 
     def parse_with_selected_parser(markup)
       case @options[:error_mode] || Template.error_mode
-      when :strict then strict_parse(markup)
+      when :strict then strict_parse_with_error_context(markup)
       when :lax    then lax_parse(markup)
       when :warn
         begin
-          return strict_parse(markup)
+          return strict_parse_with_error_context(markup)
         rescue SyntaxError => e
           @warnings ||= []
           @warnings << e
           return lax_parse(markup)
         end
       end
+    end
+
+    private
+    def strict_parse_with_error_context(markup)
+      strict_parse(markup)
+    rescue SyntaxError => e
+      e.message << " in \"#{markup.strip}\"" 
+      raise e
     end
   end # Tag
 end # Liquid
