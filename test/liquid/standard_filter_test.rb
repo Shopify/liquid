@@ -75,6 +75,41 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal "测试...", @filters.truncate("测试测试测试测试", 5)
   end
 
+  def test_truncate_html
+    # non-HTML truncation (works just like truncate filter)
+    assert_equal '1234...', @filters.truncate_html('1234567890', 7)
+    assert_equal '1234567890', @filters.truncate_html('1234567890', 20)
+    assert_equal '...', @filters.truncate_html('1234567890', 0)
+    assert_equal '1234567890', @filters.truncate_html('1234567890')
+    assert_equal "测试...", @filters.truncate_html("测试测试测试测试", 5)
+    # HTML tag encloses an entire string
+    assert_equal '<b>1234...</b>', @filters.truncate_html('<b>1234567890</b>', 7)
+    assert_equal '<b>1234567890</b>', @filters.truncate_html('<b>1234567890</b>', 20)
+    assert_equal '<b>1234567890</b>', @filters.truncate_html('<b>1234567890</b>', 10)
+    assert_equal '...', @filters.truncate_html('<b>1234567890</b>', 0)
+    assert_equal '<b>1234567890</b>', @filters.truncate_html('<b>1234567890</b>')
+    assert_equal "<b>测试...</b>", @filters.truncate_html("<b>测试测试测试测试</b>", 5)
+    # HTML tag encloses the end of a string (tag opens in the middle and closes at the end)
+    assert_equal '12<b>34...</b>', @filters.truncate_html('12<b>34567890</b>', 7)
+    assert_equal '12<b>34567890</b>', @filters.truncate_html('12<b>34567890</b>', 20)
+    assert_equal '...', @filters.truncate_html('12<b>34567890</b>', 0)
+    assert_equal '12<b>34567890</b>', @filters.truncate_html('12<b>34567890</b>')
+    assert_equal "测<b>试...</b>", @filters.truncate_html("测<b>试测试测试测试</b>", 5)
+    # HTML tag encloses the middle of a string (tag opens in the middle and closes in the middle)
+    assert_equal '1<b>2</b>34...', @filters.truncate_html('1<b>2</b>34567890', 7)
+    assert_equal '1<b>2</b>34567890', @filters.truncate_html('1<b>2</b>34567890', 20)
+    assert_equal '...', @filters.truncate_html('1<b>2</b>34567890', 0)
+    assert_equal '1<b>2</b>34567890', @filters.truncate_html('1<b>2</b>34567890')
+    assert_equal "测<b>试</b>测...", @filters.truncate_html("测<b>试</b>测试测试测试", 6)
+    # nested HTML tags with attributes
+    assert_equal '<a href="/"><em class="x">1234...</em></a>', @filters.truncate_html('<a href="/"><em class="x">1234567890</em></a>', 7)
+    assert_equal '<a href="/"><em class="x">1234567890</em></a>', @filters.truncate_html('<a href="/"><em class="x">1234567890</em></a>', 20)
+    assert_equal '<a href="/"><em class="x">1234567890</em></a>', @filters.truncate_html('<a href="/"><em class="x">1234567890</em></a>', 10)
+    assert_equal '<a href="/">...</a>', @filters.truncate_html('<a href="/"><em class="x">1234567890</em></a>', 0)
+    assert_equal '<a href="/"><em class="x">1234567890</em></a>', @filters.truncate_html('<a href="/"><em class="x">1234567890</em></a>')
+    assert_equal "<a href='/'><em class='x'>测试...</em></a>", @filters.truncate_html("<a href='/'><em class='x'>测试测试测试测试</em></a>", 5)
+  end
+
   def test_strip
     assert_equal ['12','34'], @filters.split('12~34', '~')
     assert_equal ['A? ',' ,Z'], @filters.split('A? ~ ~ ~ ,Z', '~ ~ ~')
@@ -98,6 +133,26 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal 'one two three', @filters.truncatewords('one two three')
     assert_equal 'Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221;...', @filters.truncatewords('Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221; x 16&#8221; x 10.5&#8221; high) with cover.', 15)
     assert_equal "测试测试测试测试", @filters.truncatewords('测试测试测试测试', 5)
+  end
+
+  def test_truncatewords_html
+    assert_equal 'one two three', @filters.truncatewords_html('one two three', 4)
+    assert_equal 'one two...', @filters.truncatewords_html('one two three', 2)
+    assert_equal 'one two three', @filters.truncatewords_html('one two three')
+    assert_equal 'Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221;...', @filters.truncatewords_html('Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221; x 16&#8221; x 10.5&#8221; high) with cover.', 15)
+    assert_equal "测试测试测试测试", @filters.truncatewords_html('测试测试测试测试', 5)
+
+    assert_equal '<b>one two three</b>', @filters.truncatewords_html('<b>one two three</b>', 4)
+    assert_equal '<b>one two...</b>', @filters.truncatewords_html('<b>one two three</b>', 2)
+    assert_equal '<b>one two three</b>', @filters.truncatewords_html('<b>one two three</b>')
+    assert_equal '<b>Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221;...</b>', @filters.truncatewords_html('<b>Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221; x 16&#8221; x 10.5&#8221; high) with cover.</b>', 15)
+    assert_equal "<b>测试测试测试测试</b>", @filters.truncatewords_html('<b>测试测试测试测试</b>', 5)
+
+    assert_equal '<a href="/"><em class="x">one two three</em></a>', @filters.truncatewords_html('<a href="/"><em class="x">one two three</em></a>', 4)
+    assert_equal '<a href="/"><em class="x">one two...</em></a>', @filters.truncatewords_html('<a href="/"><em class="x">one two three</em></a>', 2)
+    assert_equal '<a href="/"><em class="x">one two three</em></a>', @filters.truncatewords_html('<a href="/"><em class="x">one two three</em></a>')
+    assert_equal '<a href="/"><em class="x">Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221;...</em></a>', @filters.truncatewords_html('<a href="/"><em class="x">Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221; x 16&#8221; x 10.5&#8221; high) with cover.</em></a>', 15)
+    assert_equal "<a href=\"/\"><em class=\"x\">测试测试测试测试</em></a>", @filters.truncatewords_html('<a href="/"><em class="x">测试测试测试测试</em></a>', 5)
   end
 
   def test_strip_html

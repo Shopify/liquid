@@ -55,6 +55,26 @@ module Liquid
       wordlist.length > l ? wordlist[0..l].join(" ") + truncate_string : input
     end
 
+    # Same as truncate, but ignores HTML markup when truncating, and closes unclosed HTML tags
+    def truncate_html(input, length = 15, truncate_string = "...")
+      if input !~ /</ then return truncate(input, length, truncate_string) end
+      truncated = truncate(input, length + html_char_count(input, length), truncate_string)
+      close_html_tags(truncated.gsub(/\s*<[^>]+\s*#{Regexp.escape(truncate_string)}\z/, truncate_string))
+    end
+
+    # Same as truncatewords, but ignores HTML markup when truncating, and closes unclosed HTML tags
+    def truncatewords_html(input, words = 15, truncate_string = "...")
+      if input !~ /</ then return truncatewords(input, words, truncate_string) end
+      # first remove the HTML tags, truncate the string, and get its length
+      length = truncatewords(strip_html(input), words, truncate_string).length
+      truncate_html(input, length, truncate_string)
+    end
+
+    # Closes unclosed HTML tags
+    def close_html_tags(input)
+      input.to_s + unclosed_html_tags(input).reverse.map{ |tag| "</#{tag}>" }.join
+    end
+
     # Split input string into an array of substrings separated by given pattern.
     #
     # Example:
@@ -274,6 +294,52 @@ module Liquid
     def apply_operation(input, operand, operation)
       result = to_number(input).send(operation, to_number(operand))
       result.is_a?(BigDecimal) ? result.to_f : result
+    end
+
+    # Count the number of characters that are HTML markup (for truncate_html & truncatewords_html)
+    def html_char_count(input, limit = nil)
+      html_chars = 0
+      text_chars = 0
+      in_tag = false
+      input.to_s.scan(/./) do |c|
+        if c == '<'
+          in_tag = true
+          html_chars += 1
+        elsif c == '>'
+          in_tag = false
+          html_chars += 1
+        elsif in_tag
+          html_chars += 1
+        elsif limit
+          text_chars += 1
+          if text_chars > limit
+            break
+          end
+        end
+      end
+      html_chars
+    end
+
+    # Find the HTML tags in a string
+    def html_tags(input, unclosed_tags_only = false)
+      tags = []
+      input.to_s.scan(%r{<(/)?([\w\-]+).*?(/)?\s*>}).map do |beginning_slash, tag, ending_slash|
+        if unclosed_tags_only
+          if beginning_slash && tags.last == tag # remove the tag that's been closed
+            tags.pop
+          elsif !ending_slash && !%w( br hr input img ).include?(tag) # add the tag if it's not a self-closing tag (like <br/>)
+            tags << tag
+          end
+        else
+          tags << tag
+        end
+      end
+      tags
+    end
+
+    # Find unclosed HTML tags in a string
+    def unclosed_html_tags(input)
+      html_tags(input, true)
     end
   end
 
