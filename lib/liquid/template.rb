@@ -61,8 +61,7 @@ module Liquid
     end
 
     # creates a new <tt>Template</tt> from an array of tokens. Use <tt>Template.parse</tt> instead
-    def initialize(options = {})
-      registers[:locale] = I18n.new(options[:locale]) || I18n.new
+    def initialize
       @resource_limits = {}
     end
 
@@ -80,7 +79,7 @@ module Liquid
     end
 
     def registers
-      @registers ||= {}
+      @registers ||= {:locale => Liquid::I18n.new}
     end
 
     def assigns

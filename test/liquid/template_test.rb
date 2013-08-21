@@ -145,14 +145,14 @@ class TemplateTest < Test::Unit::TestCase
   end
 
   def test_sets_default_localization_in_context
-    t = Template.new(:locale => fixture("en_locale.yml"))
-
+    t = Template.new
     assert_instance_of I18n, t.registers[:locale]
-    assert_equal fixture("en_locale.yml"), t.registers[:locale].path
   end
 
   def test_sets_default_localization_in_context_with_quick_initialization
-    t = Template.parse('{{foo}}', :locale => fixture("en_locale.yml"))
+    t = Template.new
+    t.registers[:locale] = I18n.new(fixture("en_locale.yml"))
+    t.parse('{{foo}}')
 
     assert_instance_of I18n, t.registers[:locale]
     assert_equal fixture("en_locale.yml"), t.registers[:locale].path
