@@ -18,7 +18,6 @@ module Liquid
     def initialize(markup, options = {})
       @markup  = markup
       @name    = nil
-      @warnings = []
       @options = options || {}
       
 
@@ -29,6 +28,7 @@ module Liquid
         begin
           strict_parse(markup)
         rescue SyntaxError => e
+          @warnings ||= []
           @warnings << e
           lax_parse(markup)
         end

@@ -67,10 +67,8 @@ module Liquid
       all_warnings = []
       all_warnings.concat(@warnings) if @warnings
 
-      return all_warnings unless @children
       @children.each do |node|
-        node_warns = node.respond_to?(:warnings) ? node.warnings : nil
-        all_warnings.concat(node_warns) if node_warns
+        all_warnings.concat(node.warnings || [])
       end
 
       all_warnings
