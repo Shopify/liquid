@@ -14,6 +14,9 @@ module Liquid
       @nodelist ||= []
       @nodelist.clear
 
+      # All child tags of the current block.
+      @children = []
+
       while token = tokens.shift
         case token
         when IsTag
@@ -31,6 +34,7 @@ module Liquid
               new_tag = tag.new_with_options($1, $2, tokens, @options || {})
               @blank &&= new_tag.blank?
               @nodelist << new_tag
+              @children << new_tag
             else
               # this tag is not registered with the system
               # pass it to the current block for special handling or error reporting
@@ -40,7 +44,9 @@ module Liquid
             raise SyntaxError, "Tag '#{token}' was not properly terminated with regexp: #{TagEnd.inspect} "
           end
         when IsVariable
-          @nodelist << create_variable(token)
+          new_var = create_variable(token)
+          @nodelist << new_var
+          @children << new_var
           @blank = false
         when ''
           # pass
@@ -61,9 +67,8 @@ module Liquid
       all_warnings = []
       all_warnings.concat(@warnings) if @warnings
 
-      return all_warnings unless @nodelist
-      @nodelist.each do |node|
-        p node
+      return all_warnings unless @children
+      @children.each do |node|
         node_warns = node.respond_to?(:warnings) ? node.warnings : nil
         all_warnings.concat(node_warns) if node_warns
       end

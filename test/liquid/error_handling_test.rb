@@ -95,6 +95,7 @@ class ErrorHandlingTest < Test::Unit::TestCase
     template = Liquid::Template.parse('{% if ~~~ %}{{%%%}}{% else %}wat{% endif %}', :error_mode => :warn)
     assert_equal 2, template.warnings.size
     assert_equal 'Unexpected character ~ in "~~~"', template.warnings.first.message
+    assert_equal 'Unexpected character % in "{{%%%}}"', template.warnings.last.message
     assert_equal 'wat', template.render
   end
 
