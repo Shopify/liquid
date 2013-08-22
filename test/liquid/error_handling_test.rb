@@ -96,7 +96,7 @@ class ErrorHandlingTest < Test::Unit::TestCase
     assert_equal 3, template.warnings.size
     assert_equal 'Unexpected character ~ in "~~~"', template.warnings[0].message
     assert_equal 'Unexpected character % in "{{%%%}}"', template.warnings[1].message
-    assert_equal 'Expected id but found [:end_of_string] in "{{ hello. }}"', template.warnings[2].message
+    assert_equal 'Expected id but found end_of_string in "{{ hello. }}"', template.warnings[2].message
     assert_equal '', template.render
   end
 
