@@ -87,7 +87,6 @@ module Liquid
 
     def render(context)
       return '' if @name.nil?
-      context.errors << @warning if @warning
       @filters.inject(context[@name]) do |output, filter|
         filterargs = []
         keyword_args = {}
