@@ -92,11 +92,12 @@ class ErrorHandlingTest < Test::Unit::TestCase
   end
 
   def test_warnings
-    template = Liquid::Template.parse('{% if ~~~ %}{{%%%}}{% else %}wat{% endif %}', :error_mode => :warn)
-    assert_equal 2, template.warnings.size
-    assert_equal 'Unexpected character ~ in "~~~"', template.warnings.first.message
-    assert_equal 'Unexpected character % in "{{%%%}}"', template.warnings.last.message
-    assert_equal 'wat', template.render
+    template = Liquid::Template.parse('{% if ~~~ %}{{%%%}}{% else %}{{ hello. }}{% endif %}', :error_mode => :warn)
+    assert_equal 3, template.warnings.size
+    assert_equal 'Unexpected character ~ in "~~~"', template.warnings[0].message
+    assert_equal 'Unexpected character % in "{{%%%}}"', template.warnings[1].message
+    assert_equal 'Expected id but found [:end_of_string] in "{{ hello. }}"', template.warnings[2].message
+    assert_equal '', template.render
   end
 
   # Liquid should not catch Exceptions that are not subclasses of StandardError, like Interrupt and NoMemoryError
