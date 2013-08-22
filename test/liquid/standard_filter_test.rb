@@ -6,6 +6,39 @@ class Filters
   include Liquid::StandardFilters
 end
 
+class TestThing
+  def initialize
+    @foo = 0
+  end
+
+  def to_s
+    "woot: #{@foo}"
+  end
+
+  def [](whatever)
+    to_s
+  end
+
+  def to_liquid
+    @foo += 1
+    self
+  end
+end
+
+class TestDrop < Liquid::Drop
+  def test
+    "testfoo"
+  end
+end
+
+class TestEnumerable < Liquid::Drop
+  include Enumerable
+
+  def each(&block)
+    [ { "foo" => 1, "bar" => 2 }, { "foo" => 2, "bar" => 1 }, { "foo" => 3, "bar" => 3 } ].each(&block)
+  end
+end
+
 class StandardFiltersTest < Test::Unit::TestCase
   include Liquid
 
@@ -95,6 +128,36 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal [1,2,3,4], @filters.map([{"a" => 1}, {"a" => 2}, {"a" => 3}, {"a" => 4}], 'a')
     assert_template_result 'abc', "{{ ary | map:'foo' | map:'bar' }}",
       'ary' => [{'foo' => {'bar' => 'a'}}, {'foo' => {'bar' => 'b'}}, {'foo' => {'bar' => 'c'}}]
+  end
+
+  def test_map_doesnt_call_arbitrary_stuff
+    assert_equal "", Liquid::Template.parse('{{ "foo" | map: "__id__" }}').render
+    assert_equal "", Liquid::Template.parse('{{ "foo" | map: "inspect" }}').render
+  end
+
+  def test_map_calls_to_liquid
+    t = TestThing.new
+    assert_equal "woot: 1", Liquid::Template.parse('{{ foo | map: "whatever" }}').render("foo" => [t])
+  end
+
+  def test_sort_calls_to_liquid
+    t = TestThing.new
+    assert_equal "woot: 1", Liquid::Template.parse('{{ foo | sort: "whatever" }}').render("foo" => [t])
+  end
+
+  def test_map_over_proc
+    drop = TestDrop.new
+    p = Proc.new{ drop }
+    templ = '{{ procs | map: "test" }}'
+    assert_equal "testfoo", Liquid::Template.parse(templ).render("procs" => [p])
+  end
+
+  def test_map_works_on_enumerables
+    assert_equal "123", Liquid::Template.parse('{{ foo | map: "foo" }}').render!("foo" => TestEnumerable.new)
+  end
+
+  def test_sort_works_on_enumerables
+    assert_equal "213", Liquid::Template.parse('{{ foo | sort: "bar" | map: "foo" }}').render!("foo" => TestEnumerable.new)
   end
 
   def test_date
