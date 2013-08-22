@@ -56,6 +56,21 @@ module Liquid
       assert_missing_delimitation!
     end
 
+    # warnings of this block and all sub-tags
+    def warnings
+      all_warnings = []
+      all_warnings.concat(@warnings) if @warnings
+
+      return all_warnings unless @nodelist
+      @nodelist.each do |node|
+        p node
+        node_warns = node.respond_to?(:warnings) ? node.warnings : nil
+        all_warnings.concat(node_warns) if node_warns
+      end
+
+      all_warnings
+    end
+
     def end_tag
     end
 
