@@ -1,6 +1,7 @@
 module Liquid
   class Tag
     attr_accessor :nodelist, :options
+    attr_reader :warnings
 
     def self.new_with_options(tag_name, markup, tokens, options)
       # Forgive me Matz for I have sinned. I know this code is weird
@@ -31,10 +32,6 @@ module Liquid
 
     def blank?
       @blank || true
-    end
-
-    def warnings
-      @warnings
     end
 
     def parse_with_selected_parser(markup)
