@@ -26,9 +26,9 @@ module Liquid
 
       loop do
         @ss.skip(/\s*/)
+        return @output.push([:end_of_string]) if @ss.eos?
 
         tok = case
-        when @ss.eos? then nil
         when t = @ss.scan(COMPARISON_OPERATOR) then [:comparison, t]
         when t = @ss.scan(SINGLE_STRING_LITERAL) then [:string, t]
         when t = @ss.scan(DOUBLE_STRING_LITERAL) then [:string, t]
@@ -43,10 +43,6 @@ module Liquid
           end
         end
 
-        unless tok
-          @output << [:end_of_string]
-          return @output
-        end
         @output << tok
       end
     end
