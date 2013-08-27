@@ -13,12 +13,11 @@ module Liquid
   class Variable
     FilterParser = /(?:#{FilterSeparator}|(?:\s*(?:#{QuotedFragment}|#{ArgumentSeparator})\s*)+)/o
     EasyParse = /^ *(\w+(?:\.\w+)*) *$/
-    attr_accessor :filters, :name
+    attr_accessor :filters, :name, :warnings
 
     def initialize(markup, options = {})
       @markup  = markup
       @name    = nil
-      @warning = nil
       @options = options || {}
       
 
@@ -29,7 +28,8 @@ module Liquid
         begin
           strict_parse(markup)
         rescue SyntaxError => e
-          @warning = e
+          @warnings ||= []
+          @warnings << e
           lax_parse(markup)
         end
       end
@@ -87,7 +87,6 @@ module Liquid
 
     def render(context)
       return '' if @name.nil?
-      context.errors << @warning if @warning
       @filters.inject(context[@name]) do |output, filter|
         filterargs = []
         keyword_args = {}
