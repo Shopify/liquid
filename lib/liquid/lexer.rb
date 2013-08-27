@@ -18,16 +18,14 @@ module Liquid
     COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains/
 
     def initialize(input)
-      @ss = StringScanner.new(input)
+      @ss = StringScanner.new(input.rstrip)
     end
 
     def tokenize
       @output = []
 
-      loop do
+      while !@ss.eos?
         @ss.skip(/\s*/)
-        return @output.push([:end_of_string]) if @ss.eos?
-
         tok = case
         when t = @ss.scan(COMPARISON_OPERATOR) then [:comparison, t]
         when t = @ss.scan(SINGLE_STRING_LITERAL) then [:string, t]
@@ -42,9 +40,10 @@ module Liquid
             raise SyntaxError, "Unexpected character #{c}"
           end
         end
-
         @output << tok
       end
+
+      @output << [:end_of_string]
     end
   end
 end
