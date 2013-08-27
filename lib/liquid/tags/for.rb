@@ -47,19 +47,7 @@ module Liquid
     Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
 
     def initialize(tag_name, markup, tokens)
-      if markup =~ Syntax
-        @variable_name = $1
-        @collection_name = $2
-        @name = "#{$1}-#{$2}"
-        @reversed = $3
-        @attributes = {}
-        markup.scan(TagAttributes) do |key, value|
-          @attributes[key] = value
-        end
-      else
-        raise SyntaxError.new("Syntax Error in 'for loop' - Valid syntax: for [item] in [collection]")
-      end
-
+      parse_with_selected_parser(markup)
       @nodelist = @for_block = []
       super
     end
@@ -125,6 +113,43 @@ module Liquid
         end
       end
       result
+    end
+
+    protected
+
+    def lax_parse(markup)
+      if markup =~ Syntax
+        @variable_name = $1
+        @collection_name = $2
+        @name = "#{$1}-#{$2}"
+        @reversed = $3
+        @attributes = {}
+        markup.scan(TagAttributes) do |key, value|
+          @attributes[key] = value
+        end
+      else
+        raise SyntaxError.new("Syntax Error in 'for loop' - Valid syntax: for [item] in [collection]")
+      end
+    end
+
+    def strict_parse(markup)
+      p = Parser.new(markup)
+      @variable_name = p.consume(:id)
+      raise SyntaxError, "For loops require an 'in' clause" unless p.id?('in')
+      @collection_name = p.expression
+      @name = "#{@variable_name}-#{@collection_name}"
+      @reversed = p.id?('reversed')
+
+      @attributes = {}
+      while p.look(:id) && p.look(:colon, 1)
+        unless attribute = p.id?('limit') || p.id?('offset')
+          raise SyntaxError, "Invalid attribute in for loop. Valid attributes are limit and offset"
+        end
+        p.consume
+        val = p.expression
+        @attributes[attribute] = val
+      end
+      p.consume(:end_of_string)
     end
 
     private

@@ -14,6 +14,9 @@ module Liquid
       @nodelist ||= []
       @nodelist.clear
 
+      # All child tags of the current block.
+      @children = []
+
       while token = tokens.shift
         case token
         when IsTag
@@ -28,9 +31,10 @@ module Liquid
 
             # fetch the tag from registered blocks
             if tag = Template.tags[$1]
-              new_tag = tag.new($1, $2, tokens)
+              new_tag = tag.new_with_options($1, $2, tokens, @options || {})
               @blank &&= new_tag.blank?
               @nodelist << new_tag
+              @children << new_tag
             else
               # this tag is not registered with the system
               # pass it to the current block for special handling or error reporting
@@ -40,7 +44,9 @@ module Liquid
             raise SyntaxError, "Tag '#{token}' was not properly terminated with regexp: #{TagEnd.inspect} "
           end
         when IsVariable
-          @nodelist << create_variable(token)
+          new_var = create_variable(token)
+          @nodelist << new_var
+          @children << new_var
           @blank = false
         when ''
           # pass
@@ -54,6 +60,18 @@ module Liquid
       # Effectively this method will throw an exception unless the current block is
       # of type Document
       assert_missing_delimitation!
+    end
+
+    # warnings of this block and all sub-tags
+    def warnings
+      all_warnings = []
+      all_warnings.concat(@warnings) if @warnings
+
+      @children.each do |node|
+        all_warnings.concat(node.warnings || [])
+      end
+
+      all_warnings
     end
 
     def end_tag
@@ -80,7 +98,7 @@ module Liquid
 
     def create_variable(token)
       token.scan(ContentOfVariable) do |content|
-        return Variable.new(content.first)
+        return Variable.new(content.first, @options)
       end
       raise SyntaxError.new("Variable '#{token}' was not properly terminated with regexp: #{VariableEnd.inspect} ")
     end

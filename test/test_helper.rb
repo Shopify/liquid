@@ -9,6 +9,13 @@ rescue LoadError
 end
 require File.join(File.dirname(__FILE__), '..', 'lib', 'liquid')
 
+mode = :strict
+if env_mode = ENV['LIQUID_PARSER_MODE']
+  puts "-- #{env_mode.upcase} ERROR MODE"
+  mode = env_mode.to_sym
+end
+Liquid::Template.error_mode = mode
+
 
 module Test
   module Unit
@@ -23,6 +30,13 @@ module Test
         return assert_template_result(expected, template, assigns, message) unless expected.is_a? Regexp
 
         assert_match expected, Template.parse(template).render(assigns)
+      end
+
+      def with_error_mode(mode)
+        old_mode = Liquid::Template.error_mode
+        Liquid::Template.error_mode = mode
+        yield
+        Liquid::Template.error_mode = old_mode
       end
     end # Assertions
   end # Unit

@@ -73,8 +73,14 @@ class VariableTest < Test::Unit::TestCase
   end
 
   def test_symbol
-    var = Variable.new("http://disney.com/logo.gif | image: 'med' ")
-    assert_equal 'http://disney.com/logo.gif', var.name
+    var = Variable.new("http://disney.com/logo.gif | image: 'med' ", :error_mode => :lax)
+    assert_equal "http://disney.com/logo.gif", var.name
+    assert_equal [["image",["'med'"]]], var.filters
+  end
+
+  def test_string_to_filter
+    var = Variable.new("'http://disney.com/logo.gif' | image: 'med' ")
+    assert_equal "'http://disney.com/logo.gif'", var.name
     assert_equal [["image",["'med'"]]], var.filters
   end
 
@@ -115,9 +121,17 @@ class VariableTest < Test::Unit::TestCase
   end
 
   def test_lax_filter_argument_parsing
-    var = Variable.new(%! number_of_comments | pluralize: 'comment': 'comments' !)
+    var = Variable.new(%! number_of_comments | pluralize: 'comment': 'comments' !, :error_mode => :lax)
     assert_equal 'number_of_comments', var.name
     assert_equal [['pluralize',["'comment'","'comments'"]]], var.filters
+  end
+
+  def test_strict_filter_argument_parsing
+    with_error_mode(:strict) do
+      assert_raises(SyntaxError) do
+        Variable.new(%! number_of_comments | pluralize: 'comment': 'comments' !)
+      end
+    end
   end
 end
 
