@@ -69,7 +69,13 @@ module Liquid
     # Returns self for easy chaining
     def parse(source, options = {})
       @root = Document.new(tokenize(source), options)
+      @warnings = nil
       self
+    end
+
+    def warnings
+      return [] unless @root
+      @warnings ||= @root.warnings
     end
 
     def registers
