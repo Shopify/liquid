@@ -40,6 +40,13 @@ module Test
         assert_match expected, Template.parse(template).render(assigns)
       end
 
+      def assert_match_syntax_error(match, template, registers = {})
+        exception = assert_raise(Liquid::SyntaxError) {
+          Template.parse(template).render(assigns)
+        }
+        assert_match match, exception.message
+      end
+
       def with_error_mode(mode)
         old_mode = Liquid::Template.error_mode
         Liquid::Template.error_mode = mode

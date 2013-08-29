@@ -11,7 +11,7 @@ module Liquid
           @attributes[key] = value
         end
       else
-        raise SyntaxError.new("Syntax Error in 'table_row loop' - Valid syntax: table_row [item] in [collection] cols=3")
+        raise SyntaxError.new(options[:locale].t("errors.syntax.table_row"))
       end
 
       super

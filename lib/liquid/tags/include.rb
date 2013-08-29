@@ -29,7 +29,7 @@ module Liquid
         end
 
       else
-        raise SyntaxError.new("Error in tag 'include' - Valid syntax: include '[template]' (with|for) [object|collection]")
+        raise SyntaxError.new(options[:locale].t("errors.syntax.include"))
       end
 
       super

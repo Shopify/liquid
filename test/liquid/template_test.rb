@@ -146,6 +146,7 @@ class TemplateTest < Test::Unit::TestCase
 
   def test_sets_default_localization_in_document
     t = Template.new
+    t.parse('')
     assert_instance_of I18n, t.root.options[:locale]
   end
 
