@@ -16,6 +16,7 @@
       invalid_delimiter: "'end' is not a valid delimiter for %{block_name} tags. use %{block_delimiter}"
       unexpected_else: "%{block_name} tag does not expect else tag"
       tag_termination: "Tag '%{token}' was not properly terminated with regexp: %{tag_end}"
+      variable_termination: "Variable '%{token}' was not properly terminated with regexp: %{tag_end}"
       tag_never_closed: "'%{block_name}' tag was never closed"
       meta_syntax_error: "Liquid syntax error: #{e.message}"
       table_row: "Syntax Error in 'table_row loop' - Valid syntax: table_row [item] in [collection] cols=3"

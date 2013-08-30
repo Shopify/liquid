@@ -103,7 +103,7 @@ module Liquid
       token.scan(ContentOfVariable) do |content|
         return Variable.new(content.first, @options)
       end
-      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination", :token => token, :tag_end => TagEnd.inspect))
+      raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination", :token => token, :tag_end => VariableEnd.inspect))
     end
 
     def render(context)
