@@ -7,7 +7,9 @@ begin
 rescue LoadError
   puts "Couldn't load ruby-debug. gem install ruby-debug if you need it."
 end
-require File.join(File.dirname(__FILE__), '..', 'lib', 'liquid')
+
+$:.unshift(File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib'))
+require 'liquid.rb'
 
 mode = :strict
 if env_mode = ENV['LIQUID_PARSER_MODE']
@@ -19,6 +21,12 @@ Liquid::Template.error_mode = mode
 
 module Test
   module Unit
+    class TestCase
+      def fixture(name)
+        File.join(File.expand_path(File.dirname(__FILE__)), "fixtures", name)
+      end
+    end
+
     module Assertions
       include Liquid
 
@@ -30,6 +38,13 @@ module Test
         return assert_template_result(expected, template, assigns, message) unless expected.is_a? Regexp
 
         assert_match expected, Template.parse(template).render(assigns)
+      end
+
+      def assert_match_syntax_error(match, template, registers = {})
+        exception = assert_raise(Liquid::SyntaxError) {
+          Template.parse(template).render(assigns)
+        }
+        assert_match match, exception.message
       end
 
       def with_error_mode(mode)
