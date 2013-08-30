@@ -67,7 +67,7 @@ module Liquid
       all_warnings = []
       all_warnings.concat(@warnings) if @warnings
 
-      @children.each do |node|
+      (@children || []).each do |node|
         all_warnings.concat(node.warnings || [])
       end
 
