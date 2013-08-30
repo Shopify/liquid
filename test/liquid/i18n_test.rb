@@ -19,7 +19,7 @@ class I18nTest < Test::Unit::TestCase
     assert_equal "something different", @i18n.translate("whatever", :something => "different")
   end
 
-  def test_raises_keyerror_on_undefined_interpolation_key
+  def test_raises_translation_error_on_undefined_interpolation_key
     assert_raise I18n::TranslationError do
       @i18n.translate("whatever", :oopstypos => "yes")
     end
