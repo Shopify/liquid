@@ -12,11 +12,30 @@ module Liquid
   #
   class Variable
     FilterParser = /(?:#{FilterSeparator}|(?:\s*(?:#{QuotedFragment}|#{ArgumentSeparator})\s*)+)/o
-    attr_accessor :filters, :name
+    EasyParse = /^ *(\w+(?:\.\w+)*) *$/
+    attr_accessor :filters, :name, :warnings
 
-    def initialize(markup)
+    def initialize(markup, options = {})
       @markup  = markup
       @name    = nil
+      @options = options || {}
+      
+
+      case @options[:error_mode] || Template.error_mode
+      when :strict then strict_parse(markup)
+      when :lax    then lax_parse(markup)
+      when :warn
+        begin
+          strict_parse(markup)
+        rescue SyntaxError => e
+          @warnings ||= []
+          @warnings << e
+          lax_parse(markup)
+        end
+      end
+    end
+
+    def lax_parse(markup)
       @filters = []
       if match = markup.match(/\s*(#{QuotedFragment})(.*)/o)
         @name = match[1]
@@ -31,6 +50,39 @@ module Liquid
           end
         end
       end
+    end
+
+    def strict_parse(markup)
+      # Very simple valid cases
+      if markup =~ EasyParse
+        @name = $1
+        @filters = []
+        return
+      end
+
+      @filters = []
+      p = Parser.new(markup)
+      # Could be just filters with no input
+      @name = p.look(:pipe) ? '' : p.expression
+      while p.consume?(:pipe)
+        filtername = p.consume(:id)
+        filterargs = p.consume?(:colon) ? parse_filterargs(p) : []
+        @filters << [filtername, filterargs]
+      end
+      p.consume(:end_of_string)
+    rescue SyntaxError => e
+      e.message << " in \"{{#{markup}}}\""
+      raise e
+    end
+
+    def parse_filterargs(p)
+      # first argument
+      filterargs = [p.argument]
+      # followed by comma separated others
+      while p.consume?(:comma)
+        filterargs << p.argument
+      end
+      filterargs
     end
 
     def render(context)

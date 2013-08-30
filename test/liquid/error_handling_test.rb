@@ -58,17 +58,46 @@ class ErrorHandlingTest < Test::Unit::TestCase
 
   def test_missing_endtag_parse_time_error
     assert_raise(Liquid::SyntaxError) do
-      template = Liquid::Template.parse(' {% for a in b %} ... ')
+      Liquid::Template.parse(' {% for a in b %} ... ')
     end
   end
 
   def test_unrecognized_operator
+    with_error_mode(:strict) do
+      assert_raise(SyntaxError) do
+        Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ')
+      end
+    end
+  end
+  
+  def test_lax_unrecognized_operator
     assert_nothing_raised do
-      template = Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ')
+      template = Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ', :error_mode => :lax)
       assert_equal ' Liquid error: Unknown operator =! ', template.render
       assert_equal 1, template.errors.size
       assert_equal Liquid::ArgumentError, template.errors.first.class
     end
+  end
+
+  def test_strict_error_messages
+    err = assert_raise(SyntaxError) do
+      Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ', :error_mode => :strict)
+    end
+    assert_equal 'Unexpected character = in "1 =! 2"', err.message
+
+    err = assert_raise(SyntaxError) do
+      Liquid::Template.parse('{{%%%}}', :error_mode => :strict)
+    end
+    assert_equal 'Unexpected character % in "{{%%%}}"', err.message
+  end
+
+  def test_warnings
+    template = Liquid::Template.parse('{% if ~~~ %}{{%%%}}{% else %}{{ hello. }}{% endif %}', :error_mode => :warn)
+    assert_equal 3, template.warnings.size
+    assert_equal 'Unexpected character ~ in "~~~"', template.warnings[0].message
+    assert_equal 'Unexpected character % in "{{%%%}}"', template.warnings[1].message
+    assert_equal 'Expected id but found end_of_string in "{{ hello. }}"', template.warnings[2].message
+    assert_equal '', template.render
   end
 
   # Liquid should not catch Exceptions that are not subclasses of StandardError, like Interrupt and NoMemoryError
