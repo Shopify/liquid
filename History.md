@@ -6,6 +6,8 @@ The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are
 ## 2.6.0 / Master branch (not yet released)
 
 * ...
+* Add optional strict parsing and warn parsing, see #235 [Tristan Hume, trishume]
+* Add I18n syntax error translation, see #241 [Simon Hørup Eskildsen, Sirupsen]
 * Make sort filter work on enumerable drops, see #239 [Florian Weingarten, fw42]
 * Fix clashing method names in enumerable drops, see #238 [Florian Weingarten, fw42]
 * Make map filter work on enumerable drops, see #233 [Florian Weingarten, fw42]
