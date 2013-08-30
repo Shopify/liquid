@@ -10,7 +10,6 @@ module Liquid
   #    There are {% if count < 5 %} less {% else %} more {% endif %} items than you need.
   #
   class If < Block
-    SyntaxHelp = "Syntax Error in tag 'if' - Valid syntax: if [expression]"
     Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
     ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
 
@@ -54,14 +53,14 @@ module Liquid
 
       def lax_parse(markup)
         expressions = markup.scan(ExpressionsAndOperators).reverse
-        raise(SyntaxError, SyntaxHelp) unless expressions.shift =~ Syntax
+        raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless expressions.shift =~ Syntax
 
         condition = Condition.new($1, $2, $3)
 
         while not expressions.empty?
           operator = (expressions.shift).to_s.strip
 
-          raise(SyntaxError, SyntaxHelp) unless expressions.shift.to_s =~ Syntax
+          raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless expressions.shift.to_s =~ Syntax
 
           new_condition = Condition.new($1, $2, $3)
           new_condition.send(operator.to_sym, condition)

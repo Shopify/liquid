@@ -41,7 +41,7 @@ module Liquid
               unknown_tag($1, $2, tokens)
             end
           else
-            raise SyntaxError, "Tag '#{token}' was not properly terminated with regexp: #{TagEnd.inspect} "
+            raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination", :token => token, :tag_end => TagEnd.inspect))
           end
         when IsVariable
           new_var = create_variable(token)
@@ -80,11 +80,14 @@ module Liquid
     def unknown_tag(tag, params, tokens)
       case tag
       when 'else'
-        raise SyntaxError, "#{block_name} tag does not expect else tag"
+        raise SyntaxError.new(options[:locale].t("errors.syntax.unexpected_else", 
+                                                 :block_name => block_name))
       when 'end'
-        raise SyntaxError, "'end' is not a valid delimiter for #{block_name} tags. use #{block_delimiter}"
+        raise SyntaxError.new(options[:locale].t("errors.syntax.invalid_delimiter", 
+                                                 :block_name => block_name, 
+                                                 :block_delimiter => block_delimiter))
       else
-        raise SyntaxError, "Unknown tag '#{tag}'"
+        raise SyntaxError.new(options[:locale].t("errors.syntax.unknown_tag", :tag => tag))
       end
     end
 
@@ -100,7 +103,7 @@ module Liquid
       token.scan(ContentOfVariable) do |content|
         return Variable.new(content.first, @options)
       end
-      raise SyntaxError.new("Variable '#{token}' was not properly terminated with regexp: #{VariableEnd.inspect} ")
+      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination", :token => token, :tag_end => TagEnd.inspect))
     end
 
     def render(context)
@@ -110,7 +113,7 @@ module Liquid
     protected
 
     def assert_missing_delimitation!
-      raise SyntaxError.new("#{block_name} tag was never closed")
+      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_never_closed", :block_name => block_name))
     end
 
     def render_all(list, context)

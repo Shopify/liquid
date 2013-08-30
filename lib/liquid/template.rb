@@ -14,6 +14,10 @@ module Liquid
   #   template.render('user_name' => 'bob')
   #
   class Template
+    DEFAULT_OPTIONS = {
+      :locale => I18n.new
+    }
+
     attr_accessor :root, :resource_limits
     @@file_system = BlankFileSystem.new
 
@@ -68,7 +72,7 @@ module Liquid
     # Parse source code.
     # Returns self for easy chaining
     def parse(source, options = {})
-      @root = Document.new(tokenize(source), options)
+      @root = Document.new(tokenize(source), DEFAULT_OPTIONS.merge(options))
       @warnings = nil
       self
     end
@@ -119,7 +123,7 @@ module Liquid
       when nil
         Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
       else
-        raise ArgumentError, "Expect Hash or Liquid::Context as parameter"
+        raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
       end
 
       case args.last

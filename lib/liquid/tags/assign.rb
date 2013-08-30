@@ -16,7 +16,7 @@ module Liquid
         @to = $1
         @from = Variable.new($2)
       else
-        raise SyntaxError.new("Syntax Error in 'assign' - Valid syntax: assign [var] = [source]")
+        raise SyntaxError.new options[:locale].t("errors.syntax.assign")
       end
 
       super
