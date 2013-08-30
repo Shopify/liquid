@@ -25,14 +25,14 @@ module Liquid
     private
     def interpolate(name, vars)
       name.gsub(/%{(\w+)}/) {
-        raise TranslationError, translate("errors.i18n.undefined_interpolation", :key => $1, :name => name) unless vars[$1.to_sym]
+        raise TranslationError, "Undefined key #{$1} for interpolation in translation #{name}"  unless vars[$1.to_sym]
         "#{vars[$1.to_sym]}"
       }
     end
 
     def deep_fetch_translation(name)
       name.split('.').reduce(locale) do |level, cur|
-        level[cur] or raise TranslationError, translate("errors.i18n.unknown_translation", :name => name)
+        level[cur] or raise TranslationError, "Translation for #{name} does not exist in locale #{path}"
       end
     end
   end

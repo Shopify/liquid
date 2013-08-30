@@ -4,7 +4,7 @@ class I18nTest < Test::Unit::TestCase
   include Liquid
 
   def setup
-    @i18n = I18n.new fixture("en_locale.yml")
+    @i18n = I18n.new(fixture("en_locale.yml"))
   end
 
   def test_simple_translate_string
