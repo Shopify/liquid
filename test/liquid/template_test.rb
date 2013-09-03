@@ -37,6 +37,11 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal ['  ', '{% comment %}', ' ', '{% endcomment %}', ' '], Template.new.send(:tokenize, "  {% comment %} {% endcomment %} ")
   end
 
+
+  def test_tokenize_string_with_curly_brackets
+    assert_equal ["{{ 'hello {world}' }}"], Template.new.send(:tokenize, "{{ 'hello {world}' }}")
+  end
+
   def test_instance_assigns_persist_on_same_template_object_between_parses
     t = Template.new
     assert_equal 'from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render
