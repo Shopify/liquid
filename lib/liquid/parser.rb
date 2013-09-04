@@ -53,8 +53,7 @@ module Liquid
       elsif token.first == :open_round
         consume
         first = expression
-        consume(:dot)
-        consume(:dot)
+        consume(:dotdot)
         last = expression
         consume(:close_round)
         "(#{first}..#{last})"
