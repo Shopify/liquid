@@ -14,13 +14,13 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
+    attr_accessor :exception_handler
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = {})
+    def initialize(environments = {}, outer_scope = {}, registers = {}, resource_limits = {})
       @environments    = [environments].flatten
       @scopes          = [(outer_scope || {})]
       @registers       = registers
       @errors          = []
-      @rethrow_errors  = rethrow_errors
       @resource_limits = (resource_limits || {}).merge!({ :render_score_current => 0, :assign_score_current => 0 })
       squash_instance_assigns_with_environments
 
@@ -68,7 +68,7 @@ module Liquid
 
     def handle_error(e)
       errors.push(e)
-      raise if @rethrow_errors
+      exception_handler.call(e) if exception_handler
 
       case e
       when SyntaxError

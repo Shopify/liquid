@@ -117,11 +117,11 @@ module Liquid
         environments
       when Liquid::Drop
         drop = environments
-        drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        drop.context = Context.new([drop, assigns], instance_assigns, registers, @resource_limits)
       when Hash
-        Context.new([environments, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        Context.new([environments, assigns], instance_assigns, registers, @resource_limits)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
+        Context.new(assigns, instance_assigns, registers, @resource_limits)
       else
         raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
       end
@@ -135,6 +135,9 @@ module Liquid
 
         if options[:filters]
           context.add_filters(options[:filters])
+        end
+        if options.key?(:exception_handler)
+          context.exception_handler = options[:exception_handler]
         end
 
       when Module
@@ -155,8 +158,8 @@ module Liquid
       end
     end
 
-    def render!(*args)
-      @rethrow_errors = true; render(*args)
+    def render!(envrionments = {}, options = {})
+      render(envrionments, options.merge(:exception_handler => proc {|exception| raise exception}))
     end
 
     private
