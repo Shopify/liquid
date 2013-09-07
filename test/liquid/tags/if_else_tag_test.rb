@@ -157,4 +157,9 @@ class IfElseTagTest < Test::Unit::TestCase
     assert_template_result('yes',
                            %({% if 'gnomeslab-and-or-liquid' contains 'gnomeslab-and-or-liquid' %}yes{% endif %}))
   end
+
+  def test_if_nodelist
+    template = Liquid::Template.parse('{% if true %}IF{% else %}ELSE{% endif %}')
+    assert_equal ['IF', 'ELSE'], template.root.nodelist[0].nodelist
+  end
 end # IfElseTest
