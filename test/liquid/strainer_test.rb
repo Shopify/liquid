@@ -55,7 +55,7 @@ class StrainerTest < Test::Unit::TestCase
     assert_kind_of Strainer, strainer
     assert_kind_of a, strainer
     assert_kind_of b, strainer
-    Strainer.send(:class_variable_get, :@@filters).values.each do |m|
+    Strainer.send(:class_variable_get, :@@filters).each do |m|
       assert_kind_of m, strainer
     end
   end
