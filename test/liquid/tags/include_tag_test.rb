@@ -163,4 +163,53 @@ class IncludeTagTest < Test::Unit::TestCase
       Template.parse("{% include 'pick_a_source' %}").render({}, :registers => {:file_system => file_system})
     assert_equal 2, file_system.count
   end
+
+  def test_include_tag_within_if_statement
+    assert_equal "foo_if_true",
+      Template.parse("{% if true %}{% include 'foo_if_true' %}{% endif %}").render
+  end
+
+  def test_custom_include_tag
+    original_tag = Liquid::Template.tags['include']
+    Liquid::Template.tags['include'] = CustomInclude
+    begin
+      assert_equal "custom_foo",
+        Template.parse("{% include 'custom_foo' %}").render
+    ensure
+      Liquid::Template.tags['include'] = original_tag
+    end
+  end
+
+  def test_custom_include_tag_within_if_statement
+    original_tag = Liquid::Template.tags['include']
+    Liquid::Template.tags['include'] = CustomInclude
+    begin
+      assert_equal "custom_foo_if_true",
+        Template.parse("{% if true %}{% include 'custom_foo_if_true' %}{% endif %}").render
+    ensure
+      Liquid::Template.tags['include'] = original_tag
+    end
+  end
+
+  class CustomInclude < Liquid::Tag
+    include Liquid
+    Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/o
+
+    def initialize(tag_name, markup, tokens)
+      markup =~ Syntax
+      @template_name = $1
+      super
+    end
+
+    def parse(tokens)
+    end
+
+    def blank?
+      false
+    end
+
+    def render(context)
+      @template_name[1..-2]
+    end
+  end
 end # IncludeTagTest
