@@ -192,8 +192,7 @@ class IncludeTagTest < Test::Unit::TestCase
   end
 
   class CustomInclude < Liquid::Tag
-    include Liquid
-    Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/o
+    Syntax = /(#{Liquid::QuotedFragment}+)(\s+(?:with|for)\s+(#{Liquid::QuotedFragment}+))?/o
 
     def initialize(tag_name, markup, tokens)
       markup =~ Syntax
