@@ -1,5 +1,7 @@
+require "liquid/tags/raw"
+
 module Liquid
-  class Comment < Block
+  class Comment < Raw
     def render(context)
       ''
     end

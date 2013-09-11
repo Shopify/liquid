@@ -34,6 +34,12 @@ class StandardTagTest < Test::Unit::TestCase
     assert_template_result('','{%comment%}comment{%endcomment%}')
     assert_template_result('','{% comment %}comment{% endcomment %}')
 
+    assert_template_result('','{%comment%}{%blabla%}{%endcomment%}')
+    assert_template_result('','{% comment %}{% blabla %}{% endcomment %}')
+    assert_template_result('','{%comment%}{% endif %}{%endcomment%}')
+    assert_template_result('','{% comment %}{% endwhatever %}{% endcomment %}')
+    assert_template_result('','{% comment %} {{ %} {{%%%}} {% endcomment {% endcomment %}')
+
     assert_template_result('foobar','foo{%comment%}comment{%endcomment%}bar')
     assert_template_result('foobar','foo{% comment %}comment{% endcomment %}bar')
     assert_template_result('foobar','foo{%comment%} comment {%endcomment%}bar')
