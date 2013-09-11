@@ -48,6 +48,27 @@ class CountingFileSystem
   end
 end
 
+class CustomInclude < Liquid::Tag
+  Syntax = /(#{Liquid::QuotedFragment}+)(\s+(?:with|for)\s+(#{Liquid::QuotedFragment}+))?/o
+
+  def initialize(tag_name, markup, tokens)
+    markup =~ Syntax
+    @template_name = $1
+    super
+  end
+
+  def parse(tokens)
+  end
+
+  def blank?
+    false
+  end
+
+  def render(context)
+    @template_name[1..-2]
+  end
+end
+
 class IncludeTagTest < Test::Unit::TestCase
   include Liquid
 
@@ -188,27 +209,6 @@ class IncludeTagTest < Test::Unit::TestCase
         Template.parse("{% if true %}{% include 'custom_foo_if_true' %}{% endif %}").render
     ensure
       Liquid::Template.tags['include'] = original_tag
-    end
-  end
-
-  class CustomInclude < Liquid::Tag
-    Syntax = /(#{Liquid::QuotedFragment}+)(\s+(?:with|for)\s+(#{Liquid::QuotedFragment}+))?/o
-
-    def initialize(tag_name, markup, tokens)
-      markup =~ Syntax
-      @template_name = $1
-      super
-    end
-
-    def parse(tokens)
-    end
-
-    def blank?
-      false
-    end
-
-    def render(context)
-      @template_name[1..-2]
     end
   end
 end # IncludeTagTest
