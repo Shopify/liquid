@@ -4,6 +4,9 @@ module Liquid
       ''
     end
 
+    def unknown_tag(tag, markup, tokens)
+    end
+
     def blank?
       true
     end
