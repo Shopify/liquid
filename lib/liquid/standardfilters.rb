@@ -38,6 +38,14 @@ module Liquid
 
     alias_method :h, :escape
 
+    def encode(input)
+      CGI.escape(input) rescue input
+    end
+
+    def decode(input)
+      CGI.unescape(input) rescue input
+    end
+
     # Truncate a string down to x characters
     def truncate(input, length = 50, truncate_string = "...")
       if input.nil? then return end
