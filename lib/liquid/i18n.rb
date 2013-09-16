@@ -24,7 +24,7 @@ module Liquid
 
     private
     def interpolate(name, vars)
-      name.gsub(/%{(\w+)}/) {
+      name.gsub(/%\{(\w+)\}/) {
         # raise TranslationError, "Undefined key #{$1} for interpolation in translation #{name}"  unless vars[$1.to_sym]
         "#{vars[$1.to_sym]}"
       }
