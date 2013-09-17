@@ -14,6 +14,9 @@ module Liquid
       @nodelist ||= []
       @nodelist.clear
 
+      # All child tags of the current block.
+      @children = []
+
       while token = tokens.shift
         case token
         when IsTag
@@ -28,19 +31,22 @@ module Liquid
 
             # fetch the tag from registered blocks
             if tag = Template.tags[$1]
-              new_tag = tag.new($1, $2, tokens)
+              new_tag = tag.new_with_options($1, $2, tokens, @options || {})
               @blank &&= new_tag.blank?
               @nodelist << new_tag
+              @children << new_tag
             else
               # this tag is not registered with the system
               # pass it to the current block for special handling or error reporting
               unknown_tag($1, $2, tokens)
             end
           else
-            raise SyntaxError, "Tag '#{token}' was not properly terminated with regexp: #{TagEnd.inspect} "
+            raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination", :token => token, :tag_end => TagEnd.inspect))
           end
         when IsVariable
-          @nodelist << create_variable(token)
+          new_var = create_variable(token)
+          @nodelist << new_var
+          @children << new_var
           @blank = false
         when ''
           # pass
@@ -56,17 +62,32 @@ module Liquid
       assert_missing_delimitation!
     end
 
+    # warnings of this block and all sub-tags
+    def warnings
+      all_warnings = []
+      all_warnings.concat(@warnings) if @warnings
+
+      (@children || []).each do |node|
+        all_warnings.concat(node.warnings || [])
+      end
+
+      all_warnings
+    end
+
     def end_tag
     end
 
     def unknown_tag(tag, params, tokens)
       case tag
       when 'else'
-        raise SyntaxError, "#{block_name} tag does not expect else tag"
+        raise SyntaxError.new(options[:locale].t("errors.syntax.unexpected_else", 
+                                                 :block_name => block_name))
       when 'end'
-        raise SyntaxError, "'end' is not a valid delimiter for #{block_name} tags. use #{block_delimiter}"
+        raise SyntaxError.new(options[:locale].t("errors.syntax.invalid_delimiter", 
+                                                 :block_name => block_name, 
+                                                 :block_delimiter => block_delimiter))
       else
-        raise SyntaxError, "Unknown tag '#{tag}'"
+        raise SyntaxError.new(options[:locale].t("errors.syntax.unknown_tag", :tag => tag))
       end
     end
 
@@ -80,9 +101,9 @@ module Liquid
 
     def create_variable(token)
       token.scan(ContentOfVariable) do |content|
-        return Variable.new(content.first)
+        return Variable.new(content.first, @options)
       end
-      raise SyntaxError.new("Variable '#{token}' was not properly terminated with regexp: #{VariableEnd.inspect} ")
+      raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination", :token => token, :tag_end => VariableEnd.inspect))
     end
 
     def render(context)
@@ -92,7 +113,7 @@ module Liquid
     protected
 
     def assert_missing_delimitation!
-      raise SyntaxError.new("#{block_name} tag was never closed")
+      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_never_closed", :block_name => block_name))
     end
 
     def render_all(list, context)

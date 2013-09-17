@@ -7,10 +7,26 @@ require 'rubygems/package_task'
 
 task :default => 'test'
 
-Rake::TestTask.new(:test) do |t|
+desc 'run test suite with default parser'
+Rake::TestTask.new(:base_test) do |t|
   t.libs << '.' << 'lib' << 'test'
   t.test_files = FileList['test/liquid/**/*_test.rb']
   t.verbose = false
+end
+
+desc 'run test suite with warn error mode'
+task :warn_test do
+  ENV['LIQUID_PARSER_MODE'] = 'warn'
+  Rake::Task['base_test'].invoke
+end
+
+desc 'runs test suite with both strict and lax parsers'
+task :test do
+  ENV['LIQUID_PARSER_MODE'] = 'lax'
+  Rake::Task['base_test'].invoke
+  ENV['LIQUID_PARSER_MODE'] = 'strict'
+  Rake::Task['base_test'].reenable
+  Rake::Task['base_test'].invoke
 end
 
 gemspec = eval(File.read('liquid.gemspec'))
@@ -25,11 +41,15 @@ end
 
 namespace :benchmark do
 
-  desc "Run the liquid benchmark"
+  desc "Run the liquid benchmark with lax parsing"
   task :run do
-    ruby "./performance/benchmark.rb"
+    ruby "./performance/benchmark.rb lax"
   end
 
+  desc "Run the liquid benchmark with strict parsing"
+  task :strict do
+    ruby "./performance/benchmark.rb strict"
+  end
 end
 
 
