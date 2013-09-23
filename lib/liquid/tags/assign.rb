@@ -29,6 +29,9 @@ module Liquid
       ''
     end
 
+    def blank?
+      true
+    end
   end
 
   Template.register_tag('assign', Assign)
