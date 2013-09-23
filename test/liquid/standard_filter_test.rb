@@ -92,6 +92,14 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal '&lt;strong&gt;', @filters.escape_once(@filters.escape('<strong>'))
   end
 
+  def test_encode
+    assert_equal '%27Stop%21%27+said+Fred', @filters.encode("'Stop!' said Fred")
+  end
+
+  def test_decode
+    assert_equal "'Stop!' said Fred", @filters.decode('%27Stop%21%27+said%20Fred')
+  end
+
   def test_truncatewords
     assert_equal 'one two three', @filters.truncatewords('one two three', 4)
     assert_equal 'one two...', @filters.truncatewords('one two three', 2)
