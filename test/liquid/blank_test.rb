@@ -1,5 +1,13 @@
 require 'test_helper'
 
+class FoobarTag < Liquid::Tag
+  def render(*args)
+    " "
+  end
+
+  Liquid::Template.register_tag('foobar', FoobarTag)
+end
+
 class BlankTestFileSystem
   def read_template_file(template_path, context)
     template_path
@@ -20,6 +28,10 @@ class BlankTest < Test::Unit::TestCase
 
   def wrap(body)
     wrap_in_for(body) + wrap_in_if(body)
+  end
+
+  def test_new_tags_are_not_blank_by_default
+    assert_template_result(" "*N, wrap_in_for("{% foobar %}"))
   end
 
   def test_loops_are_blank
