@@ -24,15 +24,15 @@ The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are
 * Better documentation for 'include' tag (closes #163) [Peter Schröder, phoet]
 * Use of BigDecimal on filters to have better precision (closes #155) [Arthur Nogueira Neves, arthurnn]
 
-## 2.5.3
+## 2.5.3 / branch "2.5-stable"
 
-* #232, #234, #237: Fix Map filter bugs [Florian Weingarten, fw42]
+* #232, #234, #237: Fix map filter bugs [Florian Weingarten, fw42]
 
-## 2.5.2
+## 2.5.2 / 2013-09-03 / deleted
 
-#### Yanked from rubygems, as it contained too much changes, those changes will be on major releases
+Yanked from rubygems, as it contained too many changes that broke compatibility. Those changes will be on following major releases.
 
-## 2.5.1
+## 2.5.1 / 2013-07-24
 
 * #230: Fix security issue with map filter, Use invoke_drop in map filter [Florian Weingarten, fw42]
 
