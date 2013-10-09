@@ -1,5 +1,17 @@
 # Liquid Version History
 
+## 2.5.3
+
+* #232, #234, #237: Fix Map filter bugs [Florian Weingarten, fw42]
+
+## 2.5.2
+
+#### Yanked from rubygems, as it contained too much changes, those changes will be on major releases
+
+## 2.5.1
+
+* #230: Fix security issue with map filter, Use invoke_drop in map filter [Florian Weingarten, fw42]
+
 ## 2.5.0 / 2013-03-06
 
 * Prevent Object methods from being called on drops
