@@ -3,7 +3,7 @@
 IMPORTANT: Liquid 2.6 is going to be the last version of Liquid which maintains explicit Ruby 1.8 compatability.
 The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are likely to break on Ruby 1.8.
 
-## 2.6.0 / Master branch (not yet released)
+## 2.6.0 (not yet released)
 
 * ...
 * Bugfix for #106: fix example servlet [gnowoel]
@@ -24,6 +24,17 @@ The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are
 * Better documentation for 'include' tag (closes #163) [Peter Schröder, phoet]
 * Use of BigDecimal on filters to have better precision (closes #155) [Arthur Nogueira Neves, arthurnn]
 
+## 2.5.3
+
+* #232, #234, #237: Fix Map filter bugs [Florian Weingarten, fw42]
+
+## 2.5.2
+
+#### Yanked from rubygems, as it contained too much changes, those changes will be on major releases
+
+## 2.5.1
+
+* #230: Fix security issue with map filter, Use invoke_drop in map filter [Florian Weingarten, fw42]
 
 ## 2.5.0 / 2013-03-06
 
