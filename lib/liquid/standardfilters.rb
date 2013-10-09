@@ -245,6 +245,11 @@ module Liquid
       apply_operation(input, operand, :%)
     end
 
+    def default(input, default_value = "")
+      is_blank = input.respond_to?(:empty?) ? input.empty? : !input
+      is_blank ? default_value : input
+    end
+
     private
 
     def flatten_if_necessary(input)
