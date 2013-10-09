@@ -140,6 +140,10 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal "woot: 1", Liquid::Template.parse('{{ foo | map: "whatever" }}').render("foo" => [t])
   end
 
+  def test_map_on_hashes
+    assert_equal "4217", Liquid::Template.parse('{{ thing | map: "foo" | map: "bar" }}').render("thing" => { "foo" => [ { "bar" => 42 }, { "bar" => 17 } ] })
+  end
+
   def test_sort_calls_to_liquid
     t = TestThing.new
     assert_equal "woot: 1", Liquid::Template.parse('{{ foo | sort: "whatever" }}').render("foo" => [t])

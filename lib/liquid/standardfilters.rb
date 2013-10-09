@@ -250,7 +250,7 @@ module Liquid
     def flatten_if_necessary(input)
       ary = if input.is_a?(Array)
         input.flatten
-      elsif input.kind_of?(Enumerable)
+      elsif input.is_a?(Enumerable) && !input.is_a?(Hash)
         input
       else
         [input].flatten
