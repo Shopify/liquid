@@ -1,9 +1,7 @@
-#!/usr/bin/env ruby
-
-require 'rubygems'
 require 'rake'
 require 'rake/testtask'
-require 'rubygems/package_task'
+$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+require "liquid/version"
 
 task :default => 'test'
 
@@ -13,14 +11,20 @@ Rake::TestTask.new(:test) do |t|
   t.verbose = false
 end
 
-gemspec = eval(File.read('liquid.gemspec'))
-Gem::PackageTask.new(gemspec) do |pkg|
-  pkg.gem_spec = gemspec
+task :gem => :build
+task :build do
+  system "gem build liquid.gemspec"
 end
 
-desc "Build the gem and release it to rubygems.org"
-task :release => :gem do
-  sh "gem push pkg/liquid-#{gemspec.version}.gem"
+task :install => :build do
+  system "gem install liquid-#{Liquid::VERSION}.gem"
+end
+
+task :release => :build do
+  system "git tag -a v#{Liquid::VERSION} -m 'Tagging #{Liquid::VERSION}'"
+  system "git push --tags"
+  system "gem push liquid-#{Liquid::VERSION}.gem"
+  system "rm liquid-#{Liquid::VERSION}.gem"
 end
 
 namespace :benchmark do
