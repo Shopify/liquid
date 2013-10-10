@@ -40,6 +40,13 @@ class ProductDrop < Liquid::Drop
     TextDrop.new
   end
 
+  def texts2
+    TextDrop.class_eval { attr_reader :text2 }
+    t = TextDrop.new
+    t.instance_variable_set('@text2', 'text2')
+    t
+  end
+
   def catchall
     CatchallDrop.new
   end
@@ -102,6 +109,11 @@ end
 
 class DropsTest < Test::Unit::TestCase
   include Liquid
+
+  def test_dynamically_added_methods
+    tpl = Liquid::Template.parse('{% assign text = product.texts.text %}{{ product.texts2.text2 }}')
+    assert_equal 'text2', tpl.render('product' => ProductDrop.new)
+  end
 
   def test_product_drop
     assert_nothing_raised do
