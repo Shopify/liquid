@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Add default filter to standard filters, see #267 [Derrick Reimer, djreimer]
 * Add optional strict parsing and warn parsing, see #235 [Tristan Hume, trishume]
 * Add I18n syntax error translation, see #241 [Simon Hørup Eskildsen, Sirupsen]
 * Make sort filter work on enumerable drops, see #239 [Florian Weingarten, fw42]
