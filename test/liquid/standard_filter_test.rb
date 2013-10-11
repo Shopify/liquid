@@ -274,6 +274,15 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_template_result('abc',"{{ a | prepend: b}}",assigns)
   end
 
+  def test_default
+    assert_equal "foo", @filters.default("foo", "bar")
+    assert_equal "bar", @filters.default(nil, "bar")
+    assert_equal "bar", @filters.default("", "bar")
+    assert_equal "bar", @filters.default(false, "bar")
+    assert_equal "bar", @filters.default([], "bar")
+    assert_equal "bar", @filters.default({}, "bar")
+  end
+
   def test_cannot_access_private_methods
     assert_template_result('a',"{{ 'a' | to_number }}")
   end
