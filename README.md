@@ -4,7 +4,6 @@
 * [Contributing guidelines](CONTRIBUTING.md)
 * [Version history](History.md)
 * [Liquid documentation from Shopify](http://docs.shopify.com/themes/liquid-basics)
-* [Liquid Wiki from Shopify](http://wiki.shopify.com/Liquid)
 * [Liquid Wiki at GitHub](https://github.com/Shopify/liquid/wiki)
 * [Website](http://liquidmarkup.org/)
 
