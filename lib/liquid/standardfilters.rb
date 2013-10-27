@@ -120,6 +120,13 @@ module Liquid
       input.to_s.sub(string, replacement.to_s)
     end
 
+    # Replace occurrences of a hash key with the corresponding value
+    def replace_hash(input, hash)
+      output = input
+      hash.each { |k, v| output.to_s.gsub!(k, v.to_s) }
+      output
+    end
+
     # remove a substring
     def remove(input, string)
       input.to_s.gsub(string, '')
