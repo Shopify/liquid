@@ -63,7 +63,7 @@ module Liquid
           raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless expressions.shift.to_s =~ Syntax
 
           new_condition = Condition.new($1, $2, $3)
-          new_condition.send(operator, condition)
+          new_condition.public_send(operator, condition)
           condition = new_condition
         end
 
