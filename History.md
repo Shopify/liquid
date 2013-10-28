@@ -10,7 +10,8 @@
 * Fix clashing method names in enumerable drops, see #238 [Florian Weingarten, fw42]
 * Make map filter work on enumerable drops, see #233 [Florian Weingarten, fw42]
 * Improved whitespace stripping for blank blocks, related to #216 [Florian Weingarten, fw42]
-* Don't call to_sym when creating conditions and use public_send for security reasons, see #273 [Bouke van der Bijl, bouk]
+* Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
+* Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
 
 ## 2.6.0 / not yet released / branch "2.6-stable"
 
