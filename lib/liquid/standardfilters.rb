@@ -43,8 +43,7 @@ module Liquid
       if input.nil? then return end
       l = length.to_i - truncate_string.length
       l = 0 if l < 0
-      truncated = RUBY_VERSION[0,3] == "1.8" ? input.scan(/./mu)[0...l].to_s : input[0...l]
-      input.length > length.to_i ? truncated + truncate_string : input
+      input.length > length.to_i ? input[0...l] + truncate_string : input
     end
 
     def truncatewords(input, words = 15, truncate_string = "...")
