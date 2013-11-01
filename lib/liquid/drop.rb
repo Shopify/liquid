@@ -59,13 +59,12 @@ module Liquid
     # Check for method existence without invoking respond_to?, which creates symbols
     def self.invokable?(method_name)
       unless @invokable_methods
-        # Ruby 1.8 compatibility: call to_s on method names (which are strings in 1.8, but already symbols in 1.9)
-        blacklist = (Liquid::Drop.public_instance_methods + [:each]).map(&:to_s)
+        blacklist = Liquid::Drop.public_instance_methods + [:each]
         if include?(Enumerable)
-          blacklist += Enumerable.public_instance_methods.map(&:to_s)
-          blacklist -= [:sort, :count, :first, :min, :max, :include?].map(&:to_s)
+          blacklist += Enumerable.public_instance_methods
+          blacklist -= [:sort, :count, :first, :min, :max, :include?]
         end
-        whitelist = [:to_liquid] + (public_instance_methods.map(&:to_s) - blacklist.map(&:to_s))
+        whitelist = [:to_liquid] + (public_instance_methods - blacklist)
         @invokable_methods = Set.new(whitelist.map(&:to_s))
       end
       @invokable_methods.include?(method_name.to_s)
