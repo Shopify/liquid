@@ -1,5 +1,6 @@
 require 'cgi'
 require 'bigdecimal'
+require 'i18n'
 
 module Liquid
 
@@ -21,9 +22,16 @@ module Liquid
       input.to_s.upcase
     end
 
-    # capitalize words in the input centence
+    # capitalize words in the input sentence
     def capitalize(input)
       input.to_s.capitalize
+    end
+
+    # Replaces non-ASCII characters with an ASCII approximation, or if none
+    # exists, a replacement character which defaults to "?".
+    def transliterate(input)
+      input ||= ''
+      ::I18n.transliterate(input)
     end
 
     def escape(input)
