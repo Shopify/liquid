@@ -19,6 +19,7 @@
 IMPORTANT: Liquid 2.6 is going to be the last version of Liquid which maintains explicit Ruby 1.8 compatability.
 The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are likely to break on Ruby 1.8.
 
+* ...
 * Bugfix for #106: fix example servlet [gnowoel]
 * Bugfix for #97: strip_html filter supports multi-line tags [Jo Liss, joliss]
 * Bugfix for #114: strip_html filter supports style tags [James Allardice, jamesallardice]
@@ -27,6 +28,7 @@ The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are
 * Bugfix for #204: 'raw' parsing bug [Florian Weingarten, fw42]
 * Bugfix for #150: 'for' parsing bug [Peter Schröder, phoet]
 * Bugfix for #126: Strip CRLF in strip_newline [Peter Schröder, phoet]
+* Bugfix for #174, "can't convert Fixnum into String" for "replace" [wǒ_is神仙, jsw0528]
 * Allow a Liquid::Drop to be passed into Template#render [Daniel Huckstep, darkhelmet]
 * Resource limits [Florian Weingarten, fw42]
 * Add reverse filter [Jay Strybis, unreal]
@@ -37,7 +39,11 @@ The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are
 * Better documentation for 'include' tag (closes #163) [Peter Schröder, phoet]
 * Use of BigDecimal on filters to have better precision (closes #155) [Arthur Nogueira Neves, arthurnn]
 
-## 2.5.3 / 2013-10-09 / branch "2.5-stable"
+## 2.5.4 / 2013-11-11 / branch "2.5-stable"
+
+* Fix "can't convert Fixnum into String" for "replace", see #173, [wǒ_is神仙, jsw0528]
+
+## 2.5.3 / 2013-10-09
 
 * #232, #234, #237: Fix map filter bugs [Florian Weingarten, fw42]
 
