@@ -1,6 +1,10 @@
 # Liquid Version History
 
-## 2.5.3 / branch "2.5-stable"
+## 2.5.4 / 2013-11-11 / branch "2.5-stable"
+
+* Fix "can't convert Fixnum into String" for "replace", see #173, [wǒ_is神仙, jsw0528]
+
+## 2.5.3 / 2013-10-09
 
 * #232, #234, #237: Fix map filter bugs [Florian Weingarten, fw42]
 
