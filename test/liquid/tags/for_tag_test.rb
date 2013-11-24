@@ -294,4 +294,52 @@ HERE
     assigns  = {'items' => [1,2,3,4,5]}
     assert_template_result(expected, template, assigns)
   end
+
+  class LoaderDrop < Liquid::Drop
+    attr_accessor :each_called, :load_slice_called
+
+    def initialize(data)
+      @data = data
+    end
+
+    def each
+      @each_called = true
+      @data.each { |el| yield el }
+    end
+
+    def load_slice(from, to)
+      @load_slice_called = true
+      @data[(from..to-1)]
+    end
+  end
+
+  def test_iterate_with_each_when_no_limit_applied
+    loader = LoaderDrop.new([1,2,3,4,5])
+    assigns = {'items' => loader}
+    expected = '12345'
+    template = '{% for item in items %}{{item}}{% endfor %}'
+    assert_template_result(expected, template, assigns)
+    assert loader.each_called
+    assert !loader.load_slice_called
+  end
+
+  def test_iterate_with_load_slice_when_limit_applied
+    loader = LoaderDrop.new([1,2,3,4,5])
+    assigns = {'items' => loader}
+    expected = '1'
+    template = '{% for item in items limit:1 %}{{item}}{% endfor %}'
+    assert_template_result(expected, template, assigns)
+    assert !loader.each_called
+    assert loader.load_slice_called
+  end
+
+  def test_iterate_with_load_slice_when_limit_and_offset_applied
+    loader = LoaderDrop.new([1,2,3,4,5])
+    assigns = {'items' => loader}
+    expected = '34'
+    template = '{% for item in items offset:2 limit:2 %}{{item}}{% endfor %}'
+    assert_template_result(expected, template, assigns)
+    assert !loader.each_called
+    assert loader.load_slice_called
+  end
 end
