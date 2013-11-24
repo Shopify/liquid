@@ -1,5 +1,20 @@
 module Liquid
   module Utils
+
+    def self.slice_collection(collection, from, to)
+      if (from != 0 || to != nil) && collection.respond_to?(:load_slice)
+        collection.load_slice(from, to)
+      else
+        slice_collection_using_each(collection, from, to)
+      end
+    end
+
+    def self.non_blank_string?(collection)
+      collection.is_a?(String) && collection != ''
+    end
+
+    private
+
     def self.slice_collection_using_each(collection, from, to)
       segments = []
       index = 0
@@ -21,10 +36,6 @@ module Liquid
       end
 
       segments
-    end
-
-    def self.non_blank_string?(collection)
-      collection.is_a?(String) && collection != ''
     end
   end
 end

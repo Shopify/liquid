@@ -75,11 +75,7 @@ module Liquid
       limit = context[@attributes['limit']]
       to    = limit ? limit.to_i + from : nil
 
-      segment = if (from != 0 || to != nil) && collection.respond_to?(:load_slice)
-        collection.load_slice(from, to)
-      else
-        Utils.slice_collection_using_each(collection, from, to)
-      end
+      segment = Utils.slice_collection(collection, from, to)
 
       return render_else(context) if segment.empty?
 
