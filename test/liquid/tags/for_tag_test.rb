@@ -342,4 +342,14 @@ HERE
     assert !loader.each_called
     assert loader.load_slice_called
   end
+
+  def test_iterate_with_load_slice_returns_same_results_as_without
+    loader = LoaderDrop.new([1,2,3,4,5])
+    loader_assigns = {'items' => loader}
+    array_assigns = {'items' => [1,2,3,4,5]}
+    expected = '34'
+    template = '{% for item in items offset:2 limit:2 %}{{item}}{% endfor %}'
+    assert_template_result(expected, template, loader_assigns)
+    assert_template_result(expected, template, array_assigns)
+  end
 end
