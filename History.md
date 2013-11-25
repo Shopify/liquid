@@ -3,7 +3,7 @@
 IMPORTANT: Liquid 2.6 is going to be the last version of Liquid which maintains explicit Ruby 1.8 compatability.
 The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are likely to break on Ruby 1.8.
 
-## 2.6.0 (not yet released)
+## 2.6.0 / 2013-11-25 / branch "2.6-stable"
 
 * ...
 * Bugfix for #106: fix example servlet [gnowoel]
