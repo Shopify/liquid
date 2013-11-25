@@ -6,7 +6,7 @@ rvm:
   - rbx-19mode
 matrix:
   allow_failures:
-    - rvm: 2.0.0
+    - rvm: rbx-19mode
     - rvm: jruby-head
 
 script: "rake test"
