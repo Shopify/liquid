@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Allow drops to optimize loading a slice of elements, see #282 [Tom Burns, boourns]
 * Support for passing variables to snippets in subdirs, see #271 [Joost Hietbrink, joost]
 * Add a class cache to avoid runtime extend calls, see #249 [James Tucker, raggi]
 * Remove some legacy Ruby 1.8 compatibility code, see #276 [Florian Weingarten, fw42]
