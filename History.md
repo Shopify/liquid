@@ -14,12 +14,11 @@
 * Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
 * Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
 
-## 2.6.0 / not yet released / branch "2.6-stable"
+## 2.6.0 / 2013-11-25 / branch "2.6-stable"
 
 IMPORTANT: Liquid 2.6 is going to be the last version of Liquid which maintains explicit Ruby 1.8 compatability.
 The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are likely to break on Ruby 1.8.
 
-* ...
 * Bugfix for #106: fix example servlet [gnowoel]
 * Bugfix for #97: strip_html filter supports multi-line tags [Jo Liss, joliss]
 * Bugfix for #114: strip_html filter supports style tags [James Allardice, jamesallardice]
