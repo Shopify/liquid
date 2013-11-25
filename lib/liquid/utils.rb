@@ -13,8 +13,6 @@ module Liquid
       collection.is_a?(String) && collection != ''
     end
 
-    private
-
     def self.slice_collection_using_each(collection, from, to)
       segments = []
       index = 0
