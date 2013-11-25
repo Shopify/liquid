@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Add a class cache to avoid runtime extend calls, see #249 [James Tucker, raggi]
 * Remove some legacy Ruby 1.8 compatibility code, see #276 [Florian Weingarten, fw42]
 * Add default filter to standard filters, see #267 [Derrick Reimer, djreimer]
 * Add optional strict parsing and warn parsing, see #235 [Tristan Hume, trishume]

@@ -41,8 +41,8 @@ module Liquid
       @@strainer_class_cache
     end
 
-    def self.create(context, filters = nil)
-      filters = @@filters + (filters || [])
+    def self.create(context, filters = [])
+      filters = @@filters + filters
       strainer_class_cache[filters].new(context)
     end
 
