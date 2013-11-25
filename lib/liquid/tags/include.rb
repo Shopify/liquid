@@ -51,7 +51,7 @@ module Liquid
           context[key] = context[value]
         end
 
-        context_variable_name = @template_name[1..-2].split('/').last # for a snippet in a subdir only use the filename
+        context_variable_name = @template_name[1..-2].split('/').last
         if variable.is_a?(Array)
           variable.collect do |var|
             context[context_variable_name] = var
