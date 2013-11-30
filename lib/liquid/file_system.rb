@@ -31,11 +31,22 @@ module Liquid
   # file_system.full_path("mypartial")       # => "/some/path/_mypartial.liquid"
   # file_system.full_path("dir/mypartial")   # => "/some/path/dir/_mypartial.liquid"
   #
+  # Optionally in the second argument you can specify a custom pattern for template filenames.
+  # The Kernel::sprintf format specification is used.
+  # Default pattern is "_%s.liquid".
+  #
+  # Example:
+  #
+  # file_system = Liquid::LocalFileSystem.new("/some/path", "%s.html")
+  #
+  # file_system.full_path("index") # => "/some/path/index.html"
+  #
   class LocalFileSystem
     attr_accessor :root
 
-    def initialize(root)
+    def initialize(root, pattern = "_%s.liquid")
       @root = root
+      @pattern = pattern
     end
 
     def read_template_file(template_path, context)
@@ -49,9 +60,9 @@ module Liquid
       raise FileSystemError, "Illegal template name '#{template_path}'" unless template_path =~ /^[^.\/][a-zA-Z0-9_\/]+$/
 
       full_path = if template_path.include?('/')
-        File.join(root, File.dirname(template_path), "_#{File.basename(template_path)}.liquid")
+        File.join(root, File.dirname(template_path), @pattern % File.basename(template_path))
       else
-        File.join(root, "_#{template_path}.liquid")
+        File.join(root, @pattern % template_path)
       end
 
       raise FileSystemError, "Illegal template path '#{File.expand_path(full_path)}'" unless File.expand_path(full_path) =~ /^#{File.expand_path(root)}/
