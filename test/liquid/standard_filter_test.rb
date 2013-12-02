@@ -89,7 +89,7 @@ class StandardFiltersTest < Test::Unit::TestCase
   end
 
   def test_escape_once
-    assert_equal '&lt;strong&gt;', @filters.escape_once(@filters.escape('<strong>'))
+    assert_equal '&lt;strong&gt;Hulk&lt;/strong&gt;', @filters.escape_once('&lt;strong&gt;Hulk</strong>')
   end
 
   def test_truncatewords
