@@ -121,7 +121,7 @@ module Liquid
 
     # Replace the last occurrence of a string with another
     def replace_last(input, string, replacement = '')
-      input.to_s.sub(/(.*)#{string}$/, "\\1#{replacement}")
+      input.to_s.sub(/(.*)#{string}(.*)$/, "\\1#{replacement}\\2")
     end
  
     # remove a substring
