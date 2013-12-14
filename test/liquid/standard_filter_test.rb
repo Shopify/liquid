@@ -201,7 +201,9 @@ class StandardFiltersTest < Test::Unit::TestCase
   def test_replace
     assert_equal '2 2 2 2', @filters.replace('1 1 1 1', '1', 2)
     assert_equal '2 1 1 1', @filters.replace_first('1 1 1 1', '1', 2)
+    assert_equal '1 1 1 2', @filters.replace_last('1 1 1 1', '1', 2)
     assert_template_result '2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}"
+    assert_template_result '1 1 1 2', "{{ '1 1 1 1' | replace_last: '1', 2 }}"
   end
 
   def test_remove
