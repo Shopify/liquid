@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Allow specifying custom patterns for template filenames, see #284 [Andrei Gladkyi, agladkyi]
 * Allow drops to optimize loading a slice of elements, see #282 [Tom Burns, boourns]
 * Support for passing variables to snippets in subdirs, see #271 [Joost Hietbrink, joost]
 * Add a class cache to avoid runtime extend calls, see #249 [James Tucker, raggi]
