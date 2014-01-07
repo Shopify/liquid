@@ -110,7 +110,7 @@ module Liquid
     #    filters and tags and might be useful to integrate liquid more with its host application
     #
     def render(*args)
-      return '' if @root.nil?
+      return ''.freeze if @root.nil?
 
       context = case args.first
       when Liquid::Context

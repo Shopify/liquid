@@ -10,7 +10,7 @@ module Liquid
     end
 
     def self.non_blank_string?(collection)
-      collection.is_a?(String) && collection != ''
+      collection.is_a?(String) && collection != ''.freeze
     end
 
     def self.slice_collection_using_each(collection, from, to)

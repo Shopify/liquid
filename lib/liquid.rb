@@ -21,9 +21,9 @@
 
 module Liquid
   FilterSeparator             = /\|/
-  ArgumentSeparator           = ','
-  FilterArgumentSeparator     = ':'
-  VariableAttributeSeparator  = '.'
+  ArgumentSeparator           = ','.freeze
+  FilterArgumentSeparator     = ':'.freeze
+  VariableAttributeSeparator  = '.'.freeze
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/

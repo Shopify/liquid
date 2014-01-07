@@ -8,14 +8,14 @@ module Liquid
   #
   class Condition #:nodoc:
     @@operators = {
-      '==' => lambda { |cond, left, right|  cond.send(:equal_variables, left, right) },
-      '!=' => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
-      '<>' => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
-      '<'  => :<,
-      '>'  => :>,
-      '>=' => :>=,
-      '<=' => :<=,
-      'contains' => lambda { |cond, left, right| left && right ? left.include?(right) : false }
+      '=='.freeze => lambda { |cond, left, right|  cond.send(:equal_variables, left, right) },
+      '!='.freeze => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
+      '<>'.freeze => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
+      '<'.freeze  => :<,
+      '>'.freeze  => :>,
+      '>='.freeze => :>=,
+      '<='.freeze => :<=,
+      'contains'.freeze => lambda { |cond, left, right| left && right ? left.include?(right) : false }
     }
 
     def self.operators
@@ -61,7 +61,7 @@ module Liquid
     end
 
     def inspect
-      "#<Condition #{[@left, @operator, @right].compact.join(' ')}>"
+      "#<Condition #{[@left, @operator, @right].compact.join(' '.freeze)}>".freeze
     end
 
     private
@@ -94,7 +94,7 @@ module Liquid
 
       left, right = context[left], context[right]
 
-      operation = self.class.operators[op] || raise(ArgumentError.new("Unknown operator #{op}"))
+      operation = self.class.operators[op] || raise(ArgumentError.new("Unknown operator #{op}".freeze))
 
       if operation.respond_to?(:call)
         operation.call(self, left, right)

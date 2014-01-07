@@ -31,5 +31,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('increment', Increment)
+  Template.register_tag('increment'.freeze, Increment)
 end

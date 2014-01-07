@@ -19,7 +19,6 @@ module Liquid
       @markup  = markup
       @name    = nil
       @options = options || {}
-      
 
       case @options[:error_mode] || Template.error_mode
       when :strict then strict_parse(markup)
@@ -63,7 +62,7 @@ module Liquid
       @filters = []
       p = Parser.new(markup)
       # Could be just filters with no input
-      @name = p.look(:pipe) ? '' : p.expression
+      @name = p.look(:pipe) ? ''.freeze : p.expression
       while p.consume?(:pipe)
         filtername = p.consume(:id)
         filterargs = p.consume?(:colon) ? parse_filterargs(p) : []
@@ -86,7 +85,7 @@ module Liquid
     end
 
     def render(context)
-      return '' if @name.nil?
+      return ''.freeze if @name.nil?
       @filters.inject(context[@name]) do |output, filter|
         filterargs = []
         keyword_args = {}
