@@ -6,7 +6,7 @@ module Liquid
 
     class TranslationError < StandardError
     end
-    
+
     attr_reader :path
 
     def initialize(path = DEFAULT_LOCALE)
@@ -31,7 +31,7 @@ module Liquid
     end
 
     def deep_fetch_translation(name)
-      name.split('.').reduce(locale) do |level, cur|
+      name.split('.'.freeze).reduce(locale) do |level, cur|
         level[cur] or raise TranslationError, "Translation for #{name} does not exist in locale #{path}"
       end
     end

@@ -9,7 +9,7 @@ module Liquid
       if markup =~ Syntax
         @left = $1
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.case"))
+        raise SyntaxError.new(options[:locale].t("errors.syntax.case".freeze))
       end
 
       super
@@ -18,9 +18,9 @@ module Liquid
     def unknown_tag(tag, markup, tokens)
       @nodelist = []
       case tag
-      when 'when'
+      when 'when'.freeze
         record_when_condition(markup)
-      when 'else'
+      when 'else'.freeze
         record_else_condition(markup)
       else
         super
@@ -50,12 +50,12 @@ module Liquid
       while markup
         # Create a new nodelist and assign it to the new block
         if not markup =~ WhenSyntax
-          raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_when"))
+          raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_when".freeze))
         end
 
         markup = $2
 
-        block = Condition.new(@left, '==', $1)
+        block = Condition.new(@left, '=='.freeze, $1)
         block.attach(@nodelist)
         @blocks.push(block)
       end
@@ -63,7 +63,7 @@ module Liquid
 
     def record_else_condition(markup)
       if not markup.strip.empty?
-        raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_else"))
+        raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_else".freeze))
       end
 
       block = ElseCondition.new
@@ -72,5 +72,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('case', Case)
+  Template.register_tag('case'.freeze, Case)
 end

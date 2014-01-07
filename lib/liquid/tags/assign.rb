@@ -16,7 +16,7 @@ module Liquid
         @to = $1
         @from = Variable.new($2)
       else
-        raise SyntaxError.new options[:locale].t("errors.syntax.assign")
+        raise SyntaxError.new options[:locale].t("errors.syntax.assign".freeze)
       end
 
       super
@@ -26,7 +26,7 @@ module Liquid
       val = @from.render(context)
       context.scopes.last[@to] = val
       context.resource_limits[:assign_score_current] += (val.respond_to?(:length) ? val.length : 1)
-      ''
+      ''.freeze
     end
 
     def blank?
@@ -34,5 +34,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('assign', Assign)
+  Template.register_tag('assign'.freeze, Assign)
 end

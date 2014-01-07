@@ -45,7 +45,7 @@ module Liquid
     def add_filters(filters)
       filters = [filters].flatten.compact
       filters.each do |f|
-        raise ArgumentError, "Expected module but got: #{f.class}" unless f.is_a?(Module)
+        raise ArgumentError, "Expected module but got: #{f.class}".freeze unless f.is_a?(Module)
         Strainer.add_known_filter(f)
       end
 
@@ -82,9 +82,9 @@ module Liquid
 
       case e
       when SyntaxError
-        "Liquid syntax error: #{e.message}"
+        "Liquid syntax error: #{e.message}".freeze
       else
-        "Liquid error: #{e.message}"
+        "Liquid error: #{e.message}".freeze
       end
     end
 
@@ -95,7 +95,7 @@ module Liquid
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
     def push(new_scope={})
       @scopes.unshift(new_scope)
-      raise StackLevelError, "Nesting too deep" if @scopes.length > 100
+      raise StackLevelError, "Nesting too deep".freeze if @scopes.length > 100
     end
 
     # Merge a hash of variables in the current local scope
@@ -143,11 +143,11 @@ module Liquid
 
     private
       LITERALS = {
-        nil => nil, 'nil' => nil, 'null' => nil, '' => nil,
-        'true'  => true,
-        'false' => false,
-        'blank' => :blank?,
-        'empty' => :empty?
+        nil => nil, 'nil'.freeze => nil, 'null'.freeze => nil, ''.freeze => nil,
+        'true'.freeze  => true,
+        'false'.freeze => false,
+        'blank'.freeze => :blank?,
+        'empty'.freeze => :empty?
       }
 
       # Look up variable, either resolve directly after considering the name. We can directly handle
@@ -236,7 +236,7 @@ module Liquid
               # Some special cases. If the part wasn't in square brackets and
               # no key with the same name was found we interpret following calls
               # as commands and call them on the current object
-            elsif !part_resolved and object.respond_to?(part) and ['size', 'first', 'last'].include?(part)
+            elsif !part_resolved and object.respond_to?(part) and ['size'.freeze, 'first'.freeze, 'last'.freeze].include?(part)
 
               object = object.send(part.intern).to_liquid
 

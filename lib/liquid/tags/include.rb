@@ -29,7 +29,7 @@ module Liquid
         end
 
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.include"))
+        raise SyntaxError.new(options[:locale].t("errors.syntax.include".freeze))
       end
 
       super
@@ -51,7 +51,7 @@ module Liquid
           context[key] = context[value]
         end
 
-        context_variable_name = @template_name[1..-2].split('/').last
+        context_variable_name = @template_name[1..-2].split('/'.freeze).last
         if variable.is_a?(Array)
           variable.collect do |var|
             context[context_variable_name] = var
@@ -94,5 +94,5 @@ module Liquid
       end
   end
 
-  Template.register_tag('include', Include)
+  Template.register_tag('include'.freeze, Include)
 end

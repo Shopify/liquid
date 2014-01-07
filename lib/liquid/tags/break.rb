@@ -17,5 +17,5 @@ module Liquid
 
   end
 
-  Template.register_tag('break', Break)
+  Template.register_tag('break'.freeze, Break)
 end
