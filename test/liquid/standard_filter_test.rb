@@ -232,9 +232,6 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_template_result "12", "{{ 3 | times:4 }}"
     assert_template_result "0", "{{ 'foo' | times:4 }}"
 
-    # Ruby v1.9.2-rc1, or higher, backwards compatible Float test
-    assert_match(/(6\.3)|(6\.(0{13})1)/, Template.parse("{{ '2.1' | times:3 }}").render)
-
     assert_template_result "6", "{{ '2.1' | times:3 | replace: '.','-' | plus:0}}"
 
     assert_template_result "7.25", "{{ 0.0725 | times:100 }}"
@@ -243,9 +240,6 @@ class StandardFiltersTest < Test::Unit::TestCase
   def test_divided_by
     assert_template_result "4", "{{ 12 | divided_by:3 }}"
     assert_template_result "4", "{{ 14 | divided_by:3 }}"
-
-    # Ruby v1.9.2-rc1, or higher, backwards compatible Float test
-    assert_match(/4\.(6{13,14})7/, Template.parse("{{ 14 | divided_by:'3.0' }}").render)
 
     assert_template_result "5", "{{ 15 | divided_by:3 }}"
     assert_template_result "Liquid error: divided by 0", "{{ 5 | divided_by:0 }}"
