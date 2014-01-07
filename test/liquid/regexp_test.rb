@@ -21,11 +21,11 @@ class RegexpTest < Test::Unit::TestCase
     assert_equal ['<style', 'class="hello">', '</style>'], %|<style class="hello">' </style>|.scan(QuotedFragment)
   end
 
-  def test_quoted_words
+  def test_double_quoted_words
     assert_equal ['arg1', 'arg2', '"arg 3"'], 'arg1 arg2 "arg 3"'.scan(QuotedFragment)
   end
 
-  def test_quoted_words
+  def test_single_quoted_words
     assert_equal ['arg1', 'arg2', "'arg 3'"], 'arg1 arg2 \'arg 3\''.scan(QuotedFragment)
   end
 

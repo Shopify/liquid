@@ -62,11 +62,6 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal '', @filters.upcase(nil)
   end
 
-  def test_upcase
-    assert_equal 'TESTING', @filters.upcase("Testing")
-    assert_equal '', @filters.upcase(nil)
-  end
-
   def test_truncate
     assert_equal '1234...', @filters.truncate('1234567890', 7)
     assert_equal '1234567890', @filters.truncate('1234567890', 20)
