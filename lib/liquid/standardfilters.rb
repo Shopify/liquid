@@ -309,8 +309,12 @@ module Liquid
       include Enumerable
 
       def initialize(input)
-        @input =
-          if input.kind_of?(Enumerable)
+      @input =
+          if input.is_a?(Array)
+            input.flatten
+          elsif input.is_a?(Hash)
+            [input]
+          elsif input.is_a?(Enumerable)
             input
           else
             Array(input)
