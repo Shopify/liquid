@@ -28,6 +28,14 @@ module Liquid
       @filters = []
     end
 
+    def increment_used_resources(key, obj)
+      @resource_limits[key] += if obj.class.ancestors & [ String, Array, Hash ] != []
+        obj.length
+      else
+        1
+      end
+    end
+
     def resource_limits_reached?
       (@resource_limits[:render_length_limit] && @resource_limits[:render_length_current] > @resource_limits[:render_length_limit]) ||
       (@resource_limits[:render_score_limit]  && @resource_limits[:render_score_current]  > @resource_limits[:render_score_limit] ) ||

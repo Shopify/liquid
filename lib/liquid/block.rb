@@ -135,7 +135,7 @@ module Liquid
           end
 
           token_output = (token.respond_to?(:render) ? token.render(context) : token)
-          context.resource_limits[:render_length_current] += (token_output.respond_to?(:length) ? token_output.length : 1)
+          context.increment_used_resources(:render_length_current, token_output)
           if context.resource_limits_reached?
             context.resource_limits[:reached] = true
             raise MemoryError.new("Memory limits exceeded")

@@ -25,7 +25,7 @@ module Liquid
     def render(context)
       val = @from.render(context)
       context.scopes.last[@to] = val
-      context.resource_limits[:assign_score_current] += (val.respond_to?(:length) ? val.length : 1)
+      context.increment_used_resources(:assign_score_current, val)
       ''
     end
 
