@@ -1,6 +1,12 @@
 # Liquid Version History
 
-## 2.5.4 / 2013-11-11 / branch "2.5-stable"
+## 2.5.5 / 2014-01-10 / branch "2-5-stable"
+
+Security fix, cherry-picked from master (4e14a65):
+* Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
+* Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
+
+## 2.5.4 / 2013-11-11
 
 * Fix "can't convert Fixnum into String" for "replace", see #173, [wǒ_is神仙, jsw0528]
 
