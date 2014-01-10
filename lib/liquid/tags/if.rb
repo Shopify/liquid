@@ -15,6 +15,7 @@ module Liquid
     SyntaxHelp = "Syntax Error in tag 'if' - Valid syntax: if [expression]"
     Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
     ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
+    BOOLEAN_OPERATORS = %w(and or)
 
     def initialize(tag_name, markup, tokens)
       @blocks = []
@@ -61,7 +62,8 @@ module Liquid
             raise(SyntaxError, SyntaxHelp) unless expressions.shift.to_s =~ Syntax
 
             new_condition = Condition.new($1, $2, $3)
-            new_condition.send(operator.to_sym, condition)
+            raise SyntaxError, "invalid boolean operator" unless BOOLEAN_OPERATORS.include?(operator)
+            new_condition.send(operator, condition)
             condition = new_condition
           end
 
@@ -71,8 +73,6 @@ module Liquid
         @blocks.push(block)
         @nodelist = block.attach(Array.new)
       end
-
-
   end
 
   Template.register_tag('if', If)
