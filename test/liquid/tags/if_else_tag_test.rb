@@ -157,4 +157,10 @@ class IfElseTagTest < Test::Unit::TestCase
     assert_template_result('yes',
                            %({% if 'gnomeslab-and-or-liquid' contains 'gnomeslab-and-or-liquid' %}yes{% endif %}))
   end
+
+  def test_operators_are_whitelisted
+    assert_raise(SyntaxError) do
+      assert_template_result('', %({% if 1 or throw or or 1 %}yes{% endif %}))
+    end
+  end
 end # IfElseTest
