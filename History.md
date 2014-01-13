@@ -3,6 +3,8 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
+* Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
 * Fix resource counting bug with respond_to?(:length), see #263 [Florian Weingarten, fw42]
 * Allow specifying custom patterns for template filenames, see #284 [Andrei Gladkyi, agladkyi]
 * Allow drops to optimize loading a slice of elements, see #282 [Tom Burns, boourns]
@@ -16,8 +18,6 @@
 * Fix clashing method names in enumerable drops, see #238 [Florian Weingarten, fw42]
 * Make map filter work on enumerable drops, see #233 [Florian Weingarten, fw42]
 * Improved whitespace stripping for blank blocks, related to #216 [Florian Weingarten, fw42]
-* Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
-* Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
 
 ## 2.6.0 / 2013-11-25 / branch "2.6-stable"
 
