@@ -1,7 +1,7 @@
 module Liquid
   class Tag
-    attr_accessor :nodelist, :options
-    attr_reader :warnings
+    attr_accessor :options
+    attr_reader :nodelist, :warnings
 
     def self.new_with_options(tag_name, markup, tokens, options)
       # Forgive me Matz for I have sinned. I know this code is weird

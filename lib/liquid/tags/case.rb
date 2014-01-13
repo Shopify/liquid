@@ -15,6 +15,10 @@ module Liquid
       super
     end
 
+    def nodelist
+      @blocks.map(&:attachment).flatten
+    end
+
     def unknown_tag(tag, markup, tokens)
       @nodelist = []
       case tag
