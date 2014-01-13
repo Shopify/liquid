@@ -62,11 +62,6 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal '', @filters.upcase(nil)
   end
 
-  def test_upcase
-    assert_equal 'TESTING', @filters.upcase("Testing")
-    assert_equal '', @filters.upcase(nil)
-  end
-
   def test_truncate
     assert_equal '1234...', @filters.truncate('1234567890', 7)
     assert_equal '1234567890', @filters.truncate('1234567890', 20)
@@ -89,7 +84,7 @@ class StandardFiltersTest < Test::Unit::TestCase
   end
 
   def test_escape_once
-    assert_equal '&lt;strong&gt;', @filters.escape_once(@filters.escape('<strong>'))
+    assert_equal '&lt;strong&gt;Hulk&lt;/strong&gt;', @filters.escape_once('&lt;strong&gt;Hulk</strong>')
   end
 
   def test_truncatewords
@@ -138,6 +133,10 @@ class StandardFiltersTest < Test::Unit::TestCase
   def test_map_calls_to_liquid
     t = TestThing.new
     assert_equal "woot: 1", Liquid::Template.parse('{{ foo | map: "whatever" }}').render("foo" => [t])
+  end
+
+  def test_map_on_hashes
+    assert_equal "4217", Liquid::Template.parse('{{ thing | map: "foo" | map: "bar" }}').render("thing" => { "foo" => [ { "bar" => 42 }, { "bar" => 17 } ] })
   end
 
   def test_sort_calls_to_liquid
@@ -233,9 +232,6 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_template_result "12", "{{ 3 | times:4 }}"
     assert_template_result "0", "{{ 'foo' | times:4 }}"
 
-    # Ruby v1.9.2-rc1, or higher, backwards compatible Float test
-    assert_match(/(6\.3)|(6\.(0{13})1)/, Template.parse("{{ '2.1' | times:3 }}").render)
-
     assert_template_result "6", "{{ '2.1' | times:3 | replace: '.','-' | plus:0}}"
 
     assert_template_result "7.25", "{{ 0.0725 | times:100 }}"
@@ -244,9 +240,6 @@ class StandardFiltersTest < Test::Unit::TestCase
   def test_divided_by
     assert_template_result "4", "{{ 12 | divided_by:3 }}"
     assert_template_result "4", "{{ 14 | divided_by:3 }}"
-
-    # Ruby v1.9.2-rc1, or higher, backwards compatible Float test
-    assert_match(/4\.(6{13,14})7/, Template.parse("{{ 14 | divided_by:'3.0' }}").render)
 
     assert_template_result "5", "{{ 15 | divided_by:3 }}"
     assert_template_result "Liquid error: divided by 0", "{{ 5 | divided_by:0 }}"
@@ -268,6 +261,15 @@ class StandardFiltersTest < Test::Unit::TestCase
     assigns = {'a' => 'bc', 'b' => 'a' }
     assert_template_result('abc',"{{ a | prepend: 'a'}}",assigns)
     assert_template_result('abc',"{{ a | prepend: b}}",assigns)
+  end
+
+  def test_default
+    assert_equal "foo", @filters.default("foo", "bar")
+    assert_equal "bar", @filters.default(nil, "bar")
+    assert_equal "bar", @filters.default("", "bar")
+    assert_equal "bar", @filters.default(false, "bar")
+    assert_equal "bar", @filters.default([], "bar")
+    assert_equal "bar", @filters.default({}, "bar")
   end
 
   def test_cannot_access_private_methods

@@ -1,9 +1,9 @@
+[![Build Status](https://secure.travis-ci.org/Shopify/liquid.png?branch=master)](http://travis-ci.org/Shopify/liquid)
 # Liquid template engine
 
 * [Contributing guidelines](CONTRIBUTING.md)
 * [Version history](History.md)
 * [Liquid documentation from Shopify](http://docs.shopify.com/themes/liquid-basics)
-* [Liquid Wiki from Shopify](http://wiki.shopify.com/Liquid)
 * [Liquid Wiki at GitHub](https://github.com/Shopify/liquid/wiki)
 * [Website](http://liquidmarkup.org/)
 
@@ -71,5 +71,3 @@ This is useful for doing things like enabling strict mode only in the theme edit
 
 It is recommended that you enable `:strict` or `:warn` mode on new apps to stop invalid templates from being created.
 It is also recommended that you use it in the template editors of existing apps to give editors better error messages.
-
-[![Build Status](https://secure.travis-ci.org/Shopify/liquid.png)](http://travis-ci.org/Shopify/liquid)

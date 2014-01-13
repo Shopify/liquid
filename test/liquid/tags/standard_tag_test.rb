@@ -33,6 +33,13 @@ class StandardTagTest < Test::Unit::TestCase
     assert_template_result('','{% comment %}{% endcomment %}')
     assert_template_result('','{%comment%}comment{%endcomment%}')
     assert_template_result('','{% comment %}comment{% endcomment %}')
+    assert_template_result('','{% comment %} 1 {% comment %} 2 {% endcomment %} 3 {% endcomment %}')
+
+    assert_template_result('','{%comment%}{%blabla%}{%endcomment%}')
+    assert_template_result('','{% comment %}{% blabla %}{% endcomment %}')
+    assert_template_result('','{%comment%}{% endif %}{%endcomment%}')
+    assert_template_result('','{% comment %}{% endwhatever %}{% endcomment %}')
+    assert_template_result('','{% comment %}{% raw %} {{%%%%}}  }} { {% endcomment %} {% comment {% endraw %} {% endcomment %}')
 
     assert_template_result('foobar','foo{%comment%}comment{%endcomment%}bar')
     assert_template_result('foobar','foo{% comment %}comment{% endcomment %}bar')
@@ -47,16 +54,9 @@ class StandardTagTest < Test::Unit::TestCase
                                      {%endcomment%}bar')
   end
 
-  def test_assign
-    assigns = {'var' => 'content' }
-    assert_template_result('var2:  var2:content', 'var2:{{var2}} {%assign var2 = var%} var2:{{var2}}', assigns)
-
-  end
-
   def test_hyphenated_assign
     assigns = {'a-b' => '1' }
     assert_template_result('a-b:1 a-b:2', 'a-b:{{a-b}} {%assign a-b = 2 %}a-b:{{a-b}}', assigns)
-
   end
 
   def test_assign_with_colon_and_spaces
@@ -218,7 +218,12 @@ class StandardTagTest < Test::Unit::TestCase
   end
 
   def test_assign
-    assert_equal 'variable', Liquid::Template.parse( '{% assign a = "variable"%}{{a}}'  ).render
+    assert_equal 'variable', Liquid::Template.parse( '{% assign a = "variable"%}{{a}}').render
+  end
+
+  def test_assign_unassigned
+    assigns = { 'var' => 'content' }
+    assert_template_result('var2:  var2:content', 'var2:{{var2}} {%assign var2 = var%} var2:{{var2}}', assigns)
   end
 
   def test_assign_an_empty_string

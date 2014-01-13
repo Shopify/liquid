@@ -26,4 +26,10 @@ class FileSystemTest < Test::Unit::TestCase
       file_system.full_path("/etc/passwd")
     end
   end
+
+  def test_custom_template_filename_patterns
+    file_system = Liquid::LocalFileSystem.new("/some/path", "%s.html")
+    assert_equal "/some/path/mypartial.html"    , file_system.full_path("mypartial")
+    assert_equal "/some/path/dir/mypartial.html", file_system.full_path("dir/mypartial")
+  end
 end # FileSystemTest

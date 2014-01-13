@@ -4,6 +4,8 @@ require 'bigdecimal'
 module Liquid
 
   module StandardFilters
+    HTML_ESCAPE = { '&' => '&amp;',  '>' => '&gt;',   '<' => '&lt;', '"' => '&quot;', "'" => '&#39;' }
+    HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
 
     # Return the size of an array or of an string
     def size(input)
@@ -31,9 +33,7 @@ module Liquid
     end
 
     def escape_once(input)
-      ActionView::Helpers::TagHelper.escape_once(input)
-    rescue NameError
-      input
+      input.to_s.gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
     end
 
     alias_method :h, :escape
@@ -43,8 +43,7 @@ module Liquid
       if input.nil? then return end
       l = length.to_i - truncate_string.length
       l = 0 if l < 0
-      truncated = RUBY_VERSION[0,3] == "1.8" ? input.scan(/./mu)[0...l].to_s : input[0...l]
-      input.length > length.to_i ? truncated + truncate_string : input
+      input.length > length.to_i ? input[0...l] + truncate_string : input
     end
 
     def truncatewords(input, words = 15, truncate_string = "...")
@@ -245,12 +244,17 @@ module Liquid
       apply_operation(input, operand, :%)
     end
 
+    def default(input, default_value = "")
+      is_blank = input.respond_to?(:empty?) ? input.empty? : !input
+      is_blank ? default_value : input
+    end
+
     private
 
     def flatten_if_necessary(input)
       ary = if input.is_a?(Array)
         input.flatten
-      elsif input.kind_of?(Enumerable)
+      elsif input.is_a?(Enumerable) && !input.is_a?(Hash)
         input
       else
         [input].flatten

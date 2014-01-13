@@ -2,11 +2,6 @@
 
 require 'test/unit'
 require 'test/unit/assertions'
-begin
-  require 'ruby-debug'
-rescue LoadError
-  puts "Couldn't load ruby-debug. gem install ruby-debug if you need it."
-end
 
 $:.unshift(File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib'))
 require 'liquid.rb'

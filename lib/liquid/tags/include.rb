@@ -51,13 +51,14 @@ module Liquid
           context[key] = context[value]
         end
 
+        context_variable_name = @template_name[1..-2].split('/').last
         if variable.is_a?(Array)
           variable.collect do |var|
-            context[@template_name[1..-2]] = var
+            context[context_variable_name] = var
             partial.render(context)
           end
         else
-          context[@template_name[1..-2]] = variable
+          context[context_variable_name] = variable
           partial.render(context)
         end
       end

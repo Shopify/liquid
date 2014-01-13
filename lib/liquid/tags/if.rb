@@ -12,6 +12,7 @@ module Liquid
   class If < Block
     Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
     ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
+    BOOLEAN_OPERATORS = %w(and or)
 
     def initialize(tag_name, markup, tokens)
       @blocks = []
@@ -67,7 +68,8 @@ module Liquid
           raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless expressions.shift.to_s =~ Syntax
 
           new_condition = Condition.new($1, $2, $3)
-          new_condition.send(operator.to_sym, condition)
+          raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless BOOLEAN_OPERATORS.include?(operator)
+          new_condition.send(operator, condition)
           condition = new_condition
         end
 

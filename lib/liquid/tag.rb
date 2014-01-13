@@ -31,7 +31,7 @@ module Liquid
     end
 
     def blank?
-      @blank || true
+      @blank || false
     end
 
     def parse_with_selected_parser(markup)

@@ -14,6 +14,14 @@ class TemplateContextDrop < Liquid::Drop
   end
 end
 
+class SomethingWithLength
+  def length
+    nil
+  end
+
+  liquid_methods :length
+end
+
 class TemplateTest < Test::Unit::TestCase
   include Liquid
 
@@ -84,6 +92,12 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal '1', t.parse("{{number}}").render(assigns)
     assert_equal '1', t.render(assigns)
     @global = nil
+  end
+
+  def test_resource_limits_works_with_custom_length_method
+    t = Template.parse("{% assign foo = bar %}")
+    t.resource_limits = { :render_length_limit => 42 }
+    assert_equal "", t.render("bar" => SomethingWithLength.new)
   end
 
   def test_resource_limits_render_length

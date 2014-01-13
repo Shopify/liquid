@@ -86,7 +86,7 @@ class OutputTest < Test::Unit::TestCase
     assert_equal expected, Template.parse(text).render(@assigns, :filters => [FunnyFilter])
   end
 
-  def test_variable_piping_with_args
+  def test_variable_piping_with_multiple_args
     text = %! {{ car.gm | add_tag : 'span', 'bar'}} !
     expected = %| <span id="bar">bad</span> |
 

@@ -1,18 +1,29 @@
 # Liquid Version History
 
-IMPORTANT: Liquid 2.6 is going to be the last version of Liquid which maintains explicit Ruby 1.8 compatability.
-The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are likely to break on Ruby 1.8.
-
-## 2.6.0 / Master branch (not yet released)
+## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
+* Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
+* Fix resource counting bug with respond_to?(:length), see #263 [Florian Weingarten, fw42]
+* Allow specifying custom patterns for template filenames, see #284 [Andrei Gladkyi, agladkyi]
+* Allow drops to optimize loading a slice of elements, see #282 [Tom Burns, boourns]
+* Support for passing variables to snippets in subdirs, see #271 [Joost Hietbrink, joost]
+* Add a class cache to avoid runtime extend calls, see #249 [James Tucker, raggi]
+* Remove some legacy Ruby 1.8 compatibility code, see #276 [Florian Weingarten, fw42]
+* Add default filter to standard filters, see #267 [Derrick Reimer, djreimer]
 * Add optional strict parsing and warn parsing, see #235 [Tristan Hume, trishume]
 * Add I18n syntax error translation, see #241 [Simon Hørup Eskildsen, Sirupsen]
 * Make sort filter work on enumerable drops, see #239 [Florian Weingarten, fw42]
 * Fix clashing method names in enumerable drops, see #238 [Florian Weingarten, fw42]
 * Make map filter work on enumerable drops, see #233 [Florian Weingarten, fw42]
-* Fix security issue with map filter, see #230, #232, #234, #237 [Florian Weingarten, fw42]
 * Improved whitespace stripping for blank blocks, related to #216 [Florian Weingarten, fw42]
+
+## 2.6.0 / 2013-11-25 / branch "2.6-stable"
+
+IMPORTANT: Liquid 2.6 is going to be the last version of Liquid which maintains explicit Ruby 1.8 compatability.
+The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are likely to break on Ruby 1.8.
+
 * Bugfix for #106: fix example servlet [gnowoel]
 * Bugfix for #97: strip_html filter supports multi-line tags [Jo Liss, joliss]
 * Bugfix for #114: strip_html filter supports style tags [James Allardice, jamesallardice]
@@ -21,6 +32,7 @@ The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are
 * Bugfix for #204: 'raw' parsing bug [Florian Weingarten, fw42]
 * Bugfix for #150: 'for' parsing bug [Peter Schröder, phoet]
 * Bugfix for #126: Strip CRLF in strip_newline [Peter Schröder, phoet]
+* Bugfix for #174, "can't convert Fixnum into String" for "replace" [wǒ_is神仙, jsw0528]
 * Allow a Liquid::Drop to be passed into Template#render [Daniel Huckstep, darkhelmet]
 * Resource limits [Florian Weingarten, fw42]
 * Add reverse filter [Jay Strybis, unreal]
@@ -31,6 +43,21 @@ The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are
 * Better documentation for 'include' tag (closes #163) [Peter Schröder, phoet]
 * Use of BigDecimal on filters to have better precision (closes #155) [Arthur Nogueira Neves, arthurnn]
 
+## 2.5.4 / 2013-11-11 / branch "2.5-stable"
+
+* Fix "can't convert Fixnum into String" for "replace", see #173, [wǒ_is神仙, jsw0528]
+
+## 2.5.3 / 2013-10-09
+
+* #232, #234, #237: Fix map filter bugs [Florian Weingarten, fw42]
+
+## 2.5.2 / 2013-09-03 / deleted
+
+Yanked from rubygems, as it contained too many changes that broke compatibility. Those changes will be on following major releases.
+
+## 2.5.1 / 2013-07-24
+
+* #230: Fix security issue with map filter, Use invoke_drop in map filter [Florian Weingarten, fw42]
 
 ## 2.5.0 / 2013-03-06
 
