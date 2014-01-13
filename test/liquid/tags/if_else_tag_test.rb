@@ -158,6 +158,11 @@ class IfElseTagTest < Test::Unit::TestCase
                            %({% if 'gnomeslab-and-or-liquid' contains 'gnomeslab-and-or-liquid' %}yes{% endif %}))
   end
 
+  def test_if_nodelist
+    template = Liquid::Template.parse('{% if true %}IF{% else %}ELSE{% endif %}')
+    assert_equal ['IF', 'ELSE'], template.root.nodelist[0].nodelist
+  end
+
   def test_operators_are_whitelisted
     assert_raise(SyntaxError) do
       assert_template_result('', %({% if 1 or throw or or 1 %}yes{% endif %}))

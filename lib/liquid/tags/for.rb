@@ -52,6 +52,14 @@ module Liquid
       super
     end
 
+    def nodelist
+      if @else_block
+        @for_block + @else_block
+      else
+        @for_block
+      end
+    end
+
     def unknown_tag(tag, markup, tokens)
       return super unless tag == 'else'
       @nodelist = @else_block = []
