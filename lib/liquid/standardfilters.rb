@@ -63,6 +63,18 @@ module Liquid
       input.split(pattern)
     end
 
+    def strip(input)
+      input.to_s.strip
+    end
+
+    def lstrip(input)
+      input.to_s.lstrip
+    end
+
+    def rstrip(input)
+      input.to_s.rstrip
+    end
+
     def strip_html(input)
       input.to_s.gsub(/<script.*?<\/script>/m, '').gsub(/<!--.*?-->/m, '').gsub(/<style.*?<\/style>/m, '').gsub(/<.*?>/m, '')
     end

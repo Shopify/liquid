@@ -209,6 +209,21 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_template_result 'foobar', "{{ 'foo|bar' | remove: '|' }}"
   end
 
+  def test_strip
+    assert_template_result 'ab c', "{{ source | strip }}", 'source' => " ab c  "
+    assert_template_result 'ab c', "{{ source | strip }}", 'source' => " \tab c  \n \t"
+  end
+
+  def test_lstrip
+    assert_template_result 'ab c  ', "{{ source | lstrip }}", 'source' => " ab c  "
+    assert_template_result "ab c  \n \t", "{{ source | lstrip }}", 'source' => " \tab c  \n \t"
+  end
+
+  def test_rstrip
+    assert_template_result " ab c", "{{ source | rstrip }}", 'source' => " ab c  "
+    assert_template_result " \tab c", "{{ source | rstrip }}", 'source' => " \tab c  \n \t"
+  end
+
   def test_strip_newlines
     assert_template_result 'abc', "{{ source | strip_newlines }}", 'source' => "a\nb\nc"
     assert_template_result 'abc', "{{ source | strip_newlines }}", 'source' => "a\r\nb\nc"
