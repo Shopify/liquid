@@ -70,7 +70,7 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal "测试...", @filters.truncate("测试测试测试测试", 5)
   end
 
-  def test_strip
+  def test_split
     assert_equal ['12','34'], @filters.split('12~34', '~')
     assert_equal ['A? ',' ,Z'], @filters.split('A? ~ ~ ~ ,Z', '~ ~ ~')
     assert_equal ['A?Z'], @filters.split('A?Z', '~')
