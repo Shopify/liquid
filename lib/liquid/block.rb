@@ -92,7 +92,7 @@ module Liquid
     end
 
     def block_delimiter
-      "end#{block_name}".freeze
+      "end#{block_name}"
     end
 
     def block_name

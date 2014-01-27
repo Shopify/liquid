@@ -56,7 +56,7 @@ module Liquid
         consume(:dotdot)
         last = expression
         consume(:close_round)
-        "(#{first}..#{last})".freeze
+        "(#{first}..#{last})"
       else
         raise SyntaxError, "#{token} is not a valid expression"
       end
@@ -70,7 +70,7 @@ module Liquid
       end
 
       str << expression
-      str.freeze
+      str
     end
 
     def variable_signature

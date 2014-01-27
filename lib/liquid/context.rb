@@ -45,7 +45,7 @@ module Liquid
     def add_filters(filters)
       filters = [filters].flatten.compact
       filters.each do |f|
-        raise ArgumentError, "Expected module but got: #{f.class}".freeze unless f.is_a?(Module)
+        raise ArgumentError, "Expected module but got: #{f.class}" unless f.is_a?(Module)
         Strainer.add_known_filter(f)
       end
 
@@ -82,9 +82,9 @@ module Liquid
 
       case e
       when SyntaxError
-        "Liquid syntax error: #{e.message}".freeze
+        "Liquid syntax error: #{e.message}"
       else
-        "Liquid error: #{e.message}".freeze
+        "Liquid error: #{e.message}"
       end
     end
 

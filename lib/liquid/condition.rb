@@ -61,7 +61,7 @@ module Liquid
     end
 
     def inspect
-      "#<Condition #{[@left, @operator, @right].compact.join(' '.freeze)}>".freeze
+      "#<Condition #{[@left, @operator, @right].compact.join(' '.freeze)}>"
     end
 
     private
@@ -94,7 +94,7 @@ module Liquid
 
       left, right = context[left], context[right]
 
-      operation = self.class.operators[op] || raise(ArgumentError.new("Unknown operator #{op}".freeze))
+      operation = self.class.operators[op] || raise(ArgumentError.new("Unknown operator #{op}"))
 
       if operation.respond_to?(:call)
         operation.call(self, left, right)
