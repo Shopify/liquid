@@ -52,6 +52,10 @@ module Liquid
       self
     end
 
+    def to_s
+      self.class.name
+    end
+
     alias :[] :invoke_drop
 
     private
