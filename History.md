@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Add a to_s default for liquid drops, see #306 [Adam Doeler, releod]
 * Add strip, lstrip, and rstrip to standard filters [Florian Weingarten, fw42]
 * Make if, for & case tags return complete and consistent nodelists, see #250 [Nick Jones, dntj]
 * Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
