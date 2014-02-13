@@ -237,4 +237,9 @@ class DropsTest < Test::Unit::TestCase
   def test_nil_value_access
     assert_equal '', Liquid::Template.parse('{{ product[value] }}').render('product' => ProductDrop.new, 'value' => nil)
   end
+
+  def test_default_to_s_on_drops
+    assert_equal 'ProductDrop', Liquid::Template.parse("{{ product }}").render('product' => ProductDrop.new)
+    assert_equal 'EnumerableDrop', Liquid::Template.parse('{{ collection }}').render('collection' => EnumerableDrop.new)
+  end
 end # DropsTest
