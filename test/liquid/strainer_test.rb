@@ -22,6 +22,13 @@ class StrainerTest < Test::Unit::TestCase
     assert_equal "public", strainer.invoke("public_filter")
   end
 
+  def test_stainer_raises_argument_error
+    strainer = Strainer.create(nil)
+    assert_raises(Liquid::ArgumentError) do
+      strainer.invoke("public_filter", 1)
+    end
+  end
+
   def test_strainer_only_invokes_public_filter_methods
     strainer = Strainer.create(nil)
     assert_equal false, strainer.invokable?('__test__')
