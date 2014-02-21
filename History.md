@@ -21,6 +21,7 @@
 * Fix clashing method names in enumerable drops, see #238 [Florian Weingarten, fw42]
 * Make map filter work on enumerable drops, see #233 [Florian Weingarten, fw42]
 * Improved whitespace stripping for blank blocks, related to #216 [Florian Weingarten, fw42]
+* Raise `Liquid::ArgumentError` instead of `::ArgumentError` when filter has wrong number of arguments #309 [Bogdan Gusiev, bogdan]
 
 ## 2.6.0 / 2013-11-25 / branch "2.6-stable"
 
