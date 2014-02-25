@@ -29,7 +29,7 @@ module Liquid
     end
 
     def increment_used_resources(key, obj)
-      @resource_limits[key] += if obj.class.ancestors & [ String, Array, Hash ] != []
+      @resource_limits[key] += if obj.kind_of?(String) || obj.kind_of?(Array) || obj.kind_of?(Hash)
         obj.length
       else
         1
