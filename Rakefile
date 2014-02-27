@@ -84,3 +84,4 @@ end
 Rake::ExtensionTask.new "liquid" do |ext|
   ext.lib_dir = "lib/liquid"
 end
+Rake::Task[:test].prerequisites << :compile

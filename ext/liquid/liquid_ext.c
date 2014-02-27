@@ -1,6 +1,9 @@
-#include "ruby.h"
+#include "liquid_ext.h"
+
+VALUE mLiquid;
 
 void Init_liquid(void)
 {
-    VALUE mLiquid = rb_define_module("Liquid");
+    mLiquid = rb_define_module("Liquid");
+    init_liquid_tokenizer();
 }
