@@ -5,7 +5,7 @@ extern VALUE mLiquid;
 
 static void free_tokenizer(void *ptr)
 {
-    struct liquid_tokenizer *tokenizer;
+    struct liquid_tokenizer *tokenizer = ptr;
     xfree(tokenizer);
 }
 
