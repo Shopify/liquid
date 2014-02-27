@@ -30,13 +30,9 @@ module Liquid
   VariableSegment             = /[\w\-]/
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
-  VariableIncompleteEnd       = /\}\}?/
   QuotedString                = /"[^"]*"|'[^']*'/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
-  AnyStartingTag              = /\{\{|\{\%/
-  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
-  TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
 end
 
@@ -64,3 +60,9 @@ require 'liquid/utils'
 # Load all the tags of the standard library
 #
 Dir[File.dirname(__FILE__) + '/liquid/tags/*.rb'].each { |f| require f }
+
+if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'ruby'
+  require 'liquid/liquid'
+else
+  require 'liquid/tokenizer'
+end
