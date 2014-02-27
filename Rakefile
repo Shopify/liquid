@@ -65,6 +65,10 @@ namespace :profile do
     ruby "./performance/profile.rb"
   end
 
+  task :stackprof do
+    ruby "./performance/stackprof.rb"
+  end
+
   desc "Run KCacheGrind"
   task :grind => :run  do
     system "qcachegrind /tmp/liquid.rubyprof_calltreeprinter.txt"
