@@ -190,7 +190,7 @@ module Liquid
         return input.to_s
       end
 
-      if ((input.is_a?(String) && !/^\d+$/.match(input.to_s).nil?) || input.is_a?(Integer)) && input.to_i > 0
+      if ((input.is_a?(String) && !/\A\d+\z/.match(input.to_s).nil?) || input.is_a?(Integer)) && input.to_i > 0
         input = Time.at(input.to_i)
       end
 
@@ -281,7 +281,7 @@ module Liquid
       when Numeric
         obj
       when String
-        (obj.strip =~ /^\d+\.\d+$/) ? BigDecimal.new(obj) : obj.to_i
+        (obj.strip =~ /\A\d+\.\d+\z/) ? BigDecimal.new(obj) : obj.to_i
       else
         0
       end

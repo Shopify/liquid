@@ -1,6 +1,6 @@
 module Liquid
   class Raw < Block
-    FullTokenPossiblyInvalid = /^(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/o
+    FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/o
 
     def parse(tokens)
       @nodelist ||= []

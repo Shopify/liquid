@@ -171,15 +171,15 @@ module Liquid
           LITERALS[key]
         else
           case key
-          when /^'(.*)'$/ # Single quoted strings
+          when /\A'(.*)'\z/ # Single quoted strings
             $1
-          when /^"(.*)"$/ # Double quoted strings
+          when /\A"(.*)"\z/ # Double quoted strings
             $1
-          when /^(-?\d+)$/ # Integer and floats
+          when /\A(-?\d+)\z/ # Integer and floats
             $1.to_i
-          when /^\((\S+)\.\.(\S+)\)$/ # Ranges
+          when /\A\((\S+)\.\.(\S+)\)\z/ # Ranges
             (resolve($1).to_i..resolve($2).to_i)
-          when /^(-?\d[\d\.]+)$/ # Floats
+          when /\A(-?\d[\d\.]+)\z/ # Floats
             $1.to_f
           else
             variable(key)
@@ -218,7 +218,7 @@ module Liquid
       #  assert_equal 'tobi', @context['hash["name"]']
       def variable(markup)
         parts = markup.scan(VariableParser)
-        square_bracketed = /^\[(.*)\]$/
+        square_bracketed = /\A\[(.*)\]\z/
 
         first_part = parts.shift
 
