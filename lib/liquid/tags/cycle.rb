@@ -12,8 +12,8 @@ module Liquid
   #    <div class="green"> Item five</div>
   #
   class Cycle < Tag
-    SimpleSyntax = /^#{QuotedFragment}+/o
-    NamedSyntax  = /^(#{QuotedFragment})\s*\:\s*(.*)/o
+    SimpleSyntax = /\A#{QuotedFragment}+/o
+    NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/o
 
     def initialize(tag_name, markup, tokens)
       case markup

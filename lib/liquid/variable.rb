@@ -12,7 +12,7 @@ module Liquid
   #
   class Variable
     FilterParser = /(?:#{FilterSeparator}|(?:\s*(?:#{QuotedFragment}|#{ArgumentSeparator})\s*)+)/o
-    EasyParse = /^ *(\w+(?:\.\w+)*) *$/
+    EasyParse = /\A *(\w+(?:\.\w+)*) *\z/
     attr_accessor :filters, :name, :warnings
 
     def initialize(markup, options = {})

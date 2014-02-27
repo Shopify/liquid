@@ -54,7 +54,7 @@ module ShopFilter
 
   def product_img_url(url, style = 'small')
 
-    unless url =~ /^products\/([\w\-\_]+)\.(\w{2,4})/
+    unless url =~ /\Aproducts\/([\w\-\_]+)\.(\w{2,4})/
       raise ArgumentError, 'filter "size" can only be called on product images'
     end
 

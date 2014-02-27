@@ -1,9 +1,9 @@
 module Liquid
   class Block < Tag
-    IsTag             = /^#{TagStart}/o
-    IsVariable        = /^#{VariableStart}/o
-    FullToken         = /^#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/o
-    ContentOfVariable = /^#{VariableStart}(.*)#{VariableEnd}$/o
+    IsTag             = /\A#{TagStart}/o
+    IsVariable        = /\A#{VariableStart}/o
+    FullToken         = /\A#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/o
+    ContentOfVariable = /\A#{VariableStart}(.*)#{VariableEnd}\z/o
 
     def blank?
       @blank || false
