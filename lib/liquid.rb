@@ -45,6 +45,7 @@ module Liquid
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
 end
 
+require 'liquid/liquid'
 require "liquid/version"
 require 'liquid/lexer'
 require 'liquid/parser'
