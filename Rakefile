@@ -1,5 +1,6 @@
 require 'rake'
 require 'rake/testtask'
+require 'rake/extensiontask'
 $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
 require "liquid/version"
 
@@ -75,3 +76,8 @@ desc "Run example"
 task :example do
   ruby "-w -d -Ilib example/server/server.rb"
 end
+
+Rake::ExtensionTask.new "liquid" do |ext|
+  ext.lib_dir = "lib/liquid"
+end
+Rake::Task[:test].prerequisites << :compile
