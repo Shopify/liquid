@@ -65,7 +65,6 @@ void liquid_tokenizer_next(struct liquid_tokenizer *tokenizer, struct token *tok
                 token->type = TOKEN_TAG;
                 goto found;
             }
-            // FIXME: Handle syntax error for strict mode
             cursor = incomplete_end;
             goto found;
         } else {
@@ -79,7 +78,6 @@ void liquid_tokenizer_next(struct liquid_tokenizer *tokenizer, struct token *tok
                 token->type = TOKEN_VARIABLE;
                 goto found;
             }
-            // FIXME: Handle syntax error for strict mode
             cursor = incomplete_end;
             goto found;
         }
