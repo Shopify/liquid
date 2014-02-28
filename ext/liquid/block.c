@@ -1,6 +1,5 @@
 #include "liquid_ext.h"
 
-extern VALUE mLiquid, cLiquidTokenizer, cLiquidTag, cLiquidTemplate, cLiquidVariable;
 VALUE cLiquidBlock;
 ID intern_assert_missing_delimitation, intern_block_delimiter, intern_is_blank, intern_new,
    intern_new_with_options, intern_tags, intern_unknown_tag, intern_unterminated_tag,
@@ -46,14 +45,7 @@ static bool parse_tag(struct liquid_tag *tag, char *token, long token_length)
 
 static VALUE rb_parse_body(VALUE self, VALUE tokenizerObj)
 {
-    Check_Type(tokenizerObj, T_DATA);
-    if (RBASIC_CLASS(tokenizerObj) != cLiquidTokenizer) {
-        rb_raise(rb_eTypeError, "wrong argument type %s (expected %s)",
-                 rb_obj_classname(tokenizerObj),
-                 rb_class2name(cLiquidTokenizer));
-    }
-    struct liquid_tokenizer *tokenizer;
-    Data_Get_Struct(tokenizerObj, struct liquid_tokenizer, tokenizer);
+    struct liquid_tokenizer *tokenizer = LIQUID_TOKENIZER_GET_STRUCT(tokenizerObj);
 
     bool blank = true;
     VALUE nodelist = rb_iv_get(self, "@nodelist");

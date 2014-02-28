@@ -7,5 +7,9 @@
 
 #include "tokenizer.h"
 #include "block.h"
+#include "utils.h"
+
+extern VALUE mLiquid;
+extern VALUE cLiquidTemplate, cLiquidTag, cLiquidVariable;
 
 #endif
