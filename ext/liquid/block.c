@@ -1,7 +1,7 @@
 #include "liquid_ext.h"
 
 VALUE cLiquidBlock;
-ID intern_assert_missing_delimitation, intern_block_delimiter, intern_is_blank, intern_new,
+ID intern_assert_missing_delimitation, intern_block_delimiter, intern_is_blank,
    intern_new_with_options, intern_tags, intern_unknown_tag, intern_unterminated_tag,
    intern_unterminated_variable;
 
@@ -133,7 +133,7 @@ static VALUE rb_parse_body(VALUE self, VALUE tokenizerObj)
             break;
         }
         case TOKEN_STRING:
-            rb_ary_push(nodelist, rb_str_new(token.str, token.length));
+            rb_ary_push(nodelist, liquid_string_slice_new(token.str, token.length));
             if (blank) {
                 int i;
                 for (i = 0; i < token.length; i++) {
@@ -156,7 +156,6 @@ void init_liquid_block()
     intern_assert_missing_delimitation = rb_intern("assert_missing_delimitation!");
     intern_block_delimiter = rb_intern("block_delimiter");
     intern_is_blank = rb_intern("blank?");
-    intern_new = rb_intern("new");
     intern_new_with_options = rb_intern("new_with_options");
     intern_tags = rb_intern("tags");
     intern_unknown_tag = rb_intern("unknown_tag");

@@ -21,7 +21,7 @@ static VALUE rb_initialize(VALUE self, VALUE source)
 {
     struct liquid_tokenizer *tokenizer;
 
-    Check_Type(source, T_STRING);
+    source = rb_string_value(&source);
     Data_Get_Struct(self, struct liquid_tokenizer, tokenizer);
     tokenizer->cursor = RSTRING_PTR(source);
     tokenizer->length = RSTRING_LEN(source);

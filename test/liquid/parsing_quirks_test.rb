@@ -8,7 +8,7 @@ class ParsingQuirksTest < Test::Unit::TestCase
     template = Template.parse(text)
 
     assert_equal text, template.render
-    assert_equal [String], template.root.nodelist.collect {|i| i.class}
+    assert_equal [StringSlice], template.root.nodelist.collect {|i| i.class}
   end
 
   def test_raise_on_single_close_bracet

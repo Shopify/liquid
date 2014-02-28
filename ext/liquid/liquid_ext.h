@@ -7,8 +7,10 @@
 
 #include "tokenizer.h"
 #include "block.h"
+#include "slice.h"
 #include "utils.h"
 
+extern ID intern_new;
 extern VALUE mLiquid;
 extern VALUE cLiquidTemplate, cLiquidTag, cLiquidVariable;
 
