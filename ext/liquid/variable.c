@@ -35,10 +35,10 @@ static void rb_variable_lax_parse(VALUE self, VALUE markup)
 
   if( !reti ){
     /* Extract name */
-    printf("\nWith the whole expression, a matched substring %.*s is found at position %d to %d. "
-             " and rest at %.*s is found at position %d to %d.\n",
-             match[1].rm_eo - match[1].rm_so, &variable->markup[match[1].rm_so], match[1].rm_so, match[1].rm_eo,
-             match[2].rm_eo - match[2].rm_so, &variable->markup[match[2].rm_so], match[2].rm_so, match[2].rm_eo);
+    // printf("\nWith the whole expression, a matched substring %.*s is found at position %d to %d. "
+    //          " and rest at %.*s is found at position %d to %d.\n",
+    //          match[1].rm_eo - match[1].rm_so, &variable->markup[match[1].rm_so], match[1].rm_so, match[1].rm_eo,
+    //          match[2].rm_eo - match[2].rm_so, &variable->markup[match[2].rm_so], match[2].rm_so, match[2].rm_eo);
     
     variable->name = &variable->markup[match[1].rm_so];
     variable->name_len = match[1].rm_eo - match[1].rm_so;
