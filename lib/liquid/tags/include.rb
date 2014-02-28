@@ -35,9 +35,6 @@ module Liquid
       super
     end
 
-    def parse(tokens)
-    end
-
     def blank?
       false
     end

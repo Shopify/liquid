@@ -16,10 +16,6 @@ module Liquid
       @tag_name   = tag_name
       @markup     = markup
       @options    ||= {} # needs || because might be set before initialize
-      parse(tokens)
-    end
-
-    def parse(tokens)
     end
 
     def name
