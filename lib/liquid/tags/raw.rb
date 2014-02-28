@@ -2,7 +2,7 @@ module Liquid
   class Raw < Block
     FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
 
-    def parse(tokens)
+    def parse_body(tokens)
       @nodelist ||= []
       @nodelist.clear
       while token = tokens.shift

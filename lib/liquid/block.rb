@@ -7,14 +7,14 @@ module Liquid
 
     def initialize(tag_name, markup, tokens)
       super
-      parse(tokens)
+      parse_body(tokens)
     end
 
     def blank?
       @blank || false
     end
 
-    def parse(tokens)
+    def parse_body(tokens)
       @blank = true
       @nodelist ||= []
       @nodelist.clear
