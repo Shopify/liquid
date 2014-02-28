@@ -1,10 +1,5 @@
 module Liquid
   class Block < Tag
-    IsTag             = /\A#{TagStart}/o
-    IsVariable        = /\A#{VariableStart}/o
-    FullToken         = /\A#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
-    ContentOfVariable = /\A#{VariableStart}(.*)#{VariableEnd}\z/om
-
     def initialize(tag_name, markup, tokens)
       super
       parse_body(tokens)
@@ -12,51 +7,6 @@ module Liquid
 
     def blank?
       @blank || false
-    end
-
-    def parse_body(tokens)
-      @blank = true
-      @nodelist ||= []
-      @nodelist.clear
-
-      while token = tokens.shift
-        case token
-        when IsTag
-          if token =~ FullToken
-
-            # if we found the proper block delimiter just end parsing here and let the outer block
-            # proceed
-            return if block_delimiter == $1
-
-            # fetch the tag from registered blocks
-            if tag = Template.tags[$1]
-              new_tag = tag.parse($1, $2, tokens, @options)
-              @blank &&= new_tag.blank?
-              @nodelist << new_tag
-            else
-              # this tag is not registered with the system
-              # pass it to the current block for special handling or error reporting
-              unknown_tag($1, $2, tokens)
-            end
-          else
-            raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
-          end
-        when IsVariable
-          new_var = create_variable(token)
-          @nodelist << new_var
-          @blank = false
-        when ''.freeze
-          # pass
-        else
-          @nodelist << token
-          @blank &&= (token =~ /\A\s*\z/)
-        end
-      end
-
-      # Make sure that it's ok to end parsing in the current block.
-      # Effectively this method will throw an exception unless the current block is
-      # of type Document
-      assert_missing_delimitation!
     end
 
     # warnings of this block and all sub-tags
@@ -105,6 +55,14 @@ module Liquid
     end
 
     protected
+
+    def unterminated_variable(token)
+      raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination".freeze, :token => token, :tag_end => VariableEnd.inspect))
+    end
+
+    def unterminated_tag(token)
+      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
+    end
 
     def assert_missing_delimitation!
       raise SyntaxError.new(options[:locale].t("errors.syntax.tag_never_closed".freeze, :block_name => block_name))
