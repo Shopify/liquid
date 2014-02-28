@@ -5,11 +5,11 @@ extern VALUE cLiquidStringSlice;
 
 struct string_slice {
     VALUE source;
-    char *str;
+    const char *str;
     long length;
 };
 
-VALUE liquid_string_slice_new(char *str, long length);
+VALUE liquid_string_slice_new(const char *str, long length);
 
 void init_liquid_string_slice();
 

@@ -95,7 +95,7 @@ module Liquid
         end
       end
 
-      output.join
+      StringSlice.join(output)
     end
   end
 end

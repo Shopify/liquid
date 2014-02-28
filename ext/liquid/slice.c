@@ -16,7 +16,7 @@ static void free_slice(void *ptr)
     xfree(slice);
 }
 
-VALUE liquid_string_slice_new(char *str, long length)
+VALUE liquid_string_slice_new(const char *str, long length)
 {
     return rb_funcall(cLiquidStringSlice, intern_new, 3, rb_str_new(str, length), INT2FIX(0), INT2FIX(length));
 }
@@ -89,7 +89,7 @@ static VALUE rb_slice_equal(VALUE self, VALUE other)
     struct string_slice *this_slice;
     Data_Get_Struct(self, struct string_slice, this_slice);
 
-    char *other_str;
+    const char *other_str;
     long other_length;
     if (TYPE(other) == T_DATA && RBASIC_CLASS(other) == cLiquidStringSlice) {
         struct string_slice *other_slice = DATA_PTR(other);
@@ -110,9 +110,51 @@ static VALUE rb_slice_inspect(VALUE self)
     return rb_sprintf("#<Liquid::StringSlice: %.*s>", (int)RSTRING_LEN(quoted), RSTRING_PTR(quoted));
 }
 
+static VALUE rb_slice_join(VALUE klass, VALUE ary)
+{
+    ary = rb_ary_to_ary(ary);
+
+    long i;
+    long result_length = 0;
+    for (i = 0; i < RARRAY_LEN(ary); i++) {
+        VALUE element = RARRAY_AREF(ary, i);
+
+        if (TYPE(element) == T_DATA && RBASIC_CLASS(element) == cLiquidStringSlice) {
+            struct string_slice *slice = DATA_PTR(element);
+            result_length += slice->length;
+        } else if (TYPE(element) == T_STRING) {
+            result_length += RSTRING_LEN(element);
+        }
+    }
+
+    VALUE result = rb_str_buf_new(result_length);
+    for (i = 0; i < RARRAY_LEN(ary); i++) {
+        VALUE element = RARRAY_AREF(ary, i);
+
+        const char *element_string;
+        long element_length;
+        if (TYPE(element) == T_DATA && RBASIC_CLASS(element) == cLiquidStringSlice) {
+            struct string_slice *slice = DATA_PTR(element);
+            element_string = slice->str;
+            element_length = slice->length;
+        } else if (NIL_P(element)) {
+            continue;
+        } else {
+            element = rb_check_string_type(element);
+            if (NIL_P(element))
+                continue;
+            element_string = RSTRING_PTR(element);
+            element_length = RSTRING_LEN(element);
+        }
+        rb_str_buf_cat(result, element_string, element_length);
+    }
+    return result;
+}
+
 void init_liquid_string_slice()
 {
     cLiquidStringSlice = rb_define_class_under(mLiquid, "StringSlice", rb_cObject);
+    rb_define_singleton_method(cLiquidStringSlice, "join", rb_slice_join, 1);
     rb_define_alloc_func(cLiquidStringSlice, rb_allocate);
     rb_define_method(cLiquidStringSlice, "initialize", rb_initialize, 3);
     rb_define_method(cLiquidStringSlice, "==", rb_slice_equal, 1);
