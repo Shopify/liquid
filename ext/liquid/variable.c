@@ -90,7 +90,7 @@ static VALUE rb_variable_allocate(VALUE klass)
 static int skip_whitespace(char * str, int len) 
 {
   int i = 0; char * ptr = str;
-  while (i < len && (*ptr == " " || *ptr == "\t" || *ptr == "\n" || *ptr == "\v" || *ptr == "\f" || *ptr == "\r"))
+  while (i < len && !isspace(*ptr))
     i++;
   return i;
 }
@@ -119,8 +119,7 @@ static char * get_quoted_fragment(char * cursor, int len, char * name)
         else {end = count+1; goto form_name;}
         break;
       default: 
-        if (cursor[count] != '|' && cursor[count] != ':' && cursor[count] != ',' && cursor[count] != ' ' &&
-            cursor[count] != '\n' && cursor[count] != '\v' && cursor[count] != '\t' && cursor[count] != '\f' && cursor[count] != '\r')
+        if (cursor[count] != '|' && cursor[count] != ':' && cursor[count] != ',' && cursor[count] != ' ' && !isspace(cursor[count]))
           { if (start == -1) start = count; }
         else 
           { end = count+1; goto form_name;}
