@@ -5,6 +5,11 @@ module Liquid
     FullToken         = /\A#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
     ContentOfVariable = /\A#{VariableStart}(.*)#{VariableEnd}\z/om
 
+    def initialize(tag_name, markup, tokens)
+      super
+      parse(tokens)
+    end
+
     def blank?
       @blank || false
     end

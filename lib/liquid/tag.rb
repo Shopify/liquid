@@ -19,9 +19,6 @@ module Liquid
       @options    = options
     end
 
-    def parse(tokens)
-    end
-
     def name
       self.class.name.downcase
     end
