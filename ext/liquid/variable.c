@@ -18,34 +18,34 @@ static VALUE rb_variable_allocate(VALUE klass)
     return obj;
 }
 
-static void rb_variable_lax_parse(VALUE self, VALUE markup) 
-{  
-  struct liquid_variable *variable;
-  variable->markup = RSTRING_PTR(markup);
-  variable->markup_len = RSTRING_LEN(markup);
+// static void rb_variable_lax_parse(VALUE self, VALUE markup) 
+// {  
+//   struct liquid_variable *variable;
+//   variable->markup = RSTRING_PTR(markup);
+//   variable->markup_len = RSTRING_LEN(markup);
 
-  regex_t regex, regex_f_args; 
-  int reti; 
-  regmatch_t match[3], f_match[5], f_arg_match[5];
+//   regex_t regex, regex_f_args; 
+//   int reti; 
+//   regmatch_t match[3], f_match[5], f_arg_match[5];
 
-  regcomp(&regex, "\\s*(((\"[^\"]*\"|'[^']*')|([^\\s,\\|'\"]|(\"[^\"]*\"|'[^']*'))+))(.*)", REG_EXTENDED | REG_ICASE);
-  // regcomp(&regex, "\\s*((?:(?:\"[^\"]*\"|'[^']*')|(?:[^\\s,\\|'\"]|(?:\"[^\"]*\"|'[^']*'))+))(.*)", REG_ICASE | REG_ECMASCRIPT;
+//   regcomp(&regex, "\\s*(((\"[^\"]*\"|'[^']*')|([^\\s,\\|'\"]|(\"[^\"]*\"|'[^']*'))+))(.*)", REG_EXTENDED | REG_ICASE);
+//   // regcomp(&regex, "\\s*((?:(?:\"[^\"]*\"|'[^']*')|(?:[^\\s,\\|'\"]|(?:\"[^\"]*\"|'[^']*'))+))(.*)", REG_ICASE | REG_ECMASCRIPT;
   
-  reti = regexec(&regex, variable->markup, 3, match, 0);
+//   reti = regexec(&regex, variable->markup, 3, match, 0);
 
-  if( !reti ){
-    /* Extract name */
-    // printf("\nWith the whole expression, a matched substring %.*s is found at position %d to %d. "
-    //          " and rest at %.*s is found at position %d to %d.\n",
-    //          match[1].rm_eo - match[1].rm_so, &variable->markup[match[1].rm_so], match[1].rm_so, match[1].rm_eo,
-    //          match[2].rm_eo - match[2].rm_so, &variable->markup[match[2].rm_so], match[2].rm_so, match[2].rm_eo);
+//   if( !reti ){
+//     /* Extract name */
+//     // printf("\nWith the whole expression, a matched substring %.*s is found at position %d to %d. "
+//     //          " and rest at %.*s is found at position %d to %d.\n",
+//     //          match[1].rm_eo - match[1].rm_so, &variable->markup[match[1].rm_so], match[1].rm_so, match[1].rm_eo,
+//     //          match[2].rm_eo - match[2].rm_so, &variable->markup[match[2].rm_so], match[2].rm_so, match[2].rm_eo);
     
-    variable->name = &variable->markup[match[1].rm_so];
-    variable->name_len = match[1].rm_eo - match[1].rm_so;
+//     variable->name = &variable->markup[match[1].rm_so];
+//     variable->name_len = match[1].rm_eo - match[1].rm_so;
 
-    rb_iv_set(self, "@name", rb_str_new(variable->name, variable->name_len));
+//     rb_iv_set(self, "@name", rb_str_new(variable->name, variable->name_len));
 
-    /* Extract filters */
+//     /* Extract filters */
 //     char * cursor = &variable->markup[match[2].rm_so]; int size = match[2].rm_eo - match[2].rm_so;
 //     while (cursor++ < &variable->markup[match[2].rm_eo]) {
 //       if (*cursor == ' ' || *cursor == '\n' || *cursor == '\f' || *cursor == '\t' || *cursor == '\r' || *cursor == '\v') continue;
@@ -84,62 +84,80 @@ static void rb_variable_lax_parse(VALUE self, VALUE markup)
 //         rb_iv_set(self, "@filters", filters_array);
 //       }
 //     }
+//   }
+// }
 
-
-  }
+static int skip_whitespace(char * str, int len) 
+{
+  int i = 0; char * ptr = str;
+  while (i < len && (*ptr == " " || *ptr == "\t" || *ptr == "\n" || *ptr == "\v" || *ptr == "\f" || *ptr == "\r"))
+    i++;
+  return i;
 }
 
-// static void rb_easy_parse(VALUE self)
-// {
-//   struct liquid_variable *variable;
-//   Data_Get_Struct(self, struct liquid_variable, variable);
+static char * cpy_string(char * str, int len) 
+{
+  char * s = malloc(len*sizeof(char) + 1);
+  int i = 0;
+  while (i<len) s[i] = str[i];
+  s[i] = '\0';
+  return s;
+}
 
-//   regex_t regex; int reti; regmatch_t match[2];
-//   reti = regcomp(&regex, " *(\\w+(\\.\\w+)*) *", REG_EXTENDED);
-//   reti = regexec(&regex, variable->markup, 2, match, 0);
-//   if( !reti ){
-//     variable->name = &variable->markup[match[1].rm_so];
-//     variable->name_len = match[1].rm_eo - match[1].rm_so;
+static char * get_quoted_fragment(char * cursor, int len, char * name) 
+{
+  int count = 0; int start = -1, end = -1;
+  while (count < len) {
+    
+    switch (cursor[count]) {
+      case '"': 
+        if (start == -1) start = count;
+        else {end = count+1; goto form_name;}
+        break;
+      case '\'':
+        if (start == -1) start = count;
+        else {end = count+1; goto form_name;}
+        break;
+      default: 
+        if (cursor[count] != '|' && cursor[count] != ':' && cursor[count] != ',' && cursor[count] != ' ' &&
+            cursor[count] != '\n' && cursor[count] != '\v' && cursor[count] != '\t' && cursor[count] != '\f' && cursor[count] != '\r')
+          { if (start == -1) start = count; }
+        else 
+          { end = count+1; goto form_name;}
+    }
+    count++;
+  }
+form_name:
+  if (end > start) name = cpy_string(&cursor[start], end-start);
 
-//     return;
-//   }
+  if (end != -1) return &cursor[end];
+  else return NULL;
+}
 
-//   VALUE p = rb_funcall(rb_path2class("Liquid::Parser"), rb_intern("new"), 1, rb_str_new(variable->markup, variable->markup_len));
+static void rb_variable_lax_parse_new(VALUE self, VALUE m) 
+{
+  char * markup = RSTRING_PTR(m);
+  int markup_len = RSTRING_LEN(m);
 
-//   if (rb_funcall(p, rb_intern("look"), 1, ID2SYM(rb_intern("pipe")) ))
-//   {    
-//     variable->name = NULL; variable->name_len = 0;
-//   } 
-//   else
-//   {
-//     VALUE val = rb_funcall(p, rb_intern("expression"), 0);
-//     variable->name = RSTRING_PTR(val);
-//     variable->name_len = RSTRING_LEN(val);    
-//   }
-// }
+  char * cursor = markup; int count = 0;
+  
+  /* Extract name */
+  char * name;
+  count += skip_whitespace(markup, markup_len); cursor = markup+count;
+  cursor = get_quoted_fragment(cursor, markup_len-count, name);
 
-// static VALUE rb_variable_initialize(VALUE self, VALUE markup)
-// {
-//     Check_Type(markup, T_STRING);
+  if (name == NULL) rb_iv_set(self, "@name", Qnil);
+  else 
+  {
+    rb_iv_set(self, "@name", rb_str_new2(name));
 
-//     rb_iv_set(self, "@filters", rb_ary_new());
-//     rb_iv_set(self, "@markup", markup);
-
-//     // FIXME need to be able to accept :error_mode parameter when creating
-//     VALUE val = rb_funcall(rb_path2class("Liquid::Template"), rb_intern("error_mode"), 0);
-
-//     lax_parse(self, markup);
-
-//     // if (val == ID2SYM(rb_intern("strict"))) rb_funcall(self, rb_intern("strict_parse"), 1, markup);
-//     // else if (val == ID2SYM(rb_intern("lax"))) lax_parse(self, markup);
-//     // FIXME handle :warn case
-
-//     return self;
-// }
+    /* Extract filters */
+  }
+}
 
 void init_liquid_variable()
 {
     cLiquidVariable = rb_define_class_under(mLiquid, "Variable", rb_cObject);
     rb_define_alloc_func(cLiquidVariable, rb_variable_allocate);
-    rb_define_method(cLiquidVariable, "lax_parse", rb_variable_lax_parse, 1);
+    rb_define_method(cLiquidVariable, "lax_parse", rb_variable_lax_parse_new, 1);
 }
