@@ -7,7 +7,7 @@ module Liquid
 
     # There isn't a real delimiter
     def block_delimiter
-      []
+      nil
     end
 
     # Document blocks don't need to be terminated since they are not actually opened
