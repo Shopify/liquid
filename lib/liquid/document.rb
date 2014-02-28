@@ -3,7 +3,7 @@ module Liquid
     # we don't need markup to open this block
     def initialize(tokens, options = {})
       @options = options
-      parse(tokens)
+      parse_body(tokens)
     end
 
     # There isn't a real delimiter
