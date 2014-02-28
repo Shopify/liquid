@@ -4,7 +4,7 @@ module Liquid
     def render(context)
       context.stack do
 
-        output = render_all(@nodelist, context)
+        output = super
 
         if output != context.registers[:ifchanged]
           context.registers[:ifchanged] = output

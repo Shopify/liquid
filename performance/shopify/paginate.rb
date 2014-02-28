@@ -4,8 +4,6 @@ class Paginate < Liquid::Block
   def initialize(tag_name, markup, options)
     super
 
-    @nodelist = []
-
     if markup =~ Syntax
       @collection_name = $1
       @page_size = if $2
@@ -73,7 +71,7 @@ class Paginate < Liquid::Block
         end
       end
 
-      render_all(@nodelist, context)
+      super
     end
   end
 
