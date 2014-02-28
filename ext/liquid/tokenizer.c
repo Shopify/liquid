@@ -1,7 +1,6 @@
 #include "liquid_ext.h"
 
 VALUE cLiquidTokenizer;
-extern VALUE mLiquid;
 
 static void free_tokenizer(void *ptr)
 {

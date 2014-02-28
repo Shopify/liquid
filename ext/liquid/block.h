@@ -3,4 +3,6 @@
 
 void init_liquid_block();
 
+extern VALUE cLiquidBlock;
+
 #endif
