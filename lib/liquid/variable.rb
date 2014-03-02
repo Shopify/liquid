@@ -21,18 +21,18 @@ module Liquid
       @options = options || {}
       
 
-      case @options[:error_mode] || Template.error_mode
-      when :strict then strict_parse(markup)
-      when :lax    then lax_parse(markup)
-      when :warn
-        begin
-          strict_parse(markup)
-        rescue SyntaxError => e
-          @warnings ||= []
-          @warnings << e
+      # case @options[:error_mode] || Template.error_mode
+      # when :strict then strict_parse(markup)
+      # when :lax    then lax_parse(markup)
+      # when :warn
+      #   begin
+      #     strict_parse(markup)
+      #   rescue SyntaxError => e
+      #     @warnings ||= []
+      #     @warnings << e
           lax_parse(markup)
-        end
-      end
+      #   end
+      # end
     end
 
 #     def lax_parse(markup)

@@ -21,47 +21,55 @@ static VALUE rb_variable_allocate(VALUE klass)
 static int skip_whitespace(char * str, int len) 
 {
   int i = 0; char * ptr = str;
-  while (i < len && !isspace(*ptr))
-    i++;
+  while (i < len && isspace(*ptr))
+    {i++; ptr++;}
   return i;
 }
 
-static char * cpy_string(char * str, int len) 
+static char * get_quoted_fragment(char * cursor, int len, VALUE self) 
 {
-  char * s = malloc(len*sizeof(char) + 1);
-  int i = 0;
-  while (i<len) s[i] = str[i];
-  s[i] = '\0';
-  return s;
-}
-
-static char * get_quoted_fragment(char * cursor, int len, char * name) 
-{
-  int count = 0; int start = -1, end = -1;
+  int count = 0; int start = -1, end = -1; char quoted = -1;
   while (count < len) {
     
     switch (cursor[count]) {
       case '"': 
-        if (start == -1) start = count;
-        else {end = count+1; goto form_name;}
+        if (start == -1) {start = count; quoted = '"';}
+        else if (cursor[start] == '"') {end = count; goto form_name;}
+        else if (quoted == -1) quoted = '"';
+        else if (quoted == '"') quoted = -1;
         break;
       case '\'':
-        if (start == -1) start = count;
-        else {end = count+1; goto form_name;}
+        if (start == -1) {start = count; quoted = '\'';}
+        else if (cursor[start] == '\'') {end = count; goto form_name;}
+        else if (quoted == -1) quoted = '\'';
+        else if (quoted == '\'') quoted = -1;
+        break;
+      case '|':
+      case ',':
+      case '\n':
+      case '\r':
+      case '\f':
+      case '\t':
+      case '\v':
+      case ' ': 
+        if (start != -1 && quoted == -1) {end = count-1; goto form_name;} 
         break;
       default: 
-        if (cursor[count] != '|' && cursor[count] != ':' && cursor[count] != ',' && cursor[count] != ' ' && !isspace(cursor[count]))
-          { if (start == -1) start = count; }
-        else 
-          { end = count+1; goto form_name;}
+        if (start == -1) start = count; 
+        break;
     }
     count++;
   }
-form_name:
-  if (end > start) name = cpy_string(&cursor[start], end-start);
+  if (count == len && start != -1 && end == -1) end = len-1;
 
-  if (end != -1) return &cursor[end];
-  else return NULL;
+form_name:
+  if (end > start) {
+    rb_iv_set(self, "@name", rb_str_new(&cursor[start], end-start+1));
+    return &cursor[end+1];
+  } else {
+    rb_iv_set(self, "@name", Qnil);
+    return NULL;
+  }
 }
 
 static void rb_variable_lax_parse_new(VALUE self, VALUE m) 
@@ -70,19 +78,19 @@ static void rb_variable_lax_parse_new(VALUE self, VALUE m)
   int markup_len = RSTRING_LEN(m);
 
   char * cursor = markup; int count = 0;
-  
+
   /* Extract name */
-  char * name;
-  count += skip_whitespace(markup, markup_len); cursor = markup+count;
-  cursor = get_quoted_fragment(cursor, markup_len-count, name);
+  count += skip_whitespace(markup, markup_len); 
+  cursor = markup+count;
+  cursor = get_quoted_fragment(cursor, markup_len-count, self);
 
-  if (name == NULL) rb_iv_set(self, "@name", Qnil);
-  else 
-  {
-    rb_iv_set(self, "@name", rb_str_new2(name));
+  // if (*name == NULL) rb_iv_set(self, "@name", Qnil);
+  // else 
+  // {
+  //   rb_iv_set(self, "@name", rb_str_new2(*name));
 
-    /* Extract filters */
-  }
+  //   /* Extract filters */
+  // }
 }
 
 void init_liquid_variable()
