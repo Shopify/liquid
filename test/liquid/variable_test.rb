@@ -11,7 +11,7 @@ class VariableTest < Test::Unit::TestCase
   def test_filters
     var = Variable.new('hello | textileze')
     assert_equal 'hello', var.name
-    # assert_equal [["textileze",[]]], var.filters
+    assert_equal [["textileze",[]]], var.filters
 
     var = Variable.new('hello | textileze | paragraph')
     assert_equal 'hello', var.name

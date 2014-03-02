@@ -62,7 +62,7 @@ static char * get_quoted_fragment(char * cursor, int len, VALUE self)
   }
   if (count == len && start != -1 && end == -1) end = len-1;
 
-form_name:
+  form_name:
   if (end > start) {
     rb_iv_set(self, "@name", rb_str_new(&cursor[start], end-start+1));
     return &cursor[end+1];
@@ -72,30 +72,42 @@ form_name:
   }
 }
 
-static void rb_variable_lax_parse_new(VALUE self, VALUE m) 
+static VALUE get_filters(char * cursor, int len, VALUE self) {
+  int count = 0;
+
+  while(count<len) {
+    if (cursor[count] == '|') {
+      count += skip_whitespace(&cursor[count]+1, len-count);
+
+    }
+  }
+  return self;
+}
+
+static void rb_variable_lax_parse(VALUE self, VALUE m) 
 {
   char * markup = RSTRING_PTR(m);
   int markup_len = RSTRING_LEN(m);
 
-  char * cursor = markup; int count = 0;
+  char * cursor = markup; int count = 0; VALUE filters;
 
   /* Extract name */
   count += skip_whitespace(markup, markup_len); 
   cursor = markup+count;
   cursor = get_quoted_fragment(cursor, markup_len-count, self);
 
-  // if (*name == NULL) rb_iv_set(self, "@name", Qnil);
-  // else 
-  // {
-  //   rb_iv_set(self, "@name", rb_str_new2(*name));
+  if (cursor == NULL) {filters = rb_ary_new(); rb_iv_set(self, "@filters", filters);}
+  else 
+  {
+    /* Extract filters */
+    filters = get_filters(cursor, (markup-cursor)/sizeof(char), self);
+  }
 
-  //   /* Extract filters */
-  // }
 }
 
 void init_liquid_variable()
 {
     cLiquidVariable = rb_define_class_under(mLiquid, "Variable", rb_cObject);
     rb_define_alloc_func(cLiquidVariable, rb_variable_allocate);
-    rb_define_method(cLiquidVariable, "lax_parse", rb_variable_lax_parse_new, 1);
+    rb_define_method(cLiquidVariable, "lax_parse", rb_variable_lax_parse, 1);
 }
