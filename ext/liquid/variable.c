@@ -26,7 +26,7 @@ static inline int skip_whitespace(char * str, int len)
   return skipped;
 }
 
-static char * get_quoted_fragment(char * str, int len, int * ret_size, int * end_offset) 
+static char * get_quoted_fragment(char * str, int len, int * ret_size, int * end_offset, bool colon) 
 {
   int p = 0; /* Current position in string */
   int start = -1, end = -1; /* Start and end indices for the found string */
@@ -48,6 +48,12 @@ static char * get_quoted_fragment(char * str, int len, int * ret_size, int * end
         else if (quoted_by == -1) quoted_by = '\'';
         else if (quoted_by == '\'') quoted_by = -1;
         break;
+      case ':': 
+        if (colon)
+          if (start != -1 && quoted_by == -1) {end = p-1; goto quoted_fragment_found;} 
+        else
+          if (start == -1) start = p;
+        break;
       case '|':
       case ',':
       case '\n':
@@ -67,7 +73,7 @@ static char * get_quoted_fragment(char * str, int len, int * ret_size, int * end
   if (p == len && start != -1 && end == -1) end = len-1;
 
 quoted_fragment_found:
-  if (end > start) {
+  if (end >= start) {
     *ret_size = end-start+1;
     *end_offset = end+1;
     return &str[start];
@@ -90,8 +96,8 @@ static VALUE get_filters(char * str, int len, VALUE self) {
       VALUE f_args = rb_ary_new();
 
       p += skip_whitespace(&str[p+1], len-p-1);
-      f = get_quoted_fragment(&str[p], len-p, &ret_size, &end_offset);
-      p += end_offset-1;
+      f = get_quoted_fragment(&str[p], len-p, &ret_size, &end_offset, true);
+      p += end_offset;
 
       if (f) {
         if (f[ret_size-1] == ':') ret_size--;
@@ -99,16 +105,28 @@ static VALUE get_filters(char * str, int len, VALUE self) {
       }
 
       /* Check for filter arguments */
-      // do {
-      //   p += skip_whitespace(&str[p+1], len-p-1);
+      do {
+        if (p<len) {
+          p += skip_whitespace(&str[p], len-p);
 
-      //   if (str[p] == '|') 
-      //   f = get_quoted_fragment(&str[p], len-p, &ret_size, &end_offset);
-      //   p += end_offset-1;
-      //   p += skip_whitespace(&str[p+1], len-p-1);
+          // printf("\n1. %.*s\n", len-p, &str[p]);
 
-      //   if (f) rb_ary_push(f_args, rb_str_new(f, ret_size));
-      // } while (str[p] == ',' || str[p] == ':');
+          if (str[p] != '|') {
+            f = get_quoted_fragment(&str[p], len-p, &ret_size, &end_offset, false);
+
+            // printf("\n2. %.*s\n", ret_size, f);
+            
+            p += end_offset;
+            p += skip_whitespace(&str[p], len-p);
+
+            if (str[p] == '|') p--;
+
+            if (f) rb_ary_push(f_args, rb_str_new(f, ret_size));
+          
+          } else p--;
+        }
+
+      } while (str[p] == ',' || str[p] == ':');
 
       rb_ary_push(filter, f_args);
 
@@ -132,7 +150,7 @@ static VALUE rb_variable_lax_parse(VALUE self, VALUE m)
   /* Extract name */
   cursor_pos += skip_whitespace(markup, markup_len); 
   cursor = markup + cursor_pos;
-  cursor = get_quoted_fragment(cursor, markup_len - cursor_pos, &size, &end_offset);
+  cursor = get_quoted_fragment(cursor, markup_len - cursor_pos, &size, &end_offset, false);
 
   if (cursor == NULL) {
     rb_iv_set(self, "@name", Qnil);
