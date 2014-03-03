@@ -12,4 +12,5 @@ void Init_liquid(void)
 
     init_liquid_tokenizer();
     init_liquid_block();
+    init_liquid_variable();
 }

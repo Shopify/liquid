@@ -11,7 +11,6 @@ module Liquid
   #   {{ user | link }}
   #
   class Variable
-    FilterParser = /(?:#{FilterSeparator}|(?:\s*(?:#{QuotedFragment}|#{ArgumentSeparator})\s*)+)/o
     EasyParse = /\A *(\w+(?:\.\w+)*) *\z/
     attr_accessor :filters, :name, :warnings
 
@@ -35,22 +34,22 @@ module Liquid
       end
     end
 
-    def lax_parse(markup)
-      @filters = []
-      if match = markup.match(/\s*(#{QuotedFragment})(.*)/o)
-        @name = match[1]
-        if match[2].match(/#{FilterSeparator}\s*(.*)/o)
-          filters = Regexp.last_match(1).scan(FilterParser)
-          filters.each do |f|
-            if matches = f.match(/\s*(\w+)/)
-              filtername = matches[1]
-              filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
-              @filters << [filtername, filterargs]
-            end
-          end
-        end
-      end
-    end
+#     def lax_parse(markup)
+#       @filters = []
+#       if match = markup.match(/\s*(#{QuotedFragment})(.*)/o)
+#         @name = match[1]
+#         if match[2].match(/#{FilterSeparator}\s*(.*)/o)
+#           filters = Regexp.last_match(1).scan(FilterParser)
+#           filters.each do |f|
+#             if matches = f.match(/\s*(\w+)/)
+#               filtername = matches[1]
+#               filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
+#               @filters << [filtername, filterargs]
+#             end
+#           end
+#         end
+#       end
+#     end
 
     def strict_parse(markup)
       # Very simple valid cases

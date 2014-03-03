@@ -51,11 +51,9 @@ class VariableTest < Test::Unit::TestCase
   end
 
   def test_filter_with_date_parameter
-
     var = Variable.new(%! '2006-06-06' | date: "%m/%d/%Y"!)
     assert_equal "'2006-06-06'", var.name
     assert_equal [["date",["\"%m/%d/%Y\""]]], var.filters
-
   end
 
   def test_filters_without_whitespace
@@ -73,7 +71,7 @@ class VariableTest < Test::Unit::TestCase
   end
 
   def test_symbol
-    var = Variable.new("http://disney.com/logo.gif | image: 'med' ", :error_mode => :lax)
+    var = Variable.new("http://disney.com/logo.gif | image: 'med'", :error_mode => :lax)
     assert_equal "http://disney.com/logo.gif", var.name
     assert_equal [["image",["'med'"]]], var.filters
   end
