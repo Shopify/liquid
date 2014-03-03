@@ -26,7 +26,7 @@ static int skip_whitespace(char * str, int len)
   return i;
 }
 
-static char * get_quoted_fragment(char * cursor, int len, VALUE self) 
+static char * get_quoted_fragment(char * cursor, int len, int * ret_size) 
 {
   int count = 0; int start = -1, end = -1; char quoted = -1;
   while (count < len) {
@@ -64,10 +64,14 @@ static char * get_quoted_fragment(char * cursor, int len, VALUE self)
 
   form_name:
   if (end > start) {
-    rb_iv_set(self, "@name", rb_str_new(&cursor[start], end-start+1));
-    return &cursor[end+1];
+    // rb_iv_set(self, "@name", rb_str_new(&cursor[start], end-start+1));
+    // return &cursor[end+1];
+    *ret_size = end-start+1;
+    return &cursor[start];
+
   } else {
-    rb_iv_set(self, "@name", Qnil);
+    // rb_iv_set(self, "@name", Qnil);
+    *ret_size = 0;
     return NULL;
   }
 }
@@ -89,18 +93,23 @@ static void rb_variable_lax_parse(VALUE self, VALUE m)
   char * markup = RSTRING_PTR(m);
   int markup_len = RSTRING_LEN(m);
 
-  char * cursor = markup; int count = 0; VALUE filters;
+  char * cursor = markup; int count = 0; VALUE filters; int size;
 
   /* Extract name */
   count += skip_whitespace(markup, markup_len); 
   cursor = markup+count;
-  cursor = get_quoted_fragment(cursor, markup_len-count, self);
+  cursor = get_quoted_fragment(cursor, markup_len-count, &size);
 
-  if (cursor == NULL) {filters = rb_ary_new(); rb_iv_set(self, "@filters", filters);}
+  if (cursor == NULL) {
+    rb_iv_set(self, "@name", Qnil);
+    filters = rb_ary_new(); 
+    rb_iv_set(self, "@filters", filters);
+  }
   else 
   {
+    rb_iv_set(self, "@name", rb_str_new(cursor, size));
     /* Extract filters */
-    filters = get_filters(cursor, (markup-cursor)/sizeof(char), self);
+    // filters = get_filters(cursor, (markup-cursor)/sizeof(char), self);
   }
 
 }
