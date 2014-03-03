@@ -15,7 +15,7 @@ class VariableTest < Test::Unit::TestCase
 
     var = Variable.new('hello | textileze | paragraph')
     assert_equal 'hello', var.name
-    # assert_equal [["textileze",[]], ["paragraph",[]]], var.filters
+    assert_equal [["textileze",[]], ["paragraph",[]]], var.filters
 
     var = Variable.new(%! hello | strftime: '%Y'!)
     assert_equal 'hello', var.name
@@ -47,7 +47,7 @@ class VariableTest < Test::Unit::TestCase
 
     var = Variable.new(%! hello | things: "%Y, okay?", 'the other one'!)
     assert_equal 'hello', var.name
-  #   assert_equal [["things",["\"%Y, okay?\"","'the other one'"]]], var.filters
+    # assert_equal [["things",["\"%Y, okay?\"","'the other one'"]]], var.filters
   end
 
   def test_filter_with_date_parameter
@@ -59,7 +59,7 @@ class VariableTest < Test::Unit::TestCase
   def test_filters_without_whitespace
     var = Variable.new('hello | textileze | paragraph')
     assert_equal 'hello', var.name
-    # assert_equal [["textileze",[]], ["paragraph",[]]], var.filters
+    assert_equal [["textileze",[]], ["paragraph",[]]], var.filters
 
     var = Variable.new('hello|textileze|paragraph')
     assert_equal 'hello', var.name
