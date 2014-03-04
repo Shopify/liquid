@@ -108,6 +108,17 @@ module Liquid
       end
     end
 
+    # Remove duplicate elements from an array
+    # provide optional property with which to determine uniqueness
+    def uniq(input, property = nil)
+      ary = InputIterator.new(input)
+      if property.nil?
+        input.uniq
+      elsif input.first.respond_to?('[]'.freeze)
+        input.uniq{ |a| a[property] }
+      end
+    end
+
     # Reverse the elements of an array
     def reverse(input)
       ary = InputIterator.new(input)
