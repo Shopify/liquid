@@ -64,41 +64,6 @@ class ThemeRunner
   end
 
 
-  def run_profile
-    RubyProf.measure_mode = RubyProf::WALL_TIME
-
-    # Dup assigns because will make some changes to them
-    assigns = Database.tables.dup
-
-    @tests.each do |liquid, layout, template_name|
-
-      # Compute page_tempalte outside of profiler run, uninteresting to profiler
-      html = nil
-      page_template = File.basename(template_name, File.extname(template_name))
-
-      unless @started
-        RubyProf.start
-        RubyProf.pause
-        @started = true
-      end
-
-      html = nil
-
-      RubyProf.resume
-      html = compile_and_render(liquid, layout, assigns, page_template, template_name)
-      RubyProf.pause
-
-
-      # return the result and the MD5 of the content, this can be used to detect regressions between liquid version
-      $stdout.puts "* rendered template %s, content: %s" % [template_name, Digest::MD5.hexdigest(html)]
-
-      # Uncomment to dump html files to /tmp so that you can inspect for errors
-      # File.open("/tmp/#{File.basename(template_name)}.html", "w+") { |fp| fp <<html}
-    end
-
-    RubyProf.stop
-  end
-
   def compile_and_render(template, layout, assigns, page_template, template_file)
     tmpl = Liquid::Template.new
     tmpl.assigns['page_title'] = 'Page title'
