@@ -106,8 +106,8 @@ module Liquid
       raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination", :token => token, :tag_end => VariableEnd.inspect))
     end
 
-    def render(context)
-      render_all(@nodelist, context)
+    def render(context, output)
+      render_all(@nodelist, context, output)
     end
 
     protected
@@ -116,9 +116,7 @@ module Liquid
       raise SyntaxError.new(options[:locale].t("errors.syntax.tag_never_closed", :block_name => block_name))
     end
 
-    def render_all(list, context)
-      output = []
-      context.resource_limits[:render_length_current] = 0
+    def render_all(list, context, output)
       context.resource_limits[:render_score_current] += list.length
 
       list.each do |token|
@@ -134,14 +132,16 @@ module Liquid
             break
           end
 
-          token_output = (token.respond_to?(:render) ? token.render(context) : token)
-          context.increment_used_resources(:render_length_current, token_output)
+          if token.respond_to?(:render)
+            token_output = (token.is_a?(Block) && token.blank?) ? "" : output
+            token.render(context, token_output)
+          else
+            output << token
+          end
+          context.resource_limits[:render_length_current] = output.size
           if context.resource_limits_reached?
             context.resource_limits[:reached] = true
             raise MemoryError.new("Memory limits exceeded")
-          end
-          unless token.is_a?(Block) && token.blank?
-            output << token_output
           end
         rescue MemoryError => e
           raise e
@@ -150,7 +150,7 @@ module Liquid
         end
       end
 
-      output.join
+      nil
     end
   end
 end

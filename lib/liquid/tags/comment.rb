@@ -1,7 +1,6 @@
 module Liquid
   class Comment < Block
-    def render(context)
-      ''
+    def render(context, output)
     end
 
     def unknown_tag(tag, markup, tokens)

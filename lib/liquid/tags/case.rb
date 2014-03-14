@@ -31,20 +31,18 @@ module Liquid
       end
     end
 
-    def render(context)
+    def render(context, output)
       context.stack do
         execute_else_block = true
 
-        output = ''
         @blocks.each do |block|
           if block.else?
-            return render_all(block.attachment, context) if execute_else_block
+            return render_all(block.attachment, context, output) if execute_else_block
           elsif block.evaluate(context)
             execute_else_block = false
-            output << render_all(block.attachment, context)
+            render_all(block.attachment, context, output)
           end
         end
-        output
       end
     end
 

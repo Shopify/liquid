@@ -29,17 +29,16 @@ module Liquid
       super
     end
 
-    def render(context)
+    def render(context, output)
       context.registers[:cycle] ||= Hash.new(0)
 
       context.stack do
         key = context[@name]
         iteration = context.registers[:cycle][key]
-        result = context[@variables[iteration]]
+        output << context[@variables[iteration]].to_s
         iteration += 1
         iteration  = 0  if iteration >= @variables.size
         context.registers[:cycle][key] = iteration
-        result
       end
     end
 

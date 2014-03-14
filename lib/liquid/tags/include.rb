@@ -42,7 +42,7 @@ module Liquid
       false
     end
 
-    def render(context)
+    def render(context, output)
       partial = load_cached_partial(context)
       variable = context[@variable_name || @template_name[1..-2]]
 
@@ -53,13 +53,13 @@ module Liquid
 
         context_variable_name = @template_name[1..-2].split('/').last
         if variable.is_a?(Array)
-          variable.collect do |var|
+          variable.each do |var|
             context[context_variable_name] = var
-            partial.render(context)
+            partial.render(context, :output => output)
           end
         else
           context[context_variable_name] = variable
-          partial.render(context)
+          partial.render(context, :output => output)
         end
       end
     end

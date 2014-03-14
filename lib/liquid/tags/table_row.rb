@@ -17,7 +17,7 @@ module Liquid
       super
     end
 
-    def render(context)
+    def render(context, output)
       collection = context[@collection_name] or return ''
 
       from = @attributes['offset'] ? context[@attributes['offset']].to_i : 0
@@ -32,7 +32,7 @@ module Liquid
       row = 1
       col = 0
 
-      result = "<tr class=\"row1\">\n"
+      output << "<tr class=\"row1\">\n"
       context.stack do
 
         collection.each_with_index do |item, index|
@@ -55,18 +55,19 @@ module Liquid
 
           col += 1
 
-          result << "<td class=\"col#{col}\">" << render_all(@nodelist, context) << '</td>'
+          output << "<td class=\"col#{col}\">"
+          super
+          output << '</td>'
 
           if col == cols and (index != length - 1)
             col  = 0
             row += 1
-            result << "</tr>\n<tr class=\"row#{row}\">"
+            output << "</tr>\n<tr class=\"row#{row}\">"
           end
 
         end
       end
-      result << "</tr>\n"
-      result
+      output << "</tr>\n"
     end
   end
 

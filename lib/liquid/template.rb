@@ -110,7 +110,8 @@ module Liquid
     #    filters and tags and might be useful to integrate liquid more with its host application
     #
     def render(*args)
-      return '' if @root.nil?
+      output = ''
+      return output if @root.nil?
 
       context = case args.first
       when Liquid::Context
@@ -138,6 +139,10 @@ module Liquid
           context.add_filters(options[:filters])
         end
 
+        if options[:output]
+          output = options[:output]
+        end
+
       when Module
         context.add_filters(args.pop)
       when Array
@@ -145,10 +150,8 @@ module Liquid
       end
 
       begin
-        # render the nodelist.
-        # for performance reasons we get an array back here. join will make a string out of it.
-        result = @root.render(context)
-        result.respond_to?(:join) ? result.join : result
+        @root.render(context, output)
+        output
       rescue Liquid::MemoryError => e
         context.handle_error(e)
       ensure

@@ -25,11 +25,11 @@ module Liquid
       super
     end
 
-    def render(context)
+    def render(context, output)
       value = context.environments.first[@variable] ||= 0
       value = value - 1
       context.environments.first[@variable] = value
-      value.to_s
+      output << value.to_s
     end
 
     private

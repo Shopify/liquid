@@ -20,10 +20,10 @@ module Liquid
       super
     end
 
-    def render(context)
+    def render(context, output)
       value = context.environments.first[@variable] ||= 0
       context.environments.first[@variable] = value + 1
-      value.to_s
+      output << value.to_s
     end
 
     def blank?

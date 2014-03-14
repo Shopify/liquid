@@ -85,7 +85,7 @@ module Liquid
       filterargs
     end
 
-    def render(context)
+    def evaluate(context)
       return '' if @name.nil?
       @filters.inject(context[@name]) do |output, filter|
         filterargs = []
@@ -99,10 +99,19 @@ module Liquid
         end
         filterargs << keyword_args unless keyword_args.empty?
         begin
-          output = context.invoke(filter[0], output, *filterargs)
+          context.invoke(filter[0], output, *filterargs)
         rescue FilterNotFound
           raise FilterNotFound, "Error - filter '#{filter[0]}' in '#{@markup.strip}' could not be found."
         end
+      end
+    end
+
+    def render(context, render_output)
+      variable_output = evaluate(context)
+      if variable_output.kind_of?(Array)
+        render_output << variable_output.join
+      else
+        render_output << variable_output.to_s
       end
     end
   end

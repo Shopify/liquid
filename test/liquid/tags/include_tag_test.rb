@@ -64,8 +64,8 @@ class CustomInclude < Liquid::Tag
     false
   end
 
-  def render(context)
-    @template_name[1..-2]
+  def render(context, output)
+    output << @template_name[1..-2]
   end
 end
 
