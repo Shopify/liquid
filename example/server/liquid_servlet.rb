@@ -13,7 +13,7 @@ class LiquidServlet < WEBrick::HTTPServlet::AbstractServlet
   def handle(type, req, res)
     @request, @response = req, res
 
-    @request.path_info =~ /(\w+)$/
+    @request.path_info =~ /(\w+)\z/
     @action = $1 || 'index'
     @assigns = send(@action) if respond_to?(@action)
 

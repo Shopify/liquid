@@ -57,7 +57,7 @@ module Liquid
     end
 
     def full_path(template_path)
-      raise FileSystemError, "Illegal template name '#{template_path}'" unless template_path =~ /^[^.\/][a-zA-Z0-9_\/]+$/
+      raise FileSystemError, "Illegal template name '#{template_path}'" unless template_path =~ /\A[^.\/][a-zA-Z0-9_\/]+\z/
 
       full_path = if template_path.include?('/')
         File.join(root, File.dirname(template_path), @pattern % File.basename(template_path))
@@ -65,7 +65,7 @@ module Liquid
         File.join(root, @pattern % template_path)
       end
 
-      raise FileSystemError, "Illegal template path '#{File.expand_path(full_path)}'" unless File.expand_path(full_path) =~ /^#{File.expand_path(root)}/
+      raise FileSystemError, "Illegal template path '#{File.expand_path(full_path)}'" unless File.expand_path(full_path) =~ /\A#{File.expand_path(root)}/
 
       full_path
     end
