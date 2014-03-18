@@ -1,9 +1,8 @@
 module Liquid
   class Document < Block
-    # we don't need markup to open this block
-    def initialize(tokens, options = {})
-      @options = options
-      parse(tokens)
+    def self.parse(tokens, options={})
+      # we don't need markup to open this block
+      super(nil, nil, tokens, options)
     end
 
     # There isn't a real delimiter

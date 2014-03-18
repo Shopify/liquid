@@ -17,7 +17,9 @@ module Liquid
   class Include < Tag
     Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/o
 
-    def initialize(tag_name, markup, tokens)
+    def initialize(tag_name, markup, options)
+      super
+
       if markup =~ Syntax
 
         @template_name = $1
@@ -31,8 +33,6 @@ module Liquid
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.include"))
       end
-
-      super
     end
 
     def parse(tokens)

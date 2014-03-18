@@ -3,7 +3,8 @@ module Liquid
     Syntax     = /(#{QuotedFragment})/o
     WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*\,\s*)(#{QuotedFragment}.*))?/o
 
-    def initialize(tag_name, markup, tokens)
+    def initialize(tag_name, markup, options)
+      super
       @blocks = []
 
       if markup =~ Syntax
@@ -11,8 +12,6 @@ module Liquid
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.case"))
       end
-
-      super
     end
 
     def nodelist

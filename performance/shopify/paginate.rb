@@ -1,7 +1,9 @@
 class Paginate < Liquid::Block
   Syntax     = /(#{Liquid::QuotedFragment})\s*(by\s*(\d+))?/
 
-  def initialize(tag_name, markup, tokens)
+  def initialize(tag_name, markup, options)
+    super
+
     @nodelist = []
 
     if markup =~ Syntax
@@ -19,8 +21,6 @@ class Paginate < Liquid::Block
     else
       raise SyntaxError.new("Syntax Error in tag 'paginate' - Valid syntax: paginate [collection] by number")
     end
-
-    super
   end
 
   def render(context)
