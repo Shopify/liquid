@@ -29,7 +29,7 @@ module Liquid
       super
     end
 
-    def render(context, output)
+    def render(output, context)
       context.registers[:cycle] ||= Hash.new(0)
 
       context.stack do

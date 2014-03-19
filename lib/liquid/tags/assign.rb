@@ -22,7 +22,7 @@ module Liquid
       super
     end
 
-    def render(context, output)
+    def render(output, context)
       val = @from.evaluate(context)
       context.scopes.last[@to] = val
       context.increment_used_resources(:assign_score_current, val)

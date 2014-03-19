@@ -106,7 +106,7 @@ module Liquid
       end
     end
 
-    def render(context, render_output)
+    def render(render_output, context)
       variable_output = evaluate(context)
       if variable_output.kind_of?(Array)
         render_output << variable_output.join

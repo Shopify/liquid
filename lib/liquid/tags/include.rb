@@ -42,7 +42,7 @@ module Liquid
       false
     end
 
-    def render(context, output)
+    def render(output, context)
       partial = load_cached_partial(context)
       variable = context[@variable_name || @template_name[1..-2]]
 

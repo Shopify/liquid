@@ -17,7 +17,7 @@ module Liquid
       super
     end
 
-    def render(context, output)
+    def render(output, context)
       collection = context[@collection_name] or return ''
 
       from = @attributes['offset'] ? context[@attributes['offset']].to_i : 0

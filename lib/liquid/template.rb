@@ -150,7 +150,7 @@ module Liquid
       end
 
       begin
-        @root.render(context, output)
+        @root.render(output, context)
         output
       rescue Liquid::MemoryError => e
         context.handle_error(e)

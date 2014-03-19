@@ -1,11 +1,11 @@
 module Liquid
   class Ifchanged < Block
 
-    def render(context, render_output)
+    def render(render_output, context)
       context.stack do
 
         block_output = ""
-        super(context, block_output)
+        super(block_output, context)
 
         if block_output != context.registers[:ifchanged]
           context.registers[:ifchanged] = block_output

@@ -65,14 +65,14 @@ module Liquid
       @nodelist = @else_block = []
     end
 
-    def render(context, output)
+    def render(output, context)
       context.registers[:for] ||= Hash.new(0)
 
       collection = context[@collection_name]
       collection = collection.to_a if collection.is_a?(Range)
 
       # Maintains Ruby 1.8.7 String#each behaviour on 1.9
-      return render_else(context, output) unless iterable?(collection)
+      return render_else(output, context) unless iterable?(collection)
 
       from = if @attributes['offset'] == 'continue'
         context.registers[:for][@name].to_i
@@ -85,7 +85,7 @@ module Liquid
 
       segment = Utils.slice_collection(collection, from, to)
 
-      return render_else(context, output) if segment.empty?
+      return render_else(output, context) if segment.empty?
 
       segment.reverse! if @reversed
 
@@ -107,7 +107,7 @@ module Liquid
             'first'   => (index == 0),
           'last'    => (index == length - 1) }
 
-          render_all(@for_block, context, output)
+          render_all(output, @for_block, context)
 
           # Handle any interrupts if they exist.
           if context.has_interrupt?
@@ -158,8 +158,8 @@ module Liquid
 
     private
 
-      def render_else(context, output)
-        render_all(@else_block, context, output) if @else_block
+      def render_else(output, context)
+        render_all(output, @else_block, context) if @else_block
       end
 
       def iterable?(collection)

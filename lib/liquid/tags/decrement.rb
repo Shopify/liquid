@@ -25,7 +25,7 @@ module Liquid
       super
     end
 
-    def render(context, output)
+    def render(output, context)
       value = context.environments.first[@variable] ||= 0
       value = value - 1
       context.environments.first[@variable] = value
