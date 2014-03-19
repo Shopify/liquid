@@ -45,11 +45,11 @@ module ShopFilter
   end
 
   def url_for_vendor(vendor_title)
-    "/collections/#{vendor_title.to_handle}"
+    "/collections/#{to_handle(vendor_title)}"
   end
 
   def url_for_type(type_title)
-    "/collections/#{type_title.to_handle}"
+    "/collections/#{to_handle(type_title)}"
   end
 
   def product_img_url(url, style = 'small')
@@ -93,6 +93,18 @@ module ShopFilter
   # Returns the singular word if input equals 1, otherwise plural
   def pluralize(input, singular, plural)
     input == 1 ? singular : plural
+  end
+
+  private
+
+  def to_handle(str)
+    result = str.dup
+    result.downcase!
+    result.delete!("'\"()[]")
+    result.gsub!(/\W+/, '-')
+    result.gsub!(/-+\z/, '') if result[-1] == '-'
+    result.gsub!(/\A-+/, '') if result[0] == '-'
+    result
   end
 
 end

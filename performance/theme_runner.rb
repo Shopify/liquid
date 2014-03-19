@@ -8,6 +8,7 @@
 
 require 'rubygems'
 require 'active_support'
+require 'active_support/json'
 require 'yaml'
 require 'digest/md5'
 require File.dirname(__FILE__) + '/shopify/liquid'
@@ -70,11 +71,11 @@ class ThemeRunner
     tmpl.assigns['template'] = page_template
     tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(File.dirname(template_file))
 
-    content_for_layout = tmpl.parse(template).render(assigns)
+    content_for_layout = tmpl.parse(template).render!(assigns)
 
     if layout
       assigns['content_for_layout'] = content_for_layout
-      tmpl.parse(layout).render(assigns)
+      tmpl.parse(layout).render!(assigns)
     else
       content_for_layout
     end
