@@ -133,7 +133,7 @@ module Liquid
           end
 
           if token.respond_to?(:render)
-            token_output = (token.is_a?(Block) && token.blank?) ? "" : output
+            token_output = token.blank? ? "" : output
             token.render(context, token_output)
           else
             output << token

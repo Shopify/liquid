@@ -114,5 +114,9 @@ module Liquid
         render_output << variable_output.to_s
       end
     end
+
+    def blank?
+      false
+    end
   end
 end
