@@ -1,8 +1,8 @@
 require 'test_helper'
 
 class FoobarTag < Liquid::Tag
-  def render(*args)
-    " "
+  def render(output, context)
+    output << " "
   end
 
   Liquid::Template.register_tag('foobar', FoobarTag)

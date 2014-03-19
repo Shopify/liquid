@@ -23,7 +23,7 @@ class Paginate < Liquid::Block
     super
   end
 
-  def render(context)
+  def render(output, context)
     @context = context
 
     context.stack do
@@ -73,7 +73,7 @@ class Paginate < Liquid::Block
         end
       end
 
-      render_all(@nodelist, context)
+      super
     end
   end
 

@@ -32,14 +32,13 @@ module Liquid
       end
     end
 
-    def render(context)
+    def render(output, context)
       context.stack do
         @blocks.each do |block|
           if block.evaluate(context)
-            return render_all(block.attachment, context)
+            return render_all(output, block.attachment, context)
           end
         end
-        ''
       end
     end
 

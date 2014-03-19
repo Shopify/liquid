@@ -12,7 +12,7 @@ class CommentForm < Liquid::Block
     super
   end
 
-  def render(context)
+  def render(output, context)
     article = context[@variable_name]
 
     context.stack do
@@ -23,11 +23,15 @@ class CommentForm < Liquid::Block
         'email'  => context['comment.email'],
         'body'   => context['comment.body']
       }
-      wrap_in_form(article, render_all(@nodelist, context))
+      wrap_in_form(output, article) do
+        super
+      end
     end
   end
 
-  def wrap_in_form(article, input)
-    %Q{<form id="article-#{article.id}-comment-form" class="comment-form" method="post" action="">\n#{input}\n</form>}
+  def wrap_in_form(output, article)
+    output << %Q{<form id="article-#{article.id}-comment-form" class="comment-form" method="post" action="">\n}
+    yield
+    output << "\n</form>"
   end
 end

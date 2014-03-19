@@ -24,11 +24,11 @@ module Liquid
       super
     end
 
-    def render(context)
-      output = super
-      context.scopes.last[@to] = output
-      context.increment_used_resources(:assign_score_current, output)
-      ''
+    def render(render_output, context)
+      block_output = ""
+      super(block_output, context)
+      context.scopes.last[@to] = block_output
+      context.increment_used_resources(:assign_score_current, block_output)
     end
 
     def blank?
