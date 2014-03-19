@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Raise `Liquid::ArgumentError` instead of `::ArgumentError` when filter has wrong number of arguments #309 [Bogdan Gusiev, bogdan]
 * Add a to_s default for liquid drops, see #306 [Adam Doeler, releod]
 * Add strip, lstrip, and rstrip to standard filters [Florian Weingarten, fw42]
 * Make if, for & case tags return complete and consistent nodelists, see #250 [Nick Jones, dntj]
@@ -21,7 +22,6 @@
 * Fix clashing method names in enumerable drops, see #238 [Florian Weingarten, fw42]
 * Make map filter work on enumerable drops, see #233 [Florian Weingarten, fw42]
 * Improved whitespace stripping for blank blocks, related to #216 [Florian Weingarten, fw42]
-* Raise `Liquid::ArgumentError` instead of `::ArgumentError` when filter has wrong number of arguments #309 [Bogdan Gusiev, bogdan]
 
 ## 2.6.0 / 2013-11-25 / branch "2.6-stable"
 
