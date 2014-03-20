@@ -11,15 +11,14 @@ module Liquid
   class Assign < Tag
     Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/o
 
-    def initialize(tag_name, markup, tokens)
+    def initialize(tag_name, markup, options)
+      super
       if markup =~ Syntax
         @to = $1
         @from = Variable.new($2)
       else
         raise SyntaxError.new options[:locale].t("errors.syntax.assign")
       end
-
-      super
     end
 
     def render(context)

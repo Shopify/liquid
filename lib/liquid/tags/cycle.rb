@@ -15,7 +15,8 @@ module Liquid
     SimpleSyntax = /\A#{QuotedFragment}+/o
     NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/o
 
-    def initialize(tag_name, markup, tokens)
+    def initialize(tag_name, markup, options)
+      super
       case markup
       when NamedSyntax
         @variables = variables_from_string($2)
@@ -26,7 +27,6 @@ module Liquid
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.cycle"))
       end
-      super
     end
 
     def render(context)

@@ -14,14 +14,13 @@ module Liquid
   class Capture < Block
     Syntax = /(\w+)/
 
-    def initialize(tag_name, markup, tokens)
+    def initialize(tag_name, markup, options)
+      super
       if markup =~ Syntax
         @to = $1
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.capture"))
       end
-
-      super
     end
 
     def render(context)

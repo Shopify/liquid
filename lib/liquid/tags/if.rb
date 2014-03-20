@@ -14,10 +14,10 @@ module Liquid
     ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
     BOOLEAN_OPERATORS = %w(and or)
 
-    def initialize(tag_name, markup, tokens)
+    def initialize(tag_name, markup, options)
+      super
       @blocks = []
       push_block('if', markup)
-      super
     end
 
     def nodelist

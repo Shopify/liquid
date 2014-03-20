@@ -72,7 +72,7 @@ module Liquid
     # Parse source code.
     # Returns self for easy chaining
     def parse(source, options = {})
-      @root = Document.new(tokenize(source), DEFAULT_OPTIONS.merge(options))
+      @root = Document.parse(tokenize(source), DEFAULT_OPTIONS.merge(options))
       @warnings = nil
       self
     end

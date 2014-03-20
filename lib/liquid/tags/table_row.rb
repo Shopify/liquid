@@ -2,7 +2,8 @@ module Liquid
   class TableRow < Block
     Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
 
-    def initialize(tag_name, markup, tokens)
+    def initialize(tag_name, markup, options)
+      super
       if markup =~ Syntax
         @variable_name = $1
         @collection_name = $2
@@ -13,8 +14,6 @@ module Liquid
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.table_row"))
       end
-
-      super
     end
 
     def render(context)
