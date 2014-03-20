@@ -197,4 +197,8 @@ class VariableResolutionTest < Test::Unit::TestCase
     }
     assert_equal "Unknown variable 'test'", e.message
   end
+
+  def test_multiline_variable
+    assert_equal 'worked', Template.parse("{{\ntest\n}}").render!('test' => 'worked')
+  end
 end # VariableTest

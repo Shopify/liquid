@@ -171,9 +171,9 @@ module Liquid
           LITERALS[key]
         else
           case key
-          when /\A'(.*)'\z/ # Single quoted strings
+          when /\A'(.*)'\z/m # Single quoted strings
             $1
-          when /\A"(.*)"\z/ # Double quoted strings
+          when /\A"(.*)"\z/m # Double quoted strings
             $1
           when /\A(-?\d+)\z/ # Integer and floats
             $1.to_i
@@ -218,7 +218,7 @@ module Liquid
       #  assert_equal 'tobi', @context['hash["name"]']
       def variable(markup)
         parts = markup.scan(VariableParser)
-        square_bracketed = /\A\[(.*)\]\z/
+        square_bracketed = /\A\[(.*)\]\z/m
 
         first_part = parts.shift
 

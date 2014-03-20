@@ -1,7 +1,7 @@
 module Liquid
   class Case < Block
     Syntax     = /(#{QuotedFragment})/o
-    WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*\,\s*)(#{QuotedFragment}.*))?/o
+    WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*\,\s*)(#{QuotedFragment}.*))?/om
 
     def initialize(tag_name, markup, options)
       super

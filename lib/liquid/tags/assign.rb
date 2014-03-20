@@ -9,7 +9,7 @@ module Liquid
   #  {{ foo }}
   #
   class Assign < Tag
-    Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/o
+    Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/om
 
     def initialize(tag_name, markup, options)
       super
