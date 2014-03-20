@@ -113,13 +113,13 @@ class FiltersInTemplate < Test::Unit::TestCase
   def test_local_global
     Template.register_filter(MoneyFilter)
 
-    assert_equal " 1000$ ", Template.parse("{{1000 | money}}").render(nil, nil)
-    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render(nil, :filters => CanadianMoneyFilter)
-    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render(nil, :filters => [CanadianMoneyFilter])
+    assert_equal " 1000$ ", Template.parse("{{1000 | money}}").render!(nil, nil)
+    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => CanadianMoneyFilter)
+    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => [CanadianMoneyFilter])
   end
 
   def test_local_filter_with_deprecated_syntax
-    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render(nil, CanadianMoneyFilter)
-    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render(nil, [CanadianMoneyFilter])
+    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, CanadianMoneyFilter)
+    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, [CanadianMoneyFilter])
   end
 end # FiltersTest

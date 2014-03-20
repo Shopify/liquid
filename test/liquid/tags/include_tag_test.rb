@@ -78,57 +78,52 @@ class IncludeTagTest < Test::Unit::TestCase
 
   def test_include_tag_looks_for_file_system_in_registers_first
     assert_equal 'from OtherFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render({}, :registers => {:file_system => OtherFileSystem.new})
+      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => {:file_system => OtherFileSystem.new})
   end
 
 
   def test_include_tag_with
-    assert_equal "Product: Draft 151cm ",
-      Template.parse("{% include 'product' with products[0] %}").render( "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]  )
+    assert_template_result "Product: Draft 151cm ",
+      "{% include 'product' with products[0] %}", "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]
   end
 
   def test_include_tag_with_default_name
-    assert_equal "Product: Draft 151cm ",
-      Template.parse("{% include 'product' %}").render( "product" => {'title' => 'Draft 151cm'}  )
+    assert_template_result "Product: Draft 151cm ",
+      "{% include 'product' %}", "product" => {'title' => 'Draft 151cm'}
   end
 
   def test_include_tag_for
-
-    assert_equal "Product: Draft 151cm Product: Element 155cm ",
-      Template.parse("{% include 'product' for products %}").render( "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]  )
+    assert_template_result "Product: Draft 151cm Product: Element 155cm ",
+      "{% include 'product' for products %}", "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]
   end
 
   def test_include_tag_with_local_variables
-    assert_equal "Locale: test123 ",
-      Template.parse("{% include 'locale_variables' echo1: 'test123' %}").render
+    assert_template_result "Locale: test123 ", "{% include 'locale_variables' echo1: 'test123' %}"
   end
 
   def test_include_tag_with_multiple_local_variables
-    assert_equal "Locale: test123 test321",
-      Template.parse("{% include 'locale_variables' echo1: 'test123', echo2: 'test321' %}").render
+    assert_template_result "Locale: test123 test321",
+      "{% include 'locale_variables' echo1: 'test123', echo2: 'test321' %}"
   end
 
   def test_include_tag_with_multiple_local_variables_from_context
-    assert_equal "Locale: test123 test321",
-      Template.parse("{% include 'locale_variables' echo1: echo1, echo2: more_echos.echo2 %}").render('echo1' => 'test123', 'more_echos' => { "echo2" => 'test321'})
+    assert_template_result "Locale: test123 test321",
+      "{% include 'locale_variables' echo1: echo1, echo2: more_echos.echo2 %}",
+      'echo1' => 'test123', 'more_echos' => { "echo2" => 'test321'}
   end
 
   def test_nested_include_tag
-    assert_equal "body body_detail",
-      Template.parse("{% include 'body' %}").render
+    assert_template_result "body body_detail", "{% include 'body' %}"
 
-    assert_equal "header body body_detail footer",
-      Template.parse("{% include 'nested_template' %}").render
+    assert_template_result "header body body_detail footer", "{% include 'nested_template' %}"
   end
 
   def test_nested_include_with_variable
+    assert_template_result "Product: Draft 151cm details ",
+      "{% include 'nested_product_template' with product %}", "product" => {"title" => 'Draft 151cm'}
 
-    assert_equal "Product: Draft 151cm details ",
-      Template.parse("{% include 'nested_product_template' with product %}").render("product" => {"title" => 'Draft 151cm'})
-
-    assert_equal "Product: Draft 151cm details Product: Element 155cm details ",
-      Template.parse("{% include 'nested_product_template' for products %}").render("products" => [{"title" => 'Draft 151cm'}, {"title" => 'Element 155cm'}])
-
+    assert_template_result "Product: Draft 151cm details Product: Element 155cm details ",
+      "{% include 'nested_product_template' for products %}", "products" => [{"title" => 'Draft 151cm'}, {"title" => 'Element 155cm'}]
   end
 
   def test_recursively_included_template_does_not_produce_endless_loop
@@ -160,34 +155,33 @@ class IncludeTagTest < Test::Unit::TestCase
   end
 
   def test_dynamically_choosen_template
+    assert_template_result "Test123", "{% include template %}", "template" => 'Test123'
+    assert_template_result "Test321", "{% include template %}", "template" => 'Test321'
 
-    assert_equal "Test123", Template.parse("{% include template %}").render("template" => 'Test123')
-    assert_equal "Test321", Template.parse("{% include template %}").render("template" => 'Test321')
-
-    assert_equal "Product: Draft 151cm ", Template.parse("{% include template for product %}").render("template" => 'product', 'product' => { 'title' => 'Draft 151cm'})
+    assert_template_result "Product: Draft 151cm ", "{% include template for product %}",
+      "template" => 'product', 'product' => { 'title' => 'Draft 151cm'}
   end
 
   def test_include_tag_caches_second_read_of_same_partial
     file_system = CountingFileSystem.new
     assert_equal 'from CountingFileSystemfrom CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render({}, :registers => {:file_system => file_system})
+      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render!({}, :registers => {:file_system => file_system})
     assert_equal 1, file_system.count
   end
 
   def test_include_tag_doesnt_cache_partials_across_renders
     file_system = CountingFileSystem.new
     assert_equal 'from CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render({}, :registers => {:file_system => file_system})
+      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => {:file_system => file_system})
     assert_equal 1, file_system.count
 
     assert_equal 'from CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render({}, :registers => {:file_system => file_system})
+      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => {:file_system => file_system})
     assert_equal 2, file_system.count
   end
 
   def test_include_tag_within_if_statement
-    assert_equal "foo_if_true",
-      Template.parse("{% if true %}{% include 'foo_if_true' %}{% endif %}").render
+    assert_template_result "foo_if_true", "{% if true %}{% include 'foo_if_true' %}{% endif %}"
   end
 
   def test_custom_include_tag
@@ -195,7 +189,7 @@ class IncludeTagTest < Test::Unit::TestCase
     Liquid::Template.tags['include'] = CustomInclude
     begin
       assert_equal "custom_foo",
-        Template.parse("{% include 'custom_foo' %}").render
+        Template.parse("{% include 'custom_foo' %}").render!
     ensure
       Liquid::Template.tags['include'] = original_tag
     end
@@ -206,7 +200,7 @@ class IncludeTagTest < Test::Unit::TestCase
     Liquid::Template.tags['include'] = CustomInclude
     begin
       assert_equal "custom_foo_if_true",
-        Template.parse("{% if true %}{% include 'custom_foo_if_true' %}{% endif %}").render
+        Template.parse("{% if true %}{% include 'custom_foo_if_true' %}{% endif %}").render!
     ensure
       Liquid::Template.tags['include'] = original_tag
     end

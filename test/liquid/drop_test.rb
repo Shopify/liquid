@@ -106,140 +106,140 @@ class DropsTest < Test::Unit::TestCase
   def test_product_drop
     assert_nothing_raised do
       tpl = Liquid::Template.parse( '  '  )
-      tpl.render('product' => ProductDrop.new)
+      tpl.render!('product' => ProductDrop.new)
     end
   end
 
   def test_drop_does_only_respond_to_whitelisted_methods
-    assert_equal "", Liquid::Template.parse("{{ product.inspect }}").render('product' => ProductDrop.new)
-    assert_equal "", Liquid::Template.parse("{{ product.pretty_inspect }}").render('product' => ProductDrop.new)
-    assert_equal "", Liquid::Template.parse("{{ product.whatever }}").render('product' => ProductDrop.new)
-    assert_equal "", Liquid::Template.parse('{{ product | map: "inspect" }}').render('product' => ProductDrop.new)
-    assert_equal "", Liquid::Template.parse('{{ product | map: "pretty_inspect" }}').render('product' => ProductDrop.new)
-    assert_equal "", Liquid::Template.parse('{{ product | map: "whatever" }}').render('product' => ProductDrop.new)
+    assert_equal "", Liquid::Template.parse("{{ product.inspect }}").render!('product' => ProductDrop.new)
+    assert_equal "", Liquid::Template.parse("{{ product.pretty_inspect }}").render!('product' => ProductDrop.new)
+    assert_equal "", Liquid::Template.parse("{{ product.whatever }}").render!('product' => ProductDrop.new)
+    assert_equal "", Liquid::Template.parse('{{ product | map: "inspect" }}').render!('product' => ProductDrop.new)
+    assert_equal "", Liquid::Template.parse('{{ product | map: "pretty_inspect" }}').render!('product' => ProductDrop.new)
+    assert_equal "", Liquid::Template.parse('{{ product | map: "whatever" }}').render!('product' => ProductDrop.new)
   end
 
   def test_drops_respond_to_to_liquid
-    assert_equal "text1", Liquid::Template.parse("{{ product.to_liquid.texts.text }}").render('product' => ProductDrop.new)
-    assert_equal "text1", Liquid::Template.parse('{{ product | map: "to_liquid" | map: "texts" | map: "text" }}').render('product' => ProductDrop.new)
+    assert_equal "text1", Liquid::Template.parse("{{ product.to_liquid.texts.text }}").render!('product' => ProductDrop.new)
+    assert_equal "text1", Liquid::Template.parse('{{ product | map: "to_liquid" | map: "texts" | map: "text" }}').render!('product' => ProductDrop.new)
   end
 
   def test_text_drop
-    output = Liquid::Template.parse( ' {{ product.texts.text }} '  ).render('product' => ProductDrop.new)
+    output = Liquid::Template.parse( ' {{ product.texts.text }} '  ).render!('product' => ProductDrop.new)
     assert_equal ' text1 ', output
   end
 
   def test_unknown_method
-    output = Liquid::Template.parse( ' {{ product.catchall.unknown }} '  ).render('product' => ProductDrop.new)
+    output = Liquid::Template.parse( ' {{ product.catchall.unknown }} '  ).render!('product' => ProductDrop.new)
     assert_equal ' method: unknown ', output
   end
 
   def test_integer_argument_drop
-    output = Liquid::Template.parse( ' {{ product.catchall[8] }} '  ).render('product' => ProductDrop.new)
+    output = Liquid::Template.parse( ' {{ product.catchall[8] }} '  ).render!('product' => ProductDrop.new)
     assert_equal ' method: 8 ', output
   end
 
   def test_text_array_drop
-    output = Liquid::Template.parse( '{% for text in product.texts.array %} {{text}} {% endfor %}'  ).render('product' => ProductDrop.new)
+    output = Liquid::Template.parse( '{% for text in product.texts.array %} {{text}} {% endfor %}'  ).render!('product' => ProductDrop.new)
     assert_equal ' text1  text2 ', output
   end
 
   def test_context_drop
-    output = Liquid::Template.parse( ' {{ context.bar }} '  ).render('context' => ContextDrop.new, 'bar' => "carrot")
+    output = Liquid::Template.parse( ' {{ context.bar }} '  ).render!('context' => ContextDrop.new, 'bar' => "carrot")
     assert_equal ' carrot ', output
   end
 
   def test_nested_context_drop
-    output = Liquid::Template.parse( ' {{ product.context.foo }} '  ).render('product' => ProductDrop.new, 'foo' => "monkey")
+    output = Liquid::Template.parse( ' {{ product.context.foo }} '  ).render!('product' => ProductDrop.new, 'foo' => "monkey")
     assert_equal ' monkey ', output
   end
 
   def test_protected
-    output = Liquid::Template.parse( ' {{ product.callmenot }} '  ).render('product' => ProductDrop.new)
+    output = Liquid::Template.parse( ' {{ product.callmenot }} '  ).render!('product' => ProductDrop.new)
     assert_equal '  ', output
   end
 
   def test_object_methods_not_allowed
     [:dup, :clone, :singleton_class, :eval, :class_eval, :inspect].each do |method|
-      output = Liquid::Template.parse(" {{ product.#{method} }} ").render('product' => ProductDrop.new)
+      output = Liquid::Template.parse(" {{ product.#{method} }} ").render!('product' => ProductDrop.new)
       assert_equal '  ', output
     end
   end
 
   def test_scope
-    assert_equal '1', Liquid::Template.parse( '{{ context.scopes }}'  ).render('context' => ContextDrop.new)
-    assert_equal '2', Liquid::Template.parse( '{%for i in dummy%}{{ context.scopes }}{%endfor%}'  ).render('context' => ContextDrop.new, 'dummy' => [1])
-    assert_equal '3', Liquid::Template.parse( '{%for i in dummy%}{%for i in dummy%}{{ context.scopes }}{%endfor%}{%endfor%}'  ).render('context' => ContextDrop.new, 'dummy' => [1])
+    assert_equal '1', Liquid::Template.parse( '{{ context.scopes }}'  ).render!('context' => ContextDrop.new)
+    assert_equal '2', Liquid::Template.parse( '{%for i in dummy%}{{ context.scopes }}{%endfor%}'  ).render!('context' => ContextDrop.new, 'dummy' => [1])
+    assert_equal '3', Liquid::Template.parse( '{%for i in dummy%}{%for i in dummy%}{{ context.scopes }}{%endfor%}{%endfor%}'  ).render!('context' => ContextDrop.new, 'dummy' => [1])
   end
 
   def test_scope_though_proc
-    assert_equal '1', Liquid::Template.parse( '{{ s }}'  ).render('context' => ContextDrop.new, 's' => Proc.new{|c| c['context.scopes'] })
-    assert_equal '2', Liquid::Template.parse( '{%for i in dummy%}{{ s }}{%endfor%}'  ).render('context' => ContextDrop.new, 's' => Proc.new{|c| c['context.scopes'] }, 'dummy' => [1])
-    assert_equal '3', Liquid::Template.parse( '{%for i in dummy%}{%for i in dummy%}{{ s }}{%endfor%}{%endfor%}'  ).render('context' => ContextDrop.new, 's' => Proc.new{|c| c['context.scopes'] }, 'dummy' => [1])
+    assert_equal '1', Liquid::Template.parse( '{{ s }}'  ).render!('context' => ContextDrop.new, 's' => Proc.new{|c| c['context.scopes'] })
+    assert_equal '2', Liquid::Template.parse( '{%for i in dummy%}{{ s }}{%endfor%}'  ).render!('context' => ContextDrop.new, 's' => Proc.new{|c| c['context.scopes'] }, 'dummy' => [1])
+    assert_equal '3', Liquid::Template.parse( '{%for i in dummy%}{%for i in dummy%}{{ s }}{%endfor%}{%endfor%}'  ).render!('context' => ContextDrop.new, 's' => Proc.new{|c| c['context.scopes'] }, 'dummy' => [1])
   end
 
   def test_scope_with_assigns
-    assert_equal 'variable', Liquid::Template.parse( '{% assign a = "variable"%}{{a}}'  ).render('context' => ContextDrop.new)
-    assert_equal 'variable', Liquid::Template.parse( '{% assign a = "variable"%}{%for i in dummy%}{{a}}{%endfor%}'  ).render('context' => ContextDrop.new, 'dummy' => [1])
-    assert_equal 'test', Liquid::Template.parse( '{% assign header_gif = "test"%}{{header_gif}}'  ).render('context' => ContextDrop.new)
-    assert_equal 'test', Liquid::Template.parse( "{% assign header_gif = 'test'%}{{header_gif}}"  ).render('context' => ContextDrop.new)
+    assert_equal 'variable', Liquid::Template.parse( '{% assign a = "variable"%}{{a}}'  ).render!('context' => ContextDrop.new)
+    assert_equal 'variable', Liquid::Template.parse( '{% assign a = "variable"%}{%for i in dummy%}{{a}}{%endfor%}'  ).render!('context' => ContextDrop.new, 'dummy' => [1])
+    assert_equal 'test', Liquid::Template.parse( '{% assign header_gif = "test"%}{{header_gif}}'  ).render!('context' => ContextDrop.new)
+    assert_equal 'test', Liquid::Template.parse( "{% assign header_gif = 'test'%}{{header_gif}}"  ).render!('context' => ContextDrop.new)
   end
 
   def test_scope_from_tags
-    assert_equal '1', Liquid::Template.parse( '{% for i in context.scopes_as_array %}{{i}}{% endfor %}'  ).render('context' => ContextDrop.new, 'dummy' => [1])
-    assert_equal '12', Liquid::Template.parse( '{%for a in dummy%}{% for i in context.scopes_as_array %}{{i}}{% endfor %}{% endfor %}'  ).render('context' => ContextDrop.new, 'dummy' => [1])
-    assert_equal '123', Liquid::Template.parse( '{%for a in dummy%}{%for a in dummy%}{% for i in context.scopes_as_array %}{{i}}{% endfor %}{% endfor %}{% endfor %}'  ).render('context' => ContextDrop.new, 'dummy' => [1])
+    assert_equal '1', Liquid::Template.parse( '{% for i in context.scopes_as_array %}{{i}}{% endfor %}'  ).render!('context' => ContextDrop.new, 'dummy' => [1])
+    assert_equal '12', Liquid::Template.parse( '{%for a in dummy%}{% for i in context.scopes_as_array %}{{i}}{% endfor %}{% endfor %}'  ).render!('context' => ContextDrop.new, 'dummy' => [1])
+    assert_equal '123', Liquid::Template.parse( '{%for a in dummy%}{%for a in dummy%}{% for i in context.scopes_as_array %}{{i}}{% endfor %}{% endfor %}{% endfor %}'  ).render!('context' => ContextDrop.new, 'dummy' => [1])
   end
 
   def test_access_context_from_drop
-    assert_equal '123', Liquid::Template.parse( '{%for a in dummy%}{{ context.loop_pos }}{% endfor %}'  ).render('context' => ContextDrop.new, 'dummy' => [1,2,3])
+    assert_equal '123', Liquid::Template.parse( '{%for a in dummy%}{{ context.loop_pos }}{% endfor %}'  ).render!('context' => ContextDrop.new, 'dummy' => [1,2,3])
   end
 
   def test_enumerable_drop
-    assert_equal '123', Liquid::Template.parse( '{% for c in collection %}{{c}}{% endfor %}').render('collection' => EnumerableDrop.new)
+    assert_equal '123', Liquid::Template.parse( '{% for c in collection %}{{c}}{% endfor %}').render!('collection' => EnumerableDrop.new)
   end
 
   def test_enumerable_drop_size
-    assert_equal '3', Liquid::Template.parse( '{{collection.size}}').render('collection' => EnumerableDrop.new)
+    assert_equal '3', Liquid::Template.parse( '{{collection.size}}').render!('collection' => EnumerableDrop.new)
   end
 
   def test_enumerable_drop_will_invoke_before_method_for_clashing_method_names
     ["select", "each", "map", "cycle"].each do |method|
-      assert_equal method.to_s, Liquid::Template.parse("{{collection.#{method}}}").render('collection' => EnumerableDrop.new)
-      assert_equal method.to_s, Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => EnumerableDrop.new)
-      assert_equal method.to_s, Liquid::Template.parse("{{collection.#{method}}}").render('collection' => RealEnumerableDrop.new)
-      assert_equal method.to_s, Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => RealEnumerableDrop.new)
+      assert_equal method.to_s, Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => EnumerableDrop.new)
+      assert_equal method.to_s, Liquid::Template.parse("{{collection[\"#{method}\"]}}").render!('collection' => EnumerableDrop.new)
+      assert_equal method.to_s, Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => RealEnumerableDrop.new)
+      assert_equal method.to_s, Liquid::Template.parse("{{collection[\"#{method}\"]}}").render!('collection' => RealEnumerableDrop.new)
     end
   end
 
   def test_some_enumerable_methods_still_get_invoked
     [ :count, :max ].each do |method|
-      assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => RealEnumerableDrop.new)
-      assert_equal "3", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => RealEnumerableDrop.new)
-      assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => EnumerableDrop.new)
-      assert_equal "3", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => EnumerableDrop.new)
+      assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => RealEnumerableDrop.new)
+      assert_equal "3", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render!('collection' => RealEnumerableDrop.new)
+      assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => EnumerableDrop.new)
+      assert_equal "3", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render!('collection' => EnumerableDrop.new)
     end
 
-    assert_equal "yes", Liquid::Template.parse("{% if collection contains 3 %}yes{% endif %}").render('collection' => RealEnumerableDrop.new)
+    assert_equal "yes", Liquid::Template.parse("{% if collection contains 3 %}yes{% endif %}").render!('collection' => RealEnumerableDrop.new)
 
     [ :min, :first ].each do |method|
-      assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => RealEnumerableDrop.new)
-      assert_equal "1", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => RealEnumerableDrop.new)
-      assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render('collection' => EnumerableDrop.new)
-      assert_equal "1", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render('collection' => EnumerableDrop.new)
+      assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => RealEnumerableDrop.new)
+      assert_equal "1", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render!('collection' => RealEnumerableDrop.new)
+      assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => EnumerableDrop.new)
+      assert_equal "1", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render!('collection' => EnumerableDrop.new)
     end
   end
 
   def test_empty_string_value_access
-    assert_equal '', Liquid::Template.parse('{{ product[value] }}').render('product' => ProductDrop.new, 'value' => '')
+    assert_equal '', Liquid::Template.parse('{{ product[value] }}').render!('product' => ProductDrop.new, 'value' => '')
   end
 
   def test_nil_value_access
-    assert_equal '', Liquid::Template.parse('{{ product[value] }}').render('product' => ProductDrop.new, 'value' => nil)
+    assert_equal '', Liquid::Template.parse('{{ product[value] }}').render!('product' => ProductDrop.new, 'value' => nil)
   end
 
   def test_default_to_s_on_drops
-    assert_equal 'ProductDrop', Liquid::Template.parse("{{ product }}").render('product' => ProductDrop.new)
-    assert_equal 'EnumerableDrop', Liquid::Template.parse('{{ collection }}').render('collection' => EnumerableDrop.new)
+    assert_equal 'ProductDrop', Liquid::Template.parse("{{ product }}").render!('product' => ProductDrop.new)
+    assert_equal 'EnumerableDrop', Liquid::Template.parse('{{ collection }}').render!('collection' => EnumerableDrop.new)
   end
 end # DropsTest

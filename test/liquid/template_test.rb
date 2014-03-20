@@ -47,57 +47,57 @@ class TemplateTest < Test::Unit::TestCase
 
   def test_instance_assigns_persist_on_same_template_object_between_parses
     t = Template.new
-    assert_equal 'from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render
-    assert_equal 'from instance assigns', t.parse("{{ foo }}").render
+    assert_equal 'from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render!
+    assert_equal 'from instance assigns', t.parse("{{ foo }}").render!
   end
 
   def test_instance_assigns_persist_on_same_template_parsing_between_renders
     t = Template.new.parse("{{ foo }}{% assign foo = 'foo' %}{{ foo }}")
-    assert_equal 'foo', t.render
-    assert_equal 'foofoo', t.render
+    assert_equal 'foo', t.render!
+    assert_equal 'foofoo', t.render!
   end
 
   def test_custom_assigns_do_not_persist_on_same_template
     t = Template.new
-    assert_equal 'from custom assigns', t.parse("{{ foo }}").render('foo' => 'from custom assigns')
-    assert_equal '', t.parse("{{ foo }}").render
+    assert_equal 'from custom assigns', t.parse("{{ foo }}").render!('foo' => 'from custom assigns')
+    assert_equal '', t.parse("{{ foo }}").render!
   end
 
   def test_custom_assigns_squash_instance_assigns
     t = Template.new
-    assert_equal 'from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render
-    assert_equal 'from custom assigns', t.parse("{{ foo }}").render('foo' => 'from custom assigns')
+    assert_equal 'from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render!
+    assert_equal 'from custom assigns', t.parse("{{ foo }}").render!('foo' => 'from custom assigns')
   end
 
   def test_persistent_assigns_squash_instance_assigns
     t = Template.new
-    assert_equal 'from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render
+    assert_equal 'from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render!
     t.assigns['foo'] = 'from persistent assigns'
-    assert_equal 'from persistent assigns', t.parse("{{ foo }}").render
+    assert_equal 'from persistent assigns', t.parse("{{ foo }}").render!
   end
 
   def test_lambda_is_called_once_from_persistent_assigns_over_multiple_parses_and_renders
     t = Template.new
     t.assigns['number'] = lambda { @global ||= 0; @global += 1 }
-    assert_equal '1', t.parse("{{number}}").render
-    assert_equal '1', t.parse("{{number}}").render
-    assert_equal '1', t.render
+    assert_equal '1', t.parse("{{number}}").render!
+    assert_equal '1', t.parse("{{number}}").render!
+    assert_equal '1', t.render!
     @global = nil
   end
 
   def test_lambda_is_called_once_from_custom_assigns_over_multiple_parses_and_renders
     t = Template.new
     assigns = {'number' => lambda { @global ||= 0; @global += 1 }}
-    assert_equal '1', t.parse("{{number}}").render(assigns)
-    assert_equal '1', t.parse("{{number}}").render(assigns)
-    assert_equal '1', t.render(assigns)
+    assert_equal '1', t.parse("{{number}}").render!(assigns)
+    assert_equal '1', t.parse("{{number}}").render!(assigns)
+    assert_equal '1', t.render!(assigns)
     @global = nil
   end
 
   def test_resource_limits_works_with_custom_length_method
     t = Template.parse("{% assign foo = bar %}")
     t.resource_limits = { :render_length_limit => 42 }
-    assert_equal "", t.render("bar" => SomethingWithLength.new)
+    assert_equal "", t.render!("bar" => SomethingWithLength.new)
   end
 
   def test_resource_limits_render_length
@@ -106,7 +106,7 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal "Liquid error: Memory limits exceeded", t.render()
     assert t.resource_limits[:reached]
     t.resource_limits = { :render_length_limit => 10 }
-    assert_equal "0123456789", t.render()
+    assert_equal "0123456789", t.render!()
     assert_not_nil t.resource_limits[:render_length_current]
   end
 
@@ -120,7 +120,7 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal "Liquid error: Memory limits exceeded", t.render()
     assert t.resource_limits[:reached]
     t.resource_limits = { :render_score_limit => 200 }
-    assert_equal (" foo " * 100), t.render()
+    assert_equal (" foo " * 100), t.render!()
     assert_not_nil t.resource_limits[:render_score_current]
   end
 
@@ -130,7 +130,7 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal "Liquid error: Memory limits exceeded", t.render()
     assert t.resource_limits[:reached]
     t.resource_limits = { :assign_score_limit => 2 }
-    assert_equal "", t.render()
+    assert_equal "", t.render!()
     assert_not_nil t.resource_limits[:assign_score_current]
   end
 
@@ -143,7 +143,7 @@ class TemplateTest < Test::Unit::TestCase
 
   def test_resource_limits_hash_in_template_gets_updated_even_if_no_limits_are_set
     t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
-    t.render()
+    t.render!()
     assert t.resource_limits[:assign_score_current] > 0
     assert t.resource_limits[:render_score_current] > 0
     assert t.resource_limits[:render_length_current] > 0
@@ -153,9 +153,9 @@ class TemplateTest < Test::Unit::TestCase
     t = Template.new
     t.registers['lulz'] = 'haha'
     drop = TemplateContextDrop.new
-    assert_equal 'fizzbuzz', t.parse('{{foo}}').render(drop)
-    assert_equal 'bar', t.parse('{{bar}}').render(drop)
-    assert_equal 'haha', t.parse("{{baz}}").render(drop)
+    assert_equal 'fizzbuzz', t.parse('{{foo}}').render!(drop)
+    assert_equal 'bar', t.parse('{{bar}}').render!(drop)
+    assert_equal 'haha', t.parse("{{baz}}").render!(drop)
   end
 
   def test_sets_default_localization_in_document

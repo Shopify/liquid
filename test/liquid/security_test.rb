@@ -13,14 +13,14 @@ class SecurityTest < Test::Unit::TestCase
     text = %( {{ '1+1' | instance_eval }} )
     expected = %| 1+1 |
 
-    assert_equal expected, Template.parse(text).render(@assigns)
+    assert_equal expected, Template.parse(text).render!(@assigns)
   end
 
   def test_no_existing_instance_eval
     text = %( {{ '1+1' | __instance_eval__ }} )
     expected = %| 1+1 |
 
-    assert_equal expected, Template.parse(text).render(@assigns)
+    assert_equal expected, Template.parse(text).render!(@assigns)
   end
 
 
@@ -28,7 +28,7 @@ class SecurityTest < Test::Unit::TestCase
     text = %( {{ '1+1' | instance_eval }} )
     expected = %| 1+1 |
 
-    assert_equal expected, Template.parse(text).render(@assigns)
+    assert_equal expected, Template.parse(text).render!(@assigns)
   end
 
 
@@ -36,7 +36,7 @@ class SecurityTest < Test::Unit::TestCase
     text = %( {{ '1+1' | add_one | instance_eval }} )
     expected = %| 1+1 + 1 |
 
-    assert_equal expected, Template.parse(text).render(@assigns, :filters => SecurityFilter)
+    assert_equal expected, Template.parse(text).render!(@assigns, :filters => SecurityFilter)
   end
 
   def test_does_not_add_filters_to_symbol_table
@@ -47,7 +47,7 @@ class SecurityTest < Test::Unit::TestCase
     template = Template.parse(test)
     assert_equal [], (Symbol.all_symbols - current_symbols)
 
-    template.render
+    template.render!
     assert_equal [], (Symbol.all_symbols - current_symbols)
   end
 
