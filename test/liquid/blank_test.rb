@@ -93,9 +93,9 @@ class BlankTest < Test::Unit::TestCase
 
   def test_include_is_blank
     Liquid::Template.file_system = BlankTestFileSystem.new
-    assert_equal "foobar"*(N+1), Template.parse(wrap("{% include 'foobar' %}")).render()
-    assert_equal " foobar "*(N+1), Template.parse(wrap("{% include ' foobar ' %}")).render()
-    assert_equal "   ", Template.parse(" {% include ' ' %} ").render()
+    assert_template_result "foobar"*(N+1), wrap("{% include 'foobar' %}")
+    assert_template_result " foobar "*(N+1), wrap("{% include ' foobar ' %}")
+    assert_template_result "   "*(N+1), wrap(" {% include ' ' %} ")
   end
 
   def test_case_is_blank

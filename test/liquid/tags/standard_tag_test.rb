@@ -180,11 +180,11 @@ class StandardTagTest < Test::Unit::TestCase
     # Example from the shopify forums
     code = %q({% case collection.handle %}{% when 'menswear-jackets' %}{% assign ptitle = 'menswear' %}{% when 'menswear-t-shirts' %}{% assign ptitle = 'menswear' %}{% else %}{% assign ptitle = 'womenswear' %}{% endcase %}{{ ptitle }})
     template = Liquid::Template.parse(code)
-    assert_equal "menswear",   template.render("collection" => {'handle' => 'menswear-jackets'})
-    assert_equal "menswear",   template.render("collection" => {'handle' => 'menswear-t-shirts'})
-    assert_equal "womenswear", template.render("collection" => {'handle' => 'x'})
-    assert_equal "womenswear", template.render("collection" => {'handle' => 'y'})
-    assert_equal "womenswear", template.render("collection" => {'handle' => 'z'})
+    assert_equal "menswear",   template.render!("collection" => {'handle' => 'menswear-jackets'})
+    assert_equal "menswear",   template.render!("collection" => {'handle' => 'menswear-t-shirts'})
+    assert_equal "womenswear", template.render!("collection" => {'handle' => 'x'})
+    assert_equal "womenswear", template.render!("collection" => {'handle' => 'y'})
+    assert_equal "womenswear", template.render!("collection" => {'handle' => 'z'})
   end
 
   def test_case_when_or
@@ -218,7 +218,7 @@ class StandardTagTest < Test::Unit::TestCase
   end
 
   def test_assign
-    assert_equal 'variable', Liquid::Template.parse( '{% assign a = "variable"%}{{a}}').render
+    assert_template_result 'variable', '{% assign a = "variable"%}{{a}}'
   end
 
   def test_assign_unassigned
@@ -227,12 +227,11 @@ class StandardTagTest < Test::Unit::TestCase
   end
 
   def test_assign_an_empty_string
-    assert_equal '', Liquid::Template.parse( '{% assign a = ""%}{{a}}'  ).render
+    assert_template_result '', '{% assign a = ""%}{{a}}'
   end
 
   def test_assign_is_global
-    assert_equal 'variable',
-                 Liquid::Template.parse( '{%for i in (1..2) %}{% assign a = "variable"%}{% endfor %}{{a}}'  ).render
+    assert_template_result 'variable', '{%for i in (1..2) %}{% assign a = "variable"%}{% endfor %}{{a}}'
   end
 
   def test_case_detects_bad_syntax

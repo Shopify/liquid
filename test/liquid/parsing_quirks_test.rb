@@ -7,7 +7,7 @@ class ParsingQuirksTest < Test::Unit::TestCase
     text = %| div { font-weight: bold; } |
     template = Template.parse(text)
 
-    assert_equal text, template.render
+    assert_equal text, template.render!
     assert_equal [String], template.root.nodelist.collect {|i| i.class}
   end
 

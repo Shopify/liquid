@@ -176,8 +176,8 @@ class ContextTest < Test::Unit::TestCase
     end
 
     Template.register_filter(global)
-    assert_equal 'Global test', Template.parse("{{'test' | notice }}").render
-    assert_equal 'Local test', Template.parse("{{'test' | notice }}").render({}, :filters => [local])
+    assert_equal 'Global test', Template.parse("{{'test' | notice }}").render!
+    assert_equal 'Local test', Template.parse("{{'test' | notice }}").render!({}, :filters => [local])
   end
 
   def test_only_intended_filters_make_it_there

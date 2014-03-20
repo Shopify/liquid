@@ -77,11 +77,11 @@ class ModuleExTest < Test::Unit::TestCase
   end
 
   def test_should_use_regular_objects_as_drops
-    assert_equal 'allowedA', Liquid::Template.parse("{{ a.allowedA }}").render('a'=>@a)
-    assert_equal 'allowedB', Liquid::Template.parse("{{ a.chainedB.allowedB }}").render('a'=>@a)
-    assert_equal 'allowedC', Liquid::Template.parse("{{ a.chainedB.chainedC.allowedC }}").render('a'=>@a)
-    assert_equal 'another_allowedC', Liquid::Template.parse("{{ a.chainedB.chainedC.another_allowedC }}").render('a'=>@a)
-    assert_equal '', Liquid::Template.parse("{{ a.restricted }}").render('a'=>@a)
-    assert_equal '', Liquid::Template.parse("{{ a.unknown }}").render('a'=>@a)
+    assert_template_result 'allowedA', "{{ a.allowedA }}", 'a'=>@a
+    assert_template_result 'allowedB', "{{ a.chainedB.allowedB }}", 'a'=>@a
+    assert_template_result 'allowedC', "{{ a.chainedB.chainedC.allowedC }}", 'a'=>@a
+    assert_template_result 'another_allowedC', "{{ a.chainedB.chainedC.another_allowedC }}", 'a'=>@a
+    assert_template_result '', "{{ a.restricted }}", 'a'=>@a
+    assert_template_result '', "{{ a.unknown }}", 'a'=>@a
   end
 end # ModuleExTest

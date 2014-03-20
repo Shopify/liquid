@@ -126,37 +126,38 @@ class StandardFiltersTest < Test::Unit::TestCase
   end
 
   def test_map_doesnt_call_arbitrary_stuff
-    assert_equal "", Liquid::Template.parse('{{ "foo" | map: "__id__" }}').render
-    assert_equal "", Liquid::Template.parse('{{ "foo" | map: "inspect" }}').render
+    assert_template_result "", '{{ "foo" | map: "__id__" }}'
+    assert_template_result "", '{{ "foo" | map: "inspect" }}'
   end
 
   def test_map_calls_to_liquid
     t = TestThing.new
-    assert_equal "woot: 1", Liquid::Template.parse('{{ foo | map: "whatever" }}').render("foo" => [t])
+    assert_template_result "woot: 1", '{{ foo | map: "whatever" }}', "foo" => [t]
   end
 
   def test_map_on_hashes
-    assert_equal "4217", Liquid::Template.parse('{{ thing | map: "foo" | map: "bar" }}').render("thing" => { "foo" => [ { "bar" => 42 }, { "bar" => 17 } ] })
+    assert_template_result "4217", '{{ thing | map: "foo" | map: "bar" }}',
+      "thing" => { "foo" => [ { "bar" => 42 }, { "bar" => 17 } ] }
   end
 
   def test_sort_calls_to_liquid
     t = TestThing.new
-    assert_equal "woot: 1", Liquid::Template.parse('{{ foo | sort: "whatever" }}').render("foo" => [t])
+    assert_template_result "woot: 1", '{{ foo | sort: "whatever" }}', "foo" => [t]
   end
 
   def test_map_over_proc
     drop = TestDrop.new
     p = Proc.new{ drop }
     templ = '{{ procs | map: "test" }}'
-    assert_equal "testfoo", Liquid::Template.parse(templ).render("procs" => [p])
+    assert_template_result "testfoo", templ, "procs" => [p]
   end
 
   def test_map_works_on_enumerables
-    assert_equal "123", Liquid::Template.parse('{{ foo | map: "foo" }}').render!("foo" => TestEnumerable.new)
+    assert_template_result "123", '{{ foo | map: "foo" }}', "foo" => TestEnumerable.new
   end
 
   def test_sort_works_on_enumerables
-    assert_equal "213", Liquid::Template.parse('{{ foo | sort: "bar" | map: "foo" }}').render!("foo" => TestEnumerable.new)
+    assert_template_result "213", '{{ foo | sort: "bar" | map: "foo" }}', "foo" => TestEnumerable.new
   end
 
   def test_date
@@ -257,7 +258,7 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_template_result "4", "{{ 14 | divided_by:3 }}"
 
     assert_template_result "5", "{{ 15 | divided_by:3 }}"
-    assert_template_result "Liquid error: divided by 0", "{{ 5 | divided_by:0 }}"
+    assert_equal "Liquid error: divided by 0", Template.parse("{{ 5 | divided_by:0 }}").render
 
     assert_template_result "0.5", "{{ 2.0 | divided_by:4 }}"
   end
