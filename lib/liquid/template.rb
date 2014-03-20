@@ -109,26 +109,25 @@ module Liquid
     #  * <tt>registers</tt> : hash with register variables. Those can be accessed from
     #    filters and tags and might be useful to integrate liquid more with its host application
     #
-    def render(*args)
+    def render(environments = {}, options = {})
       return '' if @root.nil?
 
-      context = case args.first
+      context = case environments
       when Liquid::Context
-        args.shift
+        environments
       when Liquid::Drop
-        drop = args.shift
-        drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        drop = environments
+        drop.context = Context.new([drop, assigns], instance_assigns, registers, @resource_limits)
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        Context.new([environments, assigns], instance_assigns, registers, @resource_limits)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
+        Context.new(assigns, instance_assigns, registers, @resource_limits)
       else
         raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
       end
 
-      case args.last
+      case options
       when Hash
-        options = args.pop
 
         if options[:registers].is_a?(Hash)
           self.registers.merge!(options[:registers])
@@ -137,11 +136,14 @@ module Liquid
         if options[:filters]
           context.add_filters(options[:filters])
         end
+        if options.key?(:exception_handler)
+          context.exception_handler = options[:exception_handler]
+        end
 
       when Module
-        context.add_filters(args.pop)
+        context.add_filters(options)
       when Array
-        context.add_filters(args.pop)
+        context.add_filters(options)
       end
 
       begin
@@ -156,8 +158,8 @@ module Liquid
       end
     end
 
-    def render!(*args)
-      @rethrow_errors = true; render(*args)
+    def render!(envrionments = {}, options = {})
+      render(envrionments, options.merge(:exception_handler => proc {|exception| raise exception}))
     end
 
     private

@@ -158,6 +158,12 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal 'haha', t.parse("{{baz}}").render(drop)
   end
 
+  def test_exception_handler
+    exception = nil
+    Template.parse("{{ 1 | divided_by: 0 }}").render({}, :exception_handler => proc {|e| exception = e })
+    assert exception.is_a?(ZeroDivisionError)
+  end
+
   def test_sets_default_localization_in_document
     t = Template.new
     t.parse('')
