@@ -3,7 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
-* Allow newlines in tags and variables
+* Allow newlines in tags and variables, see #324 [Dylan Thacker-Smith, dylanahsmith]
 * Tag#parse is called after initialize, which now takes options instead of tokens as the 3rd argument. See #321 [Dylan Thacker-Smith, dylanahsmith]
 * Raise `Liquid::ArgumentError` instead of `::ArgumentError` when filter has wrong number of arguments #309 [Bogdan Gusiev, bogdan]
 * Add a to_s default for liquid drops, see #306 [Adam Doeler, releod]
