@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Make tag/variable termination error clearer, see #325 [Dylan Thacker-Smith, dylanahsmith]
 * Allow quoted single curly braces in variables, see #325 [Dylan Thacker-Smith, dylanahsmith]
 * Allow newlines in tags and variables, see #324 [Dylan Thacker-Smith, dylanahsmith]
 * Tag#parse is called after initialize, which now takes options instead of tokens as the 3rd argument. See #321 [Dylan Thacker-Smith, dylanahsmith]

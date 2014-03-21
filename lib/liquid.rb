@@ -24,12 +24,12 @@ module Liquid
   ArgumentSeparator           = ','
   FilterArgumentSeparator     = ':'
   VariableAttributeSeparator  = '.'
-  TagStart                    = /\{\%/
-  TagEnd                      = /\%\}/
+  TagStart                    = '{%'
+  TagEnd                      = '%}'
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
   VariableSegment             = /[\w\-]/
-  VariableStart               = /\{\{/
-  VariableEnd                 = /\}\}/
+  VariableStart               = '{{'
+  VariableEnd                 = '}}'
   QuotedString                = /"[^"]*"|'[^']*'/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
   StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s|:,]+/

@@ -3,7 +3,6 @@ module Liquid
     IsTag             = /\A#{TagStart}/o
     IsVariable        = /\A#{VariableStart}/o
     FullToken         = /\A#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
-    ContentOfVariable = /\A#{VariableStart}(.*)#{VariableEnd}\z/om
 
     def blank?
       @blank || false
@@ -41,10 +40,14 @@ module Liquid
               unknown_tag($1, $2, tokens)
             end
           else
-            raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination", :token => token, :tag_end => TagEnd.inspect))
+            raise_tag_termination_error("errors.syntax.tag_termination", token + tokens.shift.to_s, TagEnd)
           end
         when IsVariable
-          new_var = create_variable(token)
+          if token.size < 4
+            raise_tag_termination_error("errors.syntax.variable_termination", token + tokens.shift.to_s, VariableEnd)
+          end
+          markup = token[2...-2]
+          new_var = Variable.new(markup, @options)
           @nodelist << new_var
           @children << new_var
           @blank = false
@@ -99,13 +102,6 @@ module Liquid
       @tag_name
     end
 
-    def create_variable(token)
-      token.scan(ContentOfVariable) do |content|
-        return Variable.new(content.first, @options)
-      end
-      raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination", :token => token, :tag_end => VariableEnd.inspect))
-    end
-
     def render(context)
       render_all(@nodelist, context)
     end
@@ -114,6 +110,11 @@ module Liquid
 
     def assert_missing_delimitation!
       raise SyntaxError.new(options[:locale].t("errors.syntax.tag_never_closed", :block_name => block_name))
+    end
+
+    def raise_tag_termination_error(error_name, token, tag_end)
+      token = token.size > 50 ? "'#{token[0...47]}'..." : "'#{token}'"
+      raise SyntaxError.new(options[:locale].t(error_name, :token => token, :tag_end => tag_end))
     end
 
     def render_all(list, context)
