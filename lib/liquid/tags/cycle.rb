@@ -13,7 +13,7 @@ module Liquid
   #
   class Cycle < Tag
     SimpleSyntax = /\A#{QuotedFragment}+/o
-    NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/o
+    NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om
 
     def initialize(tag_name, markup, options)
       super

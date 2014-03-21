@@ -37,9 +37,9 @@ module Liquid
 
     def lax_parse(markup)
       @filters = []
-      if match = markup.match(/\s*(#{QuotedFragment})(.*)/o)
+      if match = markup.match(/\s*(#{QuotedFragment})(.*)/om)
         @name = match[1]
-        if match[2].match(/#{FilterSeparator}\s*(.*)/o)
+        if match[2].match(/#{FilterSeparator}\s*(.*)/om)
           filters = Regexp.last_match(1).scan(FilterParser)
           filters.each do |f|
             if matches = f.match(/\s*(\w+)/)
