@@ -32,11 +32,6 @@ module Liquid
   VariableEnd                 = '}}'
   QuotedString                = /"[^"]*"|'[^']*'/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
-  StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s|:,]+/
-  FirstFilterArgument         = /#{FilterArgumentSeparator}(?:#{StrictQuotedFragment})/o
-  OtherFilterArgument         = /#{ArgumentSeparator}(?:#{StrictQuotedFragment})/o
-  SpacelessFilter             = /\A(?:'[^']+'|"[^"]+"|[^'"])*#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/o
-  Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/o
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
   AnyStartingTag              = /\{\{|\{\%/
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableEnd}/om
