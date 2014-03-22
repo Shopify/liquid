@@ -64,9 +64,9 @@ namespace :profile do
     ruby "./performance/profile.rb"
   end
 
-  desc "Run KCacheGrind"
-  task :grind => :run  do
-    system "qcachegrind /tmp/liquid.rubyprof_calltreeprinter.txt"
+  desc "Run the liquid profile/performance coverage with strict parsing"
+  task :strict do
+    ruby "./performance/profile.rb strict"
   end
 
 end
