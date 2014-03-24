@@ -201,8 +201,4 @@ class VariableResolutionTest < Test::Unit::TestCase
   def test_multiline_variable
     assert_equal 'worked', Template.parse("{{\ntest\n}}").render!('test' => 'worked')
   end
-
-  def test_quoted_single_curly_braces
-    assert_template_result "{user}", "{{ variable | prepend: '{' | append: '}' }}", 'variable' => 'user'
-  end
 end # VariableTest

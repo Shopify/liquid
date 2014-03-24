@@ -24,17 +24,18 @@ module Liquid
   ArgumentSeparator           = ','
   FilterArgumentSeparator     = ':'
   VariableAttributeSeparator  = '.'
-  TagStart                    = '{%'
-  TagEnd                      = '%}'
+  TagStart                    = /\{\%/
+  TagEnd                      = /\%\}/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
   VariableSegment             = /[\w\-]/
-  VariableStart               = '{{'
-  VariableEnd                 = '}}'
+  VariableStart               = /\{\{/
+  VariableEnd                 = /\}\}/
+  VariableIncompleteEnd       = /\}\}?/
   QuotedString                = /"[^"]*"|'[^']*'/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
   AnyStartingTag              = /\{\{|\{\%/
-  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableEnd}/om
+  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
 end
