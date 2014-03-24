@@ -44,7 +44,7 @@ module Liquid
   class LocalFileSystem
     attr_accessor :root
 
-    def initialize(root, pattern = "_%s.liquid")
+    def initialize(root, pattern = "_%s.liquid".freeze)
       @root = root
       @pattern = pattern
     end
@@ -59,7 +59,7 @@ module Liquid
     def full_path(template_path)
       raise FileSystemError, "Illegal template name '#{template_path}'" unless template_path =~ /\A[^.\/][a-zA-Z0-9_\/]+\z/
 
-      full_path = if template_path.include?('/')
+      full_path = if template_path.include?('/'.freeze)
         File.join(root, File.dirname(template_path), @pattern % File.basename(template_path))
       else
         File.join(root, @pattern % template_path)

@@ -4,12 +4,17 @@ require 'bigdecimal'
 module Liquid
 
   module StandardFilters
-    HTML_ESCAPE = { '&' => '&amp;',  '>' => '&gt;',   '<' => '&lt;', '"' => '&quot;', "'" => '&#39;' }
+    HTML_ESCAPE = {
+      '&'.freeze => '&amp;'.freeze,
+      '>'.freeze => '&gt;'.freeze,
+      '<'.freeze => '&lt;'.freeze,
+      '"'.freeze => '&quot;'.freeze,
+      "'".freeze => '&#39;'.freeze
+    }
     HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
 
     # Return the size of an array or of an string
     def size(input)
-
       input.respond_to?(:size) ? input.size : 0
     end
 
@@ -39,19 +44,19 @@ module Liquid
     alias_method :h, :escape
 
     # Truncate a string down to x characters
-    def truncate(input, length = 50, truncate_string = "...")
+    def truncate(input, length = 50, truncate_string = "...".freeze)
       if input.nil? then return end
       l = length.to_i - truncate_string.length
       l = 0 if l < 0
       input.length > length.to_i ? input[0...l] + truncate_string : input
     end
 
-    def truncatewords(input, words = 15, truncate_string = "...")
+    def truncatewords(input, words = 15, truncate_string = "...".freeze)
       if input.nil? then return end
       wordlist = input.to_s.split
       l = words.to_i - 1
       l = 0 if l < 0
-      wordlist.length > l ? wordlist[0..l].join(" ") + truncate_string : input
+      wordlist.length > l ? wordlist[0..l].join(" ".freeze) + truncate_string : input
     end
 
     # Split input string into an array of substrings separated by given pattern.
@@ -76,16 +81,17 @@ module Liquid
     end
 
     def strip_html(input)
-      input.to_s.gsub(/<script.*?<\/script>/m, '').gsub(/<!--.*?-->/m, '').gsub(/<style.*?<\/style>/m, '').gsub(/<.*?>/m, '')
+      empty = ''.freeze
+      input.to_s.gsub(/<script.*?<\/script>/m, empty).gsub(/<!--.*?-->/m, empty).gsub(/<style.*?<\/style>/m, empty).gsub(/<.*?>/m, empty)
     end
 
     # Remove all newlines from the string
     def strip_newlines(input)
-      input.to_s.gsub(/\r?\n/, '')
+      input.to_s.gsub(/\r?\n/, ''.freeze)
     end
 
     # Join elements of the array with certain character between them
-    def join(input, glue = ' ')
+    def join(input, glue = ' '.freeze)
       [input].flatten.join(glue)
     end
 
@@ -95,7 +101,7 @@ module Liquid
       ary = flatten_if_necessary(input)
       if property.nil?
         ary.sort
-      elsif ary.first.respond_to?('[]') and !ary.first[property].nil?
+      elsif ary.first.respond_to?('[]'.freeze) and !ary.first[property].nil?
         ary.sort {|a,b| a[property] <=> b[property] }
       elsif ary.first.respond_to?(property)
         ary.sort {|a,b| a.send(property) <=> b.send(property) }
@@ -113,7 +119,7 @@ module Liquid
       flatten_if_necessary(input).map do |e|
         e = e.call if e.is_a?(Proc)
 
-        if property == "to_liquid"
+        if property == "to_liquid".freeze
           e
         elsif e.respond_to?(:[])
           e[property]
@@ -122,23 +128,23 @@ module Liquid
     end
 
     # Replace occurrences of a string with another
-    def replace(input, string, replacement = '')
+    def replace(input, string, replacement = ''.freeze)
       input.to_s.gsub(string, replacement.to_s)
     end
 
     # Replace the first occurrences of a string with another
-    def replace_first(input, string, replacement = '')
+    def replace_first(input, string, replacement = ''.freeze)
       input.to_s.sub(string, replacement.to_s)
     end
 
     # remove a substring
     def remove(input, string)
-      input.to_s.gsub(string, '')
+      input.to_s.gsub(string, ''.freeze)
     end
 
     # remove the first occurrences of a substring
     def remove_first(input, string)
-      input.to_s.sub(string, '')
+      input.to_s.sub(string, ''.freeze)
     end
 
     # add one string to another
@@ -153,7 +159,7 @@ module Liquid
 
     # Add <br /> tags in front of all newlines in input string
     def newline_to_br(input)
-      input.to_s.gsub(/\n/, "<br />\n")
+      input.to_s.gsub(/\n/, "<br />\n".freeze)
     end
 
     # Reformat a date
@@ -196,7 +202,7 @@ module Liquid
 
       date = if input.is_a?(String)
         case input.downcase
-        when 'now', 'today'
+        when 'now'.freeze, 'today'.freeze
           Time.now
         else
           Time.parse(input)
@@ -256,7 +262,7 @@ module Liquid
       apply_operation(input, operand, :%)
     end
 
-    def default(input, default_value = "")
+    def default(input, default_value = "".freeze)
       is_blank = input.respond_to?(:empty?) ? input.empty? : !input
       is_blank ? default_value : input
     end

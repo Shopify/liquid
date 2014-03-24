@@ -10,11 +10,11 @@ module Liquid
           context.registers[:ifchanged] = output
           output
         else
-          ''
+          ''.freeze
         end
       end
     end
   end
 
-  Template.register_tag('ifchanged', Ifchanged)
+  Template.register_tag('ifchanged'.freeze, Ifchanged)
 end

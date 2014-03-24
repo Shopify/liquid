@@ -1,5 +1,4 @@
 module Liquid
-
   # Continue tag to be used to break out of a for loop.
   #
   # == Basic Usage:
@@ -10,12 +9,10 @@ module Liquid
   #    {% endfor %}
   #
   class Continue < Tag
-
     def interrupt
       ContinueInterrupt.new
     end
-
   end
 
-  Template.register_tag('continue', Continue)
+  Template.register_tag('continue'.freeze, Continue)
 end

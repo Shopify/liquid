@@ -12,21 +12,21 @@ module Liquid
           @attributes[key] = value
         end
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.table_row"))
+        raise SyntaxError.new(options[:locale].t("errors.syntax.table_row".freeze))
       end
     end
 
     def render(context)
-      collection = context[@collection_name] or return ''
+      collection = context[@collection_name] or return ''.freeze
 
-      from = @attributes['offset'] ? context[@attributes['offset']].to_i : 0
-      to = @attributes['limit'] ? from + context[@attributes['limit']].to_i : nil
+      from = @attributes['offset'.freeze] ? context[@attributes['offset'.freeze]].to_i : 0
+      to = @attributes['limit'.freeze] ? from + context[@attributes['limit'.freeze]].to_i : nil
 
       collection = Utils.slice_collection(collection, from, to)
 
       length = collection.length
 
-      cols = context[@attributes['cols']].to_i
+      cols = context[@attributes['cols'.freeze]].to_i
 
       row = 1
       col = 0
@@ -36,19 +36,19 @@ module Liquid
 
         collection.each_with_index do |item, index|
           context[@variable_name] = item
-          context['tablerowloop'] = {
-            'length'  => length,
-            'index'   => index + 1,
-            'index0'  => index,
-            'col'     => col + 1,
-            'col0'    => col,
-            'index0'  => index,
-            'rindex'  => length - index,
-            'rindex0' => length - index - 1,
-            'first'   => (index == 0),
-            'last'    => (index == length - 1),
-            'col_first' => (col == 0),
-            'col_last'  => (col == cols - 1)
+          context['tablerowloop'.freeze] = {
+            'length'.freeze    => length,
+            'index'.freeze     => index + 1,
+            'index0'.freeze    => index,
+            'col'.freeze       => col + 1,
+            'col0'.freeze      => col,
+            'index0'.freeze    => index,
+            'rindex'.freeze    => length - index,
+            'rindex0'.freeze   => length - index - 1,
+            'first'.freeze     => (index == 0),
+            'last'.freeze      => (index == length - 1),
+            'col_first'.freeze => (col == 0),
+            'col_last'.freeze  => (col == cols - 1)
           }
 
 
@@ -69,5 +69,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('tablerow', TableRow)
+  Template.register_tag('tablerow'.freeze, TableRow)
 end

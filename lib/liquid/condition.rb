@@ -8,14 +8,14 @@ module Liquid
   #
   class Condition #:nodoc:
     @@operators = {
-      '==' => lambda { |cond, left, right|  cond.send(:equal_variables, left, right) },
-      '!=' => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
-      '<>' => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
-      '<'  => :<,
-      '>'  => :>,
-      '>=' => :>=,
-      '<=' => :<=,
-      'contains' => lambda { |cond, left, right| left && right ? left.include?(right) : false }
+      '=='.freeze => lambda { |cond, left, right|  cond.send(:equal_variables, left, right) },
+      '!='.freeze => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
+      '<>'.freeze => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
+      '<'.freeze  => :<,
+      '>'.freeze  => :>,
+      '>='.freeze => :>=,
+      '<='.freeze => :<=,
+      'contains'.freeze => lambda { |cond, left, right| left && right ? left.include?(right) : false }
     }
 
     def self.operators
@@ -61,7 +61,7 @@ module Liquid
     end
 
     def inspect
-      "#<Condition #{[@left, @operator, @right].compact.join(' ')}>"
+      "#<Condition #{[@left, @operator, @right].compact.join(' '.freeze)}>"
     end
 
     private

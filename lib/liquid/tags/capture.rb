@@ -27,7 +27,7 @@ module Liquid
       output = super
       context.scopes.last[@to] = output
       context.increment_used_resources(:assign_score_current, output)
-      ''
+      ''.freeze
     end
 
     def blank?
@@ -35,5 +35,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('capture', Capture)
+  Template.register_tag('capture'.freeze, Capture)
 end

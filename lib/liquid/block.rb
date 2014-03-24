@@ -41,14 +41,14 @@ module Liquid
               unknown_tag($1, $2, tokens)
             end
           else
-            raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination", :token => token, :tag_end => TagEnd.inspect))
+            raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
           end
         when IsVariable
           new_var = create_variable(token)
           @nodelist << new_var
           @children << new_var
           @blank = false
-        when ''
+        when ''.freeze
           # pass
         else
           @nodelist << token
@@ -79,15 +79,15 @@ module Liquid
 
     def unknown_tag(tag, params, tokens)
       case tag
-      when 'else'
-        raise SyntaxError.new(options[:locale].t("errors.syntax.unexpected_else", 
+      when 'else'.freeze
+        raise SyntaxError.new(options[:locale].t("errors.syntax.unexpected_else".freeze,
                                                  :block_name => block_name))
-      when 'end'
-        raise SyntaxError.new(options[:locale].t("errors.syntax.invalid_delimiter", 
-                                                 :block_name => block_name, 
+      when 'end'.freeze
+        raise SyntaxError.new(options[:locale].t("errors.syntax.invalid_delimiter".freeze,
+                                                 :block_name => block_name,
                                                  :block_delimiter => block_delimiter))
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.unknown_tag", :tag => tag))
+        raise SyntaxError.new(options[:locale].t("errors.syntax.unknown_tag".freeze, :tag => tag))
       end
     end
 
@@ -103,7 +103,7 @@ module Liquid
       token.scan(ContentOfVariable) do |content|
         return Variable.new(content.first, @options)
       end
-      raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination", :token => token, :tag_end => VariableEnd.inspect))
+      raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination".freeze, :token => token, :tag_end => VariableEnd.inspect))
     end
 
     def render(context)
@@ -113,7 +113,7 @@ module Liquid
     protected
 
     def assert_missing_delimitation!
-      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_never_closed", :block_name => block_name))
+      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_never_closed".freeze, :block_name => block_name))
     end
 
     def render_all(list, context)
@@ -138,7 +138,7 @@ module Liquid
           context.increment_used_resources(:render_length_current, token_output)
           if context.resource_limits_reached?
             context.resource_limits[:reached] = true
-            raise MemoryError.new("Memory limits exceeded")
+            raise MemoryError.new("Memory limits exceeded".freeze)
           end
           unless token.is_a?(Block) && token.blank?
             output << token_output

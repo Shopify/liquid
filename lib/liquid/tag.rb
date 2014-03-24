@@ -27,7 +27,7 @@ module Liquid
     end
 
     def render(context)
-      ''
+      ''.freeze
     end
 
     def blank?
