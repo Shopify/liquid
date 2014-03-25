@@ -18,13 +18,17 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.7"
 
   s.test_files  = Dir.glob("{test}/**/*")
-  s.files       = Dir.glob("{lib}/**/*") + %w(MIT-LICENSE README.md)
+  s.files       = Dir.glob("{lib,ext}/**/*") + %w(MIT-LICENSE README.md)
 
   s.extra_rdoc_files  = ["History.md", "README.md"]
 
   s.require_path = "lib"
 
-  s.add_development_dependency 'stackprof' if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1.0")
   s.add_development_dependency 'rake'
   s.add_development_dependency 'activesupport'
+  if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'ruby'
+    s.extensions  = ['ext/liquid/extconf.rb']
+    s.add_development_dependency 'rake-compiler'
+    s.add_development_dependency 'stackprof' if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1.0")
+  end
 end

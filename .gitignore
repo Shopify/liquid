@@ -6,3 +6,7 @@ pkg
 .rvmrc
 .ruby-version
 Gemfile.lock
+/ext/liquid/Makefile
+*.o
+*.bundle
+/tmp

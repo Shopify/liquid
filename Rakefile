@@ -75,3 +75,11 @@ desc "Run example"
 task :example do
   ruby "-w -d -Ilib example/server/server.rb"
 end
+
+if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'ruby'
+  require 'rake/extensiontask'
+  Rake::ExtensionTask.new "liquid" do |ext|
+    ext.lib_dir = "lib/liquid"
+  end
+  Rake::Task[:test].prerequisites << :compile
+end
