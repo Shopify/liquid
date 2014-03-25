@@ -102,6 +102,7 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal '', @filters.strip_html("<style type='text/css'>foo bar</style>")
     assert_equal 'test', @filters.strip_html("<div\nclass='multiline'>test</div>")
     assert_equal 'test', @filters.strip_html("<!-- foo bar \n test -->test")
+    assert_equal 'test header test paragraph', @filters.strip_html("<h1>test header</h1><p>test paragraph</p>")
     assert_equal '', @filters.strip_html(nil)
   end
 
