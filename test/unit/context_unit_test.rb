@@ -63,7 +63,7 @@ class ArrayLike
   end
 end
 
-class ContextTest < Test::Unit::TestCase
+class ContextUnitTest < Test::Unit::TestCase
   include Liquid
 
   def setup
@@ -160,24 +160,6 @@ class ContextTest < Test::Unit::TestCase
     context.add_filters(filter)
     assert_equal 'hi? hi!', context.invoke(:hi, 'hi?')
 
-  end
-
-  def test_override_global_filter
-    global = Module.new do
-      def notice(output)
-        "Global #{output}"
-      end
-    end
-
-    local = Module.new do
-      def notice(output)
-        "Local #{output}"
-      end
-    end
-
-    Template.register_filter(global)
-    assert_equal 'Global test', Template.parse("{{'test' | notice }}").render!
-    assert_equal 'Local test', Template.parse("{{'test' | notice }}").render!({}, :filters => [local])
   end
 
   def test_only_intended_filters_make_it_there

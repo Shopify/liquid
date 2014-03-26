@@ -3,12 +3,6 @@ require 'test_helper'
 class StandardTagTest < Test::Unit::TestCase
   include Liquid
 
-  def test_tag
-    tag = Tag.parse('tag', [], [], {})
-    assert_equal 'liquid::tag', tag.name
-    assert_equal '', tag.render(Context.new)
-  end
-
   def test_no_transform
     assert_template_result('this text should come out of the template without change...',
                            'this text should come out of the template without change...')

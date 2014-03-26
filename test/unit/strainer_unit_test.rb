@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class StrainerTest < Test::Unit::TestCase
+class StrainerUnitTest < Test::Unit::TestCase
   include Liquid
 
   module AccessScopeFilters
