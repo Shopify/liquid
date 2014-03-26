@@ -36,7 +36,7 @@ class TestClassC::LiquidDropClass
   end
 end
 
-class ModuleExTest < Test::Unit::TestCase
+class ModuleExUnitTest < Test::Unit::TestCase
   include Liquid
 
   def setup

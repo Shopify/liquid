@@ -3,12 +3,9 @@ require 'test_helper'
 class ParsingQuirksTest < Test::Unit::TestCase
   include Liquid
 
-  def test_error_with_css
-    text = %| div { font-weight: bold; } |
-    template = Template.parse(text)
-
-    assert_equal text, template.render!
-    assert_equal [String], template.root.nodelist.collect {|i| i.class}
+  def test_parsing_css
+    text = " div { font-weight: bold; } "
+    assert_equal text, Template.parse(text).render!
   end
 
   def test_raise_on_single_close_bracet

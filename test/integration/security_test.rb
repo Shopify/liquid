@@ -54,10 +54,10 @@ class SecurityTest < Test::Unit::TestCase
   def test_does_not_add_drop_methods_to_symbol_table
     current_symbols = Symbol.all_symbols
 
-    drop = Drop.new
-    drop.invoke_drop("custom_method_1")
-    drop.invoke_drop("custom_method_2")
-    drop.invoke_drop("custom_method_3")
+    assigns = { 'drop' => Drop.new }
+    assert_equal "", Template.parse("{{ drop.custom_method_1 }}", assigns).render!
+    assert_equal "", Template.parse("{{ drop.custom_method_2 }}", assigns).render!
+    assert_equal "", Template.parse("{{ drop.custom_method_3 }}", assigns).render!
 
     assert_equal [], (Symbol.all_symbols - current_symbols)
   end

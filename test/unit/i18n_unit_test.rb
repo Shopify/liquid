@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class I18nTest < Test::Unit::TestCase
+class I18nUnitTest < Test::Unit::TestCase
   include Liquid
 
   def setup

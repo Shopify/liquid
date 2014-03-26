@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class FileSystemTest < Test::Unit::TestCase
+class FileSystemUnitTest < Test::Unit::TestCase
   include Liquid
 
   def test_default

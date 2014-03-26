@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class RegexpTest < Test::Unit::TestCase
+class RegexpUnitTest < Test::Unit::TestCase
   include Liquid
 
   def test_empty

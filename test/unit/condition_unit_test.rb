@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ConditionTest < Test::Unit::TestCase
+class ConditionUnitTest < Test::Unit::TestCase
   include Liquid
 
   def test_basic_condition
