@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Remove ActionView template handler [Dylan Thacker-Smith, dylanahsmith]
 * Freeze lots of string literals for new Ruby 2.1 optimization, see #297 [Florian Weingarten, fw42]
 * Allow newlines in tags and variables, see #324 [Dylan Thacker-Smith, dylanahsmith]
 * Tag#parse is called after initialize, which now takes options instead of tokens as the 3rd argument. See #321 [Dylan Thacker-Smith, dylanahsmith]
