@@ -7,7 +7,7 @@ module Liquid
   #   {% block content }Hello world{% endblock %}
   #
   class InheritedBlock < Block
-    Syntax = /(#{QuotedFragment}+)/
+    Syntax = /(#{QuotedFragment}+)/o
 
     attr_reader :name, :parent
 

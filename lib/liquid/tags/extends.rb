@@ -6,7 +6,7 @@ module Liquid
   #   {% block content }Hello world{% endblock %}
   #
   class Extends < Block
-    Syntax = /(#{QuotedFragment}+)/
+    Syntax = /(#{QuotedFragment}+)/o
 
     def initialize(tag_name, markup, options)
       super
