@@ -41,13 +41,11 @@ module Liquid
     protected
 
     def find_blocks(nodelist, blocks = {})
-      if nodelist && nodelist.any?
-        0.upto(nodelist.size - 1).each do |index|
-          node = nodelist[index]
-
+      if nodelist
+        nodelist.each_with_index do |node, index|
           # is the node an inherited block?
           if node.respond_to?(:call_super)
-            new_node = node.class.clone_block(node)
+            new_node = node.clone_it
 
             nodelist.insert(index, new_node)
             nodelist.delete_at(index + 1)

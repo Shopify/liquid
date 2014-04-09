@@ -9,9 +9,7 @@ module Liquid
   class InheritedBlock < Block
     Syntax = /(#{QuotedFragment}+)/
 
-    attr_accessor :parent
-    attr_accessor :nodelist
-    attr_reader   :name
+    attr_reader :name, :parent
 
     def initialize(tag_name, markup, options)
       super
@@ -22,7 +20,7 @@ module Liquid
         raise(SyntaxError.new(options[:locale].t("errors.syntax.block")), options[:line])
       end
 
-      self.set_full_name!(options)
+      set_full_name!(options)
 
       (options[:block_stack] ||= []).push(self)
       options[:current_block] = self
@@ -36,8 +34,9 @@ module Liquid
     end
 
     def end_tag
-      self.register_current_block
+      link_it_with_ancestor
 
+      # clean the stack
       options[:block_stack].pop
       options[:current_block] = options[:block_stack].last
     end
@@ -50,14 +49,22 @@ module Liquid
       end
     end
 
-    def self.clone_block(block)
-      new_block = new(block.send(:instance_variable_get, :"@tag_name"), block.name, {})
-      new_block.parent = block.parent
-      new_block.nodelist = block.nodelist
+    def clone_it
+      self.class.clone_it(self)
+    end
+
+    def attach_parent(parent, nodelist)
+      @parent   = parent
+      @nodelist = nodelist
+    end
+
+    def self.clone_it(block)
+      new_block = new(block.block_name, block.name, {})
+      new_block.attach_parent(block.parent, block.nodelist)
       new_block
     end
 
-    protected
+    private
 
     def set_full_name!(options)
       if options[:current_block]
@@ -65,35 +72,18 @@ module Liquid
       end
     end
 
-    def register_current_block
+    def link_it_with_ancestor
       options[:blocks] ||= {}
 
       block = options[:blocks][@name]
 
       if block
-        # copy the existing block in order to make it a parent of the parsed block
-        new_block = self.class.clone_block(block)
+        # copy/clone the existing block in order to make it a parent of the parsed block
+        cloned_block = block.clone_it
 
         # replace the up-to-date version of the block in the parent template
-        block.parent = new_block
-        block.nodelist = @nodelist
+        block.attach_parent(cloned_block, @nodelist)
       end
-    end
-
-  end
-
-  class InheritedBlockDrop < Drop
-
-    def initialize(block)
-      @block = block
-    end
-
-    def name
-      @block.name
-    end
-
-    def super
-      @block.call_super(@context)
     end
 
   end

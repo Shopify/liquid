@@ -63,4 +63,4 @@ require 'liquid/utils'
 
 # Load all the tags of the standard library
 #
-Dir[File.dirname(__FILE__) + '/liquid/tags/*.rb'].each { |f| require f }
+Dir[File.dirname(__FILE__) + '/liquid/{tags,drops}/*.rb'].each { |f| require f }
