@@ -1,7 +1,9 @@
+require 'json'
+
 module JsonFilter
 
   def json(object)
-    object.reject {|k,v| k == "collections" }.to_json
+    JSON.dump(object.reject {|k,v| k == "collections" })
   end
 
 end

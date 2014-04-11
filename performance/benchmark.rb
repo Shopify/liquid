@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'benchmark'
 require File.dirname(__FILE__) + '/theme_runner'
 
