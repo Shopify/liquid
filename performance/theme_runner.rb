@@ -6,11 +6,6 @@
 # Shopify which is likely the biggest user of liquid in the world which something to the tune of several
 # million Template#render calls a day.
 
-require 'rubygems'
-require 'active_support'
-require 'active_support/json'
-require 'yaml'
-require 'digest/md5'
 require File.dirname(__FILE__) + '/shopify/liquid'
 require File.dirname(__FILE__) + '/shopify/database.rb'
 
@@ -81,6 +76,3 @@ class ThemeRunner
     end
   end
 end
-
-
-

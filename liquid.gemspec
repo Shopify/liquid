@@ -26,5 +26,4 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'stackprof' if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1.0")
   s.add_development_dependency 'rake'
-  s.add_development_dependency 'activesupport'
 end
