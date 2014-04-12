@@ -162,8 +162,8 @@ module Liquid
       input.to_s.gsub(/\n/, "<br />\n".freeze)
     end
 
-    # Reformat a date
-    #
+    # Reformat a date using Ruby's core Time#strftime( string ) -> string
+    # 
     #   %a - The abbreviated weekday name (``Sun'')
     #   %A - The  full  weekday  name (``Sunday'')
     #   %b - The abbreviated month name (``Jan'')
@@ -176,6 +176,7 @@ module Liquid
     #   %m - Month of the year (01..12)
     #   %M - Minute of the hour (00..59)
     #   %p - Meridian indicator (``AM''  or  ``PM'')
+    #   %s - Number of seconds since 1970-01-01 00:00:00 UTC.
     #   %S - Second of the minute (00..60)
     #   %U - Week  number  of the current year,
     #           starting with the first Sunday as the first
@@ -190,6 +191,8 @@ module Liquid
     #   %Y - Year with century
     #   %Z - Time zone name
     #   %% - Literal ``%'' character
+    #
+    #   See also: http://www.ruby-doc.org/core/Time.html#method-i-strftime
     def date(input, format)
 
       if format.to_s.empty?
