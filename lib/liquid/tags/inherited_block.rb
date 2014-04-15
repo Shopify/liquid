@@ -20,7 +20,7 @@ module Liquid
         raise(SyntaxError.new(options[:locale].t("errors.syntax.block")), options[:line])
       end
 
-      set_full_name!(options)
+      @name = "#{options[:current_block].name}/#{@name}" if options[:current_block]
 
       (options[:block_stack] ||= []).push(self)
       options[:current_block] = self
@@ -65,12 +65,6 @@ module Liquid
     end
 
     private
-
-    def set_full_name!(options)
-      if options[:current_block]
-        @name = options[:current_block].name + '/' + @name
-      end
-    end
 
     def link_it_with_ancestor
       options[:blocks] ||= {}

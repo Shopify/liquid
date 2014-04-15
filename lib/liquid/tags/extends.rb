@@ -47,8 +47,7 @@ module Liquid
           if node.respond_to?(:call_super)
             new_node = node.clone_it
 
-            nodelist.insert(index, new_node)
-            nodelist.delete_at(index + 1)
+            nodelist[index] = new_node
 
             blocks[node.name] = new_node
           end
