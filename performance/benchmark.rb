@@ -1,7 +1,7 @@
-require 'rubygems'
 require 'benchmark'
 require File.dirname(__FILE__) + '/theme_runner'
 
+Liquid::Template.error_mode = ARGV.first.to_sym if ARGV.first
 profiler = ThemeRunner.new
 
 Benchmark.bmbm do |x|

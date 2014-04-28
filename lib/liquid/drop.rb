@@ -44,8 +44,16 @@ module Liquid
       true
     end
 
+    def inspect
+      self.class.to_s
+    end
+
     def to_liquid
       self
+    end
+
+    def to_s
+      self.class.name
     end
 
     alias :[] :invoke_drop
@@ -54,7 +62,15 @@ module Liquid
 
     # Check for method existence without invoking respond_to?, which creates symbols
     def self.invokable?(method_name)
-      @invokable_methods ||= Set.new((public_instance_methods - Liquid::Drop.public_instance_methods).map(&:to_s))
+      unless @invokable_methods
+        blacklist = Liquid::Drop.public_instance_methods + [:each]
+        if include?(Enumerable)
+          blacklist += Enumerable.public_instance_methods
+          blacklist -= [:sort, :count, :first, :min, :max, :include?]
+        end
+        whitelist = [:to_liquid] + (public_instance_methods - blacklist)
+        @invokable_methods = Set.new(whitelist.map(&:to_s))
+      end
       @invokable_methods.include?(method_name.to_s)
     end
   end

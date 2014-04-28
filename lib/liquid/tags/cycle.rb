@@ -12,10 +12,11 @@ module Liquid
   #    <div class="green"> Item five</div>
   #
   class Cycle < Tag
-    SimpleSyntax = /^#{QuotedFragment}+/o
-    NamedSyntax  = /^(#{QuotedFragment})\s*\:\s*(.*)/o
+    SimpleSyntax = /\A#{QuotedFragment}+/o
+    NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om
 
-    def initialize(tag_name, markup, tokens)
+    def initialize(tag_name, markup, options)
+      super
       case markup
       when NamedSyntax
         @variables = variables_from_string($2)
@@ -24,9 +25,8 @@ module Liquid
         @variables = variables_from_string(markup)
         @name = "'#{@variables.to_s}'"
       else
-        raise SyntaxError.new("Syntax Error in 'cycle' - Valid syntax: cycle [name :] var [, var2, var3 ...]")
+        raise SyntaxError.new(options[:locale].t("errors.syntax.cycle".freeze))
       end
-      super
     end
 
     def render(context)

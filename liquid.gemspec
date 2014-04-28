@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Tobias Luetke"]
   s.email       = ["tobi@leetsoft.com"]
   s.homepage    = "http://www.liquidmarkup.org"
+  s.license     = "MIT"
   #s.description = "A secure, non-evaling end user template engine with aesthetic markup."
 
   s.required_rubygems_version = ">= 1.3.7"
@@ -22,4 +23,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files  = ["History.md", "README.md"]
 
   s.require_path = "lib"
+
+  s.add_development_dependency 'stackprof' if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1.0")
+  s.add_development_dependency 'rake'
 end

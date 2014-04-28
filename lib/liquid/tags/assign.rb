@@ -9,27 +9,29 @@ module Liquid
   #  {{ foo }}
   #
   class Assign < Tag
-    Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/o
+    Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/om
 
-    def initialize(tag_name, markup, tokens)
+    def initialize(tag_name, markup, options)
+      super
       if markup =~ Syntax
         @to = $1
         @from = Variable.new($2)
       else
-        raise SyntaxError.new("Syntax Error in 'assign' - Valid syntax: assign [var] = [source]")
+        raise SyntaxError.new options[:locale].t("errors.syntax.assign".freeze)
       end
-
-      super
     end
 
     def render(context)
       val = @from.render(context)
       context.scopes.last[@to] = val
-      context.resource_limits[:assign_score_current] += (val.respond_to?(:length) ? val.length : 1)
-      ''
+      context.increment_used_resources(:assign_score_current, val)
+      ''.freeze
     end
 
+    def blank?
+      true
+    end
   end
 
-  Template.register_tag('assign', Assign)
+  Template.register_tag('assign'.freeze, Assign)
 end

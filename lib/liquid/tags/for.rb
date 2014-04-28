@@ -46,26 +46,22 @@ module Liquid
   class For < Block
     Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
 
-    def initialize(tag_name, markup, tokens)
-      if markup =~ Syntax
-        @variable_name = $1
-        @collection_name = $2
-        @name = "#{$1}-#{$2}"
-        @reversed = $3
-        @attributes = {}
-        markup.scan(TagAttributes) do |key, value|
-          @attributes[key] = value
-        end
-      else
-        raise SyntaxError.new("Syntax Error in 'for loop' - Valid syntax: for [item] in [collection]")
-      end
-
-      @nodelist = @for_block = []
+    def initialize(tag_name, markup, options)
       super
+      parse_with_selected_parser(markup)
+      @nodelist = @for_block = []
+    end
+
+    def nodelist
+      if @else_block
+        @for_block + @else_block
+      else
+        @for_block
+      end
     end
 
     def unknown_tag(tag, markup, tokens)
-      return super unless tag == 'else'
+      return super unless tag == 'else'.freeze
       @nodelist = @else_block = []
     end
 
@@ -78,17 +74,16 @@ module Liquid
       # Maintains Ruby 1.8.7 String#each behaviour on 1.9
       return render_else(context) unless iterable?(collection)
 
-      from = if @attributes['offset'] == 'continue'
+      from = if @attributes['offset'.freeze] == 'continue'.freeze
         context.registers[:for][@name].to_i
       else
-        context[@attributes['offset']].to_i
+        context[@attributes['offset'.freeze]].to_i
       end
 
-      limit = context[@attributes['limit']]
+      limit = context[@attributes['limit'.freeze]]
       to    = limit ? limit.to_i + from : nil
 
-
-      segment = Utils.slice_collection_using_each(collection, from, to)
+      segment = Utils.slice_collection(collection, from, to)
 
       return render_else(context) if segment.empty?
 
@@ -104,15 +99,16 @@ module Liquid
       context.stack do
         segment.each_with_index do |item, index|
           context[@variable_name] = item
-          context['forloop'] = {
-            'name'    => @name,
-            'length'  => length,
-            'index'   => index + 1,
-            'index0'  => index,
-            'rindex'  => length - index,
-            'rindex0' => length - index - 1,
-            'first'   => (index == 0),
-          'last'    => (index == length - 1) }
+          context['forloop'.freeze] = {
+            'name'.freeze    => @name,
+            'length'.freeze  => length,
+            'index'.freeze   => index + 1,
+            'index0'.freeze  => index,
+            'rindex'.freeze  => length - index,
+            'rindex0'.freeze => length - index - 1,
+            'first'.freeze   => (index == 0),
+            'last'.freeze    => (index == length - 1)
+          }
 
           result << render_all(@for_block, context)
 
@@ -127,16 +123,53 @@ module Liquid
       result
     end
 
+    protected
+
+    def lax_parse(markup)
+      if markup =~ Syntax
+        @variable_name = $1
+        @collection_name = $2
+        @name = "#{$1}-#{$2}"
+        @reversed = $3
+        @attributes = {}
+        markup.scan(TagAttributes) do |key, value|
+          @attributes[key] = value
+        end
+      else
+        raise SyntaxError.new(options[:locale].t("errors.syntax.for".freeze))
+      end
+    end
+
+    def strict_parse(markup)
+      p = Parser.new(markup)
+      @variable_name = p.consume(:id)
+      raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_in".freeze))  unless p.id?('in'.freeze)
+      @collection_name = p.expression
+      @name = "#{@variable_name}-#{@collection_name}"
+      @reversed = p.id?('reversed'.freeze)
+
+      @attributes = {}
+      while p.look(:id) && p.look(:colon, 1)
+        unless attribute = p.id?('limit'.freeze) || p.id?('offset'.freeze)
+          raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute".freeze))
+        end
+        p.consume
+        val = p.expression
+        @attributes[attribute] = val
+      end
+      p.consume(:end_of_string)
+    end
+
     private
 
-      def render_else(context)
-        return @else_block ? [render_all(@else_block, context)] : ''
-      end
+    def render_else(context)
+      return @else_block ? [render_all(@else_block, context)] : ''.freeze
+    end
 
-      def iterable?(collection)
-        collection.respond_to?(:each) || Utils.non_blank_string?(collection)
-      end
+    def iterable?(collection)
+      collection.respond_to?(:each) || Utils.non_blank_string?(collection)
+    end
   end
 
-  Template.register_tag('for', For)
+  Template.register_tag('for'.freeze, For)
 end

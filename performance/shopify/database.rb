@@ -1,6 +1,6 @@
 require 'yaml'
-module Database
 
+module Database
   # Load the standard vision toolkit database and re-arrage it to be simply exportable
   # to liquid as assigns. All this is based on Shopify
   def self.tables

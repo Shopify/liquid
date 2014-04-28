@@ -1,7 +1,10 @@
 module Liquid
   class Comment < Block
     def render(context)
-      ''
+      ''.freeze
+    end
+
+    def unknown_tag(tag, markup, tokens)
     end
 
     def blank?
@@ -9,5 +12,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('comment', Comment)
+  Template.register_tag('comment'.freeze, Comment)
 end
