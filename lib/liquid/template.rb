@@ -113,7 +113,9 @@ module Liquid
 
       context = case args.first
       when Liquid::Context
-        args.shift
+        c = args.shift
+        c.rethrow_errors = true if @rethrow_errors
+        c
       when Liquid::Drop
         drop = args.shift
         drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
@@ -156,7 +158,8 @@ module Liquid
     end
 
     def render!(*args)
-      @rethrow_errors = true; render(*args)
+      @rethrow_errors = true
+      render(*args)
     end
 
     private
