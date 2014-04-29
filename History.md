@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Fix broken rendering of variables which are equal to false, see #345 [Florian Weingarten, fw42]
 * Remove ActionView template handler [Dylan Thacker-Smith, dylanahsmith]
 * Freeze lots of string literals for new Ruby 2.1 optimization, see #297 [Florian Weingarten, fw42]
 * Allow newlines in tags and variables, see #324 [Dylan Thacker-Smith, dylanahsmith]
