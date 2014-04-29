@@ -25,6 +25,10 @@ class VariableTest < Test::Unit::TestCase
     assert_equal 'worked', template.render!('test' => {'test' => 'worked'})
   end
 
+  def test_false_renders_as_false
+    assert_equal 'false', Template.parse("{{ foo }}").render!('foo' => false)
+  end
+
   def test_preset_assigns
     template = Template.parse(%|{{ test }}|)
     template.assigns['test'] = 'worked'
