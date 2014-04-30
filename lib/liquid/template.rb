@@ -60,7 +60,6 @@ module Liquid
       def parse(source, options = {})
         template = Template.new
         template.parse(source, options)
-        template
       end
     end
 
