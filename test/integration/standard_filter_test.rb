@@ -186,7 +186,6 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal "07/05/2006", @filters.date("1152098955", "%m/%d/%Y")
   end
 
-
   def test_first_last
     assert_equal 1, @filters.first([1,2,3])
     assert_equal 3, @filters.last([1,2,3])
