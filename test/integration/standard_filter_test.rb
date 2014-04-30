@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'test_helper'
+require 'minitest/mock'
 
 class Filters
   include Liquid::StandardFilters
@@ -184,6 +185,30 @@ class StandardFiltersTest < Test::Unit::TestCase
 
     assert_equal "07/05/2006", @filters.date(1152098955, "%m/%d/%Y")
     assert_equal "07/05/2006", @filters.date("1152098955", "%m/%d/%Y")
+  end
+
+  def with_simulated_zone_support(mock, &block)
+    Time.define_singleton_method(:zone) { mock }
+    block.call
+  ensure
+    Time.singleton_class.send(:remove_method, :zone) if Time.respond_to?(:zone)
+  end
+
+  def test_date_uses_zones_when_supported
+    mock = MiniTest::Mock.new
+    now  = Time.now
+
+    mock.expect(:now, now)
+    mock.expect(:at, now, [now.to_i])
+    mock.expect(:parse, now, [now.to_s])
+
+    with_simulated_zone_support(mock) do
+      @filters.date("now", "%Y")
+      @filters.date(now.to_i, "%Y")
+      @filters.date(now.to_s, "%Y")
+    end
+
+    mock.verify
   end
 
   def test_first_last
