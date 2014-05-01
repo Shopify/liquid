@@ -22,6 +22,12 @@ class SomethingWithLength
   liquid_methods :length
 end
 
+class ErroneousDrop < Liquid::Drop
+  def bad_method
+    raise 'ruby error in drop'
+  end
+end
+
 class TemplateTest < Test::Unit::TestCase
   include Liquid
 
@@ -136,5 +142,15 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal 'fizzbuzz', t.parse('{{foo}}').render!(drop)
     assert_equal 'bar', t.parse('{{bar}}').render!(drop)
     assert_equal 'haha', t.parse("{{baz}}").render!(drop)
+  end
+
+  def test_render_bang_force_rethrow_errors_on_passed_context
+    context = Context.new({'drop' => ErroneousDrop.new})
+    t = Template.new.parse('{{ drop.bad_method }}')
+
+    e = assert_raises RuntimeError do
+      t.render!(context)
+    end
+    assert_equal 'ruby error in drop', e.message
   end
 end

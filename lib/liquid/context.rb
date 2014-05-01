@@ -15,6 +15,8 @@ module Liquid
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
 
+    attr_accessor :rethrow_errors
+
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = {})
       @environments    = [environments].flatten
       @scopes          = [(outer_scope || {})]

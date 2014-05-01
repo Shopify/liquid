@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Properly set context rethrow_errors on render! #349 [Thierry Joyal, tjoyal]
 * Fix broken rendering of variables which are equal to false, see #345 [Florian Weingarten, fw42]
 * Remove ActionView template handler [Dylan Thacker-Smith, dylanahsmith]
 * Freeze lots of string literals for new Ruby 2.1 optimization, see #297 [Florian Weingarten, fw42]
