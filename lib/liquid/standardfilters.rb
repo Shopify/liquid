@@ -274,16 +274,24 @@ module Liquid
       end
     end
 
+    def zone_aware_time
+      if Time.respond_to?(:zone) && Time.zone
+        Time.zone
+      else
+        Time
+      end
+    end
+
     def to_date(obj)
       return obj if obj.respond_to?(:strftime)
 
       case obj
       when 'now'.freeze, 'today'.freeze
-        Time.now
+        zone_aware_time.now
       when /\A\d+\z/, Integer
-        Time.at(obj.to_i)
+        zone_aware_time.at(obj.to_i)
       when String
-        Time.parse(obj)
+        zone_aware_time.parse(obj)
       else
         nil
       end
