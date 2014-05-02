@@ -22,6 +22,12 @@ module Liquid
     @@file_system = BlankFileSystem.new
 
     class << self
+      # Sets how strict the parser should be.
+      # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
+      # :warn is the default and will give deprecation warnings when invalid syntax is used.
+      # :strict will enforce correct syntax.
+      attr_writer :error_mode
+
       def file_system
         @@file_system
       end
@@ -36,14 +42,6 @@ module Liquid
 
       def tags
         @tags ||= {}
-      end
-
-      # Sets how strict the parser should be.
-      # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
-      # :warn is the default and will give deprecation warnings when invalid syntax is used.
-      # :strict will enforce correct syntax.
-      def error_mode=(mode)
-        @error_mode = mode
       end
 
       def error_mode
