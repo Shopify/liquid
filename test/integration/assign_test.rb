@@ -26,9 +26,9 @@ class AssignTest < Test::Unit::TestCase
   end
 
   def test_assign_with_filter_sort_by_property
-    assert_template_result('.2.',
+    assert_template_result('.1.',
                            '{% assign foo = values | sort: "a" %}.{{ foo[1].a }}.',
-                           'values' => [{"a" => 2}, {"a" => 3}, {"a" => 1}])
+                           'values' => [{"a" => 2}, {"b" => 1}, {"a" => 1}])
   end
 
   def test_assign_syntax_error
