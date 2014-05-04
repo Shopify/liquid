@@ -115,6 +115,10 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal [{"a" => 1}, {"a" => 2}, {"a" => 3}, {"a" => 4}], @filters.sort([{"a" => 4}, {"a" => 3}, {"a" => 1}, {"a" => 2}], "a")
   end
 
+  def test_sort_property_empty
+    assert_equal [{"b" => 1}, {"a" => 1}, {"a" => 2}], @filters.sort([{"a" => 2}, {"b" => 1}, {"a" => 1}], "a")
+  end
+
   def test_reverse
     assert_equal [4,3,2,1], @filters.reverse([1,2,3,4])
   end
