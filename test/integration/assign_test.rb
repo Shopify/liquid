@@ -19,7 +19,7 @@ class AssignTest < Test::Unit::TestCase
                            'values' => "foo,bar,baz")
   end
 
-  def test_assign_with_sort_filter
+  def test_assign_with_filter_sort
     assert_template_result('.b.',
                            '{% assign foo = values | sort %}.{{ foo[1] }}.',
                            'values' => ['c', 'a' ,'b'])
