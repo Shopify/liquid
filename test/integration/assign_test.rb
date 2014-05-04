@@ -25,6 +25,12 @@ class AssignTest < Test::Unit::TestCase
                            'values' => ['c', 'a' ,'b'])
   end
 
+  def test_assign_with_filter_sort_by_property
+    assert_template_result('.2.',
+                           '{% assign foo = values | sort: "a" %}.{{ foo[1].a }}.',
+                           'values' => [{"a" => 2}, {"a" => 3}, {"a" => 1}])
+  end
+
   def test_assign_syntax_error
     assert_match_syntax_error(/assign/,
                        '{% assign foo not values %}.',
