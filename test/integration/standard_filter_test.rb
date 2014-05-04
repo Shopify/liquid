@@ -119,6 +119,12 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal [{"b" => 1}, {"a" => 1}, {"a" => 2}], @filters.sort([{"a" => 2}, {"b" => 1}, {"a" => 1}], "a")
   end
 
+  def test_unknown_property
+    assigns = {"a" => {"known" => "1"}}
+    assert_template_result "1", "{{ a.known }}", assigns
+    assert_template_result "", "{{ a.unknown }}", assigns
+  end
+
   def test_reverse
     assert_equal [4,3,2,1], @filters.reverse([1,2,3,4])
   end
