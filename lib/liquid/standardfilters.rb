@@ -102,7 +102,11 @@ module Liquid
       if property.nil?
         ary.sort
       elsif ary.first.respond_to?('[]'.freeze) and !ary.first[property].nil?
-        ary.sort {|a,b| a[property] <=> b[property] }
+        ary.sort { |a,b|
+          as = a[property].to_s
+          bs = b[property].to_s
+          as <=> bs
+        }
       elsif ary.first.respond_to?(property)
         ary.sort {|a,b| a.send(property) <=> b.send(property) }
       end
