@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Add error messages for missing variables when :strict, see #352 [Daniel Gaiottino]
 * Fix broken rendering of variables which are equal to false, see #345 [Florian Weingarten, fw42]
 * Remove ActionView template handler [Dylan Thacker-Smith, dylanahsmith]
 * Freeze lots of string literals for new Ruby 2.1 optimization, see #297 [Florian Weingarten, fw42]

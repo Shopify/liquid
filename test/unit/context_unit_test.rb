@@ -457,4 +457,22 @@ class ContextUnitTest < Test::Unit::TestCase
     assert_kind_of CategoryDrop, @context['category']
     assert_equal @context, @context['category'].context
   end
+
+  def test_strict_variables_not_found
+    with_error_mode(:strict) do
+      @context['does_not_exist']
+      assert(@context.errors.length == 1)
+      assert_equal(@context.errors[0], 'Variable {{does_not_exist}} not found')
+    end
+  end
+
+  def test_strict_nested_variables_not_found
+    with_error_mode(:strict) do
+      @context['hash'] = {'this' => 'exists'}
+      @context['hash.does_not_exist']
+      assert(@context.errors.length == 1)
+      assert_equal(@context.errors[0], 'Variable {{hash.does_not_exist}} not found')
+    end
+  end
+
 end # ContextTest
