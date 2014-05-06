@@ -16,4 +16,10 @@ class TemplateUnitTest < Test::Unit::TestCase
     assert_instance_of I18n, t.root.options[:locale]
     assert_equal fixture("en_locale.yml"), t.root.options[:locale].path
   end
+
+  def test_symbol_variables
+    t = Template.new
+    t.parse('{{foo}}')
+    assert_equal 'FOO!', t.render({foo: 'FOO!'})
+  end
 end
