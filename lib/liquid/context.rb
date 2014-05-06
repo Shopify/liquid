@@ -140,7 +140,7 @@ module Liquid
 
     # Only allow String, Numeric, Hash, Array, Proc, Boolean or <tt>Liquid::Drop</tt>
     def []=(key, value)
-      @scopes[0][key] = value
+      @scopes[0][key.to_s] = value
     end
 
     def [](key)
@@ -221,7 +221,7 @@ module Liquid
       #  assert_equal 'tobi', @context['hash.name']
       #  assert_equal 'tobi', @context['hash["name"]']
       def variable(markup)
-        parts = markup.scan(VariableParser)
+        parts = markup.to_s.scan(VariableParser)
         square_bracketed = /\A\[(.*)\]\z/m
 
         first_part = parts.shift
@@ -268,12 +268,20 @@ module Liquid
       end # variable
 
       def lookup_and_evaluate(obj, key)
-        if (value = obj[key]).is_a?(Proc) && obj.respond_to?(:[]=)
+        value = lookup_value(obj, key)
+        if value.is_a?(Proc) && obj.respond_to?(:[]=)
           obj[key] = (value.arity == 0) ? value.call : value.call(self)
         else
           value
         end
       end # lookup_and_evaluate
+
+      def lookup_value(obj, key)
+        return nil if key.nil?
+        value = obj[key]
+        value = obj[key.to_sym] if value.nil?
+        value
+      end
 
       def squash_instance_assigns_with_environments
         @scopes.last.each_key do |k|

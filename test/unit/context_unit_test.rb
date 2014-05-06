@@ -98,6 +98,34 @@ class ContextUnitTest < Test::Unit::TestCase
     assert_equal nil, @context['nil']
   end
 
+  def test_symbol_variables
+    @context[:string] = 'string'
+    assert_equal 'string', @context[:string]
+
+    @context[:num] = 5
+    assert_equal 5, @context[:num]
+
+    @context[:time] = Time.parse('2006-06-06 12:00:00')
+    assert_equal Time.parse('2006-06-06 12:00:00'), @context[:time]
+
+    @context[:date] = Date.today
+    assert_equal Date.today, @context[:date]
+
+    now = DateTime.now
+    @context[:datetime] = now
+    assert_equal now, @context[:datetime]
+
+    @context[:bool] = true
+    assert_equal true, @context[:bool]
+
+    @context[:bool] = false
+    assert_equal false, @context[:bool]
+
+    @context[:nil] = nil
+    assert_equal nil, @context[:nil]
+    assert_equal nil, @context[:nil]
+  end
+
   def test_variables_not_existing
     assert_equal nil, @context['does_not_exist']
   end
