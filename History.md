@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Add error messages for missing variables when :strict, see #352 [Daniel Gaiottino]
 * Properly set context rethrow_errors on render! #349 [Thierry Joyal, tjoyal]
 * Fix broken rendering of variables which are equal to false, see #345 [Florian Weingarten, fw42]
 * Remove ActionView template handler [Dylan Thacker-Smith, dylanahsmith]
