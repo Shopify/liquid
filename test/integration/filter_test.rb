@@ -22,7 +22,7 @@ module SubstituteFilter
   end
 end
 
-class FiltersTest < Test::Unit::TestCase
+class FiltersTest < Minitest::Test
   include Liquid
 
   def setup
@@ -107,7 +107,7 @@ class FiltersTest < Test::Unit::TestCase
   end
 end
 
-class FiltersInTemplate < Test::Unit::TestCase
+class FiltersInTemplate < Minitest::Test
   include Liquid
 
   def test_local_global

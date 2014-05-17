@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class StandardTagTest < Test::Unit::TestCase
+class StandardTagTest < Minitest::Test
   include Liquid
 
   def test_no_transform
@@ -66,7 +66,7 @@ class StandardTagTest < Test::Unit::TestCase
   end
 
   def test_capture_detects_bad_syntax
-    assert_raise(SyntaxError) do
+    assert_raises(SyntaxError) do
       assert_template_result('content foo content foo ',
                              '{{ var2 }}{% capture %}{{ var }} foo {% endcapture %}{{ var2 }}{{ var2 }}',
                              {'var' => 'content' })
@@ -229,11 +229,11 @@ class StandardTagTest < Test::Unit::TestCase
   end
 
   def test_case_detects_bad_syntax
-    assert_raise(SyntaxError) do
+    assert_raises(SyntaxError) do
       assert_template_result('',  '{% case false %}{% when %}true{% endcase %}', {})
     end
 
-    assert_raise(SyntaxError) do
+    assert_raises(SyntaxError) do
       assert_template_result('',  '{% case false %}{% huh %}true{% endcase %}', {})
     end
 

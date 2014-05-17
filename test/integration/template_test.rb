@@ -28,7 +28,7 @@ class ErroneousDrop < Liquid::Drop
   end
 end
 
-class TemplateTest < Test::Unit::TestCase
+class TemplateTest < Minitest::Test
   include Liquid
 
   def test_instance_assigns_persist_on_same_template_object_between_parses
@@ -93,7 +93,7 @@ class TemplateTest < Test::Unit::TestCase
     assert t.resource_limits[:reached]
     t.resource_limits = { :render_length_limit => 10 }
     assert_equal "0123456789", t.render!()
-    assert_not_nil t.resource_limits[:render_length_current]
+    refute_nil t.resource_limits[:render_length_current]
   end
 
   def test_resource_limits_render_score
@@ -107,7 +107,7 @@ class TemplateTest < Test::Unit::TestCase
     assert t.resource_limits[:reached]
     t.resource_limits = { :render_score_limit => 200 }
     assert_equal (" foo " * 100), t.render!()
-    assert_not_nil t.resource_limits[:render_score_current]
+    refute_nil t.resource_limits[:render_score_current]
   end
 
   def test_resource_limits_assign_score
@@ -117,7 +117,7 @@ class TemplateTest < Test::Unit::TestCase
     assert t.resource_limits[:reached]
     t.resource_limits = { :assign_score_limit => 2 }
     assert_equal "", t.render!()
-    assert_not_nil t.resource_limits[:assign_score_current]
+    refute_nil t.resource_limits[:assign_score_current]
   end
 
   def test_resource_limits_aborts_rendering_after_first_error

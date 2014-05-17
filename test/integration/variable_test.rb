@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class VariableTest < Test::Unit::TestCase
+class VariableTest < Minitest::Test
   include Liquid
 
   def test_simple_variable

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class BlockUnitTest < Test::Unit::TestCase
+class BlockUnitTest < Minitest::Test
   include Liquid
 
   def test_blankspace
@@ -45,10 +45,7 @@ class BlockUnitTest < Test::Unit::TestCase
 
   def test_with_custom_tag
     Liquid::Template.register_tag("testtag", Block)
-
-    assert_nothing_thrown do
-      template = Liquid::Template.parse( "{% testtag %} {% endtesttag %}")
-    end
+    assert Liquid::Template.parse( "{% testtag %} {% endtesttag %}")
   end
 
   private

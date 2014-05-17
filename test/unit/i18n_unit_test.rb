@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class I18nUnitTest < Test::Unit::TestCase
+class I18nUnitTest < Minitest::Test
   include Liquid
 
   def setup
@@ -20,13 +20,13 @@ class I18nUnitTest < Test::Unit::TestCase
   end
 
   # def test_raises_translation_error_on_undefined_interpolation_key
-  #   assert_raise I18n::TranslationError do
+  #   assert_raises I18n::TranslationError do
   #     @i18n.translate("whatever", :oopstypos => "yes")
   #   end
   # end
   
   def test_raises_unknown_translation
-    assert_raise I18n::TranslationError do
+    assert_raises I18n::TranslationError do
       @i18n.translate("doesnt_exist")
     end
   end

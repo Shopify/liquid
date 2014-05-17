@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TableRowTest < Test::Unit::TestCase
+class TableRowTest < Minitest::Test
   include Liquid
 
   class ArrayDrop < Liquid::Drop

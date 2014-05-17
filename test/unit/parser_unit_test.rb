@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ParserUnitTest < Test::Unit::TestCase
+class ParserUnitTest < Minitest::Test
   include Liquid
 
   def test_consume

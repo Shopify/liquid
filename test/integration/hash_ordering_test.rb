@@ -12,7 +12,7 @@ module CanadianMoneyFilter
   end
 end
 
-class HashOrderingTest < Test::Unit::TestCase
+class HashOrderingTest < Minitest::Test
   include Liquid
 
  def test_global_register_order

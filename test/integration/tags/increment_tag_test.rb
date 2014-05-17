@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class IncrementTagTest < Test::Unit::TestCase
+class IncrementTagTest < Minitest::Test
   include Liquid
 
   def test_inc

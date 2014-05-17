@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class AssignTest < Test::Unit::TestCase
+class AssignTest < Minitest::Test
   include Liquid
 
   def test_assigned_variable
