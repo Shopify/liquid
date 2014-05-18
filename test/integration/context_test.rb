@@ -16,8 +16,11 @@ class ContextTest < Minitest::Test
       end
     end
 
+    original_filters = Array.new(Strainer.class_eval('@@filters'))
     Template.register_filter(global)
     assert_equal 'Global test', Template.parse("{{'test' | notice }}").render!
     assert_equal 'Local test', Template.parse("{{'test' | notice }}").render!({}, :filters => [local])
+  ensure
+    Strainer.class_eval('@@filters = ' + original_filters.to_s)
   end
 end
