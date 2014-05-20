@@ -4,10 +4,17 @@ require 'bigdecimal'
 module Liquid
 
   module StandardFilters
+    HTML_ESCAPE = {
+      '&'.freeze => '&amp;'.freeze,
+      '>'.freeze => '&gt;'.freeze,
+      '<'.freeze => '&lt;'.freeze,
+      '"'.freeze => '&quot;'.freeze,
+      "'".freeze => '&#39;'.freeze
+    }
+    HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
 
     # Return the size of an array or of an string
     def size(input)
-
       input.respond_to?(:size) ? input.size : 0
     end
 
@@ -31,28 +38,25 @@ module Liquid
     end
 
     def escape_once(input)
-      ActionView::Helpers::TagHelper.escape_once(input)
-    rescue NameError
-      input
+      input.to_s.gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
     end
 
     alias_method :h, :escape
 
     # Truncate a string down to x characters
-    def truncate(input, length = 50, truncate_string = "...")
+    def truncate(input, length = 50, truncate_string = "...".freeze)
       if input.nil? then return end
       l = length.to_i - truncate_string.length
       l = 0 if l < 0
-      truncated = RUBY_VERSION[0,3] == "1.8" ? input.scan(/./mu)[0...l].to_s : input[0...l]
-      input.length > length.to_i ? truncated + truncate_string : input
+      input.length > length.to_i ? input[0...l] + truncate_string : input
     end
 
-    def truncatewords(input, words = 15, truncate_string = "...")
+    def truncatewords(input, words = 15, truncate_string = "...".freeze)
       if input.nil? then return end
       wordlist = input.to_s.split
       l = words.to_i - 1
       l = 0 if l < 0
-      wordlist.length > l ? wordlist[0..l].join(" ") + truncate_string : input
+      wordlist.length > l ? wordlist[0..l].join(" ".freeze) + truncate_string : input
     end
 
     # Split input string into an array of substrings separated by given pattern.
@@ -64,17 +68,30 @@ module Liquid
       input.split(pattern)
     end
 
+    def strip(input)
+      input.to_s.strip
+    end
+
+    def lstrip(input)
+      input.to_s.lstrip
+    end
+
+    def rstrip(input)
+      input.to_s.rstrip
+    end
+
     def strip_html(input)
-      input.to_s.gsub(/<script.*?<\/script>/m, '').gsub(/<!--.*?-->/m, '').gsub(/<style.*?<\/style>/m, '').gsub(/<.*?>/m, '')
+      empty = ''.freeze
+      input.to_s.gsub(/<script.*?<\/script>/m, empty).gsub(/<!--.*?-->/m, empty).gsub(/<style.*?<\/style>/m, empty).gsub(/<.*?>/m, empty)
     end
 
     # Remove all newlines from the string
     def strip_newlines(input)
-      input.to_s.gsub(/\r?\n/, '')
+      input.to_s.gsub(/\r?\n/, ''.freeze)
     end
 
     # Join elements of the array with certain character between them
-    def join(input, glue = ' ')
+    def join(input, glue = ' '.freeze)
       [input].flatten.join(glue)
     end
 
@@ -84,7 +101,7 @@ module Liquid
       ary = flatten_if_necessary(input)
       if property.nil?
         ary.sort
-      elsif ary.first.respond_to?('[]') and !ary.first[property].nil?
+      elsif ary.first.respond_to?('[]'.freeze) and !ary.first[property].nil?
         ary.sort {|a,b| a[property] <=> b[property] }
       elsif ary.first.respond_to?(property)
         ary.sort {|a,b| a.send(property) <=> b.send(property) }
@@ -102,7 +119,7 @@ module Liquid
       flatten_if_necessary(input).map do |e|
         e = e.call if e.is_a?(Proc)
 
-        if property == "to_liquid"
+        if property == "to_liquid".freeze
           e
         elsif e.respond_to?(:[])
           e[property]
@@ -111,23 +128,23 @@ module Liquid
     end
 
     # Replace occurrences of a string with another
-    def replace(input, string, replacement = '')
+    def replace(input, string, replacement = ''.freeze)
       input.to_s.gsub(string, replacement.to_s)
     end
 
     # Replace the first occurrences of a string with another
-    def replace_first(input, string, replacement = '')
+    def replace_first(input, string, replacement = ''.freeze)
       input.to_s.sub(string, replacement.to_s)
     end
 
     # remove a substring
     def remove(input, string)
-      input.to_s.gsub(string, '')
+      input.to_s.gsub(string, ''.freeze)
     end
 
     # remove the first occurrences of a substring
     def remove_first(input, string)
-      input.to_s.sub(string, '')
+      input.to_s.sub(string, ''.freeze)
     end
 
     # add one string to another
@@ -142,11 +159,11 @@ module Liquid
 
     # Add <br /> tags in front of all newlines in input string
     def newline_to_br(input)
-      input.to_s.gsub(/\n/, "<br />\n")
+      input.to_s.gsub(/\n/, "<br />\n".freeze)
     end
 
-    # Reformat a date
-    #
+    # Reformat a date using Ruby's core Time#strftime( string ) -> string
+    # 
     #   %a - The abbreviated weekday name (``Sun'')
     #   %A - The  full  weekday  name (``Sunday'')
     #   %b - The abbreviated month name (``Jan'')
@@ -159,6 +176,7 @@ module Liquid
     #   %m - Month of the year (01..12)
     #   %M - Minute of the hour (00..59)
     #   %p - Meridian indicator (``AM''  or  ``PM'')
+    #   %s - Number of seconds since 1970-01-01 00:00:00 UTC.
     #   %S - Second of the minute (00..60)
     #   %U - Week  number  of the current year,
     #           starting with the first Sunday as the first
@@ -173,19 +191,21 @@ module Liquid
     #   %Y - Year with century
     #   %Z - Time zone name
     #   %% - Literal ``%'' character
+    #
+    #   See also: http://www.ruby-doc.org/core/Time.html#method-i-strftime
     def date(input, format)
 
       if format.to_s.empty?
         return input.to_s
       end
 
-      if ((input.is_a?(String) && !/^\d+$/.match(input.to_s).nil?) || input.is_a?(Integer)) && input.to_i > 0
+      if ((input.is_a?(String) && !/\A\d+\z/.match(input.to_s).nil?) || input.is_a?(Integer)) && input.to_i > 0
         input = Time.at(input.to_i)
       end
 
       date = if input.is_a?(String)
         case input.downcase
-        when 'now', 'today'
+        when 'now'.freeze, 'today'.freeze
           Time.now
         else
           Time.parse(input)
@@ -245,12 +265,17 @@ module Liquid
       apply_operation(input, operand, :%)
     end
 
+    def default(input, default_value = "".freeze)
+      is_blank = input.respond_to?(:empty?) ? input.empty? : !input
+      is_blank ? default_value : input
+    end
+
     private
 
     def flatten_if_necessary(input)
       ary = if input.is_a?(Array)
         input.flatten
-      elsif input.kind_of?(Enumerable)
+      elsif input.is_a?(Enumerable) && !input.is_a?(Hash)
         input
       else
         [input].flatten
@@ -265,7 +290,7 @@ module Liquid
       when Numeric
         obj
       when String
-        (obj.strip =~ /^\d+\.\d+$/) ? BigDecimal.new(obj) : obj.to_i
+        (obj.strip =~ /\A\d+\.\d+\z/) ? BigDecimal.new(obj) : obj.to_i
       else
         0
       end

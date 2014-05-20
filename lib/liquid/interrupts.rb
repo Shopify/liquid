@@ -5,7 +5,7 @@ module Liquid
     attr_reader :message
 
     def initialize(message=nil)
-      @message = message || "interrupt"
+      @message = message || "interrupt".freeze
     end
   end
 

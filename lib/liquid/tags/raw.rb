@@ -1,13 +1,13 @@
 module Liquid
   class Raw < Block
-    FullTokenPossiblyInvalid = /^(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/o
+    FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
 
     def parse(tokens)
       @nodelist ||= []
       @nodelist.clear
       while token = tokens.shift
         if token =~ FullTokenPossiblyInvalid
-          @nodelist << $1 if $1 != ""
+          @nodelist << $1 if $1 != "".freeze
           if block_delimiter == $2
             end_tag
             return
@@ -18,5 +18,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('raw', Raw)
+  Template.register_tag('raw'.freeze, Raw)
 end

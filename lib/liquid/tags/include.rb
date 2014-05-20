@@ -17,7 +17,9 @@ module Liquid
   class Include < Tag
     Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/o
 
-    def initialize(tag_name, markup, tokens)
+    def initialize(tag_name, markup, options)
+      super
+
       if markup =~ Syntax
 
         @template_name = $1
@@ -29,10 +31,8 @@ module Liquid
         end
 
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.include"))
+        raise SyntaxError.new(options[:locale].t("errors.syntax.include".freeze))
       end
-
-      super
     end
 
     def parse(tokens)
@@ -51,13 +51,14 @@ module Liquid
           context[key] = context[value]
         end
 
+        context_variable_name = @template_name[1..-2].split('/'.freeze).last
         if variable.is_a?(Array)
           variable.collect do |var|
-            context[@template_name[1..-2]] = var
+            context[context_variable_name] = var
             partial.render(context)
           end
         else
-          context[@template_name[1..-2]] = variable
+          context[context_variable_name] = variable
           partial.render(context)
         end
       end
@@ -93,5 +94,5 @@ module Liquid
       end
   end
 
-  Template.register_tag('include', Include)
+  Template.register_tag('include'.freeze, Include)
 end

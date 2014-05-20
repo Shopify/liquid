@@ -21,9 +21,9 @@
 
 module Liquid
   FilterSeparator             = /\|/
-  ArgumentSeparator           = ','
-  FilterArgumentSeparator     = ':'
-  VariableAttributeSeparator  = '.'
+  ArgumentSeparator           = ','.freeze
+  FilterArgumentSeparator     = ':'.freeze
+  VariableAttributeSeparator  = '.'.freeze
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
@@ -33,15 +33,10 @@ module Liquid
   VariableIncompleteEnd       = /\}\}?/
   QuotedString                = /"[^"]*"|'[^']*'/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
-  StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s|:,]+/
-  FirstFilterArgument         = /#{FilterArgumentSeparator}(?:#{StrictQuotedFragment})/o
-  OtherFilterArgument         = /#{ArgumentSeparator}(?:#{StrictQuotedFragment})/o
-  SpacelessFilter             = /^(?:'[^']+'|"[^"]+"|[^'"])*#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/o
-  Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/o
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
   AnyStartingTag              = /\{\{|\{\%/
-  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/o
-  TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/o
+  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
+  TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
 end
 
@@ -61,7 +56,6 @@ require 'liquid/document'
 require 'liquid/variable'
 require 'liquid/file_system'
 require 'liquid/template'
-require 'liquid/htmltags'
 require 'liquid/standardfilters'
 require 'liquid/condition'
 require 'liquid/module_ex'

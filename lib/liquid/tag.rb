@@ -1,22 +1,22 @@
 module Liquid
   class Tag
-    attr_accessor :nodelist, :options
-    attr_reader :warnings
+    attr_accessor :options
+    attr_reader :nodelist, :warnings
 
-    def self.new_with_options(tag_name, markup, tokens, options)
-      # Forgive me Matz for I have sinned. I know this code is weird
-      # but it was necessary to maintain API compatibility.
-      new_tag = self.allocate
-      new_tag.options = options
-      new_tag.send(:initialize, tag_name, markup, tokens)
-      new_tag
+    class << self
+      def parse(tag_name, markup, tokens, options)
+        tag = new(tag_name, markup, options)
+        tag.parse(tokens)
+        tag
+      end
+
+      private :new
     end
 
-    def initialize(tag_name, markup, tokens)
+    def initialize(tag_name, markup, options)
       @tag_name   = tag_name
       @markup     = markup
-      @options    ||= {} # needs || because might be set before initialize
-      parse(tokens)
+      @options    = options
     end
 
     def parse(tokens)
@@ -27,11 +27,11 @@ module Liquid
     end
 
     def render(context)
-      ''
+      ''.freeze
     end
 
     def blank?
-      @blank || true
+      @blank || false
     end
 
     def parse_with_selected_parser(markup)

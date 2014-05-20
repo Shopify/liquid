@@ -66,10 +66,11 @@ module Liquid
       str = ""
       # might be a keyword argument (identifier: expression)
       if look(:id) && look(:colon, 1)
-        str << consume << consume << ' '
+        str << consume << consume << ' '.freeze
       end
 
       str << expression
+      str
     end
 
     def variable_signature

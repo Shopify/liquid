@@ -72,7 +72,7 @@ module Liquid
     # Parse source code.
     # Returns self for easy chaining
     def parse(source, options = {})
-      @root = Document.new(tokenize(source), DEFAULT_OPTIONS.merge(options))
+      @root = Document.parse(tokenize(source), DEFAULT_OPTIONS.merge(options))
       @warnings = nil
       self
     end
@@ -110,7 +110,7 @@ module Liquid
     #    filters and tags and might be useful to integrate liquid more with its host application
     #
     def render(*args)
-      return '' if @root.nil?
+      return ''.freeze if @root.nil?
 
       context = case args.first
       when Liquid::Context

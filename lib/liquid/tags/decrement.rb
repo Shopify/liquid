@@ -19,10 +19,9 @@ module Liquid
   #    Hello: -3
   #
   class Decrement < Tag
-    def initialize(tag_name, markup, tokens)
-      @variable = markup.strip
-
+    def initialize(tag_name, markup, options)
       super
+      @variable = markup.strip
     end
 
     def render(context)
@@ -35,5 +34,5 @@ module Liquid
     private
   end
 
-  Template.register_tag('decrement', Decrement)
+  Template.register_tag('decrement'.freeze, Decrement)
 end

@@ -12,14 +12,13 @@ module Liquid
   #
   class Variable
     FilterParser = /(?:#{FilterSeparator}|(?:\s*(?:#{QuotedFragment}|#{ArgumentSeparator})\s*)+)/o
-    EasyParse = /^ *(\w+(?:\.\w+)*) *$/
+    EasyParse = /\A *(\w+(?:\.\w+)*) *\z/
     attr_accessor :filters, :name, :warnings
 
     def initialize(markup, options = {})
       @markup  = markup
       @name    = nil
       @options = options || {}
-      
 
       case @options[:error_mode] || Template.error_mode
       when :strict then strict_parse(markup)
@@ -37,9 +36,9 @@ module Liquid
 
     def lax_parse(markup)
       @filters = []
-      if match = markup.match(/\s*(#{QuotedFragment})(.*)/o)
+      if match = markup.match(/\s*(#{QuotedFragment})(.*)/om)
         @name = match[1]
-        if match[2].match(/#{FilterSeparator}\s*(.*)/o)
+        if match[2].match(/#{FilterSeparator}\s*(.*)/om)
           filters = Regexp.last_match(1).scan(FilterParser)
           filters.each do |f|
             if matches = f.match(/\s*(\w+)/)
@@ -63,7 +62,7 @@ module Liquid
       @filters = []
       p = Parser.new(markup)
       # Could be just filters with no input
-      @name = p.look(:pipe) ? '' : p.expression
+      @name = p.look(:pipe) ? ''.freeze : p.expression
       while p.consume?(:pipe)
         filtername = p.consume(:id)
         filterargs = p.consume?(:colon) ? parse_filterargs(p) : []
@@ -86,7 +85,7 @@ module Liquid
     end
 
     def render(context)
-      return '' if @name.nil?
+      return ''.freeze if @name.nil?
       @filters.inject(context[@name]) do |output, filter|
         filterargs = []
         keyword_args = {}

@@ -2,11 +2,6 @@
 
 require 'test/unit'
 require 'test/unit/assertions'
-begin
-  require 'ruby-debug'
-rescue LoadError
-  puts "Couldn't load ruby-debug. gem install ruby-debug if you need it."
-end
 
 $:.unshift(File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib'))
 require 'liquid.rb'
@@ -31,7 +26,7 @@ module Test
       include Liquid
 
       def assert_template_result(expected, template, assigns = {}, message = nil)
-        assert_equal expected, Template.parse(template).render(assigns)
+        assert_equal expected, Template.parse(template).render!(assigns)
       end
 
       def assert_template_result!(expected, template, assigns = {}, message = nil)
@@ -41,7 +36,7 @@ module Test
       def assert_template_result_matches(expected, template, assigns = {}, message = nil)
         return assert_template_result(expected, template, assigns, message) unless expected.is_a? Regexp
 
-        assert_match expected, Template.parse(template).render(assigns)
+        assert_match expected, Template.parse(template).render!(assigns)
       end
 
       def assert_match_syntax_error(match, template, registers = {})
