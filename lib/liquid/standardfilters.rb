@@ -163,7 +163,7 @@ module Liquid
     end
 
     # Reformat a date using Ruby's core Time#strftime( string ) -> string
-    # 
+    #
     #   %a - The abbreviated weekday name (``Sun'')
     #   %A - The  full  weekday  name (``Sunday'')
     #   %b - The abbreviated month name (``Jan'')
@@ -194,33 +194,11 @@ module Liquid
     #
     #   See also: http://www.ruby-doc.org/core/Time.html#method-i-strftime
     def date(input, format)
+      return input if format.to_s.empty?
 
-      if format.to_s.empty?
-        return input.to_s
-      end
+      return input unless date = to_date(input)
 
-      if ((input.is_a?(String) && !/\A\d+\z/.match(input.to_s).nil?) || input.is_a?(Integer)) && input.to_i > 0
-        input = Time.at(input.to_i)
-      end
-
-      date = if input.is_a?(String)
-        case input.downcase
-        when 'now'.freeze, 'today'.freeze
-          Time.now
-        else
-          Time.parse(input)
-        end
-      else
-        input
-      end
-
-      if date.respond_to?(:strftime)
-        date.strftime(format.to_s)
-      else
-        input
-      end
-    rescue
-      input
+      date.strftime(format.to_s)
     end
 
     # Get the first element of the passed in array
@@ -294,6 +272,23 @@ module Liquid
       else
         0
       end
+    end
+
+    def to_date(obj)
+      return obj if obj.respond_to?(:strftime)
+
+      case obj
+      when 'now'.freeze, 'today'.freeze
+        Time.now
+      when /\A\d+\z/, Integer
+        Time.at(obj.to_i)
+      when String
+        Time.parse(obj)
+      else
+        nil
+      end
+    rescue ArgumentError
+      nil
     end
 
     def apply_operation(input, operand, operation)

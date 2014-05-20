@@ -20,5 +20,4 @@ class ContextTest < Test::Unit::TestCase
     assert_equal 'Global test', Template.parse("{{'test' | notice }}").render!
     assert_equal 'Local test', Template.parse("{{'test' | notice }}").render!({}, :filters => [local])
   end
-
 end
