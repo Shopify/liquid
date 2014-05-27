@@ -12,34 +12,34 @@ class BlockUnitTest < Test::Unit::TestCase
     template = Liquid::Template.parse("{{funk}}  ")
     assert_equal 2, template.root.nodelist.size
     assert_equal Variable, template.root.nodelist[0].class
-    assert_equal String, template.root.nodelist[1].class
+    assert_equal Token, template.root.nodelist[1].class
   end
 
   def test_variable_end
     template = Liquid::Template.parse("  {{funk}}")
     assert_equal 2, template.root.nodelist.size
-    assert_equal String, template.root.nodelist[0].class
+    assert_equal Token, template.root.nodelist[0].class
     assert_equal Variable, template.root.nodelist[1].class
   end
 
   def test_variable_middle
     template = Liquid::Template.parse("  {{funk}}  ")
     assert_equal 3, template.root.nodelist.size
-    assert_equal String, template.root.nodelist[0].class
+    assert_equal Token, template.root.nodelist[0].class
     assert_equal Variable, template.root.nodelist[1].class
-    assert_equal String, template.root.nodelist[2].class
+    assert_equal Token, template.root.nodelist[2].class
   end
 
   def test_variable_many_embedded_fragments
     template = Liquid::Template.parse("  {{funk}} {{so}} {{brother}} ")
     assert_equal 7, template.root.nodelist.size
-    assert_equal [String, Variable, String, Variable, String, Variable, String],
+    assert_equal [Token, Variable, Token, Variable, Token, Variable, Token],
                  block_types(template.root.nodelist)
   end
 
   def test_with_block
     template = Liquid::Template.parse("  {% comment %} {% endcomment %} ")
-    assert_equal [String, Comment, String], block_types(template.root.nodelist)
+    assert_equal [Token, Comment, Token], block_types(template.root.nodelist)
     assert_equal 3, template.root.nodelist.size
   end
 

@@ -32,6 +32,7 @@ module Liquid
             # fetch the tag from registered blocks
             if tag = Template.tags[$1]
               new_tag = tag.parse($1, $2, tokens, @options)
+              new_tag.line_number = token.line_number
               @blank &&= new_tag.blank?
               @nodelist << new_tag
               @children << new_tag
@@ -45,6 +46,7 @@ module Liquid
           end
         when IsVariable
           new_var = create_variable(token)
+          new_var.line_number = token.line_number
           @nodelist << new_var
           @children << new_var
           @blank = false

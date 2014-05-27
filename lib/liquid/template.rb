@@ -166,7 +166,13 @@ module Liquid
     def tokenize(source)
       source = source.source if source.respond_to?(:source)
       return [] if source.to_s.empty?
-      tokens = source.split(TemplateParser)
+
+      current_line = 1
+      tokens = source.split(TemplateParser).map do |token|
+        Token.new(token, current_line).tap do
+          current_line += token.count("\n")
+        end
+      end
 
       # removes the rogue empty element at the beginning of the array
       tokens.shift if tokens[0] and tokens[0].empty?
