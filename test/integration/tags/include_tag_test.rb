@@ -27,6 +27,9 @@ class TestFileSystem
     when "pick_a_source"
       "from TestFileSystem"
 
+    when "display_current_template"
+      "Now in {{ __template__ }}"
+
     else
       template_path
     end
@@ -204,5 +207,10 @@ class IncludeTagTest < Test::Unit::TestCase
     ensure
       Liquid::Template.tags['include'] = original_tag
     end
+  end
+
+  def test_custom_include_sets_current_template_name
+    assert_template_result "Root is []", "Root is [{{ __template__ }}]"
+    assert_template_result "Now in 'display_current_template'", "{% include 'display_current_template' %}"
   end
 end # IncludeTagTest

@@ -28,6 +28,8 @@ module Liquid
 
       @interrupts = []
       @filters = []
+
+      self["__template__"] = ""
     end
 
     def increment_used_resources(key, obj)
