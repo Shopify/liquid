@@ -21,6 +21,7 @@ module Liquid
     attr_accessor :root, :resource_limits
     @@file_system = BlankFileSystem.new
 
+    attr_accessor :enable_profiling
     attr_reader :profiling
 
     class << self
@@ -66,6 +67,7 @@ module Liquid
     # creates a new <tt>Template</tt> from an array of tokens. Use <tt>Template.parse</tt> instead
     def initialize
       @resource_limits = {}
+      @enable_profiling = false
     end
 
     # Parse source code.
@@ -145,11 +147,15 @@ module Liquid
         context.add_filters(args.pop)
       end
 
+      if context.enable_profiling.nil?
+        context.enable_profiling = @enable_profiling
+      end
+
       begin
         # render the nodelist.
         # for performance reasons we get an array back here. join will make a string out of it.
         result = @root.render(context)
-        @profiling = context.profiling
+        @profiling = context.profiling if context.enable_profiling
         result.respond_to?(:join) ? result.join : result
       rescue Liquid::MemoryError => e
         context.handle_error(e)

@@ -13,8 +13,16 @@ class RenderProfilingTest < Test::Unit::TestCase
     Liquid::Template.file_system = ProfilingFileSystem.new
   end
 
+  def test_template_allows_flagging_profiling
+    t = Template.parse("{{ 'a string' | upcase }}")
+    t.render!
+
+    assert_nil t.profiling
+  end
+
   def test_render_makes_available_simple_profiling
     t = Template.parse("{{ 'a string' | upcase }}")
+    t.enable_profiling = true
     t.render!
 
     assert_equal 1, t.profiling.length
@@ -26,6 +34,7 @@ class RenderProfilingTest < Test::Unit::TestCase
 
   def test_render_ignores_raw_strings_when_profiling
     t = Template.parse("This is raw string\nstuff\nNewline")
+    t.enable_profiling = true
     t.render!
 
     assert_equal 0, t.profiling.length
@@ -33,6 +42,7 @@ class RenderProfilingTest < Test::Unit::TestCase
 
   def test_profiling_includes_line_numbers_of_liquid_nodes
     t = Template.parse("{{ 'a string' | upcase }}\n{% increment test %}")
+    t.enable_profiling = true
     t.render!
     assert_equal 2, t.profiling.length
 
@@ -44,6 +54,7 @@ class RenderProfilingTest < Test::Unit::TestCase
 
   def test_profiling_uses_include_to_mark_children
     t = Template.parse("{{ 'a string' | upcase }}\n{% include 'a_template' %}")
+    t.enable_profiling = true
     t.render!
 
     include_node = t.profiling[1]
@@ -52,6 +63,7 @@ class RenderProfilingTest < Test::Unit::TestCase
 
   def test_profiling_marks_children_with_the_name_of_included_partial
     t = Template.parse("{{ 'a string' | upcase }}\n{% include 'a_template' %}")
+    t.enable_profiling = true
     t.render!
 
     include_node = t.profiling[1]
@@ -62,6 +74,7 @@ class RenderProfilingTest < Test::Unit::TestCase
 
   def test_can_iterate_over_each_profiling_entry
     t = Template.parse("{{ 'a string' | upcase }}\n{% increment test %}")
+    t.enable_profiling = true
     t.render!
 
     timing_count = 0
@@ -74,6 +87,7 @@ class RenderProfilingTest < Test::Unit::TestCase
 
   def test_profiling_marks_children_of_if_blocks
     t = Template.parse("{% if true %} {% increment test %} {{ test }} {% endif %}")
+    t.enable_profiling = true
     t.render!
 
     assert_equal 1, t.profiling.length
@@ -82,6 +96,7 @@ class RenderProfilingTest < Test::Unit::TestCase
 
   def test_profiling_marks_children_of_for_blocks
     t = Template.parse("{% for item in collection %} {{ item }} {% endfor %}")
+    t.enable_profiling = true
     t.render!("collection" => ["one", "two"])
 
     assert_equal 1, t.profiling.length
