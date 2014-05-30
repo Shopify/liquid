@@ -31,17 +31,20 @@ module Liquid
       @interrupts = []
       @filters = []
 
-      @profiling = Profiler.new
-
-      self["__template__"] = ""
+      @partials = [""]
     end
 
     def timing_start(token)
-      @profiling.start_token(token, self["__template__"])
+      @profiling ||= Profiler.new
+      @profiling.start_token(token, @partials.last)
     end
 
     def timing_end(token)
       @profiling.end_token(token)
+    end
+
+    def using_partial(partial_name)
+      @partials.push(partial_name)
     end
 
     def increment_used_resources(key, obj)
@@ -130,6 +133,7 @@ module Liquid
     # Pop from the stack. use <tt>Context#stack</tt> instead
     def pop
       raise ContextError if @scopes.size == 1
+      @partials.pop
       @scopes.shift
     end
 
