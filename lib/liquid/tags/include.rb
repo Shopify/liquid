@@ -46,8 +46,7 @@ module Liquid
       partial = load_cached_partial(context)
       variable = context[@variable_name || @template_name[1..-2]]
 
-      context.stack do
-        context["__template__"] = @template_name
+      context.stack("__template__" => @template_name) do
         @attributes.each do |key, value|
           context[key] = context[value]
         end

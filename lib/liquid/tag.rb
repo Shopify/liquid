@@ -19,6 +19,10 @@ module Liquid
       @options    = options
     end
 
+    def raw
+      "#{@tag_name} #{@markup}"
+    end
+
     def parse(tokens)
     end
 

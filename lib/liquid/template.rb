@@ -21,6 +21,8 @@ module Liquid
     attr_accessor :root, :resource_limits
     @@file_system = BlankFileSystem.new
 
+    attr_reader :profiling
+
     class << self
       # Sets how strict the parser should be.
       # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
@@ -147,6 +149,7 @@ module Liquid
         # render the nodelist.
         # for performance reasons we get an array back here. join will make a string out of it.
         result = @root.render(context)
+        @profiling = context.profiling
         result.respond_to?(:join) ? result.join : result
       rescue Liquid::MemoryError => e
         context.handle_error(e)

@@ -17,6 +17,8 @@ module Liquid
 
     attr_accessor :rethrow_errors
 
+    attr_reader :profiling
+
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = {})
       @environments    = [environments].flatten
       @scopes          = [(outer_scope || {})]
@@ -29,7 +31,17 @@ module Liquid
       @interrupts = []
       @filters = []
 
+      @profiling = Profiler.new
+
       self["__template__"] = ""
+    end
+
+    def timing_start(token)
+      @profiling.start_token(token, self["__template__"])
+    end
+
+    def timing_end(token)
+      @profiling.end_token(token)
     end
 
     def increment_used_resources(key, obj)

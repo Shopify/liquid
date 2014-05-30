@@ -35,6 +35,10 @@ module Liquid
       end
     end
 
+    def raw
+      @markup
+    end
+
     def lax_parse(markup)
       @filters = []
       if match = markup.match(/\s*(#{QuotedFragment})(.*)/om)

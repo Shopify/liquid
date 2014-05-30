@@ -8,5 +8,9 @@ module Liquid
       @line_number = line_number
     end
 
+    def raw
+      "<raw>"
+    end
+
   end
 end
