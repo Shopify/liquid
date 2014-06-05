@@ -1,5 +1,5 @@
 [![Build Status](https://secure.travis-ci.org/Shopify/liquid.png?branch=master)](http://travis-ci.org/Shopify/liquid)
-[![Inline docs](http://inch-pages.github.io/github/Shopify/liquid.png)](http://inch-pages.github.io/github/Shopify/liquid)
+[![Inline docs](http://inch-ci.org/github/Shopify/liquid.png)](http://inch-ci.org/github/Shopify/liquid)
 
 # Liquid template engine
 
