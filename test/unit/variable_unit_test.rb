@@ -133,4 +133,9 @@ class VariableUnitTest < Minitest::Test
       end
     end
   end
+
+  def test_output_raw_source_of_variable
+    var = Variable.new(%! name_of_variable | upcase !)
+    assert_equal " name_of_variable | upcase ", var.raw
+  end
 end

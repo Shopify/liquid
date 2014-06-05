@@ -16,6 +16,7 @@ module Liquid
       if markup =~ Syntax
         @to = $1
         @from = Variable.new($2,options)
+        @from.line_number = line_number
       else
         raise SyntaxError.new options[:locale].t("errors.syntax.assign".freeze)
       end

@@ -1,6 +1,6 @@
 module Liquid
   class Tag
-    attr_accessor :options
+    attr_accessor :options, :line_number
     attr_reader :nodelist, :warnings
 
     class << self
@@ -20,6 +20,10 @@ module Liquid
     end
 
     def parse(tokens)
+    end
+
+    def raw
+      "#{@tag_name} #{@markup}"
     end
 
     def name

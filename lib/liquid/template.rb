@@ -51,6 +51,8 @@ module Liquid
       end
     end
 
+    attr_reader :profiler
+
     class << self
       # Sets how strict the parser should be.
       # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
@@ -85,6 +87,8 @@ module Liquid
       end
 
       # creates a new <tt>Template</tt> object from liquid source code
+      # To enable profiling, pass in <tt>profile: true</tt> as an option.
+      # See Liquid::Profiler for more information
       def parse(source, options = {})
         template = Template.new
         template.parse(source, options)
@@ -99,6 +103,7 @@ module Liquid
     # Parse source code.
     # Returns self for easy chaining
     def parse(source, options = {})
+      @profiling = options.delete(:profile)
       @root = Document.parse(tokenize(source), DEFAULT_OPTIONS.merge(options))
       @warnings = nil
       self
@@ -129,6 +134,9 @@ module Liquid
     #
     # if you use the same filters over and over again consider registering them globally
     # with <tt>Template.register_filter</tt>
+    #
+    # if profiling was enabled in <tt>Template#parse</tt> then the resulting profiling information
+    # will be available via <tt>Template#profiler</tt>
     #
     # Following options can be passed:
     #
@@ -183,7 +191,9 @@ module Liquid
       begin
         # render the nodelist.
         # for performance reasons we get an array back here. join will make a string out of it.
-        result = @root.render(context)
+        result = with_profiling do
+          @root.render(context)
+        end
         result.respond_to?(:join) ? result.join : result
       rescue Liquid::MemoryError => e
         context.handle_error(e)
@@ -203,12 +213,39 @@ module Liquid
     def tokenize(source)
       source = source.source if source.respond_to?(:source)
       return [] if source.to_s.empty?
-      tokens = source.split(TemplateParser)
+
+      tokens = calculate_line_numbers(source.split(TemplateParser))
 
       # removes the rogue empty element at the beginning of the array
       tokens.shift if tokens[0] and tokens[0].empty?
 
       tokens
+    end
+
+    def calculate_line_numbers(raw_tokens)
+      return raw_tokens unless @profiling
+
+      current_line = 1
+      raw_tokens.map do |token|
+        Token.new(token, current_line).tap do
+          current_line += token.count("\n")
+        end
+      end
+    end
+
+    def with_profiling
+      if @profiling
+        @profiler = Profiler.new
+        @profiler.start
+
+        begin
+          yield
+        ensure
+          @profiler.stop
+        end
+      else
+        yield
+      end
     end
 
   end
