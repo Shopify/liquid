@@ -60,6 +60,8 @@ require 'liquid/standardfilters'
 require 'liquid/condition'
 require 'liquid/module_ex'
 require 'liquid/utils'
+require 'liquid/token'
+require 'liquid/profiler'
 
 # Load all the tags of the standard library
 #

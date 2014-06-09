@@ -21,6 +21,13 @@ class TokenizerTest < Test::Unit::TestCase
     assert_equal ['  ', '{% comment %}', ' ', '{% endcomment %}', ' '], tokenize("  {% comment %} {% endcomment %} ")
   end
 
+  def test_calculate_line_numbers_per_token
+    assert_equal [1], tokenize("{{funk}}").map(&:line_number)
+    assert_equal [1, 1, 1], tokenize(" {{funk}} ").map(&:line_number)
+    assert_equal [1, 2, 2], tokenize("\n{{funk}}\n").map(&:line_number)
+    assert_equal [1, 1, 3], tokenize(" {{\n funk \n}} ").map(&:line_number)
+  end
+
   private
 
   def tokenize(source)

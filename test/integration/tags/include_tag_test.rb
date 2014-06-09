@@ -27,6 +27,9 @@ class TestFileSystem
     when "pick_a_source"
       "from TestFileSystem"
 
+    when "display_current_template"
+      "Now in current_template"
+
     else
       template_path
     end

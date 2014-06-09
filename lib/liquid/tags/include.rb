@@ -47,6 +47,7 @@ module Liquid
       variable = context[@variable_name || @template_name[1..-2]]
 
       context.stack do
+        context.using_partial(@template_name)
         @attributes.each do |key, value|
           context[key] = context[value]
         end

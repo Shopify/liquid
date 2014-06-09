@@ -32,6 +32,7 @@ module Liquid
             # fetch the tag from registered blocks
             if tag = Template.tags[$1]
               new_tag = tag.parse($1, $2, tokens, @options)
+              new_tag.line_number = token.line_number
               @blank &&= new_tag.blank?
               @nodelist << new_tag
               @children << new_tag
@@ -45,6 +46,7 @@ module Liquid
           end
         when IsVariable
           new_var = create_variable(token)
+          new_var.line_number = token.line_number
           @nodelist << new_var
           @children << new_var
           @blank = false
@@ -134,6 +136,8 @@ module Liquid
             break
           end
 
+          context.timing_start(token) if token.respond_to?(:render)
+
           token_output = (token.respond_to?(:render) ? token.render(context) : token)
           context.increment_used_resources(:render_length_current, token_output)
           if context.resource_limits_reached?
@@ -143,6 +147,8 @@ module Liquid
           unless token.is_a?(Block) && token.blank?
             output << token_output
           end
+
+          context.timing_end(token) if token.respond_to?(:render)
         rescue MemoryError => e
           raise e
         rescue ::StandardError => e

@@ -15,7 +15,9 @@ module Liquid
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
 
-    attr_accessor :rethrow_errors
+    attr_accessor :rethrow_errors, :enable_profiling
+
+    attr_reader :profiling
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = {})
       @environments    = [environments].flatten
@@ -28,6 +30,29 @@ module Liquid
 
       @interrupts = []
       @filters = []
+
+      @partials = [""]
+      @profiling = Profiler.new
+    end
+
+    def timing_start(token)
+      return unless @enable_profiling
+      @profiling.start_token(token, @partials.last)
+    end
+
+    def timing_end(token)
+      return unless @enable_profiling
+      @profiling.end_token(token)
+    end
+
+    def using_partial(partial_name)
+      return unless @enable_profiling
+      @partials.push(partial_name)
+    end
+
+    def pop_partial
+      return unless @enable_profiling
+      @partials.pop
     end
 
     def increment_used_resources(key, obj)
@@ -116,6 +141,7 @@ module Liquid
     # Pop from the stack. use <tt>Context#stack</tt> instead
     def pop
       raise ContextError if @scopes.size == 1
+      pop_partial
       @scopes.shift
     end
 
