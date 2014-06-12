@@ -128,6 +128,7 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_humanize
     assert_equal "draw the fuckin owl", @filters.humanize("draw_the_fuckin_owl")
+    assert_equal "", @filters.humanize(nil)
   end
 
   def test_map
