@@ -243,6 +243,21 @@ module Liquid
       apply_operation(input, operand, :%)
     end
 
+    def round(input, n = 0)
+      result = to_number(input).round(to_number(n))
+      result = result.to_f if result.is_a?(BigDecimal)
+      result = result.to_i if n == 0
+      result
+    end
+
+    def ceil(input)
+      to_number(input).ceil.to_i
+    end
+
+    def floor(input)
+      to_number(input).floor.to_i
+    end
+
     def default(input, default_value = "".freeze)
       is_blank = input.respond_to?(:empty?) ? input.empty? : !input
       is_blank ? default_value : input
