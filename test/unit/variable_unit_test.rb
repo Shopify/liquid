@@ -13,6 +13,10 @@ class VariableUnitTest < Test::Unit::TestCase
     assert_equal 'hello', var.name
     assert_equal [["textileze",[]]], var.filters
 
+    var = Variable.new('42_meaning_of_life | textileze')
+    assert_equal '42_meaning_of_life', var.name
+    assert_equal [["textileze",[]]], var.filters
+
     var = Variable.new('hello | textileze | paragraph')
     assert_equal 'hello', var.name
     assert_equal [["textileze",[]], ["paragraph",[]]], var.filters
