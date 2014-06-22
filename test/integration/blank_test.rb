@@ -14,7 +14,7 @@ class BlankTestFileSystem
   end
 end
 
-class BlankTest < Test::Unit::TestCase
+class BlankTest < Minitest::Test
   include Liquid
   N = 10
 

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ForTagTest < Test::Unit::TestCase
+class ForTagTest < Minitest::Test
   include Liquid
 
   def test_for
@@ -283,7 +283,7 @@ HERE
   end
 
   def test_bad_variable_naming_in_for_loop
-    assert_raise(Liquid::SyntaxError) do
+    assert_raises(Liquid::SyntaxError) do
       Liquid::Template.parse('{% for a/b in x %}{% endfor %}')
     end
   end

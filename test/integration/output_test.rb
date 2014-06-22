@@ -27,7 +27,7 @@ module FunnyFilter
 
 end
 
-class OutputTest < Test::Unit::TestCase
+class OutputTest < Minitest::Test
   include Liquid
 
   def setup
