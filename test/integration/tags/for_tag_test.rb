@@ -1,5 +1,11 @@
 require 'test_helper'
 
+class ThingWithValue < Liquid::Drop
+  def value
+    3
+  end
+end
+
 class ForTagTest < Test::Unit::TestCase
   include Liquid
 
@@ -32,6 +38,20 @@ HERE
 
   def test_for_with_range
     assert_template_result(' 1  2  3 ','{%for item in (1..3) %} {{item}} {%endfor%}')
+  end
+
+  def test_for_with_variable_range
+    assert_template_result(' 1  2  3 ','{%for item in (1..foobar) %} {{item}} {%endfor%}', "foobar" => 3)
+  end
+
+  def test_for_with_hash_value_range
+    foobar = { "value" => 3 }
+    assert_template_result(' 1  2  3 ','{%for item in (1..foobar.value) %} {{item}} {%endfor%}', "foobar" => foobar)
+  end
+
+  def test_for_with_drop_value_range
+    foobar = ThingWithValue.new
+    assert_template_result(' 1  2  3 ','{%for item in (1..foobar.value) %} {{item}} {%endfor%}', "foobar" => foobar)
   end
 
   def test_for_with_variable
