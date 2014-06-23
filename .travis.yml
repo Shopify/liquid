@@ -11,7 +11,7 @@ matrix:
     - rvm: rbx-19mode
     - rvm: jruby-head
 
-script: "rake test"
+script: "gem build liquid.gemspec && gem install liquid-3.0.0.gem"
 
 notifications:
   disable: true
