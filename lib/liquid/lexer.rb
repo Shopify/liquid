@@ -14,7 +14,7 @@ module Liquid
     IDENTIFIER = /[\w\-?!]+/
     SINGLE_STRING_LITERAL = /'[^\']*'/
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
-    NUMBER_LITERAL = /-?\d+(\.\d+)?/
+    NUMBER_LITERAL = /-?\d+(\.\d+)?\b/
     DOTDOT = /\.\./
     COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains/
 
