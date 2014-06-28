@@ -4,10 +4,10 @@ rvm:
   - 2.1
   - jruby-19mode
   - jruby-head
-  - rbx-19mode
+  - rbx-2
 matrix:
   allow_failures:
-    - rvm: rbx-19mode
+    - rvm: rbx-2
     - rvm: jruby-head
 
 script: "rake test"
