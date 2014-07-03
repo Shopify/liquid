@@ -21,6 +21,36 @@ module Liquid
     attr_accessor :root, :resource_limits
     @@file_system = BlankFileSystem.new
 
+    class TagRegistry
+      def initialize
+        @tags  = {}
+        @cache = {}
+      end
+
+      def [](tag_name)
+        return nil unless @tags.has_key?(tag_name)
+        return @cache[tag_name] if Liquid.cache_classes
+
+        lookup_class(@tags[tag_name]).tap { |o| @cache[tag_name] = o }
+      end
+
+      def []=(tag_name, klass)
+        @tags[tag_name]  = klass.name
+        @cache[tag_name] = klass
+      end
+
+      def delete(tag_name)
+        @tags.delete(tag_name)
+        @cache.delete(tag_name)
+      end
+
+      private
+
+      def lookup_class(name)
+        name.split("::").reject(&:empty?).reduce(Object) { |scope, const| scope.const_get(const) }
+      end
+    end
+
     class << self
       # Sets how strict the parser should be.
       # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
@@ -41,7 +71,7 @@ module Liquid
       end
 
       def tags
-        @tags ||= {}
+        @tags ||= TagRegistry.new
       end
 
       def error_mode
