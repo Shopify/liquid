@@ -148,7 +148,9 @@ module Liquid
     end
 
     def has_key?(key)
-      resolve(key) != nil
+      with_error_mode(:lax) do
+        resolve(key) != nil
+      end
     end
 
     private
@@ -289,6 +291,17 @@ module Liquid
       def handle_not_found(variable)
         @errors << "Variable {{#{variable}}} not found" if Template.error_mode == :strict
       end
+
+      def with_error_mode(mode)
+        old_error_mode = Template.error_mode
+        begin
+          Template.error_mode = mode
+          yield
+        ensure
+          Template.error_mode = old_error_mode
+        end
+      end
+
   end # Context
 
 end # Liquid

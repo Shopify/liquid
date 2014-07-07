@@ -69,7 +69,7 @@ class ErrorHandlingTest < Test::Unit::TestCase
       end
     end
   end
-  
+
   def test_lax_unrecognized_operator
     assert_nothing_raised do
       template = Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ', :error_mode => :lax)
