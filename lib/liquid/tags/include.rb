@@ -44,14 +44,23 @@ module Liquid
 
     def render(context)
       partial = load_cached_partial(context)
-      variable = context[@variable_name || @template_name[1..-2]]
+
+      template_inner_name = @template_name[1..-2]
+
+      if @variable_name
+        variable = context[@variable_name]
+      elsif context.has_key?(template_inner_name)
+        variable = context[template_inner_name]
+      else
+        variable = nil
+      end
 
       context.stack do
         @attributes.each do |key, value|
           context[key] = context[value]
         end
 
-        context_variable_name = @template_name[1..-2].split('/'.freeze).last
+        context_variable_name = template_inner_name.split('/'.freeze).last
         if variable.is_a?(Array)
           variable.collect do |var|
             context[context_variable_name] = var

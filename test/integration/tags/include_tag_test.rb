@@ -205,4 +205,12 @@ class IncludeTagTest < Test::Unit::TestCase
       Liquid::Template.tags['include'] = original_tag
     end
   end
+
+  def test_does_not_add_error_in_strict_mode_for_missing_variable
+    Liquid::Template.file_system = TestFileSystem.new
+
+    a = Liquid::Template.parse(' {% include "nested_template" %}')
+    a.render!
+    assert_empty a.errors
+  end
 end # IncludeTagTest

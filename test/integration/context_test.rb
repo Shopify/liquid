@@ -20,4 +20,14 @@ class ContextTest < Test::Unit::TestCase
     assert_equal 'Global test', Template.parse("{{'test' | notice }}").render!
     assert_equal 'Local test', Template.parse("{{'test' | notice }}").render!({}, :filters => [local])
   end
+
+  def test_has_key_will_not_add_an_error_for_missing_keys
+    Template.error_mode = :strict
+
+    context = Context.new
+
+    context.has_key?('unknown')
+
+    assert_empty context.errors
+  end
 end
