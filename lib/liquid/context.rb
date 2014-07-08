@@ -205,7 +205,6 @@ module Liquid
         end
 
         scope     ||= @environments.last || @scopes.last
-        handle_not_found(key) unless scope.has_key?(key)
         variable  ||= lookup_and_evaluate(scope, key)
 
         variable = variable.to_liquid
@@ -255,7 +254,6 @@ module Liquid
               # No key was present with the desired value and it wasn't one of the directly supported
               # keywords either. The only thing we got left is to return nil
             else
-              handle_not_found(markup)
               return nil
             end
 
@@ -285,10 +283,6 @@ module Liquid
           end
         end
       end # squash_instance_assigns_with_environments
-
-      def handle_not_found(variable)
-        @errors << "Variable {{#{variable}}} not found" if Template.error_mode == :strict
-      end
   end # Context
 
 end # Liquid
