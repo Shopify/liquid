@@ -1,5 +1,6 @@
 require 'cgi'
 require 'bigdecimal'
+require 'unicode'
 
 module Liquid
 
@@ -20,17 +21,17 @@ module Liquid
 
     # convert an input string to DOWNCASE
     def downcase(input)
-      input.to_s.downcase
+      ::Unicode::downcase String(input)
     end
 
     # convert an input string to UPCASE
     def upcase(input)
-      input.to_s.upcase
+      ::Unicode::upcase String(input)
     end
 
     # capitalize words in the input centence
     def capitalize(input)
-      input.to_s.capitalize
+      ::Unicode::capitalize String(input)
     end
 
     def escape(input)

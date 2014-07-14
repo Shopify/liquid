@@ -54,12 +54,20 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_downcase
     assert_equal 'testing', @filters.downcase("Testing")
+    assert_equal 'æøå', @filters.downcase("Æøå")
     assert_equal '', @filters.downcase(nil)
   end
 
   def test_upcase
     assert_equal 'TESTING', @filters.upcase("Testing")
+    assert_equal 'ÆØÅ', @filters.upcase("æøå")
     assert_equal '', @filters.upcase(nil)
+  end
+
+  def test_capitalize
+    assert_equal 'Testing', @filters.capitalize("testing")
+    assert_equal 'Æøå', @filters.capitalize("æøå")
+    assert_equal '', @filters.capitalize(nil)
   end
 
   def test_truncate
