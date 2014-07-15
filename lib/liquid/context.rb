@@ -73,7 +73,7 @@ module Liquid
 
     # are there any not handled interrupts?
     def has_interrupt?
-     !@interrupts.empty?
+      !@interrupts.empty?
     end
 
     # push an interrupt to the stack. this interrupt is considered not handled.
