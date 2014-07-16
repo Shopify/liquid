@@ -1,5 +1,7 @@
 module Liquid
 
+  require 'lru_redux'
+
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
   #   context['variable'] = 'testing'
@@ -219,19 +221,24 @@ module Liquid
       #  @context['hash'] = {"name" => 'tobi'}
       #  assert_equal 'tobi', @context['hash.name']
       #  assert_equal 'tobi', @context['hash["name"]']
+   
+      @@parts_hash = LruRedux::Cache.new(10000)
+     
       def variable(markup)
-        parts = markup.scan(VariableParser)
         square_bracketed = /\A\[(.*)\]\z/m
 
-        first_part = parts.shift
+        @@parts_hash[markup] = markup.scan(VariableParser) unless @@parts_hash[markup]
+        parts = @@parts_hash[markup]
 
+        first_part = parts.first
+ 
         if first_part =~ square_bracketed
           first_part = resolve($1)
         end
 
         if object = find_variable(first_part)
 
-          parts.each do |part|
+          parts.last(parts.length-1).each do |part|
             part = resolve($1) if part_resolved = (part =~ square_bracketed)
 
             # If object is a hash- or array-like object we look for the
