@@ -70,6 +70,10 @@ class ContextUnitTest < Test::Unit::TestCase
     @context = Liquid::Context.new
   end
 
+  def teardown
+    Spy.teardown
+  end
+
   def test_variables
     @context['string'] = 'string'
     assert_equal 'string', @context['string']
@@ -457,4 +461,16 @@ class ContextUnitTest < Test::Unit::TestCase
     assert_kind_of CategoryDrop, @context['category']
     assert_equal @context, @context['category'].context
   end
+
+  def test_use_empty_instead_of_any_in_interrupt_handling_to_avoid_lots_of_unnecessary_object_allocations
+    mock_any = Spy.on_instance_method(Array, :any?)
+    mock_empty = Spy.on_instance_method(Array, :empty?)
+    mock_has_interrupt = Spy.on(@context, :has_interrupt?).and_call_through
+
+    @context.has_interrupt?
+
+    refute mock_any.has_been_called?
+    assert mock_empty.has_been_called?
+  end 
+
 end # ContextTest

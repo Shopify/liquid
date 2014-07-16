@@ -2,6 +2,7 @@
 
 require 'test/unit'
 require 'test/unit/assertions'
+require 'spy/integration'
 
 $:.unshift(File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib'))
 require 'liquid.rb'
