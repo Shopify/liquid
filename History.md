@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Optimize variable parsing to avoid repeated regex evaluation during template rendering #383 [Jason Hiltz-Laforge, jasonhl]
 * Optimize checking for block interrupts to reduce object allocation #380 [Jason Hiltz-Laforge, jasonhl] 
 * Properly set context rethrow_errors on render! #349 [Thierry Joyal, tjoyal]
 * Fix broken rendering of variables which are equal to false, see #345 [Florian Weingarten, fw42]

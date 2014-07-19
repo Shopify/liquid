@@ -473,4 +473,14 @@ class ContextUnitTest < Test::Unit::TestCase
     assert mock_empty.has_been_called?
   end 
 
+  def test_variable_lookup_caches_markup
+    mock_scan = Spy.on_instance_method(String, :scan).and_return(["string"])
+
+    @context['string'] = 'string'
+    @context['string']
+    @context['string']
+
+    assert_equal 1, mock_scan.calls.size
+  end
+
 end # ContextTest

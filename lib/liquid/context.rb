@@ -17,6 +17,8 @@ module Liquid
 
     attr_accessor :rethrow_errors
 
+    SQUARE_BRACKETED = /\A\[(.*)\]\z/m
+
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = {})
       @environments    = [environments].flatten
       @scopes          = [(outer_scope || {})]
@@ -28,6 +30,7 @@ module Liquid
 
       @interrupts = []
       @filters = []
+      @parsed_variables = Hash.new{ |cache, markup| cache[markup] = variable_parse(markup) } 
     end
 
     def increment_used_resources(key, obj)
@@ -213,6 +216,16 @@ module Liquid
         return variable
       end
 
+      def variable_parse(markup)
+        parts = markup.scan(VariableParser)
+        needs_resolution = false
+        if parts.first =~ SQUARE_BRACKETED 
+          needs_resolution = true
+          parts[0] = $1
+        end
+        {:first => parts.shift, :needs_resolution => needs_resolution, :rest => parts} 
+      end
+
       # Resolves namespaced queries gracefully.
       #
       # Example
@@ -220,19 +233,17 @@ module Liquid
       #  assert_equal 'tobi', @context['hash.name']
       #  assert_equal 'tobi', @context['hash["name"]']
       def variable(markup)
-        parts = markup.scan(VariableParser)
-        square_bracketed = /\A\[(.*)\]\z/m
+        parts = @parsed_variables[markup]
 
-        first_part = parts.shift
-
-        if first_part =~ square_bracketed
-          first_part = resolve($1)
+        first_part = parts[:first] 
+        if parts[:needs_resolution]
+          first_part = resolve(parts[:first])
         end
 
         if object = find_variable(first_part)
 
-          parts.each do |part|
-            part = resolve($1) if part_resolved = (part =~ square_bracketed)
+          parts[:rest].each do |part|
+            part = resolve($1) if part_resolved = (part =~ SQUARE_BRACKETED)
 
             # If object is a hash- or array-like object we look for the
             # presence of the key and if its available we return it
