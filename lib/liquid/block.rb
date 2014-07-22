@@ -5,10 +5,14 @@ module Liquid
     TAGSTART = "{%".freeze
     VARSTART = "{{".freeze
 
+    class << self
+      public :new
+    end
+
     def initialize(tag_name, markup, options)
       super
       @block_delimiter = "end#{tag_name}"
-    end 
+    end
 
     def blank?
       @blank || false
