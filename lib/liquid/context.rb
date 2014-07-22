@@ -194,7 +194,12 @@ module Liquid
 
       # Fetches an object starting at the local scope and then moving up the hierachy
       def find_variable(key)
-        scope = @scopes.find { |s| s.has_key?(key) }
+
+        # This was changed from find() to find_index() because this is a very hot
+        # path and find_index() is optimized in MRI to reduce object allocation
+        index = @scopes.find_index { |s| s.has_key?(key) }
+        scope = @scopes[index] if index
+
         variable = nil
 
         if scope.nil?
