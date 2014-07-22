@@ -1,9 +1,14 @@
 module Liquid
   class Block < Tag
-    IsTag             = /\A#{TagStart}/o
-    IsVariable        = /\A#{VariableStart}/o
     FullToken         = /\A#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
     ContentOfVariable = /\A#{VariableStart}(.*)#{VariableEnd}\z/om
+    TAGSTART = "{%".freeze
+    VARSTART = "{{".freeze
+
+    def initialize(tag_name, markup, options)
+      super
+      @block_delimiter = "end#{tag_name}"
+    end 
 
     def blank?
       @blank || false
@@ -18,41 +23,41 @@ module Liquid
       @children = []
 
       while token = tokens.shift
-        case token
-        when IsTag
-          if token =~ FullToken
+        unless token.empty?
+          case
+          when token.start_with?(TAGSTART)
+            if token =~ FullToken
 
-            # if we found the proper block delimiter just end parsing here and let the outer block
-            # proceed
-            if block_delimiter == $1
-              end_tag
-              return
-            end
+              # if we found the proper block delimiter just end parsing here and let the outer block
+              # proceed
+              if @block_delimiter == $1
+                end_tag
+                return
+              end
 
-            # fetch the tag from registered blocks
-            if tag = Template.tags[$1]
-              new_tag = tag.parse($1, $2, tokens, @options)
-              @blank &&= new_tag.blank?
-              @nodelist << new_tag
-              @children << new_tag
+              # fetch the tag from registered blocks
+              if tag = Template.tags[$1]
+                new_tag = tag.parse($1, $2, tokens, @options)
+                @blank &&= new_tag.blank?
+                @nodelist << new_tag
+                @children << new_tag
+              else
+                # this tag is not registered with the system
+                # pass it to the current block for special handling or error reporting
+                unknown_tag($1, $2, tokens)
+              end
             else
-              # this tag is not registered with the system
-              # pass it to the current block for special handling or error reporting
-              unknown_tag($1, $2, tokens)
+              raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
             end
+          when token.start_with?(VARSTART) 
+            new_var = create_variable(token)
+            @nodelist << new_var
+            @children << new_var
+            @blank = false
           else
-            raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
+            @nodelist << token
+            @blank &&= (token =~ /\A\s*\z/)
           end
-        when IsVariable
-          new_var = create_variable(token)
-          @nodelist << new_var
-          @children << new_var
-          @blank = false
-        when ''.freeze
-          # pass
-        else
-          @nodelist << token
-          @blank &&= (token =~ /\A\s*\z/)
         end
       end
 
@@ -85,14 +90,10 @@ module Liquid
       when 'end'.freeze
         raise SyntaxError.new(options[:locale].t("errors.syntax.invalid_delimiter".freeze,
                                                  :block_name => block_name,
-                                                 :block_delimiter => block_delimiter))
+                                                 :block_delimiter => @block_delimiter))
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.unknown_tag".freeze, :tag => tag))
       end
-    end
-
-    def block_delimiter
-      "end#{block_name}"
     end
 
     def block_name
