@@ -31,7 +31,7 @@ module Liquid
     end
 
     def blank?
-      @blank || false
+      false
     end
 
     def parse_with_selected_parser(markup)
@@ -50,11 +50,12 @@ module Liquid
     end
 
     private
+
     def strict_parse_with_error_context(markup)
       strict_parse(markup)
     rescue SyntaxError => e
       e.message << " in \"#{markup.strip}\"" 
       raise e
     end
-  end # Tag
-end # Liquid
+  end
+end

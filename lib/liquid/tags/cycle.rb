@@ -43,11 +43,8 @@ module Liquid
       end
     end
 
-    def blank?
-      false
-    end
-
     private
+
     def variables_from_string(markup)
       markup.split(',').collect do |var|
         var =~ /\s*(#{QuotedFragment})\s*/o
