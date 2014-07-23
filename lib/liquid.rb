@@ -29,12 +29,13 @@ module Liquid
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
   VariableSegment             = /[\w\-]/
   VariableStart               = /\{\{/
+  VariableIncompleteEnd       = /\}\}?/
   VariableEnd                 = /\}\}/
   QuotedString                = /(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/om
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
   AnyStartingTag              = /\{\{|\{\%/
-  PartialTemplateParser       = /#{TagStart}(?:#{QuotedString}|.*?)*#{TagEnd}|#{VariableStart}(?:#{QuotedString}|.*?)*#{VariableEnd}/om
+  PartialTemplateParser       = /#{TagStart}(?:#{QuotedString}|.*?)*#{TagEnd}|#{VariableStart}(?:#{QuotedString}|.*?)*#{VariableIncompleteEnd}/om
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
 
