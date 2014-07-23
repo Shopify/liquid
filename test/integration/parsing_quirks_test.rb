@@ -84,4 +84,11 @@ class ParsingQuirksTest < Test::Unit::TestCase
       assert_template_result('',"{% if #{markup} %} YES {% endif %}")
     end
   end
+
+  def test_raise_on_invalid_tag_delimiter
+    assert_raise(Liquid::SyntaxError) do
+      Template.new.parse('{% end %}')
+    end
+  end
+
 end # ParsingQuirksTest

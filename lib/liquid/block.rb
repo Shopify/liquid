@@ -5,11 +5,6 @@ module Liquid
     TAGSTART = "{%".freeze
     VARSTART = "{{".freeze
 
-    def initialize(tag_name, markup, options)
-      super
-      @block_delimiter = "end#{tag_name}"
-    end 
-
     def blank?
       @blank
     end
@@ -30,7 +25,7 @@ module Liquid
 
               # if we found the proper block delimiter just end parsing here and let the outer block
               # proceed
-              if @block_delimiter == $1
+              if block_delimiter == $1
                 end_tag
                 return
               end
@@ -98,6 +93,10 @@ module Liquid
 
     def block_name
       @tag_name
+    end
+
+    def block_delimiter
+      @block_delimiter ||= "end#{block_name}"
     end
 
     def create_variable(token)

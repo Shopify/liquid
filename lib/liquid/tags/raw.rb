@@ -8,7 +8,7 @@ module Liquid
       while token = tokens.shift
         if token =~ FullTokenPossiblyInvalid
           @nodelist << $1 if $1 != "".freeze
-          if @block_delimiter == $2
+          if block_delimiter == $2
             end_tag
             return
           end
