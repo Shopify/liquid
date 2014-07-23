@@ -28,9 +28,9 @@ module Liquid
     attr_accessor :left, :operator, :right
 
     def initialize(left = nil, operator = nil, right = nil)
-      @left = left
+      @left = Expression.parse(left)
       @operator = operator
-      @right = right
+      @right = Expression.parse(right)
       @child_relation  = nil
       @child_condition = nil
     end
@@ -96,10 +96,10 @@ module Liquid
       # If the operator is empty this means that the decision statement is just
       # a single variable. We can just poll this variable from the context and
       # return this as the result.
-      return context[left] if op == nil
+      return context.evaluate(left) if op == nil
 
-      left = context[left]
-      right = context[right]
+      left = context.evaluate(left)
+      right = context.evaluate(right)
 
       operation = self.class.operators[op] || raise(Liquid::ArgumentError.new("Unknown operator #{op}"))
 
