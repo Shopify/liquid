@@ -38,10 +38,6 @@ module Liquid
     def parse(tokens)
     end
 
-    def blank?
-      false
-    end
-
     def render(context)
       partial = load_cached_partial(context)
       variable = context[@variable_name || @template_name[1..-2]]

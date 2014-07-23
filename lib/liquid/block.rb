@@ -11,7 +11,7 @@ module Liquid
     end 
 
     def blank?
-      @blank || false
+      @blank
     end
 
     def parse(tokens)
@@ -49,7 +49,7 @@ module Liquid
             else
               raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
             end
-          when token.start_with?(VARSTART) 
+          when token.start_with?(VARSTART)
             new_var = create_variable(token)
             @nodelist << new_var
             @children << new_var
