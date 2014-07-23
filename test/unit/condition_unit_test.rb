@@ -49,6 +49,17 @@ class ConditionUnitTest < Test::Unit::TestCase
     assert_evalutes_false "'bob'", 'contains', "'---'"
   end
 
+  def test_invalid_comparation_operator
+    assert_evaluates_argument_error "1", '~~', '0'
+  end
+
+  def test_comparation_of_int_and_str
+    assert_evaluates_argument_error "'1'", '>', '0'
+    assert_evaluates_argument_error "'1'", '<', '0'
+    assert_evaluates_argument_error "'1'", '>=', '0'
+    assert_evaluates_argument_error "'1'", '<=', '0'
+  end
+
   def test_contains_works_on_arrays
     @context = Liquid::Context.new
     @context['array'] = [1,2,3,4,5]
@@ -124,4 +135,11 @@ class ConditionUnitTest < Test::Unit::TestCase
       assert !Condition.new(left, op, right).evaluate(@context || Liquid::Context.new),
              "Evaluated true: #{left} #{op} #{right}"
     end
+
+    def assert_evaluates_argument_error(left, op, right)
+      assert_raises(Liquid::ArgumentError) do
+        Condition.new(left, op, right).evaluate(@context || Liquid::Context.new)
+      end
+    end
+
 end # ConditionTest

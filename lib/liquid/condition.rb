@@ -94,12 +94,16 @@ module Liquid
 
       left, right = context[left], context[right]
 
-      operation = self.class.operators[op] || raise(ArgumentError.new("Unknown operator #{op}"))
+      operation = self.class.operators[op] || raise(Liquid::ArgumentError.new("Unknown operator #{op}"))
 
       if operation.respond_to?(:call)
         operation.call(self, left, right)
       elsif left.respond_to?(operation) and right.respond_to?(operation)
-        left.send(operation, right)
+        begin
+          left.send(operation, right)
+        rescue ::ArgumentError => e
+          raise Liquid::ArgumentError.new(e.message)
+        end
       else
         nil
       end
