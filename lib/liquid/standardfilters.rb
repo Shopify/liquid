@@ -92,7 +92,7 @@ module Liquid
 
     # Join elements of the array with certain character between them
     def join(input, glue = ' '.freeze)
-      Array(input).join(glue)
+      InputIterator.new(input).join(glue)
     end
 
     # Sort elements of the array
@@ -110,7 +110,7 @@ module Liquid
 
     # Reverse the elements of an array
     def reverse(input)
-      ary = Array(input)
+      ary = InputIterator.new(input)
       ary.reverse
     end
 
@@ -309,16 +309,23 @@ module Liquid
       include Enumerable
 
       def initialize(input)
-      @input =
-          if input.is_a?(Array)
-            input.flatten
-          elsif input.is_a?(Hash)
-            [input]
-          elsif input.is_a?(Enumerable)
-            input
-          else
-            Array(input)
-          end
+        @input = if input.is_a?(Array)
+          input.flatten
+        elsif input.is_a?(Hash)
+          [input]
+        elsif input.is_a?(Enumerable)
+          input
+        else
+          Array(input)
+        end
+      end
+
+      def join(glue)
+        to_a.join(glue)
+      end
+
+      def reverse
+        reverse_each.to_a
       end
 
       def each
