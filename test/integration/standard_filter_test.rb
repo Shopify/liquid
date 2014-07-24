@@ -7,6 +7,8 @@ class Filters
 end
 
 class TestThing
+  attr_reader :foo
+
   def initialize
     @foo = 0
   end
@@ -115,6 +117,10 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal [{"a" => 1}, {"a" => 2}, {"a" => 3}, {"a" => 4}], @filters.sort([{"a" => 4}, {"a" => 3}, {"a" => 1}, {"a" => 2}], "a")
   end
 
+  def test_legacy_sort_hash
+    assert_equal [{a:1, b:2}], @filters.sort({a:1, b:2})
+  end
+
   def test_numerical_vs_lexicographical_sort
     assert_equal [2, 10], @filters.sort([10, 2])
     assert_equal [{"a" => 2}, {"a" => 10}], @filters.sort([{"a" => 10}, {"a" => 2}], "a")
@@ -124,6 +130,10 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_reverse
     assert_equal [4,3,2,1], @filters.reverse([1,2,3,4])
+  end
+
+  def test_legacy_reverse_hash
+    assert_equal [{a:1, b:2}], @filters.reverse(a:1, b:2)
   end
 
   def test_map
@@ -147,9 +157,16 @@ class StandardFiltersTest < Test::Unit::TestCase
       "thing" => { "foo" => [ { "bar" => 42 }, { "bar" => 17 } ] }
   end
 
+  def test_legacy_map_on_hashes_with_dynamic_key
+    template = "{% assign key = 'foo' %}{{ thing | map: key | map: 'bar' }}"
+    hash = { "foo" => { "bar" => 42 } }
+    assert_template_result "42", template, "thing" => hash
+  end
+
   def test_sort_calls_to_liquid
     t = TestThing.new
-    assert_template_result "woot: 1", '{{ foo | sort: "whatever" }}', "foo" => [t]
+    Liquid::Template.parse('{{ foo | sort: "whatever" }}').render("foo" => [t])
+    assert t.foo > 0
   end
 
   def test_map_over_proc
