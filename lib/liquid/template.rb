@@ -142,7 +142,11 @@ module Liquid
       context = case args.first
       when Liquid::Context
         c = args.shift
-        c.rethrow_errors = true if @rethrow_errors
+
+        if @rethrow_errors
+          c.exception_handler = ->(e) { true }
+        end
+
         c
       when Liquid::Drop
         drop = args.shift
@@ -167,6 +171,9 @@ module Liquid
           context.add_filters(options[:filters])
         end
 
+        if options[:exception_handler]
+          context.exception_handler = options[:exception_handler]
+        end
       when Module
         context.add_filters(args.pop)
       when Array
