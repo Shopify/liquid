@@ -163,16 +163,6 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_template_result "42", template, "thing" => hash
   end
 
-  def test_flatten
-    assert_equal [1,2,3,4], @filters.flatten([1,2,3,4])
-    assert_equal [1,2,3,4], @filters.flatten([[1,2,3,4]])
-    assert_equal [1,2,3,4], @filters.flatten([[1],[2],[3],[4]])
-    assert_equal [1], @filters.flatten(1)
-
-    assert_template_result '1234', "{{ ary | flatten | flatten }}",
-      'ary' => [[1],2,[3],4]
-  end
-
   def test_sort_calls_to_liquid
     t = TestThing.new
     Liquid::Template.parse('{{ foo | sort: "whatever" }}').render("foo" => [t])

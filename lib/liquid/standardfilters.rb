@@ -127,11 +127,6 @@ module Liquid
       end
     end
 
-    # flatten the given input
-    def flatten(input)
-      Array(input).flatten
-    end
-
     # Replace occurrences of a string with another
     def replace(input, string, replacement = ''.freeze)
       input.to_s.gsub(string, replacement.to_s)
