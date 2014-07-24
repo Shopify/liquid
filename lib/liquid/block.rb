@@ -85,7 +85,7 @@ module Liquid
       when 'end'.freeze
         raise SyntaxError.new(options[:locale].t("errors.syntax.invalid_delimiter".freeze,
                                                  :block_name => block_name,
-                                                 :block_delimiter => @block_delimiter))
+                                                 :block_delimiter => block_delimiter))
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.unknown_tag".freeze, :tag => tag))
       end
