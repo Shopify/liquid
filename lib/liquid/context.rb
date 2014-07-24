@@ -19,11 +19,12 @@ module Liquid
     SQUARE_BRACKETED = /\A\[(.*)\]\z/m
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = {})
-      @environments    = [environments].flatten
-      @scopes          = [(outer_scope || {})]
-      @registers       = registers
-      @errors          = []
-      @resource_limits = (resource_limits || {}).merge!({ :render_score_current => 0, :assign_score_current => 0 })
+      @environments     = [environments].flatten
+      @scopes           = [(outer_scope || {})]
+      @registers        = registers
+      @errors           = []
+      @resource_limits  = (resource_limits || {}).merge!({ :render_score_current => 0, :assign_score_current => 0 })
+      @parsed_variables = Hash.new{ |cache, markup| cache[markup] = variable_parse(markup) } 
       squash_instance_assigns_with_environments
 
       if rethrow_errors
@@ -32,7 +33,6 @@ module Liquid
 
       @interrupts = []
       @filters = []
-      @parsed_variables = Hash.new{ |cache, markup| cache[markup] = variable_parse(markup) } 
     end
 
     def increment_used_resources(key, obj)
