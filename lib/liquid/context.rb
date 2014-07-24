@@ -14,8 +14,7 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
-
-    attr_accessor :rethrow_errors
+    attr_accessor :exception_handler
 
     SQUARE_BRACKETED = /\A\[(.*)\]\z/m
 
@@ -24,9 +23,12 @@ module Liquid
       @scopes          = [(outer_scope || {})]
       @registers       = registers
       @errors          = []
-      @rethrow_errors  = rethrow_errors
       @resource_limits = (resource_limits || {}).merge!({ :render_score_current => 0, :assign_score_current => 0 })
       squash_instance_assigns_with_environments
+
+      if rethrow_errors
+        self.exception_handler = ->(e) { true }
+      end
 
       @interrupts = []
       @filters = []
@@ -91,7 +93,8 @@ module Liquid
 
     def handle_error(e)
       errors.push(e)
-      raise if @rethrow_errors
+
+      raise if exception_handler && exception_handler.call(e)
 
       case e
       when SyntaxError
@@ -300,5 +303,4 @@ module Liquid
         end
       end # squash_instance_assigns_with_environments
   end # Context
-
 end # Liquid
