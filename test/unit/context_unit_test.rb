@@ -483,4 +483,12 @@ class ContextUnitTest < Test::Unit::TestCase
     assert_equal 1, mock_scan.calls.size
   end
 
+  def test_context_initialization_with_a_proc_in_environment
+    contx = Context.new([:test => lambda { |c| c['poutine']}], {:test => :foo})
+
+    assert contx
+    assert_nil contx['poutine']
+  end
+
+
 end # ContextTest
