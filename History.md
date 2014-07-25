@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Removed Block#end_tag. Instead, override parse with `super` followed by your code. See #446 [Dylan Thacker-Smith, dylanahsmith]
 * Fixed condition with wrong data types, see #423 [Bogdan Gusiev]
 * Add url_encode to standard filters, see #421 [Derrick Reimer, djreimer]
 * Add uniq to standard filters [Florian Weingarten, fw42]

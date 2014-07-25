@@ -23,10 +23,7 @@ module Liquid
 
                 # if we found the proper block delimiter just end parsing here and let the outer block
                 # proceed
-                if block_delimiter == $1
-                  end_tag
-                  return
-                end
+                return if block_delimiter == $1
 
                 # fetch the tag from registered blocks
                 if tag = Template.tags[$1]
@@ -75,9 +72,6 @@ module Liquid
       end
 
       all_warnings
-    end
-
-    def end_tag
     end
 
     def unknown_tag(tag, params, tokens)
