@@ -27,10 +27,6 @@ module Liquid
       @parsed_variables = Hash.new{ |cache, markup| cache[markup] = variable_parse(markup) } 
       squash_instance_assigns_with_environments
 
-      @used_stacks = 0
-      @unused_stacks = 0
-      @max_stack_depth = 0
-      @this_stack_depth = 0
       @this_stack_used = false
 
       if rethrow_errors
