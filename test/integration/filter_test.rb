@@ -111,14 +111,11 @@ class FiltersInTemplate < Minitest::Test
   include Liquid
 
   def test_local_global
-    original_filters = Array.new(Strainer.class_eval('@@filters'))
-    Template.register_filter(MoneyFilter)
-
-    assert_equal " 1000$ ", Template.parse("{{1000 | money}}").render!(nil, nil)
-    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => CanadianMoneyFilter)
-    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => [CanadianMoneyFilter])
-  ensure
-    Strainer.class_eval('@@filters = ' + original_filters.to_s)
+    with_global_filter(MoneyFilter) do
+      assert_equal " 1000$ ", Template.parse("{{1000 | money}}").render!(nil, nil)
+      assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => CanadianMoneyFilter)
+      assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => [CanadianMoneyFilter])
+    end
   end
 
   def test_local_filter_with_deprecated_syntax

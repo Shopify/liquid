@@ -104,7 +104,7 @@ class DropsTest < Minitest::Test
   include Liquid
 
   def test_product_drop
-    tpl = Liquid::Template.parse( '  '  )
+    tpl = Liquid::Template.parse('  ')
     assert_equal '  ', tpl.render!('product' => ProductDrop.new)
   end
 

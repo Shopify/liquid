@@ -47,10 +47,21 @@ module Minitest
       assert_match match, exception.message
     end
 
+    def with_global_filter(*globals)
+      original_filters = Array.new(Liquid::Strainer.class_variable_get(:@@filters))
+      globals.each do |global|
+        Liquid::Template.register_filter(global)
+      end
+      yield
+    ensure
+      Liquid::Strainer.class_variable_set(:@@filters, original_filters)
+    end
+
     def with_error_mode(mode)
       old_mode = Liquid::Template.error_mode
       Liquid::Template.error_mode = mode
       yield
+    ensure
       Liquid::Template.error_mode = old_mode
     end
   end
