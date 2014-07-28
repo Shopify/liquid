@@ -1,10 +1,10 @@
 require 'test_helper'
 
-class FileSystemUnitTest < Test::Unit::TestCase
+class FileSystemUnitTest < Minitest::Test
   include Liquid
 
   def test_default
-    assert_raise(FileSystemError) do
+    assert_raises(FileSystemError) do
       BlankFileSystem.new.read_template_file("dummy", {'dummy'=>'smarty'})
     end
   end
@@ -14,15 +14,15 @@ class FileSystemUnitTest < Test::Unit::TestCase
     assert_equal "/some/path/_mypartial.liquid"    , file_system.full_path("mypartial")
     assert_equal "/some/path/dir/_mypartial.liquid", file_system.full_path("dir/mypartial")
 
-    assert_raise(FileSystemError) do
+    assert_raises(FileSystemError) do
       file_system.full_path("../dir/mypartial")
     end
 
-    assert_raise(FileSystemError) do
+    assert_raises(FileSystemError) do
       file_system.full_path("/dir/../../dir/mypartial")
     end
 
-    assert_raise(FileSystemError) do
+    assert_raises(FileSystemError) do
       file_system.full_path("/etc/passwd")
     end
   end

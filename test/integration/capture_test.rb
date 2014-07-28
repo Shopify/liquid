@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CaptureTest < Test::Unit::TestCase
+class CaptureTest < Minitest::Test
   include Liquid
 
   def test_captures_block_content_in_variable

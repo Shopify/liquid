@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ContextTest < Test::Unit::TestCase
+class ContextTest < Minitest::Test
   include Liquid
 
   def test_override_global_filter

@@ -41,7 +41,7 @@ class TestEnumerable < Liquid::Drop
   end
 end
 
-class StandardFiltersTest < Test::Unit::TestCase
+class StandardFiltersTest < Minitest::Test
   include Liquid
 
   def setup

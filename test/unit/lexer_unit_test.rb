@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class LexerUnitTest < Test::Unit::TestCase
+class LexerUnitTest < Minitest::Test
   include Liquid
 
   def test_strings
