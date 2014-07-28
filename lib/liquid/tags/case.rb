@@ -14,12 +14,18 @@ module Liquid
       end
     end
 
+    def parse(tokens)
+      body = BlockBody.new(options)
+      while more = parse_body(body, tokens)
+        body = @blocks.last.attachment
+      end
+    end
+
     def nodelist
-      @blocks.flat_map(&:attachment)
+      @blocks.map(&:attachment)
     end
 
     def unknown_tag(tag, markup, tokens)
-      @nodelist = []
       case tag
       when 'when'.freeze
         record_when_condition(markup)
@@ -37,10 +43,10 @@ module Liquid
         output = ''
         @blocks.each do |block|
           if block.else?
-            return render_all(block.attachment, context) if execute_else_block
+            return block.attachment.render(context) if execute_else_block
           elsif block.evaluate(context)
             execute_else_block = false
-            output << render_all(block.attachment, context)
+            output << block.attachment.render(context)
           end
         end
         output
@@ -50,8 +56,9 @@ module Liquid
     private
 
     def record_when_condition(markup)
+      body = BlockBody.new(options)
+
       while markup
-        # Create a new nodelist and assign it to the new block
         if not markup =~ WhenSyntax
           raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_when".freeze))
         end
@@ -59,8 +66,8 @@ module Liquid
         markup = $2
 
         block = Condition.new(@left, '=='.freeze, Expression.parse($1))
-        block.attach(@nodelist)
-        @blocks.push(block)
+        block.attach(body)
+        @blocks << block
       end
     end
 
@@ -70,7 +77,7 @@ module Liquid
       end
 
       block = ElseCondition.new
-      block.attach(@nodelist)
+      block.attach(BlockBody.new(options))
       @blocks << block
     end
   end

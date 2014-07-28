@@ -20,8 +20,13 @@ module Liquid
       push_block('if'.freeze, markup)
     end
 
+    def parse(tokens)
+      while more = parse_body(@blocks.last.attachment, tokens)
+      end
+    end
+
     def nodelist
-      @blocks.flat_map(&:attachment)
+      @blocks.map(&:attachment)
     end
 
     def unknown_tag(tag, markup, tokens)
@@ -36,7 +41,7 @@ module Liquid
       context.stack do
         @blocks.each do |block|
           if block.evaluate(context)
-            return render_all(block.attachment, context)
+            return block.attachment.render(context)
           end
         end
         ''.freeze
@@ -53,7 +58,7 @@ module Liquid
         end
 
         @blocks.push(block)
-        @nodelist = block.attach(Array.new)
+        block.attach(BlockBody.new(options))
       end
 
       def lax_parse(markup)
