@@ -41,7 +41,6 @@ module Liquid
 
   singleton_class.send(:attr_accessor, :cache_classes)
   self.cache_classes = true
-
 end
 
 require "liquid/version"
