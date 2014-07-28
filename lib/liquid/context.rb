@@ -27,6 +27,12 @@ module Liquid
       @parsed_variables = Hash.new{ |cache, markup| cache[markup] = variable_parse(markup) } 
       squash_instance_assigns_with_environments
 
+      @used_stacks = 0
+      @unused_stacks = 0
+      @max_stack_depth = 0
+      @this_stack_depth = 0
+      @this_stack_used = false
+
       if rethrow_errors
         self.exception_handler = ->(e) { true }
       end
@@ -134,10 +140,13 @@ module Liquid
     #
     #   context['var]  #=> nil
     def stack(new_scope={})
-      push(new_scope)
+      old_stack_used = @this_stack_used
+      @this_stack_used = (new_scope != {})
+      push(new_scope) if @this_stack_used
       yield
     ensure
-      pop
+      pop if @this_stack_used
+      @this_stack_used = old_stack_used
     end
 
     def clear_instance_assigns
@@ -146,6 +155,10 @@ module Liquid
 
     # Only allow String, Numeric, Hash, Array, Proc, Boolean or <tt>Liquid::Drop</tt>
     def []=(key, value)
+      if !@this_stack_used
+        @this_stack_used = true
+        push({})
+      end
       @scopes[0][key] = value
     end
 
