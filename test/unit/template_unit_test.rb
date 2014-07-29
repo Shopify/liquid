@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TemplateUnitTest < Test::Unit::TestCase
+class TemplateUnitTest < Minitest::Test
   include Liquid
 
   def test_sets_default_localization_in_document

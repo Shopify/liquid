@@ -63,7 +63,7 @@ class ArrayLike
   end
 end
 
-class ContextUnitTest < Test::Unit::TestCase
+class ContextUnitTest < Minitest::Test
   include Liquid
 
   def setup
@@ -107,16 +107,14 @@ class ContextUnitTest < Test::Unit::TestCase
   end
 
   def test_scoping
-    assert_nothing_raised do
-      @context.push
+    @context.push
+    @context.pop
+
+    assert_raises(Liquid::ContextError) do
       @context.pop
     end
 
-    assert_raise(Liquid::ContextError) do
-      @context.pop
-    end
-
-    assert_raise(Liquid::ContextError) do
+    assert_raises(Liquid::ContextError) do
       @context.push
       @context.pop
       @context.pop

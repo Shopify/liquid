@@ -100,14 +100,12 @@ class RealEnumerableDrop < Liquid::Drop
   end
 end
 
-class DropsTest < Test::Unit::TestCase
+class DropsTest < Minitest::Test
   include Liquid
 
   def test_product_drop
-    assert_nothing_raised do
-      tpl = Liquid::Template.parse( '  '  )
-      tpl.render!('product' => ProductDrop.new)
-    end
+    tpl = Liquid::Template.parse('  ')
+    assert_equal '  ', tpl.render!('product' => ProductDrop.new)
   end
 
   def test_drop_does_only_respond_to_whitelisted_methods

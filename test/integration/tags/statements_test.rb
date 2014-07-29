@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class StatementsTest < Test::Unit::TestCase
+class StatementsTest < Minitest::Test
   include Liquid
 
   def test_true_eql_true

@@ -65,7 +65,7 @@ class CustomInclude < Liquid::Tag
   end
 end
 
-class IncludeTagTest < Test::Unit::TestCase
+class IncludeTagTest < Minitest::Test
   include Liquid
 
   def setup
@@ -132,7 +132,7 @@ class IncludeTagTest < Test::Unit::TestCase
 
     Liquid::Template.file_system = infinite_file_system.new
 
-    assert_raise(Liquid::StackLevelError) do
+    assert_raises(Liquid::StackLevelError) do
       Template.parse("{% include 'loop' %}").render!
     end
 

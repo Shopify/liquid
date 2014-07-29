@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CaseTagUnitTest < Test::Unit::TestCase
+class CaseTagUnitTest < Minitest::Test
   include Liquid
 
   def test_case_nodelist
