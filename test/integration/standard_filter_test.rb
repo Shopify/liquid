@@ -27,6 +27,12 @@ class TestThing
   end
 end
 
+class ThingWithToLiquid
+  def to_liquid
+    'foobar'
+  end
+end
+
 class TestDrop < Liquid::Drop
   def test
     "testfoo"
@@ -208,6 +214,14 @@ class StandardFiltersTest < Minitest::Test
 
     assert_equal "07/05/2006", @filters.date(1152098955, "%m/%d/%Y")
     assert_equal "07/05/2006", @filters.date("1152098955", "%m/%d/%Y")
+  end
+
+  def test_first_calls_to_liquid
+    assert_equal 'foobar', @filters.first([ThingWithToLiquid.new])
+  end
+
+  def test_last_calls_to_liquid
+    assert_equal 'foobar', @filters.last([ThingWithToLiquid.new])
   end
 
   def test_first_last

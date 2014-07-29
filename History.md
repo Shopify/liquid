@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Call #to_liquid in "first" and "last" filter, fixes #227 [Florian Weingarten, fw42]
 * Add exception_handler feature, see #397 and #254 [Bogdan Gusiev, bogdan and Florian Weingarten, fw42]
 * Optimize variable parsing to avoid repeated regex evaluation during template rendering #383 [Jason Hiltz-Laforge, jasonhl]
 * Optimize checking for block interrupts to reduce object allocation #380 [Jason Hiltz-Laforge, jasonhl] 
