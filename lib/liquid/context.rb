@@ -137,8 +137,13 @@ module Liquid
     #   context['var]  #=> nil
     def stack(new_scope=nil)
       old_stack_used = @this_stack_used
-      @this_stack_used = (new_scope != nil)
-      push(new_scope) if @this_stack_used
+      if new_scope
+        push(new_scope)
+        @this_stack_used = true
+      else
+        @this_stack_used = false
+      end
+
       yield
     ensure
       pop if @this_stack_used
