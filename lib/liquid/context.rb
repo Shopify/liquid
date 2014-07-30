@@ -151,7 +151,7 @@ module Liquid
 
     # Only allow String, Numeric, Hash, Array, Proc, Boolean or <tt>Liquid::Drop</tt>
     def []=(key, value)
-      if !@this_stack_used
+      unless @this_stack_used
         @this_stack_used = true
         push({})
       end
