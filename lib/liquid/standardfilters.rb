@@ -206,8 +206,11 @@ module Liquid
     # Example:
     #    {{ product.images | first | to_img }}
     #
-    def first(array)
-      array.first if array.respond_to?(:first)
+    def first(input)
+      return unless input.respond_to?(:first)
+      output = input.first
+      output = output.to_liquid if output.respond_to?(:to_liquid)
+      output
     end
 
     # Get the last element of the passed in array
@@ -215,8 +218,11 @@ module Liquid
     # Example:
     #    {{ product.images | last | to_img }}
     #
-    def last(array)
-      array.last if array.respond_to?(:last)
+    def last(input)
+      return unless input.respond_to?(:last)
+      output = input.last
+      output = output.to_liquid if output.respond_to?(:to_liquid)
+      output
     end
 
     # addition
