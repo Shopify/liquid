@@ -3,6 +3,7 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Add uniq to standard filters [Florian Weingarten, fw42]
 * Add exception_handler feature, see #397 and #254 [Bogdan Gusiev, bogdan and Florian Weingarten, fw42]
 * Optimize variable parsing to avoid repeated regex evaluation during template rendering #383 [Jason Hiltz-Laforge, jasonhl]
 * Optimize checking for block interrupts to reduce object allocation #380 [Jason Hiltz-Laforge, jasonhl] 
