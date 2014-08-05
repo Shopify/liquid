@@ -36,12 +36,17 @@ module Liquid
     def escape(input)
       CGI.escapeHTML(input) rescue input
     end
+    alias_method :h, :escape
 
     def escape_once(input)
       input.to_s.gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
     end
 
-    alias_method :h, :escape
+    def slice(input, offset, length=nil)
+      offset = Integer(offset)
+      length = length ? Integer(length) : 1
+      input.to_s.slice(offset, length) || ''
+    end
 
     # Truncate a string down to x characters
     def truncate(input, length = 50, truncate_string = "...".freeze)

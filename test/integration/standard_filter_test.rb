@@ -64,6 +64,20 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '', @filters.upcase(nil)
   end
 
+  def test_slice
+    assert_equal 'oob', @filters.slice('foobar', 1, 3)
+    assert_equal 'oobar', @filters.slice('foobar', 1, 1000)
+    assert_equal '', @filters.slice('foobar', 1, 0)
+    assert_equal 'o', @filters.slice('foobar', 1, 1)
+    assert_equal 'bar', @filters.slice('foobar', 3, 3)
+    assert_equal 'ar', @filters.slice('foobar', -2, 2)
+    assert_equal 'ar', @filters.slice('foobar', -2, 1000)
+    assert_equal 'r', @filters.slice('foobar', -1)
+    assert_equal '', @filters.slice(nil, 0)
+    assert_equal '', @filters.slice('foobar', 100, 10)
+    assert_equal '', @filters.slice('foobar', -100, 10)
+  end
+
   def test_truncate
     assert_equal '1234...', @filters.truncate('1234567890', 7)
     assert_equal '1234567890', @filters.truncate('1234567890', 20)
