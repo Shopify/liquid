@@ -43,7 +43,9 @@ module Liquid
     end
 
     def slice(input, offset, length=nil)
-      input.to_s.slice(offset.to_i, (length || 1).to_i) || ''
+      offset = Integer(offset)
+      length = length ? Integer(length) : 1
+      input.to_s.slice(offset, length) || ''
     end
 
     # Truncate a string down to x characters
