@@ -78,6 +78,20 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '', @filters.slice('foobar', -100, 10)
   end
 
+  def test_slice_on_arrays
+    input = 'foobar'.split(//)
+    assert_equal %w{o o b}, @filters.slice(input, 1, 3)
+    assert_equal %w{o o b a r}, @filters.slice(input, 1, 1000)
+    assert_equal %w{}, @filters.slice(input, 1, 0)
+    assert_equal %w{o}, @filters.slice(input, 1, 1)
+    assert_equal %w{b a r}, @filters.slice(input, 3, 3)
+    assert_equal %w{a r}, @filters.slice(input, -2, 2)
+    assert_equal %w{a r}, @filters.slice(input, -2, 1000)
+    assert_equal %w{r}, @filters.slice(input, -1)
+    assert_equal %w{}, @filters.slice(input, 100, 10)
+    assert_equal %w{}, @filters.slice(input, -100, 10)
+  end
+
   def test_truncate
     assert_equal '1234...', @filters.truncate('1234567890', 7)
     assert_equal '1234567890', @filters.truncate('1234567890', 20)
