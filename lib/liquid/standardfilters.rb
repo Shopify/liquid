@@ -75,7 +75,7 @@ module Liquid
     #   <div class="summary">{{ post | split '//' | first }}</div>
     #
     def split(input, pattern)
-      input.split(pattern)
+      input.to_s.split(pattern)
     end
 
     def strip(input)
