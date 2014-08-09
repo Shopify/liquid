@@ -64,5 +64,22 @@ module Minitest
     ensure
       Liquid::Template.error_mode = old_mode
     end
+
+    def with_mathn_behaviour
+      Fixnum.class_eval do
+        alias_method :old_division, :/
+        def /(other)
+          Rational(self.old_division(other))
+        end
+      end
+
+      yield
+    ensure
+      Fixnum.class_eval do
+        remove_method :/
+        alias_method :/, :old_division
+        remove_method :old_division
+      end
+    end
   end
 end

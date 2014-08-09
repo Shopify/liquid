@@ -322,6 +322,12 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "0.5", "{{ 2.0 | divided_by:4 }}"
   end
 
+  def test_divided_by_with_mathn_bullshit
+    with_mathn_behaviour do
+      assert_template_result "4", "{{ 14 | divided_by:3 }}"
+    end
+  end
+
   def test_modulo
     assert_template_result "1", "{{ 3 | modulo:2 }}"
   end

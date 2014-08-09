@@ -257,7 +257,13 @@ module Liquid
 
     # division
     def divided_by(input, operand)
-      apply_operation(input, operand, :/)
+      result = apply_operation(input, operand, :/)
+
+      if result.is_a?(Rational) && input.is_a?(Fixnum) && operand.is_a?(Fixnum)
+        result.to_i
+      else
+        result
+      end
     end
 
     def modulo(input, operand)
