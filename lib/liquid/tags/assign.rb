@@ -15,7 +15,7 @@ module Liquid
       super
       if markup =~ Syntax
         @to = $1
-        @from = Variable.new($2)
+        @from = Variable.new($2,options)
       else
         raise SyntaxError.new options[:locale].t("errors.syntax.assign".freeze)
       end
