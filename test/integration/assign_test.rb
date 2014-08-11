@@ -24,4 +24,15 @@ class AssignTest < Minitest::Test
                        '{% assign foo not values %}.',
                        'values' => "foo,bar,baz")
   end
+
+  def test_assign_uses_error_mode
+    with_error_mode(:strict) do
+      assert_raises(SyntaxError) do
+        Template.parse("{% assign foo = ('X' | downcase) %}")
+      end
+    end
+    with_error_mode(:lax) do
+      assert Template.parse("{% assign foo = ('X' | downcase) %}")
+    end
+  end
 end # AssignTest
