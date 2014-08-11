@@ -87,4 +87,17 @@ class ParsingQuirksTest < Minitest::Test
     end
   end
 
+  def test_unanchored_filter_arguments
+    with_error_mode(:lax) do
+      assert_template_result('hi',"{{ 'hi there' | split$$$:' ' | first }}")
+
+      var = Variable.new("('x' | downcase)")
+      assert_equal [['downcase',[]]], var.filters
+      assert_equal "('x'", var.name
+
+      var = Variable.new("variant.title | escape | remove:\"\"\" | remove: \"'\"")
+      assert_equal [["escape", []], ["remove", ["\"\""]]], var.filters
+    end
+  end
+
 end # ParsingQuirksTest
