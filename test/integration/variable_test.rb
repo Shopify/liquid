@@ -9,6 +9,10 @@ class VariableTest < Minitest::Test
     assert_equal 'worked wonderfully', template.render!('test' => 'worked wonderfully')
   end
 
+  def test_variable_render_calls_to_liquid
+    assert_template_result 'foobar', '{{ foo }}', 'foo' => ThingWithToLiquid.new
+  end
+
   def test_simple_with_whitespaces
     template = Template.parse(%|  {{ test }}  |)
     assert_equal '  worked  ', template.render!('test' => 'worked')
