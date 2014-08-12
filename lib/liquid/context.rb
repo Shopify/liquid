@@ -204,10 +204,7 @@ module Liquid
       scope     ||= @environments.last || @scopes.last
       variable  ||= lookup_and_evaluate(scope, key)
 
-      variable = variable.to_liquid
-      variable.context = self if variable.respond_to?(:context=)
-
-      return variable
+      harden(variable)
     end
 
     def lookup_and_evaluate(obj, key)
@@ -216,6 +213,12 @@ module Liquid
       else
         value
       end
+    end
+
+    def harden(value)
+      value = value.to_liquid
+      value.context = self if value.respond_to?(:context=)
+      value
     end
 
     private
