@@ -105,7 +105,7 @@ module Liquid
     end
 
     def invoke(method, *args)
-      strainer.invoke(method, *args)
+      strainer.invoke(method, *args).to_liquid
     end
 
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead

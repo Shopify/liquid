@@ -66,3 +66,9 @@ module Minitest
     end
   end
 end
+
+class ThingWithToLiquid
+  def to_liquid
+    'foobar'
+  end
+end
