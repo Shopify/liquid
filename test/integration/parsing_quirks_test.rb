@@ -91,12 +91,12 @@ class ParsingQuirksTest < Minitest::Test
     with_error_mode(:lax) do
       assert_template_result('hi',"{{ 'hi there' | split$$$:' ' | first }}")
 
-      var = Variable.new("('x' | downcase)")
-      assert_equal [['downcase',[]]], var.filters
-      assert_equal "('x'", var.name
+      assert_template_result('x', "{{ 'X' | downcase) }}")
 
-      var = Variable.new("variant.title | escape | remove:\"\"\" | remove: \"'\"")
-      assert_equal [["escape", []], ["remove", ["\"\""]]], var.filters
+      # After the messed up quotes a filter without parameters (reverse) should work
+      # but one with parameters (remove) shouldn't be detected.
+      assert_template_result('here',  "{{ 'hi there' | split:\"t\"\" | reverse | first}}")
+      assert_template_result('hi ',  "{{ 'hi there' | split:\"t\"\" | remove:\"i\" | first}}")
     end
   end
 
