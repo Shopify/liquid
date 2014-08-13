@@ -33,6 +33,7 @@ module Liquid
               # fetch the tag from registered blocks
               if tag = Template.tags[$1]
                 new_tag = tag.parse($1, $2, tokens, @options)
+                new_tag.line_number = token.line_number if token.is_a?(Token)
                 @blank &&= new_tag.blank?
                 @nodelist << new_tag
                 @children << new_tag
@@ -46,6 +47,7 @@ module Liquid
             end
           when token.start_with?(VARSTART)
             new_var = create_variable(token)
+            new_var.line_number = token.line_number if token.is_a?(Token)
             @nodelist << new_var
             @children << new_var
             @blank = false
@@ -134,12 +136,8 @@ module Liquid
             break
           end
 
-          token_output = (token.respond_to?(:render) ? token.render(context) : token)
-          context.increment_used_resources(:render_length_current, token_output)
-          if context.resource_limits_reached?
-            context.resource_limits[:reached] = true
-            raise MemoryError.new("Memory limits exceeded".freeze)
-          end
+          token_output = render_token(token, context)
+
           unless token.is_a?(Block) && token.blank?
             output << token_output
           end
@@ -151,6 +149,16 @@ module Liquid
       end
 
       output.join
+    end
+
+    def render_token(token, context)
+      token_output = (token.respond_to?(:render) ? token.render(context) : token)
+      context.increment_used_resources(:render_length_current, token_output)
+      if context.resource_limits_reached?
+        context.resource_limits[:reached] = true
+        raise MemoryError.new("Memory limits exceeded".freeze)
+      end
+      token_output
     end
   end
 end

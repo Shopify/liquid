@@ -14,6 +14,7 @@ module Liquid
     FilterParser = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
     EasyParse = /\A *(\w+(?:\.\w+)*) *\z/
     attr_accessor :filters, :name, :warnings
+    attr_accessor :line_number
 
     def initialize(markup, options = {})
       @markup  = markup
@@ -32,6 +33,10 @@ module Liquid
           lax_parse(markup)
         end
       end
+    end
+
+    def raw
+      @markup
     end
 
     def lax_parse(markup)
