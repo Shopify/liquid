@@ -11,7 +11,7 @@ module Liquid
   #   {{ user | link }}
   #
   class Variable
-    FilterParser = /(?:#{FilterSeparator}|(?:\s*(?:#{QuotedFragment}|#{ArgumentSeparator})\s*)+)/o
+    FilterParser = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
     EasyParse = /\A *(\w+(?:\.\w+)*) *\z/
     attr_accessor :filters, :name, :warnings
 
