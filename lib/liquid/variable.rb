@@ -41,8 +41,8 @@ module Liquid
         if Regexp.last_match(2) =~ /#{FilterSeparator}\s*(.*)/om
           filters = Regexp.last_match(1).scan(FilterParser)
           filters.each do |f|
-            if f =~ /\s*(\w+)/
-              filtername = Regexp.last_match(1)
+            if f =~ /\w+/
+              filtername = Regexp.last_match(0)
               filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
               @filters << [filtername, filterargs]
             end
