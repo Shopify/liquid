@@ -10,5 +10,9 @@ module Liquid
     def raw
       "<raw>"
     end
+
+    def child(string)
+      Token.new(string, @line_number)
+    end
   end
 end

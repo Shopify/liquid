@@ -32,7 +32,8 @@ module Liquid
 
               # fetch the tag from registered blocks
               if tag = Template.tags[$1]
-                new_tag = tag.parse($1, $2, tokens, @options)
+                markup = token.is_a?(Token) ? token.child($2) : $2
+                new_tag = tag.parse($1, markup, tokens, @options)
                 new_tag.line_number = token.line_number if token.is_a?(Token)
                 @blank &&= new_tag.blank?
                 @nodelist << new_tag
@@ -103,7 +104,8 @@ module Liquid
 
     def create_variable(token)
       token.scan(ContentOfVariable) do |content|
-        return Variable.new(content.first, @options)
+        markup = token.is_a?(Token) ? token.child(content.first) : content.first
+        return Variable.new(markup, @options)
       end
       raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination".freeze, :token => token, :tag_end => VariableEnd.inspect))
     end

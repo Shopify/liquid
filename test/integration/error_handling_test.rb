@@ -121,6 +121,12 @@ class ErrorHandlingTest < Minitest::Test
     assert_equal '', template.render
   end
 
+  def test_warning_line_numbers
+    template = Liquid::Template.parse("{% if ~~~ %}\n{{%%%}}{% else %}\n{{ hello. }}{% endif %}", :error_mode => :warn, :line_numbers => true)
+    assert_equal 3, template.warnings.size
+    assert_equal [1,2,3], template.warnings.map(&:line_number)
+  end
+
   # Liquid should not catch Exceptions that are not subclasses of StandardError, like Interrupt and NoMemoryError
   def test_exceptions_propagate
     assert_raises Exception do
