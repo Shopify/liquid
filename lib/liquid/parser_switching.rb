@@ -8,6 +8,7 @@ module Liquid
         begin
           return strict_parse_with_error_context(markup)
         rescue SyntaxError => e
+          e.line_number = markup.line_number if markup.is_a?(Token)
           @warnings ||= []
           @warnings << e
           return lax_parse(markup)
