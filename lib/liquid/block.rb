@@ -144,7 +144,7 @@ module Liquid
         rescue MemoryError => e
           raise e
         rescue ::StandardError => e
-          output << (context.handle_error(e))
+          output << (context.handle_error(e, token))
         end
       end
 

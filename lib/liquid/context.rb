@@ -91,17 +91,12 @@ module Liquid
       @interrupts.pop
     end
 
-    def handle_error(e)
+
+    def handle_error(e, token)
+      e = Liquid::Error.error_with_line_number(e, token)
       errors.push(e)
-
       raise if exception_handler && exception_handler.call(e)
-
-      case e
-      when SyntaxError
-        "Liquid syntax error: #{e.message}"
-      else
-        "Liquid error: #{e.message}"
-      end
+      Liquid::Error.render(e)
     end
 
     def invoke(method, *args)

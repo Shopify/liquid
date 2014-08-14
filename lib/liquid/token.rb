@@ -1,6 +1,5 @@
 module Liquid
   class Token < String
-
     attr_reader :line_number
 
     def initialize(content, line_number)
@@ -11,6 +10,5 @@ module Liquid
     def raw
       "<raw>"
     end
-
   end
 end
