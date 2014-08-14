@@ -22,22 +22,22 @@ module Liquid
 
     def parse(markup)
       if LITERALS.key?(markup)
-        @instructions << [:id, LITERALS[markup]]
+        @instructions.push(:id, LITERALS[markup])
       else
         case markup
         when /\A'(.*)'\z/m # Single quoted strings
-          @instructions << [:id, $1]
+          @instructions.push(:id, $1)
         when /\A"(.*)"\z/m # Double quoted strings
-          @instructions << [:id, $1]
+          @instructions.push(:id, $1)
         when /\A(-?\d+)\z/ # Integer
-          @instructions << [:id, $1.to_i]
+          @instructions.push(:id, $1.to_i)
         when /\A\((\S+)\.\.(\S+)\)\z/ # Ranges
           left, right = $1, $2
           parse(left)
           parse(right)
-          @instructions << [:range, nil]
+          @instructions.push(:range, nil)
         when /\A(-?\d[\d\.]+)\z/ # Floats
-          @instructions << [:id, $1.to_f]
+          @instructions.push(:id, $1.to_f)
         else
           parse_variable(markup)
         end
@@ -47,7 +47,10 @@ module Liquid
     def evaluate(context)
       stack = []
 
-      @instructions.each do |sym, value|
+      i = 0
+      while i < @instructions.size
+        sym = @instructions[i]
+        value = @instructions[i + 1]
         case sym
         when :id
           stack.push(value)
@@ -76,6 +79,7 @@ module Liquid
         else
           raise "Unknown expression instruction #{sym}"
         end
+        i += 2
       end
 
       stack.first
@@ -90,18 +94,18 @@ module Liquid
       if name =~ SQUARE_BRACKETED
         parse($1)
       else
-        @instructions << [:id, name]
+        @instructions.push(:id, name)
       end
-      @instructions << [:lookup, nil]
+      @instructions.push(:lookup, nil)
 
       lookups.each do |lookup|
         if lookup =~ SQUARE_BRACKETED
           parse($1)
-          @instructions << [:call, nil]
+          @instructions.push(:call, nil)
         elsif COMMAND_METHODS.include?(lookup)
-          @instructions << [:builtin, lookup]
+          @instructions.push(:builtin, lookup)
         else
-          @instructions << [:id, lookup] << [:call, nil]
+          @instructions.push(:id, lookup, :call, nil)
         end
       end
     end
