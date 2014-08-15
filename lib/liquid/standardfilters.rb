@@ -42,6 +42,10 @@ module Liquid
       input.to_s.gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
     end
 
+    def url_encode(input)
+      CGI.escape(input) rescue input
+    end
+
     def slice(input, offset, length=nil)
       offset = Integer(offset)
       length = length ? Integer(length) : 1
