@@ -118,6 +118,11 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '&lt;strong&gt;Hulk&lt;/strong&gt;', @filters.escape_once('&lt;strong&gt;Hulk</strong>')
   end
 
+  def test_url_encode
+    assert_equal 'foo%2B1%40example.com', @filters.url_encode('foo+1@example.com')
+    assert_equal nil, @filters.url_encode(nil)
+  end
+
   def test_truncatewords
     assert_equal 'one two three', @filters.truncatewords('one two three', 4)
     assert_equal 'one two...', @filters.truncatewords('one two three', 2)
