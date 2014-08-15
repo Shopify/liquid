@@ -77,7 +77,7 @@ module Liquid
 
           stack.push(context.harden(value))
         else
-          raise "Unknown expression instruction #{sym}"
+          raise InternalError, "Unknown expression instruction #{sym}"
         end
         i += 2
       end

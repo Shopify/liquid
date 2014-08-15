@@ -9,4 +9,5 @@ module Liquid
   class SyntaxError < Error; end
   class StackLevelError < Error; end
   class MemoryError < Error; end
+  class InternalError < Error; end
 end
