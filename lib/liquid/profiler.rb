@@ -96,6 +96,10 @@ module Liquid
       Thread.current[:liquid_profiler]
     end
 
+    def self.profiling?
+      !current_profile.nil?
+    end
+
     def initialize
       @partial_stack = ["<root>"]
 
