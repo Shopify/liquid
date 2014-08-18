@@ -15,7 +15,9 @@ module Liquid
       '>'.freeze  => :>,
       '>='.freeze => :>=,
       '<='.freeze => :<=,
-      'contains'.freeze => lambda { |cond, left, right| left && right ? left.include?(right) : false }
+      'contains'.freeze => lambda { |cond, left, right|
+        left && right && left.respond_to?(:include?) ? left.include?(right) : false
+      }
     }
 
     def self.operators
