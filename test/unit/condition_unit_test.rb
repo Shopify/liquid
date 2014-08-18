@@ -80,6 +80,10 @@ class ConditionUnitTest < Minitest::Test
     assert_evalutes_false "0", 'contains', 'not_assigned'
   end
 
+  def test_contains_return_false_on_wrong_data_type
+    assert_evalutes_false "1", 'contains', '0'
+  end
+
   def test_or_condition
     condition = Condition.new('1', '==', '2')
 
