@@ -223,7 +223,7 @@ module Liquid
     end
 
     def calculate_line_numbers(raw_tokens)
-      return raw_tokens unless @profiling
+      return raw_tokens unless @profiling || Profiler.profiling?
 
       current_line = 1
       raw_tokens.map do |token|
