@@ -40,13 +40,13 @@ class ErrorHandlingTest < Minitest::Test
     expected = <<-TEXT
       Hello,
 
-      Liquid error: 3: standard error will raise a standard error.
+      Liquid error (line 3): standard error will raise a standard error.
 
       Bla bla test.
 
-      Liquid syntax error: 7: syntax error will raise a syntax error.
+      Liquid syntax error (line 7): syntax error will raise a syntax error.
 
-      This is an argument error: Liquid error: 9: argument error
+      This is an argument error: Liquid error (line 9): argument error
 
       Bla.
     TEXT

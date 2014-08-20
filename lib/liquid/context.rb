@@ -92,8 +92,8 @@ module Liquid
     end
 
 
-    def handle_error(e, token)
-      e = Liquid::Error.error_with_line_number(e, token)
+    def handle_error(e, token=nil)
+      e = Liquid::Error.error_from_token(e, token) if token
       errors.push(e)
       raise if exception_handler && exception_handler.call(e)
       Liquid::Error.render(e)

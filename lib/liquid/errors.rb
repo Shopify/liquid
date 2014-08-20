@@ -4,24 +4,21 @@ module Liquid
 
     def self.render(e)
       msg = if e.is_a?(Liquid::Error) && e.line_number
-        "#{e.line_number}: #{e.message}"
+        " (line #{e.line_number}): #{e.message}"
       else
-        e.message
+        ": #{e.message}"
       end
 
       case e
       when SyntaxError
-        "Liquid syntax error: #{msg}"
+        "Liquid syntax error" << msg
       else
-        "Liquid error: #{msg}"
+        "Liquid error" << msg
       end
     end
 
-    def self.error_with_line_number(e, token)
-      if e.is_a?(Liquid::Error)
-        e.set_line_number_from_token(token)
-      end
-
+    def self.error_from_token(e, token)
+      e.set_line_number_from_token(token) if e.is_a?(Liquid::Error)
       e
     end
 
