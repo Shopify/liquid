@@ -199,7 +199,7 @@ module Liquid
         end
         result.respond_to?(:join) ? result.join : result
       rescue Liquid::MemoryError => e
-        context.handle_error(e, nil)
+        context.handle_error(e)
       ensure
         @errors = context.errors
       end
