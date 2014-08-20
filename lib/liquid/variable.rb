@@ -30,7 +30,7 @@ module Liquid
     end
 
     def markup_context(markup)
-      " in \"{{#{markup}}}\""
+      "in \"{{#{markup}}}\""
     end
 
     def lax_parse(markup)

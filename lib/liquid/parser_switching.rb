@@ -20,12 +20,12 @@ module Liquid
     def strict_parse_with_error_context(markup)
       strict_parse(markup)
     rescue SyntaxError => e
-      e.message << markup_context(markup)
+      e.markup_context = markup_context(markup)
       raise e
     end
 
     def markup_context(markup)
-      " in \"#{markup.strip}\"" 
+      "in \"#{markup.strip}\"" 
     end
   end
 end
