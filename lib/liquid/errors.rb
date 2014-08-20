@@ -3,18 +3,21 @@ module Liquid
     attr_accessor :line_number
 
     def self.render(e)
-      msg = if e.is_a?(Liquid::Error) && e.line_number
-        " (line #{e.line_number}): #{e.message}"
+      str = ""
+
+      if e.is_a?(SyntaxError)
+        str << "Liquid syntax error"
       else
-        ": #{e.message}"
+        str << "Liquid error"
       end
 
-      case e
-      when SyntaxError
-        "Liquid syntax error" << msg
-      else
-        "Liquid error" << msg
+      if e.respond_to?(:line_number) && e.line_number
+        str << " (line #{e.line_number})"
       end
+
+      str << ": "
+      str << e.message
+      str
     end
 
     def self.error_from_token(e, token)
