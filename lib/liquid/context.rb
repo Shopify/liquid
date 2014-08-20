@@ -93,7 +93,10 @@ module Liquid
 
 
     def handle_error(e, token=nil)
-      e = Liquid::Error.error_from_token(e, token) if token
+      if e.is_a?(Liquid::Error)
+        e.set_line_number_from_token(token)
+      end
+
       errors.push(e)
       raise if exception_handler && exception_handler.call(e)
       Liquid::Error.render(e)

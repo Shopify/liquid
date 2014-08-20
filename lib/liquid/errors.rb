@@ -20,11 +20,6 @@ module Liquid
       str
     end
 
-    def self.error_from_token(e, token)
-      e.set_line_number_from_token(token) if e.is_a?(Liquid::Error)
-      e
-    end
-
     def set_line_number_from_token(token)
       return unless token.respond_to?(:line_number)
       self.line_number = token.line_number
