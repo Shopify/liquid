@@ -106,7 +106,7 @@ module Liquid
       @options = options
       @profiling = options[:profile]
       @profiling = options.delete(:profile)
-      @line_numbers = options.delete(:line_numbers) || @profiling
+      @line_numbers = options.delete(:line_numbers)
       @root = Document.parse(tokenize(source), DEFAULT_OPTIONS.merge(options))
       @warnings = nil
       self
@@ -226,7 +226,7 @@ module Liquid
     end
 
     def calculate_line_numbers(raw_tokens)
-      return raw_tokens unless @line_numbers
+      return raw_tokens unless @line_numbers || @profiling
 
       current_line = 1
       raw_tokens.map do |token|
