@@ -11,13 +11,12 @@ module Liquid
     COMMAND_METHODS = ['size'.freeze, 'first'.freeze, 'last'.freeze]
 
     def self.parse(markup)
-      obj = new
-      obj.parse(markup)
-      obj
+      new.parse(markup)
     end
 
     def initialize
       @instructions = []
+      @stack = []
     end
 
     def parse(markup)
@@ -42,10 +41,11 @@ module Liquid
           parse_variable(markup)
         end
       end
+      self
     end
 
     def evaluate(context)
-      stack = []
+      @stack.clear 
 
       i = 0
       while i < @instructions.size
@@ -53,36 +53,36 @@ module Liquid
         value = @instructions[i + 1]
         case sym
         when :id
-          stack.push(value)
+          @stack.push(value)
         when :lookup
-          left = stack.pop
+          left = @stack.pop
           value = context.find_variable(left)
 
-          stack.push(value)
+          @stack.push(value)
         when :range
-          right = stack.pop.to_i
-          left  = stack.pop.to_i
+          right = @stack.pop.to_i
+          left  = @stack.pop.to_i
 
-          stack.push(left..right)
+          @stack.push(left..right)
         when :builtin
-          left = stack.pop
+          left = @stack.pop
 
           value = invoke_builtin(context, left, value)
 
-          stack.push(context.harden(value))
+          @stack.push(context.harden(value))
         when :call
-          left = stack.pop
-          right = stack.pop
+          left = @stack.pop
+          right = @stack.pop
           value = invoke(context, right, left)
 
-          stack.push(context.harden(value))
+          @stack.push(context.harden(value))
         else
           raise InternalError, "Unknown expression instruction #{sym}"
         end
         i += 2
       end
 
-      stack.first
+      @stack.first
     end
 
     private
