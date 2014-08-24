@@ -16,12 +16,12 @@
   </head>
 
   <body>
-
+    {% assign all_products = products | concat: more_products  %}
     <h1>{{ description | split: '~' | first }}</h1>
 
     <h2>{{ description | split: '~' | last }}</h2>
 
-    <h2>There are currently {{products | count}} products in the {{section}} catalog</h2>
+    <h2>There are currently {{all_products | count}} products in the {{section}} catalog</h2>
 
     {% if cool_products %}
       Cool products :)
@@ -31,7 +31,7 @@
 
     <ul id="products">
 
-      {% for product in products %}
+      {% for product in all_products %}
         <li>
           <h2>{{product.name}}</h2>
           Only {{product.price | price }}
