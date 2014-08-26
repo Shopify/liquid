@@ -103,7 +103,8 @@ module Liquid
     # Parse source code.
     # Returns self for easy chaining
     def parse(source, options = {})
-      @profiling = options.delete(:profile)
+      @options = options
+      @profiling = options[:profile]
       @root = Document.parse(tokenize(source), DEFAULT_OPTIONS.merge(options))
       @warnings = nil
       self
@@ -234,7 +235,7 @@ module Liquid
     end
 
     def with_profiling
-      if @profiling
+      if @profiling && !@options[:included]
         @profiler = Profiler.new
         @profiler.start
 

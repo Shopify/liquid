@@ -69,7 +69,7 @@ module Liquid
           return cached
         end
         source = read_template_from_file_system(context)
-        partial = Liquid::Template.parse(source)
+        partial = Liquid::Template.parse(source, pass_options)
         cached_partials[template_name] = partial
         context.registers[:cached_partials] = cached_partials
         partial
@@ -87,6 +87,16 @@ module Liquid
         else
           raise ArgumentError, "file_system.read_template_file expects two parameters: (template_name, context)"
         end
+      end
+
+      def pass_options
+        dont_pass = @options[:include_options_blacklist]
+        return {locale: @options[:locale]} if dont_pass == true
+        opts = @options.merge(included: true, include_options_blacklist: false)
+        if dont_pass.is_a?(Array)
+          dont_pass.each {|o| opts.delete(o)}
+        end
+        opts
       end
   end
 
