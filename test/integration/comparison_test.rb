@@ -14,7 +14,7 @@ class BlankTest < Minitest::Test
   end
 
   def dump_template(t)
-    t.inspect.gsub(/:0x[a-f0-9]+/, "")
+    Marshal.dump(t)
   end
 
   def compare_parsers(file)
