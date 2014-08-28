@@ -1,6 +1,3 @@
-require "pp"
-require "yaml"
-
 PERF_DIR = File.dirname(__FILE__) + '/../../performance/shopify'
 require PERF_DIR + '/comment_form'
 require PERF_DIR + '/paginate'
@@ -16,18 +13,22 @@ class BlankTest < Minitest::Test
     Liquid::Template.tags.delete('form')
   end
 
-  def compare_result(file)
+  def dump_template(t)
+    t.inspect.gsub(/:0x[a-f0-9]+/, "")
+  end
+
+  def compare_parsers(file)
     Liquid::Template.error_mode = :lax
     t = Liquid::Template.parse(file)
     Liquid::Template.error_mode = :strict
     t2 = Liquid::Template.parse(file)
-    assert_equal t.to_yaml, t2.to_yaml
+    assert_equal dump_template(t), dump_template(t2)
   end
 
   def test_template_comparison
     Dir[File.dirname(__FILE__) + "/../../performance/tests/**/*.liquid"].each do |template|
       content = IO.read(template)
-      compare_result(content)
+      compare_parsers(content)
     end
   end
 end
