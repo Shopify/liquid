@@ -1,3 +1,4 @@
+require "test_helper"
 PERF_DIR = File.dirname(__FILE__) + '/../../performance/shopify'
 require PERF_DIR + '/comment_form'
 require PERF_DIR + '/paginate'
@@ -18,10 +19,13 @@ class BlankTest < Minitest::Test
   end
 
   def compare_parsers(file)
-    Liquid::Template.error_mode = :lax
-    t = Liquid::Template.parse(file)
-    Liquid::Template.error_mode = :strict
-    t2 = Liquid::Template.parse(file)
+    t, t2 = nil
+    with_error_mode(:lax) do
+      t = Liquid::Template.parse(file)
+    end
+    with_error_mode(:strict) do
+      t2 = Liquid::Template.parse(file)
+    end
     assert_equal dump_template(t), dump_template(t2)
   end
 
