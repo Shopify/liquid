@@ -105,7 +105,6 @@ module Liquid
     def parse(source, options = {})
       @options = options
       @profiling = options[:profile]
-      @profiling = options.delete(:profile)
       @line_numbers = options.delete(:line_numbers)
       @root = Document.parse(tokenize(source), DEFAULT_OPTIONS.merge(options))
       @warnings = nil

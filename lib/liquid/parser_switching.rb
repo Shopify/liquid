@@ -25,7 +25,7 @@ module Liquid
     end
 
     def markup_context(markup)
-      "in \"#{markup.strip}\"" 
+      "in \"#{markup.strip}\""
     end
   end
 end
