@@ -54,6 +54,7 @@ require 'liquid/interrupts'
 require 'liquid/strainer'
 require 'liquid/expression'
 require 'liquid/context'
+require 'liquid/parser_switching'
 require 'liquid/tag'
 require 'liquid/block'
 require 'liquid/document'
@@ -66,11 +67,11 @@ require 'liquid/standardfilters'
 require 'liquid/condition'
 require 'liquid/module_ex'
 require 'liquid/utils'
+require 'liquid/token'
 
 # Load all the tags of the standard library
 #
 Dir[File.dirname(__FILE__) + '/liquid/tags/*.rb'].each { |f| require f }
 
 require 'liquid/profiler'
-require 'liquid/profiler/token'
 require 'liquid/profiler/hooks'

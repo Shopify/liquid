@@ -22,6 +22,39 @@ end
 class ErrorHandlingTest < Minitest::Test
   include Liquid
 
+  def test_templates_parsed_with_line_numbers_renders_them_in_errors
+    template = <<-LIQUID
+      Hello,
+
+      {{ errors.standard_error }} will raise a standard error.
+
+      Bla bla test.
+
+      {{ errors.syntax_error }} will raise a syntax error.
+
+      This is an argument error: {{ errors.argument_error }}
+
+      Bla.
+    LIQUID
+
+    expected = <<-TEXT
+      Hello,
+
+      Liquid error (line 3): standard error will raise a standard error.
+
+      Bla bla test.
+
+      Liquid syntax error (line 7): syntax error will raise a syntax error.
+
+      This is an argument error: Liquid error (line 9): argument error
+
+      Bla.
+    TEXT
+
+    output = Liquid::Template.parse(template, line_numbers: true).render('errors' => ErrorDrop.new)
+    assert_equal expected, output
+  end
+
   def test_standard_error
     template = Liquid::Template.parse( ' {{ errors.standard_error }} '  )
     assert_equal ' Liquid error: standard error ', template.render('errors' => ErrorDrop.new)
@@ -59,7 +92,7 @@ class ErrorHandlingTest < Minitest::Test
       end
     end
   end
-  
+
   def test_lax_unrecognized_operator
     template = Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ', :error_mode => :lax)
     assert_equal ' Liquid error: Unknown operator =! ', template.render
@@ -71,28 +104,37 @@ class ErrorHandlingTest < Minitest::Test
     err = assert_raises(SyntaxError) do
       Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ', :error_mode => :strict)
     end
-    assert_equal 'Unexpected character = in "1 =! 2"', err.message
+    assert_equal 'Liquid syntax error: Unexpected character = in "1 =! 2"', err.message
 
     err = assert_raises(SyntaxError) do
       Liquid::Template.parse('{{%%%}}', :error_mode => :strict)
     end
-    assert_equal 'Unexpected character % in "{{%%%}}"', err.message
+    assert_equal 'Liquid syntax error: Unexpected character % in "{{%%%}}"', err.message
   end
 
   def test_warnings
     template = Liquid::Template.parse('{% if ~~~ %}{{%%%}}{% else %}{{ hello. }}{% endif %}', :error_mode => :warn)
     assert_equal 3, template.warnings.size
-    assert_equal 'Unexpected character ~ in "~~~"', template.warnings[0].message
-    assert_equal 'Unexpected character % in "{{%%%}}"', template.warnings[1].message
-    assert_equal 'Expected id but found end_of_string in "{{ hello. }}"', template.warnings[2].message
+    assert_equal 'Unexpected character ~ in "~~~"', template.warnings[0].to_s(false)
+    assert_equal 'Unexpected character % in "{{%%%}}"', template.warnings[1].to_s(false)
+    assert_equal 'Expected id but found end_of_string in "{{ hello. }}"', template.warnings[2].to_s(false)
     assert_equal '', template.render
+  end
+
+  def test_warning_line_numbers
+    template = Liquid::Template.parse("{% if ~~~ %}\n{{%%%}}{% else %}\n{{ hello. }}{% endif %}", :error_mode => :warn, :line_numbers => true)
+    assert_equal 'Liquid syntax error (line 1): Unexpected character ~ in "~~~"', template.warnings[0].message
+    assert_equal 'Liquid syntax error (line 2): Unexpected character % in "{{%%%}}"', template.warnings[1].message
+    assert_equal 'Liquid syntax error (line 3): Expected id but found end_of_string in "{{ hello. }}"', template.warnings[2].message
+    assert_equal 3, template.warnings.size
+    assert_equal [1,2,3], template.warnings.map(&:line_number)
   end
 
   # Liquid should not catch Exceptions that are not subclasses of StandardError, like Interrupt and NoMemoryError
   def test_exceptions_propagate
     assert_raises Exception do
-      template = Liquid::Template.parse( ' {{ errors.exception }} '  )
+      template = Liquid::Template.parse('{{ errors.exception }}')
       template.render('errors' => ErrorDrop.new)
     end
   end
-end # ErrorHandlingTest
+end

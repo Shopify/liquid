@@ -132,7 +132,7 @@ class IncludeTagTest < Minitest::Test
 
     Liquid::Template.file_system = infinite_file_system.new
 
-    assert_raises(Liquid::StackLevelError) do
+    assert_raises(Liquid::StackLevelError, SystemStackError) do
       Template.parse("{% include 'loop' %}").render!
     end
 

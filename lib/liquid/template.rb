@@ -105,6 +105,7 @@ module Liquid
     def parse(source, options = {})
       @options = options
       @profiling = options[:profile]
+      @line_numbers = options[:line_numbers] || @profiling
       @root = Document.parse(tokenize(source), DEFAULT_OPTIONS.merge(options))
       @warnings = nil
       self
@@ -224,7 +225,7 @@ module Liquid
     end
 
     def calculate_line_numbers(raw_tokens)
-      return raw_tokens unless @profiling
+      return raw_tokens unless @line_numbers
 
       current_line = 1
       raw_tokens.map do |token|
@@ -248,6 +249,5 @@ module Liquid
         yield
       end
     end
-
   end
 end
