@@ -86,6 +86,10 @@ module Liquid
         Strainer.global_filter(mod)
       end
 
+      def default_resource_limits
+        @default_resource_limits ||= {}
+      end
+
       # creates a new <tt>Template</tt> object from liquid source code
       # To enable profiling, pass in <tt>profile: true</tt> as an option.
       # See Liquid::Profiler for more information
@@ -95,9 +99,8 @@ module Liquid
       end
     end
 
-    # creates a new <tt>Template</tt> from an array of tokens. Use <tt>Template.parse</tt> instead
     def initialize
-      @resource_limits = {}
+      @resource_limits = self.class.default_resource_limits.dup
     end
 
     # Parse source code.

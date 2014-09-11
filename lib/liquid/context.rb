@@ -16,12 +16,14 @@ module Liquid
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
     attr_accessor :exception_handler
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = {})
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
       @environments     = [environments].flatten
       @scopes           = [(outer_scope || {})]
       @registers        = registers
       @errors           = []
-      @resource_limits  = (resource_limits || {}).merge!({ :render_score_current => 0, :assign_score_current => 0 })
+      @resource_limits  = resource_limits || Template.default_resource_limits
+      @resource_limits[:render_score_current] = 0
+      @resource_limits[:assign_score_current] = 0
       @parsed_expression = Hash.new{ |cache, markup| cache[markup] = Expression.parse(markup) }
       squash_instance_assigns_with_environments
 
