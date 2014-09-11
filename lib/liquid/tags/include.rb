@@ -81,15 +81,7 @@ module Liquid
       def read_template_from_file_system(context)
         file_system = context.registers[:file_system] || Liquid::Template.file_system
 
-        # make read_template_file call backwards-compatible.
-        case file_system.method(:read_template_file).arity
-        when 1
-          file_system.read_template_file(context.evaluate(@template_name))
-        when 2
-          file_system.read_template_file(context.evaluate(@template_name), context)
-        else
-          raise ArgumentError, "file_system.read_template_file expects two parameters: (template_name, context)"
-        end
+        file_system.read_template_file(context.evaluate(@template_name))
       end
 
       def pass_options
