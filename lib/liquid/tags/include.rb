@@ -30,6 +30,11 @@ module Liquid
           @attributes[key] = value
         end
 
+        if partial_parsable_at_parse_time?
+          source = read_template_from_file_system_at_parse
+          @partial = Liquid::Template.parse(source, pass_options)
+        end
+
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.include".freeze))
       end
@@ -66,19 +71,40 @@ module Liquid
         template_name = context[@template_name]
 
         if cached = cached_partials[template_name]
-          return cached
+          cached
+        else
+          if @partial && context.registers[:file_system].nil?
+            partial = @partial
+          else
+            partial = Liquid::Template.parse(read_template_from_file_system(context), pass_options)
+          end
+          cached_partials[template_name] = partial
+          context.registers[:cached_partials] = cached_partials
+          partial
         end
-        source = read_template_from_file_system(context)
-        partial = Liquid::Template.parse(source, pass_options)
-        cached_partials[template_name] = partial
-        context.registers[:cached_partials] = cached_partials
-        partial
       end
 
       def read_template_from_file_system(context)
-        file_system = context.registers[:file_system] || Liquid::Template.file_system
+        file_system = context.registers[:file_system] || parsed_file_system || Liquid::Template.file_system
 
         file_system.read_template_file(context[@template_name])
+      end
+
+      def read_template_from_file_system_at_parse
+        parsed_file_system.read_template_file(parsed_template_name)
+      end
+
+      def parsed_file_system
+        options[:file_system]
+      end
+
+      def partial_parsable_at_parse_time?
+        template_name_is_string_constant = parsed_template_name.is_a?(String)
+        options[:file_system] && template_name_is_string_constant
+      end
+
+      def parsed_template_name
+        Expression.parse(@template_name)
       end
 
       def pass_options

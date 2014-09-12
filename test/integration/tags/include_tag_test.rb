@@ -33,6 +33,13 @@ class TestFileSystem
   end
 end
 
+# FileSystems at parse time don't have a context
+class ParseFileSystem
+  def read_template_file(template_path)
+    'from ParseFileSystem'
+  end
+end
+
 class OtherFileSystem
   def read_template_file(template_path)
     'from OtherFileSystem'
@@ -77,6 +84,20 @@ class IncludeTagTest < Minitest::Test
       Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => {:file_system => OtherFileSystem.new})
   end
 
+  def test_include_tag_can_use_file_system_at_parse_so_it_can_be_parsed_before_rendered
+    assert_equal 'from ParseFileSystem',
+      Template.parse("{% include 'pick_a_source' %}",file_system: ParseFileSystem.new).render!({})
+  end
+
+  def test_include_tag_looks_at_file_system_passed_in_registers_over_parse_options
+    assert_equal 'from OtherFileSystem',
+      Template.parse("{% include 'pick_a_source' %}",file_system: ParseFileSystem.new).render!({}, :registers => {:file_system => OtherFileSystem.new})
+  end
+
+  def test_include_tag_use_parse_option_file_system_even_if_partial_can_be_preparsed
+    assert_equal 'from ParseFileSystem',
+      Template.parse("{% include template %}",file_system: ParseFileSystem.new).render!({})
+  end 
 
   def test_include_tag_with
     assert_template_result "Product: Draft 151cm ",
