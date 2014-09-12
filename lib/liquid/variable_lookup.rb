@@ -64,5 +64,15 @@ module Liquid
 
       object
     end
+
+    def ==(other)
+      self.class == other.class && self.state == other.state
+    end
+
+    protected
+
+    def state
+      [@name, @lookup, @command_flags]
+    end
   end
 end
