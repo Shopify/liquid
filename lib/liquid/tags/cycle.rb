@@ -20,10 +20,10 @@ module Liquid
       case markup
       when NamedSyntax
         @variables = variables_from_string($2)
-        @name = $1
+        @name = Expression.parse($1)
       when SimpleSyntax
         @variables = variables_from_string(markup)
-        @name = "'#{@variables.to_s}'"
+        @name = @variables.to_s
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.cycle".freeze))
       end
@@ -33,9 +33,9 @@ module Liquid
       context.registers[:cycle] ||= Hash.new(0)
 
       context.stack do
-        key = context[@name]
+        key = context.evaluate(@name)
         iteration = context.registers[:cycle][key]
-        result = context[@variables[iteration]]
+        result = context.evaluate(@variables[iteration])
         iteration += 1
         iteration  = 0  if iteration >= @variables.size
         context.registers[:cycle][key] = iteration
@@ -48,7 +48,7 @@ module Liquid
     def variables_from_string(markup)
       markup.split(',').collect do |var|
         var =~ /\s*(#{QuotedFragment})\s*/o
-        $1 ? $1 : nil
+        $1 ? Expression.parse($1) : nil
       end.compact
     end
   end
