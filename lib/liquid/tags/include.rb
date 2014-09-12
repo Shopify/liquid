@@ -73,7 +73,7 @@ module Liquid
         if cached = cached_partials[template_name]
           cached
         else
-          if @partial && context.registers[:file_system].nil?
+          if @partial
             partial = @partial
           else
             partial = Liquid::Template.parse(read_template_from_file_system(context), pass_options)
@@ -85,7 +85,7 @@ module Liquid
       end
 
       def read_template_from_file_system(context)
-        file_system = context.registers[:file_system] || parsed_file_system || Liquid::Template.file_system
+        file_system = context.registers[:file_system] || Liquid::Template.file_system
 
         file_system.read_template_file(context[@template_name])
       end
