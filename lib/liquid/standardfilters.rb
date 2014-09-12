@@ -34,7 +34,7 @@ module Liquid
     end
 
     def escape(input)
-      CGI.escapeHTML(input) rescue input
+      CGI.escapeHTML(input).untaint rescue input
     end
     alias_method :h, :escape
 
