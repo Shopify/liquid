@@ -113,27 +113,27 @@ class DropsTest < Minitest::Test
   end
 
   def test_rendering_raises_on_tainted_attr
-    Liquid::Template.taint_mode = :error
-    tpl = Liquid::Template.parse('{{ product.user_input }}')
-    assert_raises TaintedError do
-      tpl.render!('product' => ProductDrop.new)
+    with_taint_mode(:error) do
+      tpl = Liquid::Template.parse('{{ product.user_input }}')
+      assert_raises TaintedError do
+        tpl.render!('product' => ProductDrop.new)
+      end
     end
-    Liquid::Template.taint_mode = :lax
   end
 
   def test_rendering_warns_on_tainted_attr
-    Liquid::Template.taint_mode = :warn
-    tpl = Liquid::Template.parse('{{ product.user_input }}')
-    tpl.render!('product' => ProductDrop.new)
-    assert_match /tainted/, tpl.warnings.first
-    Liquid::Template.taint_mode = :lax
+    with_taint_mode(:warn) do
+      tpl = Liquid::Template.parse('{{ product.user_input }}')
+      tpl.render!('product' => ProductDrop.new)
+      assert_match /tainted/, tpl.warnings.first
+    end
   end
 
   def test_rendering_doesnt_raise_on_escaped_tainted_attr
-    Liquid::Template.taint_mode = :error
-    tpl = Liquid::Template.parse('{{ product.user_input | escape }}')
-    tpl.render!('product' => ProductDrop.new)
-    Liquid::Template.taint_mode = :lax
+    with_taint_mode(:error) do
+      tpl = Liquid::Template.parse('{{ product.user_input | escape }}')
+      tpl.render!('product' => ProductDrop.new)
+    end
   end
 
   def test_drop_does_only_respond_to_whitelisted_methods
