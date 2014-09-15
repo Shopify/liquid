@@ -54,7 +54,7 @@ module Liquid
 
           col += 1
 
-          result << "<td class=\"col#{col}\">" << render_all(@nodelist, context) << '</td>'
+          result << "<td class=\"col#{col}\">" << super << '</td>'
 
           if col == cols and (index != length - 1)
             col  = 0
