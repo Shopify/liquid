@@ -93,11 +93,7 @@ module Liquid
           end
         end
         filterargs << keyword_args unless keyword_args.empty?
-        begin
-          output = context.invoke(filter[0], output, *filterargs)
-        rescue FilterNotFound
-          raise FilterNotFound, "Error - filter '#{filter[0]}' in '#{@markup.strip}' could not be found."
-        end
+        output = context.invoke(filter[0], output, *filterargs)
       end
     end
   end
