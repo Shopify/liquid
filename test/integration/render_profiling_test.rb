@@ -72,7 +72,7 @@ class RenderProfilingTest < Minitest::Test
     t = Template.parse("{% include 'a_template' %}", :profile => true)
     t.render!
 
-    assert t.profiler.total_render_time > 0, "Total render time was not calculated"
+    assert t.profiler.total_render_time >= 0, "Total render time was not calculated"
   end
 
   def test_profiling_uses_include_to_mark_children
