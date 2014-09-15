@@ -14,9 +14,6 @@ module Liquid
       @nodelist ||= []
       @nodelist.clear
 
-      # All child tags of the current block.
-      @children = []
-
       while token = tokens.shift
         unless token.empty?
           case
@@ -37,7 +34,6 @@ module Liquid
                 new_tag.line_number = token.line_number if token.is_a?(Token)
                 @blank &&= new_tag.blank?
                 @nodelist << new_tag
-                @children << new_tag
               else
                 # this tag is not registered with the system
                 # pass it to the current block for special handling or error reporting
@@ -50,7 +46,6 @@ module Liquid
             new_var = create_variable(token)
             new_var.line_number = token.line_number if token.is_a?(Token)
             @nodelist << new_var
-            @children << new_var
             @blank = false
           else
             @nodelist << token
@@ -70,8 +65,8 @@ module Liquid
       all_warnings = []
       all_warnings.concat(@warnings) if @warnings
 
-      (@children || []).each do |node|
-        all_warnings.concat(node.warnings || [])
+      (nodelist || []).each do |node|
+        all_warnings.concat(node.warnings || []) if node.respond_to?(:warnings)
       end
 
       all_warnings
