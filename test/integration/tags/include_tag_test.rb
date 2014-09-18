@@ -27,6 +27,9 @@ class TestFileSystem
     when "pick_a_source"
       "from TestFileSystem"
 
+    when 'assignments'
+      "{% assign foo = 'bar' %}"
+
     else
       template_path
     end
@@ -106,6 +109,10 @@ class IncludeTagTest < Minitest::Test
     assert_template_result "Locale: test123 test321",
       "{% include 'locale_variables' echo1: echo1, echo2: more_echos.echo2 %}",
       'echo1' => 'test123', 'more_echos' => { "echo2" => 'test321'}
+  end
+
+  def test_included_templates_assigns_variables
+    assert_template_result "bar", "{% include 'assignments' %}{{ foo }}"
   end
 
   def test_nested_include_tag
