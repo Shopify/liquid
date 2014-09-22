@@ -94,6 +94,16 @@ module Liquid
         end
         filterargs << keyword_args unless keyword_args.empty?
         output = context.invoke(filter[0], output, *filterargs)
+      end.tap do |obj|
+        if obj.tainted?
+          case Template.taint_mode
+          when :warn
+            @warnings ||= []
+            @warnings << "variable '#{@name}' is tainted and was not escaped"
+          when :error
+            raise TaintedError, "Error - variable '#{@name}' is tainted and was not escaped"
+          end
+        end
       end
     end
   end

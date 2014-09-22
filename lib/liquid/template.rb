@@ -60,6 +60,12 @@ module Liquid
       # :strict will enforce correct syntax.
       attr_writer :error_mode
 
+      # Sets how strict the taint checker should be.
+      # :lax is the default, and ignores the taint flag completely
+      # :warn adds a warning, but does not interrupt the rendering
+      # :error raises an error when tainted output is used
+      attr_writer :taint_mode
+
       def file_system
         @@file_system
       end
@@ -78,6 +84,10 @@ module Liquid
 
       def error_mode
         @error_mode || :lax
+      end
+
+      def taint_mode
+        @taint_mode || :lax
       end
 
       # Pass a module with filter methods which should be available
