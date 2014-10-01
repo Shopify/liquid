@@ -135,6 +135,18 @@ class TemplateTest < Minitest::Test
     assert t.resource_limits[:render_length_current] > 0
   end
 
+  def test_default_resource_limits_unaffected_by_render_with_context
+    context = Context.new
+    t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
+    t.render!(context)
+    assert context.resource_limits[:assign_score_current] > 0
+    assert context.resource_limits[:render_score_current] > 0
+    assert context.resource_limits[:render_length_current] > 0
+    refute Template.default_resource_limits.key?(:assign_score_current)
+    refute Template.default_resource_limits.key?(:render_score_current)
+    refute Template.default_resource_limits.key?(:render_length_current)
+  end
+
   def test_can_use_drop_as_context
     t = Template.new
     t.registers['lulz'] = 'haha'
