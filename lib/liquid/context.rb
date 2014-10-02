@@ -21,7 +21,7 @@ module Liquid
       @scopes           = [(outer_scope || {})]
       @registers        = registers
       @errors           = []
-      @resource_limits  = resource_limits || Template.default_resource_limits
+      @resource_limits  = resource_limits || Template.default_resource_limits.dup
       @resource_limits[:render_score_current] = 0
       @resource_limits[:assign_score_current] = 0
       @parsed_expression = Hash.new{ |cache, markup| cache[markup] = Expression.parse(markup) }
