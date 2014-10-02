@@ -1,8 +1,7 @@
 module Liquid
   class Parser
     def initialize(input)
-      l = Lexer.new(input)
-      @tokens = l.tokenize
+      tokenize(input)
       @p = 0 # pointer to current location
     end
 
@@ -85,6 +84,16 @@ module Liquid
         str << variable_signature
       end
       str
+    end
+
+    private
+
+    def tokenize(input)
+      l = Lexer.new(input)
+      @tokens = l.tokenize
+    rescue SyntaxError => e
+      e.set_line_number_from_token(input)
+      raise
     end
   end
 end
