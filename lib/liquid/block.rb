@@ -15,42 +15,47 @@ module Liquid
       @nodelist.clear
 
       while token = tokens.shift
-        unless token.empty?
-          case
-          when token.start_with?(TAGSTART)
-            if token =~ FullToken
+        begin
+          unless token.empty?
+            case
+            when token.start_with?(TAGSTART)
+              if token =~ FullToken
 
-              # if we found the proper block delimiter just end parsing here and let the outer block
-              # proceed
-              if block_delimiter == $1
-                end_tag
-                return
-              end
+                # if we found the proper block delimiter just end parsing here and let the outer block
+                # proceed
+                if block_delimiter == $1
+                  end_tag
+                  return
+                end
 
-              # fetch the tag from registered blocks
-              if tag = Template.tags[$1]
-                markup = token.is_a?(Token) ? token.child($2) : $2
-                new_tag = tag.parse($1, markup, tokens, @options)
-                new_tag.line_number = token.line_number if token.is_a?(Token)
-                @blank &&= new_tag.blank?
-                @nodelist << new_tag
+                # fetch the tag from registered blocks
+                if tag = Template.tags[$1]
+                  markup = token.is_a?(Token) ? token.child($2) : $2
+                  new_tag = tag.parse($1, markup, tokens, @options)
+                  new_tag.line_number = token.line_number if token.is_a?(Token)
+                  @blank &&= new_tag.blank?
+                  @nodelist << new_tag
+                else
+                  # this tag is not registered with the system
+                  # pass it to the current block for special handling or error reporting
+                  unknown_tag($1, $2, tokens)
+                end
               else
-                # this tag is not registered with the system
-                # pass it to the current block for special handling or error reporting
-                unknown_tag($1, $2, tokens)
+                raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
               end
+            when token.start_with?(VARSTART)
+              new_var = create_variable(token)
+              new_var.line_number = token.line_number if token.is_a?(Token)
+              @nodelist << new_var
+              @blank = false
             else
-              raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
+              @nodelist << token
+              @blank &&= (token =~ /\A\s*\z/)
             end
-          when token.start_with?(VARSTART)
-            new_var = create_variable(token)
-            new_var.line_number = token.line_number if token.is_a?(Token)
-            @nodelist << new_var
-            @blank = false
-          else
-            @nodelist << token
-            @blank &&= (token =~ /\A\s*\z/)
           end
+        rescue SyntaxError => e
+          e.set_line_number_from_token(token)
+          raise
         end
       end
 
