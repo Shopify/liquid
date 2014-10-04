@@ -100,6 +100,73 @@ class ErrorHandlingTest < Minitest::Test
     assert_equal Liquid::ArgumentError, template.errors.first.class
   end
 
+  def test_with_line_numbers_adds_numbers_to_parser_errors
+    err = assert_raises(SyntaxError) do
+      template = Liquid::Template.parse(%q{
+          foobar
+
+          {% "cat" | foobar %}
+
+          bla
+        },
+        :line_numbers => true
+      )
+    end
+
+    assert_match /Liquid syntax error \(line 4\)/, err.message
+  end
+
+  def test_parsing_warn_with_line_numbers_adds_numbers_to_lexer_errors
+    template = Liquid::Template.parse(%q{
+        foobar
+
+        {% if 1 =! 2 %}ok{% endif %}
+
+        bla
+      },
+      :error_mode => :warn,
+      :line_numbers => true
+    )
+
+    assert_equal ['Liquid syntax error (line 4): Unexpected character = in "1 =! 2"'],
+      template.warnings.map(&:message)
+  end
+
+  def test_parsing_strict_with_line_numbers_adds_numbers_to_lexer_errors
+    err = assert_raises(SyntaxError) do
+      Liquid::Template.parse(%q{
+          foobar
+
+          {% if 1 =! 2 %}ok{% endif %}
+
+          bla
+        },
+        :error_mode => :strict,
+        :line_numbers => true
+      )
+    end
+
+    assert_equal 'Liquid syntax error (line 4): Unexpected character = in "1 =! 2"', err.message
+  end
+
+  def test_syntax_errors_in_nested_blocks_have_correct_line_number
+    err = assert_raises(SyntaxError) do
+      Liquid::Template.parse(%q{
+          foobar
+
+          {% if 1 != 2 %}
+            {% foo %}
+          {% endif %}
+
+          bla
+        },
+        :line_numbers => true
+      )
+    end
+
+    assert_equal "Liquid syntax error (line 5): Unknown tag 'foo'", err.message
+  end
+
   def test_strict_error_messages
     err = assert_raises(SyntaxError) do
       Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ', :error_mode => :strict)
