@@ -36,6 +36,11 @@ HERE
     assert_template_result('321','{%for item in array reversed %}{{item}}{%endfor%}',assigns)
   end
 
+  def test_for_reversed_with_limiting
+    assigns = {'array' => [ 1, 2, 3] }
+    assert_template_result('32','{%for item in array reversed limit:2 %}{{item}}{%endfor%}',assigns)
+  end
+
   def test_for_with_range
     assert_template_result(' 1  2  3 ','{%for item in (1..3) %} {{item}} {%endfor%}')
   end

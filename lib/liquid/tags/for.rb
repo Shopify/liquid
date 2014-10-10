@@ -80,14 +80,14 @@ module Liquid
         context[@attributes['offset'.freeze]].to_i
       end
 
+      collection.reverse! if @reversed
+
       limit = context[@attributes['limit'.freeze]]
       to    = limit ? limit.to_i + from : nil
 
       segment = Utils.slice_collection(collection, from, to)
 
       return render_else(context) if segment.empty?
-
-      segment.reverse! if @reversed
 
       result = ''
 
