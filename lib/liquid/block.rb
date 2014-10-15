@@ -6,7 +6,7 @@ module Liquid
     end
 
     def parse(tokens)
-      @body = BlockBody.new(options)
+      @body = BlockBody.new
       while more = parse_body(@body, tokens)
       end
     end
@@ -60,7 +60,7 @@ module Liquid
     protected
 
     def parse_body(body, tokens)
-      body.parse(tokens) do |end_tag_name, end_tag_params|
+      body.parse(tokens, options) do |end_tag_name, end_tag_params|
         @blank &&= body.blank?
 
         return false if end_tag_name == block_delimiter

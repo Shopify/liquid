@@ -49,7 +49,7 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       parse_with_selected_parser(markup)
-      @for_block = BlockBody.new(options)
+      @for_block = BlockBody.new
     end
 
     def parse(tokens)
@@ -64,7 +64,7 @@ module Liquid
 
     def unknown_tag(tag, markup, tokens)
       return super unless tag == 'else'.freeze
-      @else_block = BlockBody.new(options)
+      @else_block = BlockBody.new
     end
 
     def render(context)

@@ -5,21 +5,14 @@ module Liquid
     TAGSTART = "{%".freeze
     VARSTART = "{{".freeze
 
-    def self.parse(tokens, options)
-      body = new(options)
-      body.parse(tokens)
-      body
-    end
-
     attr_reader :nodelist
 
-    def initialize(options)
+    def initialize
       @nodelist = []
       @blank = true
-      @options = options
     end
 
-    def parse(tokens)
+    def parse(tokens, options)
       while token = tokens.shift
         begin
           unless token.empty?
@@ -31,7 +24,7 @@ module Liquid
                 # fetch the tag from registered blocks
                 if tag = Template.tags[tag_name]
                   markup = token.child(markup) if token.is_a?(Token)
-                  new_tag = tag.parse(tag_name, markup, tokens, @options)
+                  new_tag = tag.parse(tag_name, markup, tokens, options)
                   new_tag.line_number = token.line_number if token.is_a?(Token)
                   @blank &&= new_tag.blank?
                   @nodelist << new_tag
@@ -41,10 +34,10 @@ module Liquid
                   return yield tag_name, markup
                 end
               else
-                raise SyntaxError.new(@options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
+                raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
               end
             when token.start_with?(VARSTART)
-              new_var = create_variable(token)
+              new_var = create_variable(token, options)
               new_var.line_number = token.line_number if token.is_a?(Token)
               @nodelist << new_var
               @blank = false
@@ -107,6 +100,8 @@ module Liquid
       output.join
     end
 
+    private
+
     def render_token(token, context)
       token_output = (token.respond_to?(:render) ? token.render(context) : token)
       context.increment_used_resources(:render_length_current, token_output)
@@ -117,12 +112,12 @@ module Liquid
       token_output
     end
 
-    def create_variable(token)
+    def create_variable(token, options)
       token.scan(ContentOfVariable) do |content|
         markup = token.is_a?(Token) ? token.child(content.first) : content.first
-        return Variable.new(markup, @options)
+        return Variable.new(markup, options)
       end
-      raise SyntaxError.new(@options[:locale].t("errors.syntax.variable_termination".freeze, :token => token, :tag_end => VariableEnd.inspect))
+      raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination".freeze, :token => token, :tag_end => VariableEnd.inspect))
     end
   end
 end

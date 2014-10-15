@@ -15,7 +15,7 @@ module Liquid
     end
 
     def parse(tokens)
-      body = BlockBody.new(options)
+      body = BlockBody.new
       while more = parse_body(body, tokens)
         body = @blocks.last.attachment
       end
@@ -56,7 +56,7 @@ module Liquid
     private
 
     def record_when_condition(markup)
-      body = BlockBody.new(options)
+      body = BlockBody.new
 
       while markup
         if not markup =~ WhenSyntax
@@ -77,7 +77,7 @@ module Liquid
       end
 
       block = ElseCondition.new
-      block.attach(BlockBody.new(options))
+      block.attach(BlockBody.new)
       @blocks << block
     end
   end

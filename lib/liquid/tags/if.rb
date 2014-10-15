@@ -58,7 +58,7 @@ module Liquid
         end
 
         @blocks.push(block)
-        block.attach(BlockBody.new(options))
+        block.attach(BlockBody.new)
       end
 
       def lax_parse(markup)
