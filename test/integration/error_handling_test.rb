@@ -151,7 +151,7 @@ class ErrorHandlingTest < Minitest::Test
 
   def test_syntax_errors_in_nested_blocks_have_correct_line_number
     err = assert_raises(SyntaxError) do
-      tmpl = Liquid::Template.parse(%q{
+      Liquid::Template.parse(%q{
           foobar
 
           {% if 1 != 2 %}
