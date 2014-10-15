@@ -57,15 +57,15 @@ module Liquid
       end
 
       def lax_parse(markup)
-        expressions = markup.scan(ExpressionsAndOperators).reverse
-        raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.shift =~ Syntax
+        expressions = markup.scan(ExpressionsAndOperators)
+        raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop =~ Syntax
 
         condition = Condition.new($1, $2, $3)
 
         while not expressions.empty?
-          operator = (expressions.shift).to_s.strip
+          operator = expressions.pop.to_s.strip
 
-          raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.shift.to_s =~ Syntax
+          raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop.to_s =~ Syntax
 
           new_condition = Condition.new($1, $2, $3)
           raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless BOOLEAN_OPERATORS.include?(operator)
