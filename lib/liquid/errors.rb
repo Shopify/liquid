@@ -57,4 +57,5 @@ module Liquid
   class StackLevelError < Error; end
   class TaintedError < Error; end
   class MemoryError < Error; end
+  class InternalError < Error; end
 end
