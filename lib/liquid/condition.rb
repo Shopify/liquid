@@ -3,7 +3,7 @@ module Liquid
   #
   # Example:
   #
-  #   c = Condition.new('1', '==', '1')
+  #   c = Condition.new(1, '==', 1)
   #   c.evaluate #=> true
   #
   class Condition #:nodoc:
@@ -28,9 +28,9 @@ module Liquid
     attr_accessor :left, :operator, :right
 
     def initialize(left = nil, operator = nil, right = nil)
-      @left = Expression.parse(left)
+      @left = left
       @operator = operator
-      @right = Expression.parse(right)
+      @right = right
       @child_relation  = nil
       @child_condition = nil
     end
