@@ -24,7 +24,6 @@ module Liquid
       @resource_limits  = resource_limits || Template.default_resource_limits.dup
       @resource_limits[:render_score_current] = 0
       @resource_limits[:assign_score_current] = 0
-      @parsed_expression = Hash.new{ |cache, markup| cache[markup] = Expression.parse(markup) }
       squash_instance_assigns_with_environments
 
       @this_stack_used = false
@@ -170,7 +169,7 @@ module Liquid
     # Example:
     #   products == empty #=> products.empty?
     def [](expression)
-      evaluate(@parsed_expression[expression])
+      evaluate(Expression.parse(expression))
     end
 
     def has_key?(key)
