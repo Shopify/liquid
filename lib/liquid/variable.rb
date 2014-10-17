@@ -36,7 +36,8 @@ module Liquid
     def lax_parse(markup)
       @filters = []
       if markup =~ /(#{QuotedFragment})(.*)/om
-        name_markup, filter_markup = $1, $2
+        name_markup = $1
+        filter_markup = $2
         @name = Expression.parse(name_markup)
         if filter_markup =~ /#{FilterSeparator}\s*(.*)/om
           filters = $1.scan(FilterParser)
