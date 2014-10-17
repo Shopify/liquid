@@ -15,7 +15,7 @@ module Liquid
     end
 
     def nodelist
-      @blocks.map(&:attachment).flatten
+      @blocks.flat_map(&:attachment)
     end
 
     def unknown_tag(tag, markup, tokens)
