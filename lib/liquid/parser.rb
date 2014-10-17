@@ -77,7 +77,7 @@ module Liquid
       str = consume(:id)
       while consume?(:dash)
         str << "-".freeze
-        str << consume(:id) if look(:id)
+        str << consume(:id)
       end
       if consume?(:question)
         str << "?".freeze
