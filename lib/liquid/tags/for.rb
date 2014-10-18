@@ -130,7 +130,7 @@ module Liquid
         @variable_name = $1
         @collection_name = $2
         @name = "#{$1}-#{$2}"
-        @reversed = $3
+        @reversed = $3 || false
         @attributes = {}
         markup.scan(TagAttributes) do |key, value|
           @attributes[key] = value
