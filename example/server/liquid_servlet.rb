@@ -11,7 +11,8 @@ class LiquidServlet < WEBrick::HTTPServlet::AbstractServlet
   private
 
   def handle(type, req, res)
-    @request, @response = req, res
+    @request = req
+    @response = res
 
     @request.path_info =~ /(\w+)\z/
     @action = $1 || 'index'

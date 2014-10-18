@@ -28,7 +28,9 @@ module Liquid
     attr_accessor :left, :operator, :right
 
     def initialize(left = nil, operator = nil, right = nil)
-      @left, @operator, @right = left, operator, right
+      @left = left
+      @operator = operator
+      @right = right
       @child_relation  = nil
       @child_condition = nil
     end
@@ -47,11 +49,13 @@ module Liquid
     end
 
     def or(condition)
-      @child_relation, @child_condition = :or, condition
+      @child_relation = :or
+      @child_condition = condition
     end
 
     def and(condition)
-      @child_relation, @child_condition = :and, condition
+      @child_relation = :and
+      @child_condition = condition
     end
 
     def attach(attachment)
@@ -94,7 +98,8 @@ module Liquid
       # return this as the result.
       return context[left] if op == nil
 
-      left, right = context[left], context[right]
+      left = context[left]
+      right = context[right]
 
       operation = self.class.operators[op] || raise(Liquid::ArgumentError.new("Unknown operator #{op}"))
 
