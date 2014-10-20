@@ -68,19 +68,19 @@ module Liquid
     def render(context)
       context.registers[:for] ||= Hash.new(0)
 
-      collection = context[@collection_name]
+      collection = context.evaluate(@collection_name)
       collection = collection.to_a if collection.is_a?(Range)
 
       # Maintains Ruby 1.8.7 String#each behaviour on 1.9
       return render_else(context) unless iterable?(collection)
 
-      from = if @attributes['offset'.freeze] == 'continue'.freeze
+      from = if @from == :continue
         context.registers[:for][@name].to_i
       else
-        context[@attributes['offset'.freeze]].to_i
+        context.evaluate(@from).to_i
       end
 
-      limit = context[@attributes['limit'.freeze]]
+      limit = context.evaluate(@limit)
       to    = limit ? limit.to_i + from : nil
 
       segment = Utils.slice_collection(collection, from, to)
@@ -128,12 +128,12 @@ module Liquid
     def lax_parse(markup)
       if markup =~ Syntax
         @variable_name = $1
-        @collection_name = $2
-        @name = "#{$1}-#{$2}"
+        collection_name = $2
         @reversed = $3
-        @attributes = {}
+        @name = "#{@variable_name}-#{collection_name}"
+        @collection_name = Expression.parse(collection_name)
         markup.scan(TagAttributes) do |key, value|
-          @attributes[key] = value
+          set_attribute(key, value)
         end
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.for".freeze))
@@ -144,23 +144,35 @@ module Liquid
       p = Parser.new(markup)
       @variable_name = p.consume(:id)
       raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_in".freeze))  unless p.id?('in'.freeze)
-      @collection_name = p.expression
-      @name = "#{@variable_name}-#{@collection_name}"
+      collection_name = p.expression
+      @name = "#{@variable_name}-#{collection_name}"
+      @collection_name = Expression.parse(collection_name)
       @reversed = p.id?('reversed'.freeze)
 
-      @attributes = {}
       while p.look(:id) && p.look(:colon, 1)
         unless attribute = p.id?('limit'.freeze) || p.id?('offset'.freeze)
           raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute".freeze))
         end
         p.consume
-        val = p.expression
-        @attributes[attribute] = val
+        set_attribute(attribute, p.expression)
       end
       p.consume(:end_of_string)
     end
 
     private
+
+    def set_attribute(key, expr)
+      case key
+      when 'offset'.freeze
+        @from = if expr == 'continue'.freeze
+          :continue
+        else
+          Expression.parse(expr)
+        end
+      when 'limit'.freeze
+        @limit = Expression.parse(expr)
+      end
+    end
 
     def render_else(context)
       return @else_block ? [render_all(@else_block, context)] : ''.freeze

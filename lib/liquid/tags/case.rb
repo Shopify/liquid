@@ -8,7 +8,7 @@ module Liquid
       @blocks = []
 
       if markup =~ Syntax
-        @left = $1
+        @left = Expression.parse($1)
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.case".freeze))
       end
@@ -58,7 +58,7 @@ module Liquid
 
         markup = $2
 
-        block = Condition.new(@left, '=='.freeze, $1)
+        block = Condition.new(@left, '=='.freeze, Expression.parse($1))
         block.attach(@nodelist)
         @blocks.push(block)
       end

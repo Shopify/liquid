@@ -89,7 +89,7 @@ class RenderProfilingTest < Minitest::Test
 
     include_node = t.profiler[1]
     include_node.children.each do |child|
-      assert_equal "'a_template'", child.partial
+      assert_equal "a_template", child.partial
     end
   end
 
@@ -99,12 +99,12 @@ class RenderProfilingTest < Minitest::Test
 
     a_template = t.profiler[1]
     a_template.children.each do |child|
-      assert_equal "'a_template'", child.partial
+      assert_equal "a_template", child.partial
     end
 
     b_template = t.profiler[2]
     b_template.children.each do |child|
-      assert_equal "'b_template'", child.partial
+      assert_equal "b_template", child.partial
     end
   end
 
@@ -114,12 +114,12 @@ class RenderProfilingTest < Minitest::Test
 
     a_template1 = t.profiler[1]
     a_template1.children.each do |child|
-      assert_equal "'a_template'", child.partial
+      assert_equal "a_template", child.partial
     end
 
     a_template2 = t.profiler[2]
     a_template2.children.each do |child|
-      assert_equal "'a_template'", child.partial
+      assert_equal "a_template", child.partial
     end
   end
 

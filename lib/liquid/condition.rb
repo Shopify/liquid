@@ -3,7 +3,7 @@ module Liquid
   #
   # Example:
   #
-  #   c = Condition.new('1', '==', '1')
+  #   c = Condition.new(1, '==', 1)
   #   c.evaluate #=> true
   #
   class Condition #:nodoc:
@@ -96,10 +96,10 @@ module Liquid
       # If the operator is empty this means that the decision statement is just
       # a single variable. We can just poll this variable from the context and
       # return this as the result.
-      return context[left] if op == nil
+      return context.evaluate(left) if op == nil
 
-      left = context[left]
-      right = context[right]
+      left = context.evaluate(left)
+      right = context.evaluate(right)
 
       operation = self.class.operators[op] || raise(Liquid::ArgumentError.new("Unknown operator #{op}"))
 
