@@ -10,6 +10,11 @@ class IfElseTagTest < Minitest::Test
     assert_template_result('  you rock ?','{% if false %} you suck {% endif %} {% if true %} you rock {% endif %}?')
   end
 
+  def test_literal_comparisons
+    assert_template_result(' NO ','{% assign v = false %}{% if v %} YES {% else %} NO {% endif %}')
+    assert_template_result(' YES ','{% assign v = nil %}{% if v == nil %} YES {% else %} NO {% endif %}')
+  end
+
   def test_if_else
     assert_template_result(' YES ','{% if false %} NO {% else %} YES {% endif %}')
     assert_template_result(' YES ','{% if true %} YES {% else %} NO {% endif %}')

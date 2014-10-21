@@ -31,6 +31,12 @@ class VariableTest < Minitest::Test
 
   def test_false_renders_as_false
     assert_equal 'false', Template.parse("{{ foo }}").render!('foo' => false)
+    assert_equal 'false', Template.parse("{{ false }}").render!
+  end
+
+  def test_nil_renders_as_empty_string
+    assert_equal '', Template.parse("{{ nil }}").render!
+    assert_equal 'cat', Template.parse("{{ nil | append: 'cat' }}").render!
   end
 
   def test_preset_assigns
