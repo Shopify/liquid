@@ -8,6 +8,7 @@ class IfElseTagTest < Minitest::Test
     assert_template_result('  this text should go into the output  ',
                            ' {% if true %} this text should go into the output {% endif %} ')
     assert_template_result('  you rock ?','{% if false %} you suck {% endif %} {% if true %} you rock {% endif %}?')
+    assert_template_result(' NO ','{% assign v = false %}{% if v %} YES {% else %} NO {% endif %}')
   end
 
   def test_if_else

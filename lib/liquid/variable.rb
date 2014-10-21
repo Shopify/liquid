@@ -83,7 +83,7 @@ module Liquid
     end
 
     def render(context)
-      return ''.freeze unless @name
+      return ''.freeze if @name.nil?
       @filters.inject(context.evaluate(@name)) do |output, (filter_name, filter_args, filter_kwargs)|
         filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
         output = context.invoke(filter_name, output, *filter_args)
