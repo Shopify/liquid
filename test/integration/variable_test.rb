@@ -34,6 +34,10 @@ class VariableTest < Minitest::Test
     assert_equal 'false', Template.parse("{{ false }}").render!
   end
 
+  def test_nil_operations
+    assert_equal 'cat', Template.parse("{{ nil | append: 'cat' }}").render!
+  end
+
   def test_preset_assigns
     template = Template.parse(%|{{ test }}|)
     template.assigns['test'] = 'worked'
