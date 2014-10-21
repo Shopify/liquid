@@ -1,6 +1,6 @@
 module Liquid
   class Block < Tag
-    FullToken         = /\A#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
+    FullToken         = /\A#{TagStart}\s*([[:word:]]+)\s*(.*)?#{TagEnd}\z/om
     ContentOfVariable = /\A#{VariableStart}(.*)#{VariableEnd}\z/om
     TAGSTART = "{%".freeze
     VARSTART = "{{".freeze

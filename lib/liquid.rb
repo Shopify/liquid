@@ -26,14 +26,14 @@ module Liquid
   VariableAttributeSeparator  = '.'.freeze
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
-  VariableSignature           = /\(?[\w\-\.\[\]]\)?/
-  VariableSegment             = /[\w\-]/
+  VariableSignature           = /\(?[[[:word:]]\-\.\[\]]\)?/
+  VariableSegment             = /[[[:word:]]\-]/
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
   VariableIncompleteEnd       = /\}\}?/
   QuotedString                = /"[^"]*"|'[^']*'/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
-  TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
+  TagAttributes               = /([[:word:]]+)\s*\:\s*(#{QuotedFragment})/o
   AnyStartingTag              = /\{\{|\{\%/
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om

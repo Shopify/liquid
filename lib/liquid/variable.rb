@@ -12,7 +12,7 @@ module Liquid
   #
   class Variable
     FilterParser = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
-    EasyParse = /\A *(\w+(?:\.\w+)*) *\z/
+    EasyParse = /\A *([[:word:]]+(?:\.[[:word:]]+)*) *\z/
     attr_accessor :filters, :name, :warnings
     attr_accessor :line_number
     include ParserSwitching
@@ -42,9 +42,9 @@ module Liquid
         if filter_markup =~ /#{FilterSeparator}\s*(.*)/om
           filters = $1.scan(FilterParser)
           filters.each do |f|
-            if f =~ /\w+/
+            if f =~ /[[:word:]]+/
               filtername = Regexp.last_match(0)
-              filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
+              filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:[[:word:]]+\s*\:\s*)?#{QuotedFragment})/o).flatten
               @filters << parse_filter_expressions(filtername, filterargs)
             end
           end

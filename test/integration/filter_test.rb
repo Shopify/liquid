@@ -18,7 +18,7 @@ end
 
 module SubstituteFilter
   def substitute(input, params={})
-    input.gsub(/%\{(\w+)\}/) { |match| params[$1] }
+    input.gsub(/%\{([[:word:]]+)\}/) { |match| params[$1] }
   end
 end
 
