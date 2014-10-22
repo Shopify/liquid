@@ -72,7 +72,7 @@ module Liquid
     protected
 
     def state
-      [@name, @lookup, @command_flags]
+      [@name, @lookups, @command_flags]
     end
   end
 end

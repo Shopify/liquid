@@ -23,12 +23,10 @@ class ContextTest < Minitest::Test
   end
 
   def test_has_key_will_not_add_an_error_for_missing_keys
-    Template.error_mode = :strict
-
-    context = Context.new
-
-    context.has_key?('unknown')
-
-    assert_empty context.errors
+    with_error_mode :strict do
+      context = Context.new
+      context.has_key?('unknown')
+      assert_empty context.errors
+    end
   end
 end
