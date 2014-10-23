@@ -50,6 +50,12 @@ class VariableUnitTest < Minitest::Test
     assert_equal [['things',['%Y, okay?','the other one']]], var.filters
   end
 
+  def test_empty_variable_filters
+    var = Variable.new(' | flt')
+    assert_equal nil, var.name
+    assert_equal [['flt',[]]], var.filters
+  end
+
   def test_filter_with_date_parameter
     var = Variable.new(%! '2006-06-06' | date: "%m/%d/%Y"!)
     assert_equal '2006-06-06', var.name
