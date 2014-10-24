@@ -25,6 +25,10 @@ class IfElseTagTest < Minitest::Test
     assert_template_result(' YES ','{% if var %} YES {% endif %}', 'var' => true)
   end
 
+  def test_if_with_spaces
+    assert_template_result(' YES ','{% if var . prop == 1 %} YES {% endif %}', 'var' => {'prop' => 1})
+  end
+
   def test_if_or
     assert_template_result(' YES ','{% if a or b %} YES {% endif %}', 'a' => true, 'b' => true)
     assert_template_result(' YES ','{% if a or b %} YES {% endif %}', 'a' => true, 'b' => false)
