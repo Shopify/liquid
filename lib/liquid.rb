@@ -37,7 +37,7 @@ module Liquid
   AnyStartingTag              = /\{\{|\{\%/
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
-  VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
+  VariableParser              = /\[[^\]]+\]+|#{VariableSegment}+\??/o
 
   singleton_class.send(:attr_accessor, :cache_classes)
   self.cache_classes = true

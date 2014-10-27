@@ -6,7 +6,9 @@ class VariableUnitTest < Minitest::Test
   def test_variable
     var = Variable.new('hello')
     assert_equal VariableLookup.new('hello'), var.name
+  end
 
+  def test_nested_square_brackets
     var = Variable.new('hello[hello[0]]')
     assert_equal VariableLookup.new('hello[0]'), var.name.instance_variable_get(:@lookups).first
   end
