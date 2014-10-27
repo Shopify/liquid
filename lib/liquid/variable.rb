@@ -62,7 +62,7 @@ module Liquid
 
       @filters = []
       p = Parser.new(markup)
-      # Could be just filters with no input
+
       @name = Expression.parse(p.expression)
       while p.consume?(:pipe)
         filtername = p.consume(:id)
