@@ -108,6 +108,8 @@ class VariableUnitTest < Minitest::Test
 
     with_error_mode :strict do
       assert_raises(Liquid::SyntaxError) { Variable.new('foo - bar') }
+      assert_raises(Liquid::SyntaxError) { Variable.new('-foo') }
+      assert_raises(Liquid::SyntaxError) { Variable.new('2foo') }
     end
   end
 
