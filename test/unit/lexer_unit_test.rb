@@ -32,7 +32,7 @@ class LexerUnitTest < Minitest::Test
 
   def test_fancy_identifiers
     tokens = Lexer.new('hi five?').tokenize
-    assert_equal [[:id,'hi'], [:id, 'five'], [:question, '?'], [:end_of_string]], tokens
+    assert_equal [[:id,'hi'], [:id, 'five?'], [:end_of_string]], tokens
   end
 
   def test_whitespace

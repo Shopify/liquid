@@ -13,7 +13,7 @@ module Liquid
       '?'.freeze => :question,
       '-'.freeze => :dash
     }
-    IDENTIFIER = /\w+/
+    IDENTIFIER = /[\w-]+\??/
     SINGLE_STRING_LITERAL = /'[^\']*'/
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
     NUMBER_LITERAL = /-?\d+(\.\d+)?/

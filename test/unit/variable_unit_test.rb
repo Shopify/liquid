@@ -102,6 +102,15 @@ class VariableUnitTest < Minitest::Test
     assert_equal 1000.01, var.name
   end
 
+  def test_dashes
+    assert_equal VariableLookup.new('foo-bar'), Variable.new('foo-bar').name
+    assert_equal VariableLookup.new('foo-bar-2'), Variable.new('foo-bar-2').name
+
+    with_error_mode :strict do
+      assert_raises(Liquid::SyntaxError) { Variable.new('foo - bar') }
+    end
+  end
+
   def test_string_with_special_chars
     var = Variable.new(%| 'hello! $!@.;"ddasd" ' |)
     assert_equal 'hello! $!@.;"ddasd" ', var.name
