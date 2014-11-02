@@ -3,13 +3,13 @@ require File.dirname(__FILE__) + '/theme_runner'
 
 Liquid::Template.error_mode = ARGV.first.to_sym if ARGV.first
 profiler = ThemeRunner.new
-profiler.run
+profiler.parse_and_render
 
 [:cpu, :object].each do |profile_type|
   puts "Profiling in #{profile_type.to_s} mode..."
   results = StackProf.run(mode: profile_type) do
     100.times do
-      profiler.run
+      profiler.parse_and_render
     end
   end
   StackProf::Report.new(results).print_text(false, 20)

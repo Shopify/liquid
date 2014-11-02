@@ -32,45 +32,59 @@ class ThemeRunner
 
       [File.read(test), (File.file?(theme_path) ? File.read(theme_path) : nil), test]
     end.compact
-  end
-
-  def compile
-    # Dup assigns because will make some changes to them
-
-    @tests.each do |liquid, layout, template_name|
-
-      tmpl = Liquid::Template.new
-      tmpl.parse(liquid)
-      tmpl = Liquid::Template.new
-      tmpl.parse(layout)
+    @parsed = @tests.map do |liquid, layout, template_name|
+      [Liquid::Template.parse(liquid), Liquid::Template.parse(layout), template_name]
+    end
+    @marshaled = @parsed.map do |liquid, layout, template_name|
+      [Marshal.dump(liquid), Marshal.dump(layout), template_name]
     end
   end
 
-   def run
+  def parse
+    @tests.each do |liquid, layout, template_name|
+      Liquid::Template.parse(liquid)
+      Liquid::Template.parse(layout)
+    end
+  end
+
+  def marshal_load
+    @marshaled.each do |liquid, layout, template_name|
+      Marshal.load(liquid)
+      Marshal.load(layout)
+    end
+  end
+
+  def render
+    @parsed.each do |liquid, layout, template_name|
+      render_once(liquid, layout, template_name)
+    end
+  end
+
+  def load_and_render
+    @marshaled.each do |liquid, layout, template_name|
+      render_once(Marshal.load(liquid), Marshal.load(layout), template_name)
+    end
+  end
+
+  def parse_and_render
+    @tests.each do |liquid, layout, template_name|
+      render_once(Liquid::Template.parse(liquid), Liquid::Template.parse(layout), template_name)
+    end
+  end
+
+  def render_once(template, layout, template_name)
     # Dup assigns because will make some changes to them
     assigns = Database.tables.dup
 
-    @tests.each do |liquid, layout, template_name|
+    assigns['page_title'] = 'Page title'
+    assigns['template'] = File.basename(template_name, File.extname(template_name))
+    template.registers[:file_system] = ThemeRunner::FileSystem.new(File.dirname(template_name))
 
-      # Compute page_tempalte outside of profiler run, uninteresting to profiler
-      page_template = File.basename(template_name, File.extname(template_name))
-      compile_and_render(liquid, layout, assigns, page_template, template_name)
-
-    end
-  end
-
-
-  def compile_and_render(template, layout, assigns, page_template, template_file)
-    tmpl = Liquid::Template.new
-    tmpl.assigns['page_title'] = 'Page title'
-    tmpl.assigns['template'] = page_template
-    tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(File.dirname(template_file))
-
-    content_for_layout = tmpl.parse(template).render!(assigns)
+    content_for_layout = template.render!(assigns)
 
     if layout
       assigns['content_for_layout'] = content_for_layout
-      tmpl.parse(layout).render!(assigns)
+      layout.render!(assigns)
     else
       content_for_layout
     end
