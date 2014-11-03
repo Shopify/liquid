@@ -3,15 +3,26 @@ module Liquid
     FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
 
     def parse(tokens)
-      @nodelist ||= []
-      @nodelist.clear
+      @body = ''
       while token = tokens.shift
         if token =~ FullTokenPossiblyInvalid
-          @nodelist << $1 if $1 != "".freeze
+          @body << $1 if $1 != "".freeze
           return if block_delimiter == $2
         end
-        @nodelist << token if not token.empty?
+        @body << token if not token.empty?
       end
+    end
+
+    def render(context)
+      @body
+    end
+
+    def nodelist
+      [@body]
+    end
+
+    def blank?
+      @body.empty?
     end
   end
 

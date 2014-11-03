@@ -1,5 +1,5 @@
 module Liquid
-  class Block < Tag
+  class BlockBody
     def render_token_with_profiling(token, context)
       Profiler.profile_token_render(token) do
         render_token_without_profiling(token, context)

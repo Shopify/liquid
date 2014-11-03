@@ -49,20 +49,22 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       parse_with_selected_parser(markup)
-      @nodelist = @for_block = []
+      @for_block = BlockBody.new
+    end
+
+    def parse(tokens)
+      if more = parse_body(@for_block, tokens)
+        parse_body(@else_block, tokens)
+      end
     end
 
     def nodelist
-      if @else_block
-        @for_block + @else_block
-      else
-        @for_block
-      end
+      @else_block ? [@for_block, @else_block] : [@for_block]
     end
 
     def unknown_tag(tag, markup, tokens)
       return super unless tag == 'else'.freeze
-      @nodelist = @else_block = []
+      @else_block = BlockBody.new
     end
 
     def render(context)
@@ -110,7 +112,7 @@ module Liquid
             'last'.freeze    => (index == length - 1)
           }
 
-          result << render_all(@for_block, context)
+          result << @for_block.render(context)
 
           # Handle any interrupts if they exist.
           if context.has_interrupt?
@@ -175,7 +177,7 @@ module Liquid
     end
 
     def render_else(context)
-      return @else_block ? [render_all(@else_block, context)] : ''.freeze
+      @else_block ? @else_block.render(context) : ''.freeze
     end
 
     def iterable?(collection)
