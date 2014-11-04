@@ -34,7 +34,7 @@ module Liquid
                   return yield tag_name, markup
                 end
               else
-                raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
+                raise_missing_tag_terminator(token, options)
               end
             when token.start_with?(VARSTART)
               new_var = create_variable(token, options)
@@ -117,6 +117,14 @@ module Liquid
         markup = token.is_a?(Token) ? token.child(content.first) : content.first
         return Variable.new(markup, options)
       end
+      raise_missing_variable_terminator(token, options)
+    end
+
+    def raise_missing_tag_terminator(token, options)
+      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
+    end
+
+    def raise_missing_variable_terminator(token, options)
       raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination".freeze, :token => token, :tag_end => VariableEnd.inspect))
     end
   end
