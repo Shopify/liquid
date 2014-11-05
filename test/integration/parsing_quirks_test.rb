@@ -103,4 +103,11 @@ class ParsingQuirksTest < Minitest::Test
     end
   end
 
+  def test_invalid_variables_work
+    with_error_mode(:lax) do
+      assert_template_result('bar', "{% assign 123foo = 'bar' %}{{ 123foo }}")
+      assert_template_result('123', "{% assign 123 = 'bar' %}{{ 123 }}")
+    end
+  end
+
 end # ParsingQuirksTest
