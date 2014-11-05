@@ -103,4 +103,17 @@ class ParsingQuirksTest < Minitest::Test
     end
   end
 
+  def test_invalid_variables_work
+    with_error_mode(:lax) do
+      assert_template_result('bar', "{% assign 123foo = 'bar' %}{{ 123foo }}")
+      assert_template_result('123', "{% assign 123 = 'bar' %}{{ 123 }}")
+    end
+  end
+
+  def test_extra_dots_in_ranges
+    with_error_mode(:lax) do
+      assert_template_result('12345', "{% for i in (1...5) %}{{ i }}{% endfor %}")
+    end
+  end
+
 end # ParsingQuirksTest
