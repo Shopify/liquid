@@ -43,7 +43,7 @@ module Liquid
               @blank = false
             else
               @nodelist << token
-              @blank &&= (token =~ /\A\s*\z/)
+              @blank &&= !!(token =~ /\A\s*\z/)
             end
           end
         rescue SyntaxError => e
