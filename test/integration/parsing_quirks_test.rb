@@ -28,14 +28,11 @@ class ParsingQuirksTest < Minitest::Test
 
   def test_error_on_empty_filter
     assert Template.parse("{{test}}")
-
-    with_error_mode(:lax) do
-      assert Template.parse("{{|test}}")
-    end
-
+    assert Template.parse("{{|test}}")
     with_error_mode(:strict) do
-      assert_raises(SyntaxError) { Template.parse("{{|test}}") }
-      assert_raises(SyntaxError) { Template.parse("{{test |a|b|}}") }
+      assert_raises(SyntaxError) do
+        Template.parse("{{test |a|b|}}")
+      end
     end
   end
 

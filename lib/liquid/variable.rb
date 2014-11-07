@@ -62,8 +62,8 @@ module Liquid
 
       @filters = []
       p = Parser.new(markup)
-
-      @name = Expression.parse(p.expression)
+      # Could be just filters with no input
+      @name = p.look(:pipe) ? nil : Expression.parse(p.expression)
       while p.consume?(:pipe)
         filtername = p.consume(:id)
         filterargs = p.consume?(:colon) ? parse_filterargs(p) : []
