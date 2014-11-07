@@ -22,16 +22,12 @@ module Liquid
 
       if markup =~ Syntax
 
-        template_name = $1
-        variable_name = $3
-
-        @variable_name = Expression.parse(variable_name || template_name[1..-2])
-        @context_variable_name = template_name[1..-2].split('/'.freeze).last
-        @template_name = Expression.parse(template_name)
+        @template_name = $1
+        @variable_name = $3
         @attributes    = {}
 
         markup.scan(TagAttributes) do |key, value|
-          @attributes[key] = Expression.parse(value)
+          @attributes[key] = value
         end
 
       else
@@ -44,20 +40,21 @@ module Liquid
 
     def render(context)
       partial = load_cached_partial(context)
-      variable = context.evaluate(@variable_name)
+      variable = context[@variable_name || @template_name[1..-2]]
 
       context.stack do
         @attributes.each do |key, value|
-          context[key] = context.evaluate(value)
+          context[key] = context[value]
         end
 
+        context_variable_name = @template_name[1..-2].split('/'.freeze).last
         if variable.is_a?(Array)
           variable.collect do |var|
-            context[@context_variable_name] = var
+            context[context_variable_name] = var
             partial.render(context)
           end
         else
-          context[@context_variable_name] = variable
+          context[context_variable_name] = variable
           partial.render(context)
         end
       end
@@ -66,7 +63,7 @@ module Liquid
     private
       def load_cached_partial(context)
         cached_partials = context.registers[:cached_partials] || {}
-        template_name = context.evaluate(@template_name)
+        template_name = context[@template_name]
 
         if cached = cached_partials[template_name]
           return cached
@@ -84,9 +81,9 @@ module Liquid
         # make read_template_file call backwards-compatible.
         case file_system.method(:read_template_file).arity
         when 1
-          file_system.read_template_file(context.evaluate(@template_name))
+          file_system.read_template_file(context[@template_name])
         when 2
-          file_system.read_template_file(context.evaluate(@template_name), context)
+          file_system.read_template_file(context[@template_name], context)
         else
           raise ArgumentError, "file_system.read_template_file expects two parameters: (template_name, context)"
         end

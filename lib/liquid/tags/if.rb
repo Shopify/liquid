@@ -60,14 +60,14 @@ module Liquid
         expressions = markup.scan(ExpressionsAndOperators)
         raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop =~ Syntax
 
-        condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
+        condition = Condition.new($1, $2, $3)
 
         while not expressions.empty?
           operator = expressions.pop.to_s.strip
 
           raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop.to_s =~ Syntax
 
-          new_condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
+          new_condition = Condition.new($1, $2, $3)
           raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless BOOLEAN_OPERATORS.include?(operator)
           new_condition.send(operator, condition)
           condition = new_condition
@@ -92,9 +92,9 @@ module Liquid
       end
 
       def parse_comparison(p)
-        a = Expression.parse(p.expression)
+        a = p.expression
         if op = p.consume?(:comparison)
-          b = Expression.parse(p.expression)
+          b = p.expression
           Condition.new(a, op, b)
         else
           Condition.new(a)

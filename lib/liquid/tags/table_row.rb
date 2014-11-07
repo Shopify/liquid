@@ -6,10 +6,10 @@ module Liquid
       super
       if markup =~ Syntax
         @variable_name = $1
-        @collection_name = Expression.parse($2)
+        @collection_name = $2
         @attributes = {}
         markup.scan(TagAttributes) do |key, value|
-          @attributes[key] = Expression.parse(value)
+          @attributes[key] = value
         end
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.table_row".freeze))
@@ -17,16 +17,16 @@ module Liquid
     end
 
     def render(context)
-      collection = context.evaluate(@collection_name) or return ''.freeze
+      collection = context[@collection_name] or return ''.freeze
 
-      from = @attributes.key?('offset'.freeze) ? context.evaluate(@attributes['offset'.freeze]).to_i : 0
-      to = @attributes.key?('limit'.freeze) ? from + context.evaluate(@attributes['limit'.freeze]).to_i : nil
+      from = @attributes['offset'.freeze] ? context[@attributes['offset'.freeze]].to_i : 0
+      to = @attributes['limit'.freeze] ? from + context[@attributes['limit'.freeze]].to_i : nil
 
       collection = Utils.slice_collection(collection, from, to)
 
       length = collection.length
 
-      cols = context.evaluate(@attributes['cols'.freeze]).to_i
+      cols = context[@attributes['cols'.freeze]].to_i
 
       row = 1
       col = 0

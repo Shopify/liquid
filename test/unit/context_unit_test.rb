@@ -469,6 +469,16 @@ class ContextUnitTest < Minitest::Test
 
     refute mock_any.has_been_called?
     assert mock_empty.has_been_called?
+  end 
+
+  def test_variable_lookup_caches_markup
+    mock_scan = Spy.on_instance_method(String, :scan).and_return(["string"])
+
+    @context['string'] = 'string'
+    @context['string']
+    @context['string']
+
+    assert_equal 1, mock_scan.calls.size
   end
 
   def test_context_initialization_with_a_proc_in_environment
