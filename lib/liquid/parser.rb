@@ -75,6 +75,13 @@ module Liquid
 
     def variable_signature
       str = consume(:id)
+      while consume?(:dash)
+        str << "-".freeze
+        str << consume(:id)
+      end
+      if consume?(:question)
+        str << "?".freeze
+      end
       if look(:open_square)
         str << consume
         str << expression
