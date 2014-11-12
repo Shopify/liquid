@@ -37,6 +37,16 @@ class TemplateTest < Minitest::Test
     assert_equal 'from instance assigns', t.parse("{{ foo }}").render!
   end
 
+  def test_warnings_is_not_exponential_time
+    str = "false"
+    100.times do
+      str = "{% if true %}true{% else %}#{str}{% endif %}"
+    end
+
+    t = Template.parse(str)
+    assert_equal [], t.warnings
+  end
+
   def test_instance_assigns_persist_on_same_template_parsing_between_renders
     t = Template.new.parse("{{ foo }}{% assign foo = 'foo' %}{{ foo }}")
     assert_equal 'foo', t.render!
