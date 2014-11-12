@@ -41,6 +41,10 @@ module Liquid
 
   singleton_class.send(:attr_accessor, :cache_classes)
   self.cache_classes = true
+
+  def self.load_profiler_hooks
+    require 'liquid/profiler/hooks'
+  end
 end
 
 require "liquid/version"
@@ -75,4 +79,3 @@ require 'liquid/token'
 Dir[File.dirname(__FILE__) + '/liquid/tags/*.rb'].each { |f| require f }
 
 require 'liquid/profiler'
-require 'liquid/profiler/hooks'

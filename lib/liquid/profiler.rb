@@ -70,6 +70,10 @@ module Liquid
       end
     end
 
+    def self.hooks_loaded
+      false
+    end
+
     def self.profile_token_render(token)
       if Profiler.current_profile && token.respond_to?(:render)
         Profiler.current_profile.start_token(token)

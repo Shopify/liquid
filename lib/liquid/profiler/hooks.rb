@@ -1,4 +1,10 @@
 module Liquid
+  class Profiler
+    def self.hooks_loaded
+      true
+    end
+  end
+
   class BlockBody
     def render_token_with_profiling(token, context)
       Profiler.profile_token_render(token) do
