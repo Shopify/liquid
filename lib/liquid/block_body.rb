@@ -62,7 +62,7 @@ module Liquid
     def warnings
       all_warnings = []
       nodelist.each do |node|
-        all_warnings.concat(node.warnings) if node.respond_to?(:warnings)
+        all_warnings.concat(node.warnings || []) if node.respond_to?(:warnings)
       end
       all_warnings
     end
