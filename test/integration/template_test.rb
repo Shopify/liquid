@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'timeout'
 
 class TemplateContextDrop < Liquid::Drop
   def before_method(method)
@@ -35,6 +36,16 @@ class TemplateTest < Minitest::Test
     t = Template.new
     assert_equal 'from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render!
     assert_equal 'from instance assigns', t.parse("{{ foo }}").render!
+  end
+
+  def test_warnings_is_not_exponential_time
+    str = "false"
+    100.times do
+      str = "{% if true %}true{% else %}#{str}{% endif %}"
+    end
+
+    t = Template.parse(str)
+    assert_equal [], Timeout::timeout(1) { t.warnings }
   end
 
   def test_instance_assigns_persist_on_same_template_parsing_between_renders
