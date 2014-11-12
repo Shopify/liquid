@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'timeout'
 
 class TemplateContextDrop < Liquid::Drop
   def before_method(method)
@@ -44,7 +45,7 @@ class TemplateTest < Minitest::Test
     end
 
     t = Template.parse(str)
-    assert_equal [], t.warnings
+    assert_equal [], Timeout::timeout(1) { t.warnings }
   end
 
   def test_instance_assigns_persist_on_same_template_parsing_between_renders
