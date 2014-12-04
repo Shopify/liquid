@@ -41,10 +41,6 @@ module Liquid
 
   singleton_class.send(:attr_accessor, :cache_classes)
   self.cache_classes = true
-
-  def self.load_profiler_hooks
-    require 'liquid/profiler/hooks'
-  end
 end
 
 require "liquid/version"

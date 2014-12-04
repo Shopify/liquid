@@ -12,6 +12,7 @@ if env_mode = ENV['LIQUID_PARSER_MODE']
   mode = env_mode.to_sym
 end
 Liquid::Template.error_mode = mode
+Liquid::Profiler.load_hooks
 
 if Minitest.const_defined?('Test')
   # We're on Minitest 5+. Nothing to do here.

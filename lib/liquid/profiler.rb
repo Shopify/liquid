@@ -71,7 +71,13 @@ module Liquid
     end
 
     def self.hooks_loaded
-      false
+      @hooks_loaded
+    end
+
+    def self.load_hooks
+      return if @hooks_loaded
+      require 'liquid/profiler/hooks'
+      @hooks_loaded = true
     end
 
     def self.profile_token_render(token)
