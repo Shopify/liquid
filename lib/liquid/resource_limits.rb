@@ -9,7 +9,6 @@ module Liquid
       @assign_score_limit = limits[:assign_score_limit]
 
       # render_length is assigned by BlockBody
-      # @render_length = 0
       @render_score = 0
       @assign_score = 0
     end
