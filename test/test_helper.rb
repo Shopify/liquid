@@ -5,6 +5,7 @@ require 'spy/integration'
 
 $:.unshift(File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib'))
 require 'liquid.rb'
+require 'liquid/profiler'
 
 mode = :strict
 if env_mode = ENV['LIQUID_PARSER_MODE']
@@ -12,7 +13,6 @@ if env_mode = ENV['LIQUID_PARSER_MODE']
   mode = env_mode.to_sym
 end
 Liquid::Template.error_mode = mode
-Liquid::Profiler.load_hooks
 
 if Minitest.const_defined?('Test')
   # We're on Minitest 5+. Nothing to do here.
