@@ -101,61 +101,62 @@ class TemplateTest < Minitest::Test
     t = Template.parse("0123456789")
     t.resource_limits = { :render_length_limit => 5 }
     assert_equal "Liquid error: Memory limits exceeded", t.render()
-    assert t.resource_limits[:reached]
+    assert t.resource_limits.reached?
+
     t.resource_limits = { :render_length_limit => 10 }
     assert_equal "0123456789", t.render!()
-    refute_nil t.resource_limits[:render_length_current]
+    refute_nil t.resource_limits.render_length
   end
 
   def test_resource_limits_render_score
     t = Template.parse("{% for a in (1..10) %} {% for a in (1..10) %} foo {% endfor %} {% endfor %}")
     t.resource_limits = { :render_score_limit => 50 }
     assert_equal "Liquid error: Memory limits exceeded", t.render()
-    assert t.resource_limits[:reached]
+    assert t.resource_limits.reached?
+
     t = Template.parse("{% for a in (1..100) %} foo {% endfor %}")
     t.resource_limits = { :render_score_limit => 50 }
     assert_equal "Liquid error: Memory limits exceeded", t.render()
-    assert t.resource_limits[:reached]
+    assert t.resource_limits.reached?
+
     t.resource_limits = { :render_score_limit => 200 }
     assert_equal (" foo " * 100), t.render!()
-    refute_nil t.resource_limits[:render_score_current]
+    refute_nil t.resource_limits.render_score
   end
 
   def test_resource_limits_assign_score
     t = Template.parse("{% assign foo = 42 %}{% assign bar = 23 %}")
     t.resource_limits = { :assign_score_limit => 1 }
     assert_equal "Liquid error: Memory limits exceeded", t.render()
-    assert t.resource_limits[:reached]
+    assert t.resource_limits.reached?
+
     t.resource_limits = { :assign_score_limit => 2 }
     assert_equal "", t.render!()
-    refute_nil t.resource_limits[:assign_score_current]
+    refute_nil t.resource_limits.assign_score
   end
 
   def test_resource_limits_aborts_rendering_after_first_error
     t = Template.parse("{% for a in (1..100) %} foo1 {% endfor %} bar {% for a in (1..100) %} foo2 {% endfor %}")
     t.resource_limits = { :render_score_limit => 50 }
     assert_equal "Liquid error: Memory limits exceeded", t.render()
-    assert t.resource_limits[:reached]
+    assert t.resource_limits.reached?
   end
 
   def test_resource_limits_hash_in_template_gets_updated_even_if_no_limits_are_set
     t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
     t.render!()
-    assert t.resource_limits[:assign_score_current] > 0
-    assert t.resource_limits[:render_score_current] > 0
-    assert t.resource_limits[:render_length_current] > 0
+    assert t.resource_limits.assign_score > 0
+    assert t.resource_limits.render_score > 0
+    assert t.resource_limits.render_length > 0
   end
 
   def test_default_resource_limits_unaffected_by_render_with_context
     context = Context.new
     t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
     t.render!(context)
-    assert context.resource_limits[:assign_score_current] > 0
-    assert context.resource_limits[:render_score_current] > 0
-    assert context.resource_limits[:render_length_current] > 0
-    refute Template.default_resource_limits.key?(:assign_score_current)
-    refute Template.default_resource_limits.key?(:render_score_current)
-    refute Template.default_resource_limits.key?(:render_length_current)
+    assert context.resource_limits.assign_score > 0
+    assert context.resource_limits.render_score > 0
+    assert context.resource_limits.render_length > 0
   end
 
   def test_can_use_drop_as_context

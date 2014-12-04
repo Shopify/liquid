@@ -18,7 +18,13 @@ module Liquid
       :locale => I18n.new
     }
 
-    attr_accessor :root, :resource_limits
+    attr_accessor :root
+    attr_reader :resource_limits
+
+    def resource_limits=(limits)
+      @resource_limits = ResourceLimits.new(limits)
+    end
+
     @@file_system = BlankFileSystem.new
 
     class TagRegistry
@@ -110,7 +116,7 @@ module Liquid
     end
 
     def initialize
-      @resource_limits = self.class.default_resource_limits.dup
+      self.resource_limits = self.class.default_resource_limits
     end
 
     # Parse source code.

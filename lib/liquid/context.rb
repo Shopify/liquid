@@ -21,9 +21,12 @@ module Liquid
       @scopes           = [(outer_scope || {})]
       @registers        = registers
       @errors           = []
-      @resource_limits  = resource_limits || Template.default_resource_limits.dup
-      @resource_limits[:render_score_current] = 0
-      @resource_limits[:assign_score_current] = 0
+
+      @resource_limits = if resource_limits.is_a?(ResourceLimits)
+                           resource_limits
+                         else
+                           ResourceLimits.new(resource_limits || Template.default_resource_limits)
+                         end
       squash_instance_assigns_with_environments
 
       @this_stack_used = false
@@ -34,20 +37,6 @@ module Liquid
 
       @interrupts = []
       @filters = []
-    end
-
-    def increment_used_resources(key, obj)
-      @resource_limits[key] += if obj.kind_of?(String) || obj.kind_of?(Array) || obj.kind_of?(Hash)
-        obj.length
-      else
-        1
-      end
-    end
-
-    def resource_limits_reached?
-      (@resource_limits[:render_length_limit] && @resource_limits[:render_length_current] > @resource_limits[:render_length_limit]) ||
-      (@resource_limits[:render_score_limit]  && @resource_limits[:render_score_current]  > @resource_limits[:render_score_limit] ) ||
-      (@resource_limits[:assign_score_limit]  && @resource_limits[:assign_score_current]  > @resource_limits[:assign_score_limit] )
     end
 
     def strainer
