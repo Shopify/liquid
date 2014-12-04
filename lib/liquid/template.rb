@@ -21,10 +21,6 @@ module Liquid
     attr_accessor :root
     attr_reader :resource_limits
 
-    def resource_limits=(limits)
-      @resource_limits = ResourceLimits.new(limits)
-    end
-
     @@file_system = BlankFileSystem.new
 
     class TagRegistry
@@ -116,7 +112,7 @@ module Liquid
     end
 
     def initialize
-      self.resource_limits = self.class.default_resource_limits
+      @resource_limits = ResourceLimits.new(self.class.default_resource_limits)
     end
 
     # Parse source code.

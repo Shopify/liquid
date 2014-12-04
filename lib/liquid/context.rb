@@ -21,12 +21,7 @@ module Liquid
       @scopes           = [(outer_scope || {})]
       @registers        = registers
       @errors           = []
-
-      @resource_limits = if resource_limits.is_a?(ResourceLimits)
-                           resource_limits
-                         else
-                           ResourceLimits.new(resource_limits || Template.default_resource_limits)
-                         end
+      @resource_limits  = resource_limits || ResourceLimits.new(Template.default_resource_limits)
       squash_instance_assigns_with_environments
 
       @this_stack_used = false
