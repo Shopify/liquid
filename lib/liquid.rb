@@ -73,6 +73,3 @@ require 'liquid/token'
 # Load all the tags of the standard library
 #
 Dir[File.dirname(__FILE__) + '/liquid/tags/*.rb'].each { |f| require f }
-
-require 'liquid/profiler'
-require 'liquid/profiler/hooks'

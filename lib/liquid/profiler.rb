@@ -1,9 +1,12 @@
+require 'liquid/profiler/hooks'
+
 module Liquid
 
   # Profiler enables support for profiling template rendering to help track down performance issues.
   #
-  # To enable profiling, pass the <tt>profile: true</tt> option to <tt>Liquid::Template.parse</tt>. Then, after
-  # <tt>Liquid::Template#render</tt> is called, the template object makes available an instance of this
+  # To enable profiling, first require 'liquid/profiler'.
+  # Then, to profile a parse/render cycle, pass the <tt>profile: true</tt> option to <tt>Liquid::Template.parse</tt>.
+  # After <tt>Liquid::Template#render</tt> is called, the template object makes available an instance of this
   # class via the <tt>Liquid::Template#profiler</tt> method.
   #
   #   template = Liquid::Template.parse(template_content, profile: true)

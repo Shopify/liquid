@@ -250,6 +250,8 @@ module Liquid
 
     def with_profiling
       if @profiling && !@options[:included]
+        raise "Profiler not loaded, require 'liquid/profiler' first" unless defined?(Liquid::Profiler)
+
         @profiler = Profiler.new
         @profiler.start
 
