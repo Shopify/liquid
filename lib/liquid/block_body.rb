@@ -104,11 +104,13 @@ module Liquid
 
     def render_token(token, context)
       token_output = (token.respond_to?(:render) ? token.render(context) : token)
-      context.resource_limits.increment_render_length(token_output)
+      token_str = token_output.is_a?(Array) ? token_output.join : token_output.to_s
+
+      context.resource_limits.render_length += token_str.length
       if context.resource_limits.reached?
         raise MemoryError.new("Memory limits exceeded".freeze)
       end
-      token_output
+      token_str
     end
 
     def create_variable(token, options)

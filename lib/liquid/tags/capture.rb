@@ -25,7 +25,7 @@ module Liquid
     def render(context)
       output = super
       context.scopes.last[@to] = output
-      context.resource_limits.increment_assign_score(output)
+      context.resource_limits.assign_score += output.length
       ''.freeze
     end
 

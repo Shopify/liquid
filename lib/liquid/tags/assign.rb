@@ -25,7 +25,10 @@ module Liquid
     def render(context)
       val = @from.render(context)
       context.scopes.last[@to] = val
-      context.resource_limits.increment_assign_score(val)
+
+      inc = val.instance_of?(String) || val.instance_of?(Array) || val.instance_of?(Hash) ? val.length : 1
+      context.resource_limits.assign_score += inc
+
       ''.freeze
     end
 

@@ -18,22 +18,5 @@ module Liquid
       (@render_score_limit  && @render_score  > @render_score_limit ) ||
       (@assign_score_limit  && @assign_score  > @assign_score_limit )
     end
-
-    def increment_render_length(obj)
-      @render_length += increment_for(obj)
-    end
-
-    def increment_render_score(obj)
-      @render_score += increment_for(obj)
-    end
-
-    def increment_assign_score(obj)
-      @assign_score += increment_for(obj)
-    end
-
-    private
-    def increment_for(obj)
-      obj.instance_of?(String) || obj.instance_of?(Array) || obj.instance_of?(Hash) ? obj.length : 1
-    end
   end
 end
