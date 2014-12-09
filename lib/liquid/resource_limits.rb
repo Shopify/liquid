@@ -7,16 +7,17 @@ module Liquid
       @render_length_limit = limits[:render_length_limit]
       @render_score_limit = limits[:render_score_limit]
       @assign_score_limit = limits[:assign_score_limit]
-
-      # render_length is assigned by BlockBody
-      @render_score = 0
-      @assign_score = 0
+      reset
     end
 
     def reached?
       (@render_length_limit && @render_length > @render_length_limit) ||
       (@render_score_limit  && @render_score  > @render_score_limit ) ||
       (@assign_score_limit  && @assign_score  > @assign_score_limit )
+    end
+
+    def reset
+      @render_length = @render_score = @assign_score = 0
     end
   end
 end

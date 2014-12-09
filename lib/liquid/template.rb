@@ -205,6 +205,9 @@ module Liquid
         context.add_filters(args.pop)
       end
 
+      # Retrying a render resets resource usage
+      context.resource_limits.reset
+
       begin
         # render the nodelist.
         # for performance reasons we get an array back here. join will make a string out of it.

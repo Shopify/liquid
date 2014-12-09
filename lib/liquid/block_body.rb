@@ -69,7 +69,6 @@ module Liquid
 
     def render(context)
       output = []
-      context.resource_limits.render_length = 0
       context.resource_limits.render_score += @nodelist.length
 
       @nodelist.each do |token|
