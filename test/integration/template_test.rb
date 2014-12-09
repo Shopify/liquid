@@ -125,14 +125,11 @@ class TemplateTest < Minitest::Test
   end
 
   def test_resource_limits_assign_score
-    markup = "{% assign foo = 42 %}{% assign bar = 23 %}"
-
-    t = Template.parse(markup)
+    t = Template.parse("{% assign foo = 42 %}{% assign bar = 23 %}")
     t.resource_limits.assign_score_limit = 1
     assert_equal "Liquid error: Memory limits exceeded", t.render()
     assert t.resource_limits.reached?
 
-    t = Template.parse(markup)
     t.resource_limits.assign_score_limit = 2
     assert_equal "", t.render!()
     refute_nil t.resource_limits.assign_score
