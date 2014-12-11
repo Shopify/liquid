@@ -150,6 +150,13 @@ class TemplateTest < Minitest::Test
     assert t.resource_limits.render_length > 0
   end
 
+  def test_render_length_persists_between_blocks
+    t = Template.parse("{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}")
+    t.resource_limits.render_length_limit = 5
+    assert_equal "Liquid error: Memory limits exceeded", t.render()
+    assert t.resource_limits.reached?
+  end
+
   def test_default_resource_limits_unaffected_by_render_with_context
     context = Context.new
     t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
