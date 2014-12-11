@@ -18,7 +18,9 @@ module Liquid
       :locale => I18n.new
     }
 
-    attr_accessor :root, :resource_limits
+    attr_accessor :root
+    attr_reader :resource_limits
+
     @@file_system = BlankFileSystem.new
 
     class TagRegistry
@@ -110,7 +112,7 @@ module Liquid
     end
 
     def initialize
-      @resource_limits = self.class.default_resource_limits.dup
+      @resource_limits = ResourceLimits.new(self.class.default_resource_limits)
     end
 
     # Parse source code.
@@ -202,6 +204,9 @@ module Liquid
       when Array
         context.add_filters(args.pop)
       end
+
+      # Retrying a render resets resource usage
+      context.resource_limits.reset
 
       begin
         # render the nodelist.

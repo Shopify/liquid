@@ -69,8 +69,7 @@ module Liquid
 
     def render(context)
       output = []
-      context.resource_limits[:render_length_current] = 0
-      context.resource_limits[:render_score_current] += @nodelist.length
+      context.resource_limits.render_score += @nodelist.length
 
       @nodelist.each do |token|
         # Break out if we have any unhanded interrupts.
@@ -104,12 +103,13 @@ module Liquid
 
     def render_token(token, context)
       token_output = (token.respond_to?(:render) ? token.render(context) : token)
-      context.increment_used_resources(:render_length_current, token_output)
-      if context.resource_limits_reached?
-        context.resource_limits[:reached] = true
+      token_str = token_output.is_a?(Array) ? token_output.join : token_output.to_s
+
+      context.resource_limits.render_length += token_str.length
+      if context.resource_limits.reached?
         raise MemoryError.new("Memory limits exceeded".freeze)
       end
-      token_output
+      token_str
     end
 
     def create_variable(token, options)
