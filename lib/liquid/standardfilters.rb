@@ -307,7 +307,7 @@ module Liquid
       return obj if obj.respond_to?(:strftime)
 
       case obj
-      when 'now'.freeze, 'today'.freeze
+      when /\A(?:now|today)\z/i
         Time.now
       when /\A\d+\z/, Integer
         Time.at(obj.to_i)
