@@ -246,9 +246,16 @@ module Liquid
       return raw_tokens unless @line_numbers
 
       current_line = 1
+      current_column = 1
       raw_tokens.map do |token|
-        Token.new(token, current_line).tap do
-          current_line += token.count("\n")
+        Token.new(token, current_line, current_column).tap do
+          new_line_count = token.count("\n")
+          if new_line_count > 0
+            current_line += new_line_count
+            current_column = token.size - token.rindex("\n") + 1
+          else
+            current_column += token.size
+          end
         end
       end
     end
