@@ -306,8 +306,10 @@ module Liquid
     def to_date(obj)
       return obj if obj.respond_to?(:strftime)
 
+      obj = obj.downcase if obj.is_a?(String)
+
       case obj
-      when /\A(?:now|today)\z/i
+      when 'now'.freeze, 'today'.freeze
         Time.now
       when /\A\d+\z/, Integer
         Time.at(obj.to_i)
