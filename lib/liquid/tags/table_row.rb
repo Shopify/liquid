@@ -42,7 +42,6 @@ module Liquid
             'index0'.freeze    => index,
             'col'.freeze       => col + 1,
             'col0'.freeze      => col,
-            'index0'.freeze    => index,
             'rindex'.freeze    => length - index,
             'rindex0'.freeze   => length - index - 1,
             'first'.freeze     => (index == 0),
