@@ -11,7 +11,7 @@ module Liquid
   # in a sidebar or footer.
   #
   class Capture < Block
-    Syntax = /(\w+)/
+    Syntax = /(#{VariableSignature}+)/o
 
     def initialize(tag_name, markup, options)
       super
