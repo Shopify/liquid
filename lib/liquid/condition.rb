@@ -3,7 +3,7 @@ module Liquid
   #
   # Example:
   #
-  #   c = Condition.new('1', '==', '1')
+  #   c = Condition.new(1, '==', 1)
   #   c.evaluate #=> true
   #
   class Condition #:nodoc:
@@ -15,7 +15,9 @@ module Liquid
       '>'.freeze  => :>,
       '>='.freeze => :>=,
       '<='.freeze => :<=,
-      'contains'.freeze => lambda { |cond, left, right| left && right ? left.include?(right) : false }
+      'contains'.freeze => lambda { |cond, left, right|
+        left && right && left.respond_to?(:include?) ? left.include?(right) : false
+      }
     }
 
     def self.operators
@@ -26,7 +28,9 @@ module Liquid
     attr_accessor :left, :operator, :right
 
     def initialize(left = nil, operator = nil, right = nil)
-      @left, @operator, @right = left, operator, right
+      @left = left
+      @operator = operator
+      @right = right
       @child_relation  = nil
       @child_condition = nil
     end
@@ -45,11 +49,13 @@ module Liquid
     end
 
     def or(condition)
-      @child_relation, @child_condition = :or, condition
+      @child_relation = :or
+      @child_condition = condition
     end
 
     def and(condition)
-      @child_relation, @child_condition = :and, condition
+      @child_relation = :and
+      @child_condition = condition
     end
 
     def attach(attachment)
@@ -90,16 +96,21 @@ module Liquid
       # If the operator is empty this means that the decision statement is just
       # a single variable. We can just poll this variable from the context and
       # return this as the result.
-      return context[left] if op == nil
+      return context.evaluate(left) if op == nil
 
-      left, right = context[left], context[right]
+      left = context.evaluate(left)
+      right = context.evaluate(right)
 
-      operation = self.class.operators[op] || raise(ArgumentError.new("Unknown operator #{op}"))
+      operation = self.class.operators[op] || raise(Liquid::ArgumentError.new("Unknown operator #{op}"))
 
       if operation.respond_to?(:call)
         operation.call(self, left, right)
       elsif left.respond_to?(operation) and right.respond_to?(operation)
-        left.send(operation, right)
+        begin
+          left.send(operation, right)
+        rescue ::ArgumentError => e
+          raise Liquid::ArgumentError.new(e.message)
+        end
       else
         nil
       end

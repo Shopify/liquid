@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'timeout'
 
 class TemplateContextDrop < Liquid::Drop
   def before_method(method)
@@ -22,13 +23,29 @@ class SomethingWithLength
   liquid_methods :length
 end
 
-class TemplateTest < Test::Unit::TestCase
+class ErroneousDrop < Liquid::Drop
+  def bad_method
+    raise 'ruby error in drop'
+  end
+end
+
+class TemplateTest < Minitest::Test
   include Liquid
 
   def test_instance_assigns_persist_on_same_template_object_between_parses
     t = Template.new
     assert_equal 'from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render!
     assert_equal 'from instance assigns', t.parse("{{ foo }}").render!
+  end
+
+  def test_warnings_is_not_exponential_time
+    str = "false"
+    100.times do
+      str = "{% if true %}true{% else %}#{str}{% endif %}"
+    end
+
+    t = Template.parse(str)
+    assert_equal [], Timeout::timeout(1) { t.warnings }
   end
 
   def test_instance_assigns_persist_on_same_template_parsing_between_renders
@@ -76,57 +93,92 @@ class TemplateTest < Test::Unit::TestCase
 
   def test_resource_limits_works_with_custom_length_method
     t = Template.parse("{% assign foo = bar %}")
-    t.resource_limits = { :render_length_limit => 42 }
+    t.resource_limits.render_length_limit = 42
     assert_equal "", t.render!("bar" => SomethingWithLength.new)
   end
 
   def test_resource_limits_render_length
     t = Template.parse("0123456789")
-    t.resource_limits = { :render_length_limit => 5 }
+    t.resource_limits.render_length_limit = 5
     assert_equal "Liquid error: Memory limits exceeded", t.render()
-    assert t.resource_limits[:reached]
-    t.resource_limits = { :render_length_limit => 10 }
+    assert t.resource_limits.reached?
+
+    t.resource_limits.render_length_limit = 10
     assert_equal "0123456789", t.render!()
-    assert_not_nil t.resource_limits[:render_length_current]
+    refute_nil t.resource_limits.render_length
   end
 
   def test_resource_limits_render_score
     t = Template.parse("{% for a in (1..10) %} {% for a in (1..10) %} foo {% endfor %} {% endfor %}")
-    t.resource_limits = { :render_score_limit => 50 }
+    t.resource_limits.render_score_limit = 50
     assert_equal "Liquid error: Memory limits exceeded", t.render()
-    assert t.resource_limits[:reached]
+    assert t.resource_limits.reached?
+
     t = Template.parse("{% for a in (1..100) %} foo {% endfor %}")
-    t.resource_limits = { :render_score_limit => 50 }
+    t.resource_limits.render_score_limit = 50
     assert_equal "Liquid error: Memory limits exceeded", t.render()
-    assert t.resource_limits[:reached]
-    t.resource_limits = { :render_score_limit => 200 }
+    assert t.resource_limits.reached?
+
+    t.resource_limits.render_score_limit = 200
     assert_equal (" foo " * 100), t.render!()
-    assert_not_nil t.resource_limits[:render_score_current]
+    refute_nil t.resource_limits.render_score
   end
 
   def test_resource_limits_assign_score
     t = Template.parse("{% assign foo = 42 %}{% assign bar = 23 %}")
-    t.resource_limits = { :assign_score_limit => 1 }
+    t.resource_limits.assign_score_limit = 1
     assert_equal "Liquid error: Memory limits exceeded", t.render()
-    assert t.resource_limits[:reached]
-    t.resource_limits = { :assign_score_limit => 2 }
+    assert t.resource_limits.reached?
+
+    t.resource_limits.assign_score_limit = 2
     assert_equal "", t.render!()
-    assert_not_nil t.resource_limits[:assign_score_current]
+    refute_nil t.resource_limits.assign_score
   end
 
   def test_resource_limits_aborts_rendering_after_first_error
     t = Template.parse("{% for a in (1..100) %} foo1 {% endfor %} bar {% for a in (1..100) %} foo2 {% endfor %}")
-    t.resource_limits = { :render_score_limit => 50 }
+    t.resource_limits.render_score_limit = 50
     assert_equal "Liquid error: Memory limits exceeded", t.render()
-    assert t.resource_limits[:reached]
+    assert t.resource_limits.reached?
   end
 
   def test_resource_limits_hash_in_template_gets_updated_even_if_no_limits_are_set
     t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
     t.render!()
-    assert t.resource_limits[:assign_score_current] > 0
-    assert t.resource_limits[:render_score_current] > 0
-    assert t.resource_limits[:render_length_current] > 0
+    assert t.resource_limits.assign_score > 0
+    assert t.resource_limits.render_score > 0
+    assert t.resource_limits.render_length > 0
+  end
+
+  def test_render_length_persists_between_blocks
+    t = Template.parse("{% if true %}aaaa{% endif %}")
+    t.resource_limits.render_length_limit = 7
+    assert_equal "Liquid error: Memory limits exceeded", t.render()
+    t.resource_limits.render_length_limit = 8
+    assert_equal "aaaa", t.render()
+
+    t = Template.parse("{% if true %}aaaa{% endif %}{% if true %}bbb{% endif %}")
+    t.resource_limits.render_length_limit = 13
+    assert_equal "Liquid error: Memory limits exceeded", t.render()
+    t.resource_limits.render_length_limit = 14
+    assert_equal "aaaabbb", t.render()
+
+    t = Template.parse("{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}")
+    t.resource_limits.render_length_limit = 5
+    assert_equal "Liquid error: Memory limits exceeded", t.render()
+    t.resource_limits.render_length_limit = 11
+    assert_equal "Liquid error: Memory limits exceeded", t.render()
+    t.resource_limits.render_length_limit = 12
+    assert_equal "ababab", t.render()
+  end
+
+  def test_default_resource_limits_unaffected_by_render_with_context
+    context = Context.new
+    t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
+    t.render!(context)
+    assert context.resource_limits.assign_score > 0
+    assert context.resource_limits.render_score > 0
+    assert context.resource_limits.render_length > 0
   end
 
   def test_can_use_drop_as_context
@@ -136,5 +188,29 @@ class TemplateTest < Test::Unit::TestCase
     assert_equal 'fizzbuzz', t.parse('{{foo}}').render!(drop)
     assert_equal 'bar', t.parse('{{bar}}').render!(drop)
     assert_equal 'haha', t.parse("{{baz}}").render!(drop)
+  end
+
+  def test_render_bang_force_rethrow_errors_on_passed_context
+    context = Context.new({'drop' => ErroneousDrop.new})
+    t = Template.new.parse('{{ drop.bad_method }}')
+
+    e = assert_raises RuntimeError do
+      t.render!(context)
+    end
+    assert_equal 'ruby error in drop', e.message
+  end
+
+  def test_exception_handler_doesnt_reraise_if_it_returns_false
+    exception = nil
+    Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_handler: ->(e) { exception = e; false })
+    assert exception.is_a?(ZeroDivisionError)
+  end
+
+  def test_exception_handler_does_reraise_if_it_returns_true
+    exception = nil
+    assert_raises(ZeroDivisionError) do
+      Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_handler: ->(e) { exception = e; true })
+    end
+    assert exception.is_a?(ZeroDivisionError)
   end
 end

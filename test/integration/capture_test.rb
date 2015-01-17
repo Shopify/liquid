@@ -1,10 +1,20 @@
 require 'test_helper'
 
-class CaptureTest < Test::Unit::TestCase
+class CaptureTest < Minitest::Test
   include Liquid
 
   def test_captures_block_content_in_variable
     assert_template_result("test string", "{% capture 'var' %}test string{% endcapture %}{{var}}", {})
+  end
+
+  def test_capture_with_hyphen_in_variable_name
+    template_source = <<-END_TEMPLATE
+    {% capture this-thing %}Print this-thing{% endcapture %}
+    {{ this-thing }}
+    END_TEMPLATE
+    template = Template.parse(template_source)
+    rendered = template.render!
+    assert_equal "Print this-thing", rendered.strip
   end
 
   def test_capture_to_variable_from_outer_scope_if_existing

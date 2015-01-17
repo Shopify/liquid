@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ParserUnitTest < Test::Unit::TestCase
+class ParserUnitTest < Minitest::Test
   include Liquid
 
   def test_consume
@@ -44,9 +44,9 @@ class ParserUnitTest < Test::Unit::TestCase
   end
 
   def test_expressions
-    p = Parser.new("hi.there hi[5].! hi.there.bob")
+    p = Parser.new("hi.there hi?[5].there? hi.there.bob")
     assert_equal 'hi.there', p.expression
-    assert_equal 'hi[5].!', p.expression
+    assert_equal 'hi?[5].there?', p.expression
     assert_equal 'hi.there.bob', p.expression
 
     p = Parser.new("567 6.0 'lol' \"wut\"")

@@ -20,8 +20,13 @@ module Liquid
       push_block('if'.freeze, markup)
     end
 
+    def parse(tokens)
+      while more = parse_body(@blocks.last.attachment, tokens)
+      end
+    end
+
     def nodelist
-      @blocks.map(&:attachment).flatten
+      @blocks.map(&:attachment)
     end
 
     def unknown_tag(tag, markup, tokens)
@@ -36,7 +41,7 @@ module Liquid
       context.stack do
         @blocks.each do |block|
           if block.evaluate(context)
-            return render_all(block.attachment, context)
+            return block.attachment.render(context)
           end
         end
         ''.freeze
@@ -53,21 +58,21 @@ module Liquid
         end
 
         @blocks.push(block)
-        @nodelist = block.attach(Array.new)
+        block.attach(BlockBody.new)
       end
 
       def lax_parse(markup)
-        expressions = markup.scan(ExpressionsAndOperators).reverse
-        raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.shift =~ Syntax
+        expressions = markup.scan(ExpressionsAndOperators)
+        raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop =~ Syntax
 
-        condition = Condition.new($1, $2, $3)
+        condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
 
         while not expressions.empty?
-          operator = (expressions.shift).to_s.strip
+          operator = expressions.pop.to_s.strip
 
-          raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.shift.to_s =~ Syntax
+          raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop.to_s =~ Syntax
 
-          new_condition = Condition.new($1, $2, $3)
+          new_condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
           raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless BOOLEAN_OPERATORS.include?(operator)
           new_condition.send(operator, condition)
           condition = new_condition
@@ -92,9 +97,9 @@ module Liquid
       end
 
       def parse_comparison(p)
-        a = p.expression
+        a = Expression.parse(p.expression)
         if op = p.consume?(:comparison)
-          b = p.expression
+          b = Expression.parse(p.expression)
           Condition.new(a, op, b)
         else
           Condition.new(a)

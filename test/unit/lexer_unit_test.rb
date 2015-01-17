@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class LexerUnitTest < Test::Unit::TestCase
+class LexerUnitTest < Minitest::Test
   include Liquid
 
   def test_strings
@@ -31,8 +31,11 @@ class LexerUnitTest < Test::Unit::TestCase
   end
 
   def test_fancy_identifiers
-    tokens = Lexer.new('hi! five?').tokenize
-    assert_equal [[:id,'hi!'], [:id, 'five?'], [:end_of_string]], tokens
+    tokens = Lexer.new('hi five?').tokenize
+    assert_equal [[:id, 'hi'], [:id, 'five?'], [:end_of_string]], tokens
+
+    tokens = Lexer.new('2foo').tokenize
+    assert_equal [[:number, '2'], [:id, 'foo'], [:end_of_string]], tokens
   end
 
   def test_whitespace

@@ -7,6 +7,8 @@ class Filters
 end
 
 class TestThing
+  attr_reader :foo
+
   def initialize
     @foo = 0
   end
@@ -39,7 +41,7 @@ class TestEnumerable < Liquid::Drop
   end
 end
 
-class StandardFiltersTest < Test::Unit::TestCase
+class StandardFiltersTest < Minitest::Test
   include Liquid
 
   def setup
@@ -62,6 +64,34 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal '', @filters.upcase(nil)
   end
 
+  def test_slice
+    assert_equal 'oob', @filters.slice('foobar', 1, 3)
+    assert_equal 'oobar', @filters.slice('foobar', 1, 1000)
+    assert_equal '', @filters.slice('foobar', 1, 0)
+    assert_equal 'o', @filters.slice('foobar', 1, 1)
+    assert_equal 'bar', @filters.slice('foobar', 3, 3)
+    assert_equal 'ar', @filters.slice('foobar', -2, 2)
+    assert_equal 'ar', @filters.slice('foobar', -2, 1000)
+    assert_equal 'r', @filters.slice('foobar', -1)
+    assert_equal '', @filters.slice(nil, 0)
+    assert_equal '', @filters.slice('foobar', 100, 10)
+    assert_equal '', @filters.slice('foobar', -100, 10)
+  end
+
+  def test_slice_on_arrays
+    input = 'foobar'.split(//)
+    assert_equal %w{o o b}, @filters.slice(input, 1, 3)
+    assert_equal %w{o o b a r}, @filters.slice(input, 1, 1000)
+    assert_equal %w{}, @filters.slice(input, 1, 0)
+    assert_equal %w{o}, @filters.slice(input, 1, 1)
+    assert_equal %w{b a r}, @filters.slice(input, 3, 3)
+    assert_equal %w{a r}, @filters.slice(input, -2, 2)
+    assert_equal %w{a r}, @filters.slice(input, -2, 1000)
+    assert_equal %w{r}, @filters.slice(input, -1)
+    assert_equal %w{}, @filters.slice(input, 100, 10)
+    assert_equal %w{}, @filters.slice(input, -100, 10)
+  end
+
   def test_truncate
     assert_equal '1234...', @filters.truncate('1234567890', 7)
     assert_equal '1234567890', @filters.truncate('1234567890', 20)
@@ -76,6 +106,7 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal ['A?Z'], @filters.split('A?Z', '~')
     # Regexp works although Liquid does not support.
     assert_equal ['A','Z'], @filters.split('AxZ', /x/)
+    assert_equal [], @filters.split(nil, ' ')
   end
 
   def test_escape
@@ -85,6 +116,11 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_escape_once
     assert_equal '&lt;strong&gt;Hulk&lt;/strong&gt;', @filters.escape_once('&lt;strong&gt;Hulk</strong>')
+  end
+
+  def test_url_encode
+    assert_equal 'foo%2B1%40example.com', @filters.url_encode('foo+1@example.com')
+    assert_equal nil, @filters.url_encode(nil)
   end
 
   def test_truncatewords
@@ -115,8 +151,30 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal [{"a" => 1}, {"a" => 2}, {"a" => 3}, {"a" => 4}], @filters.sort([{"a" => 4}, {"a" => 3}, {"a" => 1}, {"a" => 2}], "a")
   end
 
+  def test_legacy_sort_hash
+    assert_equal [{a:1, b:2}], @filters.sort({a:1, b:2})
+  end
+
+  def test_numerical_vs_lexicographical_sort
+    assert_equal [2, 10], @filters.sort([10, 2])
+    assert_equal [{"a" => 2}, {"a" => 10}], @filters.sort([{"a" => 10}, {"a" => 2}], "a")
+    assert_equal ["10", "2"], @filters.sort(["10", "2"])
+    assert_equal [{"a" => "10"}, {"a" => "2"}], @filters.sort([{"a" => "10"}, {"a" => "2"}], "a")
+  end
+
+  def test_uniq
+    assert_equal [1,3,2,4], @filters.uniq([1,1,3,2,3,1,4,3,2,1])
+    assert_equal [{"a" => 1}, {"a" => 3}, {"a" => 2}], @filters.uniq([{"a" => 1}, {"a" => 3}, {"a" => 1}, {"a" => 2}], "a")
+    testdrop = TestDrop.new
+    assert_equal [testdrop], @filters.uniq([testdrop, TestDrop.new], 'test')
+  end
+
   def test_reverse
     assert_equal [4,3,2,1], @filters.reverse([1,2,3,4])
+  end
+
+  def test_legacy_reverse_hash
+    assert_equal [{a:1, b:2}], @filters.reverse(a:1, b:2)
   end
 
   def test_map
@@ -140,9 +198,16 @@ class StandardFiltersTest < Test::Unit::TestCase
       "thing" => { "foo" => [ { "bar" => 42 }, { "bar" => 17 } ] }
   end
 
+  def test_legacy_map_on_hashes_with_dynamic_key
+    template = "{% assign key = 'foo' %}{{ thing | map: key | map: 'bar' }}"
+    hash = { "foo" => { "bar" => 42 } }
+    assert_template_result "42", template, "thing" => hash
+  end
+
   def test_sort_calls_to_liquid
     t = TestThing.new
-    assert_template_result "woot: 1", '{{ foo | sort: "whatever" }}', "foo" => [t]
+    Liquid::Template.parse('{{ foo | sort: "whatever" }}').render("foo" => [t])
+    assert t.foo > 0
   end
 
   def test_map_over_proc
@@ -158,6 +223,11 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_sort_works_on_enumerables
     assert_template_result "213", '{{ foo | sort: "bar" | map: "foo" }}', "foo" => TestEnumerable.new
+  end
+
+  def test_first_and_last_call_to_liquid
+    assert_template_result 'foobar', '{{ foo | first }}', 'foo' => [ThingWithToLiquid.new]
+    assert_template_result 'foobar', '{{ foo | last }}', 'foo' => [ThingWithToLiquid.new]
   end
 
   def test_date
@@ -185,7 +255,6 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal "07/05/2006", @filters.date(1152098955, "%m/%d/%Y")
     assert_equal "07/05/2006", @filters.date("1152098955", "%m/%d/%Y")
   end
-
 
   def test_first_last
     assert_equal 1, @filters.first([1,2,3])
@@ -265,6 +334,22 @@ class StandardFiltersTest < Test::Unit::TestCase
 
   def test_modulo
     assert_template_result "1", "{{ 3 | modulo:2 }}"
+  end
+
+  def test_round
+    assert_template_result "5", "{{ input | round }}", 'input' => 4.6
+    assert_template_result "4", "{{ '4.3' | round }}"
+    assert_template_result "4.56", "{{ input | round: 2 }}", 'input' => 4.5612
+  end
+
+  def test_ceil
+    assert_template_result "5", "{{ input | ceil }}", 'input' => 4.6
+    assert_template_result "5", "{{ '4.3' | ceil }}"
+  end
+
+  def test_floor
+    assert_template_result "4", "{{ input | floor }}", 'input' => 4.6
+    assert_template_result "4", "{{ '4.3' | floor }}"
   end
 
   def test_append

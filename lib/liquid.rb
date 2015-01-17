@@ -38,6 +38,9 @@ module Liquid
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
+
+  singleton_class.send(:attr_accessor, :cache_classes)
+  self.cache_classes = true
 end
 
 require "liquid/version"
@@ -49,17 +52,24 @@ require 'liquid/extensions'
 require 'liquid/errors'
 require 'liquid/interrupts'
 require 'liquid/strainer'
+require 'liquid/expression'
 require 'liquid/context'
+require 'liquid/parser_switching'
 require 'liquid/tag'
 require 'liquid/block'
+require 'liquid/block_body'
 require 'liquid/document'
 require 'liquid/variable'
+require 'liquid/variable_lookup'
+require 'liquid/range_lookup'
 require 'liquid/file_system'
+require 'liquid/resource_limits'
 require 'liquid/template'
 require 'liquid/standardfilters'
 require 'liquid/condition'
 require 'liquid/module_ex'
 require 'liquid/utils'
+require 'liquid/token'
 
 # Load all the tags of the standard library
 #

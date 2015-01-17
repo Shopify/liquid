@@ -48,6 +48,10 @@ class ProductDrop < Liquid::Drop
     ContextDrop.new
   end
 
+  def user_input
+    "foo".taint
+  end
+
   protected
     def callmenot
       "protected"
@@ -100,12 +104,34 @@ class RealEnumerableDrop < Liquid::Drop
   end
 end
 
-class DropsTest < Test::Unit::TestCase
+class DropsTest < Minitest::Test
   include Liquid
 
   def test_product_drop
-    assert_nothing_raised do
-      tpl = Liquid::Template.parse( '  '  )
+    tpl = Liquid::Template.parse('  ')
+    assert_equal '  ', tpl.render!('product' => ProductDrop.new)
+  end
+
+  def test_rendering_raises_on_tainted_attr
+    with_taint_mode(:error) do
+      tpl = Liquid::Template.parse('{{ product.user_input }}')
+      assert_raises TaintedError do
+        tpl.render!('product' => ProductDrop.new)
+      end
+    end
+  end
+
+  def test_rendering_warns_on_tainted_attr
+    with_taint_mode(:warn) do
+      tpl = Liquid::Template.parse('{{ product.user_input }}')
+      tpl.render!('product' => ProductDrop.new)
+      assert_match /tainted/, tpl.warnings.first
+    end
+  end
+
+  def test_rendering_doesnt_raise_on_escaped_tainted_attr
+    with_taint_mode(:error) do
+      tpl = Liquid::Template.parse('{{ product.user_input | escape }}')
       tpl.render!('product' => ProductDrop.new)
     end
   end

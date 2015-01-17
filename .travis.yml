@@ -1,13 +1,16 @@
+language: ruby
+
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - 2.1.0
-  - jruby-19mode
+  - 2.0
+  - 2.1
+  - ruby-head
   - jruby-head
-  - rbx-19mode
+  - rbx-2
+
+sudo: false
+
 matrix:
   allow_failures:
-    - rvm: rbx-19mode
     - rvm: jruby-head
 
 script: "rake test"

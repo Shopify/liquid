@@ -22,7 +22,7 @@ module SubstituteFilter
   end
 end
 
-class FiltersTest < Test::Unit::TestCase
+class FiltersTest < Minitest::Test
   include Liquid
 
   def setup
@@ -67,12 +67,12 @@ class FiltersTest < Test::Unit::TestCase
     @context['value'] = 3
     @context['numbers'] = [2,1,4,3]
     @context['words'] = ['expected', 'as', 'alphabetic']
-    @context['arrays'] = [['flattened'], ['are']]
+    @context['arrays'] = ['flower', 'are']
 
     assert_equal [1,2,3,4], Variable.new("numbers | sort").render(@context)
     assert_equal ['alphabetic', 'as', 'expected'], Variable.new("words | sort").render(@context)
     assert_equal [3], Variable.new("value | sort").render(@context)
-    assert_equal ['are', 'flattened'], Variable.new("arrays | sort").render(@context)
+    assert_equal ['are', 'flower'], Variable.new("arrays | sort").render(@context)
   end
 
   def test_strip_html
@@ -107,15 +107,15 @@ class FiltersTest < Test::Unit::TestCase
   end
 end
 
-class FiltersInTemplate < Test::Unit::TestCase
+class FiltersInTemplate < Minitest::Test
   include Liquid
 
   def test_local_global
-    Template.register_filter(MoneyFilter)
-
-    assert_equal " 1000$ ", Template.parse("{{1000 | money}}").render!(nil, nil)
-    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => CanadianMoneyFilter)
-    assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => [CanadianMoneyFilter])
+    with_global_filter(MoneyFilter) do
+      assert_equal " 1000$ ", Template.parse("{{1000 | money}}").render!(nil, nil)
+      assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => CanadianMoneyFilter)
+      assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => [CanadianMoneyFilter])
+    end
   end
 
   def test_local_filter_with_deprecated_syntax

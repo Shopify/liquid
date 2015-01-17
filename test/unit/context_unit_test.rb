@@ -63,11 +63,15 @@ class ArrayLike
   end
 end
 
-class ContextUnitTest < Test::Unit::TestCase
+class ContextUnitTest < Minitest::Test
   include Liquid
 
   def setup
     @context = Liquid::Context.new
+  end
+
+  def teardown
+    Spy.teardown
   end
 
   def test_variables
@@ -103,16 +107,14 @@ class ContextUnitTest < Test::Unit::TestCase
   end
 
   def test_scoping
-    assert_nothing_raised do
-      @context.push
+    @context.push
+    @context.pop
+
+    assert_raises(Liquid::ContextError) do
       @context.pop
     end
 
-    assert_raise(Liquid::ContextError) do
-      @context.pop
-    end
-
-    assert_raise(Liquid::ContextError) do
+    assert_raises(Liquid::ContextError) do
       @context.push
       @context.pop
       @context.pop
@@ -457,4 +459,24 @@ class ContextUnitTest < Test::Unit::TestCase
     assert_kind_of CategoryDrop, @context['category']
     assert_equal @context, @context['category'].context
   end
+
+  def test_use_empty_instead_of_any_in_interrupt_handling_to_avoid_lots_of_unnecessary_object_allocations
+    mock_any = Spy.on_instance_method(Array, :any?)
+    mock_empty = Spy.on_instance_method(Array, :empty?)
+    mock_has_interrupt = Spy.on(@context, :has_interrupt?).and_call_through
+
+    @context.has_interrupt?
+
+    refute mock_any.has_been_called?
+    assert mock_empty.has_been_called?
+  end
+
+  def test_context_initialization_with_a_proc_in_environment
+    contx = Context.new([:test => lambda { |c| c['poutine']}], {:test => :foo})
+
+    assert contx
+    assert_nil contx['poutine']
+  end
+
+
 end # ContextTest

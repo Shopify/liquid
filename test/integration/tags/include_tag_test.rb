@@ -27,6 +27,9 @@ class TestFileSystem
     when "pick_a_source"
       "from TestFileSystem"
 
+    when 'assignments'
+      "{% assign foo = 'bar' %}"
+
     else
       template_path
     end
@@ -60,16 +63,12 @@ class CustomInclude < Liquid::Tag
   def parse(tokens)
   end
 
-  def blank?
-    false
-  end
-
   def render(context)
     @template_name[1..-2]
   end
 end
 
-class IncludeTagTest < Test::Unit::TestCase
+class IncludeTagTest < Minitest::Test
   include Liquid
 
   def setup
@@ -112,6 +111,10 @@ class IncludeTagTest < Test::Unit::TestCase
       'echo1' => 'test123', 'more_echos' => { "echo2" => 'test321'}
   end
 
+  def test_included_templates_assigns_variables
+    assert_template_result "bar", "{% include 'assignments' %}{{ foo }}"
+  end
+
   def test_nested_include_tag
     assert_template_result "body body_detail", "{% include 'body' %}"
 
@@ -136,7 +139,7 @@ class IncludeTagTest < Test::Unit::TestCase
 
     Liquid::Template.file_system = infinite_file_system.new
 
-    assert_raise(Liquid::StackLevelError) do
+    assert_raises(Liquid::StackLevelError, SystemStackError) do
       Template.parse("{% include 'loop' %}").render!
     end
 
@@ -203,6 +206,29 @@ class IncludeTagTest < Test::Unit::TestCase
         Template.parse("{% if true %}{% include 'custom_foo_if_true' %}{% endif %}").render!
     ensure
       Liquid::Template.tags['include'] = original_tag
+    end
+  end
+
+  def test_does_not_add_error_in_strict_mode_for_missing_variable
+    Liquid::Template.file_system = TestFileSystem.new
+
+    a = Liquid::Template.parse(' {% include "nested_template" %}')
+    a.render!
+    assert_empty a.errors
+  end
+
+  def test_passing_options_to_included_templates
+    assert_raises(Liquid::SyntaxError) do
+      Template.parse("{% include template %}", error_mode: :strict).render!("template" => '{{ "X" || downcase }}')
+    end
+    with_error_mode(:lax) do
+      assert_equal 'x', Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: true).render!("template" => '{{ "X" || downcase }}')
+    end
+    assert_raises(Liquid::SyntaxError) do
+      Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: [:locale]).render!("template" => '{{ "X" || downcase }}')
+    end
+    with_error_mode(:lax) do
+      assert_equal 'x', Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: [:error_mode]).render!("template" => '{{ "X" || downcase }}')
     end
   end
 end # IncludeTagTest

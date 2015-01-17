@@ -25,10 +25,6 @@ module Liquid
       context.environments.first[@variable] = value + 1
       value.to_s
     end
-
-    def blank?
-      false
-    end
   end
 
   Template.register_tag('increment'.freeze, Increment)

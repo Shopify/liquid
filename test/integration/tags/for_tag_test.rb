@@ -1,6 +1,12 @@
 require 'test_helper'
 
-class ForTagTest < Test::Unit::TestCase
+class ThingWithValue < Liquid::Drop
+  def value
+    3
+  end
+end
+
+class ForTagTest < Minitest::Test
   include Liquid
 
   def test_for
@@ -32,6 +38,20 @@ HERE
 
   def test_for_with_range
     assert_template_result(' 1  2  3 ','{%for item in (1..3) %} {{item}} {%endfor%}')
+  end
+
+  def test_for_with_variable_range
+    assert_template_result(' 1  2  3 ','{%for item in (1..foobar) %} {{item}} {%endfor%}', "foobar" => 3)
+  end
+
+  def test_for_with_hash_value_range
+    foobar = { "value" => 3 }
+    assert_template_result(' 1  2  3 ','{%for item in (1..foobar.value) %} {{item}} {%endfor%}', "foobar" => foobar)
+  end
+
+  def test_for_with_drop_value_range
+    foobar = ThingWithValue.new
+    assert_template_result(' 1  2  3 ','{%for item in (1..foobar.value) %} {{item}} {%endfor%}', "foobar" => foobar)
   end
 
   def test_for_with_variable
@@ -283,7 +303,7 @@ HERE
   end
 
   def test_bad_variable_naming_in_for_loop
-    assert_raise(Liquid::SyntaxError) do
+    assert_raises(Liquid::SyntaxError) do
       Liquid::Template.parse('{% for a/b in x %}{% endfor %}')
     end
   end

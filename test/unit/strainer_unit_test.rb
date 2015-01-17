@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class StrainerUnitTest < Test::Unit::TestCase
+class StrainerUnitTest < Minitest::Test
   include Liquid
 
   module AccessScopeFilters
@@ -57,7 +57,8 @@ class StrainerUnitTest < Test::Unit::TestCase
   end
 
   def test_strainer_uses_a_class_cache_to_avoid_method_cache_invalidation
-    a, b = Module.new, Module.new
+    a = Module.new
+    b = Module.new
     strainer = Strainer.create(nil, [a,b])
     assert_kind_of Strainer, strainer
     assert_kind_of a, strainer

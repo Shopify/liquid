@@ -9,9 +9,11 @@ module Liquid
       '['.freeze => :open_square,
       ']'.freeze => :close_square,
       '('.freeze => :open_round,
-      ')'.freeze => :close_round
+      ')'.freeze => :close_round,
+      '?'.freeze => :question,
+      '-'.freeze => :dash
     }
-    IDENTIFIER = /[\w\-?!]+/
+    IDENTIFIER = /[a-zA-Z_][\w-]*\??/
     SINGLE_STRING_LITERAL = /'[^\']*'/
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
     NUMBER_LITERAL = /-?\d+(\.\d+)?/

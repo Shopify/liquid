@@ -1,5 +1,4 @@
 module Liquid
-
   # Capture stores the result of a block into a variable without rendering it inplace.
   #
   #   {% capture heading %}
@@ -12,7 +11,7 @@ module Liquid
   # in a sidebar or footer.
   #
   class Capture < Block
-    Syntax = /(\w+)/
+    Syntax = /(#{VariableSignature}+)/o
 
     def initialize(tag_name, markup, options)
       super
@@ -26,7 +25,7 @@ module Liquid
     def render(context)
       output = super
       context.scopes.last[@to] = output
-      context.increment_used_resources(:assign_score_current, output)
+      context.resource_limits.assign_score += output.length
       ''.freeze
     end
 

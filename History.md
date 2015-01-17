@@ -3,6 +3,16 @@
 ## 3.0.0 / not yet released / branch "master"
 
 * ...
+* Block parsing moved to BlockBody class, see #458 [Dylan Thacker-Smith, dylanahsmith]
+* Removed Block#end_tag. Instead, override parse with `super` followed by your code. See #446 [Dylan Thacker-Smith, dylanahsmith]
+* Fixed condition with wrong data types, see #423 [Bogdan Gusiev]
+* Add url_encode to standard filters, see #421 [Derrick Reimer, djreimer]
+* Add uniq to standard filters [Florian Weingarten, fw42]
+* Add exception_handler feature, see #397 and #254 [Bogdan Gusiev, bogdan and Florian Weingarten, fw42]
+* Optimize variable parsing to avoid repeated regex evaluation during template rendering #383 [Jason Hiltz-Laforge, jasonhl]
+* Optimize checking for block interrupts to reduce object allocation #380 [Jason Hiltz-Laforge, jasonhl] 
+* Properly set context rethrow_errors on render! #349 [Thierry Joyal, tjoyal]
+* Fix broken rendering of variables which are equal to false, see #345 [Florian Weingarten, fw42]
 * Remove ActionView template handler [Dylan Thacker-Smith, dylanahsmith]
 * Freeze lots of string literals for new Ruby 2.1 optimization, see #297 [Florian Weingarten, fw42]
 * Allow newlines in tags and variables, see #324 [Dylan Thacker-Smith, dylanahsmith]
@@ -27,7 +37,13 @@
 * Make map filter work on enumerable drops, see #233 [Florian Weingarten, fw42]
 * Improved whitespace stripping for blank blocks, related to #216 [Florian Weingarten, fw42]
 
-## 2.6.0 / 2013-11-25 / branch "2.6-stable"
+## 2.6.1 / 2014-01-10 / branch "2-6-stable"
+
+Security fix, cherry-picked from master (4e14a65):
+* Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
+* Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
+
+## 2.6.0 / 2013-11-25
 
 IMPORTANT: Liquid 2.6 is going to be the last version of Liquid which maintains explicit Ruby 1.8 compatability.
 The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are likely to break on Ruby 1.8.
@@ -51,7 +67,13 @@ The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are
 * Better documentation for 'include' tag (closes #163) [Peter Schröder, phoet]
 * Use of BigDecimal on filters to have better precision (closes #155) [Arthur Nogueira Neves, arthurnn]
 
-## 2.5.4 / 2013-11-11 / branch "2.5-stable"
+## 2.5.5 / 2014-01-10 / branch "2-5-stable"
+
+Security fix, cherry-picked from master (4e14a65):
+* Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
+* Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
+
+## 2.5.4 / 2013-11-11
 
 * Fix "can't convert Fixnum into String" for "replace", see #173, [wǒ_is神仙, jsw0528]
 

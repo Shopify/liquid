@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class BreakTagTest < Test::Unit::TestCase
+class BreakTagTest < Minitest::Test
   include Liquid
 
   # tests that no weird errors are raised if break is called outside of a

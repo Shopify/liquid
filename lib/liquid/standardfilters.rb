@@ -34,14 +34,28 @@ module Liquid
     end
 
     def escape(input)
-      CGI.escapeHTML(input) rescue input
+      CGI.escapeHTML(input).untaint rescue input
     end
+    alias_method :h, :escape
 
     def escape_once(input)
       input.to_s.gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
     end
 
-    alias_method :h, :escape
+    def url_encode(input)
+      CGI.escape(input) rescue input
+    end
+
+    def slice(input, offset, length=nil)
+      offset = Integer(offset)
+      length = length ? Integer(length) : 1
+
+      if input.is_a?(Array)
+        input.slice(offset, length) || []
+      else
+        input.to_s.slice(offset, length) || ''
+      end
+    end
 
     # Truncate a string down to x characters
     def truncate(input, length = 50, truncate_string = "...".freeze)
@@ -65,7 +79,7 @@ module Liquid
     #   <div class="summary">{{ post | split '//' | first }}</div>
     #
     def split(input, pattern)
-      input.split(pattern)
+      input.to_s.split(pattern)
     end
 
     def strip(input)
@@ -92,31 +106,42 @@ module Liquid
 
     # Join elements of the array with certain character between them
     def join(input, glue = ' '.freeze)
-      [input].flatten.join(glue)
+      InputIterator.new(input).join(glue)
     end
 
     # Sort elements of the array
     # provide optional property with which to sort an array of hashes or drops
     def sort(input, property = nil)
-      ary = flatten_if_necessary(input)
+      ary = InputIterator.new(input)
       if property.nil?
         ary.sort
-      elsif ary.first.respond_to?('[]'.freeze) and !ary.first[property].nil?
+      elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
         ary.sort {|a,b| a[property] <=> b[property] }
       elsif ary.first.respond_to?(property)
         ary.sort {|a,b| a.send(property) <=> b.send(property) }
       end
     end
 
+    # Remove duplicate elements from an array
+    # provide optional property with which to determine uniqueness
+    def uniq(input, property = nil)
+      ary = InputIterator.new(input)
+      if property.nil?
+        input.uniq
+      elsif input.first.respond_to?(:[])
+        input.uniq{ |a| a[property] }
+      end
+    end
+
     # Reverse the elements of an array
     def reverse(input)
-      ary = [input].flatten
+      ary = InputIterator.new(input)
       ary.reverse
     end
 
     # map/collect on a given property
     def map(input, property)
-      flatten_if_necessary(input).map do |e|
+      InputIterator.new(input).map do |e|
         e = e.call if e.is_a?(Proc)
 
         if property == "to_liquid".freeze
@@ -162,7 +187,7 @@ module Liquid
       input.to_s.gsub(/\n/, "<br />\n".freeze)
     end
 
-    # Reformat a date
+    # Reformat a date using Ruby's core Time#strftime( string ) -> string
     #
     #   %a - The abbreviated weekday name (``Sun'')
     #   %A - The  full  weekday  name (``Sunday'')
@@ -176,6 +201,7 @@ module Liquid
     #   %m - Month of the year (01..12)
     #   %M - Minute of the hour (00..59)
     #   %p - Meridian indicator (``AM''  or  ``PM'')
+    #   %s - Number of seconds since 1970-01-01 00:00:00 UTC.
     #   %S - Second of the minute (00..60)
     #   %U - Week  number  of the current year,
     #           starting with the first Sunday as the first
@@ -190,34 +216,14 @@ module Liquid
     #   %Y - Year with century
     #   %Z - Time zone name
     #   %% - Literal ``%'' character
+    #
+    #   See also: http://www.ruby-doc.org/core/Time.html#method-i-strftime
     def date(input, format)
+      return input if format.to_s.empty?
 
-      if format.to_s.empty?
-        return input.to_s
-      end
+      return input unless date = to_date(input)
 
-      if ((input.is_a?(String) && !/\A\d+\z/.match(input.to_s).nil?) || input.is_a?(Integer)) && input.to_i > 0
-        input = Time.at(input.to_i)
-      end
-
-      date = if input.is_a?(String)
-        case input.downcase
-        when 'now'.freeze, 'today'.freeze
-          Time.now
-        else
-          Time.parse(input)
-        end
-      else
-        input
-      end
-
-      if date.respond_to?(:strftime)
-        date.strftime(format.to_s)
-      else
-        input
-      end
-    rescue
-      input
+      date.strftime(format.to_s)
     end
 
     # Get the first element of the passed in array
@@ -262,23 +268,27 @@ module Liquid
       apply_operation(input, operand, :%)
     end
 
+    def round(input, n = 0)
+      result = to_number(input).round(to_number(n))
+      result = result.to_f if result.is_a?(BigDecimal)
+      result = result.to_i if n == 0
+      result
+    end
+
+    def ceil(input)
+      to_number(input).ceil.to_i
+    end
+
+    def floor(input)
+      to_number(input).floor.to_i
+    end
+
     def default(input, default_value = "".freeze)
       is_blank = input.respond_to?(:empty?) ? input.empty? : !input
       is_blank ? default_value : input
     end
 
     private
-
-    def flatten_if_necessary(input)
-      ary = if input.is_a?(Array)
-        input.flatten
-      elsif input.is_a?(Enumerable) && !input.is_a?(Hash)
-        input
-      else
-        [input].flatten
-      end
-      ary.map{ |e| e.respond_to?(:to_liquid) ? e.to_liquid : e }
-    end
 
     def to_number(obj)
       case obj
@@ -293,9 +303,56 @@ module Liquid
       end
     end
 
+    def to_date(obj)
+      return obj if obj.respond_to?(:strftime)
+
+      case obj
+      when 'now'.freeze, 'today'.freeze
+        Time.now
+      when /\A\d+\z/, Integer
+        Time.at(obj.to_i)
+      when String
+        Time.parse(obj)
+      else
+        nil
+      end
+    rescue ArgumentError
+      nil
+    end
+
     def apply_operation(input, operand, operation)
       result = to_number(input).send(operation, to_number(operand))
       result.is_a?(BigDecimal) ? result.to_f : result
+    end
+
+    class InputIterator
+      include Enumerable
+
+      def initialize(input)
+        @input = if input.is_a?(Array)
+          input.flatten
+        elsif input.is_a?(Hash)
+          [input]
+        elsif input.is_a?(Enumerable)
+          input
+        else
+          Array(input)
+        end
+      end
+
+      def join(glue)
+        to_a.join(glue)
+      end
+
+      def reverse
+        reverse_each.to_a
+      end
+
+      def each
+        @input.each do |e|
+          yield(e.respond_to?(:to_liquid) ? e.to_liquid : e)
+        end
+      end
     end
   end
 
