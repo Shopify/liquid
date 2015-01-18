@@ -27,7 +27,7 @@ class LayoutFileSystem
   end
 end
 
-class ExtendsTagTest < Test::Unit::TestCase
+class ExtendsTagTest < Minitest::Test
   include Liquid
 
   def setup
@@ -78,5 +78,27 @@ class ExtendsTagTest < Test::Unit::TestCase
     assert_template_result "<body><h1>Our product: iPhone</h1><h2>Some info</h2><p>$42.00</p><p>(not on sale)</p></body>",
       "{% extends product_with_static_price %}{% block info/price %}{{ block.super }}<p>(not on sale)</p>{% endblock %}", 'name' => 'iPhone'
   end
+
+  # def _print(node, depth = 0)
+  #   offset = ('.' * depth) + ' '
+
+  #   if node.respond_to?(:template_name) # extends
+  #     puts "#{offset}Extends #{node.template_name}"
+  #   elsif node.respond_to?(:push_to_stack) # inherited block
+  #     puts "#{offset}Block #{node.name} (descendant: #{(!node.descendant.nil?).inspect} / parent: #{(!node.parent.nil?).inspect}), nodes? #{node.self_or_first_ascendant.nodelist.size.inspect} / #{node.blank?.inspect}"
+  #   elsif node.respond_to?(:name)
+  #     puts "#{offset}#{node.name}"
+  #   else
+  #     puts "#{offset} #{node}"
+  #   end
+
+  #   if node.respond_to?(:nodelist)
+  #     _node = node.respond_to?(:self_or_first_ascendant) ? node.self_or_first_ascendant : node
+
+  #     _node.nodelist.each_with_index do |__node, index|
+  #       print(__node, depth + 1)
+  #     end
+  #   end
+  # end
 
 end # ExtendsTagTest

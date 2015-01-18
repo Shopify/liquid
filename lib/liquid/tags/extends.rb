@@ -1,6 +1,6 @@
 module Liquid
 
-  # Extends allows designer to use template inheritance
+  # Extends allows designer to use template inheritance.
   #
   #   {% extends home %}
   #   {% block content }Hello world{% endblock %}
@@ -16,22 +16,23 @@ module Liquid
       else
         raise(SyntaxError.new(options[:locale].t("errors.syntax.extends".freeze)))
       end
+
+      # variables needed by the inheritance mechanism during the parsing
+      options[:inherited_blocks] ||= {
+        nested:   [], # used to get the full name of the blocks if nested (stack mechanism)
+        all:      {}  # keep track of the blocks by their full name
+      }
     end
 
     def parse(tokens)
-      # get the nodes of the template the object inherits from
-      parent_template = parse_parent_template
-
-      # find the blocks in case there is a call to
-      # the super method inside the current template
-      @options.merge!(:blocks => self.find_blocks(parent_template.root.nodelist))
-
-      # finally, process the rest of the tokens
-      # the tags/blocks other than the InheritedBlock type will be ignored.
       super
 
-      # replace the nodes of the current template by the ones from the parent
-      @nodelist = parent_template.root.nodelist.clone
+      parent_template = parse_parent_template
+
+      # replace the nodes of the current template by those from the parent
+      # which itself may have have done the same operation if it includes
+      # the extends tag.
+      nodelist.replace(parent_template.root.nodelist)
     end
 
     def blank?
@@ -40,35 +41,22 @@ module Liquid
 
     protected
 
-    def find_blocks(nodelist, blocks = {})
-      if nodelist
-        nodelist.each_with_index do |node, index|
-          # is the node an inherited block?
-          if node.respond_to?(:call_super)
-            new_node = node.clone_it
+    def parse_body(body, tokens)
+      body.parse(tokens, options) do |end_tag_name, end_tag_params|
+        @blank &&= body.blank?
 
-            nodelist[index] = new_node
-
-            blocks[node.name] = new_node
-          end
-          if node.respond_to?(:nodelist)
-            # find nested blocks too
-            self.find_blocks(node.nodelist, blocks)
-          end
-        end
+        # Note: extends does not require the "end tag".
+        return false if end_tag_name.nil?
       end
-      blocks
-    end
 
-    private
+      true
+    end
 
     def parse_parent_template
       source = Template.file_system.read_template_file(@template_name, {})
-      Template.parse(source)
+      Template.parse(source, options)
     end
 
-    def assert_missing_delimitation!
-    end
   end
 
   Template.register_tag('extends', Extends)
