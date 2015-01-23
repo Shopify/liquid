@@ -362,8 +362,6 @@ class StandardFiltersTest < Minitest::Test
     assert_equal([1,2,3,4 ], @filters.concat([1,2], [3,4] ))
     assert_equal([1,2,'a' ], @filters.concat([1,2], ['a'] ))
     assert_equal([1,2, 10 ], @filters.concat([1,2], [ 10] ))
-    assert_equal(['a', 10 ], @filters.concat('a',  10  ))
-    assert_equal(['a','bc'], @filters.concat('a', 'bc' ))
   end
 
   def test_prepend

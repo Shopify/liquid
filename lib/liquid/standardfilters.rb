@@ -349,7 +349,7 @@ module Liquid
       end
 
       def concat(args)
-        to_a.concat Array(args)
+        to_a.concat args
       end
 
       def reverse
