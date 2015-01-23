@@ -3,6 +3,7 @@ language: ruby
 rvm:
   - 2.0
   - 2.1
+  - 2.2
   - ruby-head
   - jruby-head
   - rbx-2
@@ -12,6 +13,7 @@ sudo: false
 matrix:
   allow_failures:
     - rvm: jruby-head
+    - rvm: ruby-head
 
 script: "rake test"
 
