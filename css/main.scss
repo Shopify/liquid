@@ -53,11 +53,26 @@ $on-laptop:        900px;
   "syntax-highlighting"
 ;
 
-
-
-
 * {
   box-sizing: border-box;
+}
+
+/** Clearfix */
+%clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+   }
+}
+
+.wrapper {
+  max-width: $content-width;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: $spacing-unit;
+  padding-left: $spacing-unit;
+  @extend %clearfix;
 }
 
 /*============================================================================
@@ -89,6 +104,16 @@ $on-laptop:        900px;
 
   > ul {
     margin: 0;
+
+    > li {
+      margin-bottom: $spacing-unit;
+    }
+
+    ul {
+      li {
+        margin-top: $spacing-unit/2;
+      }
+    }
   }
 
   li {
@@ -109,58 +134,17 @@ $on-laptop:        900px;
 .content {
   padding: $spacing-unit $spacing-unit $spacing-unit ($spacing-unit + $sidebar-width);
 
-  h1 {
-    font-size: 2em;
-  }
-
-  h2 {
-    font-size: 2em;
-    text-decoration: underline;
-  }
-
-  h3 {
-    font-size: 1.5em;
-  }
-
-  h4 {
-    font-size: 1.5em;
-    text-decoration: underline;
-  }
-
-  blockquote {
-    color: lighten($color-slate, 20);
-    border-left: 4px solid lighten($color-slate, 20);
-    padding-left: $spacing-unit / 2;
-    font-size: 18px;
-    letter-spacing: -1px;
-    font-style: italic;
-
-    > :last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  pre, code {
-    font-size: 15px;
-    border: 1px solid $color-blue-2;
-    border-radius: 3px;
-    background-color: lighten($color-blue-1, 0.9);
-  }
-
-  code {
-    padding: 1px 5px;
-  }
-
-  pre {
-    padding: 8px 12px;
-
-    > code {
-      border: 0;
-      padding-right: 0;
-      padding-left: 0;
-    }
-  }
-
 }
 
 
+/*============================================================================
+  Index
+ ==============================================================================*/
+
+.home--banner {
+  h1 {
+    text-align: center;
+    font-weight: bold;
+    font-size: 5em;
+  }
+}

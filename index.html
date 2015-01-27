@@ -2,9 +2,20 @@
 layout: default
 ---
 
-{% for post in site.posts %}
-    <h2>
-      <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-    </h2>
-    {{ post.content }}
-{% endfor %}
+<div class="home">
+
+  <header class="home--banner">
+    <h1>Liquid</h1>
+    <div>Ruby library for rendering safe templates which cannot affect the security of the server they are rendered on.</div>
+  </header>
+
+  <hr/>
+
+  {% for post in site.posts %}
+      <h2>
+        <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+      </h2>
+      {{ post.content }}
+  {% endfor %}
+
+</div>
