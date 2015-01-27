@@ -101,28 +101,30 @@ $on-laptop:        900px;
 
 .sidebar--nav {
   padding: $spacing-unit/2 $spacing-unit;
+  font-weight: bold;
 
+  //First Level Links
   > ul {
     margin: 0;
 
     > li {
       margin-bottom: $spacing-unit / 2;
-
-      a {
-
-      }
-
     }
 
+    // Second Level Links
     ul {
       margin-left: $spacing-unit/2;
+      font-weight: normal;
+      font-size: 0.9em;
 
       li {
-        margin-top: $spacing-unit/2;
+        margin-top: $spacing-unit/4;
       }
     }
+
   }
 
+  // Styles for both First and SecondLevel Links
   li {
     list-style: none;
 
@@ -140,9 +142,19 @@ $on-laptop:        900px;
 
 .content {
   padding: $spacing-unit $spacing-unit $spacing-unit ($spacing-unit + $sidebar-width);
-
 }
 
+.btn {
+  color: $color-white;
+  display: inline-block;
+  background: $color-blue-5;
+  padding: $spacing-unit/4 $spacing-unit/2;
+  border-radius: 4px;
+}
+
+.btn:visited {
+  color: $color-white;
+}
 
 /*============================================================================
   Index
