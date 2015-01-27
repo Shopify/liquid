@@ -100,16 +100,23 @@ $on-laptop:        900px;
 }
 
 .sidebar--nav {
-  padding: $spacing-unit / 2;
+  padding: $spacing-unit/2 $spacing-unit;
 
   > ul {
     margin: 0;
 
     > li {
-      margin-bottom: $spacing-unit;
+      margin-bottom: $spacing-unit / 2;
+
+      a {
+
+      }
+
     }
 
     ul {
+      margin-left: $spacing-unit/2;
+
       li {
         margin-top: $spacing-unit/2;
       }
@@ -142,8 +149,9 @@ $on-laptop:        900px;
  ==============================================================================*/
 
 .home--banner {
+  text-align: center;
+
   h1 {
-    text-align: center;
     font-weight: bold;
     font-size: 5em;
   }

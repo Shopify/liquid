@@ -96,8 +96,8 @@ h4 {
 }
 
 blockquote {
-  color: lighten($color-slate, 20);
-  border-left: 2px solid lighten($color-slate, 20);
+  color: lighten($color-slate, 30%);
+  border-left: 2px solid lighten($color-slate, 50%);
   padding-left: $spacing-unit / 2;
   letter-spacing: -1px;
   font-style: italic;
@@ -132,5 +132,6 @@ hr {
   display: block;
   height: 1px;
   border: 0;
-  background-color: lighten($color-slate, 40%);
+  background-color: lighten($color-slate, 50%);
+  margin-bottom: $spacing-unit/2;
 }
