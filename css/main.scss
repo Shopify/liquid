@@ -28,9 +28,10 @@ $grey-color-dark:  darken($grey-color, 25%);
 */
 
 // Width of the content area
-$content-width:    800px;
+$sidebar-width: 250px;
+$content-width:    900px;
 $on-palm:          600px;
-$on-laptop:        800px;
+$on-laptop:        900px;
 
 // Using media queries with like this:
 // @include media-query($on-palm) {
@@ -39,16 +40,17 @@ $on-laptop:        800px;
 //         padding-left: $spacing-unit / 2;
 //     }
 // }
+
 @mixin media-query($device) {
-    @media screen and (max-width: $device) {
-        @content;
-    }
+  @media screen and (max-width: $device) {
+    @content;
+  }
 }
 
 // Import partials from `sass_dir` (defaults to `_sass`)
 @import
-        "base",
-        "syntax-highlighting"
+  "base",
+  "syntax-highlighting"
 ;
 
 
@@ -58,17 +60,16 @@ $on-laptop:        800px;
   box-sizing: border-box;
 }
 
-body {
-  display: flex;
-}
-
-/***** Sidebar ******/
-
+/*============================================================================
+  Sidebar
+ ==============================================================================*/
 
 .sidebar {
   background: $color-blue-5;
-  flex: 0 1 250px;
+  //flex: 0 0 250px;
+  width: $sidebar-width;
   height: 100vh;
+  position: fixed;
 }
 
 .sidebar--logo {
@@ -77,15 +78,89 @@ body {
   text-align: center;
   padding: $spacing-unit;
   border-bottom: 1px solid $color-blue-4;
+
   a {
     color: $color-white;
   }
 }
 
+.sidebar--nav {
+  padding: $spacing-unit / 2;
 
-/***** Content ******/
+  > ul {
+    margin: 0;
+  }
+
+  li {
+    list-style: none;
+
+    a {
+      color: $color-white;
+    }
+  }
+
+}
+
+
+/*============================================================================
+  Content & Markdown Styles
+ ==============================================================================*/
 
 .content {
-  padding: $spacing-unit;
-  flex: 0 1 auto;
+  padding: $spacing-unit $spacing-unit $spacing-unit ($spacing-unit + $sidebar-width);
+
+  h1 {
+    font-size: 2em;
+  }
+
+  h2 {
+    font-size: 2em;
+    text-decoration: underline;
+  }
+
+  h3 {
+    font-size: 1.5em;
+  }
+
+  h4 {
+    font-size: 1.5em;
+    text-decoration: underline;
+  }
+
+  blockquote {
+    color: lighten($color-slate, 20);
+    border-left: 4px solid lighten($color-slate, 20);
+    padding-left: $spacing-unit / 2;
+    font-size: 18px;
+    letter-spacing: -1px;
+    font-style: italic;
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  pre, code {
+    font-size: 15px;
+    border: 1px solid $color-blue-2;
+    border-radius: 3px;
+    background-color: lighten($color-blue-1, 0.9);
+  }
+
+  code {
+    padding: 1px 5px;
+  }
+
+  pre {
+    padding: 8px 12px;
+
+    > code {
+      border: 0;
+      padding-right: 0;
+      padding-left: 0;
+    }
+  }
+
 }
+
+

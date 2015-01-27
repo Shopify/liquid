@@ -6,9 +6,26 @@
   <body>
     <div class="sidebar">
       <h1 class="sidebar--logo"><a href="/">Liquid</a></h1>
+      <nav class="sidebar--nav">
+        <ul>
+          <li><a href="#">Nav Item 1</a>
+            <ul>
+              <li><a href="#">Sub Nav Item 1</a></li>
+              <li><a href="#">Sub Nav Item 2</a></li>
+              <li><a href="#">Sub Nav Item 3 (Active)</a></li>
+              <li><a href="#">Sub Nav Item 4</a></li>
+            </ul>
+          </li>
+          <li><a href="#">Nav Item 2</a></li>
+          <li><a href="#">Nav Item 3</a></li>
+          <li><a href="#">Nav Item 4</a></li>
+        </ul>
+      </nav>
     </div>
     <div class="content">
-      {{ content }}
+      <div class="wrapper">
+        {{ content }}
+      </div>
     </div>
   </body>
 
