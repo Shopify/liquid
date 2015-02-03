@@ -31,11 +31,11 @@ class StrainerUnitTest < Minitest::Test
 
   def test_strainer_only_invokes_public_filter_methods
     strainer = Strainer.create(nil)
-    assert_equal false, strainer.invokable?('__test__')
-    assert_equal false, strainer.invokable?('test')
-    assert_equal false, strainer.invokable?('instance_eval')
-    assert_equal false, strainer.invokable?('__send__')
-    assert_equal true, strainer.invokable?('size') # from the standard lib
+    assert_equal false, strainer.class.invokable?('__test__')
+    assert_equal false, strainer.class.invokable?('test')
+    assert_equal false, strainer.class.invokable?('instance_eval')
+    assert_equal false, strainer.class.invokable?('__send__')
+    assert_equal true, strainer.class.invokable?('size') # from the standard lib
   end
 
   def test_strainer_returns_nil_if_no_filter_method_found
@@ -63,9 +63,7 @@ class StrainerUnitTest < Minitest::Test
     assert_kind_of Strainer, strainer
     assert_kind_of a, strainer
     assert_kind_of b, strainer
-    Strainer.class_variable_get(:@@filters).each do |m|
-      assert_kind_of m, strainer
-    end
+    assert_kind_of Liquid::StandardFilters, strainer
   end
 
 end # StrainerTest

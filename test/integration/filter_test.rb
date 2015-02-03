@@ -25,6 +25,12 @@ end
 class FiltersTest < Minitest::Test
   include Liquid
 
+  module OverrideObjectMethodFilter
+    def tap(input)
+      "tap overridden"
+    end
+  end
+
   def setup
     @context = Context.new
   end
@@ -104,6 +110,13 @@ class FiltersTest < Minitest::Test
     @context.add_filters(SubstituteFilter)
     output = Variable.new(%! 'hello %{first_name}, %{last_name}' | substitute: first_name: surname, last_name: 'doe' !).render(@context)
     assert_equal 'hello john, doe', output
+  end
+
+  def test_override_object_method_in_filter
+    assert_equal "tap overridden", Template.parse("{{var | tap}}").render!({ 'var' => 1000 }, :filters => [OverrideObjectMethodFilter])
+
+    # tap still treated as a non-existent filter
+    assert_equal "1000", Template.parse("{{var | tap}}").render!({ 'var' => 1000 })
   end
 end
 
