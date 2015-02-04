@@ -48,13 +48,19 @@ module Minitest
     end
 
     def with_global_filter(*globals)
-      original_filters = Array.new(Liquid::Strainer.class_variable_get(:@@filters))
+      original_global_strainer = Liquid::Strainer.class_variable_get(:@@global_strainer)
+      Liquid::Strainer.class_variable_set(:@@global_strainer, Class.new(Liquid::Strainer) do
+        @filter_methods = Set.new
+      end)
+      Liquid::Strainer.class_variable_get(:@@strainer_class_cache).clear
+
       globals.each do |global|
         Liquid::Template.register_filter(global)
       end
       yield
     ensure
-      Liquid::Strainer.class_variable_set(:@@filters, original_filters)
+      Liquid::Strainer.class_variable_get(:@@strainer_class_cache).clear
+      Liquid::Strainer.class_variable_set(:@@global_strainer, original_global_strainer)
     end
 
     def with_taint_mode(mode)
