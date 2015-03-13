@@ -9,7 +9,7 @@
       <nav class="sidebar--nav">
         <ul>
           {% for collection in site.collections %}
-          <li>{{ collection[0] | capitalize }}
+          <li><a href="{{ collection[0] | prepend: "/" | prepend: site.baseurl | append: "/" }}">{{ collection[0] | capitalize }}</a>
             <ul>
               {% for doc in collection[1].docs %}
               <li><a href="{{ "/filters/" | append: "#" | append: doc.title | prepend: site.baseurl }}">{{ doc.title }}</a></li>
