@@ -1,0 +1,3 @@
+install: gem install github-pages
+script: jekyll build --trace
+sudo: false
