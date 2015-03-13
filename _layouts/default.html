@@ -8,14 +8,15 @@
       <h1 class="sidebar--logo"><a href="/">Liquid</a></h1>
       <nav class="sidebar--nav">
         <ul>
-          <li><a href="#">Nav Item 1</a>
+          {% for collection in site.collections %}
+          <li>{{ collection[0] | capitalize }}
             <ul>
-              <li><a href="#">Sub Nav Item 1</a></li>
-              <li><a href="#">Sub Nav Item 2</a></li>
-              <li><a href="#">Sub Nav Item 3 (Active)</a></li>
-              <li><a href="#">Sub Nav Item 4</a></li>
+              {% for doc in collection[1].docs %}
+              <li><a href="{{ doc.url | prepend: site.baseurl }}">{{ doc.title }}</a></li>
+              {% endfor %}
             </ul>
           </li>
+          {% endfor %}
           <li><a href="#">Nav Item 2</a></li>
           <li><a href="#">Nav Item 3</a></li>
           <li><a href="#">Nav Item 4</a></li>
