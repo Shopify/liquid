@@ -12,7 +12,7 @@
           <li>{{ collection[0] | capitalize }}
             <ul>
               {% for doc in collection[1].docs %}
-              <li><a href="{{ doc.url | prepend: site.baseurl }}">{{ doc.title }}</a></li>
+              <li><a href="{{ "/filters/" | append: "#" | append: doc.title | prepend: site.baseurl }}">{{ doc.title }}</a></li>
               {% endfor %}
             </ul>
           </li>
