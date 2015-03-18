@@ -85,6 +85,7 @@ $on-laptop:        900px;
   width: $sidebar-width;
   height: 100vh;
   position: fixed;
+  overflow: scroll;
 }
 
 .sidebar--logo {
