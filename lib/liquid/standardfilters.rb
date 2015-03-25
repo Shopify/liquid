@@ -177,6 +177,10 @@ module Liquid
       input.to_s + string.to_s
     end
 
+    def concat(input, array)
+      InputIterator.new(input).concat(array)
+    end
+
     # prepend a string to another
     def prepend(input, string)
       string.to_s + input.to_s
@@ -344,6 +348,10 @@ module Liquid
 
       def join(glue)
         to_a.join(glue)
+      end
+
+      def concat(args)
+        to_a.concat args
       end
 
       def reverse
