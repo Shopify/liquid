@@ -298,6 +298,22 @@ HERE
                 'string' => "test string")
   end
 
+  def test_for_parentloop_references_parent_loop
+    assert_template_result('1.1 1.2 1.3 2.1 2.2 2.3 ',
+                           '{% for inner in outer %}{% for k in inner %}' +
+                           '{{ forloop.parentloop.index }}.{{ forloop.index }} ' +
+                           '{% endfor %}{% endfor %}',
+                           'outer' => [[1, 1, 1], [1, 1, 1]])
+  end
+
+  def test_for_parentloop_nil_when_not_present
+    assert_template_result('.1 .2 ',
+                           '{% for inner in outer %}' +
+                           '{{ forloop.parentloop.index }}.{{ forloop.index }} ' +
+                           '{% endfor %}',
+                           'outer' => [[1, 1, 1], [1, 1, 1]])
+  end
+
   def test_blank_string_not_iterable
     assert_template_result('', "{% for char in characters %}I WILL NOT BE OUTPUT{% endfor %}", 'characters' => '')
   end

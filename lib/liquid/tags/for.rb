@@ -42,6 +42,7 @@ module Liquid
   #                   where 0 is the last item.
   # forloop.first:: Returns true if the item is the first item.
   # forloop.last:: Returns true if the item is the last item.
+  # forloop.parentloop:: Provides access to the parent loop, if present.
   #
   class For < Block
     Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
@@ -98,18 +99,21 @@ module Liquid
       # Store our progress through the collection for the continue flag
       context.registers[:for][@name] = from + segment.length
 
+      parent_loop = context['forloop'.freeze]
+
       context.stack do
         segment.each_with_index do |item, index|
           context[@variable_name] = item
           context['forloop'.freeze] = {
-            'name'.freeze    => @name,
-            'length'.freeze  => length,
-            'index'.freeze   => index + 1,
-            'index0'.freeze  => index,
-            'rindex'.freeze  => length - index,
-            'rindex0'.freeze => length - index - 1,
-            'first'.freeze   => (index == 0),
-            'last'.freeze    => (index == length - 1)
+            'name'.freeze       => @name,
+            'length'.freeze     => length,
+            'index'.freeze      => index + 1,
+            'index0'.freeze     => index,
+            'rindex'.freeze     => length - index,
+            'rindex0'.freeze    => length - index - 1,
+            'first'.freeze      => (index == 0),
+            'last'.freeze       => (index == length - 1),
+            'parentloop'.freeze => parent_loop
           }
 
           result << @for_block.render(context)
