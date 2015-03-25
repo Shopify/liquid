@@ -1,9 +1,18 @@
-# Liquid Version History
+# Liquid Change Log
 
 ## 4.0.0 / not yet released / branch "master"
-
-* ...
+### Changed
+* Add forloop.parentloop as a reference to the parent loop, see #520 [Justin Li, pushrax]
 * Block parsing moved to BlockBody class, see #458 [Dylan Thacker-Smith, dylanahsmith]
+* Add concat filter to concatenate arrays, see #429 [Diogo Beato, dvbeato]
+* Ruby 1.9 support dropped, see #491 [Justin Li, pushrax]
+
+### Fixed
+* Fix capturing into variables with a hyphen in the name, see #505 [Florian Weingarten, fw42]
+* Fix case sensitivity regression in date standard filter, see #499 [Kelley Reynolds, kreynolds]
+* Disallow filters with no variable in strict mode, see #475 [Justin Li, pushrax]
+* Disallow variable names in the strict parser that are not valid in the lax parser, see #463 [Justin Li, pushrax]
+* Fix BlockBody#warnings taking exponential time to compute, see #486 [Justin Li, pushrax]
 
 ## 3.0.0 / 2014-11-12 / branch "3-0-stable"
 
