@@ -359,9 +359,14 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_concat
-    assert_equal([1,2,3,4 ], @filters.concat([1,2], [3,4] ))
-    assert_equal([1,2,'a' ], @filters.concat([1,2], ['a'] ))
-    assert_equal([1,2, 10 ], @filters.concat([1,2], [ 10] ))
+    assert_equal [1, 2, 3, 4], @filters.concat([1, 2], [3, 4])
+    assert_equal [1, 2, 'a'],  @filters.concat([1, 2], ['a'])
+    assert_equal [1, 2, 10],   @filters.concat([1, 2], [10])
+
+    assert_raises(TypeError) do
+      # no implicit conversion of Fixnum into Array
+      @filters.concat([1, 2], 10)
+    end
   end
 
   def test_prepend
