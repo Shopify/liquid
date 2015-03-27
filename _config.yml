@@ -5,3 +5,6 @@ markdown: kramdown
 permalink: /:year/:month/:day/:basename:output_ext
 collections:
   - filters
+exclude:
+  - README.md
+  - CNAME
