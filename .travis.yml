@@ -1,0 +1,4 @@
+install: gem install github-pages
+script: jekyll build --trace
+sudo: false
+rvm: 2.1

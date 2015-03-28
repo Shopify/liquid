@@ -135,3 +135,38 @@ hr {
   background-color: lighten($color-slate, 50%);
   margin-bottom: $spacing-unit/2;
 }
+
+table {
+  width: 100%;
+  overflow: auto;
+  display: block;
+  margin: 15px 0;
+  border-collapse: collapse;
+  thead {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+  }
+  th {
+    border: 1px solid #ddd;
+    padding: 6px 13px;
+    font-weight: bold;
+    text-align: center;
+  }
+  tbody {
+    vertical-align: middle;
+    border-color: inherit;
+  }
+  tr {
+    border-top: 1px solid #ccc;
+    background-color: #fff;
+    vertical-align: inherit;
+  }
+  td {
+    border: 1px solid #ddd;
+    padding: 6px 13px;
+  }
+}

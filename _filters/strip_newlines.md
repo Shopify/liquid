@@ -1,0 +1,3 @@
+---
+title: strip_newlines
+---
