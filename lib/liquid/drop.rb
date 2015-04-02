@@ -62,6 +62,10 @@ module Liquid
 
     # Check for method existence without invoking respond_to?, which creates symbols
     def self.invokable?(method_name)
+      self.invokable_methods.include?(method_name.to_s)
+    end
+
+    def self.invokable_methods
       unless @invokable_methods
         blacklist = Liquid::Drop.public_instance_methods + [:each]
         if include?(Enumerable)
@@ -71,7 +75,7 @@ module Liquid
         whitelist = [:to_liquid] + (public_instance_methods - blacklist)
         @invokable_methods = Set.new(whitelist.map(&:to_s))
       end
-      @invokable_methods.include?(method_name.to_s)
+      @invokable_methods
     end
   end
 end
