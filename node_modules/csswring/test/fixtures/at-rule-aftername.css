@@ -1,0 +1,20 @@
+@import    "foo.css";
+
+@media  	screen {
+  .bar {
+    display: block;
+  }
+}
+
+@media
+  (min-width: 99px) {
+  .baz {
+    display: block;
+  }
+}
+
+@font-face
+{
+  font-family: "Qux";
+  src: url("qux.woff") format("woff");
+}

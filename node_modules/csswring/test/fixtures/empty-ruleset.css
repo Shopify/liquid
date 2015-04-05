@@ -1,0 +1,15 @@
+.foo {
+  display: block;
+}
+
+.bar {
+  ;
+}
+
+.baz {
+  /* empty */
+}
+
+.qux {
+  /*! not empty */
+}

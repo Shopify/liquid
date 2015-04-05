@@ -1,0 +1,172 @@
+
+@charset "utf-8";
+
+// Our variables
+$base-font-family: 'Droid Sans', sans-serif;
+$base-font-size:   16px;
+$small-font-size:  $base-font-size * 0.875;
+$base-line-height: 1.5;
+$spacing-unit:     40px;
+
+// Liquid Docs Blues. 1 --> 5, lightest --> darkest.
+
+$color-blue-1: #E8F8FF;
+$color-blue-2: #B4DCED;
+$color-blue-3: #91C9E8;
+$color-blue-4: #67B8DE;
+$color-blue-5: #3399CC;
+$color-white: #ffffff;
+$color-slate: #5E5E5E;
+
+/*
+$grey-color:       #828282;
+$grey-color-light: lighten($grey-color, 40%);
+$grey-color-dark:  darken($grey-color, 25%);
+*/
+
+// Width of the cont       s sent area
+$sidebar-width: 250px;
+$content-width:    900px;
+$on-palm:          600px;
+$on-laptop:        900px;
+
+// Using media queries with like this:
+// @include media-query($on-palm) {
+//     .wrapper {
+//         padding-right: $spacing-unit / 2;
+//         padding-left: $spacing-unit / 2;
+//     }
+// }
+
+@mixin media-query($device) {
+  @media screen and (max-width: $device) {
+    @content;
+  }
+}
+
+// Import partials from `sass_dir` (defaults to `_sass`)
+@import
+  "modules/base",
+  "vendors/syntax-highlighting"
+;
+
+* {
+  box-sizing: border-box;
+}
+
+/** Clearfix */
+%clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+   }
+}
+
+.wrapper {
+  max-width: $content-width;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: $spacing-unit;
+  padding-left: $spacing-unit;
+  @extend %clearfix;
+}
+
+/*============================================================================
+  Sidebar
+ ==============================================================================*/
+
+.sidebar {
+  background: $color-blue-5;
+  //flex: 0 0 250px;
+  width: $sidebar-width;
+  height: 100vh;
+  position: fixed;
+  overflow: scroll;
+}
+
+.sidebar--logo {
+  font-size: $base-font-size * 2;
+  font-weight: bold;
+  text-align: center;
+  padding: $spacing-unit;
+  border-bottom: 1px solid $color-blue-4;
+
+  a {
+    color: $color-white;
+  }
+}
+
+.sidebar--nav {
+  padding: $spacing-unit/2 $spacing-unit;
+  font-weight: bold;
+
+  //First Level Links
+  > ul {
+    margin: 0;
+
+    > li {
+      margin-bottom: $spacing-unit / 2;
+    }
+
+    // Second Level Links
+    ul {
+      margin-left: $spacing-unit/2;
+      font-weight: normal;
+      font-size: 0.9em;
+
+      li {
+        margin-top: $spacing-unit/4;
+      }
+    }
+
+  }
+
+  // Styles for both First and SecondLevel Links
+  li {
+    list-style: none;
+
+    a {
+      color: $color-white;
+    }
+  }
+
+}
+
+
+/*============================================================================
+  Content & Markdown Styles
+ ==============================================================================*/
+
+.content {
+  padding: $spacing-unit $spacing-unit $spacing-unit ($spacing-unit + $sidebar-width);
+}
+
+.btn {
+  color: $color-white;
+  display: inline-block;
+  background: $color-blue-5;
+  padding: $spacing-unit/4 $spacing-unit/2;
+  border-radius: 4px;
+}
+
+.btn:visited {
+  color: $color-white;
+}
+
+.right {
+  float: right;
+}
+
+/*============================================================================
+  Index
+ ==============================================================================*/
+
+.home--banner {
+  text-align: center;
+
+  h1 {
+    font-weight: bold;
+    font-size: 5em;
+  }
+}

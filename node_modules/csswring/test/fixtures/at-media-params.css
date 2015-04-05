@@ -1,0 +1,6 @@
+@media /* foo */ (  min-width: 99px    ) and
+(	max-width:    999px  ) {
+  .at-media-params {
+    display: auto;
+  }
+}

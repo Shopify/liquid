@@ -1,0 +1,22 @@
+.foo {
+  display: block;
+}
+
+@media (min-width: 99px) {
+}
+
+@font-face {
+  font-style: normal;
+}
+
+@supports (margin: 0) {
+  .bar {}
+}
+
+@page {
+  /* empty */
+}
+
+@keyframes baz {
+  /*! not empty */
+}

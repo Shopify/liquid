@@ -1,0 +1,7 @@
+.foo {
+  list-style: circle url("foo.png");
+  background-image: url('foo.png');
+  background: url(foo.png) rgb(238, 238, 238) no-repeat fixed;
+  cursor: url("open(parens.cur"), auto;
+  border-image: url(escaped-close\)parens.png) 30 30 repeat;
+}

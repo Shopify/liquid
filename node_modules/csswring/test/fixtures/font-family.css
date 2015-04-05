@@ -1,0 +1,11 @@
+.foo {
+  font-family: "Hoefler Text", "Constantia", "Georgia", serif;
+}
+
+.bar {
+  font-family: "0font", "--font", "-0font", serif;
+}
+
+.baz {
+  font-family: 'Glyphicons Halflings', serif;
+}

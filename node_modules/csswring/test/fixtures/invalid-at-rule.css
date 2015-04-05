@@ -1,0 +1,18 @@
+/*! Special comment */
+@charset "UTF-8";
+
+@charset "EUC-JP";
+
+@import "foo.css";
+
+.bar {
+  display: block;
+}
+
+@charset "Shift_JIS";
+
+@import "baz.css";
+
+.qux {
+  display: block;
+}

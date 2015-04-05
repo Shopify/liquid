@@ -1,0 +1,7 @@
+.foo {
+  font-family: "ヒラギノ角ゴ Pro W3", serif;
+}
+
+.bar[att="ほげ"] {
+  display: block;
+}

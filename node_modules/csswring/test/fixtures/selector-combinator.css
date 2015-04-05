@@ -1,0 +1,15 @@
+.foo > .bar {
+  display: block;
+}
+
+.foo + .baz {
+  display: block;
+}
+
+.foo ~ .qux {
+  display: block;
+}
+
+.foo .\<quux\> {
+  display: block;
+}

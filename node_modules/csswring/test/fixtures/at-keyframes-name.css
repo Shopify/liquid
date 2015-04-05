@@ -1,0 +1,9 @@
+@keyframes "foo" {
+  from {
+    top: 0px;
+  }
+
+  to {
+    top: 100px;
+  }
+}

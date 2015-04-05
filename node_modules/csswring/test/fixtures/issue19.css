@@ -1,0 +1,6 @@
+@media /* a */ (min-width: 99px) {
+    .issue19 /* b */, #issue19   {
+    display: auto    
+        ;
+  }
+}

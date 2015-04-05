@@ -1,0 +1,11 @@
+@import "foo.css";
+
+.foo {
+  display: block;
+}
+
+@import "bar.css";
+
+.bar {
+  display: block;
+}

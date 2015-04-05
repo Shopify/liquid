@@ -1,0 +1,8 @@
+[ foo          ],
+[ bar =  "bar" ],
+[ baz *= "baz" ],
+[ qux ~= 'qu]x'],
+[quux |= qu\]ux],
+[corge="corge"][grault] {
+  display: block;
+}
