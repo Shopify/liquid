@@ -1,6 +1,5 @@
 // Gruntfile
 module.exports = function(grunt) {
-var autoprefixer = require('autoprefixer-core');
 require('load-grunt-tasks')(grunt);
 
   // Project configuration.
@@ -10,11 +9,9 @@ require('load-grunt-tasks')(grunt);
 
     watch: {
       css: {
-        files: ['_sass/*.scss'],
+        files: ['_sass/**/*.scss'],
         tasks: ['sass', 'postcss', 'shell:jekyllBuild'],
         options: {
-          spawn: false,
-          interrupt: true,
           atBegin: true
         }
       },
@@ -53,7 +50,7 @@ require('load-grunt-tasks')(grunt);
       options: {
         map: true,
         processors: [
-          autoprefixer({ browsers: ['last 2 version'] }).postcss
+          require('autoprefixer-core')({browsers: 'last 2 versions'})
         ]
       },
       dist: {

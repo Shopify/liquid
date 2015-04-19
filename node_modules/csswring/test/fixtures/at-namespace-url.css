@@ -1,6 +1,0 @@
-@namespace url(foo.css);
-@namespace url("bar.css");
-@namespace url('baz.css');
-@namespace "qux.css";
-@namespace 'quux.css';
-@namespace corge url("corge.css");

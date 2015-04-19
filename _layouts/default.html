@@ -1,33 +1,48 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>{% if page.title %}{{ page.title }} – {% endif %}{{ site.data.site.title }}</title>
 
-  {% include head.html %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.data.site.description }}{% endif %}">
+
+    <link rel="stylesheet" href="{{ '/css/main.css' | prepend: site.baseurl }}">
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+    <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" />
+  </head>
 
   <body>
     <div class="sidebar">
-      <h1 class="sidebar--logo"><a href="/">Liquid</a></h1>
+      <div class="sidebar--logo">
+        <a href="/">Liquid</a>
+      </div>
       <nav class="sidebar--nav">
-        <ul>
-          {% for collection in site.collections %}
-          <li><a href="{{ collection[0] | prepend: "/" | prepend: site.baseurl | append: "/" }}">{{ collection[0] | capitalize }}</a>
-            <ul>
-              {% for doc in collection[1].docs %}
-              <li><a href="{{ "/filters/" | append: "#" | append: doc.title | prepend: site.baseurl }}">{{ doc.title }}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
-          {% endfor %}
-          <li><a href="https://github.com/Shopify/liquid">Source on GitHub</a></li>
-          <li><a href="#">Nav Item 3</a></li>
-          <li><a href="#">Nav Item 4</a></li>
-        </ul>
+        {% for collection in site.collections %}
+          {% assign section_title = collection[0] %}
+          <ul class="section">
+            <li>
+              <h3 class="section__header">{{ section_title | capitalize }}</h3>
+              <ul class="section__links">
+                {% for doc in site.collections[section_title].docs %}
+                  <li>
+                    <a href="{{ doc.url }}" class="section__link {% if doc.title == page.title %}section__link--is-active{% endif %}">{{ doc.title }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </li>
+          </ul>
+        {% endfor %}
       </nav>
     </div>
     <div class="content">
       <div class="wrapper">
+        <h1>{{ page.title }}</h1>
         {{ content }}
       </div>
     </div>
   </body>
-
 </html>

@@ -4,9 +4,33 @@ url: "http://liquidmarkup.org" # the base hostname & protocol for your site
 markdown: kramdown
 permalink: /:year/:month/:day/:basename:output_ext
 collections:
-  - filters
+  filters:
+    output: true
+  objects:
+    output: true
+  tags:
+    output: true
 exclude:
   - README.md
   - CNAME
   - node_modules
 keep_files: ['css']
+defaults:
+  -
+    scope:
+      path: ""
+      type: "filters"
+    values:
+      layout: "default"
+  -
+    scope:
+      path: ""
+      type: "objects"
+    values:
+      layout: "default"
+  -
+    scope:
+      path: ""
+      type: "tags"
+    values:
+      layout: "default"

@@ -6,3 +6,4 @@ To run, follow these steps:
 2. Navigate to `liquid` folder
 3. Run `jekyll watch`
 4. Open `http://127.0.0.1:4000` in your browser
+
