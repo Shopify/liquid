@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+ENV["MT_NO_EXPECTATIONS"] = "1"
 require 'minitest/autorun'
 require 'spy/integration'
 
