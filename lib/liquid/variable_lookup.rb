@@ -3,7 +3,7 @@ module Liquid
     SQUARE_BRACKETED = /\A\[(.*)\]\z/m
     COMMAND_METHODS = ['size'.freeze, 'first'.freeze, 'last'.freeze]
 
-    attr_reader :name, :lookups, :command_flags
+    attr_reader :name, :lookups
 
     def self.parse(markup)
       new(markup)
