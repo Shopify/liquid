@@ -2,59 +2,59 @@
 
 ## 4.0.0 / not yet released / branch "master"
 ### Changed
-* Expose VariableLookup private members, see #551 [Justin Li, pushrax]
-* Add forloop.parentloop as a reference to the parent loop, see #520 [Justin Li, pushrax]
-* Block parsing moved to BlockBody class, see #458 [Dylan Thacker-Smith, dylanahsmith]
-* Add concat filter to concatenate arrays, see #429 [Diogo Beato, dvbeato]
-* Ruby 1.9 support dropped, see #491 [Justin Li, pushrax]
+* Expose VariableLookup private members (#551) [Justin Li, pushrax]
+* Add forloop.parentloop as a reference to the parent loop (#520) [Justin Li, pushrax]
+* Block parsing moved to BlockBody class (#458) [Dylan Thacker-Smith, dylanahsmith]
+* Add concat filter to concatenate arrays (#429) [Diogo Beato, dvbeato]
+* Ruby 1.9 support dropped (#491) [Justin Li, pushrax]
 
 ### Fixed
-* Fix capturing into variables with a hyphen in the name, see #505 [Florian Weingarten, fw42]
-* Fix case sensitivity regression in date standard filter, see #499 [Kelley Reynolds, kreynolds]
-* Disallow filters with no variable in strict mode, see #475 [Justin Li, pushrax]
-* Disallow variable names in the strict parser that are not valid in the lax parser, see #463 [Justin Li, pushrax]
-* Fix BlockBody#warnings taking exponential time to compute, see #486 [Justin Li, pushrax]
+* Fix capturing into variables with a hyphen in the name (#505) [Florian Weingarten, fw42]
+* Fix case sensitivity regression in date standard filter (#499) [Kelley Reynolds, kreynolds]
+* Disallow filters with no variable in strict mode (#475) [Justin Li, pushrax]
+* Disallow variable names in the strict parser that are not valid in the lax parser (#463) [Justin Li, pushrax]
+* Fix BlockBody#warnings taking exponential time to compute (#486) [Justin Li, pushrax]
 
 ## 3.0.0 / 2014-11-12 / branch "3-0-stable"
 
 * Removed Block#end_tag. Instead, override parse with `super` followed by your code. See #446 [Dylan Thacker-Smith, dylanahsmith]
-* Fixed condition with wrong data types, see #423 [Bogdan Gusiev]
-* Add url_encode to standard filters, see #421 [Derrick Reimer, djreimer]
+* Fixed condition with wrong data types (#423) [Bogdan Gusiev]
+* Add url_encode to standard filters (#421) [Derrick Reimer, djreimer]
 * Add uniq to standard filters [Florian Weingarten, fw42]
-* Add exception_handler feature, see #397 and #254 [Bogdan Gusiev, bogdan and Florian Weingarten, fw42]
+* Add exception_handler feature (#397) and #254 [Bogdan Gusiev, bogdan and Florian Weingarten, fw42]
 * Optimize variable parsing to avoid repeated regex evaluation during template rendering #383 [Jason Hiltz-Laforge, jasonhl]
 * Optimize checking for block interrupts to reduce object allocation #380 [Jason Hiltz-Laforge, jasonhl] 
 * Properly set context rethrow_errors on render! #349 [Thierry Joyal, tjoyal]
-* Fix broken rendering of variables which are equal to false, see #345 [Florian Weingarten, fw42]
+* Fix broken rendering of variables which are equal to false (#345) [Florian Weingarten, fw42]
 * Remove ActionView template handler [Dylan Thacker-Smith, dylanahsmith]
-* Freeze lots of string literals for new Ruby 2.1 optimization, see #297 [Florian Weingarten, fw42]
-* Allow newlines in tags and variables, see #324 [Dylan Thacker-Smith, dylanahsmith]
+* Freeze lots of string literals for new Ruby 2.1 optimization (#297) [Florian Weingarten, fw42]
+* Allow newlines in tags and variables (#324) [Dylan Thacker-Smith, dylanahsmith]
 * Tag#parse is called after initialize, which now takes options instead of tokens as the 3rd argument. See #321 [Dylan Thacker-Smith, dylanahsmith]
 * Raise `Liquid::ArgumentError` instead of `::ArgumentError` when filter has wrong number of arguments #309 [Bogdan Gusiev, bogdan]
-* Add a to_s default for liquid drops, see #306 [Adam Doeler, releod]
+* Add a to_s default for liquid drops (#306) [Adam Doeler, releod]
 * Add strip, lstrip, and rstrip to standard filters [Florian Weingarten, fw42]
-* Make if, for & case tags return complete and consistent nodelists, see #250 [Nick Jones, dntj]
-* Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
-* Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
-* Fix resource counting bug with respond_to?(:length), see #263 [Florian Weingarten, fw42]
-* Allow specifying custom patterns for template filenames, see #284 [Andrei Gladkyi, agladkyi]
-* Allow drops to optimize loading a slice of elements, see #282 [Tom Burns, boourns]
-* Support for passing variables to snippets in subdirs, see #271 [Joost Hietbrink, joost]
-* Add a class cache to avoid runtime extend calls, see #249 [James Tucker, raggi]
-* Remove some legacy Ruby 1.8 compatibility code, see #276 [Florian Weingarten, fw42]
-* Add default filter to standard filters, see #267 [Derrick Reimer, djreimer]
-* Add optional strict parsing and warn parsing, see #235 [Tristan Hume, trishume]
-* Add I18n syntax error translation, see #241 [Simon Hørup Eskildsen, Sirupsen]
-* Make sort filter work on enumerable drops, see #239 [Florian Weingarten, fw42]
-* Fix clashing method names in enumerable drops, see #238 [Florian Weingarten, fw42]
-* Make map filter work on enumerable drops, see #233 [Florian Weingarten, fw42]
+* Make if, for & case tags return complete and consistent nodelists (#250) [Nick Jones, dntj]
+* Prevent arbitrary method invocation on condition objects (#274) [Dylan Thacker-Smith, dylanahsmith]
+* Don't call to_sym when creating conditions for security reasons (#273) [Bouke van der Bijl, bouk]
+* Fix resource counting bug with respond_to?(:length) (#263) [Florian Weingarten, fw42]
+* Allow specifying custom patterns for template filenames (#284) [Andrei Gladkyi, agladkyi]
+* Allow drops to optimize loading a slice of elements (#282) [Tom Burns, boourns]
+* Support for passing variables to snippets in subdirs (#271) [Joost Hietbrink, joost]
+* Add a class cache to avoid runtime extend calls (#249) [James Tucker, raggi]
+* Remove some legacy Ruby 1.8 compatibility code (#276) [Florian Weingarten, fw42]
+* Add default filter to standard filters (#267) [Derrick Reimer, djreimer]
+* Add optional strict parsing and warn parsing (#235) [Tristan Hume, trishume]
+* Add I18n syntax error translation (#241) [Simon Hørup Eskildsen, Sirupsen]
+* Make sort filter work on enumerable drops (#239) [Florian Weingarten, fw42]
+* Fix clashing method names in enumerable drops (#238) [Florian Weingarten, fw42]
+* Make map filter work on enumerable drops (#233) [Florian Weingarten, fw42]
 * Improved whitespace stripping for blank blocks, related to #216 [Florian Weingarten, fw42]
 
 ## 2.6.1 / 2014-01-10 / branch "2-6-stable"
 
 Security fix, cherry-picked from master (4e14a65):
-* Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
-* Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
+* Don't call to_sym when creating conditions for security reasons (#273) [Bouke van der Bijl, bouk]
+* Prevent arbitrary method invocation on condition objects (#274) [Dylan Thacker-Smith, dylanahsmith]
 
 ## 2.6.0 / 2013-11-25
 
@@ -83,12 +83,12 @@ The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are
 ## 2.5.5 / 2014-01-10 / branch "2-5-stable"
 
 Security fix, cherry-picked from master (4e14a65):
-* Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
-* Prevent arbitrary method invocation on condition objects, see #274 [Dylan Thacker-Smith, dylanahsmith]
+* Don't call to_sym when creating conditions for security reasons (#273) [Bouke van der Bijl, bouk]
+* Prevent arbitrary method invocation on condition objects (#274) [Dylan Thacker-Smith, dylanahsmith]
 
 ## 2.5.4 / 2013-11-11
 
-* Fix "can't convert Fixnum into String" for "replace", see #173, [wǒ_is神仙, jsw0528]
+* Fix "can't convert Fixnum into String" for "replace" (#173), [wǒ_is神仙, jsw0528]
 
 ## 2.5.3 / 2013-10-09
 
