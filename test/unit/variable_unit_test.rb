@@ -136,4 +136,10 @@ class VariableUnitTest < Minitest::Test
     var = Variable.new(%! name_of_variable | upcase !)
     assert_equal " name_of_variable | upcase ", var.raw
   end
+
+  def test_variable_lookup_interface
+    lookup = VariableLookup.new('a.b.c')
+    assert_equal 'a', lookup.name
+    assert_equal ['b', 'c'], lookup.lookups
+  end
 end
