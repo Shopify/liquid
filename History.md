@@ -2,7 +2,6 @@
 
 ## 4.0.0 / not yet released / branch "master"
 ### Changed
-* Expose VariableLookup private members (#551) [Justin Li, pushrax]
 * Add forloop.parentloop as a reference to the parent loop (#520) [Justin Li, pushrax]
 * Block parsing moved to BlockBody class (#458) [Dylan Thacker-Smith, dylanahsmith]
 * Add concat filter to concatenate arrays (#429) [Diogo Beato, dvbeato]
@@ -15,7 +14,16 @@
 * Disallow variable names in the strict parser that are not valid in the lax parser (#463) [Justin Li, pushrax]
 * Fix BlockBody#warnings taking exponential time to compute (#486) [Justin Li, pushrax]
 
-## 3.0.0 / 2014-11-12 / branch "3-0-stable"
+## 3.0.2 / 2015-04-24 / branch "3-0-stable"
+
+* Expose VariableLookup private members (#551) [Justin Li, pushrax]
+* Documentation fixes
+
+## 3.0.1 / 2015-01-23
+
+* Remove duplicate `index0` key in TableRow tag (#502) [Alfred Xing]
+
+## 3.0.0 / 2014-11-12
 
 * Removed Block#end_tag. Instead, override parse with `super` followed by your code. See #446 [Dylan Thacker-Smith, dylanahsmith]
 * Fixed condition with wrong data types (#423) [Bogdan Gusiev]
