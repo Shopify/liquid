@@ -1,8 +1,16 @@
 # Liquid Version History
 
-## 3.0.0 / not yet released / branch "master"
+## 3.0.2 / 2015-04-24 / branch "3-0-stable"
 
-* ...
+* Expose VariableLookup private members (#551) [Justin Li, pushrax]
+* Documentation fixes
+
+## 3.0.1 / 2015-01-23
+
+* Remove duplicate `index0` key in TableRow tag (#502) [Alfred Xing]
+
+## 3.0.0 / 2014-11-12
+
 * Removed Block#end_tag. Instead, override parse with `super` followed by your code. See #446 [Dylan Thacker-Smith, dylanahsmith]
 * Fixed condition with wrong data types, see #423 [Bogdan Gusiev]
 * Add url_encode to standard filters, see #421 [Derrick Reimer, djreimer]
