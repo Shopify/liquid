@@ -6,6 +6,7 @@
 * Block parsing moved to BlockBody class (#458) [Dylan Thacker-Smith, dylanahsmith]
 * Add concat filter to concatenate arrays (#429) [Diogo Beato, dvbeato]
 * Ruby 1.9 support dropped (#491) [Justin Li, pushrax]
+* Liquid::Template.file_system's read_template_file method is no longer passed the context. (#441) [James Reid-Smith, sunblaze]
 
 ### Fixed
 * Fix capturing into variables with a hyphen in the name (#505) [Florian Weingarten, fw42]
