@@ -9,7 +9,7 @@ class FoobarTag < Liquid::Tag
 end
 
 class BlankTestFileSystem
-  def read_template_file(template_path, context)
+  def read_template_file(template_path)
     template_path
   end
 end

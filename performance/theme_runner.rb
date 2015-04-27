@@ -17,7 +17,7 @@ class ThemeRunner
     end
 
     # Called by Liquid to retrieve a template file
-    def read_template_file(template_path, context)
+    def read_template_file(template_path)
       File.read(@path + '/' + template_path + '.liquid')
     end
   end
