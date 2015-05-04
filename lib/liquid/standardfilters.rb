@@ -127,19 +127,12 @@ module Liquid
     def sort_natural(input, property = nil)
       ary = InputIterator.new(input)
 
-      # Quick function that returns the downcased object if it has a downcase,
-      # otherwise it returns the object itself.
-      insensitive = lambda do |obj|
-        obj = obj.downcase if obj.respond_to? :downcase
-        obj
-      end
-
       if property.nil?
-        ary.sort {|a,b| insensitive.call(a) <=> insensitive.call(b) }
+        ary.sort {|a,b| a.casecmp b }
       elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
-        ary.sort {|a,b| insensitive.call(a[property]) <=> insensitive.call(b[property]) }
+        ary.sort {|a,b| a[property].casecmp b[property] }
       elsif ary.first.respond_to?(property)
-        ary.sort {|a,b| insensitive.call(a.send(property)) <=> insensitive.call(b.send(property)) }
+        ary.sort {|a,b| a.send(property).casecmp b.send(property) }
       end
     end
 
