@@ -128,11 +128,11 @@ module Liquid
       ary = InputIterator.new(input)
 
       if property.nil?
-        ary.sort {|a,b| a.casecmp b }
+        ary.sort {|a,b| a.casecmp(b) }
       elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
-        ary.sort {|a,b| a[property].casecmp b[property] }
+        ary.sort {|a,b| a[property].casecmp(b[property]) }
       elsif ary.first.respond_to?(property)
-        ary.sort {|a,b| a.send(property).casecmp b.send(property) }
+        ary.sort {|a,b| a.send(property).casecmp(b.send(property)) }
       end
     end
 
