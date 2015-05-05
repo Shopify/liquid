@@ -13,7 +13,6 @@ sudo: false
 matrix:
   allow_failures:
     - rvm: jruby-head
-    - rvm: ruby-head
 
 script: "rake test"
 
