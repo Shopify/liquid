@@ -1,3 +1,9 @@
+at_exit do
+  p 'Objects distribution:'
+  require 'pp'
+  pp ObjectSpace.count_objects
+end
+
 require 'allocation_tracer' rescue fail("install allocation_tracer extension/gem")
 require File.dirname(__FILE__) + '/theme_runner'
 
