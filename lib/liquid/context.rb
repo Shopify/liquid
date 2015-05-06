@@ -13,14 +13,13 @@ module Liquid
   #
   #   context['bob']  #=> nil  class Context
   class Context
-    attr_reader :scopes, :errors, :registers, :environments, :resource_limits
+    attr_reader :scopes, :registers, :environments, :resource_limits
     attr_accessor :exception_handler
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
       @environments     = [environments].flatten
       @scopes           = [(outer_scope || {})]
       @registers        = registers
-      @errors           = []
       @resource_limits  = resource_limits || ResourceLimits.new(Template.default_resource_limits)
       squash_instance_assigns_with_environments
 
@@ -30,8 +29,12 @@ module Liquid
         self.exception_handler = ->(e) { true }
       end
 
-      @interrupts = []
+      @interrupts = nil
       @filters = []
+    end
+
+    def errors
+      @errors ||= []
     end
 
     def strainer
@@ -50,17 +53,17 @@ module Liquid
 
     # are there any not handled interrupts?
     def has_interrupt?
-      !@interrupts.empty?
+      @interrupts && !@interrupts.empty?
     end
 
     # push an interrupt to the stack. this interrupt is considered not handled.
     def push_interrupt(e)
-      @interrupts.push(e)
+      (@interrupts ||= []).push(e)
     end
 
     # pop an interrupt from the stack
     def pop_interrupt
-      @interrupts.pop
+      @interrupts.pop if @interrupts
     end
 
 
