@@ -68,7 +68,8 @@ module Liquid
     end
 
     def render(context)
-      output = []
+      @output ||= []
+      @output.clear
       context.resource_limits.render_score += @nodelist.length
 
       @nodelist.each do |token|
@@ -87,16 +88,16 @@ module Liquid
           token_output = render_token(token, context)
 
           unless token.is_a?(Block) && token.blank?
-            output << token_output
+            @output << token_output
           end
         rescue MemoryError => e
           raise e
         rescue ::StandardError => e
-          output << context.handle_error(e, token)
+          @output << context.handle_error(e, token)
         end
       end
 
-      output.join
+      @output.join
     end
 
     private
