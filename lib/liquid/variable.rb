@@ -33,7 +33,8 @@ module Liquid
     end
 
     def lax_parse(markup)
-      @filters = []
+      @filters ||= []
+      @filters.clear
       if markup =~ /(#{QuotedFragment})(.*)/om
         name_markup = $1
         filter_markup = $2
@@ -52,7 +53,8 @@ module Liquid
     end
 
     def strict_parse(markup)
-      @filters = []
+      @filters ||= []
+      @filters.clear
       p = Parser.new(markup)
 
       @name = Expression.parse(p.expression)
