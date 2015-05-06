@@ -71,6 +71,20 @@ namespace :profile do
 
 end
 
+namespace :memory do
+
+  desc "Run the liquid memory tracer"
+  task :run do
+    ruby "./performance/memory.rb"
+  end
+
+  desc "Run the liquid memory tracer with strict parsing"
+  task :strict do
+    ruby "./performance/memory.rb strict"
+  end
+
+end
+
 desc "Run example"
 task :example do
   ruby "-w -d -Ilib example/server/server.rb"
