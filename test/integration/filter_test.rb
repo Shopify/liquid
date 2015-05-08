@@ -85,7 +85,6 @@ class FiltersTest < Minitest::Test
 
   def test_sort_natural
     @context['words'] = ['case', 'Assert', 'Insensitive']
-    # This specific syntax forces hashes to have string keys. Colons won't work.
     @context['hashes'] = [{ 'a' => 'A'}, { 'a' => 'b'}, { 'a' => 'C' }]
     @context['objects'] = [TestObject.new('A'), TestObject.new('b'), TestObject.new('C')]
 
@@ -161,8 +160,6 @@ class FiltersInTemplate < Minitest::Test
   end
 end # FiltersTest
 
-# Simple object that gmay be passed into a filter.
-# Note to test subjects: do not smuggle test objects out of the testing area.
 class TestObject
   attr_accessor :a
   def initialize(a)
