@@ -14,6 +14,7 @@ module Liquid
 
       name = lookups.shift
       if name =~ SQUARE_BRACKETED
+        @name_expression = true
         name = Expression.parse($1)
       end
       @name = name
@@ -69,6 +70,20 @@ module Liquid
 
     def ==(other)
       self.class == other.class && self.state == other.state
+    end
+
+    def format
+      out = @name_expression ? Expression.format(@name) : @name.dup
+
+      @lookups.each do |lookup|
+        if lookup.is_a?(String) && lookup =~ /^#{VariableSegment}+$/
+          out << ".#{lookup}"
+        else
+          out << "[#{Expression.format(lookup)}]"
+        end
+      end
+
+      out
     end
 
     protected

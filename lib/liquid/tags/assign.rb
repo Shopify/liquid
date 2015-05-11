@@ -35,6 +35,10 @@ module Liquid
     def blank?
       true
     end
+
+    def format
+      "{% assign #{@to} = #{@from.format} %}"
+    end
   end
 
   Template.register_tag('assign'.freeze, Assign)

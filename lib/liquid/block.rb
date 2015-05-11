@@ -57,6 +57,10 @@ module Liquid
       @block_delimiter ||= "end#{block_name}"
     end
 
+    def format
+      "{% #{block_name} %}#{@body.format}{% #{block_delimiter} %}"
+    end
+
     protected
 
     def parse_body(body, tokens)

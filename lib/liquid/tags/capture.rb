@@ -32,6 +32,10 @@ module Liquid
     def blank?
       true
     end
+
+    def format
+      "{% #{block_name} #{@to} %}#{@body.format}{% #{block_delimiter} %}"
+    end
   end
 
   Template.register_tag('capture'.freeze, Capture)

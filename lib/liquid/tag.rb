@@ -38,5 +38,13 @@ module Liquid
     def blank?
       false
     end
+
+    def format
+      tag = @tag_name.strip
+      markup = @markup.strip
+      tag << " #{markup}" unless markup.empty?
+
+      "{% #{tag} %}"
+    end
   end
 end

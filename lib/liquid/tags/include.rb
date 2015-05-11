@@ -25,6 +25,7 @@ module Liquid
         template_name = $1
         variable_name = $3
 
+        @has_with_clause = !variable_name.nil?
         @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
         @template_name_expr = Expression.parse(template_name)
         @attributes = {}
@@ -68,6 +69,21 @@ module Liquid
           partial.render(context)
         end
       end
+    end
+
+    def format
+      segments = [@tag_name, Expression.format(@template_name)]
+
+      if @has_with_clause
+        segments << "with"
+        segments << Expression.format(@variable_name)
+      end
+
+      unless @attributes.empty?
+        segments << @attributes.map { |k, v| "#{k}: #{Expression.format(v)}" }.join(", ")
+      end
+
+      "{% #{segments.join(' ')} %}"
     end
 
     private

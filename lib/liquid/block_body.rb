@@ -99,6 +99,18 @@ module Liquid
       output.join
     end
 
+    def format
+      @nodelist.map do |node|
+        if node.is_a?(Variable)
+          "{{ #{node.format} }}"
+        elsif node.is_a?(Tag)
+          node.format
+        else
+          node
+        end
+      end.join
+    end
+
     private
 
     def render_token(token, context)

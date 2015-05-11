@@ -28,6 +28,28 @@ module Liquid
       @markup
     end
 
+    def format
+      out = Expression.format(@name)
+
+      @filters.each do |filter|
+        out << " | "
+        out << filter[0]
+
+        args = filter[1].map { |arg| Expression.format(arg) }
+
+        if filter.size > 2
+          args += filter[2].map { |key, arg| "#{key}: #{Expression.format(arg)}" }
+        end
+
+        unless args.empty?
+          out << ": "
+          out << args.join(', ')
+        end
+      end
+
+      out
+    end
+
     def markup_context(markup)
       "in \"{{#{markup}}}\""
     end

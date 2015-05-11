@@ -129,6 +129,16 @@ module Liquid
       result
     end
 
+    def format
+      out = "{% for #{@variable_name} in #{Expression.format(@collection_name)} %}"
+      out << @for_block.format
+      if @else_block
+        out << "{% else %}"
+        out << @else_block.format
+      end
+      out + "{% endfor %}"
+    end
+
     protected
 
     def lax_parse(markup)

@@ -48,6 +48,25 @@ module Liquid
       end
     end
 
+    def format
+      out = ""
+      first_condition = true
+
+      @blocks.each do |block|
+        if block.else?
+          out << "{% else %}"
+        elsif first_condition
+          out << "{% #{block_name} #{block.format} %}"
+          first_condition = false
+        else
+          out << "{% elsif #{block.format} %}"
+        end
+        out << block.attachment.format
+      end
+
+      out + "{% #{block_delimiter} %}"
+    end
+
     private
 
       def push_block(tag, markup)

@@ -18,5 +18,9 @@ module Liquid
     def evaluate(context)
       context.evaluate(@start_obj).to_i..context.evaluate(@end_obj).to_i
     end
+
+    def format
+      "(#{Expression.format(@start_obj)}..#{Expression.format(@end_obj)})"
+    end
   end
 end

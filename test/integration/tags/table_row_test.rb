@@ -57,7 +57,7 @@ class TableRowTest < Minitest::Test
 
   def test_offset_and_limit
     assert_template_result("<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
-                           '{% tablerow n in numbers cols:3 offset:1 limit:6%} {{n}} {% endtablerow %}',
+                           '{% tablerow n in numbers cols:3, offset:1, limit:6%} {{n}} {% endtablerow %}',
                            'numbers' => [0,1,2,3,4,5,6,7])
   end
 end
