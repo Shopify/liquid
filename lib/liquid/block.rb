@@ -58,7 +58,7 @@ module Liquid
     end
 
     def format
-      "{% #{block_name} %}#{@body.format}{% #{block_delimiter} %}"
+      "{% #{raw} %}#{@body.format}{% #{block_delimiter} %}"
     end
 
     protected
