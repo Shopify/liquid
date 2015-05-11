@@ -41,22 +41,52 @@
 # You can also chain associations, by adding the liquid_method call in the
 # association models.
 #
+# You may also pass a block that can be used to transform the method's returned value.
+#
+#   class SomeClass
+#     liquid_methods :an_allowed_method do |object, method, value|
+#       if value.is_a?(String)
+#         value += ' that has been transformed'
+#       else
+#         value
+#       end
+#     end
+#
+#     def an_allowed_method
+#       'this comes from an allowed method'
+#     end
+#
+#   end
+#
+# usage:
+#   @something = SomeClass.new
+#
+# template:
+#   {{something.an_allowed_method}}
+#
+# output:
+#   'this comes from an allowed method that has been transformed'
 class Module
-  def liquid_methods(*allowed_methods)
+  def liquid_methods(*allowed_methods, &block)
     drop_class = eval "class #{self.to_s}::LiquidDropClass < Liquid::Drop; self; end"
-    
+
     define_method :to_liquid do
       drop_class.new(self)
     end
-    
+
     drop_class.class_eval do
       def initialize(object)
         @object = object
       end
-      
+
       allowed_methods.each do |sym|
         define_method sym do
-          @object.send sym
+          _value = @object.send(sym)
+          if block
+            block.call(@object, sym, _value)
+          else
+            _value
+          end
         end
       end
     end
