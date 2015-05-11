@@ -26,7 +26,6 @@ module Liquid
         variable_name = $3
 
         @variable_name = Expression.parse(variable_name || template_name[1..-2])
-        @context_variable_name = template_name[1..-2].split('/'.freeze).last
         @template_name = Expression.parse(template_name)
         @attributes    = {}
 
@@ -45,7 +44,13 @@ module Liquid
     def render(context)
       partial = load_cached_partial(context)
       variable = context.evaluate(@variable_name)
-
+      
+      if @template_name =~ QuotedString
+          context_variable_name = @template_name[1..-2].split('/'.freeze).last
+      else
+          context_variable_name = context[@template_name]
+      end
+      
       context.stack do
         @attributes.each do |key, value|
           context[key] = context.evaluate(value)
@@ -53,11 +58,11 @@ module Liquid
 
         if variable.is_a?(Array)
           variable.collect do |var|
-            context[@context_variable_name] = var
+            context[context_variable_name] = var
             partial.render(context)
           end
         else
-          context[@context_variable_name] = variable
+          context[context_variable_name] = variable
           partial.render(context)
         end
       end
