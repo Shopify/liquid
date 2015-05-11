@@ -219,4 +219,12 @@ class IncludeTagTest < Minitest::Test
       assert_equal 'x', Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: [:error_mode]).render!("template" => '{{ "X" || downcase }}')
     end
   end
+
+  def test_including_via_variable_value
+    assert_template_result "from TestFileSystem", "{% assign page = 'pick_a_source' %}{% include page %}"
+
+    assert_template_result "Product: Draft 151cm ", "{% assign page = 'product' %}{% include page %}", "product" => {'title' => 'Draft 151cm'}
+
+    assert_template_result "Product: Draft 151cm ", "{% assign page = 'product' %}{% include page for foo %}", "foo" => {'title' => 'Draft 151cm'}
+  end
 end # IncludeTagTest
