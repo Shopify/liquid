@@ -45,7 +45,7 @@ module Liquid
       partial = load_cached_partial(context)
 
       template_name = context.evaluate(@template_name_expr)
-      variable = context.evaluate(@variable_name_expr || Expression.parse(template_name))
+      variable = @variable_name_expr ? context.evaluate(@variable_name_expr) : context[template_name]
       context_variable_name = template_name.split('/'.freeze).last
 
       context.stack do
