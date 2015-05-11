@@ -45,8 +45,13 @@ module Liquid
       partial = load_cached_partial(context)
 
       template_name = context.evaluate(@template_name_expr)
-      variable = @variable_name_expr ? context.evaluate(@variable_name_expr) : context[template_name]
       context_variable_name = template_name.split('/'.freeze).last
+
+      variable = if @variable_name_expr
+        context.evaluate(@variable_name_expr)
+      else
+        context.find_variable(template_name)
+      end
 
       context.stack do
         @attributes.each do |key, value|
