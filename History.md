@@ -9,6 +9,7 @@
 * Liquid::Template.file_system's read_template_file method is no longer passed the context. (#441) [James Reid-Smith, sunblaze]
 
 ### Fixed
+* Fix naming of the "context variable" when dynamically including a template (#559) [Justin Li, pushrax]
 * Gracefully accept empty strings in the date filter (#555) [Loren Hale, boobooninja]
 * Fix capturing into variables with a hyphen in the name (#505) [Florian Weingarten, fw42]
 * Fix case sensitivity regression in date standard filter (#499) [Kelley Reynolds, kreynolds]
