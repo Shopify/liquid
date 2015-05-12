@@ -177,7 +177,18 @@ module Liquid
       variable = variable.to_liquid
       variable.context = self if variable.respond_to?(:context=)
 
-      return variable
+      variable
+    end
+
+    def find_own_variable(key)
+      index = @scopes.find_index { |s| s.has_key?(key) }
+      return unless index
+
+      scope = @scopes[index]
+      variable = lookup_and_evaluate(@scopes[index], key).to_liquid
+      variable.context = self if variable.respond_to?(:context=)
+
+      variable
     end
 
     def lookup_and_evaluate(obj, key)

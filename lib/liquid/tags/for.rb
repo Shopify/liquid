@@ -99,7 +99,7 @@ module Liquid
       # Store our progress through the collection for the continue flag
       context.registers[:for][@name] = from + segment.length
 
-      parent_loop = context.find_variable('forloop'.freeze)
+      parent_loop = context.find_own_variable('forloop'.freeze)
 
       context.stack do
         segment.each_with_index do |item, index|
