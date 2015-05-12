@@ -25,10 +25,9 @@ module Liquid
         template_name = $1
         variable_name = $3
 
-        @variable_name = Expression.parse(variable_name || template_name[1..-2])
-        @context_variable_name = template_name[1..-2].split('/'.freeze).last
-        @template_name = Expression.parse(template_name)
-        @attributes    = {}
+        @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
+        @template_name_expr = Expression.parse(template_name)
+        @attributes = {}
 
         markup.scan(TagAttributes) do |key, value|
           @attributes[key] = Expression.parse(value)
@@ -44,7 +43,15 @@ module Liquid
 
     def render(context)
       partial = load_cached_partial(context)
-      variable = context.evaluate(@variable_name)
+
+      template_name = context.evaluate(@template_name_expr)
+      context_variable_name = template_name.split('/'.freeze).last
+
+      variable = if @variable_name_expr
+        context.evaluate(@variable_name_expr)
+      else
+        context.find_variable(template_name)
+      end
 
       context.stack do
         @attributes.each do |key, value|
@@ -53,11 +60,11 @@ module Liquid
 
         if variable.is_a?(Array)
           variable.collect do |var|
-            context[@context_variable_name] = var
+            context[context_variable_name] = var
             partial.render(context)
           end
         else
-          context[@context_variable_name] = variable
+          context[context_variable_name] = variable
           partial.render(context)
         end
       end
@@ -66,7 +73,7 @@ module Liquid
     private
       def load_cached_partial(context)
         cached_partials = context.registers[:cached_partials] || {}
-        template_name = context.evaluate(@template_name)
+        template_name = context.evaluate(@template_name_expr)
 
         if cached = cached_partials[template_name]
           return cached
@@ -81,7 +88,7 @@ module Liquid
       def read_template_from_file_system(context)
         file_system = context.registers[:file_system] || Liquid::Template.file_system
 
-        file_system.read_template_file(context.evaluate(@template_name))
+        file_system.read_template_file(context.evaluate(@template_name_expr))
       end
 
       def pass_options

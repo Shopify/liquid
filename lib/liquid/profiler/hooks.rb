@@ -12,7 +12,7 @@ module Liquid
 
   class Include < Tag
     def render_with_profiling(context)
-      Profiler.profile_children(context.evaluate(@template_name).to_s) do
+      Profiler.profile_children(context.evaluate(@template_name_expr).to_s) do
         render_without_profiling(context)
       end
     end
