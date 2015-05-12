@@ -74,11 +74,34 @@ class FiltersTest < Minitest::Test
     @context['numbers'] = [2,1,4,3]
     @context['words'] = ['expected', 'as', 'alphabetic']
     @context['arrays'] = ['flower', 'are']
+    @context['case_sensitive'] = ['sensitive', 'Expected', 'case']
 
     assert_equal [1,2,3,4], Variable.new("numbers | sort").render(@context)
     assert_equal ['alphabetic', 'as', 'expected'], Variable.new("words | sort").render(@context)
     assert_equal [3], Variable.new("value | sort").render(@context)
     assert_equal ['are', 'flower'], Variable.new("arrays | sort").render(@context)
+    assert_equal ['Expected', 'case', 'sensitive'], Variable.new("case_sensitive | sort").render(@context)
+  end
+
+  def test_sort_natural
+    @context['words'] = ['case', 'Assert', 'Insensitive']
+    @context['hashes'] = [{ 'a' => 'A'}, { 'a' => 'b'}, { 'a' => 'C' }]
+    @context['objects'] = [TestObject.new('A'), TestObject.new('b'), TestObject.new('C')]
+
+    # Test strings
+    assert_equal ['Assert', 'case', 'Insensitive'], Variable.new("words | sort_natural").render(@context)
+
+    # Test hashes
+    sorted = Variable.new("hashes | sort_natural: 'a'").render(@context)
+    assert_equal sorted[0]['a'], 'A'
+    assert_equal sorted[1]['a'], 'b'
+    assert_equal sorted[2]['a'], 'C'
+
+    # Test objects
+    sorted = Variable.new("objects | sort_natural: 'a'").render(@context)
+    assert_equal sorted[0].a, 'A'
+    assert_equal sorted[1].a, 'b'
+    assert_equal sorted[2].a, 'C'
   end
 
   def test_strip_html
@@ -136,3 +159,10 @@ class FiltersInTemplate < Minitest::Test
     assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, [CanadianMoneyFilter])
   end
 end # FiltersTest
+
+class TestObject
+  attr_accessor :a
+  def initialize(a)
+    @a = a
+  end
+end
