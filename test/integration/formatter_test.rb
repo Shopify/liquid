@@ -19,7 +19,7 @@ class FormatterTest < Minitest::Test
   end
 
   def test_conditionals
-    src = """
+    src = <<-eof
       {% if true && !!%}
         cats
       {% elsif a  or  (b and  c) && d%}
@@ -29,9 +29,9 @@ class FormatterTest < Minitest::Test
       {%unless  something%}
         cats
       {% endunless%}
-    """
+    eof
 
-    expected = """
+    expected = <<-eof
       {% if true %}
         cats
       {% elsif a or b and c %}
@@ -41,27 +41,27 @@ class FormatterTest < Minitest::Test
       {% unless something %}
         cats
       {% endunless %}
-    """
+    eof
 
     assert_format expected, src
 
-    src = """
-      {%case  var asdf $$#$ %}
+    src = <<-eof
+      {%case  var asdf $$^$ %}
       {% when true%}
         w
       {% else%}
         e
       {%endcase  %}
-    """
+    eof
 
-    expected = """
+    expected = <<-eof
       {% case var %}
       {% when true %}
         w
       {% else %}
         e
       {% endcase %}
-    """
+    eof
 
     assert_format expected, src
   end
@@ -75,7 +75,7 @@ class FormatterTest < Minitest::Test
   end
 
   def test_looping
-    src = """
+    src = <<-eof
       {% for i in (1..10) %}
         cat
         {%ifchanged%}{{i}}{% endifchanged  %}
@@ -84,9 +84,9 @@ class FormatterTest < Minitest::Test
         dog
         {%break  %}
       {% endfor %}
-    """
+    eof
 
-    expected = """
+    expected = <<-eof
       {% for i in (1..10) %}
         cat
         {% ifchanged %}{{ i }}{% endifchanged %}
@@ -95,7 +95,7 @@ class FormatterTest < Minitest::Test
         dog
         {% break %}
       {% endfor %}
-    """
+    eof
 
     assert_format expected, src
 
