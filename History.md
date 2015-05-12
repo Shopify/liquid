@@ -2,6 +2,7 @@
 
 ## 4.0.0 / not yet released / branch "master"
 ### Changed
+* Add sort_natural filter (#554) [Martin Hanzel, arthanzel]
 * Add forloop.parentloop as a reference to the parent loop (#520) [Justin Li, pushrax]
 * Block parsing moved to BlockBody class (#458) [Dylan Thacker-Smith, dylanahsmith]
 * Add concat filter to concatenate arrays (#429) [Diogo Beato, dvbeato]
