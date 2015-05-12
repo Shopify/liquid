@@ -130,7 +130,12 @@ module Liquid
     end
 
     def format
-      out = "{% for #{@variable_name} in #{Expression.format(@collection_name)} %}"
+      args = [Expression.format(@collection_name)]
+      args << "reversed" if @reversed
+      args << "limit: #{Expression.format(@limit)}" if @limit
+      args << "offset: " << (@from == :continue ? 'continue' : Expression.format(@from)) if @from
+
+      out = "{% for #{@variable_name} in #{args.join(' ')} %}"
       out << @for_block.format
       if @else_block
         out << "{% else %}"
