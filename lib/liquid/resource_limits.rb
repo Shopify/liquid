@@ -19,5 +19,11 @@ module Liquid
     def reset
       @render_length = @render_score = @assign_score = 0
     end
+
+    def to_hash
+      instance_variables.each_with_object({}) do |key, hash|
+        hash[key.to_s[1..-1].to_sym] = instance_variable_get(key)
+      end
+    end
   end
 end

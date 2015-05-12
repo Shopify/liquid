@@ -181,6 +181,16 @@ class TemplateTest < Minitest::Test
     assert context.resource_limits.render_length > 0
   end
 
+  def test_resource_limits_serialization
+    t = Template.parse("{% if true %}aaaa{% endif %}")
+    t.resource_limits.render_score_limit = 50
+    t.resource_limits.render_length_limit = 50
+    t.resource_limits.assign_score_limit = 50
+
+    expected = {render_score: 0, render_length: 0, assign_score: 0, render_score_limit: 50, render_length_limit: 50, assign_score_limit: 50}
+    assert_equal expected, t.resource_limits.to_hash
+  end
+
   def test_can_use_drop_as_context
     t = Template.new
     t.registers['lulz'] = 'haha'
