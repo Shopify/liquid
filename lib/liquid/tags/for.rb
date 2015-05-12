@@ -69,7 +69,8 @@ module Liquid
     end
 
     def render(context)
-      context.registers[:for] ||= Hash.new(0)
+      for_offsets = context.registers[:for] ||= Hash.new(0)
+      for_stack = context.registers[:for_stack] ||= []
 
       collection = context.evaluate(@collection_name)
       collection = collection.to_a if collection.is_a?(Range)
@@ -78,7 +79,7 @@ module Liquid
       return render_else(context) unless iterable?(collection)
 
       from = if @from == :continue
-        context.registers[:for][@name].to_i
+        for_offsets[@name].to_i
       else
         context.evaluate(@from).to_i
       end
@@ -97,14 +98,15 @@ module Liquid
       length = segment.length
 
       # Store our progress through the collection for the continue flag
-      context.registers[:for][@name] = from + segment.length
+      for_offsets[@name] = from + segment.length
 
-      parent_loop = context.find_own_variable('forloop'.freeze)
+      parent_loop = for_stack.last
+      for_stack.push(nil)
 
       context.stack do
         segment.each_with_index do |item, index|
           context[@variable_name] = item
-          context['forloop'.freeze] = {
+          loop_vars = {
             'name'.freeze       => @name,
             'length'.freeze     => length,
             'index'.freeze      => index + 1,
@@ -116,6 +118,9 @@ module Liquid
             'parentloop'.freeze => parent_loop
           }
 
+          context['forloop'.freeze] = loop_vars
+          for_stack[-1] = loop_vars
+
           result << @for_block.render(context)
 
           # Handle any interrupts if they exist.
@@ -126,6 +131,8 @@ module Liquid
           end
         end
       end
+
+      for_stack.pop
       result
     end
 
