@@ -25,7 +25,6 @@ module Liquid
         template_name = $1
         variable_name = $3
 
-        @has_with_clause = !variable_name.nil?
         @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
         @template_name_expr = Expression.parse(template_name)
         @attributes = {}
@@ -72,11 +71,11 @@ module Liquid
     end
 
     def format
-      segments = [@tag_name, Expression.format(@template_name)]
+      segments = [@tag_name, Expression.format(@template_name_expr)]
 
-      if @has_with_clause
+      if @variable_name_expr
         segments << "with"
-        segments << Expression.format(@variable_name)
+        segments << Expression.format(@variable_name_expr)
       end
 
       unless @attributes.empty?
