@@ -49,12 +49,12 @@ module Liquid
     end
   end
 
-  class ArgumentError < Error; end
-  class ContextError < Error; end
-  class FileSystemError < Error; end
-  class StandardError < Error; end
-  class SyntaxError < Error; end
-  class StackLevelError < Error; end
-  class TaintedError < Error; end
-  class MemoryError < Error; end
+  ArgumentError = Class.new(Error)
+  ContextError = Class.new(Error)
+  FileSystemError = Class.new(Error)
+  StandardError = Class.new(Error)
+  SyntaxError = Class.new(Error)
+  StackLevelError = Class.new(Error)
+  TaintedError = Class.new(Error)
+  MemoryError = Class.new(Error)
 end
