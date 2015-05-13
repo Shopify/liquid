@@ -6,8 +6,8 @@
 # Shopify which is likely the biggest user of liquid in the world which something to the tune of several
 # million Template#render calls a day.
 
-require File.dirname(__FILE__) + '/shopify/liquid'
-require File.dirname(__FILE__) + '/shopify/database.rb'
+require_relative 'shopify/liquid'
+require_relative 'shopify/database'
 
 class ThemeRunner
   class FileSystem
@@ -25,7 +25,7 @@ class ThemeRunner
   # Load all templates into memory, do this now so that
   # we don't profile IO.
   def initialize
-    @tests = Dir[File.dirname(__FILE__) + '/tests/**/*.liquid'].collect do |test|
+    @tests = Dir[__dir__ + '/tests/**/*.liquid'].collect do |test|
       next if File.basename(test) == 'theme.liquid'
 
       theme_path = File.dirname(test) + '/theme.liquid'

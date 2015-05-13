@@ -1,5 +1,5 @@
 require 'benchmark/ips'
-require File.dirname(__FILE__) + '/theme_runner'
+require_relative 'theme_runner'
 
 Liquid::Template.error_mode = ARGV.first.to_sym if ARGV.first
 profiler = ThemeRunner.new
