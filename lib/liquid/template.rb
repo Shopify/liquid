@@ -1,5 +1,4 @@
 module Liquid
-
   # Templates are central to liquid.
   # Interpretating templates is a two step process. First you compile the
   # source code you got. During compile time some extensive error checking is performed.
@@ -15,7 +14,7 @@ module Liquid
   #
   class Template
     DEFAULT_OPTIONS = {
-      :locale => I18n.new
+      locale: I18n.new
     }
 
     attr_accessor :root
@@ -189,7 +188,7 @@ module Liquid
         options = args.pop
 
         if options[:registers].is_a?(Hash)
-          self.registers.merge!(options[:registers])
+          registers.merge!(options[:registers])
         end
 
         if options[:filters]
@@ -237,7 +236,7 @@ module Liquid
       tokens = calculate_line_numbers(source.split(TemplateParser))
 
       # removes the rogue empty element at the beginning of the array
-      tokens.shift if tokens[0] and tokens[0].empty?
+      tokens.shift if tokens[0] && tokens[0].empty?
 
       tokens
     end

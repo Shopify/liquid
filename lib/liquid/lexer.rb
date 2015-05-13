@@ -27,7 +27,7 @@ module Liquid
     def tokenize
       @output = []
 
-      while !@ss.eos?
+      until @ss.eos?
         @ss.skip(/\s*/)
         tok = case
         when t = @ss.scan(COMPARISON_OPERATOR) then [:comparison, t]
@@ -39,7 +39,7 @@ module Liquid
         else
           c = @ss.getch
           if s = SPECIALS[c]
-            [s,c]
+            [s, c]
           else
             raise SyntaxError, "Unexpected character #{c}"
           end

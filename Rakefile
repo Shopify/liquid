@@ -3,7 +3,7 @@ require 'rake/testtask'
 $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
 require "liquid/version"
 
-task :default => 'test'
+task default: [:rubocop, :test]
 
 desc 'run test suite with default parser'
 Rake::TestTask.new(:base_test) do |t|
@@ -18,6 +18,11 @@ task :warn_test do
   Rake::Task['base_test'].invoke
 end
 
+task :rubocop do
+  require 'rubocop/rake_task'
+  RuboCop::RakeTask.new
+end
+
 desc 'runs test suite with both strict and lax parsers'
 task :test do
   ENV['LIQUID_PARSER_MODE'] = 'lax'
@@ -27,16 +32,16 @@ task :test do
   Rake::Task['base_test'].invoke
 end
 
-task :gem => :build
+task gem: :build
 task :build do
   system "gem build liquid.gemspec"
 end
 
-task :install => :build do
+task install: :build do
   system "gem install liquid-#{Liquid::VERSION}.gem"
 end
 
-task :release => :build do
+task release: :build do
   system "git tag -a v#{Liquid::VERSION} -m 'Tagging #{Liquid::VERSION}'"
   system "git push --tags"
   system "gem push liquid-#{Liquid::VERSION}.gem"
@@ -44,7 +49,6 @@ task :release => :build do
 end
 
 namespace :benchmark do
-
   desc "Run the liquid benchmark with lax parsing"
   task :run do
     ruby "./performance/benchmark.rb lax"
@@ -56,9 +60,7 @@ namespace :benchmark do
   end
 end
 
-
 namespace :profile do
-
   desc "Run the liquid profile/performance coverage"
   task :run do
     ruby "./performance/profile.rb"
@@ -68,7 +70,6 @@ namespace :profile do
   task :strict do
     ruby "./performance/profile.rb strict"
   end
-
 end
 
 desc "Run example"

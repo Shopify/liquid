@@ -2,7 +2,6 @@ require 'cgi'
 require 'bigdecimal'
 
 module Liquid
-
   module StandardFilters
     HTML_ESCAPE = {
       '&'.freeze => '&amp;'.freeze,
@@ -46,7 +45,7 @@ module Liquid
       CGI.escape(input) rescue input
     end
 
-    def slice(input, offset, length=nil)
+    def slice(input, offset, length = nil)
       offset = Integer(offset)
       length = length ? Integer(length) : 1
 
@@ -59,14 +58,14 @@ module Liquid
 
     # Truncate a string down to x characters
     def truncate(input, length = 50, truncate_string = "...".freeze)
-      if input.nil? then return end
+      return if input.nil?
       l = length.to_i - truncate_string.length
       l = 0 if l < 0
       input.length > length.to_i ? input[0...l] + truncate_string : input
     end
 
     def truncatewords(input, words = 15, truncate_string = "...".freeze)
-      if input.nil? then return end
+      return if input.nil?
       wordlist = input.to_s.split
       l = words.to_i - 1
       l = 0 if l < 0
@@ -116,9 +115,9 @@ module Liquid
       if property.nil?
         ary.sort
       elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
-        ary.sort {|a,b| a[property] <=> b[property] }
+        ary.sort { |a, b| a[property] <=> b[property] }
       elsif ary.first.respond_to?(property)
-        ary.sort {|a,b| a.send(property) <=> b.send(property) }
+        ary.sort { |a, b| a.send(property) <=> b.send(property) }
       end
     end
 
@@ -128,11 +127,11 @@ module Liquid
       ary = InputIterator.new(input)
 
       if property.nil?
-        ary.sort {|a,b| a.casecmp(b) }
+        ary.sort { |a, b| a.casecmp(b) }
       elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
-        ary.sort {|a,b| a[property].casecmp(b[property]) }
+        ary.sort { |a, b| a[property].casecmp(b[property]) }
       elsif ary.first.respond_to?(property)
-        ary.sort {|a,b| a.send(property).casecmp(b.send(property)) }
+        ary.sort { |a, b| a.send(property).casecmp(b.send(property)) }
       end
     end
 
@@ -336,8 +335,6 @@ module Liquid
         Time.at(obj.to_i)
       when String
         Time.parse(obj)
-      else
-        nil
       end
     rescue ArgumentError
       nil

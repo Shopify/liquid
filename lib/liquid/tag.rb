@@ -20,7 +20,7 @@ module Liquid
       @options    = options
     end
 
-    def parse(tokens)
+    def parse(_tokens)
     end
 
     def raw
@@ -31,7 +31,7 @@ module Liquid
       self.class.name.downcase
     end
 
-    def render(context)
+    def render(_context)
       ''.freeze
     end
 

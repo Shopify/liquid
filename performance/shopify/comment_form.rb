@@ -28,6 +28,6 @@ class CommentForm < Liquid::Block
   end
 
   def wrap_in_form(article, input)
-    %Q{<form id="article-#{article.id}-comment-form" class="comment-form" method="post" action="">\n#{input}\n</form>}
+    %(<form id="article-#{article.id}-comment-form" class="comment-form" method="post" action="">\n#{input}\n</form>)
   end
 end

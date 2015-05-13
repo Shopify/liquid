@@ -49,7 +49,7 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_size
-    assert_equal 3, @filters.size([1,2,3])
+    assert_equal 3, @filters.size([1, 2, 3])
     assert_equal 0, @filters.size([])
     assert_equal 0, @filters.size(nil)
   end
@@ -80,16 +80,16 @@ class StandardFiltersTest < Minitest::Test
 
   def test_slice_on_arrays
     input = 'foobar'.split(//)
-    assert_equal %w{o o b}, @filters.slice(input, 1, 3)
-    assert_equal %w{o o b a r}, @filters.slice(input, 1, 1000)
-    assert_equal %w{}, @filters.slice(input, 1, 0)
-    assert_equal %w{o}, @filters.slice(input, 1, 1)
-    assert_equal %w{b a r}, @filters.slice(input, 3, 3)
-    assert_equal %w{a r}, @filters.slice(input, -2, 2)
-    assert_equal %w{a r}, @filters.slice(input, -2, 1000)
-    assert_equal %w{r}, @filters.slice(input, -1)
-    assert_equal %w{}, @filters.slice(input, 100, 10)
-    assert_equal %w{}, @filters.slice(input, -100, 10)
+    assert_equal %w(o o b), @filters.slice(input, 1, 3)
+    assert_equal %w(o o b a r), @filters.slice(input, 1, 1000)
+    assert_equal %w(), @filters.slice(input, 1, 0)
+    assert_equal %w(o), @filters.slice(input, 1, 1)
+    assert_equal %w(b a r), @filters.slice(input, 3, 3)
+    assert_equal %w(a r), @filters.slice(input, -2, 2)
+    assert_equal %w(a r), @filters.slice(input, -2, 1000)
+    assert_equal %w(r), @filters.slice(input, -1)
+    assert_equal %w(), @filters.slice(input, 100, 10)
+    assert_equal %w(), @filters.slice(input, -100, 10)
   end
 
   def test_truncate
@@ -101,11 +101,11 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_split
-    assert_equal ['12','34'], @filters.split('12~34', '~')
-    assert_equal ['A? ',' ,Z'], @filters.split('A? ~ ~ ~ ,Z', '~ ~ ~')
+    assert_equal ['12', '34'], @filters.split('12~34', '~')
+    assert_equal ['A? ', ' ,Z'], @filters.split('A? ~ ~ ~ ,Z', '~ ~ ~')
     assert_equal ['A?Z'], @filters.split('A?Z', '~')
     # Regexp works although Liquid does not support.
-    assert_equal ['A','Z'], @filters.split('AxZ', /x/)
+    assert_equal ['A', 'Z'], @filters.split('AxZ', /x/)
     assert_equal [], @filters.split(nil, ' ')
   end
 
@@ -142,45 +142,45 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_join
-    assert_equal '1 2 3 4', @filters.join([1,2,3,4])
-    assert_equal '1 - 2 - 3 - 4', @filters.join([1,2,3,4], ' - ')
+    assert_equal '1 2 3 4', @filters.join([1, 2, 3, 4])
+    assert_equal '1 - 2 - 3 - 4', @filters.join([1, 2, 3, 4], ' - ')
   end
 
   def test_sort
-    assert_equal [1,2,3,4], @filters.sort([4,3,2,1])
-    assert_equal [{"a" => 1}, {"a" => 2}, {"a" => 3}, {"a" => 4}], @filters.sort([{"a" => 4}, {"a" => 3}, {"a" => 1}, {"a" => 2}], "a")
+    assert_equal [1, 2, 3, 4], @filters.sort([4, 3, 2, 1])
+    assert_equal [{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], @filters.sort([{ "a" => 4 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a")
   end
 
   def test_legacy_sort_hash
-    assert_equal [{a:1, b:2}], @filters.sort({a:1, b:2})
+    assert_equal [{ a: 1, b: 2 }], @filters.sort({ a: 1, b: 2 })
   end
 
   def test_numerical_vs_lexicographical_sort
     assert_equal [2, 10], @filters.sort([10, 2])
-    assert_equal [{"a" => 2}, {"a" => 10}], @filters.sort([{"a" => 10}, {"a" => 2}], "a")
+    assert_equal [{ "a" => 2 }, { "a" => 10 }], @filters.sort([{ "a" => 10 }, { "a" => 2 }], "a")
     assert_equal ["10", "2"], @filters.sort(["10", "2"])
-    assert_equal [{"a" => "10"}, {"a" => "2"}], @filters.sort([{"a" => "10"}, {"a" => "2"}], "a")
+    assert_equal [{ "a" => "10" }, { "a" => "2" }], @filters.sort([{ "a" => "10" }, { "a" => "2" }], "a")
   end
 
   def test_uniq
-    assert_equal [1,3,2,4], @filters.uniq([1,1,3,2,3,1,4,3,2,1])
-    assert_equal [{"a" => 1}, {"a" => 3}, {"a" => 2}], @filters.uniq([{"a" => 1}, {"a" => 3}, {"a" => 1}, {"a" => 2}], "a")
+    assert_equal [1, 3, 2, 4], @filters.uniq([1, 1, 3, 2, 3, 1, 4, 3, 2, 1])
+    assert_equal [{ "a" => 1 }, { "a" => 3 }, { "a" => 2 }], @filters.uniq([{ "a" => 1 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a")
     testdrop = TestDrop.new
     assert_equal [testdrop], @filters.uniq([testdrop, TestDrop.new], 'test')
   end
 
   def test_reverse
-    assert_equal [4,3,2,1], @filters.reverse([1,2,3,4])
+    assert_equal [4, 3, 2, 1], @filters.reverse([1, 2, 3, 4])
   end
 
   def test_legacy_reverse_hash
-    assert_equal [{a:1, b:2}], @filters.reverse(a:1, b:2)
+    assert_equal [{ a: 1, b: 2 }], @filters.reverse(a: 1, b: 2)
   end
 
   def test_map
-    assert_equal [1,2,3,4], @filters.map([{"a" => 1}, {"a" => 2}, {"a" => 3}, {"a" => 4}], 'a')
+    assert_equal [1, 2, 3, 4], @filters.map([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], 'a')
     assert_template_result 'abc', "{{ ary | map:'foo' | map:'bar' }}",
-      'ary' => [{'foo' => {'bar' => 'a'}}, {'foo' => {'bar' => 'b'}}, {'foo' => {'bar' => 'c'}}]
+      'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }]
   end
 
   def test_map_doesnt_call_arbitrary_stuff
@@ -212,7 +212,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map_over_proc
     drop = TestDrop.new
-    p = Proc.new{ drop }
+    p = proc{ drop }
     templ = '{{ procs | map: "test" }}'
     assert_template_result "testfoo", templ, "procs" => [p]
   end
@@ -260,8 +260,8 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_first_last
-    assert_equal 1, @filters.first([1,2,3])
-    assert_equal 3, @filters.last([1,2,3])
+    assert_equal 1, @filters.first([1, 2, 3])
+    assert_equal 3, @filters.last([1, 2, 3])
     assert_equal nil, @filters.first([])
     assert_equal nil, @filters.last([])
   end
@@ -356,9 +356,9 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_append
-    assigns = {'a' => 'bc', 'b' => 'd' }
-    assert_template_result('bcd',"{{ a | append: 'd'}}",assigns)
-    assert_template_result('bcd',"{{ a | append: b}}",assigns)
+    assigns = { 'a' => 'bc', 'b' => 'd' }
+    assert_template_result('bcd', "{{ a | append: 'd'}}", assigns)
+    assert_template_result('bcd', "{{ a | append: b}}", assigns)
   end
 
   def test_concat
@@ -373,9 +373,9 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_prepend
-    assigns = {'a' => 'bc', 'b' => 'a' }
-    assert_template_result('abc',"{{ a | prepend: 'a'}}",assigns)
-    assert_template_result('abc',"{{ a | prepend: b}}",assigns)
+    assigns = { 'a' => 'bc', 'b' => 'a' }
+    assert_template_result('abc', "{{ a | prepend: 'a'}}", assigns)
+    assert_template_result('abc', "{{ a | prepend: b}}", assigns)
   end
 
   def test_default
@@ -388,6 +388,6 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_cannot_access_private_methods
-    assert_template_result('a',"{{ 'a' | to_number }}")
+    assert_template_result('a', "{{ 'a' | to_number }}")
   end
 end # StandardFiltersTest

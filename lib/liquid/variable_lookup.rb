@@ -41,8 +41,8 @@ module Liquid
         # If object is a hash- or array-like object we look for the
         # presence of the key and if its available we return it
         if object.respond_to?(:[]) &&
-          ((object.respond_to?(:has_key?) && object.has_key?(key)) ||
-           (object.respond_to?(:fetch) && key.is_a?(Integer)))
+            ((object.respond_to?(:has_key?) && object.has_key?(key)) ||
+             (object.respond_to?(:fetch) && key.is_a?(Integer)))
 
           # if its a proc we will replace the entry with the proc
           res = context.lookup_and_evaluate(object, key)
@@ -68,7 +68,7 @@ module Liquid
     end
 
     def ==(other)
-      self.class == other.class && self.state == other.state
+      self.class == other.class && state == other.state
     end
 
     protected

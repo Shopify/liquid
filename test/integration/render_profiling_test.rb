@@ -145,7 +145,7 @@ class RenderProfilingTest < Minitest::Test
 
   def test_profiling_marks_children_of_for_blocks
     t = Template.parse("{% for item in collection %} {{ item }} {% endfor %}", :profile => true)
-    t.render!({"collection" => ["one", "two"]})
+    t.render!({ "collection" => ["one", "two"] })
 
     assert_equal 1, t.profiler.length
     # Will profile each invocation of the for block

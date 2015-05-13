@@ -37,7 +37,6 @@ class StatementsTest < Minitest::Test
     text = ' {% if null <= 0 %} true {% else %} false {% endif %} '
     assert_template_result '  false  ', text
 
-
     text = ' {% if 0 <= null %} true {% else %} false {% endif %} '
     assert_template_result '  false  ', text
   end
@@ -72,18 +71,17 @@ class StatementsTest < Minitest::Test
     assert_template_result '  true  ', text, 'var' => 'hello there!'
   end
 
-
   def test_var_and_long_string_are_equal_backwards
     text = " {% if 'hello there!' == var %} true {% else %} false {% endif %} "
     assert_template_result '  true  ', text, 'var' => 'hello there!'
   end
 
-  #def test_is_nil
+  # def test_is_nil
   #  text = %| {% if var != nil %} true {% else %} false {% end %} |
   #  @template.assigns = { 'var' => 'hello there!'}
   #  expected = %|  true  |
   #  assert_equal expected, @template.parse(text)
-  #end
+  # end
 
   def test_is_collection_empty
     text = ' {% if array == empty %} true {% else %} false {% endif %} '
@@ -92,7 +90,7 @@ class StatementsTest < Minitest::Test
 
   def test_is_not_collection_empty
     text = ' {% if array == empty %} true {% else %} false {% endif %} '
-    assert_template_result '  false  ', text, 'array' => [1,2,3]
+    assert_template_result '  false  ', text, 'array' => [1, 2, 3]
   end
 
   def test_nil

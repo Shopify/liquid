@@ -42,23 +42,22 @@ class Paginate < Liquid::Block
       page_count = (collection_size.to_f / @page_size.to_f).to_f.ceil + 1
 
       pagination['items']      = collection_size
-      pagination['pages']      = page_count -1
-      pagination['previous']   = link('&laquo; Previous', current_page-1 )  unless 1 >= current_page
-      pagination['next']       = link('Next &raquo;', current_page+1 )      unless page_count <= current_page+1
+      pagination['pages']      = page_count - 1
+      pagination['previous']   = link('&laquo; Previous', current_page - 1)  unless 1 >= current_page
+      pagination['next']       = link('Next &raquo;', current_page + 1)      unless page_count <= current_page + 1
       pagination['parts']      = []
 
       hellip_break = false
 
       if page_count > 2
-        1.upto(page_count-1) do |page|
-
+        1.upto(page_count - 1) do |page|
           if current_page == page
             pagination['parts'] << no_link(page)
           elsif page == 1
             pagination['parts'] << link(page, page)
-          elsif page == page_count -1
+          elsif page == page_count - 1
             pagination['parts'] << link(page, page)
-          elsif page <= current_page - @attributes['window_size'] or page >= current_page + @attributes['window_size']
+          elsif page <= current_page - @attributes['window_size'] || page >= current_page + @attributes['window_size']
             next if hellip_break
             pagination['parts'] << no_link('&hellip;')
             hellip_break = true
@@ -78,11 +77,11 @@ class Paginate < Liquid::Block
   private
 
   def no_link(title)
-    { 'title' => title, 'is_link' => false}
+    { 'title' => title, 'is_link' => false }
   end
 
   def link(title, page)
-    { 'title' => title, 'url' => current_url + "?page=#{page}", 'is_link' => true}
+    { 'title' => title, 'url' => current_url + "?page=#{page}", 'is_link' => true }
   end
 
   def current_url

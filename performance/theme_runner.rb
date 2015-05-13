@@ -11,7 +11,6 @@ require_relative 'shopify/database'
 
 class ThemeRunner
   class FileSystem
-
     def initialize(path)
       @path = path
     end
@@ -38,7 +37,6 @@ class ThemeRunner
     # Dup assigns because will make some changes to them
 
     @tests.each do |liquid, layout, template_name|
-
       tmpl = Liquid::Template.new
       tmpl.parse(liquid)
       tmpl = Liquid::Template.new
@@ -46,19 +44,16 @@ class ThemeRunner
     end
   end
 
-   def run
+  def run
     # Dup assigns because will make some changes to them
     assigns = Database.tables.dup
 
     @tests.each do |liquid, layout, template_name|
-
       # Compute page_tempalte outside of profiler run, uninteresting to profiler
       page_template = File.basename(template_name, File.extname(template_name))
       compile_and_render(liquid, layout, assigns, page_template, template_name)
-
     end
   end
-
 
   def compile_and_render(template, layout, assigns, page_template, template_file)
     tmpl = Liquid::Template.new

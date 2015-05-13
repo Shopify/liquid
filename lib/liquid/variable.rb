@@ -1,5 +1,4 @@
 module Liquid
-
   # Holds variables. Variables are only loaded "just in time"
   # and are not evaluated as part of the render stage
   #
@@ -34,18 +33,18 @@ module Liquid
 
     def lax_parse(markup)
       @filters = []
-      if markup =~ /(#{QuotedFragment})(.*)/om
-        name_markup = $1
-        filter_markup = $2
-        @name = Expression.parse(name_markup)
-        if filter_markup =~ /#{FilterSeparator}\s*(.*)/om
-          filters = $1.scan(FilterParser)
-          filters.each do |f|
-            if f =~ /\w+/
-              filtername = Regexp.last_match(0)
-              filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
-              @filters << parse_filter_expressions(filtername, filterargs)
-            end
+      return unless markup =~ /(#{QuotedFragment})(.*)/om
+
+      name_markup = $1
+      filter_markup = $2
+      @name = Expression.parse(name_markup)
+      if filter_markup =~ /#{FilterSeparator}\s*(.*)/om
+        filters = $1.scan(FilterParser)
+        filters.each do |f|
+          if f =~ /\w+/
+            filtername = Regexp.last_match(0)
+            filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
+            @filters << parse_filter_expressions(filtername, filterargs)
           end
         end
       end
@@ -68,9 +67,7 @@ module Liquid
       # first argument
       filterargs = [p.argument]
       # followed by comma separated others
-      while p.consume?(:comma)
-        filterargs << p.argument
-      end
+      filterargs << p.argument while p.consume?(:comma)
       filterargs
     end
 

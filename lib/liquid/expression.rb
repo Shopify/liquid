@@ -28,6 +28,5 @@ module Liquid
         end
       end
     end
-
   end
 end

@@ -39,7 +39,7 @@ module Database
   end
 end
 
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
   p Database.tables['collections']['frontpage'].keys
-  #p Database.tables['blog']['articles']
+  # p Database.tables['blog']['articles']
 end

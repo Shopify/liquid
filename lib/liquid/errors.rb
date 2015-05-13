@@ -3,7 +3,7 @@ module Liquid
     attr_accessor :line_number
     attr_accessor :markup_context
 
-    def to_s(with_prefix=true)
+    def to_s(with_prefix = true)
       str = ""
       str << message_prefix if with_prefix
       str << super()
@@ -18,7 +18,7 @@ module Liquid
 
     def set_line_number_from_token(token)
       return unless token.respond_to?(:line_number)
-      return if self.line_number
+      return if line_number
       self.line_number = token.line_number
     end
 
@@ -26,7 +26,7 @@ module Liquid
       if e.is_a?(Liquid::Error)
         e.to_s
       else
-        "Liquid error: #{e.to_s}"
+        "Liquid error: #{e}"
       end
     end
 

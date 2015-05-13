@@ -1,5 +1,4 @@
 module ShopFilter
-
   def asset_url(input)
     "/files/1/[shop_id]/[shop_id]/assets/#{input}"
   end
@@ -16,16 +15,16 @@ module ShopFilter
     %(<script src="#{url}" type="text/javascript"></script>)
   end
 
-  def stylesheet_tag(url, media="all")
+  def stylesheet_tag(url, media = "all")
     %(<link href="#{url}" rel="stylesheet" type="text/css"  media="#{media}"  />)
   end
 
-  def link_to(link, url, title="")
-    %|<a href="#{url}" title="#{title}">#{link}</a>|
+  def link_to(link, url, title = "")
+    %(<a href="#{url}" title="#{title}">#{link}</a>)
   end
 
-  def img_tag(url, alt="")
-    %|<img src="#{url}" alt="#{alt}" />|
+  def img_tag(url, alt = "")
+    %(<img src="#{url}" alt="#{alt}" />)
   end
 
   def link_to_vendor(vendor)
@@ -53,7 +52,6 @@ module ShopFilter
   end
 
   def product_img_url(url, style = 'small')
-
     unless url =~ /\Aproducts\/([\w\-\_]+)\.(\w{2,4})/
       raise ArgumentError, 'filter "size" can only be called on product images'
     end
@@ -69,7 +67,6 @@ module ShopFilter
   end
 
   def default_pagination(paginate)
-
     html = []
     html << %(<span class="prev">#{link_to(paginate['previous']['title'], paginate['previous']['url'])}</span>) if paginate['previous']
 
@@ -106,5 +103,4 @@ module ShopFilter
     result.gsub!(/\A-+/, '') if result[0] == '-'
     result
   end
-
 end

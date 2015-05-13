@@ -1,7 +1,6 @@
 require 'set'
 
 module Liquid
-
   # Strainer is the parent class for the filters system.
   # New filters are mixed into the strainer class which is then instantiated for each liquid template render run.
   #
@@ -22,14 +21,14 @@ module Liquid
       @context = context
     end
 
-    def self.filter_methods
-      @filter_methods
+    class << self
+      attr_reader :filter_methods
     end
 
     def self.add_filter(filter)
       raise ArgumentError, "Expected module but got: #{f.class}" unless filter.is_a?(Module)
       unless self.class.include?(filter)
-        self.send(:include, filter)
+        send(:include, filter)
         @filter_methods.merge(filter.public_instance_methods.map(&:to_s))
       end
     end

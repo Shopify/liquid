@@ -17,6 +17,7 @@ module Liquid
     end
 
     private
+
     def strict_parse_with_error_context(markup)
       strict_parse(markup)
     rescue SyntaxError => e

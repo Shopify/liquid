@@ -15,9 +15,9 @@ module Liquid
     def unknown_tag(tag, options)
       case tag
       when 'else'.freeze, 'end'.freeze
-        raise SyntaxError.new(options[:locale].t("errors.syntax.unexpected_outer_tag".freeze, :tag => tag))
+        raise SyntaxError.new(options[:locale].t("errors.syntax.unexpected_outer_tag".freeze, tag: tag))
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.unknown_tag".freeze, :tag => tag))
+        raise SyntaxError.new(options[:locale].t("errors.syntax.unknown_tag".freeze, tag: tag))
       end
     end
   end

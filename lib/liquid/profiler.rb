@@ -1,7 +1,6 @@
 require 'liquid/profiler/hooks'
 
 module Liquid
-
   # Profiler enables support for profiling template rendering to help track down performance issues.
   #
   # To enable profiling, first require 'liquid/profiler'.
@@ -55,9 +54,7 @@ module Liquid
       end
 
       def self.start(token, partial)
-        new(token, partial).tap do |t|
-          t.start
-        end
+        new(token, partial).tap(&:start)
       end
 
       def start
@@ -139,7 +136,7 @@ module Liquid
       @timing_stack.push(Timing.start(token, current_partial))
     end
 
-    def end_token(token)
+    def end_token(_token)
       timing = @timing_stack.pop
       timing.finish
 
@@ -157,6 +154,5 @@ module Liquid
     def pop_partial
       @partial_stack.pop
     end
-
   end
 end

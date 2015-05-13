@@ -59,7 +59,7 @@ module Liquid
       body = BlockBody.new
 
       while markup
-        if not markup =~ WhenSyntax
+        unless markup =~ WhenSyntax
           raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_when".freeze))
         end
 
@@ -72,7 +72,7 @@ module Liquid
     end
 
     def record_else_condition(markup)
-      if not markup.strip.empty?
+      unless markup.strip.empty?
         raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_else".freeze))
       end
 

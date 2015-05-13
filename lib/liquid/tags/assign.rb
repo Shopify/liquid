@@ -1,5 +1,4 @@
 module Liquid
-
   # Assign sets a variable in your template.
   #
   #   {% assign foo = 'monkey' %}
@@ -15,7 +14,7 @@ module Liquid
       super
       if markup =~ Syntax
         @to = $1
-        @from = Variable.new($2,options)
+        @from = Variable.new($2, options)
         @from.line_number = line_number
       else
         raise SyntaxError.new options[:locale].t("errors.syntax.assign".freeze)
