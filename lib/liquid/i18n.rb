@@ -2,7 +2,7 @@ require 'yaml'
 
 module Liquid
   class I18n
-    DEFAULT_LOCALE = File.join(File.expand_path(File.dirname(__FILE__)), "locales", "en.yml")
+    DEFAULT_LOCALE = File.join(File.expand_path(__dir__), "locales", "en.yml")
 
     TranslationError = Class.new(StandardError)
 

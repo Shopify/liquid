@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/if'
+require_relative 'if'
 
 module Liquid
   # Unless is a conditional just like 'if' but works on the inverse logic.

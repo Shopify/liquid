@@ -4,7 +4,7 @@ ENV["MT_NO_EXPECTATIONS"] = "1"
 require 'minitest/autorun'
 require 'spy/integration'
 
-$:.unshift(File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib'))
+$:.unshift(File.join(File.expand_path(__dir__), '..', 'lib'))
 require 'liquid.rb'
 require 'liquid/profiler'
 
@@ -25,7 +25,7 @@ end
 module Minitest
   class Test
     def fixture(name)
-      File.join(File.expand_path(File.dirname(__FILE__)), "fixtures", name)
+      File.join(File.expand_path(__dir__), "fixtures", name)
     end
   end
 

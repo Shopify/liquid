@@ -5,7 +5,7 @@ module Database
   # to liquid as assigns. All this is based on Shopify
   def self.tables
     @tables ||= begin
-      db = YAML.load_file(File.dirname(__FILE__) + '/vision.database.yml')
+      db = YAML.load_file("#{__dir__}/vision.database.yml")
 
       # From vision source
       db['products'].each do |product|

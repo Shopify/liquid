@@ -1,13 +1,13 @@
-$:.unshift File.dirname(__FILE__) + '/../../lib'
-require File.dirname(__FILE__) + '/../../lib/liquid'
+$:.unshift __dir__ + '/../../lib'
+require_relative '../../lib/liquid'
 
-require File.dirname(__FILE__) + '/comment_form'
-require File.dirname(__FILE__) + '/paginate'
-require File.dirname(__FILE__) + '/json_filter'
-require File.dirname(__FILE__) + '/money_filter'
-require File.dirname(__FILE__) + '/shop_filter'
-require File.dirname(__FILE__) + '/tag_filter'
-require File.dirname(__FILE__) + '/weight_filter'
+require_relative 'comment_form'
+require_relative 'paginate'
+require_relative 'json_filter'
+require_relative 'money_filter'
+require_relative 'shop_filter'
+require_relative 'tag_filter'
+require_relative 'weight_filter'
 
 Liquid::Template.register_tag 'paginate', Paginate
 Liquid::Template.register_tag 'form', CommentForm
