@@ -4,8 +4,7 @@ module Liquid
   class I18n
     DEFAULT_LOCALE = File.join(File.expand_path(File.dirname(__FILE__)), "locales", "en.yml")
 
-    class TranslationError < StandardError
-    end
+    TranslationError = Class.new(StandardError)
 
     attr_reader :path
 
