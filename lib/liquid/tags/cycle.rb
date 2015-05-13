@@ -21,6 +21,7 @@ module Liquid
       when NamedSyntax
         @variables = variables_from_string($2)
         @name = Expression.parse($1)
+        @named = true
       when SimpleSyntax
         @variables = variables_from_string(markup)
         @name = @variables.to_s
@@ -40,6 +41,15 @@ module Liquid
         iteration  = 0  if iteration >= @variables.size
         context.registers[:cycle][key] = iteration
         result
+      end
+    end
+
+    def format
+      formatted_vars = @variables.map { |v| Expression.format(v) }.join(', ')
+      if @named
+        "{% cycle #{Expression.format(@name)}: #{formatted_vars} %}"
+      else
+        "{% cycle #{formatted_vars} %}"
       end
     end
 

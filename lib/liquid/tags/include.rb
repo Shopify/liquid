@@ -70,6 +70,21 @@ module Liquid
       end
     end
 
+    def format
+      segments = [@tag_name, Expression.format(@template_name_expr)]
+
+      if @variable_name_expr
+        segments << "with"
+        segments << Expression.format(@variable_name_expr)
+      end
+
+      unless @attributes.empty?
+        segments << @attributes.map { |k, v| "#{k}: #{Expression.format(v)}" }.join(", ")
+      end
+
+      "{% #{segments.join(' ')} %}"
+    end
+
     private
       def load_cached_partial(context)
         cached_partials = context.registers[:cached_partials] || {}

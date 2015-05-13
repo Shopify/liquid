@@ -24,6 +24,10 @@ module Liquid
     def blank?
       @body.empty?
     end
+
+    def format
+      "{% #{block_name} %}#{@body}{% #{block_delimiter} %}"
+    end
   end
 
   Template.register_tag('raw'.freeze, Raw)

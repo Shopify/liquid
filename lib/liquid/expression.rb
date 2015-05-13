@@ -8,6 +8,8 @@ module Liquid
       'empty'.freeze => :empty?
     }
 
+    INVERTED_LITERALS = LITERALS.invert
+
     def self.parse(markup)
       if LITERALS.key?(markup)
         LITERALS[markup]
@@ -29,5 +31,18 @@ module Liquid
       end
     end
 
+    def self.format(value)
+      if INVERTED_LITERALS.key?(value)
+        INVERTED_LITERALS[value].dup
+      elsif value.is_a?(VariableLookup) || value.is_a?(RangeLookup)
+        value.format
+      elsif value.is_a?(String)
+        "\"#{value}\""
+      elsif value.is_a?(Range)
+        "(#{value.to_s})"
+      else
+        value.to_s
+      end
+    end
   end
 end

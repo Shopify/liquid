@@ -24,7 +24,10 @@ module Liquid
     end
 
     def raw
-      "#{@tag_name} #{@markup}"
+      tag = @tag_name.strip
+      markup = @markup.strip
+      tag << " #{markup}" unless markup.empty?
+      tag
     end
 
     def name
@@ -37,6 +40,10 @@ module Liquid
 
     def blank?
       false
+    end
+
+    def format
+      "{% #{raw} %}"
     end
   end
 end

@@ -15,7 +15,7 @@ module Liquid
     end
 
     def parse(tokens)
-      body = BlockBody.new
+      @initial_body = body = BlockBody.new
       while more = parse_body(body, tokens)
         body = @blocks.last.attachment
       end
@@ -51,6 +51,21 @@ module Liquid
         end
         output
       end
+    end
+
+    def format
+      out = "{% case #{Expression.format(@left)} %}#{@initial_body.format}"
+
+      @blocks.each do |block|
+        if block.else?
+          out << "{% else %}"
+        else
+          out << "{% when #{Expression.format(block.right)} %}"
+        end
+        out << block.attachment.format
+      end
+
+      out + "{% endcase %}"
     end
 
     private

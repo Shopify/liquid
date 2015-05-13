@@ -129,6 +129,21 @@ module Liquid
       result
     end
 
+    def format
+      args = [Expression.format(@collection_name)]
+      args << "reversed" if @reversed
+      args << "limit: #{Expression.format(@limit)}" if @limit
+      args << "offset: " << (@from == :continue ? 'continue' : Expression.format(@from)) if @from
+
+      out = "{% for #{@variable_name} in #{args.join(' ')} %}"
+      out << @for_block.format
+      if @else_block
+        out << "{% else %}"
+        out << @else_block.format
+      end
+      out + "{% endfor %}"
+    end
+
     protected
 
     def lax_parse(markup)

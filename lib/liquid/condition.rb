@@ -33,6 +33,12 @@ module Liquid
       @right = right
       @child_relation  = nil
       @child_condition = nil
+
+      if right && right.is_a?(VariableLookup) && right.name.nil?
+        # Strip blank variable lookups resulting from cases like:
+        # {% if foo && bar %}
+        @right = nil
+      end
     end
 
     def evaluate(context = Context.new)
@@ -68,6 +74,20 @@ module Liquid
 
     def inspect
       "#<Condition #{[@left, @operator, @right].compact.join(' '.freeze)}>"
+    end
+
+    def format
+      out = if operator.nil?
+        Expression.format(left)
+      else
+        "#{Expression.format(left)} #{operator} #{Expression.format(right)}"
+      end
+
+      if @child_relation
+        "#{out} #{@child_relation.to_s} #{@child_condition.format}"
+      else
+        out
+      end
     end
 
     private

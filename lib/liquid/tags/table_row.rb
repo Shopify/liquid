@@ -66,6 +66,12 @@ module Liquid
       result << "</tr>\n"
       result
     end
+
+    def format
+      tag_main = "#{block_name} #{@variable_name} in #{Expression.format(@collection_name)}"
+      args = @attributes.map { |k, v| "#{k}: #{Expression.format(v)}" }.join(", ")
+      "{% #{tag_main} #{args} %}#{@body.format}{% #{block_delimiter} %}"
+    end
   end
 
   Template.register_tag('tablerow'.freeze, TableRow)
