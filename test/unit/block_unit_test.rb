@@ -34,7 +34,7 @@ class BlockUnitTest < Minitest::Test
     template = Liquid::Template.parse("  {{funk}} {{so}} {{brother}} ")
     assert_equal 7, template.root.nodelist.size
     assert_equal [String, Variable, String, Variable, String, Variable, String],
-                 block_types(template.root.nodelist)
+      block_types(template.root.nodelist)
   end
 
   def test_with_block
@@ -45,11 +45,12 @@ class BlockUnitTest < Minitest::Test
 
   def test_with_custom_tag
     Liquid::Template.register_tag("testtag", Block)
-    assert Liquid::Template.parse( "{% testtag %} {% endtesttag %}")
+    assert Liquid::Template.parse("{% testtag %} {% endtesttag %}")
   end
 
   private
-    def block_types(nodelist)
-      nodelist.collect { |node| node.class }
-    end
+
+  def block_types(nodelist)
+    nodelist.collect(&:class)
+  end
 end # VariableTest

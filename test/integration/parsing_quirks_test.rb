@@ -69,18 +69,18 @@ class ParsingQuirksTest < Minitest::Test
 
   def test_meaningless_parens_lax
     with_error_mode(:lax) do
-      assigns = {'b' => 'bar', 'c' => 'baz'}
+      assigns = { 'b' => 'bar', 'c' => 'baz' }
       markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
-      assert_template_result(' YES ',"{% if #{markup} %} YES {% endif %}", assigns)
+      assert_template_result(' YES ', "{% if #{markup} %} YES {% endif %}", assigns)
     end
   end
 
   def test_unexpected_characters_silently_eat_logic_lax
     with_error_mode(:lax) do
       markup = "true && false"
-      assert_template_result(' YES ',"{% if #{markup} %} YES {% endif %}")
+      assert_template_result(' YES ', "{% if #{markup} %} YES {% endif %}")
       markup = "false || true"
-      assert_template_result('',"{% if #{markup} %} YES {% endif %}")
+      assert_template_result('', "{% if #{markup} %} YES {% endif %}")
     end
   end
 
@@ -92,7 +92,7 @@ class ParsingQuirksTest < Minitest::Test
 
   def test_unanchored_filter_arguments
     with_error_mode(:lax) do
-      assert_template_result('hi',"{{ 'hi there' | split$$$:' ' | first }}")
+      assert_template_result('hi', "{{ 'hi there' | split$$$:' ' | first }}")
 
       assert_template_result('x', "{{ 'X' | downcase) }}")
 

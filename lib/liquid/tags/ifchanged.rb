@@ -1,9 +1,7 @@
 module Liquid
   class Ifchanged < Block
-
     def render(context)
       context.stack do
-
         output = super
 
         if output != context.registers[:ifchanged]

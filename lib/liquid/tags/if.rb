@@ -21,7 +21,7 @@ module Liquid
     end
 
     def parse(tokens)
-      while more = parse_body(@blocks.last.attachment, tokens)
+      while parse_body(@blocks.last.attachment, tokens)
       end
     end
 
@@ -50,61 +50,61 @@ module Liquid
 
     private
 
-      def push_block(tag, markup)
-        block = if tag == 'else'.freeze
-          ElseCondition.new
-        else
-          parse_with_selected_parser(markup)
-        end
-
-        @blocks.push(block)
-        block.attach(BlockBody.new)
+    def push_block(tag, markup)
+      block = if tag == 'else'.freeze
+        ElseCondition.new
+      else
+        parse_with_selected_parser(markup)
       end
 
-      def lax_parse(markup)
-        expressions = markup.scan(ExpressionsAndOperators)
-        raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop =~ Syntax
+      @blocks.push(block)
+      block.attach(BlockBody.new)
+    end
 
-        condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
+    def lax_parse(markup)
+      expressions = markup.scan(ExpressionsAndOperators)
+      raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop =~ Syntax
 
-        while not expressions.empty?
-          operator = expressions.pop.to_s.strip
+      condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
 
-          raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop.to_s =~ Syntax
+      until expressions.empty?
+        operator = expressions.pop.to_s.strip
 
-          new_condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
-          raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless BOOLEAN_OPERATORS.include?(operator)
-          new_condition.send(operator, condition)
-          condition = new_condition
-        end
+        raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop.to_s =~ Syntax
 
-        condition
+        new_condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
+        raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless BOOLEAN_OPERATORS.include?(operator)
+        new_condition.send(operator, condition)
+        condition = new_condition
       end
 
-      def strict_parse(markup)
-        p = Parser.new(markup)
+      condition
+    end
 
-        condition = parse_comparison(p)
+    def strict_parse(markup)
+      p = Parser.new(markup)
 
-        while op = (p.id?('and'.freeze) || p.id?('or'.freeze))
-          new_cond = parse_comparison(p)
-          new_cond.send(op, condition)
-          condition = new_cond
-        end
-        p.consume(:end_of_string)
+      condition = parse_comparison(p)
 
-        condition
+      while op = (p.id?('and'.freeze) || p.id?('or'.freeze))
+        new_cond = parse_comparison(p)
+        new_cond.send(op, condition)
+        condition = new_cond
       end
+      p.consume(:end_of_string)
 
-      def parse_comparison(p)
-        a = Expression.parse(p.expression)
-        if op = p.consume?(:comparison)
-          b = Expression.parse(p.expression)
-          Condition.new(a, op, b)
-        else
-          Condition.new(a)
-        end
+      condition
+    end
+
+    def parse_comparison(p)
+      a = Expression.parse(p.expression)
+      if op = p.consume?(:comparison)
+        b = Expression.parse(p.expression)
+        Condition.new(a, op, b)
+      else
+        Condition.new(a)
       end
+    end
   end
 
   Template.register_tag('if'.freeze, If)

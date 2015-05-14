@@ -8,7 +8,6 @@ module Liquid
   class Unless < If
     def render(context)
       context.stack do
-
         # First condition is interpreted backwards ( if not )
         first_block = @blocks.first
         unless first_block.evaluate(context)

@@ -1,5 +1,4 @@
 module Liquid
-
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
   #   context['variable'] = 'testing'
@@ -63,8 +62,7 @@ module Liquid
       @interrupts.pop
     end
 
-
-    def handle_error(e, token=nil)
+    def handle_error(e, token = nil)
       if e.is_a?(Liquid::Error)
         e.set_line_number_from_token(token)
       end
@@ -79,7 +77,7 @@ module Liquid
     end
 
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
-    def push(new_scope={})
+    def push(new_scope = {})
       @scopes.unshift(new_scope)
       raise StackLevelError, "Nesting too deep".freeze if @scopes.length > 100
     end
@@ -103,7 +101,7 @@ module Liquid
     #   end
     #
     #   context['var]  #=> nil
-    def stack(new_scope=nil)
+    def stack(new_scope = nil)
       old_stack_used = @this_stack_used
       if new_scope
         push(new_scope)
@@ -153,7 +151,6 @@ module Liquid
 
     # Fetches an object starting at the local scope and then moving up the hierachy
     def find_variable(key)
-
       # This was changed from find() to find_index() because this is a very hot
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.has_key?(key) }
@@ -171,13 +168,13 @@ module Liquid
         end
       end
 
-      scope     ||= @environments.last || @scopes.last
-      variable  ||= lookup_and_evaluate(scope, key)
+      scope ||= @environments.last || @scopes.last
+      variable ||= lookup_and_evaluate(scope, key)
 
       variable = variable.to_liquid
       variable.context = self if variable.respond_to?(:context=)
 
-      return variable
+      variable
     end
 
     def lookup_and_evaluate(obj, key)
@@ -189,15 +186,16 @@ module Liquid
     end
 
     private
-      def squash_instance_assigns_with_environments
-        @scopes.last.each_key do |k|
-          @environments.each do |env|
-            if env.has_key?(k)
-              scopes.last[k] = lookup_and_evaluate(env, k)
-              break
-            end
+
+    def squash_instance_assigns_with_environments
+      @scopes.last.each_key do |k|
+        @environments.each do |env|
+          if env.has_key?(k)
+            scopes.last[k] = lookup_and_evaluate(env, k)
+            break
           end
         end
-      end # squash_instance_assigns_with_environments
+      end
+    end # squash_instance_assigns_with_environments
   end # Context
 end # Liquid

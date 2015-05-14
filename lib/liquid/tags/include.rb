@@ -1,5 +1,4 @@
 module Liquid
-
   # Include allows templates to relate with other templates
   #
   # Simply include another template:
@@ -38,7 +37,7 @@ module Liquid
       end
     end
 
-    def parse(tokens)
+    def parse(_tokens)
     end
 
     def render(context)
@@ -71,35 +70,36 @@ module Liquid
     end
 
     private
-      def load_cached_partial(context)
-        cached_partials = context.registers[:cached_partials] || {}
-        template_name = context.evaluate(@template_name_expr)
 
-        if cached = cached_partials[template_name]
-          return cached
-        end
-        source = read_template_from_file_system(context)
-        partial = Liquid::Template.parse(source, pass_options)
-        cached_partials[template_name] = partial
-        context.registers[:cached_partials] = cached_partials
-        partial
+    def load_cached_partial(context)
+      cached_partials = context.registers[:cached_partials] || {}
+      template_name = context.evaluate(@template_name_expr)
+
+      if cached = cached_partials[template_name]
+        return cached
       end
+      source = read_template_from_file_system(context)
+      partial = Liquid::Template.parse(source, pass_options)
+      cached_partials[template_name] = partial
+      context.registers[:cached_partials] = cached_partials
+      partial
+    end
 
-      def read_template_from_file_system(context)
-        file_system = context.registers[:file_system] || Liquid::Template.file_system
+    def read_template_from_file_system(context)
+      file_system = context.registers[:file_system] || Liquid::Template.file_system
 
-        file_system.read_template_file(context.evaluate(@template_name_expr))
+      file_system.read_template_file(context.evaluate(@template_name_expr))
+    end
+
+    def pass_options
+      dont_pass = @options[:include_options_blacklist]
+      return { locale: @options[:locale] } if dont_pass == true
+      opts = @options.merge(included: true, include_options_blacklist: false)
+      if dont_pass.is_a?(Array)
+        dont_pass.each { |o| opts.delete(o) }
       end
-
-      def pass_options
-        dont_pass = @options[:include_options_blacklist]
-        return {locale: @options[:locale]} if dont_pass == true
-        opts = @options.merge(included: true, include_options_blacklist: false)
-        if dont_pass.is_a?(Array)
-          dont_pass.each {|o| opts.delete(o)}
-        end
-        opts
-      end
+      opts
+    end
   end
 
   Template.register_tag('include'.freeze, Include)

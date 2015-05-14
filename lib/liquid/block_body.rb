@@ -79,7 +79,7 @@ module Liquid
           # If we get an Interrupt that means the block must stop processing. An
           # Interrupt is any command that stops block execution such as {% break %}
           # or {% continue %}
-          if token.is_a?(Continue) or token.is_a?(Break)
+          if token.is_a?(Continue) || token.is_a?(Break)
             context.push_interrupt(token.interrupt)
             break
           end
@@ -121,11 +121,11 @@ module Liquid
     end
 
     def raise_missing_tag_terminator(token, options)
-      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, :token => token, :tag_end => TagEnd.inspect))
+      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, token: token, tag_end: TagEnd.inspect))
     end
 
     def raise_missing_variable_terminator(token, options)
-      raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination".freeze, :token => token, :tag_end => VariableEnd.inspect))
+      raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination".freeze, token: token, tag_end: VariableEnd.inspect))
     end
   end
 end

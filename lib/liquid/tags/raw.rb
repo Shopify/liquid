@@ -9,11 +9,11 @@ module Liquid
           @body << $1 if $1 != "".freeze
           return if block_delimiter == $2
         end
-        @body << token if not token.empty?
+        @body << token unless token.empty?
       end
     end
 
-    def render(context)
+    def render(_context)
       @body
     end
 

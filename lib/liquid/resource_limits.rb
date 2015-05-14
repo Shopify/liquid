@@ -1,7 +1,7 @@
 module Liquid
   class ResourceLimits
     attr_accessor :render_length, :render_score, :assign_score,
-                  :render_length_limit, :render_score_limit, :assign_score_limit
+      :render_length_limit, :render_score_limit, :assign_score_limit
 
     def initialize(limits)
       @render_length_limit = limits[:render_length_limit]
@@ -12,8 +12,8 @@ module Liquid
 
     def reached?
       (@render_length_limit && @render_length > @render_length_limit) ||
-      (@render_score_limit  && @render_score  > @render_score_limit ) ||
-      (@assign_score_limit  && @assign_score  > @assign_score_limit )
+        (@render_score_limit && @render_score > @render_score_limit) ||
+        (@assign_score_limit && @assign_score > @assign_score_limit)
     end
 
     def reset

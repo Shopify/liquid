@@ -1,7 +1,6 @@
 require 'set'
 
 module Liquid
-
   # A drop in liquid is a class which allows you to export DOM like things to liquid.
   # Methods of drops are callable.
   # The main use for liquid drops is to implement lazy loaded objects.
@@ -27,7 +26,7 @@ module Liquid
     EMPTY_STRING = ''.freeze
 
     # Catch all for the method
-    def before_method(method)
+    def before_method(_method)
       nil
     end
 
@@ -40,7 +39,7 @@ module Liquid
       end
     end
 
-    def has_key?(name)
+    def has_key?(_name)
       true
     end
 
@@ -56,13 +55,13 @@ module Liquid
       self.class.name
     end
 
-    alias :[] :invoke_drop
+    alias_method :[], :invoke_drop
 
     private
 
     # Check for method existence without invoking respond_to?, which creates symbols
     def self.invokable?(method_name)
-      self.invokable_methods.include?(method_name.to_s)
+      invokable_methods.include?(method_name.to_s)
     end
 
     def self.invokable_methods

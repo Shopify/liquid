@@ -62,15 +62,15 @@ class ConditionUnitTest < Minitest::Test
 
   def test_contains_works_on_arrays
     @context = Liquid::Context.new
-    @context['array'] = [1,2,3,4,5]
+    @context['array'] = [1, 2, 3, 4, 5]
     array_expr = VariableLookup.new("array")
 
     assert_evalutes_false array_expr, 'contains', 0
-    assert_evalutes_true  array_expr, 'contains', 1
-    assert_evalutes_true  array_expr, 'contains', 2
-    assert_evalutes_true  array_expr, 'contains', 3
-    assert_evalutes_true  array_expr, 'contains', 4
-    assert_evalutes_true  array_expr, 'contains', 5
+    assert_evalutes_true array_expr, 'contains', 1
+    assert_evalutes_true array_expr, 'contains', 2
+    assert_evalutes_true array_expr, 'contains', 3
+    assert_evalutes_true array_expr, 'contains', 4
+    assert_evalutes_true array_expr, 'contains', 5
     assert_evalutes_false array_expr, 'contains', 6
     assert_evalutes_false array_expr, 'contains', "1"
   end
@@ -114,9 +114,9 @@ class ConditionUnitTest < Minitest::Test
   end
 
   def test_should_allow_custom_proc_operator
-    Condition.operators['starts_with'] = Proc.new { |cond, left, right| left =~ %r{^#{right}} }
+    Condition.operators['starts_with'] = proc { |cond, left, right| left =~ %r{^#{right}} }
 
-    assert_evalutes_true  'bob', 'starts_with', 'b'
+    assert_evalutes_true 'bob', 'starts_with', 'b'
     assert_evalutes_false 'bob', 'starts_with', 'o'
   ensure
     Condition.operators.delete 'starts_with'
@@ -130,20 +130,21 @@ class ConditionUnitTest < Minitest::Test
   end
 
   private
-    def assert_evalutes_true(left, op, right)
-      assert Condition.new(left, op, right).evaluate(@context || Liquid::Context.new),
-             "Evaluated false: #{left} #{op} #{right}"
-    end
 
-    def assert_evalutes_false(left, op, right)
-      assert !Condition.new(left, op, right).evaluate(@context || Liquid::Context.new),
-             "Evaluated true: #{left} #{op} #{right}"
-    end
+  def assert_evalutes_true(left, op, right)
+    assert Condition.new(left, op, right).evaluate(@context || Liquid::Context.new),
+      "Evaluated false: #{left} #{op} #{right}"
+  end
 
-    def assert_evaluates_argument_error(left, op, right)
-      assert_raises(Liquid::ArgumentError) do
-        Condition.new(left, op, right).evaluate(@context || Liquid::Context.new)
-      end
+  def assert_evalutes_false(left, op, right)
+    assert !Condition.new(left, op, right).evaluate(@context || Liquid::Context.new),
+      "Evaluated true: #{left} #{op} #{right}"
+  end
+
+  def assert_evaluates_argument_error(left, op, right)
+    assert_raises(Liquid::ArgumentError) do
+      Condition.new(left, op, right).evaluate(@context || Liquid::Context.new)
     end
+  end
 
 end # ConditionTest

@@ -1,10 +1,10 @@
 module Liquid
   class Comment < Block
-    def render(context)
+    def render(_context)
       ''.freeze
     end
 
-    def unknown_tag(tag, markup, tokens)
+    def unknown_tag(_tag, _markup, _tokens)
     end
 
     def blank?

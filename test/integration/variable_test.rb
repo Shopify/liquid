@@ -4,7 +4,7 @@ class VariableTest < Minitest::Test
   include Liquid
 
   def test_simple_variable
-    template = Template.parse(%|{{test}}|)
+    template = Template.parse(%({{test}}))
     assert_equal 'worked', template.render!('test' => 'worked')
     assert_equal 'worked wonderfully', template.render!('test' => 'worked wonderfully')
   end
@@ -14,19 +14,19 @@ class VariableTest < Minitest::Test
   end
 
   def test_simple_with_whitespaces
-    template = Template.parse(%|  {{ test }}  |)
+    template = Template.parse(%(  {{ test }}  ))
     assert_equal '  worked  ', template.render!('test' => 'worked')
     assert_equal '  worked wonderfully  ', template.render!('test' => 'worked wonderfully')
   end
 
   def test_ignore_unknown
-    template = Template.parse(%|{{ test }}|)
+    template = Template.parse(%({{ test }}))
     assert_equal '', template.render!
   end
 
   def test_hash_scoping
-    template = Template.parse(%|{{ test.test }}|)
-    assert_equal 'worked', template.render!('test' => {'test' => 'worked'})
+    template = Template.parse(%({{ test.test }}))
+    assert_equal 'worked', template.render!('test' => { 'test' => 'worked' })
   end
 
   def test_false_renders_as_false
@@ -40,23 +40,23 @@ class VariableTest < Minitest::Test
   end
 
   def test_preset_assigns
-    template = Template.parse(%|{{ test }}|)
+    template = Template.parse(%({{ test }}))
     template.assigns['test'] = 'worked'
     assert_equal 'worked', template.render!
   end
 
   def test_reuse_parsed_template
-    template = Template.parse(%|{{ greeting }} {{ name }}|)
+    template = Template.parse(%({{ greeting }} {{ name }}))
     template.assigns['greeting'] = 'Goodbye'
     assert_equal 'Hello Tobi', template.render!('greeting' => 'Hello', 'name' => 'Tobi')
     assert_equal 'Hello ', template.render!('greeting' => 'Hello', 'unknown' => 'Tobi')
     assert_equal 'Hello Brian', template.render!('greeting' => 'Hello', 'name' => 'Brian')
     assert_equal 'Goodbye Brian', template.render!('name' => 'Brian')
-    assert_equal({'greeting'=>'Goodbye'}, template.assigns)
+    assert_equal({ 'greeting' => 'Goodbye' }, template.assigns)
   end
 
   def test_assigns_not_polluted_from_template
-    template = Template.parse(%|{{ test }}{% assign test = 'bar' %}{{ test }}|)
+    template = Template.parse(%({{ test }}{% assign test = 'bar' %}{{ test }}))
     template.assigns['test'] = 'baz'
     assert_equal 'bazbar', template.render!
     assert_equal 'bazbar', template.render!
@@ -65,8 +65,8 @@ class VariableTest < Minitest::Test
   end
 
   def test_hash_with_default_proc
-    template = Template.parse(%|Hello {{ test }}|)
-    assigns = Hash.new { |h,k| raise "Unknown variable '#{k}'" }
+    template = Template.parse(%(Hello {{ test }}))
+    assigns = Hash.new { |h, k| raise "Unknown variable '#{k}'" }
     assigns['test'] = 'Tobi'
     assert_equal 'Hello Tobi', template.render!(assigns)
     assigns.delete('test')

@@ -4,23 +4,23 @@ class LexerUnitTest < Minitest::Test
   include Liquid
 
   def test_strings
-    tokens = Lexer.new(%! 'this is a test""' "wat 'lol'"!).tokenize
-    assert_equal [[:string,%!'this is a test""'!], [:string, %!"wat 'lol'"!], [:end_of_string]], tokens
+    tokens = Lexer.new(%( 'this is a test""' "wat 'lol'")).tokenize
+    assert_equal [[:string, %('this is a test""')], [:string, %("wat 'lol'")], [:end_of_string]], tokens
   end
 
   def test_integer
     tokens = Lexer.new('hi 50').tokenize
-    assert_equal [[:id,'hi'], [:number, '50'], [:end_of_string]], tokens
+    assert_equal [[:id, 'hi'], [:number, '50'], [:end_of_string]], tokens
   end
 
   def test_float
     tokens = Lexer.new('hi 5.0').tokenize
-    assert_equal [[:id,'hi'], [:number, '5.0'], [:end_of_string]], tokens
+    assert_equal [[:id, 'hi'], [:number, '5.0'], [:end_of_string]], tokens
   end
 
   def test_comparison
     tokens = Lexer.new('== <> contains').tokenize
-    assert_equal [[:comparison,'=='], [:comparison, '<>'], [:comparison, 'contains'], [:end_of_string]], tokens
+    assert_equal [[:comparison, '=='], [:comparison, '<>'], [:comparison, 'contains'], [:end_of_string]], tokens
   end
 
   def test_specials
@@ -40,7 +40,7 @@ class LexerUnitTest < Minitest::Test
 
   def test_whitespace
     tokens = Lexer.new("five|\n\t ==").tokenize
-    assert_equal [[:id,'five'], [:pipe, '|'], [:comparison, '=='], [:end_of_string]], tokens
+    assert_equal [[:id, 'five'], [:pipe, '|'], [:comparison, '=='], [:end_of_string]], tokens
   end
 
   def test_unexpected_character

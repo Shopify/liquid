@@ -1,5 +1,4 @@
 module Liquid
-
   # "For" iterates over an array or collection.
   # Several useful variables are available to you within the loop.
   #
@@ -54,9 +53,8 @@ module Liquid
     end
 
     def parse(tokens)
-      if more = parse_body(@for_block, tokens)
-        parse_body(@else_block, tokens)
-      end
+      return unless parse_body(@for_block, tokens)
+      parse_body(@else_block, tokens)
     end
 
     def nodelist

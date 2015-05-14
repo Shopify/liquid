@@ -24,7 +24,7 @@ class I18nUnitTest < Minitest::Test
   #     @i18n.translate("whatever", :oopstypos => "yes")
   #   end
   # end
-  
+
   def test_raises_unknown_translation
     assert_raises I18n::TranslationError do
       @i18n.translate("doesnt_exist")

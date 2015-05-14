@@ -33,7 +33,6 @@ module Liquid
 
       result = "<tr class=\"row1\">\n"
       context.stack do
-
         collection.each_with_index do |item, index|
           context[@variable_name] = item
           context['tablerowloop'.freeze] = {
@@ -50,17 +49,15 @@ module Liquid
             'col_last'.freeze  => (col == cols - 1)
           }
 
-
           col += 1
 
           result << "<td class=\"col#{col}\">" << super << '</td>'
 
-          if col == cols and (index != length - 1)
+          if col == cols && (index != length - 1)
             col  = 0
             row += 1
             result << "</tr>\n<tr class=\"row#{row}\">"
           end
-
         end
       end
       result << "</tr>\n"

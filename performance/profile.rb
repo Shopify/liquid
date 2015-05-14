@@ -6,7 +6,7 @@ profiler = ThemeRunner.new
 profiler.run
 
 [:cpu, :object].each do |profile_type|
-  puts "Profiling in #{profile_type.to_s} mode..."
+  puts "Profiling in #{profile_type} mode..."
   results = StackProf.run(mode: profile_type) do
     200.times do
       profiler.run

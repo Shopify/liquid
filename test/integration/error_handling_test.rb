@@ -56,7 +56,7 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_standard_error
-    template = Liquid::Template.parse( ' {{ errors.standard_error }} '  )
+    template = Liquid::Template.parse(' {{ errors.standard_error }} ')
     assert_equal ' Liquid error: standard error ', template.render('errors' => ErrorDrop.new)
 
     assert_equal 1, template.errors.size
@@ -64,7 +64,7 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_syntax
-    template = Liquid::Template.parse( ' {{ errors.syntax_error }} '  )
+    template = Liquid::Template.parse(' {{ errors.syntax_error }} ')
     assert_equal ' Liquid syntax error: syntax error ', template.render('errors' => ErrorDrop.new)
 
     assert_equal 1, template.errors.size
@@ -72,7 +72,7 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_argument
-    template = Liquid::Template.parse( ' {{ errors.argument_error }} '  )
+    template = Liquid::Template.parse(' {{ errors.argument_error }} ')
     assert_equal ' Liquid error: argument error ', template.render('errors' => ErrorDrop.new)
 
     assert_equal 1, template.errors.size
@@ -102,31 +102,31 @@ class ErrorHandlingTest < Minitest::Test
 
   def test_with_line_numbers_adds_numbers_to_parser_errors
     err = assert_raises(SyntaxError) do
-      template = Liquid::Template.parse(%q{
+      template = Liquid::Template.parse(%q(
           foobar
 
           {% "cat" | foobar %}
 
           bla
-        },
+                ),
         :line_numbers => true
-      )
+                                       )
     end
 
     assert_match /Liquid syntax error \(line 4\)/, err.message
   end
 
   def test_parsing_warn_with_line_numbers_adds_numbers_to_lexer_errors
-    template = Liquid::Template.parse(%q{
+    template = Liquid::Template.parse('
         foobar
 
         {% if 1 =! 2 %}ok{% endif %}
 
         bla
-      },
+            ',
       :error_mode => :warn,
       :line_numbers => true
-    )
+                                     )
 
     assert_equal ['Liquid syntax error (line 4): Unexpected character = in "1 =! 2"'],
       template.warnings.map(&:message)
@@ -134,16 +134,16 @@ class ErrorHandlingTest < Minitest::Test
 
   def test_parsing_strict_with_line_numbers_adds_numbers_to_lexer_errors
     err = assert_raises(SyntaxError) do
-      Liquid::Template.parse(%q{
+      Liquid::Template.parse('
           foobar
 
           {% if 1 =! 2 %}ok{% endif %}
 
           bla
-        },
+                ',
         :error_mode => :strict,
         :line_numbers => true
-      )
+                            )
     end
 
     assert_equal 'Liquid syntax error (line 4): Unexpected character = in "1 =! 2"', err.message
@@ -151,7 +151,7 @@ class ErrorHandlingTest < Minitest::Test
 
   def test_syntax_errors_in_nested_blocks_have_correct_line_number
     err = assert_raises(SyntaxError) do
-      Liquid::Template.parse(%q{
+      Liquid::Template.parse('
           foobar
 
           {% if 1 != 2 %}
@@ -159,9 +159,9 @@ class ErrorHandlingTest < Minitest::Test
           {% endif %}
 
           bla
-        },
+                ',
         :line_numbers => true
-      )
+                            )
     end
 
     assert_equal "Liquid syntax error (line 5): Unknown tag 'foo'", err.message
@@ -194,7 +194,7 @@ class ErrorHandlingTest < Minitest::Test
     assert_equal 'Liquid syntax error (line 2): Unexpected character % in "{{%%%}}"', template.warnings[1].message
     assert_equal 'Liquid syntax error (line 3): Expected id but found end_of_string in "{{ hello. }}"', template.warnings[2].message
     assert_equal 3, template.warnings.size
-    assert_equal [1,2,3], template.warnings.map(&:line_number)
+    assert_equal [1, 2, 3], template.warnings.map(&:line_number)
   end
 
   # Liquid should not catch Exceptions that are not subclasses of StandardError, like Interrupt and NoMemoryError

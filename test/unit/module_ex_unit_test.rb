@@ -5,9 +5,11 @@ class TestClassA
   def allowedA
     'allowedA'
   end
+
   def restrictedA
     'restrictedA'
   end
+
   def chainedB
     TestClassB.new
   end
@@ -18,6 +20,7 @@ class TestClassB
   def allowedB
     'allowedB'
   end
+
   def chainedC
     TestClassC.new
   end
@@ -77,11 +80,11 @@ class ModuleExUnitTest < Minitest::Test
   end
 
   def test_should_use_regular_objects_as_drops
-    assert_template_result 'allowedA', "{{ a.allowedA }}", 'a'=>@a
-    assert_template_result 'allowedB', "{{ a.chainedB.allowedB }}", 'a'=>@a
-    assert_template_result 'allowedC', "{{ a.chainedB.chainedC.allowedC }}", 'a'=>@a
-    assert_template_result 'another_allowedC', "{{ a.chainedB.chainedC.another_allowedC }}", 'a'=>@a
-    assert_template_result '', "{{ a.restricted }}", 'a'=>@a
-    assert_template_result '', "{{ a.unknown }}", 'a'=>@a
+    assert_template_result 'allowedA', "{{ a.allowedA }}", 'a' => @a
+    assert_template_result 'allowedB', "{{ a.chainedB.allowedB }}", 'a' => @a
+    assert_template_result 'allowedC', "{{ a.chainedB.chainedC.allowedC }}", 'a' => @a
+    assert_template_result 'another_allowedC', "{{ a.chainedB.chainedC.another_allowedC }}", 'a' => @a
+    assert_template_result '', "{{ a.restricted }}", 'a' => @a
+    assert_template_result '', "{{ a.unknown }}", 'a' => @a
   end
 end # ModuleExTest

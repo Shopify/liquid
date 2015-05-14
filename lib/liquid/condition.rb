@@ -8,16 +8,16 @@ module Liquid
   #
   class Condition #:nodoc:
     @@operators = {
-      '=='.freeze => lambda { |cond, left, right|  cond.send(:equal_variables, left, right) },
-      '!='.freeze => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
-      '<>'.freeze => lambda { |cond, left, right| !cond.send(:equal_variables, left, right) },
+      '=='.freeze => ->(cond, left, right) {  cond.send(:equal_variables, left, right) },
+      '!='.freeze => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
+      '<>'.freeze => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
       '<'.freeze  => :<,
       '>'.freeze  => :>,
       '>='.freeze => :>=,
       '<='.freeze => :<=,
-      'contains'.freeze => lambda { |cond, left, right|
+      'contains'.freeze => lambda do |cond, left, right|
         left && right && left.respond_to?(:include?) ? left.include?(right) : false
-      }
+      end
     }
 
     def self.operators
@@ -96,7 +96,7 @@ module Liquid
       # If the operator is empty this means that the decision statement is just
       # a single variable. We can just poll this variable from the context and
       # return this as the result.
-      return context.evaluate(left) if op == nil
+      return context.evaluate(left) if op.nil?
 
       left = context.evaluate(left)
       right = context.evaluate(right)
@@ -105,27 +105,23 @@ module Liquid
 
       if operation.respond_to?(:call)
         operation.call(self, left, right)
-      elsif left.respond_to?(operation) and right.respond_to?(operation)
+      elsif left.respond_to?(operation) && right.respond_to?(operation)
         begin
           left.send(operation, right)
         rescue ::ArgumentError => e
           raise Liquid::ArgumentError.new(e.message)
         end
-      else
-        nil
       end
     end
   end
-
 
   class ElseCondition < Condition
     def else?
       true
     end
 
-    def evaluate(context)
+    def evaluate(_context)
       true
     end
   end
-
 end

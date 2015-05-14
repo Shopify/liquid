@@ -6,7 +6,7 @@ class BreakTagTest < Minitest::Test
   # tests that no weird errors are raised if break is called outside of a
   # block
   def test_break_with_no_block
-    assigns = {'i' => 1}
+    assigns = { 'i' => 1 }
     markup = '{% break %}'
     expected = ''
 

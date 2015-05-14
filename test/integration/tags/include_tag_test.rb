@@ -77,23 +77,22 @@ class IncludeTagTest < Minitest::Test
 
   def test_include_tag_looks_for_file_system_in_registers_first
     assert_equal 'from OtherFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => {:file_system => OtherFileSystem.new})
+      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => { :file_system => OtherFileSystem.new })
   end
-
 
   def test_include_tag_with
     assert_template_result "Product: Draft 151cm ",
-      "{% include 'product' with products[0] %}", "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]
+      "{% include 'product' with products[0] %}", "products" => [ { 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' } ]
   end
 
   def test_include_tag_with_default_name
     assert_template_result "Product: Draft 151cm ",
-      "{% include 'product' %}", "product" => {'title' => 'Draft 151cm'}
+      "{% include 'product' %}", "product" => { 'title' => 'Draft 151cm' }
   end
 
   def test_include_tag_for
     assert_template_result "Product: Draft 151cm Product: Element 155cm ",
-      "{% include 'product' for products %}", "products" => [ {'title' => 'Draft 151cm'}, {'title' => 'Element 155cm'} ]
+      "{% include 'product' for products %}", "products" => [ { 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' } ]
   end
 
   def test_include_tag_with_local_variables
@@ -108,7 +107,7 @@ class IncludeTagTest < Minitest::Test
   def test_include_tag_with_multiple_local_variables_from_context
     assert_template_result "Locale: test123 test321",
       "{% include 'locale_variables' echo1: echo1, echo2: more_echos.echo2 %}",
-      'echo1' => 'test123', 'more_echos' => { "echo2" => 'test321'}
+      'echo1' => 'test123', 'more_echos' => { "echo2" => 'test321' }
   end
 
   def test_included_templates_assigns_variables
@@ -123,14 +122,13 @@ class IncludeTagTest < Minitest::Test
 
   def test_nested_include_with_variable
     assert_template_result "Product: Draft 151cm details ",
-      "{% include 'nested_product_template' with product %}", "product" => {"title" => 'Draft 151cm'}
+      "{% include 'nested_product_template' with product %}", "product" => { "title" => 'Draft 151cm' }
 
     assert_template_result "Product: Draft 151cm details Product: Element 155cm details ",
-      "{% include 'nested_product_template' for products %}", "products" => [{"title" => 'Draft 151cm'}, {"title" => 'Element 155cm'}]
+      "{% include 'nested_product_template' for products %}", "products" => [{ "title" => 'Draft 151cm' }, { "title" => 'Element 155cm' }]
   end
 
   def test_recursively_included_template_does_not_produce_endless_loop
-
     infinite_file_system = Class.new do
       def read_template_file(template_path)
         "-{% include 'loop' %}"
@@ -142,7 +140,6 @@ class IncludeTagTest < Minitest::Test
     assert_raises(Liquid::StackLevelError, SystemStackError) do
       Template.parse("{% include 'loop' %}").render!
     end
-
   end
 
   def test_dynamically_choosen_template
@@ -150,24 +147,24 @@ class IncludeTagTest < Minitest::Test
     assert_template_result "Test321", "{% include template %}", "template" => 'Test321'
 
     assert_template_result "Product: Draft 151cm ", "{% include template for product %}",
-      "template" => 'product', 'product' => { 'title' => 'Draft 151cm'}
+      "template" => 'product', 'product' => { 'title' => 'Draft 151cm' }
   end
 
   def test_include_tag_caches_second_read_of_same_partial
     file_system = CountingFileSystem.new
     assert_equal 'from CountingFileSystemfrom CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render!({}, :registers => {:file_system => file_system})
+      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render!({}, :registers => { :file_system => file_system })
     assert_equal 1, file_system.count
   end
 
   def test_include_tag_doesnt_cache_partials_across_renders
     file_system = CountingFileSystem.new
     assert_equal 'from CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => {:file_system => file_system})
+      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => { :file_system => file_system })
     assert_equal 1, file_system.count
 
     assert_equal 'from CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => {:file_system => file_system})
+      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => { :file_system => file_system })
     assert_equal 2, file_system.count
   end
 
@@ -223,8 +220,8 @@ class IncludeTagTest < Minitest::Test
   def test_including_via_variable_value
     assert_template_result "from TestFileSystem", "{% assign page = 'pick_a_source' %}{% include page %}"
 
-    assert_template_result "Product: Draft 151cm ", "{% assign page = 'product' %}{% include page %}", "product" => {'title' => 'Draft 151cm'}
+    assert_template_result "Product: Draft 151cm ", "{% assign page = 'product' %}{% include page %}", "product" => { 'title' => 'Draft 151cm' }
 
-    assert_template_result "Product: Draft 151cm ", "{% assign page = 'product' %}{% include page for foo %}", "foo" => {'title' => 'Draft 151cm'}
+    assert_template_result "Product: Draft 151cm ", "{% assign page = 'product' %}{% include page for foo %}", "foo" => { 'title' => 'Draft 151cm' }
   end
 end # IncludeTagTest
