@@ -88,3 +88,22 @@ class ThingWithToLiquid
     'foobar'
   end
 end
+
+class ErrorDrop < Liquid::Drop
+  def standard_error
+    raise Liquid::StandardError, 'standard error'
+  end
+
+  def argument_error
+    raise Liquid::ArgumentError, 'argument error'
+  end
+
+  def syntax_error
+    raise Liquid::SyntaxError, 'syntax error'
+  end
+
+  def exception
+    raise Exception, 'exception'
+  end
+end
+

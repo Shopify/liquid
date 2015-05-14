@@ -132,8 +132,9 @@ module Liquid
         end
       end
 
-      for_stack.pop
       result
+    ensure
+      for_stack.pop
     end
 
     protected
