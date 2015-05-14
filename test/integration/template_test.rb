@@ -15,12 +15,10 @@ class TemplateContextDrop < Liquid::Drop
   end
 end
 
-class SomethingWithLength
+class SomethingWithLength < Liquid::Drop
   def length
     nil
   end
-
-  liquid_methods :length
 end
 
 class ErroneousDrop < Liquid::Drop

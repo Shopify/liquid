@@ -1,6 +1,7 @@
 # Liquid Change Log
 
 ## 4.0.0 / not yet released / branch "master"
+
 ### Changed
 * Add sort_natural filter (#554) [Martin Hanzel, arthanzel]
 * Add forloop.parentloop as a reference to the parent loop (#520) [Justin Li, pushrax]
@@ -8,6 +9,7 @@
 * Add concat filter to concatenate arrays (#429) [Diogo Beato, dvbeato]
 * Ruby 1.9 support dropped (#491) [Justin Li, pushrax]
 * Liquid::Template.file_system's read_template_file method is no longer passed the context. (#441) [James Reid-Smith, sunblaze]
+* Remove support for `liquid_methods`
 
 ### Fixed
 * Fix naming of the "context variable" when dynamically including a template (#559) [Justin Li, pushrax]
