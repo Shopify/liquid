@@ -164,4 +164,25 @@ class IfElseTagTest < Minitest::Test
       assert_template_result('', %({% if 1 or throw or or 1 %}yes{% endif %}))
     end
   end
+
+  def test_multiple_conditions
+    tpl = "{% if a or b and c %}true{% else %}false{% endif %}"
+
+    tests = {
+      [true, true, true] => true,
+      [true, true, false] => true,
+      [true, false, true] => true,
+      [true, false, false] => true,
+      [false, true, true] => true,
+      [false, true, false] => false,
+      [false, false, true] => false,
+      [false, false, false] => false,
+    }
+
+    tests.each do |vals, expected|
+      a, b, c = vals
+      assigns = { 'a' => a, 'b' => b, 'c' => c }
+      assert_template_result expected.to_s, tpl, assigns, assigns.to_s
+    end
+  end
 end
