@@ -38,14 +38,12 @@ module Liquid
     end
 
     def render(context)
-      context.stack do
-        @blocks.each do |block|
-          if block.evaluate(context)
-            return block.attachment.render(context)
-          end
+      @blocks.each do |block|
+        if block.evaluate(context)
+          return block.attachment.render(context)
         end
-        ''.freeze
       end
+      ''.freeze
     end
 
     private
