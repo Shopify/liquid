@@ -1,4 +1,6 @@
-$:.unshift __dir__ + '/../../lib'
+current_path = File.dirname(File.realpath(__FILE__))
+
+$:.unshift current_path + '/../../lib'
 require_relative '../../lib/liquid'
 
 require_relative 'comment_form'

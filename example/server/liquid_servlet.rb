@@ -24,6 +24,7 @@ class LiquidServlet < WEBrick::HTTPServlet::AbstractServlet
   end
 
   def read_template(filename = @action)
-    File.read("#{__dir__}/templates/#{filename}.liquid")
+    current_path = File.dirname(File.realpath(__FILE__))
+    File.read("#{current_path}/templates/#{filename}.liquid")
   end
 end

@@ -73,4 +73,5 @@ require 'liquid/token'
 
 # Load all the tags of the standard library
 #
-Dir["#{__dir__}/liquid/tags/*.rb"].each { |f| require f }
+current_path = File.dirname(File.realpath(__FILE__))
+Dir["#{current_path}/liquid/tags/*.rb"].each { |f| require f }

@@ -24,7 +24,8 @@ class ThemeRunner
   # Load all templates into memory, do this now so that
   # we don't profile IO.
   def initialize
-    @tests = Dir[__dir__ + '/tests/**/*.liquid'].collect do |test|
+    current_path = File.dirname(File.realpath(__FILE__))
+    @tests = Dir[current_path + '/tests/**/*.liquid'].collect do |test|
       next if File.basename(test) == 'theme.liquid'
 
       theme_path = File.dirname(test) + '/theme.liquid'
