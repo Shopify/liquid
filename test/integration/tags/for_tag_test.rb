@@ -387,4 +387,14 @@ HERE
     assert_template_result(expected, template, loader_assigns)
     assert_template_result(expected, template, array_assigns)
   end
+
+  def test_for_cleans_up_registers
+    context = Context.new(ErrorDrop.new)
+
+    assert_raises(StandardError) do
+      Liquid::Template.parse('{% for i in (1..2) %}{{ standard_error }}{% endfor %}').render!(context)
+    end
+
+    assert context.registers[:for_stack].empty?
+  end
 end
