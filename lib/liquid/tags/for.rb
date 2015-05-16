@@ -70,6 +70,9 @@ module Liquid
       for_offsets = context.registers[:for] ||= Hash.new(0)
       for_stack = context.registers[:for_stack] ||= []
 
+      parent_loop = for_stack.last
+      for_stack.push(nil)
+
       collection = context.evaluate(@collection_name)
       collection = collection.to_a if collection.is_a?(Range)
 
@@ -97,9 +100,6 @@ module Liquid
 
       # Store our progress through the collection for the continue flag
       for_offsets[@name] = from + segment.length
-
-      parent_loop = for_stack.last
-      for_stack.push(nil)
 
       context.stack do
         segment.each_with_index do |item, index|
