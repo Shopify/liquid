@@ -17,7 +17,7 @@ module Liquid
       locale: I18n.new
     }
 
-    attr_accessor :root
+    attr_accessor :root, :render_errors
     attr_reader :resource_limits
 
     @@file_system = BlankFileSystem.new
@@ -112,6 +112,7 @@ module Liquid
 
     def initialize
       @resource_limits = ResourceLimits.new(self.class.default_resource_limits)
+      @render_errors = true
     end
 
     # Parse source code.
@@ -163,6 +164,8 @@ module Liquid
     def render(*args)
       return ''.freeze if @root.nil?
 
+      render_errors = self.render_errors
+
       context = case args.first
       when Liquid::Context
         c = args.shift
@@ -174,11 +177,11 @@ module Liquid
         c
       when Liquid::Drop
         drop = args.shift
-        drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits, render_errors)
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits, render_errors)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
+        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits, render_errors)
       else
         raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
       end
