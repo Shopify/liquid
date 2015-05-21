@@ -279,8 +279,6 @@ module Liquid
     # division
     def divided_by(input, operand)
       apply_operation(input, operand, :/)
-    rescue ::ZeroDivisionError => e
-      raise Liquid::ZeroDivisionError.new(e.message)
     end
 
     def modulo(input, operand)

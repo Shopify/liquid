@@ -18,9 +18,8 @@ module Liquid
     end
 
     def set_line_number_from_token(token)
-      return unless token.respond_to?(:line_number)
       return if line_number
-      self.line_number = token.line_number
+      self.line_number = ErrorLocation.line_number_from_token(token)
     end
 
     def self.render(e)
@@ -60,5 +59,4 @@ module Liquid
   StackLevelError = Class.new(Error)
   TaintedError = Class.new(Error)
   MemoryError = Class.new(Error)
-  ZeroDivisionError = Class.new(Error)
 end
