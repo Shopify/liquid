@@ -57,4 +57,5 @@ module Liquid
   StackLevelError = Class.new(Error)
   TaintedError = Class.new(Error)
   MemoryError = Class.new(Error)
+  ZeroDivisionError = Class.new(Error)
 end
