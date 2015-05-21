@@ -41,9 +41,9 @@ module Liquid
     end
 
     def render(context)
-      partial = load_cached_partial(context)
-
       template_name = context.evaluate(@template_name_expr)
+      partial = load_cached_partial(template_name, context)
+
       context_variable_name = template_name.split('/'.freeze).last
 
       variable = if @variable_name_expr
@@ -52,28 +52,33 @@ module Liquid
         context.find_variable(template_name)
       end
 
-      context.stack do
-        @attributes.each do |key, value|
-          context[key] = context.evaluate(value)
-        end
+      old_template_name = context.template_name
+      begin
+        context.template_name = template_name
+        context.stack do
+          @attributes.each do |key, value|
+            context[key] = context.evaluate(value)
+          end
 
-        if variable.is_a?(Array)
-          variable.collect do |var|
-            context[context_variable_name] = var
+          if variable.is_a?(Array)
+            variable.collect do |var|
+              context[context_variable_name] = var
+              partial.render(context)
+            end
+          else
+            context[context_variable_name] = variable
             partial.render(context)
           end
-        else
-          context[context_variable_name] = variable
-          partial.render(context)
         end
+      ensure
+        context.template_name = old_template_name
       end
     end
 
     private
 
-    def load_cached_partial(context)
+    def load_cached_partial(template_name, context)
       cached_partials = context.registers[:cached_partials] || {}
-      template_name = context.evaluate(@template_name_expr)
 
       if cached = cached_partials[template_name]
         return cached

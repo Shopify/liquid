@@ -13,7 +13,7 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
-    attr_accessor :exception_handler
+    attr_accessor :exception_handler, :template_name
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
       @environments     = [environments].flatten
@@ -64,6 +64,7 @@ module Liquid
 
     def handle_error(e, token = nil)
       if e.is_a?(Liquid::Error)
+        e.template_name = template_name
         e.set_line_number_from_token(token)
       end
 
