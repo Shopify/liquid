@@ -1,6 +1,7 @@
 module Liquid
   class Error < ::StandardError
     attr_accessor :line_number
+    attr_accessor :template_name
     attr_accessor :markup_context
 
     def to_s(with_prefix = true)
@@ -41,7 +42,9 @@ module Liquid
       end
 
       if line_number
-        str << " (line #{line_number})"
+        str << " ("
+        str << template_name << " " if template_name
+        str << "line " << line_number.to_s << ")"
       end
 
       str << ": "
