@@ -17,7 +17,7 @@ module Liquid
       locale: I18n.new
     }
 
-    attr_accessor :root
+    attr_accessor :root, :render_errors
     attr_reader :resource_limits
 
     @@file_system = BlankFileSystem.new
@@ -182,6 +182,8 @@ module Liquid
       else
         raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
       end
+
+      context.render_errors = self.render_errors unless self.render_errors.nil?
 
       case args.last
       when Hash
