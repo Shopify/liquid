@@ -185,4 +185,11 @@ class ErrorHandlingTest < Minitest::Test
       template.render('errors' => ErrorDrop.new)
     end
   end
+
+  def test_disabling_error_rendering
+    template = Liquid::Template.parse('This is an argument error: {{ errors.argument_error }}')
+    template.render_errors = false
+    assert_equal 'This is an argument error: ', template.render('errors' => ErrorDrop.new)
+    assert_equal [ArgumentError], template.errors.map(&:class)
+  end
 end
