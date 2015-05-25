@@ -22,6 +22,12 @@ module SubstituteFilter
   end
 end
 
+module ErrorFilter
+  def standard_error(input)
+    raise ::StandardError, 'standard error'
+  end
+end
+
 class FiltersTest < Minitest::Test
   include Liquid
 
@@ -158,7 +164,14 @@ class FiltersInTemplate < Minitest::Test
     assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, CanadianMoneyFilter)
     assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, [CanadianMoneyFilter])
   end
-end # FiltersTest
+
+  def test_filter_error
+    context = Context.new
+    context.add_filters(ErrorFilter)
+    assert_equal "Liquid error: standard error", Template.parse("{{'var' | standard_error}}").render(context)
+    assert_equal [Liquid::FilterError], context.errors.map(&:class)
+  end
+end
 
 class TestObject
   attr_accessor :a

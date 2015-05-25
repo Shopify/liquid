@@ -47,12 +47,20 @@ module Liquid
 
     def invoke(method, *args)
       if self.class.invokable?(method)
-        send(method, *args)
+        begin
+          send(method, *args)
+        rescue ::ArgumentError => e
+          raise Liquid::ArgumentError.new(e.message)
+        rescue Liquid::Error
+          raise
+        rescue ::StandardError => exception
+          error = Liquid::FilterError.new(exception.message)
+          error.original_exception = exception
+          raise error
+        end
       else
         args.first
       end
-    rescue ::ArgumentError => e
-      raise Liquid::ArgumentError.new(e.message)
     end
   end
 end

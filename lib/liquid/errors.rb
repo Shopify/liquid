@@ -49,6 +49,10 @@ module Liquid
     end
   end
 
+  class FilterError < Error
+    attr_accessor :original_exception
+  end
+
   ArgumentError = Class.new(Error)
   ContextError = Class.new(Error)
   FileSystemError = Class.new(Error)
