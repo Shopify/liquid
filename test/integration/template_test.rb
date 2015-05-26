@@ -201,14 +201,14 @@ class TemplateTest < Minitest::Test
   def test_exception_handler_doesnt_reraise_if_it_returns_false
     exception = nil
     Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_handler: ->(e) { exception = e; false })
-    assert exception.is_a?(ZeroDivisionError)
+    assert exception.is_a?(Liquid::ZeroDivisionError)
   end
 
   def test_exception_handler_does_reraise_if_it_returns_true
     exception = nil
-    assert_raises(ZeroDivisionError) do
+    assert_raises(Liquid::ZeroDivisionError) do
       Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_handler: ->(e) { exception = e; true })
     end
-    assert exception.is_a?(ZeroDivisionError)
+    assert exception.is_a?(Liquid::ZeroDivisionError)
   end
 end
