@@ -8,10 +8,6 @@ module Liquid
       end
     end
 
-    def self.non_blank_string?(collection)
-      collection.is_a?(String) && collection != ''.freeze
-    end
-
     def self.slice_collection_using_each(collection, from, to)
       segments = []
       index = 0
@@ -20,6 +16,7 @@ module Liquid
       if collection.is_a?(String)
         return collection.empty? ? [] : [collection]
       end
+      return [] unless collection.respond_to?(:each)
 
       collection.each do |item|
         if to && to <= index
