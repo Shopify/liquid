@@ -141,7 +141,7 @@ module Liquid
       if markup =~ Syntax
         @variable_name = $1
         collection_name = $2
-        @reversed = $3
+        @reversed = !!$3
         @name = "#{@variable_name}-#{collection_name}"
         @collection_name = Expression.parse(collection_name)
         markup.scan(TagAttributes) do |key, value|
