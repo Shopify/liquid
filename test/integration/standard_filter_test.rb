@@ -274,7 +274,9 @@ class StandardFiltersTest < Minitest::Test
 
   def test_remove
     assert_equal '   ', @filters.remove("a a a a", 'a')
+    assert_equal '   ', @filters.remove("1 1 1 1", 1)
     assert_equal 'a a a', @filters.remove_first("a a a a", 'a ')
+    assert_equal ' 1 1 1', @filters.remove_first("1 1 1 1", 1)
     assert_template_result 'a a a', "{{ 'a a a a' | remove_first: 'a ' }}"
   end
 
@@ -333,26 +335,41 @@ class StandardFiltersTest < Minitest::Test
     assert_equal "Liquid error: divided by 0", Template.parse("{{ 5 | divided_by:0 }}").render
 
     assert_template_result "0.5", "{{ 2.0 | divided_by:4 }}"
+    assert_raises(Liquid::ZeroDivisionError) do
+      assert_template_result "4", "{{ 1 | modulo: 0 }}"
+    end
   end
 
   def test_modulo
     assert_template_result "1", "{{ 3 | modulo:2 }}"
+    assert_raises(Liquid::ZeroDivisionError) do
+      assert_template_result "4", "{{ 1 | modulo: 0 }}"
+    end
   end
 
   def test_round
     assert_template_result "5", "{{ input | round }}", 'input' => 4.6
     assert_template_result "4", "{{ '4.3' | round }}"
     assert_template_result "4.56", "{{ input | round: 2 }}", 'input' => 4.5612
+    assert_raises(Liquid::FloatDomainError) do
+      assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | round }}"
+    end
   end
 
   def test_ceil
     assert_template_result "5", "{{ input | ceil }}", 'input' => 4.6
     assert_template_result "5", "{{ '4.3' | ceil }}"
+    assert_raises(Liquid::FloatDomainError) do
+      assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | ceil }}"
+    end
   end
 
   def test_floor
     assert_template_result "4", "{{ input | floor }}", 'input' => 4.6
     assert_template_result "4", "{{ '4.3' | floor }}"
+    assert_raises(Liquid::FloatDomainError) do
+      assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | floor }}"
+    end
   end
 
   def test_append

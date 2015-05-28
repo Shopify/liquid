@@ -177,12 +177,12 @@ module Liquid
 
     # remove a substring
     def remove(input, string)
-      input.to_s.gsub(string, ''.freeze)
+      input.to_s.gsub(string.to_s, ''.freeze)
     end
 
     # remove the first occurrences of a substring
     def remove_first(input, string)
-      input.to_s.sub(string, ''.freeze)
+      input.to_s.sub(string.to_s, ''.freeze)
     end
 
     # add one string to another
@@ -285,6 +285,8 @@ module Liquid
 
     def modulo(input, operand)
       apply_operation(input, operand, :%)
+    rescue ::ZeroDivisionError => e
+      raise Liquid::ZeroDivisionError, e.message
     end
 
     def round(input, n = 0)
@@ -292,14 +294,20 @@ module Liquid
       result = result.to_f if result.is_a?(BigDecimal)
       result = result.to_i if n == 0
       result
+    rescue ::FloatDomainError => e
+      raise Liquid::FloatDomainError, e.message
     end
 
     def ceil(input)
       to_number(input).ceil.to_i
+    rescue ::FloatDomainError => e
+      raise Liquid::FloatDomainError, e.message
     end
 
     def floor(input)
       to_number(input).floor.to_i
+    rescue ::FloatDomainError => e
+      raise Liquid::FloatDomainError, e.message
     end
 
     def default(input, default_value = "".freeze)
