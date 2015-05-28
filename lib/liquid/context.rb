@@ -13,7 +13,7 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
-    attr_accessor :exception_handler, :render_errors
+    attr_accessor :exception_handler
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
       @environments     = [environments].flatten
@@ -22,12 +22,11 @@ module Liquid
       @errors           = []
       @resource_limits  = resource_limits || ResourceLimits.new(Template.default_resource_limits)
       squash_instance_assigns_with_environments
-      @render_errors    = true
 
       @this_stack_used = false
 
       if rethrow_errors
-        self.exception_handler = ->(e) { true }
+        self.exception_handler = ->(e) { raise }
       end
 
       @interrupts = []
@@ -68,9 +67,22 @@ module Liquid
         e.set_line_number_from_token(token)
       end
 
+      output = nil
+
+      if exception_handler
+        result = exception_handler.call(e)
+        case result
+        when Exception
+          e = result
+          e.set_line_number_from_token(token) if e.is_a?(Liquid::Error)
+        when String
+          output = result
+        else
+          raise if result
+        end
+      end
       errors.push(e)
-      raise if exception_handler && exception_handler.call(e)
-      render_errors ? Liquid::Error.render(e) : ''
+      output || Liquid::Error.render(e)
     end
 
     def invoke(method, *args)

@@ -102,6 +102,10 @@ class ErrorDrop < Liquid::Drop
     raise Liquid::SyntaxError, 'syntax error'
   end
 
+  def runtime_error
+    raise RuntimeError, 'runtime error'
+  end
+
   def exception
     raise Exception, 'exception'
   end

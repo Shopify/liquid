@@ -186,10 +186,21 @@ class ErrorHandlingTest < Minitest::Test
     end
   end
 
-  def test_disabling_error_rendering
+  def test_exception_handler_with_string_result
     template = Liquid::Template.parse('This is an argument error: {{ errors.argument_error }}')
-    template.render_errors = false
-    assert_equal 'This is an argument error: ', template.render('errors' => ErrorDrop.new)
+    output = template.render({ 'errors' => ErrorDrop.new }, exception_handler: ->(e) { '' })
+    assert_equal 'This is an argument error: ', output
     assert_equal [ArgumentError], template.errors.map(&:class)
+  end
+
+  class InternalError < Liquid::Error
+  end
+
+  def test_exception_handler_with_exception_result
+    template = Liquid::Template.parse('This is a runtime error: {{ errors.runtime_error }}', line_numbers: true)
+    handler = ->(e) { e.is_a?(Liquid::Error) ? e : InternalError.new('internal') }
+    output = template.render({ 'errors' => ErrorDrop.new }, exception_handler: handler)
+    assert_equal 'This is a runtime error: Liquid error (line 1): internal', output
+    assert_equal [InternalError], template.errors.map(&:class)
   end
 end
