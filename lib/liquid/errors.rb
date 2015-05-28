@@ -58,4 +58,5 @@ module Liquid
   TaintedError = Class.new(Error)
   MemoryError = Class.new(Error)
   ZeroDivisionError = Class.new(Error)
+  FloatDomainError = Class.new(Error)
 end
