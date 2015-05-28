@@ -17,7 +17,9 @@ module Liquid
       index = 0
 
       # Maintains Ruby 1.8.7 String#each behaviour on 1.9
-      return collection != ''.freeze ? [collection] : [] if collection.is_a?(String)
+      if collection.is_a?(String)
+        return collection.empty? ? [] : [collection]
+      end
 
       collection.each do |item|
         if to && to <= index
