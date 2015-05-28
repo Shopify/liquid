@@ -57,4 +57,8 @@ class TableRowTest < Minitest::Test
       '{% tablerow n in numbers cols:3 offset:1 limit:6%} {{n}} {% endtablerow %}',
       'numbers' => [0, 1, 2, 3, 4, 5, 6, 7])
   end
+
+  def test_blank_string_not_iterable
+    assert_template_result("<tr class=\"row1\">\n</tr>\n", "{% tablerow char in characters cols:3 %}I WILL NOT BE OUTPUT{% endtablerow %}", 'characters' => '')
+  end
 end
