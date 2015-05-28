@@ -83,23 +83,16 @@ module Liquid
 
     def strict_parse(markup)
       p = Parser.new(markup)
-
-      conditions = [parse_comparison(p)]
-
-      while op = (p.id?('and'.freeze) || p.id?('or'.freeze))
-        conditions << op << parse_comparison(p)
-      end
+      condition = parse_binary_comparison(p)
       p.consume(:end_of_string)
+      condition
+    end
 
-      condition = conditions.pop
-
-      until conditions.empty?
-        op = conditions.pop
-        new_cond = conditions.pop
-        new_cond.send(op, condition)
-        condition = new_cond
+    def parse_binary_comparison(p)
+      condition = parse_comparison(p)
+      if op = (p.id?('and'.freeze) || p.id?('or'.freeze))
+        condition.send(op, parse_binary_comparison(p))
       end
-
       condition
     end
 
