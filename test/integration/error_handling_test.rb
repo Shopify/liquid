@@ -197,10 +197,10 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_exception_handler_with_exception_result
-    template = Liquid::Template.parse('This is a runtime error: {{ errors.runtime_error }}')
+    template = Liquid::Template.parse('This is a runtime error: {{ errors.runtime_error }}', line_numbers: true)
     handler = ->(e) { e.is_a?(Liquid::Error) ? e : InternalError.new('internal') }
     output = template.render({ 'errors' => ErrorDrop.new }, exception_handler: handler)
-    assert_equal 'This is a runtime error: Liquid error: internal', output
+    assert_equal 'This is a runtime error: Liquid error (line 1): internal', output
     assert_equal [InternalError], template.errors.map(&:class)
   end
 end
