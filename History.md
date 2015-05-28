@@ -1,6 +1,10 @@
 # Liquid Version History
 
-## 3.0.2 / 2015-04-24 / branch "3-0-stable"
+## 3.0.3 / 2015-05-28 / branch "3-0-stable"
+
+* Fix condition parse order in strict mode (#569) [Justin Li, pushrax]
+
+## 3.0.2 / 2015-04-24
 
 * Expose VariableLookup private members (#551) [Justin Li, pushrax]
 * Documentation fixes
