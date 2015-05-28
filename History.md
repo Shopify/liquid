@@ -12,6 +12,7 @@
 * Remove support for `liquid_methods`
 
 ### Fixed
+* Fix condition parse order in strict mode (#569) [Justin Li, pushrax]
 * Fix naming of the "context variable" when dynamically including a template (#559) [Justin Li, pushrax]
 * Gracefully accept empty strings in the date filter (#555) [Loren Hale, boobooninja]
 * Fix capturing into variables with a hyphen in the name (#505) [Florian Weingarten, fw42]
@@ -20,7 +21,11 @@
 * Disallow variable names in the strict parser that are not valid in the lax parser (#463) [Justin Li, pushrax]
 * Fix BlockBody#warnings taking exponential time to compute (#486) [Justin Li, pushrax]
 
-## 3.0.2 / 2015-04-24 / branch "3-0-stable"
+## 3.0.3 / 2015-05-28 / branch "3-0-stable"
+
+* Fix condition parse order in strict mode (#569) [Justin Li, pushrax]
+
+## 3.0.2 / 2015-04-24
 
 * Expose VariableLookup private members (#551) [Justin Li, pushrax]
 * Documentation fixes
