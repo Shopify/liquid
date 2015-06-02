@@ -1,6 +1,6 @@
 module Liquid
   class Raw < Block
-    Syntax = /\A\s*\z/om
+    Syntax = /\A\s*\z/
     FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
 
     def initialize(tag_name, markup, options)
