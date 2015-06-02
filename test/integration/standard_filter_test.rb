@@ -76,6 +76,12 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '', @filters.slice(nil, 0)
     assert_equal '', @filters.slice('foobar', 100, 10)
     assert_equal '', @filters.slice('foobar', -100, 10)
+    assert_raises(Liquid::ArgumentError) do
+      @filters.slice('foobar', nil)
+    end
+    assert_raises(Liquid::ArgumentError) do
+      @filters.slice('foobar', 0, "")
+    end
   end
 
   def test_slice_on_arrays
