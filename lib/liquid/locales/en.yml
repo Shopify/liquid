@@ -1,6 +1,7 @@
 ---
   errors:
     syntax:
+      tag_unexpected_args: "Syntax Error in '%{tag}' - Valid syntax: %{tag}"
       assign: "Syntax Error in 'assign' - Valid syntax: assign [var] = [source]"
       capture: "Syntax Error in 'capture' - Valid syntax: capture [var]"
       case: "Syntax Error in 'case' - Valid syntax: case [condition]"
