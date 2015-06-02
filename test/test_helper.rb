@@ -42,7 +42,7 @@ module Minitest
       assert_match expected, Template.parse(template).render!(assigns), message
     end
 
-    def assert_match_syntax_error(match, template, registers = {})
+    def assert_match_syntax_error(match, template, assigns = {})
       exception = assert_raises(Liquid::SyntaxError) {
         Template.parse(template).render(assigns)
       }

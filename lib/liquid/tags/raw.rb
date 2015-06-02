@@ -11,6 +11,8 @@ module Liquid
         end
         @body << token unless token.empty?
       end
+
+      raise SyntaxError.new(@options[:locale].t("errors.syntax.tag_never_closed".freeze, block_name: block_name))
     end
 
     def render(_context)
