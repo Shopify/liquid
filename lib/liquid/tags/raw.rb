@@ -1,6 +1,15 @@
 module Liquid
   class Raw < Block
+    Syntax = /\A\s*\z/om
     FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
+
+    def initialize(tag_name, markup, options)
+      super
+
+      unless markup =~ Syntax
+        raise SyntaxError.new(@options[:locale].t("errors.syntax.tag_unexpected_args".freeze, tag: tag_name))
+      end
+    end
 
     def parse(tokens)
       @body = ''
