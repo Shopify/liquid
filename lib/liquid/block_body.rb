@@ -22,7 +22,13 @@ module Liquid
                 tag_name = $1
                 markup = $2
                 # fetch the tag from registered blocks
-                if tag = Template.tags[tag_name]
+                tag = if options[:template_specific_tags]
+                  options[:template_specific_tags][tag_name]
+                else
+                  Template.tags[tag_name]
+                end
+
+                if tag
                   markup = token.child(markup) if token.is_a?(Token)
                   new_tag = tag.parse(tag_name, markup, tokens, options)
                   new_tag.line_number = token.line_number if token.is_a?(Token)

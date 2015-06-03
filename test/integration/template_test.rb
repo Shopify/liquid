@@ -211,4 +211,19 @@ class TemplateTest < Minitest::Test
     end
     assert exception.is_a?(Liquid::ZeroDivisionError)
   end
+
+  def test_tags_registered_on_a_template_instance_ignores_global_tags
+    template = Template.new
+    template.registered_tags['new_tag'] = Raw
+    assert_raises Liquid::SyntaxError, "Unknown tag 'assign'" do
+      template.parse "{% new_tag %} 42 {% endnew_tag%} {% assign foo = 5 %} Foo={{ foo }}"
+    end
+  end
+
+  def test_tags_registered_on_a_template_instance_renders_fine
+    template = Template.new
+    template.registered_tags['new_tag'] = Raw
+    t = template.parse "{% new_tag %} 42 {% endnew_tag%}"
+    assert_equal " 42 ", t.render({})
+  end
 end

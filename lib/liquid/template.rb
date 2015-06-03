@@ -45,6 +45,10 @@ module Liquid
         @cache.delete(tag_name)
       end
 
+      def present?
+        @tags.any?
+      end
+
       private
 
       def lookup_class(name)
@@ -120,6 +124,7 @@ module Liquid
       @options = options
       @profiling = options[:profile]
       @line_numbers = options[:line_numbers] || @profiling
+      options[:template_specific_tags] = registered_tags if registered_tags.present?
       @root = Document.parse(tokenize(source), DEFAULT_OPTIONS.merge(options))
       @warnings = nil
       self
@@ -144,6 +149,10 @@ module Liquid
 
     def errors
       @errors ||= []
+    end
+
+    def registered_tags
+      @registered_tags ||= TagRegistry.new
     end
 
     # Render takes a hash with local variables.
