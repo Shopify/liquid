@@ -120,6 +120,7 @@ module Liquid
       @options = options
       @profiling = options[:profile]
       @line_numbers = options[:line_numbers] || @profiling
+      options[:template_specific_tags] = registered_tags unless registered_tags.empty?
       @root = Document.parse(tokenize(source), DEFAULT_OPTIONS.merge(options))
       @warnings = nil
       self
@@ -144,6 +145,10 @@ module Liquid
 
     def errors
       @errors ||= []
+    end
+
+    def registered_tags
+      @registered_tags ||= {}
     end
 
     # Render takes a hash with local variables.
