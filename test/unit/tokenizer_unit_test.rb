@@ -24,15 +24,16 @@ class TokenizerTest < Minitest::Test
   def test_calculate_line_numbers_per_token_with_profiling
     template = Liquid::Template.parse("", :profile => true)
 
-    assert_equal [1],       template.send(:tokenize, "{{funk}}").map(&:line_number)
-    assert_equal [1, 1, 1], template.send(:tokenize, " {{funk}} ").map(&:line_number)
-    assert_equal [1, 2, 2], template.send(:tokenize, "\n{{funk}}\n").map(&:line_number)
-    assert_equal [1, 1, 3], template.send(:tokenize, " {{\n funk \n}} ").map(&:line_number)
+    assert_equal [1],       template.send(:tokenize, "{{funk}}").tokens.map(&:line_number)
+    assert_equal [1, 1, 1], template.send(:tokenize, " {{funk}} ").tokens.map(&:line_number)
+    assert_equal [1, 2, 2], template.send(:tokenize, "\n{{funk}}\n").tokens.map(&:line_number)
+    assert_equal [1, 1, 3], template.send(:tokenize, " {{\n funk \n}} ").tokens.map(&:line_number)
   end
 
   private
 
   def tokenize(source)
-    Liquid::Template.new.send(:tokenize, source)
+    tokenizer = Liquid::Tokenizer.new(source)
+    tokenizer.tokens
   end
 end
