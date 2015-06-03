@@ -16,7 +16,12 @@ module Liquid
       '>='.freeze => :>=,
       '<='.freeze => :<=,
       'contains'.freeze => lambda do |cond, left, right|
-        left && right && left.respond_to?(:include?) ? left.include?(right) : false
+        if left && right && left.respond_to?(:include?)
+          right = right.to_s if left.is_a?(String)
+          left.include?(right)
+        else
+          false
+        end
       end
     }
 
