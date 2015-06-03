@@ -46,8 +46,8 @@ module Liquid
     end
 
     def slice(input, offset, length = nil)
-      offset = Integer(offset)
-      length = length ? Integer(length) : 1
+      offset = to_integer(offset)
+      length = length ? to_integer(length) : 1
 
       if input.is_a?(Array)
         input.slice(offset, length) || []
@@ -316,6 +316,16 @@ module Liquid
     end
 
     private
+
+    def to_integer(num)
+      return num if num.is_a?(Integer)
+      num = num.to_s
+      begin
+        Integer(num)
+      rescue ::ArgumentError
+        raise Liquid::ArgumentError, "invalid integer"
+      end
+    end
 
     def to_number(obj)
       case obj
