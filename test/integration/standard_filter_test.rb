@@ -76,6 +76,7 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '', @filters.slice(nil, 0)
     assert_equal '', @filters.slice('foobar', 100, 10)
     assert_equal '', @filters.slice('foobar', -100, 10)
+    assert_equal 'oob', @filters.slice('foobar', '1', '3')
     assert_raises(Liquid::ArgumentError) do
       @filters.slice('foobar', nil)
     end

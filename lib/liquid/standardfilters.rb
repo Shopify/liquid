@@ -323,7 +323,7 @@ module Liquid
       begin
         Integer(num)
       rescue ::ArgumentError
-        raise Liquid::ArgumentError, "invalid integer '#{num}'"
+        raise Liquid::ArgumentError, "invalid integer"
       end
     end
 
