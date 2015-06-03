@@ -13,10 +13,6 @@ module Liquid
   #   template.render('user_name' => 'bob')
   #
   class Template
-    DEFAULT_OPTIONS = {
-      locale: I18n.new
-    }
-
     attr_accessor :root
     attr_reader :resource_limits
 
@@ -120,7 +116,7 @@ module Liquid
       @options = options
       @profiling = options[:profile]
       @line_numbers = options[:line_numbers] || @profiling
-      @root = Document.parse(tokenize(source), DEFAULT_OPTIONS.merge(options))
+      @root = Document.parse(tokenize(source), options)
       @warnings = nil
       self
     end
