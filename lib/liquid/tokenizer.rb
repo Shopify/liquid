@@ -1,7 +1,5 @@
 module Liquid
   class Tokenizer
-    attr_reader :tokens
-
     def initialize(source, line_numbers = false)
       @source, @line_numbers = source, line_numbers
       @tokens = tokenize
