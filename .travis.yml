@@ -14,7 +14,7 @@ matrix:
   allow_failures:
     - rvm: jruby-head
 
-script: "rake test"
+script: "rake"
 
 notifications:
   disable: true
