@@ -5,6 +5,11 @@ AllCops:
     - 'performance/shopify/*'
     - 'pkg/**'
 
+Metrics/BlockNesting:
+  Max: 3
+  Exclude:
+    - 'lib/liquid/block_body.rb'
+
 Lint/AssignmentInCondition:
   Enabled: false
 
@@ -24,6 +29,9 @@ Lint/EndAlignment:
   AlignWith: variable
 
 Style/SingleLineBlockParams:
+  Enabled: false
+
+Style/DoubleNegation:
   Enabled: false
 
 Style/StringLiteralsInInterpolation:

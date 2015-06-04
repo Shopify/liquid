@@ -16,7 +16,7 @@ module Liquid
 
     def parse(tokens)
       body = BlockBody.new
-      while more = parse_body(body, tokens)
+      while parse_body(body, tokens)
         body = @blocks.last.attachment
       end
     end

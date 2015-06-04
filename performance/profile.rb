@@ -1,4 +1,4 @@
-require 'stackprof' rescue fail("install stackprof extension/gem")
+require 'stackprof'
 require_relative 'theme_runner'
 
 Liquid::Template.error_mode = ARGV.first.to_sym if ARGV.first
