@@ -110,4 +110,3 @@ class ErrorDrop < Liquid::Drop
     raise Exception, 'exception'
   end
 end
-

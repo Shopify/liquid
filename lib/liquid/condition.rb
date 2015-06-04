@@ -78,17 +78,17 @@ module Liquid
     private
 
     def equal_variables(left, right)
-      if left.is_a?(Symbol)
-        if right.respond_to?(left)
-          return right.send(left.to_s)
+      if left.is_a?(Liquid::Expression::MethodLiteral)
+        if right.respond_to?(left.method_name)
+          return right.send(left.method_name)
         else
           return nil
         end
       end
 
-      if right.is_a?(Symbol)
-        if left.respond_to?(right)
-          return left.send(right.to_s)
+      if right.is_a?(Liquid::Expression::MethodLiteral)
+        if left.respond_to?(right.method_name)
+          return left.send(right.method_name)
         else
           return nil
         end

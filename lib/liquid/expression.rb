@@ -1,11 +1,24 @@
 module Liquid
   class Expression
+    class MethodLiteral
+      attr_reader :method_name, :to_s
+
+      def initialize(method_name, to_s)
+        @method_name = method_name
+        @to_s = to_s
+      end
+
+      def to_liquid
+        to_s
+      end
+    end
+
     LITERALS = {
       nil => nil, 'nil'.freeze => nil, 'null'.freeze => nil, ''.freeze => nil,
       'true'.freeze  => true,
       'false'.freeze => false,
-      'blank'.freeze => :blank?,
-      'empty'.freeze => :empty?
+      'blank'.freeze => MethodLiteral.new(:blank?, '').freeze,
+      'empty'.freeze => MethodLiteral.new(:empty?, '').freeze
     }
 
     def self.parse(markup)
