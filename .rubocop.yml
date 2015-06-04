@@ -3,6 +3,7 @@ inherit_from: ./.rubocop_todo.yml
 AllCops:
   Exclude:
     - 'performance/shopify/*'
+    - 'pkg/**'
 
 Lint/AssignmentInCondition:
   Enabled: false
