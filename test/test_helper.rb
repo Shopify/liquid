@@ -4,7 +4,7 @@ ENV["MT_NO_EXPECTATIONS"] = "1"
 require 'minitest/autorun'
 require 'spy/integration'
 
-$:.unshift(File.join(File.expand_path(__dir__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.expand_path(__dir__), '..', 'lib'))
 require 'liquid.rb'
 require 'liquid/profiler'
 
@@ -43,9 +43,9 @@ module Minitest
     end
 
     def assert_match_syntax_error(match, template, assigns = {})
-      exception = assert_raises(Liquid::SyntaxError) {
+      exception = assert_raises(Liquid::SyntaxError) do
         Template.parse(template).render(assigns)
-      }
+      end
       assert_match match, exception.message
     end
 
@@ -103,11 +103,10 @@ class ErrorDrop < Liquid::Drop
   end
 
   def runtime_error
-    raise RuntimeError, 'runtime error'
+    raise 'runtime error'
   end
 
   def exception
     raise Exception, 'exception'
   end
 end
-

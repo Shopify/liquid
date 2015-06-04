@@ -19,7 +19,6 @@ class ContextDrop < Liquid::Drop
 end
 
 class ProductDrop < Liquid::Drop
-
   class TextDrop < Liquid::Drop
     def array
       ['text1', 'text2']

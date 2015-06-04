@@ -271,7 +271,7 @@ class StandardTagTest < Minitest::Test
   end
 
   def test_size_of_hash
-    assigns = { "hash" => { :a => 1, :b => 2, :c => 3, :d => 4 } }
+    assigns = { "hash" => { a: 1, b: 2, c: 3, d: 4 } }
     assert_template_result('hash has 4 elements', "hash has {{ hash.size }} elements", assigns)
   end
 

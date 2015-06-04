@@ -62,9 +62,9 @@ class ParsingQuirksTest < Minitest::Test
   end
 
   def test_no_error_on_lax_empty_filter
-    assert Template.parse("{{test |a|b|}}", :error_mode => :lax)
-    assert Template.parse("{{test}}", :error_mode => :lax)
-    assert Template.parse("{{|test|}}", :error_mode => :lax)
+    assert Template.parse("{{test |a|b|}}", error_mode: :lax)
+    assert Template.parse("{{test}}", error_mode: :lax)
+    assert Template.parse("{{|test|}}", error_mode: :lax)
   end
 
   def test_meaningless_parens_lax
@@ -115,5 +115,4 @@ class ParsingQuirksTest < Minitest::Test
       assert_template_result('12345', "{% for i in (1...5) %}{{ i }}{% endfor %}")
     end
   end
-
 end # ParsingQuirksTest

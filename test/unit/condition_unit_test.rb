@@ -151,5 +151,4 @@ class ConditionUnitTest < Minitest::Test
       Condition.new(left, op, right).evaluate(@context || Liquid::Context.new)
     end
   end
-
 end # ConditionTest

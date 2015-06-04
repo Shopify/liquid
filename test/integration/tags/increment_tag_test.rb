@@ -20,5 +20,4 @@ class IncrementTagTest < Minitest::Test
       '{%increment port %} {%decrement port%} ' \
       '{%decrement starboard %}', { 'port' => 1, 'starboard' => 5 })
   end
-
 end

@@ -12,5 +12,4 @@ class ContinueTagTest < Minitest::Test
 
     assert_template_result(expected, markup, assigns)
   end
-
 end

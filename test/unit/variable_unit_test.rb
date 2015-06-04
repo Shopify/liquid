@@ -71,7 +71,7 @@ class VariableUnitTest < Minitest::Test
   end
 
   def test_symbol
-    var = Variable.new("http://disney.com/logo.gif | image: 'med' ", :error_mode => :lax)
+    var = Variable.new("http://disney.com/logo.gif | image: 'med' ", error_mode: :lax)
     assert_equal VariableLookup.new('http://disney.com/logo.gif'), var.name
     assert_equal [['image', ['med']]], var.filters
   end
@@ -130,7 +130,7 @@ class VariableUnitTest < Minitest::Test
   end
 
   def test_lax_filter_argument_parsing
-    var = Variable.new(%( number_of_comments | pluralize: 'comment': 'comments' ), :error_mode => :lax)
+    var = Variable.new(%( number_of_comments | pluralize: 'comment': 'comments' ), error_mode: :lax)
     assert_equal VariableLookup.new('number_of_comments'), var.name
     assert_equal [['pluralize', ['comment', 'comments']]], var.filters
   end
