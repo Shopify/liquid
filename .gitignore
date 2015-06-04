@@ -6,3 +6,4 @@ pkg
 .rvmrc
 .ruby-version
 Gemfile.lock
+.bundle
