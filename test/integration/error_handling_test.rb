@@ -203,4 +203,24 @@ class ErrorHandlingTest < Minitest::Test
     assert_equal 'This is a runtime error: Liquid error (line 1): internal', output
     assert_equal [InternalError], template.errors.map(&:class)
   end
+
+  class TestFileSystem
+    def read_template_file(template_path)
+      "{{ errors.argument_error }}"
+    end
+  end
+
+  def test_included_template_name_with_line_numbers
+    old_file_system = Liquid::Template.file_system
+
+    begin
+      Liquid::Template.file_system = TestFileSystem.new
+      template = Liquid::Template.parse("Argument error:\n{% include 'product' %}", line_numbers: true)
+      page = template.render('errors' => ErrorDrop.new)
+    ensure
+      Liquid::Template.file_system = old_file_system
+    end
+    assert_equal "Argument error:\nLiquid error (product line 1): argument error", page
+    assert_equal "product", template.errors.first.template_name
+  end
 end
