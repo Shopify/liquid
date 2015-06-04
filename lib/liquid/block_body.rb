@@ -73,7 +73,7 @@ module Liquid
 
       @nodelist.each do |token|
         # Break out if we have any unhanded interrupts.
-        break if context.has_interrupt?
+        break if context.interrupt?
 
         begin
           # If we get an Interrupt that means the block must stop processing. An

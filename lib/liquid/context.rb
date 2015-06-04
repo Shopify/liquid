@@ -48,7 +48,7 @@ module Liquid
     end
 
     # are there any not handled interrupts?
-    def has_interrupt?
+    def interrupt?
       !@interrupts.empty?
     end
 
@@ -154,7 +154,7 @@ module Liquid
       evaluate(Expression.parse(expression))
     end
 
-    def has_key?(key)
+    def key?(key)
       self[key] != nil
     end
 
@@ -166,7 +166,7 @@ module Liquid
     def find_variable(key)
       # This was changed from find() to find_index() because this is a very hot
       # path and find_index() is optimized in MRI to reduce object allocation
-      index = @scopes.find_index { |s| s.has_key?(key) }
+      index = @scopes.find_index { |s| s.key?(key) }
       scope = @scopes[index] if index
 
       variable = nil
@@ -203,7 +203,7 @@ module Liquid
     def squash_instance_assigns_with_environments
       @scopes.last.each_key do |k|
         @environments.each do |env|
-          if env.has_key?(k)
+          if env.key?(k)
             scopes.last[k] = lookup_and_evaluate(env, k)
             break
           end

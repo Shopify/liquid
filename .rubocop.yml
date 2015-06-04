@@ -28,6 +28,9 @@ Lint/UnusedBlockArgument:
 Lint/EndAlignment:
   AlignWith: variable
 
+Lint/UnusedMethodArgument:
+  Enabled: false
+
 Style/SingleLineBlockParams:
   Enabled: false
 
