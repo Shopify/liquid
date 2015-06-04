@@ -83,15 +83,15 @@ class ErrorHandlingTest < Minitest::Test
 
   def test_with_line_numbers_adds_numbers_to_parser_errors
     err = assert_raises(SyntaxError) do
-      template = Liquid::Template.parse(%q(
+      Liquid::Template.parse(%q(
           foobar
 
           {% "cat" | foobar %}
 
           bla
-                ),
+        ),
         line_numbers: true
-                                       )
+      )
     end
 
     assert_match /Liquid syntax error \(line 4\)/, err.message

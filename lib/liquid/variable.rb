@@ -41,11 +41,10 @@ module Liquid
       if filter_markup =~ /#{FilterSeparator}\s*(.*)/om
         filters = $1.scan(FilterParser)
         filters.each do |f|
-          if f =~ /\w+/
-            filtername = Regexp.last_match(0)
-            filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
-            @filters << parse_filter_expressions(filtername, filterargs)
-          end
+          next unless f =~ /\w+/
+          filtername = Regexp.last_match(0)
+          filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
+          @filters << parse_filter_expressions(filtername, filterargs)
         end
       end
     end
@@ -74,7 +73,7 @@ module Liquid
     def render(context)
       @filters.inject(context.evaluate(@name)) do |output, (filter_name, filter_args, filter_kwargs)|
         filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
-        output = context.invoke(filter_name, output, *filter_args)
+        context.invoke(filter_name, output, *filter_args)
       end.tap{ |obj| taint_check(obj) }
     end
 

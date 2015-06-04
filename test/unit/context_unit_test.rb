@@ -453,7 +453,6 @@ class ContextUnitTest < Minitest::Test
   def test_use_empty_instead_of_any_in_interrupt_handling_to_avoid_lots_of_unnecessary_object_allocations
     mock_any = Spy.on_instance_method(Array, :any?)
     mock_empty = Spy.on_instance_method(Array, :empty?)
-    mock_has_interrupt = Spy.on(@context, :has_interrupt?).and_call_through
 
     @context.has_interrupt?
 
