@@ -13,10 +13,6 @@ module Liquid
   #   template.render('user_name' => 'bob')
   #
   class Template
-    DEFAULT_OPTIONS = {
-      locale: I18n.new
-    }
-
     attr_accessor :root
     attr_reader :resource_limits
 
@@ -120,7 +116,7 @@ module Liquid
       @options = options
       @profiling = options[:profile]
       @line_numbers = options[:line_numbers] || @profiling
-      @root = Document.parse(tokenize(source), DEFAULT_OPTIONS.merge(options))
+      @root = Document.parse(tokenize(source), options)
       @warnings = nil
       self
     end
@@ -228,28 +224,8 @@ module Liquid
 
     private
 
-    # Uses the <tt>Liquid::TemplateParser</tt> regexp to tokenize the passed source
     def tokenize(source)
-      source = source.source if source.respond_to?(:source)
-      return [] if source.to_s.empty?
-
-      tokens = calculate_line_numbers(source.split(TemplateParser))
-
-      # removes the rogue empty element at the beginning of the array
-      tokens.shift if tokens[0] && tokens[0].empty?
-
-      tokens
-    end
-
-    def calculate_line_numbers(raw_tokens)
-      return raw_tokens unless @line_numbers
-
-      current_line = 1
-      raw_tokens.map do |token|
-        Token.new(token, current_line).tap do
-          current_line += token.count("\n")
-        end
-      end
+      Tokenizer.new(source, @line_numbers)
     end
 
     def with_profiling

@@ -22,7 +22,7 @@ module Liquid
                 tag_name = $1
                 markup = $2
                 # fetch the tag from registered blocks
-                if tag = Template.tags[tag_name]
+                if tag = registered_tags[tag_name]
                   markup = token.child(markup) if token.is_a?(Token)
                   new_tag = tag.parse(tag_name, markup, tokens, options)
                   new_tag.line_number = token.line_number if token.is_a?(Token)
@@ -126,6 +126,10 @@ module Liquid
 
     def raise_missing_variable_terminator(token, options)
       raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination".freeze, token: token, tag_end: VariableEnd.inspect))
+    end
+
+    def registered_tags
+      Template.tags
     end
   end
 end
