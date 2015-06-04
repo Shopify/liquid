@@ -454,7 +454,7 @@ class ContextUnitTest < Minitest::Test
     mock_any = Spy.on_instance_method(Array, :any?)
     mock_empty = Spy.on_instance_method(Array, :empty?)
 
-    @context.has_interrupt?
+    @context.interrupt?
 
     refute mock_any.has_been_called?
     assert mock_empty.has_been_called?

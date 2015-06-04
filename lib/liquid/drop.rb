@@ -39,7 +39,7 @@ module Liquid
       end
     end
 
-    def has_key?(_name)
+    def key?(_name)
       true
     end
 

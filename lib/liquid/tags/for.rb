@@ -119,7 +119,7 @@ module Liquid
           result << @for_block.render(context)
 
           # Handle any interrupts if they exist.
-          if context.has_interrupt?
+          if context.interrupt?
             interrupt = context.pop_interrupt
             break if interrupt.is_a? BreakInterrupt
             next if interrupt.is_a? ContinueInterrupt

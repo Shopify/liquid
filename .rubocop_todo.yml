@@ -5,11 +5,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 11
-# Cop supports --auto-correct.
-Lint/UnusedMethodArgument:
-  Enabled: false
-
 # Offense count: 51
 Metrics/AbcSize:
   Max: 58
@@ -68,11 +63,6 @@ Style/MultilineBlockChain:
 # Offense count: 2
 # Configuration parameters: EnforcedStyle, MinBodyLength, SupportedStyles.
 Style/Next:
-  Enabled: false
-
-# Offense count: 3
-# Configuration parameters: NamePrefix, NamePrefixBlacklist.
-Style/PredicateName:
   Enabled: false
 
 # Offense count: 7
