@@ -25,7 +25,7 @@ module Liquid
       end
 
       def [](tag_name)
-        return nil unless @tags.has_key?(tag_name)
+        return nil unless @tags.key?(tag_name)
         return @cache[tag_name] if Liquid.cache_classes
 
         lookup_class(@tags[tag_name]).tap { |o| @cache[tag_name] = o }

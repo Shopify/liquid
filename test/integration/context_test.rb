@@ -25,7 +25,7 @@ class ContextTest < Minitest::Test
   def test_has_key_will_not_add_an_error_for_missing_keys
     with_error_mode :strict do
       context = Context.new
-      context.has_key?('unknown')
+      context.key?('unknown')
       assert_empty context.errors
     end
   end
