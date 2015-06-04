@@ -8,6 +8,15 @@ AllCops:
 Lint/AssignmentInCondition:
   Enabled: false
 
+Lint/AmbiguousOperator:
+  Enabled: false
+
+Lint/AmbiguousRegexpLiteral:
+  Enabled: false
+
+Lint/ParenthesesAsGroupedExpression:
+  Enabled: false
+
 Lint/UnusedBlockArgument:
   Enabled: false
 
@@ -18,6 +27,9 @@ Style/SingleLineBlockParams:
   Enabled: false
 
 Style/StringLiteralsInInterpolation:
+  Enabled: false
+
+Style/AndOr:
   Enabled: false
 
 Style/SignalException:

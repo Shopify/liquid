@@ -136,7 +136,7 @@ class FiltersTest < Minitest::Test
   end
 
   def test_override_object_method_in_filter
-    assert_equal "tap overridden", Template.parse("{{var | tap}}").render!({ 'var' => 1000 }, :filters => [OverrideObjectMethodFilter])
+    assert_equal "tap overridden", Template.parse("{{var | tap}}").render!({ 'var' => 1000 }, filters: [OverrideObjectMethodFilter])
 
     # tap still treated as a non-existent filter
     assert_equal "1000", Template.parse("{{var | tap}}").render!({ 'var' => 1000 })
@@ -149,8 +149,8 @@ class FiltersInTemplate < Minitest::Test
   def test_local_global
     with_global_filter(MoneyFilter) do
       assert_equal " 1000$ ", Template.parse("{{1000 | money}}").render!(nil, nil)
-      assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => CanadianMoneyFilter)
-      assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, :filters => [CanadianMoneyFilter])
+      assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, filters: CanadianMoneyFilter)
+      assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, filters: [CanadianMoneyFilter])
     end
   end
 

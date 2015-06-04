@@ -54,62 +54,62 @@ class OutputTest < Minitest::Test
     text = %( {{ car.gm | make_funny }} )
     expected = %( LOL )
 
-    assert_equal expected, Template.parse(text).render!(@assigns, :filters => [FunnyFilter])
+    assert_equal expected, Template.parse(text).render!(@assigns, filters: [FunnyFilter])
   end
 
   def test_variable_piping_with_input
     text = %( {{ car.gm | cite_funny }} )
     expected = %( LOL: bad )
 
-    assert_equal expected, Template.parse(text).render!(@assigns, :filters => [FunnyFilter])
+    assert_equal expected, Template.parse(text).render!(@assigns, filters: [FunnyFilter])
   end
 
   def test_variable_piping_with_args
     text = %! {{ car.gm | add_smiley : ':-(' }} !
     expected = %| bad :-( |
 
-    assert_equal expected, Template.parse(text).render!(@assigns, :filters => [FunnyFilter])
+    assert_equal expected, Template.parse(text).render!(@assigns, filters: [FunnyFilter])
   end
 
   def test_variable_piping_with_no_args
     text = %( {{ car.gm | add_smiley }} )
     expected = %| bad :-) |
 
-    assert_equal expected, Template.parse(text).render!(@assigns, :filters => [FunnyFilter])
+    assert_equal expected, Template.parse(text).render!(@assigns, filters: [FunnyFilter])
   end
 
   def test_multiple_variable_piping_with_args
     text = %! {{ car.gm | add_smiley : ':-(' | add_smiley : ':-('}} !
     expected = %| bad :-( :-( |
 
-    assert_equal expected, Template.parse(text).render!(@assigns, :filters => [FunnyFilter])
+    assert_equal expected, Template.parse(text).render!(@assigns, filters: [FunnyFilter])
   end
 
   def test_variable_piping_with_multiple_args
     text = %( {{ car.gm | add_tag : 'span', 'bar'}} )
     expected = %( <span id="bar">bad</span> )
 
-    assert_equal expected, Template.parse(text).render!(@assigns, :filters => [FunnyFilter])
+    assert_equal expected, Template.parse(text).render!(@assigns, filters: [FunnyFilter])
   end
 
   def test_variable_piping_with_variable_args
     text = %( {{ car.gm | add_tag : 'span', car.bmw}} )
     expected = %( <span id="good">bad</span> )
 
-    assert_equal expected, Template.parse(text).render!(@assigns, :filters => [FunnyFilter])
+    assert_equal expected, Template.parse(text).render!(@assigns, filters: [FunnyFilter])
   end
 
   def test_multiple_pipings
     text = %( {{ best_cars | cite_funny | paragraph }} )
     expected = %( <p>LOL: bmw</p> )
 
-    assert_equal expected, Template.parse(text).render!(@assigns, :filters => [FunnyFilter])
+    assert_equal expected, Template.parse(text).render!(@assigns, filters: [FunnyFilter])
   end
 
   def test_link_to
     text = %( {{ 'Typo' | link_to: 'http://typo.leetsoft.com' }} )
     expected = %( <a href="http://typo.leetsoft.com">Typo</a> )
 
-    assert_equal expected, Template.parse(text).render!(@assigns, :filters => [FunnyFilter])
+    assert_equal expected, Template.parse(text).render!(@assigns, filters: [FunnyFilter])
   end
 end # OutputTest

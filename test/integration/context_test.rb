@@ -18,7 +18,7 @@ class ContextTest < Minitest::Test
 
     with_global_filter(global) do
       assert_equal 'Global test', Template.parse("{{'test' | notice }}").render!
-      assert_equal 'Local test', Template.parse("{{'test' | notice }}").render!({}, :filters => [local])
+      assert_equal 'Local test', Template.parse("{{'test' | notice }}").render!({}, filters: [local])
     end
   end
 

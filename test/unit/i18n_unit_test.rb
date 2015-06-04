@@ -16,7 +16,7 @@ class I18nUnitTest < Minitest::Test
   end
 
   def test_single_string_interpolation
-    assert_equal "something different", @i18n.translate("whatever", :something => "different")
+    assert_equal "something different", @i18n.translate("whatever", something: "different")
   end
 
   # def test_raises_translation_error_on_undefined_interpolation_key

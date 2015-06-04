@@ -65,5 +65,4 @@ class StrainerUnitTest < Minitest::Test
     assert_kind_of b, strainer
     assert_kind_of Liquid::StandardFilters, strainer
   end
-
 end # StrainerTest

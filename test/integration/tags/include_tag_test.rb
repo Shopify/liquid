@@ -77,7 +77,7 @@ class IncludeTagTest < Minitest::Test
 
   def test_include_tag_looks_for_file_system_in_registers_first
     assert_equal 'from OtherFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => { :file_system => OtherFileSystem.new })
+      Template.parse("{% include 'pick_a_source' %}").render!({}, registers: { file_system: OtherFileSystem.new })
   end
 
   def test_include_tag_with
@@ -153,18 +153,18 @@ class IncludeTagTest < Minitest::Test
   def test_include_tag_caches_second_read_of_same_partial
     file_system = CountingFileSystem.new
     assert_equal 'from CountingFileSystemfrom CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render!({}, :registers => { :file_system => file_system })
+      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system })
     assert_equal 1, file_system.count
   end
 
   def test_include_tag_doesnt_cache_partials_across_renders
     file_system = CountingFileSystem.new
     assert_equal 'from CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => { :file_system => file_system })
+      Template.parse("{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system })
     assert_equal 1, file_system.count
 
     assert_equal 'from CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render!({}, :registers => { :file_system => file_system })
+      Template.parse("{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system })
     assert_equal 2, file_system.count
   end
 

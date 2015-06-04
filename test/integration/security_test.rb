@@ -34,7 +34,7 @@ class SecurityTest < Minitest::Test
     text = %( {{ '1+1' | add_one | instance_eval }} )
     expected = %( 1+1 + 1 )
 
-    assert_equal expected, Template.parse(text).render!(@assigns, :filters => SecurityFilter)
+    assert_equal expected, Template.parse(text).render!(@assigns, filters: SecurityFilter)
   end
 
   def test_does_not_add_filters_to_symbol_table

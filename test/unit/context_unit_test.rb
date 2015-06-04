@@ -462,10 +462,9 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_context_initialization_with_a_proc_in_environment
-    contx = Context.new([:test => ->(c) { c['poutine'] }], { :test => :foo })
+    contx = Context.new([test: ->(c) { c['poutine'] }], { test: :foo })
 
     assert contx
     assert_nil contx['poutine']
   end
-
 end # ContextTest
