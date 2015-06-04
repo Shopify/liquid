@@ -1,7 +1,8 @@
 module Liquid
   class Tokenizer
     def initialize(source, line_numbers = false)
-      @source, @line_numbers = source, line_numbers
+      @source = source
+      @line_numbers = line_numbers
       @tokens = tokenize
     end
 
