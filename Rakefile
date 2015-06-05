@@ -76,3 +76,7 @@ desc "Run example"
 task :example do
   ruby "-w -d -Ilib example/server/server.rb"
 end
+
+task :console do
+  exec 'irb -I lib -r liquid'
+end
