@@ -37,8 +37,11 @@ module Liquid
 
       name_markup = $1
       filter_markup = $2
+
+      global_filter_markup = add_global_filters(filter_markup)
+
       @name = Expression.parse(name_markup)
-      if filter_markup =~ /#{FilterSeparator}\s*(.*)/om
+      if global_filter_markup =~ /#{FilterSeparator}\s*(.*)/om
         filters = $1.scan(FilterParser)
         filters.each do |f|
           next unless f =~ /\w+/
@@ -51,7 +54,10 @@ module Liquid
 
     def strict_parse(markup)
       @filters = []
-      p = Parser.new(markup)
+
+      global_markup = add_global_filters(markup)
+
+      p = Parser.new(global_markup)
 
       @name = Expression.parse(p.expression)
       while p.consume?(:pipe)
@@ -78,6 +84,17 @@ module Liquid
     end
 
     private
+
+    def add_global_filters(filter_markup)
+      fm = filter_markup.dup
+      gf = @options[:global_filters]
+      if gf && gf.is_a?(Array)
+        gf.each do |filter|
+          fm += " | #{filter}"
+        end
+      end
+      fm
+    end
 
     def parse_filter_expressions(filter_name, unparsed_args)
       filter_args = []

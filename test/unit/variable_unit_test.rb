@@ -153,4 +153,17 @@ class VariableUnitTest < Minitest::Test
     assert_equal 'a', lookup.name
     assert_equal ['b', 'c'], lookup.lookups
   end
+
+  def test_global_filters
+    var = Variable.new(%( 'foo' ), global_filters: ['repeat: 3'])
+    assert_equal 'foo', var.name
+    assert_equal [['repeat', [3]]], var.filters
+  end
+
+  def test_global_filters_to_existing_filters
+    var = Variable.new(%( 'foo' | upcase ), global_filters: ['repeat: 3'])
+    assert_equal 'foo', var.name
+    assert_equal [['upcase', []],['repeat', [3]]], var.filters
+  end
+
 end
