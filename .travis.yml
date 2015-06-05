@@ -14,7 +14,7 @@ matrix:
   allow_failures:
     - rvm: jruby-head
 
-script: "rake"
+script: "bundle exec rake"
 
 notifications:
   disable: true

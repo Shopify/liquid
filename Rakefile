@@ -27,9 +27,22 @@ desc 'runs test suite with both strict and lax parsers'
 task :test do
   ENV['LIQUID_PARSER_MODE'] = 'lax'
   Rake::Task['base_test'].invoke
+
   ENV['LIQUID_PARSER_MODE'] = 'strict'
   Rake::Task['base_test'].reenable
   Rake::Task['base_test'].invoke
+
+  if RUBY_ENGINE == 'ruby'
+    ENV['LIQUID-C'] = '1'
+
+    ENV['LIQUID_PARSER_MODE'] = 'lax'
+    Rake::Task['base_test'].reenable
+    Rake::Task['base_test'].invoke
+
+    ENV['LIQUID_PARSER_MODE'] = 'strict'
+    Rake::Task['base_test'].reenable
+    Rake::Task['base_test'].invoke
+  end
 end
 
 task gem: :build
