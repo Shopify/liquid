@@ -78,5 +78,5 @@ task :example do
 end
 
 task :console do
-  exec 'irb -I lib -r ./lib/liquid.rb'
+  exec 'irb -I lib -r liquid'
 end
