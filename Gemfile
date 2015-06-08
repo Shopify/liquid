@@ -7,4 +7,8 @@ group :test do
   gem 'spy', '0.4.1'
   gem 'benchmark-ips'
   gem 'rubocop'
+
+  platform :mri do
+    gem 'liquid-c', github: 'Shopify/liquid-c', ref: '35e9aee48d639ae1d3ac9ba77616aca9800eab7d'
+  end
 end
