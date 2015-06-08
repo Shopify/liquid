@@ -8,7 +8,7 @@ group :test do
   gem 'benchmark-ips'
   gem 'rubocop'
 
-  platform :ruby, :mswin, :mingw do
+  platform :mri do
     gem 'liquid-c', github: 'Shopify/liquid-c', ref: '35e9aee48d639ae1d3ac9ba77616aca9800eab7d'
   end
 end
