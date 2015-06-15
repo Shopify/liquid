@@ -165,7 +165,7 @@ module Liquid
         end
       end
     end
-    
+
     # Remove nils within an array
     # provide optional property with which to check for nil
     def compact(input, property = nil)
