@@ -10,6 +10,9 @@ Metrics/BlockNesting:
   Exclude:
     - 'lib/liquid/block_body.rb'
 
+Metrics/ModuleLength:
+  Enabled: false
+
 Lint/AssignmentInCondition:
   Enabled: false
 
