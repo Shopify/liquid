@@ -59,15 +59,17 @@ module Liquid
     # Truncate a string down to x characters
     def truncate(input, length = 50, truncate_string = "...".freeze)
       return if input.nil?
-      l = length.to_i - truncate_string.length
+      length = to_integer(length)
+      l = length - truncate_string.length
       l = 0 if l < 0
-      input.length > length.to_i ? input[0...l] + truncate_string : input
+      input.length > length ? input[0...l] + truncate_string : input
     end
 
     def truncatewords(input, words = 15, truncate_string = "...".freeze)
       return if input.nil?
       wordlist = input.to_s.split
-      l = words.to_i - 1
+      words = to_integer(words)
+      l = words - 1
       l = 0 if l < 0
       wordlist.length > l ? wordlist[0..l].join(" ".freeze) + truncate_string : input
     end
