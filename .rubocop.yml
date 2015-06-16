@@ -114,3 +114,7 @@ Style/PerlBackrefs:
 
 Style/WordArray:
   Enabled: false
+
+Style/ModuleLength:
+  Exclude:
+    - lib/liquid/standardfilters.rb
