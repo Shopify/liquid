@@ -67,7 +67,7 @@ module Liquid
     def truncatewords(input, words = 15, truncate_string = "...".freeze)
       return if input.nil?
       wordlist = input.to_s.split
-      l = words.to_i - 1
+      l = to_integer(words) - 1
       l = 0 if l < 0
       wordlist.length > l ? wordlist[0..l].join(" ".freeze) + truncate_string : input
     end
