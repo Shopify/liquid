@@ -168,6 +168,20 @@ module Liquid
       end
     end
 
+    # Remove nils within an array
+    # provide optional property with which to check for nil
+    def compact(input, property = nil)
+      ary = InputIterator.new(input)
+
+      if property.nil?
+        ary.compact
+      elsif ary.first.respond_to?(:[])
+        ary.reject{ |a| a[property].nil? }
+      elsif ary.first.respond_to?(property)
+        ary.reject { |a| a.send(property).nil? }
+      end
+    end
+
     # Replace occurrences of a string with another
     def replace(input, string, replacement = ''.freeze)
       input.to_s.gsub(string.to_s, replacement.to_s)
@@ -397,6 +411,10 @@ module Liquid
 
       def uniq(&block)
         to_a.uniq(&block)
+      end
+
+      def compact
+        to_a.compact
       end
 
       def each

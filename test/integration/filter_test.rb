@@ -104,6 +104,27 @@ class FiltersTest < Minitest::Test
     assert_equal sorted[2].a, 'C'
   end
 
+  def test_compact
+    @context['words'] = ['a', nil, 'b', nil, 'c']
+    @context['hashes'] = [{ 'a' => 'A' }, { 'a' => nil }, { 'a' => 'C' }]
+    @context['objects'] = [TestObject.new('A'), TestObject.new(nil), TestObject.new('C')]
+
+    # Test strings
+    assert_equal ['a', 'b', 'c'], Variable.new("words | compact").render(@context)
+
+    # Test hashes
+    sorted = Variable.new("hashes | compact: 'a'").render(@context)
+    assert_equal sorted[0]['a'], 'A'
+    assert_equal sorted[1]['a'], 'C'
+    assert_nil sorted[2]
+
+    # Test objects
+    sorted = Variable.new("objects | compact: 'a'").render(@context)
+    assert_equal sorted[0].a, 'A'
+    assert_equal sorted[1].a, 'C'
+    assert_nil sorted[2]
+  end
+
   def test_strip_html
     @context['var'] = "<b>bla blub</a>"
 
