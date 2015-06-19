@@ -3,6 +3,7 @@
 ## 4.0.0 / not yet released / branch "master"
 
 ### Changed
+* Add compact filter (#600) [Carson Reinke, carsonreinke]
 * Rename deprecated "has_key?" and "has_interrupt?" methods (#593) [Florian Weingarten, fw42]
 * Include template name with line numbers in render errors (574) [Dylan Thacker-Smith, dylanahsmith]
 * Add sort_natural filter (#554) [Martin Hanzel, arthanzel]
