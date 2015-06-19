@@ -3,6 +3,8 @@
 ## 4.0.0 / not yet released / branch "master"
 
 ### Changed
+* Rename deprecated "has_key?" and "has_interrupt?" methods (#593) [Florian Weingarten, fw42]
+* Include template name with line numbers in render errors (574) [Dylan Thacker-Smith, dylanahsmith]
 * Add sort_natural filter (#554) [Martin Hanzel, arthanzel]
 * Add forloop.parentloop as a reference to the parent loop (#520) [Justin Li, pushrax]
 * Block parsing moved to BlockBody class (#458) [Dylan Thacker-Smith, dylanahsmith]
@@ -12,6 +14,8 @@
 * Remove support for `liquid_methods`
 
 ### Fixed
+* Fix bug in uniq filter (#595) [Florian Weingarten, fw42]
+* Fix bug when "blank" and "empty" are used as variable names (#592) [Florian Weingarten, fw42]
 * Fix condition parse order in strict mode (#569) [Justin Li, pushrax]
 * Fix naming of the "context variable" when dynamically including a template (#559) [Justin Li, pushrax]
 * Gracefully accept empty strings in the date filter (#555) [Loren Hale, boobooninja]
