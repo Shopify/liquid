@@ -166,7 +166,7 @@ class StandardFiltersTest < Minitest::Test
     am = { "title" => "Harry Potter", "distributor" => "Warner Brothers" }
     bm = { "title" => "Lord of the Flies", "distributor" => "Columbia Pictures" }
     cm = { "title" => "The Circle", "distributor" => "Devolver" }
-    dm = { "title" => "The Social Network", "distributor" => "Columbia Pictures" }
+    dm = { "title" => "The Social Network", "distributor" => "Big Pictures" }
     a = { "book" => ab, "movie" => am, "id" => 4 }
     b = { "book" => bb, "movie" => bm, "id" => 3 }
     c = { "book" => cb, "movie" => cm, "id" => 2 }
