@@ -116,7 +116,9 @@ module Liquid
       ary = InputIterator.new(input)
       if property.nil?
         ary.sort
-      elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
+      elsif property.include? '.'
+        nested_sort(input, property)
+      elsif ary.first.respond_to?(:[]) && accepts?(ary.first, property)
         ary.sort { |a, b| a[property] <=> b[property] }
       elsif ary.first.respond_to?(property)
         ary.sort { |a, b| a.send(property) <=> b.send(property) }
@@ -375,6 +377,43 @@ module Liquid
       end
     rescue ArgumentError
       nil
+    end
+
+    def nested_respond_to?(input, property)
+      return true if property.empty?
+      p = property.split('.').first
+      q = property[/#{p}.?([\w.]*)/, 1]
+      if input.respond_to?(:[]) && accepts?(input, p)
+        return nested_respond_to?(input[p], q)
+      elsif input.respond_to?(p)
+        return nested_respond_to?(input.send(p), q)
+      end
+      false
+    end
+
+    def nested_send(input, property)
+      return input if property.empty?
+      p = property.split('.').first
+      q = property[/#{p}.?([\w.]*)/, 1]
+      if input.respond_to?(:[]) && accepts?(input, p)
+        return nested_send(input[p], q)
+      elsif input.respond_to?(p)
+        return nested_send(input.send(p), q)
+      end
+      nil
+    end
+
+    def accepts?(input, index)
+      !input[index].nil?
+      rescue TypeError
+        false
+    end
+
+    def nested_sort(input, property = nil)
+      ary = InputIterator.new(input)
+      if nested_respond_to?(ary.first, property)
+        ary.sort { |a, b| nested_send(a, property) <=> nested_send(b, property) }
+      end
     end
 
     def apply_operation(input, operand, operation)

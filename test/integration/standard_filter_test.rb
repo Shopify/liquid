@@ -158,6 +158,30 @@ class StandardFiltersTest < Minitest::Test
     assert_equal [{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], @filters.sort([{ "a" => 4 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a")
   end
 
+  def prepare_test_nested_sort
+    ab = { "title" => "Harry Potter", "author" => "JK Rowling", "series" => [ 1, 2 ] }
+    bb = { "title" => "Lord of the Flies", "author" => "William Golding" }
+    cb = { "title" => "The Circle", "author" => "Dave Eggers" }
+    db = { "title" => "The Accidental Billionaires", "author" => "Ben Mezrich" }
+    am = { "title" => "Harry Potter", "distributor" => "Warner Brothers" }
+    bm = { "title" => "Lord of the Flies", "distributor" => "Columbia Pictures" }
+    cm = { "title" => "The Circle", "distributor" => "Devolver" }
+    dm = { "title" => "The Social Network", "distributor" => "Columbia Pictures" }
+    a = { "book" => ab, "movie" => am, "id" => 4 }
+    b = { "book" => bb, "movie" => bm, "id" => 3 }
+    c = { "book" => cb, "movie" => cm, "id" => 2 }
+    d = { "book" => db, "movie" => dm, "id" => 1 }
+    [ a, b, c, d ]
+  end
+
+  def test_nested_sort
+    collection = prepare_test_nested_sort
+    a, b, c, d = collection
+    assert_equal [d, c, b, a], @filters.sort(collection, "id")
+    assert_equal [d, c, a, b], @filters.sort(collection, "book.author")
+    assert_equal [d, b, c, a], @filters.sort(collection, "movie.distributor")
+  end
+
   def test_legacy_sort_hash
     assert_equal [{ a: 1, b: 2 }], @filters.sort({ a: 1, b: 2 })
   end
