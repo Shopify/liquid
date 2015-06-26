@@ -105,6 +105,11 @@ module Liquid
       input.to_s.gsub(/\r?\n/, ''.freeze)
     end
 
+    # Remove whitespace between HTML tags
+    def strip_html_whitespace(input)
+      Spaceless.strip_html_whitespace(input.to_s)
+    end
+
     # Join elements of the array with certain character between them
     def join(input, glue = ' '.freeze)
       InputIterator.new(input).join(glue)
