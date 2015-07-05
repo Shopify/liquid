@@ -1,12 +1,8 @@
 module Liquid
   class Document < BlockBody
-    DEFAULT_OPTIONS = {
-      locale: I18n.new
-    }
-
     def self.parse(tokens, options)
       doc = new
-      doc.parse(tokens, DEFAULT_OPTIONS.merge(options))
+      doc.parse(tokens, options)
       doc
     end
 

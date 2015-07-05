@@ -23,18 +23,6 @@ module Liquid
       @body.nodelist
     end
 
-    # warnings of this block and all sub-tags
-    def warnings
-      all_warnings = []
-      all_warnings.concat(@warnings) if @warnings
-
-      (nodelist || []).each do |node|
-        all_warnings.concat(node.warnings || []) if node.respond_to?(:warnings)
-      end
-
-      all_warnings
-    end
-
     def unknown_tag(tag, _params, _tokens)
       case tag
       when 'else'.freeze

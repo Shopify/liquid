@@ -14,7 +14,7 @@ module Liquid
   #
   class Template
     attr_accessor :root
-    attr_reader :resource_limits
+    attr_reader :resource_limits, :warnings
 
     @@file_system = BlankFileSystem.new
 
@@ -116,14 +116,10 @@ module Liquid
       @options = options
       @profiling = options[:profile]
       @line_numbers = options[:line_numbers] || @profiling
-      @root = Document.parse(tokenize(source), options)
-      @warnings = nil
+      parse_context = options.is_a?(ParseContext) ? options : ParseContext.new(options)
+      @root = Document.parse(tokenize(source), parse_context)
+      @warnings = parse_context.warnings
       self
-    end
-
-    def warnings
-      return [] unless @root
-      @warnings ||= @root.warnings
     end
 
     def registers
@@ -206,7 +202,7 @@ module Liquid
       begin
         # render the nodelist.
         # for performance reasons we get an array back here. join will make a string out of it.
-        result = with_profiling do
+        result = with_profiling(context) do
           @root.render(context)
         end
         result.respond_to?(:join) ? result.join : result
@@ -228,8 +224,8 @@ module Liquid
       Tokenizer.new(source, @line_numbers)
     end
 
-    def with_profiling
-      if @profiling && !@options[:included]
+    def with_profiling(context)
+      if @profiling && !context.partial
         raise "Profiler not loaded, require 'liquid/profiler' first" unless defined?(Liquid::Profiler)
 
         @profiler = Profiler.new

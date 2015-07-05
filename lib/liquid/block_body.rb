@@ -12,8 +12,9 @@ module Liquid
       @blank = true
     end
 
-    def parse(tokens, options)
-      while token = tokens.shift
+    def parse(tokenizer, parse_context)
+      parse_context.line_number = tokenizer.line_number
+      while token = tokenizer.shift
         begin
           unless token.empty?
             case
@@ -23,9 +24,7 @@ module Liquid
                 markup = $2
                 # fetch the tag from registered blocks
                 if tag = registered_tags[tag_name]
-                  markup = token.child(markup) if token.is_a?(Token)
-                  new_tag = tag.parse(tag_name, markup, tokens, options)
-                  new_tag.line_number = token.line_number if token.is_a?(Token)
+                  new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
                   @blank &&= new_tag.blank?
                   @nodelist << new_tag
                 else
@@ -34,12 +33,10 @@ module Liquid
                   return yield tag_name, markup
                 end
               else
-                raise_missing_tag_terminator(token, options)
+                raise_missing_tag_terminator(token, parse_context)
               end
             when token.start_with?(VARSTART)
-              new_var = create_variable(token, options)
-              new_var.line_number = token.line_number if token.is_a?(Token)
-              @nodelist << new_var
+              @nodelist << create_variable(token, parse_context)
               @blank = false
             else
               @nodelist << token
@@ -47,9 +44,10 @@ module Liquid
             end
           end
         rescue SyntaxError => e
-          e.set_line_number_from_token(token)
+          e.line_number ||= parse_context.line_number
           raise
         end
+        parse_context.line_number = tokenizer.line_number
       end
 
       yield nil, nil
@@ -57,14 +55,6 @@ module Liquid
 
     def blank?
       @blank
-    end
-
-    def warnings
-      all_warnings = []
-      nodelist.each do |node|
-        all_warnings.concat(node.warnings || []) if node.respond_to?(:warnings)
-      end
-      all_warnings
     end
 
     def render(context)
@@ -92,7 +82,7 @@ module Liquid
         rescue MemoryError => e
           raise e
         rescue ::StandardError => e
-          output << context.handle_error(e, token)
+          output << context.handle_error(e, token.line_number)
         end
       end
 
@@ -112,12 +102,12 @@ module Liquid
       node_output
     end
 
-    def create_variable(token, options)
+    def create_variable(token, parse_context)
       token.scan(ContentOfVariable) do |content|
-        markup = token.is_a?(Token) ? token.child(content.first) : content.first
-        return Variable.new(markup, options)
+        markup = content.first
+        return Variable.new(markup, parse_context)
       end
-      raise_missing_variable_terminator(token, options)
+      raise_missing_variable_terminator(token, parse_context)
     end
 
     def raise_missing_tag_terminator(token, options)

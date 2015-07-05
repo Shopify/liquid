@@ -1,16 +1,15 @@
 module Liquid
   module ParserSwitching
     def parse_with_selected_parser(markup)
-      case @options[:error_mode] || Template.error_mode
+      case @options.error_mode
       when :strict then strict_parse_with_error_context(markup)
       when :lax    then lax_parse(markup)
       when :warn
         begin
           return strict_parse_with_error_context(markup)
         rescue SyntaxError => e
-          e.set_line_number_from_token(markup)
-          @warnings ||= []
-          @warnings << e
+          e.line_number = line_number
+          @options.warnings << e
           return lax_parse(markup)
         end
       end
