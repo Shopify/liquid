@@ -84,10 +84,10 @@ module Liquid
             break
           end
 
-          token_output = render_token(token, context)
+          node_output = render_node(token, context)
 
           unless token.is_a?(Block) && token.blank?
-            output << token_output
+            output << node_output
           end
         rescue MemoryError => e
           raise e
@@ -101,15 +101,15 @@ module Liquid
 
     private
 
-    def render_token(token, context)
-      token_output = (token.respond_to?(:render) ? token.render(context) : token)
-      token_str = token_output.is_a?(Array) ? token_output.join : token_output.to_s
+    def render_node(node, context)
+      node_output = (node.respond_to?(:render) ? node.render(context) : node)
+      node_output = node_output.is_a?(Array) ? node_output.join : node_output.to_s
 
-      context.resource_limits.render_length += token_str.length
+      context.resource_limits.render_length += node_output.length
       if context.resource_limits.reached?
         raise MemoryError.new("Memory limits exceeded".freeze)
       end
-      token_str
+      node_output
     end
 
     def create_variable(token, options)

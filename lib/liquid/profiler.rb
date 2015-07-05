@@ -19,7 +19,7 @@ module Liquid
   # inside of <tt>{% include %}</tt> tags.
   #
   #   profile.each do |node|
-  #     # Access to the token itself
+  #     # Access to the node itself
   #     node.code
   #
   #     # Which template and line number of this node.
@@ -46,15 +46,15 @@ module Liquid
     class Timing
       attr_reader :code, :partial, :line_number, :children
 
-      def initialize(token, partial)
-        @code        = token.respond_to?(:raw) ? token.raw : token
+      def initialize(node, partial)
+        @code        = node.respond_to?(:raw) ? node.raw : node
         @partial     = partial
-        @line_number = token.respond_to?(:line_number) ? token.line_number : nil
+        @line_number = node.respond_to?(:line_number) ? node.line_number : nil
         @children    = []
       end
 
-      def self.start(token, partial)
-        new(token, partial).tap(&:start)
+      def self.start(node, partial)
+        new(node, partial).tap(&:start)
       end
 
       def start
@@ -70,11 +70,11 @@ module Liquid
       end
     end
 
-    def self.profile_token_render(token)
-      if Profiler.current_profile && token.respond_to?(:render)
-        Profiler.current_profile.start_token(token)
+    def self.profile_node_render(node)
+      if Profiler.current_profile && node.respond_to?(:render)
+        Profiler.current_profile.start_node(node)
         output = yield
-        Profiler.current_profile.end_token(token)
+        Profiler.current_profile.end_node(node)
         output
       else
         yield
@@ -132,11 +132,11 @@ module Liquid
       @root_timing.children.length
     end
 
-    def start_token(token)
-      @timing_stack.push(Timing.start(token, current_partial))
+    def start_node(node)
+      @timing_stack.push(Timing.start(node, current_partial))
     end
 
-    def end_token(_token)
+    def end_node(_node)
       timing = @timing_stack.pop
       timing.finish
 
