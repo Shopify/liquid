@@ -74,7 +74,7 @@ module Liquid
       @filters.inject(context.evaluate(@name)) do |output, (filter_name, filter_args, filter_kwargs)|
         filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
         context.invoke(filter_name, output, *filter_args)
-      end.tap{ |obj| taint_check(obj) }
+      end.tap{ |obj| taint_check(context, obj) }
     end
 
     private
@@ -106,16 +106,20 @@ module Liquid
       parsed_args
     end
 
-    def taint_check(obj)
-      if obj.tainted?
+    def taint_check(context, obj)
+      if obj.tainted? && Template.taint_mode != :lax
         @markup =~ QuotedFragment
         name = Regexp.last_match(0)
+
+        error = TaintedError.new("variable '#{name}' is tainted and was not escaped")
+        error.line_number = line_number
+        error.template_name = context.template_name
+
         case Template.taint_mode
         when :warn
-          @warnings ||= []
-          @warnings << "variable '#{name}' is tainted and was not escaped"
+          context.warnings << error
         when :error
-          raise TaintedError, "Error - variable '#{name}' is tainted and was not escaped"
+          raise error
         end
       end
     end

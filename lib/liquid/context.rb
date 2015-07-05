@@ -33,6 +33,10 @@ module Liquid
       @filters = []
     end
 
+    def warnings
+      @warnings ||= []
+    end
+
     def strainer
       @strainer ||= Strainer.create(self, @filters)
     end
