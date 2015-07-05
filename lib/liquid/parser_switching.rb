@@ -8,7 +8,6 @@ module Liquid
         begin
           return strict_parse_with_error_context(markup)
         rescue SyntaxError => e
-          e.line_number = line_number
           @options.warnings << e
           return lax_parse(markup)
         end
@@ -20,6 +19,7 @@ module Liquid
     def strict_parse_with_error_context(markup)
       strict_parse(markup)
     rescue SyntaxError => e
+      e.line_number = line_number
       e.markup_context = markup_context(markup)
       raise e
     end

@@ -15,37 +15,32 @@ module Liquid
     def parse(tokenizer, parse_context)
       parse_context.line_number = tokenizer.line_number
       while token = tokenizer.shift
-        begin
-          unless token.empty?
-            case
-            when token.start_with?(TAGSTART)
-              if token =~ FullToken
-                tag_name = $1
-                markup = $2
-                # fetch the tag from registered blocks
-                if tag = registered_tags[tag_name]
-                  new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
-                  @blank &&= new_tag.blank?
-                  @nodelist << new_tag
-                else
-                  # end parsing if we reach an unknown tag and let the caller decide
-                  # determine how to proceed
-                  return yield tag_name, markup
-                end
+        unless token.empty?
+          case
+          when token.start_with?(TAGSTART)
+            if token =~ FullToken
+              tag_name = $1
+              markup = $2
+              # fetch the tag from registered blocks
+              if tag = registered_tags[tag_name]
+                new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
+                @blank &&= new_tag.blank?
+                @nodelist << new_tag
               else
-                raise_missing_tag_terminator(token, parse_context)
+                # end parsing if we reach an unknown tag and let the caller decide
+                # determine how to proceed
+                return yield tag_name, markup
               end
-            when token.start_with?(VARSTART)
-              @nodelist << create_variable(token, parse_context)
-              @blank = false
             else
-              @nodelist << token
-              @blank &&= !!(token =~ /\A\s*\z/)
+              raise_missing_tag_terminator(token, parse_context)
             end
+          when token.start_with?(VARSTART)
+            @nodelist << create_variable(token, parse_context)
+            @blank = false
+          else
+            @nodelist << token
+            @blank &&= !!(token =~ /\A\s*\z/)
           end
-        rescue SyntaxError => e
-          e.line_number ||= parse_context.line_number
-          raise
         end
         parse_context.line_number = tokenizer.line_number
       end
