@@ -13,6 +13,9 @@ Metrics/BlockNesting:
 Metrics/ModuleLength:
   Enabled: false
 
+Metrics/ClassLength:
+  Enabled: false
+
 Lint/AssignmentInCondition:
   Enabled: false
 
@@ -118,6 +121,3 @@ Style/PerlBackrefs:
 Style/WordArray:
   Enabled: false
 
-Style/ModuleLength:
-  Exclude:
-    - lib/liquid/standardfilters.rb

@@ -13,11 +13,6 @@ Lint/NestedMethodDefinition:
 Metrics/AbcSize:
   Max: 58
 
-# Offense count: 16
-# Configuration parameters: CountComments.
-Metrics/ClassLength:
-  Max: 314
-
 # Offense count: 12
 Metrics/CyclomaticComplexity:
   Max: 15
@@ -31,11 +26,6 @@ Metrics/LineLength:
 # Configuration parameters: CountComments.
 Metrics/MethodLength:
   Max: 46
-
-# Offense count: 1
-# Configuration parameters: CountComments.
-Metrics/ModuleLength:
-  Max: 235
 
 # Offense count: 6
 Metrics/PerceivedComplexity:
