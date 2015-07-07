@@ -1,13 +1,13 @@
 module Liquid
   class BlockBody
-    def render_token_with_profiling(token, context)
-      Profiler.profile_token_render(token) do
-        render_token_without_profiling(token, context)
+    def render_node_with_profiling(node, context)
+      Profiler.profile_node_render(node) do
+        render_node_without_profiling(node, context)
       end
     end
 
-    alias_method :render_token_without_profiling, :render_token
-    alias_method :render_token, :render_token_with_profiling
+    alias_method :render_node_without_profiling, :render_node
+    alias_method :render_node, :render_node_with_profiling
   end
 
   class Include < Tag
