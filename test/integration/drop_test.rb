@@ -124,8 +124,10 @@ class DropsTest < Minitest::Test
   def test_rendering_warns_on_tainted_attr
     with_taint_mode(:warn) do
       tpl = Liquid::Template.parse('{{ product.user_input }}')
-      tpl.render!('product' => ProductDrop.new)
-      assert_match /tainted/, tpl.warnings.first
+      context = Context.new('product' => ProductDrop.new)
+      tpl.render!(context)
+      assert_equal [Liquid::TaintedError], context.warnings.map(&:class)
+      assert_equal "variable 'product.user_input' is tainted and was not escaped", context.warnings.first.to_s(false)
     end
   end
 
