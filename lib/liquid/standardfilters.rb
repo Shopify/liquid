@@ -46,8 +46,8 @@ module Liquid
     end
 
     def slice(input, offset, length = nil)
-      offset = to_integer(offset)
-      length = length ? to_integer(length) : 1
+      offset = Utils.to_integer(offset)
+      length = length ? Utils.to_integer(length) : 1
 
       if input.is_a?(Array)
         input.slice(offset, length) || []
@@ -59,7 +59,7 @@ module Liquid
     # Truncate a string down to x characters
     def truncate(input, length = 50, truncate_string = "...".freeze)
       return if input.nil?
-      length = to_integer(length)
+      length = Utils.to_integer(length)
       l = length - truncate_string.length
       l = 0 if l < 0
       input.length > length ? input[0...l] + truncate_string : input
@@ -68,7 +68,7 @@ module Liquid
     def truncatewords(input, words = 15, truncate_string = "...".freeze)
       return if input.nil?
       wordlist = input.to_s.split
-      words = to_integer(words)
+      words = Utils.to_integer(words)
       l = words - 1
       l = 0 if l < 0
       wordlist.length > l ? wordlist[0..l].join(" ".freeze) + truncate_string : input
@@ -255,7 +255,7 @@ module Liquid
     def date(input, format)
       return input if format.to_s.empty?
 
-      return input unless date = to_date(input)
+      return input unless date = Utils.to_date(input)
 
       date.strftime(format.to_s)
     end
@@ -307,7 +307,7 @@ module Liquid
     end
 
     def round(input, n = 0)
-      result = to_number(input).round(to_number(n))
+      result = Utils.to_number(input).round(Utils.to_number(n))
       result = result.to_f if result.is_a?(BigDecimal)
       result = result.to_i if n == 0
       result
@@ -316,13 +316,13 @@ module Liquid
     end
 
     def ceil(input)
-      to_number(input).ceil.to_i
+      Utils.to_number(input).ceil.to_i
     rescue ::FloatDomainError => e
       raise Liquid::FloatDomainError, e.message
     end
 
     def floor(input)
-      to_number(input).floor.to_i
+      Utils.to_number(input).floor.to_i
     rescue ::FloatDomainError => e
       raise Liquid::FloatDomainError, e.message
     end
@@ -334,51 +334,8 @@ module Liquid
 
     private
 
-    def to_integer(num)
-      return num if num.is_a?(Integer)
-      num = num.to_s
-      begin
-        Integer(num)
-      rescue ::ArgumentError
-        raise Liquid::ArgumentError, "invalid integer"
-      end
-    end
-
-    def to_number(obj)
-      case obj
-      when Float
-        BigDecimal.new(obj.to_s)
-      when Numeric
-        obj
-      when String
-        (obj.strip =~ /\A\d+\.\d+\z/) ? BigDecimal.new(obj) : obj.to_i
-      else
-        0
-      end
-    end
-
-    def to_date(obj)
-      return obj if obj.respond_to?(:strftime)
-
-      if obj.is_a?(String)
-        return nil if obj.empty?
-        obj = obj.downcase
-      end
-
-      case obj
-      when 'now'.freeze, 'today'.freeze
-        Time.now
-      when /\A\d+\z/, Integer
-        Time.at(obj.to_i)
-      when String
-        Time.parse(obj)
-      end
-    rescue ArgumentError
-      nil
-    end
-
     def apply_operation(input, operand, operation)
-      result = to_number(input).send(operation, to_number(operand))
+      result = Utils.to_number(input).send(operation, Utils.to_number(operand))
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
