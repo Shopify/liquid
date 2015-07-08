@@ -105,12 +105,12 @@ module Liquid
       raise_missing_variable_terminator(token, parse_context)
     end
 
-    def raise_missing_tag_terminator(token, options)
-      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, token: token, tag_end: TagEnd.inspect))
+    def raise_missing_tag_terminator(token, parse_context)
+      raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_termination".freeze, token: token, tag_end: TagEnd.inspect))
     end
 
-    def raise_missing_variable_terminator(token, options)
-      raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination".freeze, token: token, tag_end: VariableEnd.inspect))
+    def raise_missing_variable_terminator(token, parse_context)
+      raise SyntaxError.new(parse_context.locale.t("errors.syntax.variable_termination".freeze, token: token, tag_end: VariableEnd.inspect))
     end
 
     def registered_tags
