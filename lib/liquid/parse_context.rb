@@ -27,9 +27,7 @@ module Liquid
         if dont_pass == true
           { locale: locale }
         elsif dont_pass.is_a?(Array)
-          opts = @template_options.dup
-          dont_pass.each { |o| opts.delete(o) }
-          opts
+          @template_options.reject { |k, v| dont_pass.include?(k) }
         else
           @template_options
         end
