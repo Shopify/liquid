@@ -38,6 +38,10 @@ HERE
 
   def test_for_with_range
     assert_template_result(' 1  2  3 ', '{%for item in (1..3) %} {{item}} {%endfor%}')
+
+    assert_raises(Liquid::ArgumentError) do
+      Template.parse('{% for i in (a..2) %}{% endfor %}').render!("a" => [1, 2])
+    end
   end
 
   def test_for_with_variable_range
