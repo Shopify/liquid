@@ -12,44 +12,37 @@ module Liquid
       @blank = true
     end
 
-    def parse(tokens, options)
-      while token = tokens.shift
-        begin
-          unless token.empty?
-            case
-            when token.start_with?(TAGSTART)
-              if token =~ FullToken
-                tag_name = $1
-                markup = $2
-                # fetch the tag from registered blocks
-                if tag = registered_tags[tag_name]
-                  markup = token.child(markup) if token.is_a?(Token)
-                  new_tag = tag.parse(tag_name, markup, tokens, options)
-                  new_tag.line_number = token.line_number if token.is_a?(Token)
-                  @blank &&= new_tag.blank?
-                  @nodelist << new_tag
-                else
-                  # end parsing if we reach an unknown tag and let the caller decide
-                  # determine how to proceed
-                  return yield tag_name, markup
-                end
+    def parse(tokenizer, parse_context)
+      parse_context.line_number = tokenizer.line_number
+      while token = tokenizer.shift
+        unless token.empty?
+          case
+          when token.start_with?(TAGSTART)
+            if token =~ FullToken
+              tag_name = $1
+              markup = $2
+              # fetch the tag from registered blocks
+              if tag = registered_tags[tag_name]
+                new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
+                @blank &&= new_tag.blank?
+                @nodelist << new_tag
               else
-                raise_missing_tag_terminator(token, options)
+                # end parsing if we reach an unknown tag and let the caller decide
+                # determine how to proceed
+                return yield tag_name, markup
               end
-            when token.start_with?(VARSTART)
-              new_var = create_variable(token, options)
-              new_var.line_number = token.line_number if token.is_a?(Token)
-              @nodelist << new_var
-              @blank = false
             else
-              @nodelist << token
-              @blank &&= !!(token =~ /\A\s*\z/)
+              raise_missing_tag_terminator(token, parse_context)
             end
+          when token.start_with?(VARSTART)
+            @nodelist << create_variable(token, parse_context)
+            @blank = false
+          else
+            @nodelist << token
+            @blank &&= !!(token =~ /\A\s*\z/)
           end
-        rescue SyntaxError => e
-          e.set_line_number_from_token(token)
-          raise
         end
+        parse_context.line_number = tokenizer.line_number
       end
 
       yield nil, nil
@@ -57,14 +50,6 @@ module Liquid
 
     def blank?
       @blank
-    end
-
-    def warnings
-      all_warnings = []
-      nodelist.each do |node|
-        all_warnings.concat(node.warnings || []) if node.respond_to?(:warnings)
-      end
-      all_warnings
     end
 
     def render(context)
@@ -92,7 +77,7 @@ module Liquid
         rescue MemoryError => e
           raise e
         rescue ::StandardError => e
-          output << context.handle_error(e, token)
+          output << context.handle_error(e, token.line_number)
         end
       end
 
@@ -112,20 +97,20 @@ module Liquid
       node_output
     end
 
-    def create_variable(token, options)
+    def create_variable(token, parse_context)
       token.scan(ContentOfVariable) do |content|
-        markup = token.is_a?(Token) ? token.child(content.first) : content.first
-        return Variable.new(markup, options)
+        markup = content.first
+        return Variable.new(markup, parse_context)
       end
-      raise_missing_variable_terminator(token, options)
+      raise_missing_variable_terminator(token, parse_context)
     end
 
-    def raise_missing_tag_terminator(token, options)
-      raise SyntaxError.new(options[:locale].t("errors.syntax.tag_termination".freeze, token: token, tag_end: TagEnd.inspect))
+    def raise_missing_tag_terminator(token, parse_context)
+      raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_termination".freeze, token: token, tag_end: TagEnd.inspect))
     end
 
-    def raise_missing_variable_terminator(token, options)
-      raise SyntaxError.new(options[:locale].t("errors.syntax.variable_termination".freeze, token: token, tag_end: VariableEnd.inspect))
+    def raise_missing_variable_terminator(token, parse_context)
+      raise SyntaxError.new(parse_context.locale.t("errors.syntax.variable_termination".freeze, token: token, tag_end: VariableEnd.inspect))
     end
 
     def registered_tags

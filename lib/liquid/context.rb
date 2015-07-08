@@ -13,13 +13,14 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
-    attr_accessor :exception_handler, :template_name
+    attr_accessor :exception_handler, :template_name, :partial
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
       @environments     = [environments].flatten
       @scopes           = [(outer_scope || {})]
       @registers        = registers
       @errors           = []
+      @partial          = false
       @resource_limits  = resource_limits || ResourceLimits.new(Template.default_resource_limits)
       squash_instance_assigns_with_environments
 
@@ -66,10 +67,10 @@ module Liquid
       @interrupts.pop
     end
 
-    def handle_error(e, token = nil)
+    def handle_error(e, line_number = nil)
       if e.is_a?(Liquid::Error)
-        e.template_name = template_name
-        e.set_line_number_from_token(token)
+        e.template_name ||= template_name
+        e.line_number ||= line_number
       end
 
       output = nil
@@ -79,7 +80,10 @@ module Liquid
         case result
         when Exception
           e = result
-          e.set_line_number_from_token(token) if e.is_a?(Liquid::Error)
+          if e.is_a?(Liquid::Error)
+            e.template_name ||= template_name
+            e.line_number ||= line_number
+          end
         when String
           output = result
         else

@@ -11,14 +11,16 @@ module Liquid
   #
   class Variable
     FilterParser = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
-    attr_accessor :filters, :name, :warnings
-    attr_accessor :line_number
+    attr_accessor :filters, :name, :line_number
+    attr_reader :options
+    alias_method :parse_context, :options
     include ParserSwitching
 
-    def initialize(markup, options = {})
+    def initialize(markup, parse_context)
       @markup  = markup
       @name    = nil
-      @options = options || {}
+      @options = parse_context
+      @line_number = parse_context.line_number
 
       parse_with_selected_parser(markup)
     end

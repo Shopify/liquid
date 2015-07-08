@@ -69,7 +69,7 @@ require 'liquid/standardfilters'
 require 'liquid/condition'
 require 'liquid/utils'
 require 'liquid/tokenizer'
-require 'liquid/token'
+require 'liquid/parse_context'
 
 # Load all the tags of the standard library
 #
