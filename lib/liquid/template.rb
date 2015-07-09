@@ -120,9 +120,6 @@ module Liquid
       @root = Document.parse(tokenize(source), parse_context)
       @warnings = parse_context.warnings
       self
-    rescue SyntaxError => e
-      e.line_number ||= parse_context.line_number
-      raise
     end
 
     def registers
