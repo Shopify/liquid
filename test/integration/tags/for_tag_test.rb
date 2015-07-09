@@ -42,6 +42,8 @@ HERE
     assert_raises(Liquid::ArgumentError) do
       Template.parse('{% for i in (a..2) %}{% endfor %}').render!("a" => [1, 2])
     end
+
+    assert_template_result(' 0  1  2  3 ', '{% for item in (a..3) %} {{item}} {% endfor %}', "a" => "invalid integer")
   end
 
   def test_for_with_variable_range
