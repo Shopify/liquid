@@ -10,7 +10,7 @@ module Liquid
   #   {{ user | link }}
   #
   class Variable
-    FilterParser = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
+    FilterParser = /\s*(?:#{FilterSeparator}|(['"\|]+?))\s*((?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+)/o
     attr_accessor :filters, :name, :line_number
     attr_reader :parse_context
     alias_method :options, :parse_context
@@ -35,16 +35,19 @@ module Liquid
 
     def lax_parse(markup)
       @filters = []
-      return unless markup =~ /(#{QuotedFragment})(.*)/om
+      return unless markup =~ /\A\s*([\s,\|'"]+?)??\s*(#{QuotedFragment})\s*(?:([^\|]+?)??\s*(#{FilterSeparator}.*))?\s*\z/om
 
-      name_markup = $1
-      filter_markup = $2
+      add_syntax_warning("variable prefixed with ignored characters: #{$1.inspect}") if $1
+      name_markup = $2
+      add_syntax_warning("variable filter seperator prefixed with ignored characters: #{$3.inspect}") if $3
+      filters_markup = $4
       @name = Expression.parse(name_markup)
-      if filter_markup =~ /#{FilterSeparator}\s*(.*)/om
-        filters = $1.scan(FilterParser)
-        filters.each do |f|
-          next unless f =~ /\w+/
-          filtername = Regexp.last_match(0)
+      if filters_markup
+        filters_markup.scan(FilterParser) do |sep, f|
+          add_syntax_warning("unterminated quote or multiple pipe characters used as a filter seperator: #{sep.inspect}") if sep
+          next unless f =~ /\A\s*(\W+)??(\w+)/
+          add_syntax_warning("ignored characters before filter name: #{$1.inspect}") if $1
+          filtername = $2
           filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
           @filters << parse_filter_expressions(filtername, filterargs)
         end
@@ -80,6 +83,13 @@ module Liquid
     end
 
     private
+
+    def add_syntax_warning(warning)
+      return unless parse_context.error_mode == :lax_warn
+      error = SyntaxError.new(warning)
+      error.line_number = parse_context.line_number
+      parse_context.warnings << error
+    end
 
     def parse_filter_expressions(filter_name, unparsed_args)
       filter_args = []

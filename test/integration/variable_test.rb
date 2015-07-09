@@ -89,4 +89,32 @@ class VariableTest < Minitest::Test
   def test_multiline_variable
     assert_equal 'worked', Template.parse("{{\ntest\n}}").render!('test' => 'worked')
   end
+
+  def test_lax_warnings_for_variable_ignored_prefix
+    ignored_chars = %(|,'")
+    template = Liquid::Template.parse("{{ #{ignored_chars}test }}", error_mode: :lax_warn)
+    assert_equal "works", template.render!('test' => 'works')
+    assert_equal [Liquid::SyntaxError.new("variable prefixed with ignored characters: #{ignored_chars.inspect}")], template.warnings
+  end
+
+  def test_lax_warnings_for_ignored_variable_filter_prefix
+    ignored_chars = ",wat? lax!"
+    template = Liquid::Template.parse("{{ test#{ignored_chars} | noop }}", error_mode: :lax_warn)
+    assert_equal "works", template.render!('test' => 'works')
+    assert_equal [Liquid::SyntaxError.new("variable filter seperator prefixed with ignored characters: #{ignored_chars.inspect}")], template.warnings
+  end
+
+  def test_lax_warnings_for_weird_filter_chars
+    template = Liquid::Template.parse("{{ test | upcase \" prepend: 'it ' || append: ' surprisingly' }}", error_mode: :lax_warn)
+    assert_equal "it WORKS surprisingly", template.render!('test' => 'works')
+    expected_warnings = ['"', '||'].map{ |sep| Liquid::SyntaxError.new("unterminated quote or multiple pipe characters used as a filter seperator: #{sep.inspect}") }
+    assert_equal expected_warnings, template.warnings
+  end
+
+  def test_lax_warnings_for_ignored_filter_name_prefix
+    ignored_chars = "'': '"
+    template = Liquid::Template.parse("{{ test | '': 'prepend ' }}", error_mode: :lax_warn)
+    assert_equal "prepend wat", template.render!('test' => 'wat')
+    assert_equal [Liquid::SyntaxError.new("ignored characters before filter name: #{ignored_chars.inspect}")], template.warnings
+  end
 end
