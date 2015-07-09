@@ -16,9 +16,9 @@ module Liquid
     capture_filters = /(#{FilterSeparator}.*)/o
     VariableSyntax = /\A\s*#{capture_ignored_variable_prefix}\s*#{capture_expression}\s*(?:#{capture_ignored_filter_prefix}\s*#{capture_filters})?\z/om
 
-    capture_lax_seperator = /(['"\|]+?)/
+    capture_lax_separator = /(['"\|]+?)/
     capture_filter = /((?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+)/o
-    FilterParser = /\s*(?:#{FilterSeparator}|#{capture_lax_seperator})\s*#{capture_filter}/o
+    FilterParser = /\s*(?:#{FilterSeparator}|#{capture_lax_separator})\s*#{capture_filter}/o
 
     attr_accessor :filters, :name, :line_number
     attr_reader :parse_context
@@ -48,12 +48,12 @@ module Liquid
 
       add_syntax_warning("variable prefixed with ignored characters: #{$1.inspect}") if $1
       name_markup = $2
-      add_syntax_warning("variable filter seperator prefixed with ignored characters: #{$3.inspect}") if $3
+      add_syntax_warning("variable filter separator prefixed with ignored characters: #{$3.inspect}") if $3
       filters_markup = $4
       @name = Expression.parse(name_markup)
       if filters_markup
         filters_markup.scan(FilterParser) do |lax_sep, f|
-          add_syntax_warning("unterminated quote or multiple pipe characters used as a filter seperator: #{lax_sep.inspect}") if lax_sep
+          add_syntax_warning("unterminated quote or multiple pipe characters used as a filter separator: #{lax_sep.inspect}") if lax_sep
           next unless f =~ /\A\s*(\W+)??(\w+)/
           add_syntax_warning("ignored characters before filter name: #{$1.inspect}") if $1
           filtername = $2
