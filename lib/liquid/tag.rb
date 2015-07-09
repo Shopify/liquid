@@ -1,7 +1,7 @@
 module Liquid
   class Tag
-    attr_reader :nodelist, :tag_name, :line_number, :options
-    alias_method :parse_context, :options
+    attr_reader :nodelist, :tag_name, :line_number, :parse_context
+    alias_method :options, :parse_context
     include ParserSwitching
 
     class << self
@@ -17,7 +17,7 @@ module Liquid
     def initialize(tag_name, markup, parse_context)
       @tag_name   = tag_name
       @markup     = markup
-      @options    = parse_context
+      @parse_context = parse_context
       @line_number = parse_context.line_number
     end
 
