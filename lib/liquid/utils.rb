@@ -33,13 +33,14 @@ module Liquid
       segments
     end
 
-    def self.to_integer(num)
+    def self.to_integer(num, accept_invalid = false)
       return num if num.is_a?(Integer)
       num = num.to_s
       begin
         Integer(num)
       rescue ::ArgumentError
-        raise Liquid::ArgumentError, "invalid integer"
+        raise Liquid::ArgumentError, "invalid integer" unless accept_invalid
+        0
       end
     end
 
