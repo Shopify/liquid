@@ -11,6 +11,7 @@ class TokenizerTest < Minitest::Test
     assert_equal [' ', '{{funk}}', ' '], tokenize(' {{funk}} ')
     assert_equal [' ', '{{funk}}', ' ', '{{so}}', ' ', '{{brother}}', ' '], tokenize(' {{funk}} {{so}} {{brother}} ')
     assert_equal [' ', '{{  funk  }}', ' '], tokenize(' {{  funk  }} ')
+    assert_equal ['{{funk | replace: "}", \'}}\' }}'], tokenize('{{funk | replace: "}", \'}}\' }}')
   end
 
   def test_tokenize_blocks
