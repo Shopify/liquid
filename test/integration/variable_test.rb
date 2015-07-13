@@ -89,4 +89,9 @@ class VariableTest < Minitest::Test
   def test_multiline_variable
     assert_equal 'worked', Template.parse("{{\ntest\n}}").render!('test' => 'worked')
   end
+
+  def test_string_with_curly_brackets
+    json = '{ "key": { "nested": "value" }}'
+    assert_template_result(json, "{{ '#{json}' }}")
+  end
 end
