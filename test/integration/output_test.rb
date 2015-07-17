@@ -44,6 +44,14 @@ class OutputTest < Minitest::Test
     assert_equal expected, Template.parse(text).render!(@assigns)
   end
 
+  def test_variable_traversing_with_two_brackets
+    text = %({{ site.data.menu[include.menu][include.locale] }})
+    assert_equal "it works!", Template.parse(text).render!(
+      "site" => { "data" => { "menu" => { "foo" => { "bar" => "it works!" } } } },
+      "include" => { "menu" => "foo", "locale" => "bar" }
+    )
+  end
+
   def test_variable_traversing
     text = %| {{car.bmw}} {{car.gm}} {{car.bmw}} |
 
