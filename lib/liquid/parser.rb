@@ -75,7 +75,7 @@ module Liquid
 
     def variable_signature
       str = consume(:id)
-      if look(:open_square)
+      while look(:open_square)
         str << consume
         str << expression
         str << consume(:close_square)
