@@ -293,4 +293,9 @@ class StandardTagTest < Minitest::Test
   def test_multiline_tag
     assert_template_result '0 1 2 3', "0{%\nfor i in (1..3)\n%} {{\ni\n}}{%\nendfor\n%}"
   end
+
+  def test_spaceless
+    html = "<a>\n\n   <b>  \n  <c>a</c> \r\n   </b>   </a>"
+    assert_template_result '<a><b><c>a</c></b></a>', "{% spaceless %}#{html}{% endspaceless %}"
+  end
 end # StandardTagTest

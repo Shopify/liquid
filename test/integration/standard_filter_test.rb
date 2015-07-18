@@ -417,4 +417,9 @@ class StandardFiltersTest < Minitest::Test
   def test_cannot_access_private_methods
     assert_template_result('a', "{{ 'a' | to_number }}")
   end
+
+  def test_strip_html_whitespace
+    html = "<a>\n\n   <b>  \n  <c>a</c> \r\n   </b>   </a>"
+    assert_template_result('<a><b><c>a</c></b></a>', "{{ a | strip_html_whitespace }}", { 'a' => html })
+  end
 end # StandardFiltersTest
