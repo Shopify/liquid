@@ -190,6 +190,10 @@ module Liquid
         if options[:exception_handler]
           context.exception_handler = options[:exception_handler]
         end
+
+        if options[:template_name]
+          context.template_name = options[:template_name]
+        end
       when Module
         context.add_filters(args.pop)
       when Array

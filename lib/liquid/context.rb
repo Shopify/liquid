@@ -87,11 +87,32 @@ module Liquid
         when String
           output = result
         else
-          raise if result
+          if result
+            inject_shit_into_backtrace(e, line_number)
+            raise e
+          end
         end
       end
       errors.push(e)
       output || Liquid::Error.render(e)
+    end
+
+    def inject_shit_into_backtrace(e, line_number)
+      return unless template_name && line_number
+
+      new_backtrace = []
+
+      found = false
+      e.backtrace.each_with_index do |line, index|
+        if !found && line =~ /lib\/liquid\/block_body\.rb:\d+:in `render_node'/
+          new_backtrace << "#{template_name}:#{line_number}"
+          found = true
+        end
+
+        new_backtrace << line
+      end
+
+      e.set_backtrace(new_backtrace)
     end
 
     def invoke(method, *args)
