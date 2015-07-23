@@ -3,7 +3,15 @@
 IMPORTANT: Liquid 2.6 is going to be the last version of Liquid which maintains explicit Ruby 1.8 compatability.
 The following releases will only be tested against Ruby 1.9 and Ruby 2.0 and are likely to break on Ruby 1.8.
 
-## 2.6.1 / 2014-01-10 / branch "2-6-stable"
+## 2.6.3 / 2015-07-23 / branch "2-6-stable"
+
+* Fix test failure under certain timezones [Dylan Thacker-Smith]
+
+## 2.6.2 / 2015-01-23
+
+* Remove duplicate hash key [Parker Moore]
+
+## 2.6.1 / 2014-01-10
 
 Security fix, cherry-picked from master (4e14a65):
 * Don't call to_sym when creating conditions for security reasons, see #273 [Bouke van der Bijl, bouk]
