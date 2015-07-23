@@ -74,7 +74,15 @@
 * Make map filter work on enumerable drops (#233) [Florian Weingarten]
 * Improved whitespace stripping for blank blocks, related to #216 [Florian Weingarten]
 
-## 2.6.1 / 2014-01-10 / branch "2-6-stable"
+## 2.6.3 / 2015-07-23 / branch "2-6-stable"
+
+* Fix test failure under certain timezones [Dylan Thacker-Smith]
+
+## 2.6.2 / 2015-01-23
+
+* Remove duplicate hash key [Parker Moore]
+
+## 2.6.1 / 2014-01-10
 
 Security fix, cherry-picked from master (4e14a65):
 * Don't call to_sym when creating conditions for security reasons (#273) [Bouke van der Bijl]
