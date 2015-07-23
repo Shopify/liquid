@@ -15,6 +15,7 @@
 * Remove support for `liquid_methods`
 
 ### Fixed
+* Fix test failure under certain timezones (#631) [Dylan Thacker-Smith]
 * Fix bug in uniq filter (#595) [Florian Weingarten]
 * Fix bug when "blank" and "empty" are used as variable names (#592) [Florian Weingarten]
 * Fix condition parse order in strict mode (#569) [Justin Li]
