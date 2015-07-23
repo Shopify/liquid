@@ -1,6 +1,14 @@
 # Liquid Version History
 
-## 3.0.3 / 2015-05-28 / branch "3-0-stable"
+## 3.0.5 / 2015-07-23 / branch "3-0-stable"
+
+* Fix test failure under certain timezones [Dylan Thacker-Smith]
+
+## 3.0.4 / 2015-07-17
+
+* Fix chained access to multi-dimensional hashes [Florian Weingarten]
+
+## 3.0.3 / 2015-05-28
 
 * Fix condition parse order in strict mode (#569) [Justin Li, pushrax]
 
