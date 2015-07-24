@@ -316,7 +316,7 @@ module Liquid
       else
         nil
       end
-    rescue ArgumentError
+    rescue ::ArgumentError
       nil
     end
 
