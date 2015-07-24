@@ -420,6 +420,11 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result('a', "{{ 'a' | to_number }}")
   end
 
+  def test_date_raises_nothing
+    assert_template_result('', "{{ '' | date: '%D' }}")
+    assert_template_result('abc', "{{ 'abc' | date: '%D' }}")
+  end
+
   private
 
   def with_timezone(tz)

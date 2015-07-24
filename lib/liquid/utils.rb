@@ -72,7 +72,7 @@ module Liquid
       when String
         Time.parse(obj)
       end
-    rescue ArgumentError
+    rescue ::ArgumentError
       nil
     end
   end
