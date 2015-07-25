@@ -17,7 +17,7 @@ require('load-grunt-tasks')(grunt);
       },
 
       jekyll: {
-        files: ['index.html', '_includes/*.html', 'filters/*.*',  '_layouts/*.*', '_posts/*.*'],
+        files: ['index.html', '_includes/*.html', '_filters/*.*',  '_layouts/*.*', '_posts/*.*'],
         tasks: ['shell:jekyllBuild']
       }
 
@@ -71,6 +71,5 @@ require('load-grunt-tasks')(grunt);
   grunt.loadNpmTasks('grunt-postcss');
   grunt.loadNpmTasks('grunt-concurrent');
 
-  // grunt.registerTask('default', ['shell:jekyllServe', 'watch']);
   grunt.registerTask('default', ['concurrent']);
 };

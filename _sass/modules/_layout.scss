@@ -7,12 +7,12 @@ $wrapper-width: 800px;
   Content Area
  ==============================================================================*/
 
-.content {
+.content__area {
   padding: $spacing-unit $spacing-unit $spacing-unit ($spacing-unit + $sidebar-width);
   width: 100%;
 }
 
-.wrapper {
+.content__wrapper {
   max-width: $wrapper-width;
   margin: 0 auto;
   padding: 0 $spacing-unit;
