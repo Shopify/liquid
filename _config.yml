@@ -6,8 +6,6 @@ permalink: /:year/:month/:day/:basename:output_ext
 collections:
   filters:
     output: true
-  objects:
-    output: true
   tags:
     output: true
 exclude:
@@ -20,12 +18,6 @@ defaults:
     scope:
       path: ""
       type: "filters"
-    values:
-      layout: "default"
-  -
-    scope:
-      path: ""
-      type: "objects"
     values:
       layout: "default"
   -

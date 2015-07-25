@@ -20,6 +20,7 @@
 .btn-row {
   display: flex;
   justify-content: center;
+  margin-bottom: 0;
 
   .btn:not(:first-child) {
     margin-left: $spacing-unit / 2;
