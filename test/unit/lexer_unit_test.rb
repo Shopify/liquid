@@ -37,8 +37,8 @@ class LexerUnitTest < Minitest::Test
     tokens = Lexer.new('2foo').tokenize
     assert_equal [[:number, '2'], [:id, 'foo'], [:end_of_string]], tokens
 
-    tokens = Lexer.new('foo-bar-baz-').tokenize
-    assert_equal [[:id, 'foo-bar-baz'], [:dash, "-"], [:end_of_string]], tokens
+    tokens = Lexer.new('foo-bar--baz-').tokenize
+    assert_equal [[:id, 'foo-bar--baz'], [:dash, "-"], [:end_of_string]], tokens
   end
 
   def test_whitespace
