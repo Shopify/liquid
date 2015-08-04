@@ -466,4 +466,18 @@ class ContextUnitTest < Minitest::Test
     assert contx
     assert_nil contx['poutine']
   end
+
+  def test_apply_global_filter
+    global_filter_proc = ->(output) { "#{output} filtered" }
+
+    context = Context.new
+    context.global_filter = global_filter_proc
+
+    assert_equal 'hi filtered', context.apply_global_filter('hi')
+  end
+
+  def test_apply_global_filter_when_no_global_filter_exist
+    context = Context.new
+    assert_equal 'hi', context.apply_global_filter('hi')
+  end
 end # ContextTest
