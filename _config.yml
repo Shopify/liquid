@@ -17,12 +17,5 @@ defaults:
   -
     scope:
       path: ""
-      type: "filters"
-    values:
-      layout: "default"
-  -
-    scope:
-      path: ""
-      type: "tags"
     values:
       layout: "default"

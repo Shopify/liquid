@@ -29,7 +29,7 @@
               <ul class="section__links">
                 {% for doc in site.collections[section_title].docs %}
                   <li>
-                    <a href="{{ doc.url }}" class="section__link {% if doc.title == page.title %}section__link--is-active{% endif %}">{{ doc.title }}</a>
+                    <a href="/{{ collection[0] }}#{{ doc.title }}" class="section__link">{{ doc.title }}</a>
                   </li>
                 {% endfor %}
               </ul>
@@ -40,11 +40,8 @@
     </div>
 
     <div class="content__area">
-      <div class="content__wrapper">
-        <h1>{% unless page.url == "/index.html" %}{{ page.collection | capitalize }} &rarr; {% endunless %} {{ page.title }}</h1>
-        <div class="content">
-          {{ content }}
-        </div>
+      <div class="content__list">
+        {{ content }}
       </div>
     </div>
 
