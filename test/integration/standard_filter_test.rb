@@ -130,6 +130,13 @@ class StandardFiltersTest < Minitest::Test
     assert_equal nil, @filters.url_encode(nil)
   end
 
+  def test_url_decode
+    assert_equal 'foo bar', @filters.url_decode('foo+bar')
+    assert_equal 'foo bar', @filters.url_decode('foo%20bar')
+    assert_equal 'foo+1@example.com', @filters.url_decode('foo%2B1%40example.com')
+    assert_equal nil, @filters.url_decode(nil)
+  end
+
   def test_truncatewords
     assert_equal 'one two three', @filters.truncatewords('one two three', 4)
     assert_equal 'one two...', @filters.truncatewords('one two three', 2)
