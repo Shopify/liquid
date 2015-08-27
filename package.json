@@ -2,6 +2,7 @@
   "name": "liquid-docs",
   "version": "0.1.0",
   "devDependencies": {
+    "autoprefixer-core": "^5.2.1",
     "grunt": "~0.4.1",
     "grunt-autoprefixer": "^3.0.3",
     "grunt-concurrent": "^1.0.0",
