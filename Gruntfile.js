@@ -15,12 +15,10 @@ require('load-grunt-tasks')(grunt);
           atBegin: true
         }
       },
-
       jekyll: {
-        files: ['index.html', '_includes/*.html', '_filters/*.*',  '_layouts/*.*', '_posts/*.*'],
+        files: ['index.md', '_includes/*.html', '_filters/*.*',  '_layouts/*.*', '_tags/*.*', '_basics/*.*'],
         tasks: ['shell:jekyllBuild']
       }
-
     },
 
     sass: {

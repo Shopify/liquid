@@ -2,16 +2,9 @@
 title: Handles
 ---
 
-# Handles
+### What is a handle
 
-
-<a id="topofpage"></a>
-
-
-
-## What is a handle
-
-The handle is used to access the attributes of a Liquid object. By default, it is the object's title in lowercase with any spaces and special characters replaced by hyphens (-). Every object in Liquid (product, collection, blog, link list) has a handle.
+The handle is used to access the attributes of a Liquid object. By default, it is the object's title in lowercase with any spaces and special characters replaced by hyphens (-). 
 
 For example, a page with the title "About Us" can be accessed in Liquid via its handle <tt>about-us</tt> as shown below:
 
@@ -20,7 +13,7 @@ For example, a page with the title "About Us" can be accessed in Liquid via its 
 {{ pages.about-us.content }}
 {% endraw %}{% endhighlight %} 
 
-## How are my handles created?
+### How are my handles created?
 
 A product with the title "Shirt" will automatically be given the handle **shirt**. If there is already a product with the handle "Shirt", the handle will auto-increment. In other words, all "Shirt" products created after the first one will receive the handle **shirt-1**, **shirt-2**, and so on. 
 

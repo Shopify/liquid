@@ -2,14 +2,9 @@
 title: Operators
 ---
 
-# Operators
+Liquid has access to all of the logical and comparison operators.
 
-<a id="topofpage"></a>
-
-Liquid has access to all of the logical and comparison operators. These can be used in tags such as <a href="/themes/liquid-documentation/tags/control-flow-tags/#if">if</a> and <a href="/themes/liquid-documentation/tags/control-flow-tags/#unless">unless</a>.
-
-
-## Basic Operators
+### Basic Operators
 
 <table>
   <tbody>
@@ -77,7 +72,7 @@ Operators can be chained together.
 
 
 
-## Contains operator
+### Contains operator
 
 <code>contains</code> checks for the presence of a substring inside a string.
 

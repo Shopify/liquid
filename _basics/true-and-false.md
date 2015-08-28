@@ -2,10 +2,6 @@
 title: Truthy and Falsy
 ---
 
-# Truthy and Falsy in Liquid
-
-
-
 In programming, we describe “truthy” and “falsy” as anything that returns true or  false, respectively, when used inside an if statement.
 
 ## What is truthy? 
