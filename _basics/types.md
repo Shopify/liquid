@@ -2,13 +2,11 @@
 title: Types
 ---
 
-# Types
-
 Liquid objects can return one of six types: String, Number, Boolean, Nil, Array, or EmptyDrop. Liquid variables can be initialized by using the <a href="/themes/liquid-documentation/tags/variable-tags/#assign">assign</a> or <a href="/themes/liquid-documentation/tags/variable-tags/#capture">capture</a> tags. 
 
 
 
-## Strings 
+### Strings 
 
 Strings are declared by wrapping the variable's value in single or double quotes.
 
@@ -19,7 +17,7 @@ Strings are declared by wrapping the variable's value in single or double quotes
 </div>
 
 
-## Numbers
+### Numbers
 
 Numbers include floats and integers. 
 
@@ -31,7 +29,7 @@ Numbers include floats and integers.
 
 
 
-## Booleans
+### Booleans
 
 Booleans are either true or false. No quotations are necessary when declaring a boolean. 
 
@@ -44,7 +42,7 @@ Booleans are either true or false. No quotations are necessary when declaring a 
 
 
 
-## Nil
+### Nil
 
 Nil is an empty value that is returned when Liquid code has no results. It is **not** a  string with the characters "nil". 
 
@@ -75,10 +73,7 @@ Tracking number:
 
 
 
-
-
-
-## Arrays
+### Arrays
 
 Arrays hold a list of variables of all types.  
 
