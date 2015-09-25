@@ -7,44 +7,44 @@ class String # :nodoc:
   end
 end
 
-class Array  # :nodoc:
+class Array # :nodoc:
   def to_liquid
     self
   end
 end
 
-class Hash  # :nodoc:
+class Hash # :nodoc:
   def to_liquid
     self
   end
 end
 
-class Numeric  # :nodoc:
+class Numeric # :nodoc:
   def to_liquid
     self
   end
 end
 
-class Time  # :nodoc:
+class Time # :nodoc:
   def to_liquid
     self
   end
 end
 
-class DateTime < Date  # :nodoc:
+class DateTime < Date # :nodoc:
   def to_liquid
     self
   end
 end
 
-class Date  # :nodoc:
+class Date # :nodoc:
   def to_liquid
     self
   end
 end
 
 class TrueClass
-  def to_liquid  # :nodoc:
+  def to_liquid # :nodoc:
     self
   end
 end

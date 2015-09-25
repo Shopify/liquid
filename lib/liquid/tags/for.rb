@@ -152,7 +152,7 @@ module Liquid
     def strict_parse(markup)
       p = Parser.new(markup)
       @variable_name = p.consume(:id)
-      raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_in".freeze))  unless p.id?('in'.freeze)
+      raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_in".freeze)) unless p.id?('in'.freeze)
       collection_name = p.expression
       @name = "#{@variable_name}-#{collection_name}"
       @collection_name = Expression.parse(collection_name)

@@ -42,7 +42,7 @@ module Liquid
     end
 
     def url_encode(input)
-      CGI.escape(input) rescue input
+      CGI.escape(input) unless input.nil?
     end
 
     def slice(input, offset, length = nil)
