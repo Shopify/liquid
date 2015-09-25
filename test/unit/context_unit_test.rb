@@ -267,7 +267,7 @@ class ContextUnitTest < Minitest::Test
 
   def test_access_hashes_with_hash_notation
     @context['products'] = { 'count' => 5, 'tags' => ['deepsnow', 'freestyle'] }
-    @context['product'] = { 'variants' => [ { 'title' => 'draft151cm' }, { 'title' => 'element151cm' }  ] }
+    @context['product'] = { 'variants' => [ { 'title' => 'draft151cm' }, { 'title' => 'element151cm' } ] }
 
     assert_equal 5, @context['products["count"]']
     assert_equal 'deepsnow', @context['products["tags"][0]']
@@ -305,7 +305,7 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_first_can_appear_in_middle_of_callchain
-    @context['product'] = { 'variants' => [ { 'title' => 'draft151cm' }, { 'title' => 'element151cm' }  ] }
+    @context['product'] = { 'variants' => [ { 'title' => 'draft151cm' }, { 'title' => 'element151cm' } ] }
 
     assert_equal 'draft151cm', @context['product.variants[0].title']
     assert_equal 'element151cm', @context['product.variants[1].title']

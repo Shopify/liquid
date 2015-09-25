@@ -29,10 +29,10 @@ class IfElseTagTest < Minitest::Test
     assert_template_result(' YES ', '{% if a or b %} YES {% endif %}', 'a' => true, 'b' => true)
     assert_template_result(' YES ', '{% if a or b %} YES {% endif %}', 'a' => true, 'b' => false)
     assert_template_result(' YES ', '{% if a or b %} YES {% endif %}', 'a' => false, 'b' => true)
-    assert_template_result('',     '{% if a or b %} YES {% endif %}', 'a' => false, 'b' => false)
+    assert_template_result('',      '{% if a or b %} YES {% endif %}', 'a' => false, 'b' => false)
 
     assert_template_result(' YES ', '{% if a or b or c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => true)
-    assert_template_result('',     '{% if a or b or c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)
+    assert_template_result('',      '{% if a or b or c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)
   end
 
   def test_if_or_with_operators

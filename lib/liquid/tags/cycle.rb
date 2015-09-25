@@ -37,7 +37,7 @@ module Liquid
         iteration = context.registers[:cycle][key]
         result = context.evaluate(@variables[iteration])
         iteration += 1
-        iteration  = 0  if iteration >= @variables.size
+        iteration  = 0 if iteration >= @variables.size
         context.registers[:cycle][key] = iteration
         result
       end
