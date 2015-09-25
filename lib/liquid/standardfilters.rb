@@ -116,6 +116,8 @@ module Liquid
       ary = InputIterator.new(input)
       if property.nil?
         ary.sort
+      elsif ary.empty? # The next two cases assume a non-empty array.
+        []
       elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
         ary.sort { |a, b| a[property] <=> b[property] }
       elsif ary.first.respond_to?(property)
@@ -130,6 +132,8 @@ module Liquid
 
       if property.nil?
         ary.sort { |a, b| a.casecmp(b) }
+      elsif ary.empty? # The next two cases assume a non-empty array.
+        []
       elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
         ary.sort { |a, b| a[property].casecmp(b[property]) }
       elsif ary.first.respond_to?(property)
@@ -144,6 +148,8 @@ module Liquid
 
       if property.nil?
         ary.uniq
+      elsif ary.empty? # The next two cases assume a non-empty array.
+        []
       elsif ary.first.respond_to?(:[])
         ary.uniq{ |a| a[property] }
       end
@@ -175,6 +181,8 @@ module Liquid
 
       if property.nil?
         ary.compact
+      elsif ary.empty? # The next two cases assume a non-empty array.
+        []
       elsif ary.first.respond_to?(:[])
         ary.reject{ |a| a[property].nil? }
       elsif ary.first.respond_to?(property)
@@ -372,6 +380,11 @@ module Liquid
 
       def compact
         to_a.compact
+      end
+
+      def empty?
+        @input.each { return false }
+        true
       end
 
       def each
