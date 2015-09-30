@@ -158,6 +158,14 @@ class StandardFiltersTest < Minitest::Test
     assert_equal [{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], @filters.sort([{ "a" => 4 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a")
   end
 
+  def test_sort_empty_array
+    assert_equal [], @filters.sort([], "a")
+  end
+
+  def test_sort_natural_empty_array
+    assert_equal [], @filters.sort_natural([], "a")
+  end
+
   def test_legacy_sort_hash
     assert_equal [{ a: 1, b: 2 }], @filters.sort({ a: 1, b: 2 })
   end
@@ -175,6 +183,14 @@ class StandardFiltersTest < Minitest::Test
     assert_equal [{ "a" => 1 }, { "a" => 3 }, { "a" => 2 }], @filters.uniq([{ "a" => 1 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a")
     testdrop = TestDrop.new
     assert_equal [testdrop], @filters.uniq([testdrop, TestDrop.new], 'test')
+  end
+
+  def test_uniq_empty_array
+    assert_equal [], @filters.uniq([], "a")
+  end
+
+  def test_compact_empty_array
+    assert_equal [], @filters.compact([], "a")
   end
 
   def test_reverse
