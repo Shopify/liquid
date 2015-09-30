@@ -16,6 +16,7 @@
 * Remove support for `liquid_methods`
 
 ### Fixed
+* Fix sort filter behaviour with empty array input (#652) [Marcel Cary]
 * Fix test failure under certain timezones (#631) [Dylan Thacker-Smith]
 * Fix bug in uniq filter (#595) [Florian Weingarten]
 * Fix bug when "blank" and "empty" are used as variable names (#592) [Florian Weingarten]
