@@ -2,12 +2,12 @@
 title: Control Flow
 ---
 
-Control Flow tags determine which block of code should be executed based on different conditions. 
+Control Flow tags determine which block of code should be executed based on different conditions.
 
 
-### if
+## if
 
-<p>Executes a block of code only if a certain condition is met.</p>      
+<p>Executes a block of code only if a certain condition is met.</p>
 
 <p class="input">Input</p>
 
@@ -28,9 +28,9 @@ These shoes are awesome!
 </div>
 
 
-### elsif / else
+## elsif / else
 
-<p>Adds more conditions within an <code>if</code> or <code>unless</code> block.</p> 
+<p>Adds more conditions within an <code>if</code> or <code>unless</code> block.</p>
 
 <p class="input">Input</p>
 
@@ -58,10 +58,9 @@ Hey Anonymous!
 
 
 
+## case/when
 
-### case/when
-
-<p>Creates a switch statement to compare a variable with different values. <code>case</code> initializes the switch statement, and <code>when</code> compares its values.</p>      
+<p>Creates a switch statement to compare a variable with different values. <code>case</code> initializes the switch statement, and <code>when</code> compares its values.</p>
 
 <p class="input">Input</p>
 
@@ -93,15 +92,9 @@ This is a cake
 
 
 
+## unless
 
-
-
-
-
-
-### unless
-
-<p>Similar to <code>if</code>, but executes a block of code only if a certain condition is <strong>not</strong> met.</p>      
+<p>Similar to <code>if</code>, but executes a block of code only if a certain condition is <strong>not</strong> met.</p>
 
 <p class="input">Input</p>
 

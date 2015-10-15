@@ -6,12 +6,20 @@ permalink: /:year/:month/:day/:basename:output_ext
 collections:
   basics:
     output: true
+    permalink: /basics/:path/
   filters:
     output: true
   tags:
     output: true
+    permalink: /tags/:path/
 exclude:
   - README.md
   - CNAME
   - node_modules
 keep_files: ['css']
+defaults:
+  -
+    scope:
+      path: "" # an empty string here means all files in the project
+    values:
+      layout: "default"
