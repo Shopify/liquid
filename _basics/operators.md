@@ -2,7 +2,7 @@
 title: Operators
 ---
 
-Liquid has access to all of the logical and comparison operators.
+Liquid includes many logical and comparison operators.
 
 ### Basic Operators
 
@@ -17,7 +17,7 @@ Liquid has access to all of the logical and comparison operators.
       <td>does not equal</td>
     </tr>
     <tr>
-      <td><pre>></pre></td>
+      <td><pre>&gt;</pre></td>
       <td>greater than</td>
     </tr>
     <tr>
@@ -25,9 +25,8 @@ Liquid has access to all of the logical and comparison operators.
       <td>less than</td>
     </tr>
     <tr>
-      <td><pre>>=</pre></td>
-      <td>greater than or equal to</td>    
-
+      <td><pre>&gt;=</pre></td>
+      <td>greater than or equal to</td>
     </tr>
     <tr>
       <td><pre>&lt;=</pre></td>
@@ -35,84 +34,51 @@ Liquid has access to all of the logical and comparison operators.
     </tr>
     <tr>
       <td><pre>or</pre></td>
-      <td>condition A <strong>or</strong> condition B</td>
+      <td>logical or</td>
     </tr>
     <tr>
       <td><pre>and</pre></td>
-      <td>condition A <strong>and</strong> condition B</td>
+      <td>logical and</td>
     </tr>
-    </tbody>
+  </tbody>
 </table>
 
-**Examples:**
+For example:
 
 <div>
-{% highlight html %}{% raw %}
+{% highlight liquid %}{% raw %}
 {% if product.title == "Awesome Shoes" %}
-	These shoes are awesome!
+  These shoes are awesome!
 {% endif %}
 {% endraw %}{% endhighlight %}
 </div>
 
-Operators can be chained together. 
+You can use multiple operators in a tag:
 
 <div>
-{% highlight html %}{% raw %}
+{% highlight liquid %}{% raw %}
 {% if product.type == "Shirt" or product.type == "Shoes" %}
-	This is a shirt or a shoe. 
+  This is a shirt or a pair of shoes.
 {% endif %}
 {% endraw %}{% endhighlight %}
 </div>
 
+### contains
 
+`contains` checks for the presence of a substring inside a string.
 
-
-
-
-
-
-
-### Contains operator
-
-<code>contains</code> checks for the presence of a substring inside a string.
-
-
-{% highlight html %}{% raw %}
+{% highlight liquid %}{% raw %}
 {% if product.title contains 'Pack' %}
   This product's title contains the word Pack.
 {% endif %}
 {% endraw %}{% endhighlight %}
 
+`contains` can also check for the presence of a string in an array of strings.
 
-<code>contains</code> can also check for the presence of a string in an array of strings.
-
-{% highlight html %}{% raw %}
+{% highlight liquid %}{% raw %}
 {% if product.tags contains 'Hello' %}
   This product has been tagged with 'Hello'.
 {% endif %}
 {% endraw %}{% endhighlight %}
 
-
-You **cannot** check for the presence of an object in an array of objects using contains. This will not work:
-
-{% highlight html %}{% raw %}
-{% if product.collections contains 'Sale' %}
-  One of the collections this product belongs to is the Sale collection.
-{% endif %}
-{% endraw %}{% endhighlight %}
-
-This will work:
-
-{% highlight html %}{% raw %}
-{% assign in_sale_collection = false %}
-{% for collection in product.collections %}
-  {% if in_sale_collection == false and collection.title == 'Sale' %}
-    {% assign in_sale_collection = true %}
-  {% endif %}
-{% endfor %}
-{% if in_sale_collection %}
-  One of the collections this product belongs to is the Sale collection.
-{% endif %}
-{% endraw %}{% endhighlight %}
-
-   
+`contains` is can only search strings. You cannot use it to check for an object in an array of objects.

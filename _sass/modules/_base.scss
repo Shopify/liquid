@@ -173,6 +173,10 @@ table {
     border: 1px solid #ddd;
     padding: 6px 13px;
   }
+  /* Don't use a margin on code samples within tables */
+  pre {
+    margin-bottom: 0;
+  }
 }
 
 td {

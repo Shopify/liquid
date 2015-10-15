@@ -13,7 +13,7 @@ For example, a page with the title "About Us" can be accessed in Liquid via its 
 {% endraw %}
 {% endhighlight %}
 
-## Creating handles
+### Creating handles
 
 An object with the title "Shirt" will automatically be given the handle `shirt`. If there is already an object with the handle `shirt`, the handle will auto-increment. In other words, "Shirt" objects created after the first one will receive the handle `shirt-1`, `shirt-2`, and so on.
 
@@ -23,46 +23,28 @@ Handles also determine the URL of their corresponding objects. For example, a pa
 
 Websites often rely on static handles for pages, posts, or objects. To preserve design elements and avoid broken links, if you modify the title of an object, **its handle is not automatically updated**. For example, if you were to change a page title from "About Us" to "About This Website", its handle would still be `about-us`.
 
-You can change an object's handle manually (how?)
+You can change an object's handle manually (TK how to change a handle manually)
 
-## Accessing attributes via the handle", "attributes-handle
+### Accessing handle attributes
 
 In many cases you may know the handle of a object whose attributes you want to access. You can access its attributes by pluralizing the name of the object, then using either the square bracket ( [ ] ) or dot ( . ) notation.
 
 <p class="input">Input</p>
 <div>
-{% highlight html %}{% raw %}
+{% highlight liquid %}
+{% raw %}
 {{ pages.about-us.title }}
 {{ pages["about-us"].title }}
-{% endraw %}{% endhighlight %}
+{% endraw %}
+{% endhighlight %}
 </div>
 
 <p class="output">Output</p>
 <div>
-{% highlight html %}{% raw %}
+{% highlight text %}
 About Us
 About Us
-{% endraw %}{% endhighlight %}
+{% endhighlight %}
 </div>
 
 In the example above, notice that we are using `pages` as opposed to `page`.
-
-You can also pass in Customize theme page objects using this notation. This is handy for theme designers who wish to give the users of their themes the ability to select which content to display in their theme.
-
-<p class="input">Input</p>
-<div>
-{% highlight html %}{% raw %}
-{% for product in collections[settings.home_featured_collection].products %}
-	{{ product.title }}
-{% endfor %}
-{% endraw %}{% endhighlight %}
-</div>
-
-<p class="output">Output</p>
-<div>
-{% highlight html %}{% raw %}
-Awesome Shoes
-Cool T-Shirt
-Wicked Socks
-{% endraw %}{% endhighlight %}
-</div>
