@@ -2,7 +2,7 @@
 title: capitalize
 ---
 
-`capitalize` ensures the first character of your string is capitalized.
+`capitalize` makes the first character of your string capitalized.
 
 | Input                                                      | Output           |
 |:-----------------------------------------------------------|:-----------------|

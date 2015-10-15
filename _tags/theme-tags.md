@@ -1,14 +1,7 @@
 ---
-layout: default
-title: Theme Tags
-landing_as_article: true
-
-nav:
-  group: Liquid Documentation
-  weight: 1
+title: Theme
 ---
 
-# Theme Tags
 
 Theme Tags have various functions, including:
 

@@ -1,8 +1,6 @@
 ---
-title: Control Flow Tags
+title: Control Flow
 ---
-
-# Control Flow Tags
 
 Control Flow tags determine which block of code should be executed based on different conditions. 
 

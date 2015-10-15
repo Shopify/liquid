@@ -2,7 +2,7 @@
 title: divided_by
 ---
 
-This filter divides its input by its parameter.
+This filter divides its input by its argument.
 
 | Code                                              | Output |
 |:--------------------------------------------------|:-------|

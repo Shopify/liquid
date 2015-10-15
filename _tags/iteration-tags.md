@@ -1,8 +1,6 @@
 ---
-title: Iteration Tags
+title: Iteration
 ---
-
-# Iteration Tags
 
 Iteration Tags are used to run a block of code repeatedly.
 

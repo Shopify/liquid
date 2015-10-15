@@ -1,8 +1,6 @@
 ---
-title: Variable Tags
+title: Variable
 ---
-
-# Variable Tags
 
 Variable Tags are used to create new Liquid variables. 
 

@@ -16,7 +16,7 @@ It can also be used with variables:
 {% highlight liquid %}
 {% raw %}
 {% assign filename = "/index.html" %}
-{{ product.url | append:filename }}
+{{ product.url | append: filename }}
 {% endraw %}
 # => "#{product.url}/index.html"
 {% endhighlight %}
