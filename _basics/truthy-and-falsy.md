@@ -4,9 +4,9 @@ title: Truthy and Falsy
 
 In programming, we describe “truthy” and “falsy” as anything that returns true or  false, respectively, when used inside an if statement.
 
-## What is truthy? 
+## What is truthy?
 
-All values in Liquid are truthy, with the exception of <tt>nil</tt> and <tt>false</tt>. 
+All values in Liquid are truthy, with the exception of `nil` and `false`.
 
 In the example below, the text “Tobi” is not a boolean, but it is truthy in a conditional:
 
@@ -17,7 +17,7 @@ This will always be true.
 {% endif %}
 {% endraw %}{% endhighlight %}
 
-[Strings](/themes/liquid-documentation/basics/types/#strings), even when empty, are truthy. The example below will result in empty HTML tags if <code>settings.fp_heading</code> is empty: 
+[Strings](/themes/liquid-documentation/basics/types/#strings), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
 
 <p class="input">Input</p>
 {% highlight html %}{% raw %}
@@ -32,7 +32,7 @@ This will always be true.
 <h1></h1>
 {% endraw %}{% endhighlight %}
 
-To avoid this, you can check to see if the string is <code>blank</code>, as follows: 
+To avoid this, you can check to see if the string is <code>blank</code>, as follows:
 
 <div>
 {% highlight html %}{% raw %}
@@ -44,7 +44,7 @@ To avoid this, you can check to see if the string is <code>blank</code>, as foll
 
 <hr/>
 
-An [EmptyDrop](/themes/liquid-documentation/basics/types/#empty-drop) is also truthy. In the example below, if <code>settings.page</code> is an empty string or set to a hidden or deleted object, you will end up with an EmptyDrop. The result is an undesirable empty &lt;div&gt;:
+An [EmptyDrop](/themes/liquid-documentation/basics/types/#empty-drop) is also truthy. In the example below, if `settings.page` is an empty string or set to a hidden or deleted object, you will end up with an EmptyDrop. The result is an undesirable empty &lt;div&gt;:
 
 <p class="input">Input</p>
 {% highlight html %}{% raw %}
@@ -62,7 +62,7 @@ An [EmptyDrop](/themes/liquid-documentation/basics/types/#empty-drop) is also tr
 
 ## What is falsy?
 
-The only values that are falsy in Liquid are <tt>nil</tt> and <tt>false</tt>.
+The only values that are falsy in Liquid are `nil` and `false`.
 
 [nil](/themes/liquid-documentation/basics/types/#nil) is returned when a Liquid object doesn't have anything to return. For example, if a collection doesn't have a collection image, collection.image will be set to <tt>nil</tt>. Since that is “falsy”, you can do this:
 
@@ -76,7 +76,7 @@ The value <tt>false</tt> is returned through many Liquid object properties such 
 
 ## Summary
 
-The table below summarizes what is truthy or falsy in Liquid. 
+The table below summarizes what is truthy or falsy in Liquid.
 
 |               | truthy        | falsy         |
 | ------------- |:-------------:|:-------------:|
@@ -93,25 +93,3 @@ The table below summarizes what is truthy or falsy in Liquid.
 | collection with no products        | &times;     |     |
 | page        | &times;     |     |
 | EmptyDrop        | &times;     |     |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
