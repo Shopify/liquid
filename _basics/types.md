@@ -13,7 +13,7 @@ Liquid objects can have one of six types:
 
 Liquid variables can be initialized by using the [assign](/tags/#assign) or [capture](/tags/#capture) tags.
 
-### String
+## String
 
 Strings are declared by wrapping a variable's value in single or double quotes.
 
@@ -23,7 +23,7 @@ Strings are declared by wrapping a variable's value in single or double quotes.
 {% endraw %}
 {% endhighlight %}
 
-### Number
+## Number
 
 Numbers include floats and integers.
 
@@ -34,7 +34,7 @@ Numbers include floats and integers.
 {% endraw %}
 {% endhighlight %}
 
-### Boolean
+## Boolean
 
 Booleans are either `true` or `false`. No quotations are necessary when declaring a boolean.
 
@@ -45,7 +45,7 @@ Booleans are either `true` or `false`. No quotations are necessary when declarin
 {% endraw %}
 {% endhighlight %}
 
-### Nil
+## Nil
 
 Nil is a special empty value that is returned when Liquid code has no results. It is **not** a string with the characters "nil".
 
@@ -75,7 +75,7 @@ The current user is {{ user.name }}
 The current user is
 {% endraw %}{% endhighlight %}
 
-### Array
+## Array
 
 Arrays hold lists of variables of any type.
 

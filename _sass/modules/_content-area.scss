@@ -1,13 +1,17 @@
-
 .content__item {
   margin-bottom: $spacing-unit * 2;
 
   h3 {
     text-decoration: underline;
   }
-
 }
 
-.content__header {
-font-weight: bold;
+.content__list {
+  h2 {
+    font-weight: bold;
+
+    &:not(:first-child) {
+      margin-top: $spacing-unit * 2;
+    }
+  }
 }
