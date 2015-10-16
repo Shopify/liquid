@@ -2,7 +2,7 @@
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://liquidmarkup.org" # the base hostname & protocol for your site
 markdown: kramdown
-highlighter: rouge
+highlighter: pygments
 permalink: /:year/:month/:day/:basename:output_ext
 collections:
   basics:
