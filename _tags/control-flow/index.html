@@ -1,0 +1,15 @@
+---
+layout: default
+---
+
+CONTROL FLOW HERE
+ sss
+
+{% for doc in site.collections["tags"].docs %}
+  <div id="{{ doc.title }}" class="content__item">
+    <h2 class="content__header">{{ doc.title }}</h2>
+    <div class="content">
+      {{ doc.content }}
+    </div>
+  </div>
+{% endfor %}
