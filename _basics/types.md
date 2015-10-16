@@ -2,198 +2,156 @@
 title: Types
 ---
 
-Liquid objects can return one of six types: String, Number, Boolean, Nil, Array, or EmptyDrop. Liquid variables can be initialized by using the <a href="/themes/liquid-documentation/tags/variable-tags/#assign">assign</a> or <a href="/themes/liquid-documentation/tags/variable-tags/#capture">capture</a> tags. 
+Liquid objects can have one of six types:
 
+- [string](#string)
+- [number](#number)
+- [boolean](#boolean)
+- [nil](#nil)
+- [array](#array)
+- [EmptyDrop](#emptydrop)
 
+Liquid variables can be initialized by using the [assign](/tags/#assign) or [capture](/tags/#capture) tags.
 
-### Strings 
+### String
 
-Strings are declared by wrapping the variable's value in single or double quotes.
+Strings are declared by wrapping a variable's value in single or double quotes.
 
-<div>
+{% highlight liquid %}
 {% raw %}
 {% assign my_string = "Hello World!" %}
 {% endraw %}
-</div>
+{% endhighlight %}
 
+### Number
 
-### Numbers
+Numbers include floats and integers.
 
-Numbers include floats and integers. 
-
-<div>
+{% highlight liquid %}
 {% raw %}
-{% assign my_num = 25 %}
+{% assign my_int = 25 %}
+{% assign my_float = 39.756 %}
 {% endraw %}
-</div>
+{% endhighlight %}
 
+### Boolean
 
+Booleans are either `true` or `false`. No quotations are necessary when declaring a boolean.
 
-### Booleans
-
-Booleans are either true or false. No quotations are necessary when declaring a boolean. 
-
-<div>
+{% highlight liquid %}
 {% raw %}
 {% assign foo = true %}
 {% assign bar = false %}
 {% endraw %}
-</div>
-
-
+{% endhighlight %}
 
 ### Nil
 
-Nil is an empty value that is returned when Liquid code has no results. It is **not** a  string with the characters "nil". 
+Nil is a special empty value that is returned when Liquid code has no results. It is **not** a string with the characters "nil".
 
-Nil is treated as false in the conditions of &#123;% if %&#125; blocks and other Liquid tags that check for the truthfulness of a statement. The example below shows a situation where a fulfillment does not yet have a tracking number entered. The if statement would not render the included text within it. 
+Nil is treated as false in the conditions of `if` blocks and other Liquid tags that check the truthfulness of a statement.
 
+In the following example, if the user does not exist (that is, `user` returns `nil`), Liquid will not print the greeting:
+
+{% highlight liquid %}
 {% raw %}
-{% if fulfillment.tracking_numbers %}
-We have a tracking number!
+{% if user %}
+  Hello {{ user.name }}!
 {% endif %}
 {% endraw %}
+{% endhighlight %}
 
-Any tags or outputs that return nil will not show anything on the screen. 
+Tags or outputs that return `nil` will not print anything to the page.
 
 <p class="input">Input</p>
 
-{% highlight html %}{% raw %}
-Tracking number: {{ fulfillment.tracking_numbers }}
+{% highlight liquid %}{% raw %}
+The current user is {{ user.name }}
 {% endraw %}{% endhighlight %}
 
 <p class="output">Output</p>
 
-<div>
-{% highlight html %}{% raw %}
-Tracking number: 
+{% highlight text %}{% raw %}
+The current user is
 {% endraw %}{% endhighlight %}
-</div>
 
+### Array
 
+Arrays hold lists of variables of any type.
 
+#### Accessing items in arrays
 
-### Arrays
-
-Arrays hold a list of variables of all types.  
-
-#### Accessing all items in an array
-
-To access items in an array, you can loop through each item in the array using a <a href="/themes/liquid-documentation/tags/#for">for</a> tag or a <a href="/themes/liquid-documentation/tags/#tablerow">tablerow</a> tag. 
+To access all of the items in an array, you can loop through each item in the array using a [for](/tags/#for) or [tablerow](/tags/#tablerow) tag.
 
 <p class="input">Input</p>
-<div>
-{% highlight html %}{% raw %}
-<!-- if product.tags = "sale", "summer", "spring", "wholesale" -->
-{% for tag in product.tags %}
-	{{ tag }}
+{% highlight liquid %}{% raw %}
+<!-- if site.users = "Tobi", "Lina", "Tetsuro", "Adam" -->
+{% for user in site.users %}
+  {{ user }}
 {% endfor %}
 {% endraw %}{% endhighlight %}
-</div>
 
 <p class="output">Output</p>
-<div>
-{% highlight html %}{% raw %}
-sale summer spring wholesale
+{% highlight text %}{% raw %}
+Tobi Lina Tetsuro Adam
 {% endraw %}{% endhighlight %}
-</div>
 
 
-#### Accessing a specific item in an array
+#### Accessing specific items in arrays
 
-You can use square brackets ( [ ] ) notation to access a specific item in an array. Array indexing starts at zero. 
+You can use square bracket `[ ]` notation to access a specific item in an array. Array indexing starts at zero.
 
 <p class="input">Input</p>
-<div>
-{% highlight html %}{% raw %}
-<!-- if product.tags = "sale", "summer", "spring", "wholesale" -->
-{{ product.tags[0] }} 
-{{ product.tags[1] }} 
-{{ product.tags[2] }} 
-{{ product.tags[3] }} 
+{% highlight liquid %}{% raw %}
+<!-- if site.users = "Tobi", "Lina", "Tetsuro", "Adam" -->
+{{ site.users[0] }}
+{{ site.users[1] }}
+{{ site.users[3] }}
 {% endraw %}{% endhighlight %}
-</div>
 
 <p class="output">Output</p>
-<div>
-{% highlight html %}{% raw %}
-sale
-summer
-spring
-wholesale
+{% highlight text %}{% raw %}
+Tobi
+Lina
+Adam
 {% endraw %}{% endhighlight %}
-</div>
 
+#### Initializing arrays
 
-#### Initializing an array
+You cannot initialize arrays using pure Liquid.
 
-It is not possible to initialize an array in Liquid. For example, in Javascript you could do something like this: 
-
-<div>
-{% highlight html %}{% raw %}
-<script>
-var cars = ["Saab", "Volvo", "BMW"];
-</script>
-{% endraw %}{% endhighlight %}
-</div>
-
-In Liquid, you must instead use the <code>split</code> filter to break a single string into an array of substrings. See <a href="/themes/liquid-documentation/filters/string-filters/#split">here</a> for examples. 
-
-
-
-
-
-
+You can, however, use the [split](/filters/#split) filter to break a single string into an array of substrings.
 
 ## EmptyDrop
 
-An EmptyDrop object is returned whenever you try to access a non-existent object (for example, a collection, page or blog that was deleted or hidden) by [handle](/themes/liquid-documentation/basics/handle). In the example below, <code>page_1</code>, <code>page_2</code> and <code>page_3</code> are all EmptyDrop objects.
+An EmptyDrop object is returned if you try to access a deleted object (such as a page or post) by its [handle](/basics/#Handles). In the example below, `page_1`, `page_2` and `page_3` are all EmptyDrop objects.
 
-{% highlight html %}{% raw %}
+{% highlight liquid %}{% raw %}
 {% assign variable = "hello" %}
 {% assign page_1 = pages[variable] %}
-{% assign page_2 = pages["i-do-not-exist-in-your-store"] %}
-{% assign page_3 = pages.this-handle-does-not-belong-to-any-page %}
+{% assign page_2 = pages["does-not-exist"] %}
+{% assign page_3 = pages.this-handle-does-not-exist %}
 {% endraw %}{% endhighlight %}
 
-EmptyDrop objects only have one attribute, <code>empty?</code>, which is always true.   
+EmptyDrop objects only have one attribute, `empty?`, which is always *true*.
 
-Collections and pages that _do_ exist do not have an <code>empty?</code> attribute. Their <code>empty?</code> is “falsy”, which means that calling it inside an if statement will return <tt>false</tt>. When using an  unless statement on existing collections and pages, <code>empty?</code> will return <tt>true</tt>. 
+Collections and pages that *do* exist do not have an `empty?` attribute. Their `empty?` is “falsy”, which means that calling it inside an if statement will return *false*. When using an  unless statement on existing collections and pages, `empty?` will return `true`.
 
-#### Applications in themes
+#### Checking for emptiness
 
-Using the <code>empty?</code> attribute, you can check to see if a page exists or not _before_ accessing any of its other attributes. 
+Using the `empty?` attribute, you can check to see if an object exists or not before you access any of its attributes.
 
-{% highlight html %}{% raw %}
-{% unless pages.frontpage.empty? %}
-  <!-- We have a page with handle 'frontpage' and it's not hidden.-->
+{% highlight liquid %}{% raw %}
+{% unless pages.about.empty? %}
+  <!-- This content will only print if the page with handle 'about' is not empty -->
   <h1>{{ pages.frontpage.title }}</h1>
   <div>{{ pages.frontpage.content }}</div>
 {% endunless %}
 {% endraw %}{% endhighlight %}
 
-It is important to see if a page exists or not first to avoid outputting empty HTML elements to the page, as follows: 
+If you don't check for emptiness first, Liquid may print empty HTML elements to the page:
 
 {% highlight html %}{% raw %}
 <h1></h1>
 <div></div>
 {% endraw %}{% endhighlight %}
-
-You can perform the same verification with collections as well: 
-
-{% highlight html %}{% raw %}
-{% unless collections.frontpage.empty? %}
-  {% for product in collections.frontpage.products %}
-    {% include 'product-grid-item' %}
-  {% else %}
-    <p>We do have a 'frontpage' collection but it's empty.</p>
-  {% endfor %}
-{% endunless %}
-{% endraw %}{% endhighlight %}
-
-
-
-
-
-
-

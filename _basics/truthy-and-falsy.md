@@ -2,116 +2,69 @@
 title: Truthy and Falsy
 ---
 
-In programming, we describe “truthy” and “falsy” as anything that returns true or  false, respectively, when used inside an if statement.
+In programming, anything that returns `true` in a conditional is called **truthy**. Anything that returns `false` in a conditional is called **falsy**. All object types can be described as either truthy or falsy.
 
-## What is truthy? 
+## Truthy
 
-All values in Liquid are truthy, with the exception of <tt>nil</tt> and <tt>false</tt>. 
+All values in Liquid are truthy except `nil` and `false`.
 
-In the example below, the text “Tobi” is not a boolean, but it is truthy in a conditional:
+In the example below, the text "Tobi" is not a boolean, but it is truthy in a conditional:
 
-{% highlight html %}{% raw %}
+{% highlight liquid %}{% raw %}
 {% assign tobi = 'Tobi' %}
-{% if tobi %}
-This will always be true.
+
+{% if tobi == true %}
+  This condition will always be true.
 {% endif %}
 {% endraw %}{% endhighlight %}
 
-[Strings](/themes/liquid-documentation/basics/types/#strings), even when empty, are truthy. The example below will result in empty HTML tags if <code>settings.fp_heading</code> is empty: 
+[Strings](/basics/types/#string), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
 
 <p class="input">Input</p>
-{% highlight html %}{% raw %}
+{% highlight liquid %}{% raw %}
 {% if settings.fp_heading %}
-<h1>{{ settings.fp_heading }}</h1>
+  <h1>{{ settings.fp_heading }}</h1>
 {% endif %}
 {% endraw %}{% endhighlight %}
-
 
 <p class="output">Output</p>
 {% highlight html %}{% raw %}
 <h1></h1>
 {% endraw %}{% endhighlight %}
 
-To avoid this, you can check to see if the string is <code>blank</code>, as follows: 
-
-<div>
-{% highlight html %}{% raw %}
-{% unless settings.fp_heading == blank %}
-	<h1>{{ settings.fp_heading }}</h1>
-{% endunless %}
-{% endraw %}{% endhighlight %}
-</div>
-
-<hr/>
-
-An [EmptyDrop](/themes/liquid-documentation/basics/types/#empty-drop) is also truthy. In the example below, if <code>settings.page</code> is an empty string or set to a hidden or deleted object, you will end up with an EmptyDrop. The result is an undesirable empty &lt;div&gt;:
+[EmptyDrops](/basics/types/#emptydrop) are also truthy. In the example below, if `settings.page` is an empty string or set to a hidden or deleted object, you will end up with an EmptyDrop. The result is an empty `<div>`:
 
 <p class="input">Input</p>
 {% highlight html %}{% raw %}
 {% if pages[settings.page] %}
-<div>{{ pages[settings.page].content }}</div>
+  <div>{{ pages[settings.page].content }}</div>
 {% endif %}
 {% endraw %}{% endhighlight %}
-
 
 <p class="output">Output</p>
 {% highlight html %}{% raw %}
 <div></div>
 {% endraw %}{% endhighlight %}
 
+## Falsy
 
-## What is falsy?
-
-The only values that are falsy in Liquid are <tt>nil</tt> and <tt>false</tt>.
-
-[nil](/themes/liquid-documentation/basics/types/#nil) is returned when a Liquid object doesn't have anything to return. For example, if a collection doesn't have a collection image, collection.image will be set to <tt>nil</tt>. Since that is “falsy”, you can do this:
-
-{% highlight html %}{% raw %}
-{% if collection.image %}
-<!-- output collection image -->
-{% endif %}
-{% endraw %}{% endhighlight %}
-
-The value <tt>false</tt> is returned through many Liquid object properties such as <tt>product.available</tt>.
+The falsy values in Liquid are [nil](/basics/types/#nil) and [false](/basics/types/#boolean).
 
 ## Summary
 
-The table below summarizes what is truthy or falsy in Liquid. 
+The table below summarizes what is truthy or falsy in Liquid.
 
 |               | truthy        | falsy         |
 | ------------- |:-------------:|:-------------:|
-| true          | &times; |  |
-| false         |       | &times; |
-| nil          |  | &times; |
-| string        | &times;      |     |
-| empty string        | &times;     |     |
-| 0             |  &times;     |   |
-| 1 or 2 or 3.14        | &times;     |     |
-| array       |  &times;   |     |
-| empty array        |  &times;    |     |
-| collection        | &times;     |    |
-| collection with no products        | &times;     |     |
-| page        | &times;     |     |
-| EmptyDrop        | &times;     |     |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+| true          | •             |               |
+| false         |               | •             |
+| nil           |               | •             |
+| string        | •             |               |
+| empty string  | •             |               |
+| 0             | •             |               |
+| integer       | •             |               |
+| float         | •             |               |
+| array         | •             |               |
+| empty array   | •             |               |
+| page          | •             |               |
+| EmptyDrop     | •             |               |
