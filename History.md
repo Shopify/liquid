@@ -3,6 +3,7 @@
 ## 4.0.0 / not yet released / branch "master"
 
 ### Changed
+* Add url_decode filter to invert url_encode (#645) [Larry Archer]
 * Add global_filter to apply a filter to all output (#610) [Loren Hale]
 * Add compact filter (#600) [Carson Reinke]
 * Rename deprecated "has_key?" and "has_interrupt?" methods (#593) [Florian Weingarten]
