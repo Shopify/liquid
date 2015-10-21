@@ -46,7 +46,7 @@ module Liquid
     end
 
     def url_decode(input)
-      CGI.unescape(input) rescue input
+      CGI.unescape(input) unless input.nil?
     end
 
     def slice(input, offset, length = nil)
