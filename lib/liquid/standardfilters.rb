@@ -45,6 +45,10 @@ module Liquid
       CGI.escape(input) unless input.nil?
     end
 
+    def url_decode(input)
+      CGI.unescape(input) unless input.nil?
+    end
+
     def slice(input, offset, length = nil)
       offset = Utils.to_integer(offset)
       length = length ? Utils.to_integer(length) : 1
