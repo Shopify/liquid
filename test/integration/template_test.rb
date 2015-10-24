@@ -2,7 +2,7 @@ require 'test_helper'
 require 'timeout'
 
 class TemplateContextDrop < Liquid::Drop
-  def before_method(method)
+  def liquid_method_missing(method)
     method
   end
 

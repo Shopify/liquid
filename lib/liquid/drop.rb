@@ -18,15 +18,15 @@ module Liquid
   #   tmpl = Liquid::Template.parse( ' {% for product in product.top_sales %} {{ product.name }} {%endfor%} '  )
   #   tmpl.render('product' => ProductDrop.new ) # will invoke top_sales query.
   #
-  # Your drop can either implement the methods sans any parameters or implement the before_method(name) method which is a
-  # catch all.
+  # Your drop can either implement the methods sans any parameters
+  # or implement the liquid_method_missing(name) method which is a catch all.
   class Drop
     attr_writer :context
 
     EMPTY_STRING = ''.freeze
 
     # Catch all for the method
-    def before_method(_method)
+    def liquid_method_missing(_method)
       nil
     end
 
@@ -35,7 +35,7 @@ module Liquid
       if method_or_key && method_or_key != EMPTY_STRING && self.class.invokable?(method_or_key)
         send(method_or_key)
       else
-        before_method(method_or_key)
+        liquid_method_missing(method_or_key)
       end
     end
 
