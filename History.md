@@ -15,6 +15,7 @@
 * Ruby 1.9 support dropped (#491) [Justin Li]
 * Liquid::Template.file_system's read_template_file method is no longer passed the context. (#441) [James Reid-Smith]
 * Remove support for `liquid_methods`
+* Allow first and last filters to take count argument. (#637) [Danny Guinther]
 
 ### Fixed
 * Fix sort filter behaviour with empty array input (#652) [Marcel Cary]
