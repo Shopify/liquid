@@ -52,7 +52,7 @@ module Liquid
         args.first
       end
     rescue ::ArgumentError => e
-      raise Liquid::ArgumentError.new(e.message)
+      raise Liquid::ArgumentError, e.message, e.backtrace
     end
   end
 end

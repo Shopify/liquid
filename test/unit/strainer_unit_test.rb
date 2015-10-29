@@ -29,6 +29,18 @@ class StrainerUnitTest < Minitest::Test
     end
   end
 
+  def test_stainer_argument_error_contains_backtrace
+    strainer = Strainer.create(nil)
+    begin
+      strainer.invoke("public_filter", 1)
+    rescue Liquid::ArgumentError => e
+      assert_match(
+        /\ALiquid error: wrong number of arguments \((1 for 0|given 1, expected 0)\)\z/,
+        e.message)
+      assert_equal e.backtrace[0].split(':')[0], __FILE__
+    end
+  end
+
   def test_strainer_only_invokes_public_filter_methods
     strainer = Strainer.create(nil)
     assert_equal false, strainer.class.invokable?('__test__')
