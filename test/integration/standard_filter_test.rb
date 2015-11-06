@@ -118,6 +118,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_escape
     assert_equal '&lt;strong&gt;', @filters.escape('<strong>')
+    assert_equal nil, @filters.escape(nil)
     assert_equal '&lt;strong&gt;', @filters.h('<strong>')
   end
 
