@@ -5,21 +5,28 @@ markdown: kramdown
 highlighter: pygments
 permalink: /:year/:month/:day/:basename:output_ext
 collections:
-  basics:
+  docs:
     output: true
-    permalink: /basics/:path/
-  filters:
-    output: true
-  tags:
-    output: true
+    permalink: /docs/:path/
 exclude:
   - README.md
   - CNAME
   - node_modules
 keep_files: ['css']
 defaults:
-  -
-    scope:
+  - scope:
       path: "" # an empty string here means all files in the project
     values:
       layout: "default"
+  - scope:
+      path: "docs/basics"
+    values:
+      type: "basics"
+  - scope:
+      path: "docs/filters"
+    values:
+      type: "filters"
+  - scope:
+      path: "docs/tags"
+    values:
+      type: "tags"

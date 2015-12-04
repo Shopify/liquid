@@ -27,10 +27,12 @@
           <li>
             <h3 class="section__header">Basics</h3>
             <ul class="section__links">
-              {% for doc in site.collections["basics"].docs %}
-                <li>
-                  <a href="/basics/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
-                </li>
+              {% for doc in site.docs %}
+                {% if doc.type == "basics" %}
+                  <li>
+                    <a href="/docs/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
+                  </li>
+                {% endif %}
               {% endfor %}
             </ul>
           </li>
@@ -41,10 +43,12 @@
           <li>
             <h3 class="section__header">Tags</h3>
             <ul class="section__links">
-              {% for doc in site.collections["tags"].docs %}
-                <li>
-                  <a href="/tags/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
-                </li>
+              {% for doc in site.docs %}
+                {% if doc.type == "tags" %}
+                  <li>
+                    <a href="/docs/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
+                  </li>
+                {% endif %}
               {% endfor %}
             </ul>
           </li>
@@ -55,10 +59,12 @@
           <li>
             <h3 class="section__header">Filters</h3>
             <ul class="section__links">
-              {% for doc in site.collections["filters"].docs %}
-                <li>
-                  <a href="/filters#{{ doc.title }}" class="section__link">{{ doc.title }}</a>
-                </li>
+              {% for doc in site.docs %}
+                {% if doc.type == "filters" %}
+                  <li>
+                    <a href="/docs/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
+                  </li>
+                {% endif %}
               {% endfor %}
             </ul>
           </li>
