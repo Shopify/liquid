@@ -16,68 +16,7 @@
   </head>
 
   <body>
-    <div class="sidebar">
-      <div class="sidebar--logo">
-        <a href="/">Liquid</a>
-      </div>
-      <nav class="sidebar--nav">
-
-        <!-- Basics -->
-        <ul class="section">
-          <li>
-            <h3 class="section__header">Basics</h3>
-            <ul class="section__links">
-              {% for doc in site.pages %}
-                {% if doc.type == "basics" %}
-                  {% unless doc.path contains "index.html" %}
-                  <li>
-                    <a href="/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
-                  </li>
-                  {% endunless %}
-                {% endif %}
-              {% endfor %}
-            </ul>
-          </li>
-        </ul>
-
-        <!-- Tags -->
-        <ul class="section">
-          <li>
-            <h3 class="section__header">Tags</h3>
-            <ul class="section__links">
-              {% for doc in site.pages %}
-                {% if doc.type == "tags" %}
-                  {% unless doc.path contains "index.html" %}
-                  <li>
-                    <a href="/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
-                  </li>
-                  {% endunless %}
-                {% endif %}
-              {% endfor %}
-            </ul>
-          </li>
-        </ul>
-
-        <!-- Filters -->
-        <ul class="section">
-          <li>
-            <h3 class="section__header">Filters</h3>
-            <ul class="section__links">
-              {% for doc in site.pages %}
-                {% if doc.type == "filters" %}
-                  {% unless doc.path contains "index.html" %}
-                  <li>
-                    <a href="/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
-                  </li>
-                  {% endunless %}
-                {% endif %}
-              {% endfor %}
-            </ul>
-          </li>
-        </ul>
-
-      </nav>
-    </div>
+    {% include sidebar.html %}
 
     <div class="content__area">
       <div class="content__list">

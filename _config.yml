@@ -6,7 +6,7 @@ baseurl:                "" # the subpath of your site, e.g. /blog/
 url:                    http://liquidmarkup.org # the base hostname & protocol for your site
 markdown:               kramdown
 highlighter:            pygments
-permalink:              /:year/:month/:day/:basename:output_ext
+permalink:              pretty
 exclude:
   - README.md
   - CNAME
@@ -19,15 +19,3 @@ defaults:
       path: "" # an empty string here means all files in the project
     values:
       layout: "default"
-  - scope:
-      path: "basics"
-    values:
-      type: "basics"
-  - scope:
-      path: "filters"
-    values:
-      type: "filters"
-  - scope:
-      path: "tags"
-    values:
-      type: "tags"

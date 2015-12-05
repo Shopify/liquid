@@ -1,7 +1,6 @@
 ---
+title: Control flow
 ---
-
-TAGS!
 
 ## case/when
 
