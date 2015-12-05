@@ -2,8 +2,32 @@
   margin-bottom: $spacing-unit * 2;
 }
 
-.code--input {
+.code-block {
+  pre {
+    border-radius: 0 0 3px 3px;
+    border-top: none;
+  }
+
   &:before {
-    content: 'stuff'
+    padding: 8px 12px;
+    display: block;
+    box-sizing: border-box;
+    font-weight: bold;
+    color: $color-white;
+    background: $color-blue-5;
+    border-bottom: none;
+    border-radius: 3px 3px 0 0;
+  }
+}
+
+.code-block--input {
+  &:before {
+    content: 'Input';
+  }
+}
+
+.code-block--output {
+  &:before {
+    content: 'Output';
   }
 }

@@ -10,38 +10,21 @@ Theme Tags have various functions, including:
 - Splitting a returned array into multiple pages.
 
 
-<a id="topofpage"></a>
-
-
-
 ### comment
 
 <p>Allows you to leave un-rendered code inside a Liquid template. Any text within the opening and closing <code>comment</code> blocks will not be output, and any Liquid code within will not be executed.</p>     
 
-<p class="input">Input</p>
-
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
   My name is {% comment %}super{% endcomment %} Shopify.
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 My name is Shopify.
 {% endraw %}{% endhighlight %}
 </div>
-        
-
-
-
-
-
-
-
-
 
 ### include
 
@@ -71,12 +54,9 @@ Or you can consolidate them into one line of code:
 {% include 'snippet', snippet_variable: 'this is it', snippet_variable_two: 'this is also it' %}
 {% endraw %}{% endhighlight %}
 
-
 <h2 class="parameter">parameters <span>include</span></h2>
 
-
-
-#### with
+### with
 
 The <code>with</code> parameter assigns a value to a variable inside a snippet that shares the same name as the snippet. 
 
@@ -107,52 +87,13 @@ color: 'blue' shape: 'circle'
 color: 'red' shape: 'square'
 {% endraw %}{% endhighlight %}
 
-
-
-
-
-
-
-
-
-
-
 ### form
 
 Creates an HTML <code>&#60;form&#62;</code> element with all the necessary attributes (action, id, etc.) and <code>&#60;input&#62;</code> to submit the form successfully. 
 
 <h2 class="parameter">parameters <span>form</span></h2>
 
-
-#### activate_customer_password 
-
-Generates a form for activating a customer account on the <a href="/themes/theme-development/templates/customers-activate-account/">activate_account.liquid</a> template. 
-
-<p class="input">Input</p>
-<div>
-{% highlight html %}{% raw %}
-{% form 'activate_customer_password' %}
-...
-{% endform %}
-{% endraw %}{% endhighlight %}
-</div>
-
-<p class="output">Output</p>
-<div>
-{% highlight html %}{% raw %}
-<form accept-charset="UTF-8" action="https://my-shop.myshopify.com/account/activate" method="post">
-	<input name="form_type" type="hidden" value="activate_customer_password" />
-	<input name="utf8" type="hidden" value="✓" />
-	...	
-</form>
-{% endraw %}{% endhighlight %}
-</div>
-
-
-
-
-#### new_comment
-
+### new_comment
 
 Generates a form for creating a new comment in the <a href="/themes/theme-development/templates/article-liquid/">article.liquid</a> template. Requires the <code>article</code> object as a parameter. 
 
@@ -176,152 +117,6 @@ Generates a form for creating a new comment in the <a href="/themes/theme-develo
 </form>
 {% endraw %}{% endhighlight %}
 </div>
-
-
-#### contact
-
-Generates a form for submitting an email through the <a href="/manual/configuration/store-customization/communicating-with-customers/provide-contact-points/add-a-contact-form">Liquid contact form</a>. 
-
-<p class="input">Input</p>
-<div>
-{% highlight html %}{% raw %}
-{% form 'contact' %}
-...
-{% endform %}
-{% endraw %}{% endhighlight %}
-</div>
-
-<p class="output">Output</p>
-<div>
-{% highlight html %}{% raw %}
-<form accept-charset="UTF-8" action="/contact" class="contact-form" method="post">
-	<input name="form_type" type="hidden" value="contact" />
-	<input name="utf8" type="hidden" value="✓" />
-	...
-</form>
-{% endraw %}{% endhighlight %}
-</div>
-
-
-
-#### create_customer
-
-Generates a form for creating a new customer account on the <a href="/themes/theme-development/templates/customers-register/">register.liquid</a> template.
-
-<p class="input">Input</p>
-<div>
-{% highlight html %}{% raw %}
-{% form 'create_customer' %}
-...
-{% endform %}
-{% endraw %}{% endhighlight %}
-</div>
-
-<p class="output">Output</p>
-<div>
-{% highlight html %}{% raw %}
-<form accept-charset="UTF-8" action="https://my-shop.myshopify.com/account" id="create_customer" method="post">
-	<input name="form_type" type="hidden" value="create_customer" />
-	<input name="utf8" type="hidden" value="✓" />
-	...
-</form>
-{% endraw %}{% endhighlight %}
-</div>
-
-
-
-
-#### customer_address
-Generates a form for creating or editing customer account addresses on the <a href="/themes/theme-development/templates/customers-addresses/">addresses.liquid</a> template. When creating a new address, include the parameter <code>customer.new_address</code>. When editing an existing address, include the parameter <code>address</code>. 
-
-<p class="input">Input</p>
-<div>
-{% highlight html %}{% raw %}
-{% form 'customer_address', customer.new_address %}
-...
-{% endform %}
-{% endraw %}{% endhighlight %}
-</div>
-
-<p class="output">Output</p>
-<div>
-{% highlight html %}{% raw %}
-<form accept-charset="UTF-8" action="/account/addresses/70359392" id="address_form_70359392" method="post">
-	<input name="form_type" type="hidden" value="customer_address" />
-	<input name="utf8" type="hidden" value="✓" />
-	...
-</form>
-{% endraw %}{% endhighlight %}
-</div>
-
-
-
-
-#### customer_login
-
-Generates a form for logging into Customer Accounts on the <a href="/themes/theme-development/templates/customers-login/">login.liquid</a> template. 
-
-<p class="input">Input</p>
-<div>
-{% highlight html %}{% raw %}
-{% form 'customer_login' %}
-...
-{% endform %}
-{% endraw %}{% endhighlight %}
-</div>
-
-<p class="output">Output</p>
-<div>
-{% highlight html %}{% raw %}
-<form accept-charset="UTF-8" action="https://my-shop.myshopify.com/account/login" id="customer_login" method="post">
-	<input name="form_type" type="hidden" value="customer_login" />
-	<input name="utf8" type="hidden" value="✓" />
-	...
-</form>
-{% endraw %}{% endhighlight %}
-</div>
-
-
-
-
-#### recover_customer_password
-
-Generates a form for recovering a lost password on the <a href="/themes/theme-development/templates/customers-login/">login.liquid</a> template. 
-
-<p class="input">Input</p>
-<div>
-{% highlight html %}{% raw %}
-{% form 'recover_customer_password' %}
-...
-{% endform %}
-{% endraw %}{% endhighlight %}
-</div>
-
-<p class="output">Output</p>
-<div>
-{% highlight html %}{% raw %}
-<form accept-charset="UTF-8" action="/account/recover" method="post">
-	<input name="form_type" type="hidden" value="recover_customer_password" />
-	<input name="utf8" type="hidden" value="✓" />
-	...
-</form>
-{% endraw %}{% endhighlight %}
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ### layout
 

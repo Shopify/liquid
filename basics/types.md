@@ -63,17 +63,17 @@ In the following example, if the user does not exist (that is, `user` returns `n
 
 Tags or outputs that return `nil` will not print anything to the page.
 
-<p class="input">Input</p>
-
+<div class="code-block code-block--input">
 {% highlight liquid %}{% raw %}
 The current user is {{ user.name }}
 {% endraw %}{% endhighlight %}
+</div>
 
-<p class="output">Output</p>
-
+<div class="code-block code-block--output">
 {% highlight text %}{% raw %}
 The current user is
 {% endraw %}{% endhighlight %}
+</div>
 
 ## Array
 
@@ -83,40 +83,43 @@ Arrays hold lists of variables of any type.
 
 To access all of the items in an array, you can loop through each item in the array using a [for](/tags/#for) or [tablerow](/tags/#tablerow) tag.
 
-<p class="input">Input</p>
+<div class="code-block code-block--input">
 {% highlight liquid %}{% raw %}
 <!-- if site.users = "Tobi", "Lina", "Tetsuro", "Adam" -->
 {% for user in site.users %}
   {{ user }}
 {% endfor %}
 {% endraw %}{% endhighlight %}
+</div>
 
-<p class="output">Output</p>
+<div class="code-block code-block--output">
 {% highlight text %}{% raw %}
 Tobi Lina Tetsuro Adam
 {% endraw %}{% endhighlight %}
+</div>
 
-
-#### Accessing specific items in arrays
+### Accessing specific items in arrays
 
 You can use square bracket `[ ]` notation to access a specific item in an array. Array indexing starts at zero.
 
-<p class="input">Input</p>
+<div class="code-block code-block--input">
 {% highlight liquid %}{% raw %}
 <!-- if site.users = "Tobi", "Lina", "Tetsuro", "Adam" -->
 {{ site.users[0] }}
 {{ site.users[1] }}
 {{ site.users[3] }}
 {% endraw %}{% endhighlight %}
+</div>
 
-<p class="output">Output</p>
+<div class="code-block code-block--output">
 {% highlight text %}{% raw %}
 Tobi
 Lina
 Adam
 {% endraw %}{% endhighlight %}
+</div>
 
-#### Initializing arrays
+### Initializing arrays
 
 You cannot initialize arrays using pure Liquid.
 
@@ -137,7 +140,7 @@ EmptyDrop objects only have one attribute, `empty?`, which is always *true*.
 
 Collections and pages that *do* exist do not have an `empty?` attribute. Their `empty?` is “falsy”, which means that calling it inside an if statement will return *false*. When using an  unless statement on existing collections and pages, `empty?` will return `true`.
 
-#### Checking for emptiness
+### Checking for emptiness
 
 Using the `empty?` attribute, you can check to see if an object exists or not before you access any of its attributes.
 

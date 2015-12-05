@@ -29,8 +29,7 @@ You can change an object's handle manually (TK how to change a handle manually)
 
 In many cases you may know the handle of a object whose attributes you want to access. You can access its attributes by pluralizing the name of the object, then using either the square bracket ( [ ] ) or dot ( . ) notation.
 
-<p class="input">Input</p>
-<div>
+<div class="code-block code-block--input">
 {% highlight liquid %}
 {% raw %}
 {{ pages.about-us.title }}
@@ -39,8 +38,7 @@ In many cases you may know the handle of a object whose attributes you want to a
 {% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-<div>
+<div class="code-block code-block--output">
 {% highlight text %}
 About Us
 About Us

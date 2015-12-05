@@ -6,8 +6,7 @@ title: Control Flow
 
 <p>Creates a switch statement to compare a variable with different values. <code>case</code> initializes the switch statement, and <code>when</code> compares its values.</p>
 
-<p >Input</p>
-<div class="code--input">
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 {% assign handle = 'cake' %}
 {% case handle %}
@@ -21,9 +20,7 @@ title: Control Flow
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 This is a cake
 {% endraw %}{% endhighlight %}
@@ -33,9 +30,7 @@ This is a cake
 
 <p>Executes a block of code only if a certain condition is met.</p>
 
-<p class="input">Input</p>
-
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 {% if product.title == 'Awesome Shoes' %}
   These shoes are awesome!
@@ -43,9 +38,8 @@ This is a cake
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
 
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 These shoes are awesome!
 {% endraw %}{% endhighlight %}
@@ -55,9 +49,8 @@ These shoes are awesome!
 
 <p>Adds more conditions within an <code>if</code> or <code>unless</code> block.</p>
 
-<p class="input">Input</p>
 
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
   <!-- If customer.name = 'anonymous' -->
   {% if customer.name == 'kevin' %}
@@ -70,9 +63,7 @@ These shoes are awesome!
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 Hey Anonymous!
 {% endraw %}{% endhighlight %}
@@ -82,9 +73,7 @@ Hey Anonymous!
 
 <p>Similar to <code>if</code>, but executes a block of code only if a certain condition is <strong>not</strong> met.</p>
 
-<p class="input">Input</p>
-
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
   {% unless product.title == 'Awesome Shoes' %}
     These shoes are not awesome.
@@ -92,9 +81,7 @@ Hey Anonymous!
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 These shoes are not awesome.
 {% endraw %}{% endhighlight %}
@@ -102,7 +89,7 @@ These shoes are not awesome.
 
 This would be the equivalent of doing the following:
 
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
   {% if product.title != 'Awesome Shoes' %}
     These shoes are not awesome.

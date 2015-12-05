@@ -4,16 +4,11 @@ title: Variable
 
 Variable Tags are used to create new Liquid variables. 
 
-
-
-
 ## assign
 
 <p>Creates a new variable.</p>      
 
-<p class="input">Input</p>
-
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
   {% assign my_variable = false %}
   {% if my_variable != true %}
@@ -22,9 +17,7 @@ Variable Tags are used to create new Liquid variables.
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 	This statement is valid.
 {% endraw %}{% endhighlight %}
@@ -32,41 +25,31 @@ Variable Tags are used to create new Liquid variables.
 
 Use quotations ("") to save the variable as a string.
 
-<p class="input">Input</p>
-
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 {% assign foo = "bar" %}
 {{ foo }}
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 bar
 {% endraw %}{% endhighlight %}
 </div>
 
-
 ## capture
 
 <p>Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created through {&#37; capture &#37;} are strings.</p>
 
-
-<p class="input">Input</p>
-
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 {% capture my_variable %}I am being captured.{% endcapture %}
 {{ my_variable }}
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 I am being captured.
 {% endraw %}{% endhighlight %}
@@ -76,17 +59,15 @@ I am being captured.
 
 Creates a new number variable, and increases its value by one every time it is called. The initial value is 0. 
 
-<p class="input">Input</p>
-
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 {% increment variable %}
 {% increment variable %}
 {% increment variable %}
 {% endraw %}{% endhighlight %}
+</div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 0
 1
@@ -98,9 +79,7 @@ Variables created through the <code>increment</code> tag are independent from va
 
 In the example below, a variable named "var" is created through <code>assign</code>. The <code>increment</code> tag is then used several times on a variable with the same name. However, note that the <code>increment</code> tag does not affect the value of  "var" that was created through <code>assign</code>.
 
-<p class="input">Input</p>
-
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 {% assign var = 10 %}
 {% increment var %}
@@ -110,9 +89,7 @@ In the example below, a variable named "var" is created through <code>assign</co
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 0
 1
@@ -126,17 +103,15 @@ In the example below, a variable named "var" is created through <code>assign</co
 
 Creates a new number variable, and decreases its value by one every time it is called. The initial value is -1. 
 
-<p class="input">Input</p>
-
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 {% decrement variable %}
 {% decrement variable %}
 {% decrement variable %}
 {% endraw %}{% endhighlight %}
+</div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 -1
 -2

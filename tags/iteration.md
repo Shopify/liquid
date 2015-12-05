@@ -4,16 +4,13 @@ title: Iteration
 
 Iteration Tags are used to run a block of code repeatedly.
 
-<a id="topofpage"></a>
-
 ### for
 
 Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](/themes/liquid-documentation/objects/for-loops).
 
 `for` loops can output a maximum of 50 results per page. In cases where there are more than 50 results, use the [paginate](/themes/liquid-documentation/tags/theme-tags/#paginate) tag to split them across multiple pages.
 
-<p class="input">Input</p>
-<div>
+<div class="code-block code-block--input">
 {% highlight liquid %}{% raw %}
   {% for product in collection.products %}
     {{ product.title }}
@@ -21,8 +18,7 @@ Repeatedly executes a block of code. For a full list of attributes available wit
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-<div>
+<div class="code-block code-block--output">
 {% highlight text %}
 hat shirt pants
 {% endhighlight %}
@@ -32,8 +28,7 @@ hat shirt pants
 
 Causes the loop to stop iterating when it encounters the `break` tag.
 
-<p class="input">Input</p>
-<div>
+<div class="code-block code-block--input">
 {% highlight liquid %}{% raw %}
   {% for i in (1..5) %}
     {% if i == 4 %}
@@ -45,8 +40,7 @@ Causes the loop to stop iterating when it encounters the `break` tag.
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-<div>
+<div class="code-block code-block--output">
 {% highlight text %}
 1 2 3
 {% endhighlight %}
@@ -56,8 +50,7 @@ Causes the loop to stop iterating when it encounters the `break` tag.
 
 Causes the loop to skip the current iteration when it encounters the `continue` tag.
 
-<p class="input">Input</p>
-<div>
+<div class="code-block code-block--input">
 {% highlight liquid %}{% raw %}
   {% for i in (1..5) %}
     {% if i == 4 %}
@@ -69,8 +62,7 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-<div>
+<div class="code-block code-block--output">
 {% highlight text %}
 1 2 3   5
 {% endhighlight %}
@@ -82,10 +74,8 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 
 <h4>limit</h4>
 Exits the for loop at a specific index.
-<br/><br/>
-<p class="input">Input</p>
 
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
   <!-- if array = [1,2,3,4,5,6] -->
   {% for item in array limit:2 %}
@@ -94,9 +84,7 @@ Exits the for loop at a specific index.
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 1 2
 {% endraw %}{% endhighlight %}
@@ -105,10 +93,8 @@ Exits the for loop at a specific index.
 
 <h4>offset</h4>
 Starts the for loop at a specific index.
-<br/><br/>
-<p class="input">Input</p>
 
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
   <!-- if array = [1,2,3,4,5,6] -->
   {% for item in array offset:2 %}
@@ -117,9 +103,7 @@ Starts the for loop at a specific index.
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 3 4 5 6
 {% endraw %}{% endhighlight %}
@@ -127,10 +111,8 @@ Starts the for loop at a specific index.
 
 <h4>range</h4>
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
-<br/><br/>
-<p class="input">Input</p>
 
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 {% assign num = 4 %}
 {% for i in (1..num) %}
@@ -143,22 +125,18 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 1 2 3 4
 3 4 5
 {% endraw %}{% endhighlight %}
 </div>
 
-
 <h4>reversed
 </h4>
 Reverses the order of the for loop.
-<br/><br/>
-<p class="input">Input</p>
-<div>
+
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 <!-- if array = [1,2,3,4,5,6] -->
 {% for item in array reversed %}
@@ -167,34 +145,12 @@ Reverses the order of the for loop.
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 6 5 4 3 2 1
 {% endraw %}{% endhighlight %}
 </div>
-
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ### cycle
 
@@ -203,8 +159,7 @@ Loops through a group of strings and outputs them in the order that they were pa
 <code>cycle</code> must be used within a <a href="#for">for</a> loop block.
 
 
-<p class="input">Input</p>
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 {% cycle 'one', 'two', 'three' %}
 {% cycle 'one', 'two', 'three' %}
@@ -213,8 +168,7 @@ Loops through a group of strings and outputs them in the order that they were pa
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 one
 two
@@ -231,7 +185,6 @@ Uses for <code>cycle</code> include:
 <div class="sub-sub-section">
 
 <h2 class="parameter">parameters <span>cycle</span></h2>
-
 
 <code>cycle</code> accepts a parameter called <strong>cycle group</strong> in cases where you need multiple <code>cycle</code> blocks in one template. If no name is supplied for the cycle group, then it is assumed that multiple calls with the same parameters are one group.
 
@@ -334,9 +287,7 @@ Uses for <code>cycle</code> include:
 <p>Generates an HTML <code>&#60;table&#62;</code>. Must be wrapped in an opening &lt;table&gt; and closing &lt;/table&gt; HTML tags. For a full list of attributes available within a tablerow loop, see <a href="/themes/liquid-documentation/objects/tablerow">tablerow (object)</a>.</p>
 
 
-<p class="input">Input</p>
-
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 <table>
 {% tablerow product in collection.products %}
@@ -346,10 +297,7 @@ Uses for <code>cycle</code> include:
 {% endraw %}{% endhighlight %}
 </div>
 
-
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 <table>
 	<tr class="row1">
@@ -381,14 +329,11 @@ Uses for <code>cycle</code> include:
 
 <h2 class="parameter">parameters <span>tablerow</span></h2>
 
-
 <h4>cols</h4>
 
 Defines how many columns the tables should have.
-<br/><br/>
-<p class="input">Input</p>
 
-<div>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 {% tablerow product in collection.products cols:2 %}
   {{ product.title }}
@@ -396,9 +341,7 @@ Defines how many columns the tables should have.
 {% endraw %}{% endhighlight %}
 </div>
 
-<p class="output">Output</p>
-
-<div>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 <table>
 	<tr class="row1">

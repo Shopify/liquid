@@ -20,31 +20,35 @@ In the example below, the text "Tobi" is not a boolean, but it is truthy in a co
 
 [Strings](/basics/types/#string), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
 
-<p class="input">Input</p>
-{% highlight liquid %}{% raw %}
+<div class="code-block code-block--input">
+{% highlight html %}{% raw %}
 {% if settings.fp_heading %}
   <h1>{{ settings.fp_heading }}</h1>
 {% endif %}
 {% endraw %}{% endhighlight %}
+</div>
 
-<p class="output">Output</p>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 <h1></h1>
 {% endraw %}{% endhighlight %}
+</div>
 
-[EmptyDrops](/basics/types/#emptydrop) are also truthy. In the example below, if `settings.page` is an empty string or set to a hidden or deleted object, you will end up with an EmptyDrop. The result is an empty `<div>`:
+[EmptyDrops](/basics/types/#emptydrop) are also truthy. In the example below, if `settings.page` is an empty string or set to a hidden or deleted object, you will end up with an EmptyDrop. The result is an empty div:
 
-<p class="input">Input</p>
+<div class="code-block code-block--input">
 {% highlight html %}{% raw %}
 {% if pages[settings.page] %}
   <div>{{ pages[settings.page].content }}</div>
 {% endif %}
 {% endraw %}{% endhighlight %}
+</div>
 
-<p class="output">Output</p>
+<div class="code-block code-block--output">
 {% highlight html %}{% raw %}
 <div></div>
 {% endraw %}{% endhighlight %}
+</div>
 
 ## Falsy
 
