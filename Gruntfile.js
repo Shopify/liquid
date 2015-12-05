@@ -16,7 +16,7 @@ require('load-grunt-tasks')(grunt);
         }
       },
       jekyll: {
-        files: ['index.md', '_includes/*.html', '_filters/*.*',  '_layouts/*.*', '_tags/*.*', '_basics/*.*'],
+        files: ['index.md', '_includes/*.html', 'filters/*.*',  '_layouts/*.*', 'tags/*.*', 'basics/*.*'],
         tasks: ['shell:jekyllBuild']
       }
     },
