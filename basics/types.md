@@ -79,7 +79,7 @@ The current user is
 
 Arrays hold lists of variables of any type.
 
-#### Accessing items in arrays
+### Accessing items in arrays
 
 To access all of the items in an array, you can loop through each item in the array using a [for](/tags/#for) or [tablerow](/tags/#tablerow) tag.
 

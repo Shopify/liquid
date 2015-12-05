@@ -1,23 +1,9 @@
 .content__item {
   margin-bottom: $spacing-unit * 2;
-
-  h3 {
-    text-decoration: underline;
-  }
 }
 
-.content__list {
-
-  h1 {
-    font-weight: bold;
-  }
-
-  h2 {
-    font-weight: bold;
-    text-decoration: underline;
-
-    &:not(:first-child) {
-      margin-top: $spacing-unit * 2;
-    }
+.code--input {
+  &:before {
+    content: 'stuff'
   }
 }

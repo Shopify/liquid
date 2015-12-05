@@ -1,15 +1,13 @@
 ---
+title: Control Flow
 ---
-
-TAGS!
 
 ## case/when
 
 <p>Creates a switch statement to compare a variable with different values. <code>case</code> initializes the switch statement, and <code>when</code> compares its values.</p>
 
-<p class="input">Input</p>
-
-<div>
+<p >Input</p>
+<div class="code--input">
 {% highlight html %}{% raw %}
 {% assign handle = 'cake' %}
 {% case handle %}

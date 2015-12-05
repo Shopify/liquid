@@ -7,7 +7,7 @@ Variable Tags are used to create new Liquid variables.
 
 
 
-### assign
+## assign
 
 <p>Creates a new variable.</p>      
 
@@ -50,7 +50,7 @@ bar
 </div>
 
 
-### capture
+## capture
 
 <p>Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created through {&#37; capture &#37;} are strings.</p>
 
@@ -72,46 +72,7 @@ I am being captured.
 {% endraw %}{% endhighlight %}
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### increment
+## increment
 
 Creates a new number variable, and increases its value by one every time it is called. The initial value is 0. 
 
@@ -161,13 +122,7 @@ In the example below, a variable named "var" is created through <code>assign</co
 </div>
 
 
-
-
-
-
-
-
-### decrement
+## decrement
 
 Creates a new number variable, and decreases its value by one every time it is called. The initial value is -1. 
 

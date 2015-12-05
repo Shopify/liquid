@@ -4,7 +4,7 @@ title: Operators
 
 Liquid includes many logical and comparison operators.
 
-### Basic Operators
+## Basic Operators
 
 <table>
   <tbody>
@@ -63,7 +63,7 @@ You can use multiple operators in a tag:
 {% endraw %}{% endhighlight %}
 </div>
 
-### contains
+## contains
 
 `contains` checks for the presence of a substring inside a string.
 
