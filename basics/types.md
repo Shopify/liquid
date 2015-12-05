@@ -4,11 +4,11 @@ title: Types
 
 Liquid objects can have one of six types:
 
-- [string](#string)
-- [number](#number)
-- [boolean](#boolean)
-- [nil](#nil)
-- [array](#array)
+- [String](#string)
+- [Number](#number)
+- [Boolean](#boolean)
+- [Nil](#nil)
+- [Array](#array)
 - [EmptyDrop](#emptydrop)
 
 Liquid variables can be initialized by using the [assign](/tags/#assign) or [capture](/tags/#capture) tags.

@@ -28,11 +28,11 @@ For example, you can show basic content like a page title using a Liquid object:
 
 In this case, Liquid is rendering the content of an object called `page.title`, and that object contains the text `Overview`.
 
-[Filters](/filters) can change the way objects are printed.
+[Filters](/filters) can change the way objects are rendered.
 
 ### Tags
 
-**Tags** create the logic for your template, including variable assignment, conditionals, and loops.
+**Tags** create the logic and control flow for your template, including variable assignments, conditionals, and loops.
 
 Tags are denoted by curly braces and percent signs: `{% raw %}{%{% endraw %}` and `{% raw %}%}{% endraw %}`.
 
@@ -62,7 +62,7 @@ Hello Adam!
 {% endhighlight %}
 </div>
 
-This conditional statement `if user` checks to see if an object called `user` exists. If the condition is *true* (that is, if `user` exists), Liquid shows any content that is contained between the `if` and `endif` tags.
+This conditional statement `if user` checks to see if an object called `user` exists. If the condition is *true* (that is, if there is a `user`), Liquid shows any content that is contained between the `if` and `endif` tags.
 
 In this case, our user's `name` is Adam, so the template prints `Hello Adam!`.
 
