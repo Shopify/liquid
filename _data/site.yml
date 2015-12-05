@@ -1,6 +1,0 @@
-# Site settings
-title: Liquid Templating Engine
-description: > # this means to ignore newlines until "baseurl:"
-  Liquid is a template language and accompanying rendering engine.
-  It is built for security, so is perfect for rendering custom
-  templates from your users.

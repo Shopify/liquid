@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{% if page.title %}{{ page.title }} – {% endif %}{{ site.data.site.title }}</title>
+    <title>{% if page.title %}{{ page.title }} – {% endif %}{{ site.title }}</title>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.data.site.description }}{% endif %}">
+    <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
 
     <link rel="stylesheet" href="{{ '/css/main.css' | prepend: site.baseurl }}">
     <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -16,68 +16,7 @@
   </head>
 
   <body>
-    <div class="sidebar">
-      <div class="sidebar--logo">
-        <a href="/">Liquid</a>
-      </div>
-      <nav class="sidebar--nav">
-
-        <!-- Basics -->
-        <ul class="section">
-          <li>
-            <h3 class="section__header">Basics</h3>
-            <ul class="section__links">
-              {% for doc in site.pages %}
-                {% if doc.type == "basics" %}
-                  {% unless doc.path contains "index.html" %}
-                  <li>
-                    <a href="/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
-                  </li>
-                  {% endunless %}
-                {% endif %}
-              {% endfor %}
-            </ul>
-          </li>
-        </ul>
-
-        <!-- Tags -->
-        <ul class="section">
-          <li>
-            <h3 class="section__header">Tags</h3>
-            <ul class="section__links">
-              {% for doc in site.pages %}
-                {% if doc.type == "tags" %}
-                  {% unless doc.path contains "index.html" %}
-                  <li>
-                    <a href="/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
-                  </li>
-                  {% endunless %}
-                {% endif %}
-              {% endfor %}
-            </ul>
-          </li>
-        </ul>
-
-        <!-- Filters -->
-        <ul class="section">
-          <li>
-            <h3 class="section__header">Filters</h3>
-            <ul class="section__links">
-              {% for doc in site.pages %}
-                {% if doc.type == "filters" %}
-                  {% unless doc.path contains "index.html" %}
-                  <li>
-                    <a href="/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
-                  </li>
-                  {% endunless %}
-                {% endif %}
-              {% endfor %}
-            </ul>
-          </li>
-        </ul>
-
-      </nav>
-    </div>
+    {% include sidebar.html %}
 
     <div class="content__area">
       <div class="content__list">
