@@ -61,8 +61,9 @@
             <ul class="section__links">
               {% for doc in site.docs %}
                 {% if doc.type == "filters" %}
+                  {% capture doc_url %}/docs/{{ doc.type }}/{{ doc.title | slugify }}/{% endcapture %}
                   <li>
-                    <a href="/docs/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
+                    <a href="{{ doc_url }}" class="section__link {% if doc_url == page.url %}section__link--is-active{% endif %}">{{ doc.title }}</a>
                   </li>
                 {% endif %}
               {% endfor %}
