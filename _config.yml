@@ -4,10 +4,6 @@ url: "http://liquidmarkup.org" # the base hostname & protocol for your site
 markdown: kramdown
 highlighter: pygments
 permalink: /:year/:month/:day/:basename:output_ext
-collections:
-  docs:
-    output: true
-    permalink: /docs/:path/
 exclude:
   - README.md
   - CNAME
@@ -19,14 +15,14 @@ defaults:
     values:
       layout: "default"
   - scope:
-      path: "docs/basics"
+      path: "basics"
     values:
       type: "basics"
   - scope:
-      path: "docs/filters"
+      path: "filters"
     values:
       type: "filters"
   - scope:
-      path: "docs/tags"
+      path: "tags"
     values:
       type: "tags"
