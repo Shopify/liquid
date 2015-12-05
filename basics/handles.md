@@ -2,7 +2,7 @@
 title: Handles
 ---
 
-sss A handle is used to access the attributes of a Liquid object. By default, the handle is the object's title in lowercase with any spaces and special characters replaced by hyphens (-).
+A handle is used to access the attributes of a Liquid object. By default, the handle is the object's title in lowercase with any spaces and special characters replaced by hyphens (-).
 
 For example, a page with the title "About Us" can be accessed in Liquid via its handle `about-us` as shown below:
 
