@@ -27,11 +27,13 @@
           <li>
             <h3 class="section__header">Basics</h3>
             <ul class="section__links">
-              {% for doc in site.docs %}
+              {% for doc in site.pages %}
                 {% if doc.type == "basics" %}
+                  {% unless doc.path contains "index.html" %}
                   <li>
-                    <a href="/docs/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
+                    <a href="/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
                   </li>
+                  {% endunless %}
                 {% endif %}
               {% endfor %}
             </ul>
@@ -43,11 +45,13 @@
           <li>
             <h3 class="section__header">Tags</h3>
             <ul class="section__links">
-              {% for doc in site.docs %}
+              {% for doc in site.pages %}
                 {% if doc.type == "tags" %}
+                  {% unless doc.path contains "index.html" %}
                   <li>
-                    <a href="/docs/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
+                    <a href="/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
                   </li>
+                  {% endunless %}
                 {% endif %}
               {% endfor %}
             </ul>
@@ -59,11 +63,13 @@
           <li>
             <h3 class="section__header">Filters</h3>
             <ul class="section__links">
-              {% for doc in site.docs %}
+              {% for doc in site.pages %}
                 {% if doc.type == "filters" %}
+                  {% unless doc.path contains "index.html" %}
                   <li>
-                    <a href="/docs/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
+                    <a href="/{{ doc.type }}/{{ doc.title | slugify }}" class="section__link">{{ doc.title }}</a>
                   </li>
+                  {% endunless %}
                 {% endif %}
               {% endfor %}
             </ul>
