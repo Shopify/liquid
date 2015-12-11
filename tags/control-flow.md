@@ -4,10 +4,10 @@ title: Control flow
 
 ## case/when
 
-<p>Creates a switch statement to compare a variable with different values. <code>case</code> initializes the switch statement, and <code>when</code> compares its values.</p>
+Creates a switch statement to compare a variable with different values. `case` initializes the switch statement, and `when` compares its values.
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
+```liquid
+{% raw %}
 {% assign handle = 'cake' %}
 {% case handle %}
   {% when 'cake' %}
@@ -17,82 +17,72 @@ title: Control flow
   {% else %}
      This is not a cake nor a cookie
 {% endcase %}
-{% endraw %}{% endhighlight %}
-</div>
+{% endraw %}
+```
 
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
+```text
 This is a cake
-{% endraw %}{% endhighlight %}
-</div>
+```
 
 ## if
 
-<p>Executes a block of code only if a certain condition is met.</p>
+Executes a block of code only if a certain condition is met.
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
+```liquid
+{% raw %}
 {% if product.title == 'Awesome Shoes' %}
   These shoes are awesome!
 {% endif %}
-{% endraw %}{% endhighlight %}
-</div>
+{% endraw %}
+```
 
-
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
+```text
 These shoes are awesome!
-{% endraw %}{% endhighlight %}
-</div>
+```
 
 ## elsif / else
 
-<p>Adds more conditions within an <code>if</code> or <code>unless</code> block.</p>
+Adds more conditions within an `if` or `unless` block.
 
+```liquid
+{% raw %}
+<!-- If customer.name = 'anonymous' -->
+{% if customer.name == 'kevin' %}
+  Hey Kevin!
+{% elsif customer.name == 'anonymous' %}
+  Hey Anonymous!
+{% else %}
+  Hi Stranger!
+{% endif %}
+{% endraw %}
+```
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
-  <!-- If customer.name = 'anonymous' -->
-  {% if customer.name == 'kevin' %}
-    Hey Kevin!
-  {% elsif customer.name == 'anonymous' %}
-    Hey Anonymous!
-  {% else %}
-    Hi Stranger!
-  {% endif %}
-{% endraw %}{% endhighlight %}
-</div>
-
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
+```text
 Hey Anonymous!
-{% endraw %}{% endhighlight %}
-</div>
+```
 
 ## unless
 
-<p>Similar to <code>if</code>, but executes a block of code only if a certain condition is <strong>not</strong> met.</p>
+Similar to `if`, but executes a block of code only if a certain condition is **not** met.
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
-  {% unless product.title == 'Awesome Shoes' %}
-    These shoes are not awesome.
-  {% endunless %}
-{% endraw %}{% endhighlight %}
-</div>
+```liquid
+{% raw %}
+{% unless product.title == 'Awesome Shoes' %}
+  These shoes are not awesome.
+{% endunless %}
+{% endraw %}
+```
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
+```text
 These shoes are not awesome.
-{% endraw %}{% endhighlight %}
-</div>
+```
 
 This would be the equivalent of doing the following:
 
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
-  {% if product.title != 'Awesome Shoes' %}
-    These shoes are not awesome.
-  {% endif %}
-{% endraw %}{% endhighlight %}
-</div>
+```liquid
+{% raw %}
+{% if product.title != 'Awesome Shoes' %}
+  These shoes are not awesome.
+{% endif %}
+{% endraw %}
+```

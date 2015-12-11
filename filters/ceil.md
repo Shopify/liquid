@@ -1,6 +1,8 @@
 ---
 title: ceil
-layout: default
+layout: method
+examples:
+  - 1.2
 ---
 
 `ceil` rounds the input up to the nearest whole number.

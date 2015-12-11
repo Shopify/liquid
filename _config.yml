@@ -4,18 +4,20 @@ description: "Liquid is a template language and accompanying rendering engine. I
 # Build settings
 baseurl:                "" # the subpath of your site, e.g. /blog/
 url:                    http://liquidmarkup.org # the base hostname & protocol for your site
-markdown:               kramdown
+markdown:               redcarpet
+redcarpet:
+  extensions:           ["with_toc_data", "tables", "disable_indented_code_blocks", "no_intra_emphasis"]
 highlighter:            pygments
 permalink:              pretty
 exclude:
   - README.md
   - CNAME
   - node_modules
-keep_files:             ['css']
+keep_files:             ["css"]
 
 # Front matter defaults
 defaults:
   - scope:
       path: "" # an empty string here means all files in the project
     values:
-      layout: "default"
+      layout: default

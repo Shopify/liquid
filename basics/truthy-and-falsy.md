@@ -10,45 +10,43 @@ All values in Liquid are truthy except `nil` and `false`.
 
 In the example below, the text "Tobi" is not a boolean, but it is truthy in a conditional:
 
-{% highlight liquid %}{% raw %}
+```liquid
+{% raw %}
 {% assign tobi = 'Tobi' %}
 
 {% if tobi == true %}
   This condition will always be true.
 {% endif %}
-{% endraw %}{% endhighlight %}
+{% endraw %}
+```
 
 [Strings](/basics/types/#string), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
+```liquid
+{% raw %}
 {% if settings.fp_heading %}
   <h1>{{ settings.fp_heading }}</h1>
 {% endif %}
-{% endraw %}{% endhighlight %}
-</div>
+{% endraw %}
+```
 
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
+```html
 <h1></h1>
-{% endraw %}{% endhighlight %}
-</div>
+```
 
 [EmptyDrops](/basics/types/#emptydrop) are also truthy. In the example below, if `settings.page` is an empty string or set to a hidden or deleted object, you will end up with an EmptyDrop. The result is an empty div:
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
+```liquid
+{% raw %}
 {% if pages[settings.page] %}
   <div>{{ pages[settings.page].content }}</div>
 {% endif %}
-{% endraw %}{% endhighlight %}
-</div>
+{% endraw %}
+```
 
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
+```html
 <div></div>
-{% endraw %}{% endhighlight %}
-</div>
+```
 
 ## Falsy
 

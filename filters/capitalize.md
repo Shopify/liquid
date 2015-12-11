@@ -4,9 +4,24 @@ title: capitalize
 
 `capitalize` makes the first character of your string capitalized.
 
-| Input                                                      | Output           |
-|:-----------------------------------------------------------|:-----------------|
-| {% raw %}`{{ "title" | capitalize }}`         {% endraw %} | "Title"          |
-| {% raw %}`{{ "my great title" | capitalize }}`{% endraw %} | "My great title" |
+```liquid
+{% raw %}
+{{ "title" | capitalize }}
+{% endraw %}
+```
 
-It only capitalizes the first character, so subsequent words will not be capitalized as well.
+```text
+Title
+```
+
+`capitalize` only capitalizes the first character of the string, so subsequent words are not affected:
+
+ ```liquid
+{% raw %}
+{{ "my great title" | capitalize }}
+{% endraw %}
+```
+
+```text
+My great title
+```

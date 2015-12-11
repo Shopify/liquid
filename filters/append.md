@@ -4,19 +4,27 @@ title: append
 
 `append` concatenates two strings and returns the concatenated value.
 
-{% highlight liquid %}
+```liquid
 {% raw %}
 {{ "/my/fancy/url" | append:".html" }}
 {% endraw %}
-# => "/my/fancy/url.html"
-{% endhighlight %}
+```
 
-It can also be used with variables:
+```text
+/my/fancy/url.html
+```
 
-{% highlight liquid %}
+`append` can also be used with variables:
+
+```liquid
 {% raw %}
 {% assign filename = "/index.html" %}
 {{ product.url | append: filename }}
 {% endraw %}
-# => "#{product.url}/index.html"
-{% endhighlight %}
+```
+
+```liquid
+{% raw %}
+{{ product.url }}/index.html
+{% endraw %}
+```

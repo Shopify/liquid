@@ -2,32 +2,29 @@
   margin-bottom: $spacing-unit * 2;
 }
 
-.code-block {
+.highlight {
+
   pre {
-    border-radius: 0 0 3px 3px;
     border-top: none;
+    border-radius: 0 0 3px 3px;
   }
 
   &:before {
-    padding: 8px 12px;
+    content: "Example";
     display: block;
-    box-sizing: border-box;
+    padding: 8px 12px;
     font-weight: bold;
     color: $color-white;
     background: $color-blue-5;
     border-bottom: none;
     border-radius: 3px 3px 0 0;
+    box-sizing: border-box;
   }
-}
 
-.code-block--input {
-  &:before {
-    content: 'Input';
+  & + .highlight {
+    &:before {
+      content: "Output";
+    }
   }
-}
 
-.code-block--output {
-  &:before {
-    content: 'Output';
-  }
 }
