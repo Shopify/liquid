@@ -2,10 +2,32 @@
 title: last
 ---
 
-Return the last element of an array.
+`last` returns the last element of an array without sorting the array.
 
-| Code                                                   | Output             |
-|:-------------------------------------------------------|:-------------------|
-| {% raw %}`{{ product.tags | last }}`{% endraw %}     | `"awesome"` |
+```liquid
+{% raw %}
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
-In the sample above, assume that `product.tags` resolves to: `["sale", "mens", "womens", "awesome"]`.
+{{ my_array.last }}
+{% endraw %}
+```
+
+```text
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
+
+{{ my_array.last }}
+```
+
+```liquid
+{% raw %}
+{% assign my_array = "zebra, octopus, giraffe, tiger" | split: ", " %}
+
+{{ my_array.last }}
+{% endraw %}
+```
+
+```text
+{% assign my_array = "zebra, octopus, giraffe, tiger" | split: ", " %}
+
+{{ my_array.last }}
+```

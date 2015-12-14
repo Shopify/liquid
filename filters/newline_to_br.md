@@ -2,8 +2,24 @@
 title: newline_to_br
 ---
 
-Replace every newline (`n`) with an HTML break (`<br>`).
+Replace every newline (`\n`) with an HTML line break (`<br>`).
 
-| Code                                                   | Output             |
-|:-------------------------------------------------------|:-------------------|
-| {% raw %}`{{ "hello\nthere" | newline_to_br }}`{% endraw %}     | `hello<br/>there` |
+```liquid
+{% raw %}
+{% capture string_with_newlines %}
+Hello
+there
+{% endcapture %}
+
+{{ string_with_newlines | newline_to_br }}
+{% endraw %}
+```
+
+```html
+{% capture string_with_newlines %}
+Hello
+there
+{% endcapture %}
+
+{{ string_with_newlines | newline_to_br }}
+```

@@ -2,9 +2,14 @@
 title: truncatewords
 ---
 
+`truncate` shortens a string down to the number of words passed as a parameter. If the number of words specified is less than the number of words in the string, an ellipsis (...) is appended to the string.
 
-<p>Truncates a string down to 'x' words, where x is the number passed as a parameter. An ellipsis (...) is appended to the truncated string.</p>
+```liquid
+{% raw %}
+{{ "Ground control to Major Tom." | truncatewords: 3 }}
+{% endraw %}
+```
 
-| Input                                      | Output |
-|:-------------------------------------------|:-------|
-| {% raw %}`{{ "The cat came back the very next day" | truncatewords: 4 }}`{% endraw %} | The cat came back...|
+```text
+{{ "Ground control to Major Tom." | truncatewords: 3 }}
+```

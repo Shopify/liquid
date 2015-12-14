@@ -2,10 +2,24 @@
 title: upcase
 ---
 
-<p>Converts a string into uppercase.</p>
+`upcase` makes each character in a string uppercase. It has no effect on strings which are already all uppercase.
 
+```liquid
+{% raw %}
+{{ "Parker Moore" | upcase }}
+{% endraw %}
+```
 
-| Input                                      | Output |
-|:-------------------------------------------|:-------|
-| {% raw %}`{{ 'loud noises' | upcase }}`{% endraw %} | LOUD NOISES      |
+```text
+{{ "Parker Moore" | upcase }}
+```
 
+```liquid
+{% raw %}
+{{ "APPLE" | upcase }}
+{% endraw %}
+```
+
+```text
+{{ "APPLE" | upcase }}
+```

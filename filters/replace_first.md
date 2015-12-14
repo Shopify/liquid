@@ -2,8 +2,14 @@
 title: replace_first
 ---
 
-Replaces the first occurrence of a given string.
+`replace_first` replaces the first occurrence of the first passed-in string in the input string with the second passed-in string.
 
-| Code                                                   | Output             |
-|:-------------------------------------------------------|:-------------------|
-| {% raw %}`{{ 'hello, hello world' | replace_first: 'hello', 'goodbye' }}`{% endraw %}     | `goodbye, hello world` |
+```liquid
+{% raw %}
+{{ "Take my protein pills and put my helmet on" | replace_first: "my", "your" }}
+{% endraw %}
+```
+
+```text
+{{ "Take my protein pills and put my helmet on" | replace_first: "my", "your" }}
+```

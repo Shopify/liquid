@@ -2,9 +2,32 @@
 title: first
 ---
 
-Returns the first element of an array. For example, if you have an array called `product.tags` that resolves to: `["sale", "mens", "womens", "awesome"]`:
+`first` returns the first element of an array without sorting the array.
 
-| Code                                                   | Output             |
-|:-------------------------------------------------------|:-------------------|
-| {% raw %}`{{ product.tags | first }}`{% endraw %}     | `"sale"` |
+```liquid
+{% raw %}
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
+{{ my_array.first }}
+{% endraw %}
+```
+
+```text
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
+
+{{ my_array.first }}
+```
+
+```liquid
+{% raw %}
+{% assign my_array = "zebra, octopus, giraffe, tiger" | split: ", " %}
+
+{{ my_array.first }}
+{% endraw %}
+```
+
+```text
+{% assign my_array = "zebra, octopus, giraffe, tiger" | split: ", " %}
+
+{{ my_array.first }}
+```

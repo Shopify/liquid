@@ -2,10 +2,18 @@
 title: join
 ---
 
-`join` joins the elements of an array, using the character you provide.
+`join` combines the elements of an array into a single string using the string you provide as a separator.
 
-| Code                                                   | Output             |
-|:-------------------------------------------------------|:-------------------|
-| {% raw %}`{{ product.tags | join: ', ' }}`{% endraw %}     | `"sale, mens, womens, awesome` |
+```liquid
+{% raw %}
+{% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
 
-In the sample above, assume that `product.tags` resolves to: `["sale", "mens", "womens", "awesome"]`.
+{{ beatles | join: " and " }}
+{% endraw %}
+```
+
+```text
+{% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
+
+{{ beatles | join: " and " }}
+```

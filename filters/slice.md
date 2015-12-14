@@ -2,19 +2,48 @@
 title: slice
 ---
 
-The <code>slice</code> filter returns a substring, starting at the specified index. An optional second parameter can be passed to specify the length of the substring. If no second parameter is given, a substring of one character will be returned.
+`slice` returns a substring of 1 character beginning at the index specified by the parameter passed in. An optional second parameter specifies the length of the substring to be returned.
 
+String indices are numbered starting from 0.
 
-| Input                                           | Output |
-|:------------------------------------------------|:-------|
-| {% raw %}`{{ "hello" | slice: 0 }}`{% endraw %} | h      |
-| {% raw %}`{{ "hello" | slice: 1 }}`{% endraw %} | e      |
-| {% raw %}`{{ "hello" | slice: 1, 3 }}`{% endraw %} | ell |
+```liquid
+{% raw %}
+{{ "Liquid" | slice: 0 }}
+{% endraw %}
+```
 
+```text
+{{ "Liquid" | slice: 0 }}
+```
 
-If the passed index is negative, it is counted from the end of the string.
+```liquid
+{% raw %}
+{{ "Liquid" | slice: 2 }}
+{% endraw %}
+```
 
-| Input                                           | Output |
-|:------------------------------------------------|:-------|
-| {% raw %}`{{ "hello" | slice: -3, 2  }}`{% endraw %} | ll |
+```text
+{{ "Liquid" | slice: 2 }}
+```
 
+```liquid
+{% raw %}
+{{ "Liquid" | slice: 2, 5 }}
+{% endraw %}
+```
+
+```text
+{{ "Liquid" | slice: 2, 5 }}
+```
+
+If the first parameter is a negative number, the indices are counted from the end of the string:
+
+```liquid
+{% raw %}
+{{ "Liquid" | slice: -3, 2 }}
+{% endraw %}
+```
+
+```text
+{{ "Liquid" | slice: -3, 2 }}
+```

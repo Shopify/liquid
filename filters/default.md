@@ -21,7 +21,7 @@ In this example, `product_price` is defined, so the default value is not used.
 ```liquid
 {% raw %}
 {% assign product_price = 4.99 %}
-{{ product_price | default:2.99 }}
+{{ product_price | default: 2.99 }}
 {% endraw %}
 ```
 

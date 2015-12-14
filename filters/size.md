@@ -2,20 +2,38 @@
 title: size
 ---
 
-<p>Returns the size of a string or an array.</p>
+`size` returns the number of characters in a string or the number of items in an array. `size` can also be used with dot notation (for example, `{% raw %}{{ my_string.size }}{% endraw %}`). This allows you to use `size` inside other tags like conditionals.
 
+```liquid
+{% raw %}
+{{ "Ground control to Major Tom." | size }}
+{% endraw %}
+```
 
-| Code                                                   | Output             |
-|:-------------------------------------------------------|:-------------------|
-| {% raw %}`{{ 'is this a 30 character string?' | size }}`{% endraw %}     | `30` |
+```text
+{{ "Ground control to Major Tom." | size }}
+```
 
+```liquid
+{% raw %}
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
-`size` can be used in dot notation, in cases where it needs to be used inside a tag.
+{{ my_array | size }}
+{% endraw %}
+```
 
-<div>
-{% highlight html %}{% raw %}
-{% if collections.frontpage.products.size > 10 %}
-  There are more than 10 products in this collection!
+```text
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
+
+{{ my_array | size }}
+```
+
+Using dot notation:
+
+```liquid
+{% raw %}
+{% if site.pages.size > 10 %}
+  This is a big website!
 {% endif %}
-{% endraw %}{% endhighlight %}
-</div>
+{% endraw %}
+```

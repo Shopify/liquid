@@ -2,22 +2,22 @@
 title: split
 ---
 
-The `split` filter takes on a substring as a parameter. The substring is used as a delimiter to divide a string into an array. You can output different parts of an array using [array filters](/themes/liquid-documentation/filters/array-filters).
+`split` divides an input string into an array using the passed-in substring as a separator. `split` is commonly used to convert comma-separated items from a string to an array.
 
-<p class="input">Input</p>
-{% highlight liquid %}{% raw %}
-{% assign words = "Hi, how are you today?" | split: ' ' %}
+```liquid
+{% raw %}
+{% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
 
-{% for word in words %}
-{{ word }}
+{% for member in beatles %}
+  {{ member }}
 {% endfor %}
-{% endraw %}{% endhighlight %}
+{% endraw %}
+```
 
-<p class="output">Output</p>
-{% highlight text %}
-Hi,
-how
-are
-you
-today?
-{% endhighlight %}
+```text
+{% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
+
+{% for member in beatles %}
+  {{ member }}
+{% endfor %}
+```

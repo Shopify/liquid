@@ -2,9 +2,14 @@
 title: truncate
 ---
 
+`truncate` shortens a string  down to the number of characters passed as a parameter. If the number of characters specified is less than the length of the string, an ellipsis (...) is appended to the string and is included in the character count.
 
-<p>Truncates a string down to 'x' characters, where x is the number passed as a parameter. An ellipsis (...) is appended to the string and is included in the character count.</p>
+```liquid
+{% raw %}
+{{ "Ground control to Major Tom." | truncate: 20 }}
+{% endraw %}
+```
 
-| Input                                      | Output |
-|:-------------------------------------------|:-------|
-| {% raw %}`{{ "The cat came back the very next day" | truncate: 10 }}`{% endraw %} | "The cat..."      |
+```text
+{{ "Ground control to Major Tom." | truncate: 20 }}
+```

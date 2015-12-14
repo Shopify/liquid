@@ -2,11 +2,34 @@
 title: round
 ---
 
-Rounds the output to the nearest integer or specified number of decimals.
+`round` rounds an input number to the nearest integer or, if a number is specified as a parameter, to that number of decimal places.
 
-| Input                                      | Output |
-|:-------------------------------------------|:-------|
-| {% raw %}`{{ 4.6 | round }}`   {% endraw %} | 5      |
-| {% raw %}`{{ 4.3 | round }}`   {% endraw %} | 4      |
-| {% raw %}`{{ 4.5612 | round: 2 }}`   {% endraw %} | 4.56      |
+```liquid
+{% raw %}
+{{ 1.2 | round }}
+{% endraw %}
+```
 
+```text
+{{ 1.2 | round }}
+```
+
+```liquid
+{% raw %}
+{{ 2.7 | round }}
+{% endraw %}
+```
+
+```text
+{{ 2.7 | round }}
+```
+
+```liquid
+{% raw %}
+{{ 183.357 | round: 2 }}
+{% endraw %}
+```
+
+```text
+{{ 183.357 | round: 2 }}
+```

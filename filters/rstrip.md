@@ -2,8 +2,14 @@
 title: rstrip
 ---
 
-Strips all whitespace (tabs, spaces, and newlines) from the right side of a string.
+`rstrip` removes all whitespace (tabs, spaces, and newlines) from the right side of a string.
 
-| Code                                                   | Output             |
-|:-------------------------------------------------------|:-------------------|
-| {% raw %}`{{ '   too many spaces   ' | rstrip }}`{% endraw %}     | `"too many spaces   "` |
+```liquid
+{% raw %}
+{{ "          So much room for activities!          " | rstrip }}
+{% endraw %}
+```
+
+```text
+{{ "          So much room for activities!          " | rstrip }}
+```

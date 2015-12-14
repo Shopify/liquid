@@ -2,8 +2,14 @@
 title: remove
 ---
 
-Removes every occurrence of a given string.
+`remove` removes every occurrence of of the passed-in substring from the input string.
 
-| Code                                                   | Output             |
-|:-------------------------------------------------------|:-------------------|
-| {% raw %}`{{ 'hello, hello world' | remove: 'hello' }}`{% endraw %}     | `,  world` |
+```liquid
+{% raw %}
+{{ "I strained to see the train through the rain" | remove: "rain" }}
+{% endraw %}
+```
+
+```text
+{{ "I strained to see the train through the rain" | remove: "rain" }}
+```

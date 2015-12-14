@@ -2,14 +2,30 @@
 title: reverse
 ---
 
-Reverses the order of an array.
+`reverse` reverses the order of the items in an array. `reverse` cannot reverse a string.
 
-{% highlight liquid %}
+```liquid
 {% raw %}
-{{ product.tags }}
-// ['cool', 'sale', 'purple', 'awesome']
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
-{{ product.tags | reverse }}
-// ['awesome', 'purple', 'sale', 'cool']
+{{ my_array | reverse | join: ", " }}
 {% endraw %}
-{% endhighlight %}
+```
+
+```text
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
+
+{{ my_array | reverse | join: ", " }}
+```
+
+`reverse` cannot be used directly on a string, but you can split a string into an array, reverse the array, and rejoin it by chaining together filters:
+
+```liquid
+{% raw %}
+{{ "Ground control to Major Tom." | split: "" | reverse | join: "" }}
+{% endraw %}
+```
+
+```text
+{{ "Ground control to Major Tom." | split: "" | reverse | join: "" }}
+```

@@ -2,8 +2,14 @@
 title: replace
 ---
 
-Replaces every occurrence of a given string.
+`replace` replaces every occurrence of the first passed-in string in the input string with the second passed-in string.
 
-| Code                                                   | Output             |
-|:-------------------------------------------------------|:-------------------|
-| {% raw %}`{{ 'hello, hello world' | replace: 'hello', 'goodbye' }}`{% endraw %}     | `goodbye, goodbye world` |
+```liquid
+{% raw %}
+{{ "Take my protein pills and put my helmet on" | replace: "my", "your" }}
+{% endraw %}
+```
+
+```text
+{{ "Take my protein pills and put my helmet on" | replace: "my", "your" }}
+```

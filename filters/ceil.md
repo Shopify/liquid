@@ -1,17 +1,35 @@
 ---
 title: ceil
-layout: method
-examples:
-  - 1.2
 ---
 
-`ceil` rounds the input up to the nearest whole number.
+`ceil` rounds the input up to the nearest whole number. The filter will attempt to cast any input to a number before it is applied.
 
-| Input                                      | Output |
-|:-------------------------------------------|:-------|
-| {% raw %}`{{ 1.2 | ceil }}`   {% endraw %} | 2      |
-| {% raw %}`{{ 1.7 | ceil }}`   {% endraw %} | 2      |
-| {% raw %}`{{ 2.0 | ceil }}`   {% endraw %} | 2      |
-| {% raw %}`{{ "18.3" | ceil }}`{% endraw %} | 19     |
+```liquid
+{% raw %}
+{{ 1.2 | ceil }}
+{% endraw %}
+```
 
-It will attempt to cast any input to a number.
+```text
+2
+```
+
+```liquid
+{% raw %}
+{{ 2.0 | ceil }}
+{% endraw %}
+```
+
+```text
+2
+```
+
+```liquid
+{% raw %}
+{{ 183.357 | ceil }}
+{% endraw %}
+```
+
+```text
+184
+```

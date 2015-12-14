@@ -2,8 +2,14 @@
 title: remove_first
 ---
 
-Removes the first occurrence of a given string.
+`remove` removes the first occurrence of of the passed-in substring from the input string.
 
-| Code                                                   | Output             |
-|:-------------------------------------------------------|:-------------------|
-| {% raw %}`{{ 'hello, hello world' | remove_first: 'hello' }}`{% endraw %}     | `, hello world` |
+```liquid
+{% raw %}
+{{ "I strained to see the train through the rain" | remove_first: "rain" }}
+{% endraw %}
+```
+
+```text
+{{ "I strained to see the train through the rain" | remove_first: "rain" }}
+```

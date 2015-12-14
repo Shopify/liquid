@@ -6,12 +6,12 @@ title: append
 
 ```liquid
 {% raw %}
-{{ "/my/fancy/url" | append:".html" }}
+{{ "/my/fancy/url" | append: ".html" }}
 {% endraw %}
 ```
 
 ```text
-/my/fancy/url.html
+{{ "/my/fancy/url" | append: ".html" }}
 ```
 
 `append` can also be used with variables:
@@ -19,12 +19,11 @@ title: append
 ```liquid
 {% raw %}
 {% assign filename = "/index.html" %}
-{{ product.url | append: filename }}
+{{ "website.com" | append: filename }}
 {% endraw %}
 ```
 
-```liquid
-{% raw %}
-{{ product.url }}/index.html
-{% endraw %}
+```text
+{% assign filename = "/index.html" %}
+{{ "website.com" | append: filename }}
 ```

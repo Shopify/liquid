@@ -2,12 +2,24 @@
 title: escape_once
 ---
 
-Escapes a string without affecting existing escaped entities.
+Escapes a string without changing existing escaped entities. It doesn't change strings that have nothing to escape.
 
-| Code                                                   | Output             |
-|:-------------------------------------------------------|:-------------------|
-| {% raw %}`{{ "1 < 2 & 3" | escape_once }}`{% endraw %}     | `"1 < 2 & 3"` |
-| {% raw %}`{{ "<< Accept & Checkout" | escape_once }}`{% endraw %}     | `"<< Accept & Checkout"` |
-| {% raw %}`{{ "Nope" | escape_once }}`{% endraw %}           | `"Nope"` |
+```liquid
+{% raw %}
+{{ "1 < 2 & 3" | escape_once }}
+{% endraw %}
+```
 
-It doesn't modify strings that have nothing to escape.
+```text
+{{ "1 < 2 & 3" | escape_once }}
+```
+
+```liquid
+{% raw %}
+{{ "1 &lt; 2 &amp; 3" | escape_once }}
+{% endraw %}
+```
+
+```text
+{{ "1 &lt; 2 &amp; 3" | escape_once }}
+```

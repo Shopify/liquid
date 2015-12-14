@@ -2,126 +2,108 @@
 title: Variable
 ---
 
-Variable Tags are used to create new Liquid variables. 
+Variable tags create new Liquid variables.
 
 ## assign
 
-<p>Creates a new variable.</p>      
+Creates a new variable.
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
+```liquid
+{% raw %}
   {% assign my_variable = false %}
   {% if my_variable != true %}
   This statement is valid.
   {% endif %}
-{% endraw %}{% endhighlight %}
-</div>
+{% endraw %}
+```
 
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
+```text
 	This statement is valid.
-{% endraw %}{% endhighlight %}
-</div>
+```
 
 Use quotations ("") to save the variable as a string.
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
+```liquid
+{% raw %}
 {% assign foo = "bar" %}
 {{ foo }}
-{% endraw %}{% endhighlight %}
-</div>
+{% endraw %}
+```
 
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
+```text
 bar
-{% endraw %}{% endhighlight %}
-</div>
+```
 
 ## capture
 
-<p>Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created through {&#37; capture &#37;} are strings.</p>
+Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created through `{% raw %}{% capture %}{% endraw %}` are strings.
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
+```liquid
+{% raw %}
 {% capture my_variable %}I am being captured.{% endcapture %}
 {{ my_variable }}
-{% endraw %}{% endhighlight %}
-</div>
+{% endraw %}
+```
 
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
+```text
 I am being captured.
-{% endraw %}{% endhighlight %}
-</div>
+```
 
 ## increment
 
-Creates a new number variable, and increases its value by one every time it is called. The initial value is 0. 
+Creates a new number variable, and increases its value by one every time it is called. The initial value is 0.
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
+```liquid
+{% raw %}
 {% increment variable %}
 {% increment variable %}
 {% increment variable %}
-{% endraw %}{% endhighlight %}
-</div>
+{% endraw %}
+```
 
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
+```text
 0
 1
 2
-{% endraw %}{% endhighlight %}
-</div>
+```
 
-Variables created through the <code>increment</code> tag are independent from variables created through <code>assign</code> or <code>capture</code>. 
+Variables created through the `increment` tag are independent from variables created through `assign` or `capture`.
 
-In the example below, a variable named "var" is created through <code>assign</code>. The <code>increment</code> tag is then used several times on a variable with the same name. However, note that the <code>increment</code> tag does not affect the value of  "var" that was created through <code>assign</code>.
+In the example below, a variable named "var" is created through `assign`. The `increment` tag is then used several times on a variable with the same name. However, note that the `increment` tag does not affect the value of  "var" that was created through `assign`.
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
+```liquid
+{% raw %}
 {% assign var = 10 %}
 {% increment var %}
 {% increment var %}
 {% increment var %}
 {{ var }}
-{% endraw %}{% endhighlight %}
-</div>
+{% endraw %}
+```
 
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
+```text
 0
 1
 2
-10 
-{% endraw %}{% endhighlight %}
-</div>
-
+10
+```
 
 ## decrement
 
-Creates a new number variable, and decreases its value by one every time it is called. The initial value is -1. 
+Creates a new number variable, and decreases its value by one every time it is called. The initial value is -1.
 
-<div class="code-block code-block--input">
-{% highlight html %}{% raw %}
+```liquid
+{% raw %}
 {% decrement variable %}
 {% decrement variable %}
 {% decrement variable %}
-{% endraw %}{% endhighlight %}
-</div>
+{% endraw %}
+```
 
-<div class="code-block code-block--output">
-{% highlight html %}{% raw %}
+```text
 -1
 -2
 -3
-{% endraw %}{% endhighlight %}
-</div>
+```
 
-Like <a href="#increment">increment</a>, variables declared inside <code>decrement</code> are independent from variables created through <code>assign</code> or <code>capture</code>.
-
-
-        
-
-
+Like [increment](#increment), variables declared inside `decrement` are independent from variables created through `assign` or `capture`.

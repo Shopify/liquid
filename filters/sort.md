@@ -4,20 +4,16 @@ title: sort
 
 Sorts items in an array by a property of an item in the array. The order of the sorted array is case-sensitive.
 
-<p class="input">Input</p>
-<div>
-{% highlight html %}{% raw %}
-<!-- products = "a", "b", "A", "B" -->
-{% assign products = collection.products | sort: 'title' %}
-{% for product in products %}
-   {{ product.title }}
-{% endfor %}{% endraw %}{% endhighlight %}
-</div>
+```liquid
+{% raw %}
+{% assign my_array = "zebra, octopus, giraffe, Sally Snake" | split: ", " %}
 
-<p class="output">Output</p>
-<div>
-{% highlight html %}{% raw %}
-A B a b
-{% endraw %}{% endhighlight %}
-</div>
+{{ my_array | sort | join: ", " }}
+{% endraw %}
+```
 
+```text
+{% assign my_array = "zebra, octopus, giraffe, Sally Snake" | split: ", " %}
+
+{{ my_array | sort | join: ", " }}
+```

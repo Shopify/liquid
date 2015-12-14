@@ -21,7 +21,8 @@
     box-sizing: border-box;
   }
 
-  & + .highlight {
+  // Label every second code block with "Output"
+  & + .highlight:nth-of-type(2n) {
     &:before {
       content: "Output";
     }
