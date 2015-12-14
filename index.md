@@ -22,9 +22,15 @@ Objects and variable names are denoted by double curly braces: `{% raw %}{{{% en
 
 For example, you can show basic content like a page title using a Liquid object:
 
-| Liquid                                  | Output   |
-|:----------------------------------------|:---------|
-| {% raw %}`{{ page.title }}`{% endraw %} | Overview |
+```liquid
+{% raw %}
+{{ page.title }}
+{% endraw %}
+```
+
+```text
+Overview
+```
 
 In this case, Liquid is rendering the content of an object called `page.title`, and that object contains the text `Overview`.
 
@@ -40,27 +46,20 @@ Tag markup does not resolve to text. This means that you can assign variables an
 
 #### Conditionals
 
-For example, you can change what information Liquid shows using conditionals:
+Conditionals can change the information Liquid shows using programming logic:
 
-<p class="input">Liquid</p>
-<div>
-{% highlight liquid %}
+```liquid
 {% raw %}
-
 {% if user %}
   Hello {{ user.name }}!
 {% endif %}
 
 {% endraw %}
-{% endhighlight %}
-</div>
+```
 
-<p class="output">Output</p>
-<div>
-{% highlight text %}
+```text
 Hello Adam!
-{% endhighlight %}
-</div>
+```
 
 This conditional statement `if user` checks to see if an object called `user` exists. If the condition is *true* (that is, if there is a `user`), Liquid shows any content that is contained between the `if` and `endif` tags.
 
@@ -70,9 +69,7 @@ In this case, our user's `name` is Adam, so the template prints `Hello Adam!`.
 
 You can also use tags to loop over a list or array of objects:
 
-<p class="input">Liquid</p>
-<div>
-{% highlight liquid %}
+```liquid
 {% raw %}
 
 {% for item in collection %}
@@ -80,18 +77,14 @@ You can also use tags to loop over a list or array of objects:
 {% endfor %}
 
 {% endraw %}
-{% endhighlight %}
-</div>
+```
 
-<p class="output">Output</p>
-<div>
-{% highlight text %}
+```text
 I have a shirt
 I have a pants
 I have a banana
 I have a bucket
-{% endhighlight %}
-</div>
+```
 
 The statement `for item in collection` tells Liquid to show the content between the `for` and `endfor` tags one time for every `item` in the `collection` object.
 
