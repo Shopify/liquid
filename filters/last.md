@@ -2,7 +2,7 @@
 title: last
 ---
 
-`last` returns the last element of an array without sorting the array.
+Returns the last item of an array.
 
 ```liquid
 {% raw %}

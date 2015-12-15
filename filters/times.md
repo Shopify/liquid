@@ -2,7 +2,7 @@
 title: times
 ---
 
-`times` multiplies its input by its argument.
+Multiplies a number by another number.
 
 ```liquid
 {% raw %}

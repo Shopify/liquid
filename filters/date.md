@@ -2,7 +2,7 @@
 title: date
 ---
 
-`date` converts a timestamp into another date format. The format for this syntax is the same as [`strftime`](//strftime.net).
+Converts a timestamp into another date format. The format for this syntax is the same as [`strftime`](//strftime.net).
 
 ```liquid
 {% raw %}

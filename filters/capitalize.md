@@ -2,7 +2,7 @@
 title: capitalize
 ---
 
-`capitalize` makes the first character of your string capitalized.
+Makes the first character of a string capitalized.
 
 ```liquid
 {% raw %}

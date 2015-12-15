@@ -2,7 +2,7 @@
 title: minus
 ---
 
-`minus` subtracts the number passed in from the input number.
+Subtracts a number from another number.
 
 ```liquid
 {% raw %}

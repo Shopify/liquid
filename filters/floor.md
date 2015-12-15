@@ -2,7 +2,7 @@
 title: floor
 ---
 
-`floor` rounds the input down to the nearest whole number.
+Rounds a number down to the nearest whole number.
 
 ```liquid
 {% raw %}

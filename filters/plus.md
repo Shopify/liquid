@@ -2,7 +2,7 @@
 title: plus
 ---
 
-`plus` adds the number passed in to the input number.
+Adds a number with another number.
 
 ```liquid
 {% raw %}

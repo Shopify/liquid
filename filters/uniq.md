@@ -2,7 +2,7 @@
 title: uniq
 ---
 
-`uniq` removes any duplicate elements in an array.
+Removes any duplicate elements in an array.
 
 ```liquid
 {% raw %}

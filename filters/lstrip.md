@@ -2,7 +2,7 @@
 title: lstrip
 ---
 
-`lstrip` removes all whitespace (tabs, spaces, and newlines) from the left side of a string.
+Removes all whitespaces (tabs, spaces, and newlines) from a string.
 
 ```liquid
 {% raw %}

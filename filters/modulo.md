@@ -2,7 +2,7 @@
 title: modulo
 ---
 
-`modulo` returns the remainder when the input is divided by the passed-in parameter.
+Returns the remainder of a division operation.
 
 ```liquid
 {% raw %}

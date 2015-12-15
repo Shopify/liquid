@@ -2,7 +2,7 @@
 title: remove_first
 ---
 
-`remove` removes the first occurrence of of the passed-in substring from the input string.
+Removes only the first occurrence of an argument from a string.
 
 ```liquid
 {% raw %}

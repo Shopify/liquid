@@ -8,7 +8,7 @@ Liquid is an open-source template language created by [Shopify](https://www.shop
 
 Liquid has been in production use since June 2006 and is now used by many other hosted web applications.
 
-It was developed for usage in Ruby on Rails web applications and integrates seamlessly as a plugin but it also works well as a stand alone library.
+It was developed for usage in Ruby on Rails web applications and integrates seamlessly as a plugin but it also works well as a stand-alone library.
 
 ## Introduction
 

@@ -2,7 +2,7 @@
 title: replace
 ---
 
-`replace` replaces every occurrence of the first passed-in string in the input string with the second passed-in string.
+Replaces every occurrence of an argument in a string with the second argument.
 
 ```liquid
 {% raw %}

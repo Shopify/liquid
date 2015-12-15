@@ -2,7 +2,7 @@
 title: join
 ---
 
-`join` combines the elements of an array into a single string using the string you provide as a separator.
+Combines the items in an array into a single string using the argument as a separator.
 
 ```liquid
 {% raw %}

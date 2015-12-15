@@ -2,7 +2,7 @@
 title: url_encode
 ---
 
-`url_encode` converts any URL-unsafe characters in a string into percent-encoded characters.
+Converts any URL-unsafe characters in a string into percent-encoded characters.
 
 ```liquid
 {% raw %}

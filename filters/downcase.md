@@ -2,7 +2,7 @@
 title: downcase
 ---
 
-`downcase` makes each character in a string lowercase. It has no effect on strings which are already all lowercase.
+Makes each character in a string lowercase. It has no effect on strings which are already all lowercase.
 
 ```liquid
 {% raw %}

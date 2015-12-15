@@ -2,7 +2,7 @@
 title: reverse
 ---
 
-`reverse` reverses the order of the items in an array. `reverse` cannot reverse a string.
+Reverses the order of the items in an array. `reverse` cannot reverse a string.
 
 ```liquid
 {% raw %}

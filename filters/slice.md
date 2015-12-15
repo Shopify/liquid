@@ -2,7 +2,7 @@
 title: slice
 ---
 
-`slice` returns a substring of 1 character beginning at the index specified by the parameter passed in. An optional second parameter specifies the length of the substring to be returned.
+Returns a substring of 1 character beginning at the index specified by the argument passed in. An optional second argument specifies the length of the substring to be returned.
 
 String indices are numbered starting from 0.
 

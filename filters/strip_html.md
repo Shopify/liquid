@@ -2,7 +2,7 @@
 title: strip_html
 ---
 
-`strip_html` removes any HTML tags from a string.
+Removes any HTML tags from a string.
 
 
 ```liquid

@@ -2,7 +2,7 @@
 title: strip_newlines
 ---
 
-`strip_newlines` removes any newline characters (line breaks) from a string.
+Removes any newline characters (line breaks) from a string.
 
 ```liquid
 {% raw %}

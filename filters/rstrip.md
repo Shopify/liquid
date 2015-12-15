@@ -2,7 +2,7 @@
 title: rstrip
 ---
 
-`rstrip` removes all whitespace (tabs, spaces, and newlines) from the right side of a string.
+Removes all whitespace (tabs, spaces, and newlines) from the right side of a string.
 
 ```liquid
 {% raw %}

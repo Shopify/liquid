@@ -2,7 +2,7 @@
 title: replace_first
 ---
 
-`replace_first` replaces the first occurrence of the first passed-in string in the input string with the second passed-in string.
+Replaces only the first occurrence of an argument in a string with the second argument.
 
 ```liquid
 {% raw %}

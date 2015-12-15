@@ -2,7 +2,7 @@
 title: append
 ---
 
-`append` concatenates two strings and returns the concatenated value.
+Concatenates two strings and returns the concatenated value.
 
 ```liquid
 {% raw %}

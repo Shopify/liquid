@@ -2,7 +2,7 @@
 title: default
 ---
 
-`default` lets you specify a fallback in case a value doesn't exist. `default` will show its value if the left side is `nil`, `false`, or empty.
+Allows you to specify a fallback in case a value doesn't exist. `default` will show its value if the left side is `nil`, `false`, or empty.
 
 In this example, `product_price` is not defined, so the default value is used.
 

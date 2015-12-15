@@ -2,25 +2,15 @@
   <div class="sidebar--logo">
     <a href="/">Liquid</a>
   </div>
-  <nav class="sidebar--nav">
-
-    {% capture folders %}basics,tags,filters{% endcapture %}
-    {% assign sections = folders | split: "," %}
+  <nav class="sidebar--nav"> {% assign sections = "basics, tags, filters" | split: ", " %}
 
     {% for section in sections %}
-    <ul class="section">
-      <li>
-        <h3 class="section__header">{{ section | capitalize }}</h3>
-        <ul class="section__links">
-          {% for page in site.pages %}
-            {% if page.path contains section/ %}
-              {% unless page.path contains "index.html" %}
-              <li><a href="{{ page.url | prepend: site.baseurl }}" class="section__link">{{ page.title }}</a></li>
-              {% endunless %}
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </li>
+    <h3 class="section__header">{{ section | capitalize }}</h3>
+
+    <ul class="section__links">
+    {% for page in site.pages %}{% if page.url contains section/ %}{% unless page.path contains "index" %}
+      <li><a href="{{ page.url | prepend: site.baseurl }}" class="section__link">{{ page.title }}</a></li>
+    {% endunless %}{% endif %}{% endfor %}
     </ul>
     {% endfor %}
 

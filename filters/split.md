@@ -2,7 +2,7 @@
 title: split
 ---
 
-`split` divides an input string into an array using the passed-in substring as a separator. `split` is commonly used to convert comma-separated items from a string to an array.
+Divides an input string into an array using the argument as a separator. `split` is commonly used to convert comma-separated items from a string to an array.
 
 ```liquid
 {% raw %}

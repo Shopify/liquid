@@ -2,7 +2,7 @@
 title: size
 ---
 
-`size` returns the number of characters in a string or the number of items in an array. `size` can also be used with dot notation (for example, `{% raw %}{{ my_string.size }}{% endraw %}`). This allows you to use `size` inside other tags like conditionals.
+Returns the number of characters in a string or the number of items in an array. `size` can also be used with dot notation (for example, `{% raw %}{{ my_string.size }}{% endraw %}`). This allows you to use `size` inside  tags such as conditionals.
 
 ```liquid
 {% raw %}

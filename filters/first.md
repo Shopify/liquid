@@ -2,7 +2,7 @@
 title: first
 ---
 
-`first` returns the first element of an array without sorting the array.
+Returns the first item of an array.
 
 ```liquid
 {% raw %}

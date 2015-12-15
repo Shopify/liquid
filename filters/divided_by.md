@@ -2,7 +2,7 @@
 title: divided_by
 ---
 
-`divided_by` divides its input (left side) by its argument (right side). It uses `to_number`, which converts to a decimal value unless already a numeric.
+Divides a number by its argument.
 
 The result is rounded down to the nearest integer (that is, the [floor](/filters/floor)).
 

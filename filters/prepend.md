@@ -2,7 +2,7 @@
 title: prepend
 ---
 
-`prepend` adds a string to the beginning of the input string.
+Concatenates a string to the beginning of a string.
 
 ```liquid
 {% raw %}

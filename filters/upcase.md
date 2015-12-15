@@ -2,7 +2,7 @@
 title: upcase
 ---
 
-`upcase` makes each character in a string uppercase. It has no effect on strings which are already all uppercase.
+Makes each character in a string uppercase. It has no effect on strings which are already all uppercase.
 
 ```liquid
 {% raw %}

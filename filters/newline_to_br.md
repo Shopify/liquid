@@ -2,7 +2,7 @@
 title: newline_to_br
 ---
 
-Replace every newline (`\n`) with an HTML line break (`<br>`).
+Replaces every newline (`\n`) with an HTML line break (`<br>`).
 
 ```liquid
 {% raw %}

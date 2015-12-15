@@ -2,7 +2,7 @@
 title: round
 ---
 
-`round` rounds an input number to the nearest integer or, if a number is specified as a parameter, to that number of decimal places.
+Rounds an input number to the nearest integer or, if a number is specified as an argument, to that number of decimal places.
 
 ```liquid
 {% raw %}
