@@ -43,7 +43,6 @@ module Liquid
             'index0'  => index,
             'col'     => col + 1,
             'col0'    => col,
-            'index0'  => index,
             'rindex'  => length - index,
             'rindex0' => length - index - 1,
             'first'   => (index == 0),
