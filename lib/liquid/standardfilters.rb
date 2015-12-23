@@ -63,10 +63,11 @@ module Liquid
     # Truncate a string down to x characters
     def truncate(input, length = 50, truncate_string = "...".freeze)
       return if input.nil?
+      input_str = input.to_s
       length = Utils.to_integer(length)
       l = length - truncate_string.length
       l = 0 if l < 0
-      input.length > length ? input[0...l] + truncate_string : input
+      input_str.length > length ? input_str[0...l] + truncate_string : input_str
     end
 
     def truncatewords(input, words = 15, truncate_string = "...".freeze)

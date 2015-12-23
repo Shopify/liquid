@@ -262,6 +262,10 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result 'foobar', '{{ foo | last }}', 'foo' => [ThingWithToLiquid.new]
   end
 
+  def test_truncate_calls_to_liquid
+    assert_template_result "wo...", '{{ foo | truncate: 5 }}', "foo" => TestThing.new
+  end
+
   def test_date
     assert_equal 'May', @filters.date(Time.parse("2006-05-05 10:00:00"), "%B")
     assert_equal 'June', @filters.date(Time.parse("2006-06-05 10:00:00"), "%B")
