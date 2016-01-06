@@ -144,11 +144,7 @@ module Liquid
       result = ''
 
       context.stack do
-        loop_vars = {
-          'name'.freeze => @name,
-          'length'.freeze => length,
-          'parentloop'.freeze => for_stack[-1]
-        }
+        loop_vars = Liquid::ForloopDrop.new(@name, length, for_stack[-1])
 
         for_stack.push(loop_vars)
 
@@ -157,15 +153,8 @@ module Liquid
 
           segment.each_with_index do |item, index|
             context[@variable_name] = item
-
-            loop_vars['index'.freeze] = index + 1
-            loop_vars['index0'.freeze] = index
-            loop_vars['rindex'.freeze] = length - index
-            loop_vars['rindex0'.freeze] = length - index - 1
-            loop_vars['first'.freeze] = (index == 0)
-            loop_vars['last'.freeze] = (index == length - 1)
-
             result << @for_block.render(context)
+            loop_vars.send(:increment!)
 
             # Handle any interrupts if they exist.
             if context.interrupt?
