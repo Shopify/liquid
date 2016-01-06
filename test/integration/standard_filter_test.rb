@@ -249,6 +249,19 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "testfoo", templ, "procs" => [p]
   end
 
+  def test_map_over_drops_returning_procs
+    drops = [
+      {
+        "proc" => ->{ "foo" },
+      },
+      {
+        "proc" => ->{ "bar" },
+      },
+    ]
+    templ = '{{ drops | map: "proc" }}'
+    assert_template_result "foobar", templ, "drops" => drops
+  end
+
   def test_map_works_on_enumerables
     assert_template_result "123", '{{ foo | map: "foo" }}', "foo" => TestEnumerable.new
   end
