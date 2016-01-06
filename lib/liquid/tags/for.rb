@@ -67,69 +67,13 @@ module Liquid
     end
 
     def render(context)
-      for_offsets = context.registers[:for] ||= Hash.new(0)
-      for_stack = context.registers[:for_stack] ||= []
+      segment = collection_segment(context)
 
-      parent_loop = for_stack.last
-      for_stack.push(nil)
-
-      collection = context.evaluate(@collection_name)
-      collection = collection.to_a if collection.is_a?(Range)
-
-      from = if @from == :continue
-        for_offsets[@name].to_i
+      if segment.empty?
+        render_else(context)
       else
-        context.evaluate(@from).to_i
+        render_segment(context, segment)
       end
-
-      limit = context.evaluate(@limit)
-      to    = limit ? limit.to_i + from : nil
-
-      segment = Utils.slice_collection(collection, from, to)
-
-      return render_else(context) if segment.empty?
-
-      segment.reverse! if @reversed
-
-      result = ''
-
-      length = segment.length
-
-      # Store our progress through the collection for the continue flag
-      for_offsets[@name] = from + segment.length
-
-      context.stack do
-        segment.each_with_index do |item, index|
-          context[@variable_name] = item
-          loop_vars = {
-            'name'.freeze       => @name,
-            'length'.freeze     => length,
-            'index'.freeze      => index + 1,
-            'index0'.freeze     => index,
-            'rindex'.freeze     => length - index,
-            'rindex0'.freeze    => length - index - 1,
-            'first'.freeze      => (index == 0),
-            'last'.freeze       => (index == length - 1),
-            'parentloop'.freeze => parent_loop
-          }
-
-          context['forloop'.freeze] = loop_vars
-          for_stack[-1] = loop_vars
-
-          result << @for_block.render(context)
-
-          # Handle any interrupts if they exist.
-          if context.interrupt?
-            interrupt = context.pop_interrupt
-            break if interrupt.is_a? BreakInterrupt
-            next if interrupt.is_a? ContinueInterrupt
-          end
-        end
-      end
-
-      result
-    ensure
-      for_stack.pop
     end
 
     protected
@@ -169,6 +113,74 @@ module Liquid
     end
 
     private
+
+    def collection_segment(context)
+      offsets = context.registers[:for] ||= Hash.new(0)
+
+      from = if @from == :continue
+        offsets[@name].to_i
+      else
+        context.evaluate(@from).to_i
+      end
+
+      collection = context.evaluate(@collection_name)
+      collection = collection.to_a if collection.is_a?(Range)
+
+      limit = context.evaluate(@limit)
+      to = limit ? limit.to_i + from : nil
+
+      segment = Utils.slice_collection(collection, from, to)
+      segment.reverse! if @reversed
+
+      offsets[@name] = from + segment.length
+
+      segment
+    end
+
+    def render_segment(context, segment)
+      for_stack = context.registers[:for_stack] ||= []
+      length = segment.length
+
+      result = ''
+
+      context.stack do
+        loop_vars = {
+          'name'.freeze => @name,
+          'length'.freeze => length,
+          'parentloop'.freeze => for_stack[-1]
+        }
+
+        for_stack.push(loop_vars)
+
+        begin
+          context['forloop'.freeze] = loop_vars
+
+          segment.each_with_index do |item, index|
+            context[@variable_name] = item
+
+            loop_vars['index'.freeze] = index + 1
+            loop_vars['index0'.freeze] = index
+            loop_vars['rindex'.freeze] = length - index
+            loop_vars['rindex0'.freeze] = length - index - 1
+            loop_vars['first'.freeze] = (index == 0)
+            loop_vars['last'.freeze] = (index == length - 1)
+
+            result << @for_block.render(context)
+
+            # Handle any interrupts if they exist.
+            if context.interrupt?
+              interrupt = context.pop_interrupt
+              break if interrupt.is_a? BreakInterrupt
+              next if interrupt.is_a? ContinueInterrupt
+            end
+          end
+        ensure
+          for_stack.pop
+        end
+      end
+
+      result
+    end
 
     def set_attribute(key, expr)
       case key
