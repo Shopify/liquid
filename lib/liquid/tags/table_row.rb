@@ -28,36 +28,21 @@ module Liquid
 
       cols = context.evaluate(@attributes['cols'.freeze]).to_i
 
-      row = 1
-      col = 0
-
       result = "<tr class=\"row1\">\n"
       context.stack do
+        tablerowloop = Liquid::TablerowloopDrop.new(length, cols)
+        context['tablerowloop'.freeze] = tablerowloop
+
         collection.each_with_index do |item, index|
           context[@variable_name] = item
-          context['tablerowloop'.freeze] = {
-            'length'.freeze    => length,
-            'index'.freeze     => index + 1,
-            'index0'.freeze    => index,
-            'col'.freeze       => col + 1,
-            'col0'.freeze      => col,
-            'rindex'.freeze    => length - index,
-            'rindex0'.freeze   => length - index - 1,
-            'first'.freeze     => (index == 0),
-            'last'.freeze      => (index == length - 1),
-            'col_first'.freeze => (col == 0),
-            'col_last'.freeze  => (col == cols - 1)
-          }
 
-          col += 1
+          result << "<td class=\"col#{tablerowloop.col}\">" << super << '</td>'
 
-          result << "<td class=\"col#{col}\">" << super << '</td>'
-
-          if col == cols && (index != length - 1)
-            col  = 0
-            row += 1
-            result << "</tr>\n<tr class=\"row#{row}\">"
+          if tablerowloop.col_last && !tablerowloop.last
+            result << "</tr>\n<tr class=\"row#{tablerowloop.row + 1}\">"
           end
+
+          tablerowloop.send(:increment!)
         end
       end
       result << "</tr>\n"
