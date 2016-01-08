@@ -3,6 +3,8 @@
 ## 4.0.0 / not yet released / branch "master"
 
 ### Changed
+* Improve loop performance (#681) [Florian Weingarten]
+* Rename Drop method `before_method` to `liquid_method_missing` (#661) [Thierry Joyal]
 * Add url_decode filter to invert url_encode (#645) [Larry Archer]
 * Add global_filter to apply a filter to all output (#610) [Loren Hale]
 * Add compact filter (#600) [Carson Reinke]
@@ -15,9 +17,11 @@
 * Ruby 1.9 support dropped (#491) [Justin Li]
 * Liquid::Template.file_system's read_template_file method is no longer passed the context. (#441) [James Reid-Smith]
 * Remove support for `liquid_methods`
-* Rename Drop method `before_method` as `liquid_method_missing` (#661) [Thierry Joyal]
 
 ### Fixed
+* Fix map filter when value is a Proc (#672) [Guillaume Malette]
+* Fix truncate filter when value is not a string (#672) [Guillaume Malette]
+* Fix behaviour of escape filter when input is nil (#665) [Tanel Jakobsoo]
 * Fix sort filter behaviour with empty array input (#652) [Marcel Cary]
 * Fix test failure under certain timezones (#631) [Dylan Thacker-Smith]
 * Fix bug in uniq filter (#595) [Florian Weingarten]
