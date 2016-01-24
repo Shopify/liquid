@@ -341,9 +341,12 @@ module Liquid
       raise Liquid::FloatDomainError, e.message
     end
 
-    def default(input, default_value = "".freeze)
-      is_blank = input.respond_to?(:empty?) ? input.empty? : !input
-      is_blank ? default_value : input
+    def default(input, default_value = ''.freeze)
+      if !input || input.respond_to?(:empty?) && input.empty?
+        default_value
+      else
+        input
+      end
     end
 
     private
