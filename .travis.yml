@@ -10,6 +10,11 @@ rvm:
 
 sudo: false
 
+addons:
+  apt:
+    packages:
+    - libgmp3-dev
+
 matrix:
   allow_failures:
     - rvm: jruby-head
