@@ -41,6 +41,11 @@ $wrapper-width: 800px;
 
   a {
     color: $color-white;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
@@ -78,6 +83,7 @@ $wrapper-width: 800px;
 .section__header {
   font-weight: bold;
   font-size: 1em;
+  text-decoration: none;
   color: $color-white;
   margin-bottom: $spacing-unit / 4;
 }
@@ -93,6 +99,7 @@ $wrapper-width: 800px;
   display: inline-block;
   margin-top: $spacing-unit/4;
   opacity: 0.75;
+  text-decoration: none;
 
   &:hover {
     opacity: 1;
