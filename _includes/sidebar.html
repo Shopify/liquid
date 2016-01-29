@@ -9,7 +9,7 @@
 
     <ul class="section__links">
     {% for item in site.pages %}{% if item.url contains section/ %}{% unless item.path contains "index" %}
-      <li><a href="{{ item.url | prepend: site.baseurl }}" class="section__link{% if item.url contains page.url %} section__link--is-active {% endif %}">{{ item.title }}</a></li>
+      <li><a href="{{ item.url | prepend: site.baseurl }}" class="section__link{% if item.url contains page.url and page.url != "/" %} section__link--is-active {% endif %}">{{ item.title }}</a></li>
     {% endunless %}{% endif %}{% endfor %}
     </ul>
     {% endfor %}

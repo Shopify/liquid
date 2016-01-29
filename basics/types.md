@@ -79,7 +79,7 @@ Arrays hold lists of variables of any type.
 
 ### Accessing items in arrays
 
-To access all of the items in an array, you can loop through each item in the array using a [for](/tags/#for) or [tablerow](/tags/#tablerow) tag.
+To access all of the items in an array, you can loop through each item in the array using an [iteration tag](/tags/iteration/).
 
 ```liquid
 {% raw %}
@@ -119,11 +119,11 @@ Adam
 
 You cannot initialize arrays using pure Liquid.
 
-You can, however, use the [split](/filters/#split) filter to break a single string into an array of substrings.
+You can, however, use the [split](/filters/split) filter to break a single string into an array of substrings.
 
 ## EmptyDrop
 
-An EmptyDrop object is returned if you try to access a deleted object (such as a page or post) by its [handle](/basics/#Handles). In the example below, `page_1`, `page_2` and `page_3` are all EmptyDrop objects.
+An EmptyDrop object is returned if you try to access a deleted object (such as a page or post) by its handle. In the example below, `page_1`, `page_2` and `page_3` are all EmptyDrop objects.
 
 ```liquid
 {% raw %}

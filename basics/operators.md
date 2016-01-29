@@ -9,35 +9,35 @@ Liquid includes many logical and comparison operators.
 <table>
   <tbody>
     <tr>
-      <td><pre>==</pre></td>
+      <td><code>==</code></td>
       <td>equals</td>
     </tr>
     <tr>
-      <td><pre>!=</pre></td>
+      <td><code>!=</code></td>
       <td>does not equal</td>
     </tr>
     <tr>
-      <td><pre>&gt;</pre></td>
+      <td><code>&gt;</code></td>
       <td>greater than</td>
     </tr>
     <tr>
-      <td><pre>&lt;</pre></td>
+      <td><code>&lt;</code></td>
       <td>less than</td>
     </tr>
     <tr>
-      <td><pre>&gt;=</pre></td>
+      <td><code>&gt;=</code></td>
       <td>greater than or equal to</td>
     </tr>
     <tr>
-      <td><pre>&lt;=</pre></td>
+      <td><code>&lt;=</code></td>
       <td>less than or equal to</td>
     </tr>
     <tr>
-      <td><pre>or</pre></td>
+      <td><code>or</code></td>
       <td>logical or</td>
     </tr>
     <tr>
-      <td><pre>and</pre></td>
+      <td><code>and</code></td>
       <td>logical and</td>
     </tr>
   </tbody>
@@ -65,7 +65,7 @@ You can use multiple operators in a tag:
 
 ## contains
 
-`contains` checks for the presence of a substring inside a string.
+`contains` checks for the codesence of a substring inside a string.
 
 ```liquid
 {% raw %}
@@ -75,7 +75,7 @@ You can use multiple operators in a tag:
 {% endraw %}
 ```
 
-`contains` can also check for the presence of a string in an array of strings.
+`contains` can also check for the codesence of a string in an array of strings.
 
 ```liquid
 {% raw %}

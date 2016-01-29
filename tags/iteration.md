@@ -62,9 +62,9 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 1 2 3   5
 ```
 
-### for parameters
+## for (parameters)
 
-#### limit
+### limit
 
 Exits the for loop at a specific index.
 
@@ -81,7 +81,7 @@ Exits the for loop at a specific index.
 1 2
 ```
 
-#### offset
+### offset
 
 Starts the for loop at a specific index.
 
@@ -98,7 +98,7 @@ Starts the for loop at a specific index.
 3 4 5 6
 ```
 
-#### range
+### range
 
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
 
@@ -120,7 +120,7 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 3 4 5
 ```
 
-#### reversed
+### reversed
 
 Reverses the order of the for loop.
 
@@ -164,11 +164,11 @@ Uses for `cycle` include:
 -   applying odd/even classes to rows in a table
 -   applying a unique class to the last product thumbnail in a row
 
-### cycle parameters
+## cycle (parameters)
 
 `cycle` accepts a parameter called `cycle group` in cases where you need multiple `cycle` blocks in one template. If no name is supplied for the cycle group, then it is assumed that multiple calls with the same parameters are one group.
 
-### tablerow
+## tablerow
 
 Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags.
 
@@ -207,7 +207,7 @@ Generates an HTML table. Must be wrapped in opening `<table>` and closing `</tab
 </table>
 ```
 
-### tablerow parameters
+## tablerow (parameters)
 
 #### cols
 
