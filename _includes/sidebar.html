@@ -8,8 +8,8 @@
     <h3 class="section__header">{{ section | capitalize }}</h3>
 
     <ul class="section__links">
-    {% for page in site.pages %}{% if page.url contains section/ %}{% unless page.path contains "index" %}
-      <li><a href="{{ page.url | prepend: site.baseurl }}" class="section__link">{{ page.title }}</a></li>
+    {% for item in site.pages %}{% if item.url contains section/ %}{% unless item.path contains "index" %}
+      <li><a href="{{ item.url | prepend: site.baseurl }}" class="section__link{% if item.url contains page.url %} section__link--is-active {% endif %}">{{ item.title }}</a></li>
     {% endunless %}{% endif %}{% endfor %}
     </ul>
     {% endfor %}
