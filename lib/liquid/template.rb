@@ -187,6 +187,8 @@ module Liquid
 
         context.exception_handler = options[:exception_handler] if options[:exception_handler]
 
+        context.strict_variables = options[:strict_variables] if options[:strict_variables]
+
       when Module, Array
         context.add_filters(args.pop)
       end

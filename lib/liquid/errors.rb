@@ -56,4 +56,5 @@ module Liquid
   MemoryError = Class.new(Error)
   ZeroDivisionError = Class.new(Error)
   FloatDomainError = Class.new(Error)
+  UndefinedVariableError = Class.new(Error)
 end
