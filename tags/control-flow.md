@@ -2,6 +2,8 @@
 title: Control flow
 ---
 
+Control flow tags can change the information Liquid shows using programming logic.
+
 ## case/when
 
 Creates a switch statement to compare a variable with different values. `case` initializes the switch statement, and `when` compares its values.

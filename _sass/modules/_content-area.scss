@@ -13,12 +13,12 @@
     content: "Example";
     display: block;
     padding: 8px 12px;
-    font-weight: bold;
-    color: $color-white;
-    background: $color-blue-5;
-    border-bottom: none;
+    color: $color-slate;
+    background: #fff;
+    border: 1px solid $color-blue-2;
     border-radius: 3px 3px 0 0;
-    box-sizing: border-box;
+    font-size: 16px;
+    font-weight: bold;
   }
 
   // Label every second code block with "Output"

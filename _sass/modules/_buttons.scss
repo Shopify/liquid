@@ -1,10 +1,10 @@
 .btn {
   color: $color-white;
-  display: inline-block;
+  display: flex;
   background: $color-blue-5;
+  align-items: center;
   padding: $spacing-unit/4 $spacing-unit/2;
-  width: 200px;
-  border-radius: 4px;
+  border-radius: 8px;
   text-decoration: none;
 
   &:hover {
