@@ -5,11 +5,12 @@
   padding: $spacing-unit/4 $spacing-unit/2;
   width: 200px;
   border-radius: 4px;
+  text-decoration: none;
 
   &:hover {
     background: $color-blue-4;
-    text-decoration: none;
     cursor: pointer;
+    text-decoration: none;
   }
 }
 

@@ -4,6 +4,10 @@ title: Truthy and falsy
 
 In programming, anything that returns `true` in a conditional is called **truthy**. Anything that returns `false` in a conditional is called **falsy**. All object types can be described as either truthy or falsy.
 
+- [Truthy](#truthy)
+- [Falsy](#falsy)
+- [Summary](#summary)
+
 ## Truthy
 
 All values in Liquid are truthy except `nil` and `false`.
