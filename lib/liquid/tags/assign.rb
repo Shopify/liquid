@@ -37,7 +37,10 @@ module Liquid
       if val.instance_of?(String)
         val.length
       elsif val.instance_of?(Array) || val.instance_of?(Hash)
-        val.reduce(0) { |n, child| n + assign_score_of(child) }
+        sum = 1
+        # Uses #each to avoid extra allocations.
+        val.each { |child| sum += assign_score_of(child) }
+        sum
       else
         1
       end
