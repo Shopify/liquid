@@ -14,20 +14,23 @@ class VariableTest < Minitest::Test
   end
 
   def test_undefined_variable_with_filter_and_strict_variables
-    template = Template.parse(%@X{{nonexistent|default: 'x'}}X@)
-    assert_raises(UndefinedVariableError) {
-      template.render!({}, strict_variables: true)
-    }
+    with_error_mode :warn do
+      template = Template.parse(%@X{{nonexistent|default: 'x'}}X@)
+      assert_raises(UndefinedVariableError) {
+        template.render!({}, strict_variables: true)
+      }
+    end
   end
 
   def test_undefined_variable_with_strict_variables
-    template = Template.parse(%|X{{nonexistent}}X|)
-    template.render!({'xxx' => 'this is xxx', 'nilvalue' => nil}, strict_variables: false)
+    with_error_mode :strict do
+      template = Template.parse(%@X{{nonexistent}}X@)
 
-    e = assert_raises(UndefinedVariableError) {
-      template.render!({}, strict_variables: true)
-    }
-    assert_equal "Liquid error: The variable 'nonexistent' is not defined", e.message
+      e = assert_raises(UndefinedVariableError) {
+        template.render!({}, strict_variables: true)
+      }
+      assert_equal "Liquid error: The variable 'nonexistent' is not defined", e.message
+    end
   end
 
   def test_simple_variable
