@@ -23,15 +23,24 @@ module Liquid
     def render(context)
       val = @from.render(context)
       context.scopes.last[@to] = val
-
-      inc = val.instance_of?(String) || val.instance_of?(Array) || val.instance_of?(Hash) ? val.length : 1
-      context.resource_limits.assign_score += inc
-
+      context.resource_limits.assign_score += assign_score_of(val)
       ''.freeze
     end
 
     def blank?
       true
+    end
+
+    private
+
+    def assign_score_of(val)
+      if val.instance_of?(String)
+        val.length
+      elsif val.instance_of?(Array) || val.instance_of?(Hash)
+        val.reduce(0) { |n, child| n + assign_score_of(child) }
+      else
+        1
+      end
     end
   end
 
