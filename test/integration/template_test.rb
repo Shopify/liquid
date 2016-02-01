@@ -133,6 +133,17 @@ class TemplateTest < Minitest::Test
     refute_nil t.resource_limits.assign_score
   end
 
+  def test_resource_limits_assign_score_nested
+    t = Template.parse("{% assign foo = 'aaaa' | reverse %}")
+
+    t.resource_limits.assign_score_limit = 3
+    assert_equal "Liquid error: Memory limits exceeded", t.render
+    assert t.resource_limits.reached?
+
+    t.resource_limits.assign_score_limit = 5
+    assert_equal "", t.render!
+  end
+
   def test_resource_limits_aborts_rendering_after_first_error
     t = Template.parse("{% for a in (1..100) %} foo1 {% endfor %} bar {% for a in (1..100) %} foo2 {% endfor %}")
     t.resource_limits.render_score_limit = 50
