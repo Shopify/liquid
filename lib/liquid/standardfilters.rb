@@ -125,8 +125,6 @@ module Liquid
         []
       elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
         ary.sort { |a, b| a[property] <=> b[property] }
-      elsif ary.first.respond_to?(property)
-        ary.sort { |a, b| a.send(property) <=> b.send(property) }
       end
     end
 
@@ -141,8 +139,6 @@ module Liquid
         []
       elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
         ary.sort { |a, b| a[property].casecmp(b[property]) }
-      elsif ary.first.respond_to?(property)
-        ary.sort { |a, b| a.send(property).casecmp(b.send(property)) }
       end
     end
 
@@ -191,8 +187,6 @@ module Liquid
         []
       elsif ary.first.respond_to?(:[])
         ary.reject{ |a| a[property].nil? }
-      elsif ary.first.respond_to?(property)
-        ary.reject { |a| a.send(property).nil? }
       end
     end
 
