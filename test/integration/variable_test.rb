@@ -3,6 +3,36 @@ require 'test_helper'
 class VariableTest < Minitest::Test
   include Liquid
 
+  def test_undefined_variable
+    template = Template.parse(%|X{{nonexistent}}X|)
+    assert_equal 'XX', template.render!
+  end
+
+  def test_undefined_variable_with_filter
+    template = Template.parse(%@X{{nonexistent|default: 'x'}}X@)
+    assert_equal 'XxX', template.render!
+  end
+
+  def test_undefined_variable_with_filter_and_strict_variables
+    with_error_mode :warn do
+      template = Template.parse(%@X{{nonexistent|default: 'x'}}X@)
+      assert_raises(UndefinedVariableError) {
+        template.render!({}, strict_variables: true)
+      }
+    end
+  end
+
+  def test_undefined_variable_with_strict_variables
+    with_error_mode :strict do
+      template = Template.parse(%@X{{nonexistent}}X@)
+
+      e = assert_raises(UndefinedVariableError) {
+        template.render!({}, strict_variables: true)
+      }
+      assert_equal "Liquid error: The variable 'nonexistent' is not defined", e.message
+    end
+  end
+
   def test_simple_variable
     template = Template.parse(%({{test}}))
     assert_equal 'worked', template.render!('test' => 'worked')
