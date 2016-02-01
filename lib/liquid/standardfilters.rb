@@ -398,7 +398,7 @@ module Liquid
 
       def each
         @input.each do |e|
-          yield(e.respond_to?(:to_liquid) ? e.to_liquid : e)
+          yield(e.to_liquid)
         end
       end
     end

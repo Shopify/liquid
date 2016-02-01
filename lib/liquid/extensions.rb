@@ -60,3 +60,9 @@ class NilClass
     self
   end
 end
+
+class Proc
+  def to_liquid # :nodoc:
+    self
+  end
+end
