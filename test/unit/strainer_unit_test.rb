@@ -77,4 +77,14 @@ class StrainerUnitTest < Minitest::Test
     assert_kind_of b, strainer
     assert_kind_of Liquid::StandardFilters, strainer
   end
+
+  def test_add_filter_when_wrong_filter_class
+    c = Context.new
+    s = c.strainer
+    wrong_filter = ->(v) { v.reverse }
+
+    assert_raises ArgumentError do
+      s.class.add_filter(wrong_filter)
+    end
+  end
 end # StrainerTest

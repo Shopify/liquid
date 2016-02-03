@@ -26,7 +26,7 @@ module Liquid
     end
 
     def self.add_filter(filter)
-      raise ArgumentError, "Expected module but got: #{f.class}" unless filter.is_a?(Module)
+      raise ArgumentError, "Expected module but got: #{filter.class}" unless filter.is_a?(Module)
       unless self.class.include?(filter)
         send(:include, filter)
         @filter_methods.merge(filter.public_instance_methods.map(&:to_s))
@@ -48,6 +48,8 @@ module Liquid
     def invoke(method, *args)
       if self.class.invokable?(method)
         send(method, *args)
+      elsif @context && @context.strict_filters
+        raise Liquid::UndefinedFilter, "undefined filter #{method}"
       else
         args.first
       end
