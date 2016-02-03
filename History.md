@@ -3,6 +3,7 @@
 ## 4.0.0 / not yet released / branch "master"
 
 ### Changed
+* Add strict_variables and strict_filters options to detect undefined references (#691)
 * Improve loop performance (#681) [Florian Weingarten]
 * Rename Drop method `before_method` to `liquid_method_missing` (#661) [Thierry Joyal]
 * Add url_decode filter to invert url_encode (#645) [Larry Archer]
