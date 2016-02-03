@@ -55,9 +55,11 @@ module Liquid
           object = object.send(key).to_liquid
 
           # No key was present with the desired value and it wasn't one of the directly supported
-          # keywords either. The only thing we got left is to return nil
+          # keywords either. The only thing we got left is to return nil or
+          # raise an exception if `strict_variables` option is set to true
         else
-          return nil
+          return nil unless context.strict_variables
+          raise Liquid::UndefinedVariable, "undefined variable #{key}"
         end
 
         # If we are dealing with a drop here we have to

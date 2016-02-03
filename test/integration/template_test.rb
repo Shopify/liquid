@@ -27,6 +27,12 @@ class ErroneousDrop < Liquid::Drop
   end
 end
 
+class DropWithUndefinedMethod < Liquid::Drop
+  def foo
+    'foo'
+  end
+end
+
 class TemplateTest < Minitest::Test
   include Liquid
 
@@ -235,5 +241,69 @@ class TemplateTest < Minitest::Test
     rendered_template = Template.parse("{{name | upcase}}").render({ "name" => "bob" }, global_filter: global_filter_proc)
 
     assert_equal 'BOB filtered', rendered_template
+  end
+
+  def test_undefined_variables
+    t = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
+    result = t.render({ 'x' => 33, 'z' => { 'a' => 32, 'c' => { 'e' => 31 } } }, { strict_variables: true })
+
+    assert_equal '33  32  ', result
+    assert_equal 3, t.errors.count
+    assert_instance_of Liquid::UndefinedVariable, t.errors[0]
+    assert_equal 'Liquid error: undefined variable y', t.errors[0].message
+    assert_instance_of Liquid::UndefinedVariable, t.errors[1]
+    assert_equal 'Liquid error: undefined variable b', t.errors[1].message
+    assert_instance_of Liquid::UndefinedVariable, t.errors[2]
+    assert_equal 'Liquid error: undefined variable d', t.errors[2].message
+  end
+
+  def test_undefined_variables_raise
+    t = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
+
+    assert_raises UndefinedVariable do
+      t.render!({ 'x' => 33, 'z' => { 'a' => 32, 'c' => { 'e' => 31 } } }, { strict_variables: true })
+    end
+  end
+
+  def test_undefined_drop_methods
+    d = DropWithUndefinedMethod.new
+    t = Template.new.parse('{{ foo }} {{ woot }}')
+    result = t.render(d, { strict_variables: true })
+
+    assert_equal 'foo ', result
+    assert_equal 1, t.errors.count
+    assert_instance_of Liquid::UndefinedDropMethod, t.errors[0]
+  end
+
+  def test_undefined_drop_methods_raise
+    d = DropWithUndefinedMethod.new
+    t = Template.new.parse('{{ foo }} {{ woot }}')
+
+    assert_raises UndefinedDropMethod do
+      t.render!(d, { strict_variables: true })
+    end
+  end
+
+  def test_undefined_filters
+    t = Template.parse("{{a}} {{x | upcase | somefilter1 | somefilter2 | somefilter3}}")
+    filters = Module.new do
+      def somefilter3(v)
+        "-#{v}-"
+      end
+    end
+    result = t.render({ 'a' => 123, 'x' => 'foo' }, { filters: [filters], strict_filters: true })
+
+    assert_equal '123 ', result
+    assert_equal 1, t.errors.count
+    assert_instance_of Liquid::UndefinedFilter, t.errors[0]
+    assert_equal 'Liquid error: undefined filter somefilter1', t.errors[0].message
+  end
+
+  def test_undefined_filters_raise
+    t = Template.parse("{{x | somefilter1 | upcase | somefilter2}}")
+
+    assert_raises UndefinedFilter do
+      t.render!({ 'x' => 'foo' }, { strict_filters: true })
+    end
   end
 end

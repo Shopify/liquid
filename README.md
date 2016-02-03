@@ -73,3 +73,34 @@ This is useful for doing things like enabling strict mode only in the theme edit
 
 It is recommended that you enable `:strict` or `:warn` mode on new apps to stop invalid templates from being created.
 It is also recommended that you use it in the template editors of existing apps to give editors better error messages.
+
+### Undefined variables and filters
+
+By default, the renderer doesn't raise or in any other way notify you if some variables or filters are missing, i.e. not passed to the `render` method.
+You can improve this situation by passing `strict_variables: true` and/or `strict_filters: true` options to the `render` method.
+When one of these options is set to true, all errors about undefined variables and undefined filters will be stored in `errors` array of a `Liquid::Template` instance.
+Here are some examples:
+
+```ruby
+template = Liquid::Template.parse("{{x}} {{y}} {{z.a}} {{z.b}}")
+template.render({ 'x' => 1, 'z' => { 'a' => 2 } }, { strict_variables: true })
+#=> '1  2 ' # when a variable is undefined, it's rendered as nil
+template.errors
+#=> [#<Liquid::UndefinedVariable: Liquid error: undefined variable y>, #<Liquid::UndefinedVariable: Liquid error: undefined variable b>]
+```
+
+```ruby
+template = Liquid::Template.parse("{{x | filter1 | upcase}}")
+template.render({ 'x' => 'foo' }, { strict_filters: true })
+#=> '' # when at least one filter in the filter chain is undefined, a whole expression is rendered as nil
+template.errors
+#=> [#<Liquid::UndefinedFilter: Liquid error: undefined filter filter1>]
+```
+
+If you want to raise on a first exception instead of pushing all of them in `errors`, you can use `render!` method:
+
+```ruby
+template = Liquid::Template.parse("{{x}} {{y}}")
+template.render!({ 'x' => 1}, { strict_variables: true })
+#=> Liquid::UndefinedVariable: Liquid error: undefined variable y
+```

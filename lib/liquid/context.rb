@@ -13,7 +13,7 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
-    attr_accessor :exception_handler, :template_name, :partial, :global_filter
+    attr_accessor :exception_handler, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
       @environments     = [environments].flatten
@@ -207,6 +207,8 @@ module Liquid
     def lookup_and_evaluate(obj, key)
       if (value = obj[key]).is_a?(Proc) && obj.respond_to?(:[]=)
         obj[key] = (value.arity == 0) ? value.call : value.call(self)
+      elsif strict_variables && obj.respond_to?(:key?) && !obj.key?(key)
+        raise Liquid::UndefinedVariable, "undefined variable #{key}"
       else
         value
       end

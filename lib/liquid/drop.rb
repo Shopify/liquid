@@ -24,8 +24,9 @@ module Liquid
     attr_writer :context
 
     # Catch all for the method
-    def liquid_method_missing(_method)
-      nil
+    def liquid_method_missing(method)
+      return nil unless @context.strict_variables
+      raise Liquid::UndefinedDropMethod, "undefined method #{method}"
     end
 
     # called by liquid to invoke a drop

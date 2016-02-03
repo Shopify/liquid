@@ -181,12 +181,7 @@ module Liquid
 
         registers.merge!(options[:registers]) if options[:registers].is_a?(Hash)
 
-        context.add_filters(options[:filters]) if options[:filters]
-
-        context.global_filter = options[:global_filter] if options[:global_filter]
-
-        context.exception_handler = options[:exception_handler] if options[:exception_handler]
-
+        apply_options_to_context(context, options)
       when Module, Array
         context.add_filters(args.pop)
       end
@@ -234,6 +229,14 @@ module Liquid
       else
         yield
       end
+    end
+
+    def apply_options_to_context(context, options)
+      context.add_filters(options[:filters]) if options[:filters]
+      context.global_filter = options[:global_filter] if options[:global_filter]
+      context.exception_handler = options[:exception_handler] if options[:exception_handler]
+      context.strict_variables = options[:strict_variables] if options[:strict_variables]
+      context.strict_filters = options[:strict_filters] if options[:strict_filters]
     end
   end
 end
