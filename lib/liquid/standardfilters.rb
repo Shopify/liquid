@@ -353,7 +353,7 @@ module Liquid
       input.taint
       args.taint
 
-      args.each_index {|i| args[i] = (Hash[args[i].map { |k, v| [k.to_sym, v] }]) if args[i].instance_of?(Hash) }
+      args.each_index { |i| args[i] = (Hash[args[i].map { |k, v| [k.to_sym, v] }]) if args[i].instance_of?(Hash) }
 
       begin
         return Kernel.format(input, *args)
