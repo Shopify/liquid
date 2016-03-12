@@ -65,7 +65,7 @@ You can use multiple operators in a tag:
 
 ## contains
 
-`contains` checks for the codesence of a substring inside a string.
+`contains` checks for the presence of a substring inside a string.
 
 ```liquid
 {% raw %}
@@ -75,7 +75,7 @@ You can use multiple operators in a tag:
 {% endraw %}
 ```
 
-`contains` can also check for the codesence of a string in an array of strings.
+`contains` can also check for the presence of a string in an array of strings.
 
 ```liquid
 {% raw %}
