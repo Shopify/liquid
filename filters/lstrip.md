@@ -2,7 +2,7 @@
 title: lstrip
 ---
 
-Removes all whitespaces (tabs, spaces, and newlines) from a string.
+Removes all whitespaces (tabs, spaces, and newlines) from the beginning of a string. The filter does not affect spaces between words.
 
 ```liquid
 {% raw %}

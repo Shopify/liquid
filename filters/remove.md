@@ -2,7 +2,7 @@
 title: remove
 ---
 
-Removes every occurrence of an argument from a string.
+Removes every occurrence of the specified substring from a string.
 
 ```liquid
 {% raw %}

@@ -2,13 +2,11 @@
 title: Iteration
 ---
 
-Iteration Tags are used to run a block of code repeatedly.
+Iteration tags run blocks of code repeatedly.
 
 ## for
 
-Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](/themes/liquid-documentation/objects/for-loops).
-
-`for` loops can output a maximum of 50 results per page. In cases where there are more than 50 results, use the [paginate](/themes/liquid-documentation/tags/theme-tags/#paginate) tag to split them across multiple pages.
+Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://docs.shopify.com/themes/liquid/objects/for-loops).
 
 ```liquid
 {% raw %}
@@ -66,7 +64,7 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 
 ### limit
 
-Exits the for loop at a specific index.
+Limits the loop to the specified number of iterations.
 
 ```liquid
 {% raw %}
@@ -83,7 +81,7 @@ Exits the for loop at a specific index.
 
 ### offset
 
-Starts the for loop at a specific index.
+Begins the loop at the specified index.
 
 ```liquid
 {% raw %}
@@ -103,26 +101,26 @@ Starts the for loop at a specific index.
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
 
 ```liquid
-{% raw %}
-{% assign num = 4 %}
-{% for i in (1..num) %}
+{% for i in (3..5) %}
   {{ i }}
 {% endfor %}
 
-{% for i in (3..5) %}
+{% raw %}
+{% assign num = 4 %}
+{% for i in (1..num) %}
   {{ i }}
 {% endfor %}
 {% endraw %}
 ```
 
 ```text
-1 2 3 4
 3 4 5
+1 2 3 4
 ```
 
 ### reversed
 
-Reverses the order of the for loop.
+Reverses the order of the loop.
 
 ```liquid
 {% raw %}
@@ -209,7 +207,7 @@ Generates an HTML table. Must be wrapped in opening `<table>` and closing `</tab
 
 ## tablerow (parameters)
 
-#### cols
+### cols
 
 Defines how many columns the tables should have.
 
@@ -237,15 +235,15 @@ Defines how many columns the tables should have.
     </td>
     <td class="col2">
       Bullseye Shirt
-      </td>
+    </td>
   </tr>
   <tr class="row3">
     <td class="col1">
-          Another Classic Vinyl
-      </td>
+      Another Classic Vinyl
+    </td>
     <td class="col2">
-          Awesome Jeans
-      </td>
+      Awesome Jeans
+    </td>
   </tr>
 </table>
 ```
@@ -262,7 +260,7 @@ Exits the tablerow after a specific index.
 {% endraw %}
 ```
 
-#### offset
+### offset
 
 Starts the tablerow after a specific index.
 
@@ -274,7 +272,7 @@ Starts the tablerow after a specific index.
 {% endraw %}
 ```
 
-#### range
+### range
 
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
 

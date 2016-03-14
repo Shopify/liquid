@@ -2,7 +2,7 @@
 title: floor
 ---
 
-Rounds a number down to the nearest whole number.
+Rounds a number down to the nearest whole number. Liquid tries to convert the input to a number before the filter is applied.
 
 ```liquid
 {% raw %}
@@ -32,4 +32,16 @@ Rounds a number down to the nearest whole number.
 
 ```text
 {{ 183.357 | floor }}
+```
+
+Here the input value is a string:
+
+```liquid
+{% raw %}
+{{ "3.5" | floor }}
+{% endraw %}
+```
+
+```text
+{{ "3.5" | floor }}
 ```

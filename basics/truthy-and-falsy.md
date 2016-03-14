@@ -12,11 +12,11 @@ In programming, anything that returns `true` in a conditional is called **truthy
 
 All values in Liquid are truthy except `nil` and `false`.
 
-In the example below, the text "Tobi" is not a boolean, but it is truthy in a conditional:
+In the example below, the string "Tobi" is not a boolean, but it is truthy in a conditional:
 
 ```liquid
 {% raw %}
-{% assign tobi = 'Tobi' %}
+{% assign tobi = "Tobi" %}
 
 {% if tobi == true %}
   This condition will always be true.
@@ -38,7 +38,7 @@ In the example below, the text "Tobi" is not a boolean, but it is truthy in a co
 <h1></h1>
 ```
 
-[EmptyDrops](/basics/types/#emptydrop) are also truthy. In the example below, if `settings.page` is an empty string or set to a hidden or deleted object, you will end up with an EmptyDrop. The result is an empty div:
+[EmptyDrops](/basics/types/#emptydrop) are also truthy. In the example below, if `settings.page` is an empty string or set to a hidden or deleted object, you will end up with an EmptyDrop. The result is an empty `div`:
 
 ```liquid
 {% raw %}
@@ -54,7 +54,7 @@ In the example below, the text "Tobi" is not a boolean, but it is truthy in a co
 
 ## Falsy
 
-The falsy values in Liquid are [nil](/basics/types/#nil) and [false](/basics/types/#boolean).
+The falsy values in Liquid are [`nil`](/basics/types/#nil) and [`false`](/basics/types/#boolean).
 
 ## Summary
 

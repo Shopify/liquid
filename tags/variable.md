@@ -10,18 +10,18 @@ Creates a new variable.
 
 ```liquid
 {% raw %}
-  {% assign my_variable = false %}
-  {% if my_variable != true %}
+{% assign my_variable = false %}
+{% if my_variable != true %}
   This statement is valid.
-  {% endif %}
+{% endif %}
 {% endraw %}
 ```
 
 ```text
-	This statement is valid.
+  This statement is valid.
 ```
 
-Use quotations ("") to save the variable as a string.
+Wrap a variable in quotations `"` to save it as a string.
 
 ```liquid
 {% raw %}
@@ -55,9 +55,9 @@ Creates a new number variable, and increases its value by one every time it is c
 
 ```liquid
 {% raw %}
-{% increment variable %}
-{% increment variable %}
-{% increment variable %}
+{% increment my_counter %}
+{% increment my_counter %}
+{% increment my_counter %}
 {% endraw %}
 ```
 
@@ -69,7 +69,7 @@ Creates a new number variable, and increases its value by one every time it is c
 
 Variables created through the `increment` tag are independent from variables created through `assign` or `capture`.
 
-In the example below, a variable named "var" is created through `assign`. The `increment` tag is then used several times on a variable with the same name. However, note that the `increment` tag does not affect the value of  "var" that was created through `assign`.
+In the example below, a variable named "var" is created through `assign`. The `increment` tag is then used several times on a variable with the same name. Note that the `increment` tag does not affect the value of "var" that was created through `assign`.
 
 ```liquid
 {% raw %}

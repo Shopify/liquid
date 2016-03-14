@@ -4,7 +4,7 @@ title: Operators
 
 Liquid includes many logical and comparison operators.
 
-## Basic Operators
+## Basic operators
 
 <table>
   <tbody>

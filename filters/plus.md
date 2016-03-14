@@ -2,7 +2,7 @@
 title: plus
 ---
 
-Adds a number with another number.
+Adds a number to another number.
 
 ```liquid
 {% raw %}

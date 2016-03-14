@@ -2,7 +2,7 @@
 title: Introduction
 ---
 
-Liquid code can be categorized into three parts: **objects**, **tags**, and **filters**.
+Liquid code can be categorized into [**objects**](#objects), [**tags**](#tags), and [**filters**](#filters).
 
 ## Objects
 
@@ -23,9 +23,9 @@ In this case, Liquid is rendering the content of an object called `page.title`, 
 
 ## Tags
 
-**Tags** create the logic and control flow for your templates. They are denoted by curly braces and percent signs: `{% raw %}{%{% endraw %}` and `{% raw %}%}{% endraw %}`.
+**Tags** create the logic and control flow for templates. They are denoted by curly braces and percent signs: `{% raw %}{%{% endraw %}` and `{% raw %}%}{% endraw %}`.
 
-Tag markup does not resolve to text. This means that you can assign variables and create conditionals and loops without showing any of the Liquid logic on the page.
+The markup used in tags does not produce any visible text. This means that you can assign variables and create conditions and loops without showing any of the Liquid logic on the page.
 
 ```liquid
 {% raw %}
@@ -51,7 +51,7 @@ You can read more about each type of tag in their respective sections.
 
 ## Filters
 
-**Filters** modify the output of a Liquid object. They are using within an output and are separated by a `|`.
+**Filters** change the output of a Liquid object. They are using within an output and are separated by a `|`.
 
 ```liquid
 {% raw %}

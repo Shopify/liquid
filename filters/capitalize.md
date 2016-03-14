@@ -14,7 +14,7 @@ Makes the first character of a string capitalized.
 Title
 ```
 
-`capitalize` only capitalizes the first character of the string, so subsequent words are not affected:
+`capitalize` only capitalizes the first character of the string, so later words are not affected:
 
  ```liquid
 {% raw %}

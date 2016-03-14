@@ -2,7 +2,7 @@
 title: divided_by
 ---
 
-Divides a number by its argument.
+Divides a number by the specified number.
 
 The result is rounded down to the nearest integer (that is, the [floor](/filters/floor)).
 

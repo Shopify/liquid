@@ -28,7 +28,7 @@ This is a cake
 
 ## if
 
-Executes a block of code only if a certain condition is met.
+Executes a block of code only if a certain condition is `true`.
 
 ```liquid
 {% raw %}
@@ -42,30 +42,9 @@ Executes a block of code only if a certain condition is met.
 These shoes are awesome!
 ```
 
-## elsif / else
-
-Adds more conditions within an `if` or `unless` block.
-
-```liquid
-{% raw %}
-<!-- If customer.name = 'anonymous' -->
-{% if customer.name == 'kevin' %}
-  Hey Kevin!
-{% elsif customer.name == 'anonymous' %}
-  Hey Anonymous!
-{% else %}
-  Hi Stranger!
-{% endif %}
-{% endraw %}
-```
-
-```text
-Hey Anonymous!
-```
-
 ## unless
 
-Similar to `if`, but executes a block of code only if a certain condition is **not** met.
+The opposite of `if` – executes a block of code only if a certain condition is **not** met.
 
 ```liquid
 {% raw %}
@@ -87,4 +66,25 @@ This would be the equivalent of doing the following:
   These shoes are not awesome.
 {% endif %}
 {% endraw %}
+```
+
+## elsif / else
+
+Adds more conditions within an `if` or `unless` block.
+
+```liquid
+{% raw %}
+<!-- If customer.name = 'anonymous' -->
+{% if customer.name == 'kevin' %}
+  Hey Kevin!
+{% elsif customer.name == 'anonymous' %}
+  Hey Anonymous!
+{% else %}
+  Hi Stranger!
+{% endif %}
+{% endraw %}
+```
+
+```text
+Hey Anonymous!
 ```

@@ -11,11 +11,11 @@ Liquid objects can have one of six types:
 - [Array](#array)
 - [EmptyDrop](#emptydrop)
 
-Liquid variables can be initialized by using the [assign](/tags/#assign) or [capture](/tags/#capture) tags.
+You can initialize Liquid variables with the [assign](/tags/#assign) or [capture](/tags/#capture) tags.
 
 ## String
 
-Strings are declared by wrapping a variable's value in single or double quotes.
+Declare a string by wrapping a variable's value in single or double quotes:
 
 ```liquid
 {% raw %}
@@ -25,7 +25,7 @@ Strings are declared by wrapping a variable's value in single or double quotes.
 
 ## Number
 
-Numbers include floats and integers.
+Numbers include floats and integers:
 
 ```liquid
 {% raw %}
@@ -36,7 +36,7 @@ Numbers include floats and integers.
 
 ## Boolean
 
-Booleans are either `true` or `false`. No quotations are necessary when declaring a boolean.
+Booleans are either `true` or `false`. No quotations are necessary when declaring a boolean:
 
 ```liquid
 {% raw %}
@@ -49,7 +49,7 @@ Booleans are either `true` or `false`. No quotations are necessary when declarin
 
 Nil is a special empty value that is returned when Liquid code has no results. It is **not** a string with the characters "nil".
 
-Nil is treated as false in the conditions of `if` blocks and other Liquid tags that check the truthfulness of a statement.
+Nil is [treated as false](/basics/truthy-and-falsy) in the conditions of `if` blocks and other Liquid tags that check the truthfulness of a statement.
 
 In the following example, if the user does not exist (that is, `user` returns `nil`), Liquid will not print the greeting:
 
@@ -79,7 +79,7 @@ Arrays hold lists of variables of any type.
 
 ### Accessing items in arrays
 
-To access all of the items in an array, you can loop through each item in the array using an [iteration tag](/tags/iteration/).
+To access all the items in an array, you can loop through each item in the array using an [iteration tag](/tags/iteration/).
 
 ```liquid
 {% raw %}
@@ -117,13 +117,13 @@ Adam
 
 ### Initializing arrays
 
-You cannot initialize arrays using pure Liquid.
+You cannot initialize arrays using only Liquid.
 
-You can, however, use the [split](/filters/split) filter to break a single string into an array of substrings.
+You can, however, use the [split](/filters/split) filter to break a string into an array of substrings.
 
 ## EmptyDrop
 
-An EmptyDrop object is returned if you try to access a deleted object (such as a page or post) by its handle. In the example below, `page_1`, `page_2` and `page_3` are all EmptyDrop objects.
+An EmptyDrop object is returned if you try to access a deleted object by name. In the example below, `page_1`, `page_2` and `page_3` are all EmptyDrop objects.
 
 ```liquid
 {% raw %}
@@ -136,7 +136,7 @@ An EmptyDrop object is returned if you try to access a deleted object (such as a
 
 EmptyDrop objects only have one attribute, `empty?`, which is always *true*.
 
-Collections and pages that *do* exist do not have an `empty?` attribute. Their `empty?` is “falsy”, which means that calling it inside an if statement will return *false*. When using an  unless statement on existing collections and pages, `empty?` will return `true`.
+Collections and pages that *do* exist do not have an `empty?` attribute. Their `empty?` is "falsy", which means that calling it inside an if statement will return *false*. When using an `unless` statement on existing collections and pages, `empty?` will return `true`.
 
 ### Checking for emptiness
 
@@ -152,7 +152,7 @@ Using the `empty?` attribute, you can check to see if an object exists or not be
 {% endraw %}
 ```
 
-If you don't check for emptiness first, Liquid may print empty HTML elements to the page:
+If you don't check for emptiness first, Liquid might print empty HTML elements to the page:
 
 ```html
 <h1></h1>

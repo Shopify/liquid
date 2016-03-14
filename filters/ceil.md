@@ -2,7 +2,7 @@
 title: ceil
 ---
 
-`ceil` rounds the input up to the nearest whole number. The filter will attempt to cast any input to a number before it is applied.
+Rounds the input up to the nearest whole number. Liquid tries to convert the input to a number before the filter is applied.
 
 ```liquid
 {% raw %}
@@ -11,7 +11,7 @@ title: ceil
 ```
 
 ```text
-2
+{{ 1.2 | ceil }}
 ```
 
 ```liquid
@@ -21,7 +21,7 @@ title: ceil
 ```
 
 ```text
-2
+{{ 2.0 | ceil }}
 ```
 
 ```liquid
@@ -31,5 +31,17 @@ title: ceil
 ```
 
 ```text
-184
+{{ 183.357 | ceil }}
+```
+
+Here the input value is a string:
+
+```liquid
+{% raw %}
+{{ "3.5" | ceil }}
+{% endraw %}
+```
+
+```text
+{{ "3.5" | ceil }}
 ```
