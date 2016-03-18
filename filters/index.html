@@ -1,0 +1,10 @@
+---
+layout: default
+---
+
+{% for doc in site.collections["filters"].docs %}
+  <h2 id="{{ doc.title | slugify }}">{{ doc.title }}</h2>
+  <div class="content">
+    {{ doc.content }}
+  </div>
+{% endfor %}
