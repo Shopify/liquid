@@ -1,10 +1,9 @@
 title: Liquid Templating Engine
 description: "Liquid is a template language and accompanying rendering engine. It is built for security, so is perfect for rendering custom templates from your users."
-
 repository: https://github.com/Shopify/liquid
 
 # Build settings
-baseurl:                "/liquid/" # the subpath of your site, e.g. /blog/
+baseurl:                /liquid # the subpath of your site, e.g. /blog/
 url:                    http://liquidmarkup.org # the base hostname & protocol for your site
 markdown:               redcarpet
 redcarpet:
@@ -14,6 +13,9 @@ permalink:              pretty
 exclude:
   - README.md
   - CNAME
+  - Gemfile
+  - Gruntfile.js
+  - package.json
   - node_modules
 keep_files:             ["css"]
 
