@@ -1,0 +1,16 @@
+{
+  "name": "liquid-docs",
+  "version": "0.1.0",
+  "devDependencies": {
+    "autoprefixer-core": "^5.2.1",
+    "grunt": "~0.4.1",
+    "grunt-autoprefixer": "^3.0.3",
+    "grunt-concurrent": "^1.0.0",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-sass": "^0.9.2",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-postcss": "^0.5.5",
+    "grunt-shell": "^1.1.2",
+    "load-grunt-tasks": "^3.1.0"
+  }
+}

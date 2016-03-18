@@ -1,0 +1,185 @@
+* {
+  box-sizing: border-box;
+}
+
+/**
+ * Reset some basic elements
+ */
+body, h1, h2, h3, h4, h5, h6,
+p, blockquote, pre, hr,
+dl, dd, ol, ul, figure {
+    margin: 0;
+    padding: 0;
+}
+
+/**
+ * Basic styling
+ */
+body {
+  font-family: $base-font-family;
+  font-size: $base-font-size;
+  line-height: $base-line-height;
+  font-weight: 300;
+  color: $color-slate;
+  -webkit-text-size-adjust: 100%;
+}
+
+/** Set `margin-bottom` to maintain vertical rhythm */
+
+h1, h2, h3, h4, h5, h6,
+p, blockquote, pre,
+ul, ol, dl, figure,
+%vertical-rhythm {
+  margin-bottom: $spacing-unit / 2;
+}
+
+/** Images */
+
+img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+/** Figures */
+
+figure > img {
+  display: block;
+}
+
+figcaption {
+  font-size: $small-font-size;
+}
+
+/** Lists */
+ul, ol {
+  margin-left: $spacing-unit;
+}
+
+li {
+  > ul, > ol {
+    margin-bottom: 0;
+  }
+}
+
+/** Headings */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+}
+
+/** Links */
+a {
+    color: $color-blue-5;
+
+    &:visited {
+      color: #609;
+    }
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h2 {
+  font-size: 1.5em;
+  text-decoration: underline;
+  margin-top: $spacing-unit;
+}
+
+h3 {
+  font-size: 1em;
+  text-decoration: underline;
+}
+
+h4 {
+  font-size: 1em;
+}
+
+blockquote {
+  color: lighten($color-slate, 30%);
+  border-left: 2px solid lighten($color-slate, 50%);
+  padding-left: $spacing-unit / 2;
+  letter-spacing: -1px;
+  font-style: italic;
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+pre, code {
+  font-size: 15px;
+  border-radius: 3px;
+  background-color: lighten($color-blue-1, 0.9);
+}
+
+code {
+  padding: 1px 5px;
+}
+
+pre {
+  padding: 8px 12px;
+  border: 1px solid $color-blue-2;
+  word-wrap: break-word;
+
+  > code {
+    border: 0;
+    padding-right: 0;
+    padding-left: 0;
+  }
+}
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  background-color: lighten($color-slate, 50%);
+  margin-bottom: $spacing-unit/2;
+}
+
+table {
+  width: 100%;
+  overflow: auto;
+  display: block;
+  margin: 15px 0;
+  border-collapse: collapse;
+  thead {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+  }
+  th {
+    border: 1px solid #ddd;
+    padding: 6px 13px;
+    font-weight: bold;
+    text-align: center;
+  }
+  tbody {
+    vertical-align: middle;
+    border-color: inherit;
+  }
+  tr {
+    border-top: 1px solid #ccc;
+    background-color: #fff;
+    vertical-align: inherit;
+  }
+  td {
+    border: 1px solid #ddd;
+    padding: 6px 13px;
+  }
+  /* Don't use a margin on code samples within tables */
+  pre {
+    margin-bottom: 0;
+  }
+}
+
+p {
+  line-height: 1.8;
+}
