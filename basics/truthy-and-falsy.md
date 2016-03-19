@@ -18,7 +18,7 @@ In the example below, the string "Tobi" is not a boolean, but it is truthy in a 
 {% raw %}
 {% assign tobi = "Tobi" %}
 
-{% if tobi == true %}
+{% if tobi %}
   This condition will always be true.
 {% endif %}
 {% endraw %}
