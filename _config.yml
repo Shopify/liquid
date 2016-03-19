@@ -4,7 +4,7 @@ repository: https://github.com/Shopify/liquid
 
 # Build settings
 baseurl:                /liquid # the subpath of your site, e.g. /blog/
-url:                    http://liquidmarkup.org # the base hostname & protocol for your site
+url:                    https://shopify.github.io # the base hostname & protocol for your site
 markdown:               redcarpet
 redcarpet:
   extensions:           ["with_toc_data", "tables", "disable_indented_code_blocks", "no_intra_emphasis"]
