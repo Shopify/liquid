@@ -32,3 +32,20 @@
   vertical-align: middle;
   margin-right: $spacing-unit / 4;
 }
+
+
+/*============================================================================
+  Menu button
+ ==============================================================================*/
+.menu-button {
+  display: inline-block;
+  background: none;
+  border: none;
+  margin: $spacing-unit / 2 0 $spacing-unit / 2 ($spacing-unit / 4 * -1);
+  padding: $spacing-unit / 4;
+  color: $color-slate;
+
+  @include tablet-and-up {
+    display: none;
+  }
+}

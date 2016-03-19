@@ -3,13 +3,39 @@ $sidebar-width: 250px;
 $logo-height: 130px;
 $wrapper-width: 800px;
 
+body {
+  // display: flex;
+  // flex-direction: column;
+
+  // @include tablet-and-up {
+  //   flex-direction: row;
+  // }
+}
+
+
 /*============================================================================
   Content Area
  ==============================================================================*/
 
 .content__area {
-  padding: $spacing-unit $spacing-unit $spacing-unit ($spacing-unit + $sidebar-width);
   width: 100%;
+
+  @include tablet-and-up {
+    padding: $spacing-unit $spacing-unit $spacing-unit ($spacing-unit + $sidebar-width);
+  }
+}
+
+.content__overlay {
+  background: rgba(0, 0, 0, 0.4);
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  z-index: 1;
+  display: none;
+}
+
+.content__overlay--is-active {
+  display: block;
 }
 
 .content {
@@ -26,11 +52,22 @@ $wrapper-width: 800px;
 .sidebar {
   background: $color-blue-5;
   width: $sidebar-width;
-  height: 100vh;
   position: fixed;
+  transform: translateX($sidebar-width * -1);
+  transition: all 0.15s ease;
+  z-index: 2;
+  height: 100vh;
+
+  @include tablet-and-up {
+    transform: translateX(0);
+  }
 }
 
-.sidebar--logo {
+.sidebar--is-visible {
+  transform: translateX(0);
+}
+
+.sidebar__logo {
   font-size: $base-font-size * 2;
   font-weight: bold;
   text-align: center;
@@ -49,7 +86,7 @@ $wrapper-width: 800px;
   }
 }
 
-.sidebar--nav {
+.sidebar__nav {
   padding: $spacing-unit $spacing-unit ($spacing-unit + $logo-height); // Add a bit more padding at the bottom for consistency.
   font-weight: bold;
   max-height: 100%;
