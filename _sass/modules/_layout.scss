@@ -57,6 +57,7 @@ body {
   transition: all 0.15s ease;
   z-index: 2;
   height: 100vh;
+  -webkit-overflow-scrolling: touch;
 
   @include tablet-and-up {
     transform: translateX(0);
