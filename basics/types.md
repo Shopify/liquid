@@ -9,9 +9,8 @@ Liquid objects can have one of six types:
 - [Boolean](#boolean)
 - [Nil](#nil)
 - [Array](#array)
-- [EmptyDrop](#emptydrop)
 
-You can initialize Liquid variables with the [assign](/tags/#assign) or [capture](/tags/#capture) tags.
+You can initialize Liquid variables with the [assign]({{ "/tags/variable/#assign" | prepend: site.baseurl }}) or [capture]({{ "/tags/variable/#capture" | prepend: site.baseurl }}) tags.
 
 ## String
 
@@ -49,7 +48,7 @@ Booleans are either `true` or `false`. No quotations are necessary when declarin
 
 Nil is a special empty value that is returned when Liquid code has no results. It is **not** a string with the characters "nil".
 
-Nil is [treated as false](/basics/truthy-and-falsy) in the conditions of `if` blocks and other Liquid tags that check the truthfulness of a statement.
+Nil is [treated as false]({{ "/basics/truthy-and-falsy" | prepend: site.baseurl }}) in the conditions of `if` blocks and other Liquid tags that check the truthfulness of a statement.
 
 In the following example, if the user does not exist (that is, `user` returns `nil`), Liquid will not print the greeting:
 
@@ -79,7 +78,7 @@ Arrays hold lists of variables of any type.
 
 ### Accessing items in arrays
 
-To access all the items in an array, you can loop through each item in the array using an [iteration tag](/tags/iteration/).
+To access all the items in an array, you can loop through each item in the array using an [iteration tag]({{ "/tags/iteration" | prepend: site.baseurl }}).
 
 ```liquid
 {% raw %}
@@ -119,42 +118,4 @@ Adam
 
 You cannot initialize arrays using only Liquid.
 
-You can, however, use the [split](/filters/split) filter to break a string into an array of substrings.
-
-## EmptyDrop
-
-An EmptyDrop object is returned if you try to access a deleted object by name. In the example below, `page_1`, `page_2` and `page_3` are all EmptyDrop objects.
-
-```liquid
-{% raw %}
-{% assign variable = "hello" %}
-{% assign page_1 = pages[variable] %}
-{% assign page_2 = pages["does-not-exist"] %}
-{% assign page_3 = pages.this-handle-does-not-exist %}
-{% endraw %}
-```
-
-EmptyDrop objects only have one attribute, `empty?`, which is always *true*.
-
-Collections and pages that *do* exist do not have an `empty?` attribute. Their `empty?` is "falsy", which means that calling it inside an if statement will return *false*. When using an `unless` statement on existing collections and pages, `empty?` will return `true`.
-
-### Checking for emptiness
-
-Using the `empty?` attribute, you can check to see if an object exists or not before you access any of its attributes.
-
-```liquid
-{% raw %}
-{% unless pages.about.empty? %}
-  <!-- This will only print if the page with handle 'about' is not empty -->
-  <h1>{{ pages.frontpage.title }}</h1>
-  <div>{{ pages.frontpage.content }}</div>
-{% endunless %}
-{% endraw %}
-```
-
-If you don't check for emptiness first, Liquid might print empty HTML elements to the page:
-
-```html
-<h1></h1>
-<div></div>
-```
+You can, however, use the [split]({{ "/filters/split" | prepend: site.baseurl }}) filter to break a string into an array of substrings.
