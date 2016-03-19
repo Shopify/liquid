@@ -18,13 +18,13 @@ In the example below, the string "Tobi" is not a boolean, but it is truthy in a 
 {% raw %}
 {% assign tobi = "Tobi" %}
 
-{% if tobi == true %}
+{% if tobi %}
   This condition will always be true.
 {% endif %}
 {% endraw %}
 ```
 
-[Strings](/basics/types/#string), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
+[Strings]({{ "/basics/types/#string" | prepend: site.baseurl }}), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
 
 ```liquid
 {% raw %}
@@ -38,23 +38,9 @@ In the example below, the string "Tobi" is not a boolean, but it is truthy in a 
 <h1></h1>
 ```
 
-[EmptyDrops](/basics/types/#emptydrop) are also truthy. In the example below, if `settings.page` is an empty string or set to a hidden or deleted object, you will end up with an EmptyDrop. The result is an empty `div`:
-
-```liquid
-{% raw %}
-{% if pages[settings.page] %}
-  <div>{{ pages[settings.page].content }}</div>
-{% endif %}
-{% endraw %}
-```
-
-```html
-<div></div>
-```
-
 ## Falsy
 
-The falsy values in Liquid are [`nil`](/basics/types/#nil) and [`false`](/basics/types/#boolean).
+The falsy values in Liquid are [`nil`]({{ "/basics/types/#nil" | prepend: site.baseurl }}) and [`false`]({{ "/basics/types/#boolean" | prepend: site.baseurl }}).
 
 ## Summary
 
