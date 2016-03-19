@@ -1,6 +1,5 @@
 ---
 layout: null
-# hello tets
 ---
 
 @charset "utf-8";
@@ -8,6 +7,7 @@ layout: null
 @import "partials/defaults";
 @import "partials/colors";
 @import "partials/helpers";
+@import "partials/media-queries";
 
 @import "modules/base";
 @import "modules/layout";
