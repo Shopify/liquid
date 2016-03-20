@@ -2,10 +2,14 @@
   text-align: center;
   border-bottom: 1px solid lighten($color-slate, 50%);
   padding-bottom: $spacing-unit;
-  margin-bottom: $spacing-unit;
 
   h1 {
     font-weight: bold;
-    font-size: 5em;
+    font-size: 4em;
+
+    @include phone-and-up {
+      font-size: 5em;
+    }
   }
 }
+

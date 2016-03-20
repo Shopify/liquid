@@ -3,14 +3,30 @@
   display: flex;
   background: $color-blue-5;
   align-items: center;
+  justify-content: center;
   padding: $spacing-unit/4 $spacing-unit/2;
   border-radius: 8px;
   text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
 
   &:hover {
     background: $color-blue-4;
     cursor: pointer;
     text-decoration: none;
+  }
+
+  &:first-child {
+    margin-bottom: $spacing-unit / 2;
+  }
+
+  @include phone-and-up {
+    justify-content: center;
+
+    &:first-child {
+      justify-content: flex-start;
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -21,10 +37,15 @@
 .btn-row {
   display: flex;
   justify-content: center;
+  flex-direction: column;
   margin-bottom: 0;
 
-  .btn:not(:first-child) {
-    margin-left: $spacing-unit / 2;
+  @include phone-and-up {
+    flex-direction: row;
+
+    .btn:not(:first-child) {
+      margin-left: $spacing-unit / 2;
+    }
   }
 }
 
