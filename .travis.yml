@@ -19,6 +19,10 @@ matrix:
   allow_failures:
     - rvm: jruby-head
 
+before_install:
+  - gem update --system
+  - gem install bundler --pre
+
 script: "bundle exec rake"
 
 notifications:
