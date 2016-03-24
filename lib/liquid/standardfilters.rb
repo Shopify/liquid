@@ -1,5 +1,6 @@
 require 'cgi'
 require 'bigdecimal'
+require 'unicode_case_converter'
 
 module Liquid
   module StandardFilters
@@ -19,17 +20,20 @@ module Liquid
 
     # convert an input string to DOWNCASE
     def downcase(input)
-      input.to_s.downcase
+      input_string = input.to_s
+      input_string.ascii_only? ? input_string.downcase : UnicodeCaseConverter.downcase(input_string)
     end
 
     # convert an input string to UPCASE
     def upcase(input)
-      input.to_s.upcase
+      input_string = input.to_s
+      input_string.ascii_only? ? input_string.upcase : UnicodeCaseConverter.upcase(input_string)
     end
 
     # capitalize words in the input centence
     def capitalize(input)
-      input.to_s.capitalize
+      input_string = input.to_s
+      input_string.ascii_only? ? input_string.upcase : UnicodeCaseConverter.capitalize(input_string)
     end
 
     def escape(input)

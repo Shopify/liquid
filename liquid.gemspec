@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
 
   s.require_path = "lib"
 
+  s.add_dependency 'unicode_case_converter', '>= 1.0.0'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'minitest'
 end

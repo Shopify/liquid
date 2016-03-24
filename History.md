@@ -19,6 +19,7 @@
 * Liquid::Template.file_system's read_template_file method is no longer passed the context. (#441) [James Reid-Smith]
 * Remove support for `liquid_methods`
 * Liquid::Template.register_filter raises when the module overrides registered public methods as private or protected (#705) [Gaurav Chande]
+* Fix support cyrillic text for standart filtes (#729) [Ilya Kamenko]
 
 ### Fixed
 * Fix map filter when value is a Proc (#672) [Guillaume Malette]

@@ -56,12 +56,20 @@ class StandardFiltersTest < Minitest::Test
 
   def test_downcase
     assert_equal 'testing', @filters.downcase("Testing")
+    assert_equal 'кириллический тест', @filters.downcase('Кириллический Тест')
     assert_equal '', @filters.downcase(nil)
   end
 
   def test_upcase
     assert_equal 'TESTING', @filters.upcase("Testing")
+    assert_equal 'КИРИЛЛИЧЕСКИЙ ТЕСТ', @filters.upcase('кириллический тест')
     assert_equal '', @filters.upcase(nil)
+  end
+
+  def test_capitalize
+    assert_equal 'Testing', @filters.capitalize('testing')
+    assert_equal 'Кириллический тест', @filters.capitalize('кириллический тест')
+    assert_equal '', @filters.capitalize(nil)
   end
 
   def test_slice

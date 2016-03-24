@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gemspec
 gem 'stackprof', platforms: :mri_21
+gem 'unicode_case_converter'
 
 group :test do
   gem 'spy', '0.4.1'
