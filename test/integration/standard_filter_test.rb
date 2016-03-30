@@ -41,6 +41,16 @@ class TestEnumerable < Liquid::Drop
   end
 end
 
+class NumberLikeThing < Liquid::Drop
+  def initialize(amount)
+    @amount = amount
+  end
+
+  def to_number
+    @amount
+  end
+end
+
 class StandardFiltersTest < Minitest::Test
   include Liquid
 
@@ -364,11 +374,15 @@ class StandardFiltersTest < Minitest::Test
   def test_plus
     assert_template_result "2", "{{ 1 | plus:1 }}"
     assert_template_result "2.0", "{{ '1' | plus:'1.0' }}"
+
+    assert_template_result "5", "{{ price | plus:'2' }}", 'price' => NumberLikeThing.new(3)
   end
 
   def test_minus
     assert_template_result "4", "{{ input | minus:operand }}", 'input' => 5, 'operand' => 1
     assert_template_result "2.3", "{{ '4.3' | minus:'2' }}"
+
+    assert_template_result "5", "{{ price | minus:'2' }}", 'price' => NumberLikeThing.new(7)
   end
 
   def test_times
@@ -378,6 +392,8 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "6", "{{ '2.1' | times:3 | replace: '.','-' | plus:0}}"
 
     assert_template_result "7.25", "{{ 0.0725 | times:100 }}"
+
+    assert_template_result "4", "{{ price | times:2 }}", 'price' => NumberLikeThing.new(2)
   end
 
   def test_divided_by
@@ -391,6 +407,8 @@ class StandardFiltersTest < Minitest::Test
     assert_raises(Liquid::ZeroDivisionError) do
       assert_template_result "4", "{{ 1 | modulo: 0 }}"
     end
+
+    assert_template_result "5", "{{ price | divided_by:2 }}", 'price' => NumberLikeThing.new(10)
   end
 
   def test_modulo
@@ -398,6 +416,8 @@ class StandardFiltersTest < Minitest::Test
     assert_raises(Liquid::ZeroDivisionError) do
       assert_template_result "4", "{{ 1 | modulo: 0 }}"
     end
+
+    assert_template_result "1", "{{ price | modulo:2 }}", 'price' => NumberLikeThing.new(3)
   end
 
   def test_round
@@ -407,6 +427,9 @@ class StandardFiltersTest < Minitest::Test
     assert_raises(Liquid::FloatDomainError) do
       assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | round }}"
     end
+
+    assert_template_result "5", "{{ price | round }}", 'price' => NumberLikeThing.new(4.6)
+    assert_template_result "4", "{{ price | round }}", 'price' => NumberLikeThing.new(4.3)
   end
 
   def test_ceil
@@ -415,6 +438,8 @@ class StandardFiltersTest < Minitest::Test
     assert_raises(Liquid::FloatDomainError) do
       assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | ceil }}"
     end
+
+    assert_template_result "5", "{{ price | ceil }}", 'price' => NumberLikeThing.new(4.6)
   end
 
   def test_floor
@@ -423,6 +448,8 @@ class StandardFiltersTest < Minitest::Test
     assert_raises(Liquid::FloatDomainError) do
       assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | floor }}"
     end
+
+    assert_template_result "5", "{{ price | floor }}", 'price' => NumberLikeThing.new(5.4)
   end
 
   def test_append
