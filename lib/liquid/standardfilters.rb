@@ -216,6 +216,9 @@ module Liquid
     end
 
     def concat(input, array)
+      unless array.respond_to?(:to_ary)
+        raise ArgumentError.new("concat filter requires an array argument")
+      end
       InputIterator.new(input).concat(array)
     end
 
@@ -370,7 +373,7 @@ module Liquid
       end
 
       def concat(args)
-        to_a.concat args
+        to_a.concat(args)
       end
 
       def reverse
