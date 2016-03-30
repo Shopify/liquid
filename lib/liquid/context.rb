@@ -21,6 +21,7 @@ module Liquid
       @registers        = registers
       @errors           = []
       @partial          = false
+      @strict_variables = false
       @resource_limits  = resource_limits || ResourceLimits.new(Template.default_resource_limits)
       squash_instance_assigns_with_environments
 

@@ -94,7 +94,7 @@ class ErrorHandlingTest < Minitest::Test
       )
     end
 
-    assert_match /Liquid syntax error \(line 4\)/, err.message
+    assert_match(/Liquid syntax error \(line 4\)/, err.message)
   end
 
   def test_parsing_warn_with_line_numbers_adds_numbers_to_lexer_errors

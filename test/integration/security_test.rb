@@ -9,6 +9,10 @@ end
 class SecurityTest < Minitest::Test
   include Liquid
 
+  def setup
+    @assigns = {}
+  end
+
   def test_no_instance_eval
     text = %( {{ '1+1' | instance_eval }} )
     expected = %( 1+1 )

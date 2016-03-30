@@ -4,7 +4,7 @@ module Liquid
 
     def initialize(source, line_numbers = false)
       @source = source
-      @line_number = 1 if line_numbers
+      @line_number = line_numbers ? 1 : nil
       @tokens = tokenize
     end
 
