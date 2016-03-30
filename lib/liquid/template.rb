@@ -20,7 +20,7 @@ module Liquid
 
     class TagRegistry
       def initialize
-        @tags  = {}
+        @tags = {}
         @cache = {}
       end
 
@@ -80,11 +80,11 @@ module Liquid
       end
 
       def error_mode
-        @error_mode || :lax
+        @error_mode ||= :lax
       end
 
       def taint_mode
-        @taint_mode || :lax
+        @taint_mode ||= :lax
       end
 
       # Pass a module with filter methods which should be available
@@ -107,6 +107,7 @@ module Liquid
     end
 
     def initialize
+      @rethrow_errors = false
       @resource_limits = ResourceLimits.new(self.class.default_resource_limits)
     end
 
