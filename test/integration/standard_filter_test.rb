@@ -41,6 +41,16 @@ class TestEnumerable < Liquid::Drop
   end
 end
 
+class NumberLikeThing < Liquid::Drop
+  def initialize(amount)
+    @amount = amount
+  end
+
+  def to_number
+    @amount
+  end
+end
+
 class StandardFiltersTest < Minitest::Test
   include Liquid
 
@@ -391,6 +401,8 @@ class StandardFiltersTest < Minitest::Test
     assert_raises(Liquid::ZeroDivisionError) do
       assert_template_result "4", "{{ 1 | modulo: 0 }}"
     end
+
+    assert_template_result "5", "{{ price | divided_by:2 }}", 'price' => NumberLikeThing.new(10)
   end
 
   def test_modulo
