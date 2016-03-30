@@ -3,6 +3,7 @@
 ## 4.0.0 / not yet released / branch "master"
 
 ### Changed
+* Add to_number Drop method to allow custom drops to work with number filters (#731)
 * Add strict_variables and strict_filters options to detect undefined references (#691)
 * Improve loop performance (#681) [Florian Weingarten]
 * Rename Drop method `before_method` to `liquid_method_missing` (#661) [Thierry Joyal]
