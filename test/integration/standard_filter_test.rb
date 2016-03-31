@@ -463,8 +463,7 @@ class StandardFiltersTest < Minitest::Test
     assert_equal [1, 2, 'a'],  @filters.concat([1, 2], ['a'])
     assert_equal [1, 2, 10],   @filters.concat([1, 2], [10])
 
-    assert_raises(TypeError) do
-      # no implicit conversion of Fixnum into Array
+    assert_raises(Liquid::ArgumentError, "concat filter requires an array argument") do
       @filters.concat([1, 2], 10)
     end
   end
