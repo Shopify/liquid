@@ -388,11 +388,10 @@ class StandardFiltersTest < Minitest::Test
   def test_times
     assert_template_result "12", "{{ 3 | times:4 }}"
     assert_template_result "0", "{{ 'foo' | times:4 }}"
-
     assert_template_result "6", "{{ '2.1' | times:3 | replace: '.','-' | plus:0}}"
-
     assert_template_result "7.25", "{{ 0.0725 | times:100 }}"
-
+    assert_template_result "-7.25", '{{ "-0.0725" | times:100 }}'
+    assert_template_result "7.25", '{{ "-0.0725" | times: -100 }}'
     assert_template_result "4", "{{ price | times:2 }}", 'price' => NumberLikeThing.new(2)
   end
 
