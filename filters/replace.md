@@ -4,12 +4,14 @@ title: replace
 
 Replaces every occurrence of an argument in a string with the second argument.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {{ "Take my protein pills and put my helmet on" | replace: "my", "your" }}
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 {{ "Take my protein pills and put my helmet on" | replace: "my", "your" }}
 ```

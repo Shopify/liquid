@@ -26,6 +26,7 @@ In the example below, the string "Tobi" is not a boolean, but it is truthy in a 
 
 [Strings]({{ "/basics/types/#string" | prepend: site.baseurl }}), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% if settings.fp_heading %}
@@ -34,6 +35,7 @@ In the example below, the string "Tobi" is not a boolean, but it is truthy in a 
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```html
 <h1></h1>
 ```

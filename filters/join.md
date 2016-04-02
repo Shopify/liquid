@@ -4,6 +4,7 @@ title: join
 
 Combines the items in an array into a single string using the argument as a separator.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
@@ -12,6 +13,7 @@ Combines the items in an array into a single string using the argument as a sepa
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 {% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
 

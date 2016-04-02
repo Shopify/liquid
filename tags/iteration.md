@@ -8,6 +8,7 @@ Iteration tags run blocks of code repeatedly.
 
 Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://docs.shopify.com/themes/liquid/objects/for-loops).
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
   {% for product in collection.products %}
@@ -16,6 +17,7 @@ Repeatedly executes a block of code. For a full list of attributes available wit
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 hat shirt pants
 ```
@@ -24,6 +26,7 @@ hat shirt pants
 
 Causes the loop to stop iterating when it encounters the `break` tag.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% for i in (1..5) %}
@@ -36,6 +39,7 @@ Causes the loop to stop iterating when it encounters the `break` tag.
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 1 2 3
 ```
@@ -44,6 +48,7 @@ Causes the loop to stop iterating when it encounters the `break` tag.
 
 Causes the loop to skip the current iteration when it encounters the `continue` tag.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% for i in (1..5) %}
@@ -56,6 +61,7 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 1 2 3   5
 ```
@@ -66,6 +72,7 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 
 Limits the loop to the specified number of iterations.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 <!-- if array = [1,2,3,4,5,6] -->
@@ -75,6 +82,7 @@ Limits the loop to the specified number of iterations.
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 1 2
 ```
@@ -83,6 +91,7 @@ Limits the loop to the specified number of iterations.
 
 Begins the loop at the specified index.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 <!-- if array = [1,2,3,4,5,6] -->
@@ -92,6 +101,7 @@ Begins the loop at the specified index.
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 3 4 5 6
 ```
@@ -100,6 +110,7 @@ Begins the loop at the specified index.
 
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
 
+<p class="code-label">Input</p>
 ```liquid
 {% for i in (3..5) %}
   {{ i }}
@@ -113,6 +124,7 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 3 4 5
 1 2 3 4
@@ -122,6 +134,7 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 
 Reverses the order of the loop.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 <!-- if array = [1,2,3,4,5,6] -->
@@ -131,6 +144,7 @@ Reverses the order of the loop.
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 6 5 4 3 2 1
 ```
@@ -141,6 +155,7 @@ Loops through a group of strings and outputs them in the order that they were pa
 
 `cycle` must be used within a [for](#for) loop block.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% cycle 'one', 'two', 'three' %}
@@ -150,6 +165,7 @@ Loops through a group of strings and outputs them in the order that they were pa
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 one
 two
@@ -170,6 +186,7 @@ Uses for `cycle` include:
 
 Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 <table>
@@ -180,6 +197,7 @@ Generates an HTML table. Must be wrapped in opening `<table>` and closing `</tab
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```html
 <table>
   <tr class="row1">
@@ -211,6 +229,7 @@ Generates an HTML table. Must be wrapped in opening `<table>` and closing `</tab
 
 Defines how many columns the tables should have.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% tablerow product in collection.products cols:2 %}
@@ -219,6 +238,7 @@ Defines how many columns the tables should have.
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```html
 <table>
   <tr class="row1">

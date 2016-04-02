@@ -62,12 +62,14 @@ In the following example, if the user does not exist (that is, `user` returns `n
 
 Tags or outputs that return `nil` will not print anything to the page.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 The current user is {{ user.name }}
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 The current user is
 ```
@@ -80,6 +82,7 @@ Arrays hold lists of variables of any type.
 
 To access all the items in an array, you can loop through each item in the array using an [iteration tag]({{ "/tags/iteration" | prepend: site.baseurl }}).
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 <!-- if site.users = "Tobi", "Laura", "Tetsuro", "Adam" -->
@@ -89,6 +92,7 @@ To access all the items in an array, you can loop through each item in the array
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 {% raw %}
 Tobi Laura Tetsuro Adam
@@ -99,6 +103,7 @@ Tobi Laura Tetsuro Adam
 
 You can use square bracket `[` `]` notation to access a specific item in an array. Array indexing starts at zero.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 <!-- if site.users = "Tobi", "Laura", "Tetsuro", "Adam" -->
@@ -108,6 +113,7 @@ You can use square bracket `[` `]` notation to access a specific item in an arra
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 Tobi
 Laura
