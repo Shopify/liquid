@@ -289,6 +289,12 @@ module Liquid
       array.last if array.respond_to?(:last)
     end
 
+    # absolute value
+    def abs(input)
+      result = Utils.to_number(input).abs
+      result.is_a?(BigDecimal) ? result.to_f : result
+    end
+
     # addition
     def plus(input, operand)
       apply_operation(input, operand, :+)
