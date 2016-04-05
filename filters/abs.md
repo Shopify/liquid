@@ -24,7 +24,7 @@ Returns the absolute value of a number.
 4
 ```
 
-`abs` will work on a string if the string only contains a number.
+`abs` will also work on a string if the string only contains a number.
 
 ```liquid
 {% raw %}
