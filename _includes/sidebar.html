@@ -1,7 +1,7 @@
 <div class="sidebar">
-  <div class="sidebar__logo">
+  <header class="sidebar__logo">
     <a href="{{ "/" | prepend: site.baseurl }}">Liquid</a>
-  </div>
+  </header>
   <nav class="sidebar__nav"> {% assign sections = "basics, tags, filters" | split: ", " %}
 
     {% for section in sections %}
