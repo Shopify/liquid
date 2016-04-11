@@ -4,6 +4,7 @@ title: strip_newlines
 
 Removes any newline characters (line breaks) from a string.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% capture string_with_newlines %}
@@ -15,6 +16,7 @@ there
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```html
 {% capture string_with_newlines %}
 Hello
@@ -23,4 +25,3 @@ there
 
 {{ string_with_newlines | strip_newlines }}
 ```
-

@@ -4,6 +4,7 @@ title: uniq
 
 Removes any duplicate elements in an array.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% assign my_array = "ants, bugs, bees, bugs, ants" | split: ", " %}
@@ -12,6 +13,7 @@ Removes any duplicate elements in an array.
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 {% assign my_array = "ants, bugs, bees, bugs, ants" | split: ", " %}
 

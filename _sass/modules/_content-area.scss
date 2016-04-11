@@ -3,29 +3,20 @@
 }
 
 .highlight {
+  background: lighten($color-blue-1, 1);
+}
 
-  pre {
-    border-top: none;
-    border-radius: 0 0 3px 3px;
-  }
+.code-label {
+  padding: 4px 12px;
+  margin-bottom: 0;
+  font-size: 15px;
+  background: darken($color-blue-1, 5);
+  border: 1px solid $color-blue-2;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+}
 
-  &:before {
-    content: "Example";
-    display: block;
-    padding: 8px 12px;
-    color: $color-slate;
-    background: #fff;
-    border: 1px solid $color-blue-2;
-    border-radius: 3px 3px 0 0;
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  // Label every second code block with "Output"
-  & + .highlight:nth-of-type(2n) {
-    &:before {
-      content: "Output";
-    }
-  }
-
+.code-label + .highlighter-rouge .highlight {
+  border-top: none;
+  border-radius: 0 0 3px 3px;
 }

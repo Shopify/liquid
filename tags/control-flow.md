@@ -8,6 +8,7 @@ Control flow tags can change the information Liquid shows using programming logi
 
 Creates a switch statement to compare a variable with different values. `case` initializes the switch statement, and `when` compares its values.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% assign handle = 'cake' %}
@@ -22,6 +23,7 @@ Creates a switch statement to compare a variable with different values. `case` i
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 This is a cake
 ```
@@ -30,6 +32,7 @@ This is a cake
 
 Executes a block of code only if a certain condition is `true`.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% if product.title == 'Awesome Shoes' %}
@@ -38,6 +41,7 @@ Executes a block of code only if a certain condition is `true`.
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 These shoes are awesome!
 ```
@@ -46,6 +50,7 @@ These shoes are awesome!
 
 The opposite of `if` – executes a block of code only if a certain condition is **not** met.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% unless product.title == 'Awesome Shoes' %}
@@ -54,6 +59,7 @@ The opposite of `if` – executes a block of code only if a certain condition is
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 These shoes are not awesome.
 ```
@@ -72,6 +78,7 @@ This would be the equivalent of doing the following:
 
 Adds more conditions within an `if` or `unless` block.
 
+<p class="code-label">Input</p>
 ```liquid
 {% raw %}
 <!-- If customer.name = 'anonymous' -->
@@ -85,6 +92,7 @@ Adds more conditions within an `if` or `unless` block.
 {% endraw %}
 ```
 
+<p class="code-label">Output</p>
 ```text
 Hey Anonymous!
 ```
