@@ -6,9 +6,7 @@ module Liquid
     def initialize(tag_name, markup, parse_context)
       super
 
-      unless markup =~ Syntax
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_unexpected_args".freeze, tag: tag_name))
-      end
+      ensure_valid_markup(tag_name, markup, parse_context)
     end
 
     def parse(tokens)
@@ -34,6 +32,14 @@ module Liquid
 
     def blank?
       @body.empty?
+    end
+
+    protected
+
+    def ensure_valid_markup(tag_name, markup, parse_context)
+      unless markup =~ Syntax
+        raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_unexpected_args".freeze, tag: tag_name))
+      end
     end
   end
 
