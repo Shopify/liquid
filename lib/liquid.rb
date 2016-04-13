@@ -43,6 +43,11 @@ module Liquid
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/o
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/o
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
+  WhiteSpaceTrimTagStart      = [/[ \t]*\{\%-/, '{%']
+  WhiteSpaceTrimTagEnd        = [/-\%\}[ \t]*\r?\n?/, '%}']
+  WhiteSpaceTrimVariableStart = [/\r?\n?[ \t]*\{\{-/, '{{']
+  WhiteSpaceTrimVariableEnd   = [/-\}\}[ \t]*\r?\n?[ \t]*/, '}}']
+  WhiteSpaceTrimTags          = [WhiteSpaceTrimTagStart,WhiteSpaceTrimTagEnd,WhiteSpaceTrimVariableStart,WhiteSpaceTrimVariableEnd]
 end
 
 require "liquid/version"
