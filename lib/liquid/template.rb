@@ -145,9 +145,9 @@ module Liquid
       source = source.source if source.respond_to?(:source)
       return [] if source.to_s.empty?
 
-      if source =~ /\{[\{\%]-|-[\%\}]\}/
-        WhiteSpaceTrimTags.each do |white_space|
-          source = source.gsub(white_space[0], white_space[1])
+      if source =~ WhiteSpaceTrimCheck
+        WhiteSpaceTrimTags.each do |(regexp, string)|
+          source = source.gsub(regexp, string)
         end
       end
 

@@ -25,7 +25,7 @@ class TrimModeTest < Test::Unit::TestCase
   # Make sure the trim isn't applied to standard tags
   def test_standard_tags
     whitespace = '          '
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {% if true %}
@@ -33,8 +33,8 @@ class TrimModeTest < Test::Unit::TestCase
           {% endif %}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
 #{whitespace}
@@ -42,10 +42,10 @@ class TrimModeTest < Test::Unit::TestCase
 #{whitespace}
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
 
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {% if false %}
@@ -53,14 +53,14 @@ class TrimModeTest < Test::Unit::TestCase
           {% endif %}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
 #{whitespace}
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
@@ -123,24 +123,24 @@ class TrimModeTest < Test::Unit::TestCase
   end
 
   def test_pre_trim_output
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {{- 'John' }}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>John
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
   def test_pre_trim_tags
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if true %}
@@ -148,8 +148,8 @@ class TrimModeTest < Test::Unit::TestCase
           {%- endif %}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
 
@@ -157,10 +157,10 @@ class TrimModeTest < Test::Unit::TestCase
 
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
 
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if false %}
@@ -168,36 +168,36 @@ class TrimModeTest < Test::Unit::TestCase
           {%- endif %}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
 
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
   def test_post_trim_output
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {{ 'John' -}}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
           John</p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
   def test_post_trim_tags
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {% if true -%}
@@ -205,17 +205,17 @@ class TrimModeTest < Test::Unit::TestCase
           {% endif -%}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
                     yes
                   </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
 
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {% if false -%}
@@ -223,18 +223,18 @@ class TrimModeTest < Test::Unit::TestCase
           {% endif -%}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
                   </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
   def test_pre_and_post_trim_tags
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if true %}
@@ -242,18 +242,18 @@ class TrimModeTest < Test::Unit::TestCase
           {% endif -%}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
 
           yes
                   </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
 
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if false %}
@@ -261,18 +261,18 @@ class TrimModeTest < Test::Unit::TestCase
           {% endif -%}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
   def test_post_and_pre_trim_tags
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {% if true -%}
@@ -280,19 +280,19 @@ class TrimModeTest < Test::Unit::TestCase
           {%- endif %}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
                     yes
 
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
 
     whitespace = '          '
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {% if false -%}
@@ -300,35 +300,35 @@ class TrimModeTest < Test::Unit::TestCase
           {%- endif %}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
 #{whitespace}
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
   def test_trim_output
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {{- 'John' -}}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>John</p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
   def test_trim_tags
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if true -%}
@@ -336,17 +336,17 @@ class TrimModeTest < Test::Unit::TestCase
           {%- endif -%}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
           yes
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
 
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if false -%}
@@ -354,35 +354,35 @@ class TrimModeTest < Test::Unit::TestCase
           {%- endif -%}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
   def test_whitespace_trim_output
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {{- 'John' -}},
           {{- '30' -}}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>John,30</p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
   def test_whitespace_trim_tags
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if true -%}
@@ -390,17 +390,17 @@ class TrimModeTest < Test::Unit::TestCase
           {%- endif -%}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
           yes
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
 
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if false -%}
@@ -408,18 +408,18 @@ class TrimModeTest < Test::Unit::TestCase
           {%- endif -%}
         </p>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>
         </p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
   def test_complex_trim_output
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {{- 'John' -}}
@@ -434,8 +434,8 @@ class TrimModeTest < Test::Unit::TestCase
           {{ '30' -}}
         </i>
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
         <p>John30</p>
         <b>
@@ -444,12 +444,12 @@ class TrimModeTest < Test::Unit::TestCase
         <i>John
           30</i>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 
   def test_complex_trim
-    text = <<-END_EXPECTED
+    text = <<-END_TEMPLATE
       <div>
         {%- if true -%}
           {%- if true -%}
@@ -459,12 +459,12 @@ class TrimModeTest < Test::Unit::TestCase
           {%- endif -%}
         {%- endif -%}
       </div>
-    END_EXPECTED
-    expected = <<-END_TEMPLATE
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
       <div>
             <p>John</p>
       </div>
-    END_TEMPLATE
+    END_EXPECTED
     assert_template_result(expected, text)
   end
 end # TrimModeTest
