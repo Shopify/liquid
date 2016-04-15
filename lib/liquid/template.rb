@@ -146,9 +146,7 @@ module Liquid
       return [] if source.to_s.empty?
 
       if source =~ WhiteSpaceTrimCheck
-        WhiteSpaceTrimTags.each do |(regexp, string)|
-          source = source.gsub(regexp, string)
-        end
+          source = source.gsub(WhiteSpaceTrimTags, WhiteSpaceTrimReplace)
       end
 
       tokens = source.split(TemplateParser)
