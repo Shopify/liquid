@@ -44,7 +44,7 @@ module Liquid
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/o
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
   WhiteSpaceTrimCheck         = /\{[\{\%]-|-[\%\}]\}/
-  WhiteSpaceTrimTags          = /[ \t]*(\{\%)-|-(\%\})[ \t]*\r?\n?|\r?\n?[ \t]*(\{\{)-|-(\}\})[ \t]*\r?\n?[ \t]*/
+  WhiteSpaceTrimTags          = /[ \t]*(#{TagStart})-|-(#{TagEnd})[ \t]*\r?\n?|\r?\n?[ \t]*(#{VariableStart})-|-(#{VariableEnd})[ \t]*\r?\n?[ \t]*/
   WhiteSpaceTrimReplace       = '\1\2\3\4'
 end
 
