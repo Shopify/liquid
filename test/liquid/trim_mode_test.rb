@@ -152,9 +152,7 @@ class TrimModeTest < Test::Unit::TestCase
     expected = <<-END_EXPECTED
       <div>
         <p>
-
           yes
-
         </p>
       </div>
     END_EXPECTED
@@ -172,7 +170,6 @@ class TrimModeTest < Test::Unit::TestCase
     expected = <<-END_EXPECTED
       <div>
         <p>
-
         </p>
       </div>
     END_EXPECTED
@@ -209,8 +206,8 @@ class TrimModeTest < Test::Unit::TestCase
     expected = <<-END_EXPECTED
       <div>
         <p>
-                    yes
-                  </p>
+          yes
+          </p>
       </div>
     END_EXPECTED
     assert_template_result(expected, text)
@@ -227,7 +224,7 @@ class TrimModeTest < Test::Unit::TestCase
     expected = <<-END_EXPECTED
       <div>
         <p>
-                  </p>
+          </p>
       </div>
     END_EXPECTED
     assert_template_result(expected, text)
@@ -246,9 +243,8 @@ class TrimModeTest < Test::Unit::TestCase
     expected = <<-END_EXPECTED
       <div>
         <p>
-
           yes
-                  </p>
+          </p>
       </div>
     END_EXPECTED
     assert_template_result(expected, text)
@@ -264,8 +260,7 @@ class TrimModeTest < Test::Unit::TestCase
     END_TEMPLATE
     expected = <<-END_EXPECTED
       <div>
-        <p>
-        </p>
+        <p></p>
       </div>
     END_EXPECTED
     assert_template_result(expected, text)
@@ -284,8 +279,7 @@ class TrimModeTest < Test::Unit::TestCase
     expected = <<-END_EXPECTED
       <div>
         <p>
-                    yes
-
+          yes
         </p>
       </div>
     END_EXPECTED
@@ -339,9 +333,7 @@ class TrimModeTest < Test::Unit::TestCase
     END_TEMPLATE
     expected = <<-END_EXPECTED
       <div>
-        <p>
-          yes
-        </p>
+        <p>yes</p>
       </div>
     END_EXPECTED
     assert_template_result(expected, text)
@@ -357,8 +349,7 @@ class TrimModeTest < Test::Unit::TestCase
     END_TEMPLATE
     expected = <<-END_EXPECTED
       <div>
-        <p>
-        </p>
+        <p></p>
       </div>
     END_EXPECTED
     assert_template_result(expected, text)
@@ -393,9 +384,7 @@ class TrimModeTest < Test::Unit::TestCase
     END_TEMPLATE
     expected = <<-END_EXPECTED
       <div>
-        <p>
-          yes
-        </p>
+        <p>yes</p>
       </div>
     END_EXPECTED
     assert_template_result(expected, text)
@@ -411,8 +400,7 @@ class TrimModeTest < Test::Unit::TestCase
     END_TEMPLATE
     expected = <<-END_EXPECTED
       <div>
-        <p>
-        </p>
+        <p></p>
       </div>
     END_EXPECTED
     assert_template_result(expected, text)
@@ -461,9 +449,7 @@ class TrimModeTest < Test::Unit::TestCase
       </div>
     END_TEMPLATE
     expected = <<-END_EXPECTED
-      <div>
-            <p>John</p>
-      </div>
+      <div><p>John</p></div>
     END_EXPECTED
     assert_template_result(expected, text)
   end

@@ -39,13 +39,16 @@ module Liquid
   SpacelessFilter             = /^(?:'[^']+'|"[^"]+"|[^'"])*#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/o
   Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/o
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
-  AnyStartingTag              = /\{\{|\{\%/
+  AnyStartingTag              = /#{TagStart}|#{VariableStart}/o
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/o
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/o
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
-  WhiteSpaceTrimCheck         = /\{[\{\%]-|-[\%\}]\}/
-  WhiteSpaceTrimTags          = /[ \t]*(#{TagStart})-|-(#{TagEnd})[ \t]*\r?\n?|\r?\n?[ \t]*(#{VariableStart})-|-(#{VariableEnd})[ \t]*\r?\n?[ \t]*/
-  WhiteSpaceTrimReplace       = '\1\2\3\4'
+  WhiteSpaceControl           = /-/
+  WhiteSpaceTrimCheck         = /(#{TagStart}|#{VariableStart})#{WhiteSpaceControl}|#{WhiteSpaceControl}(#{TagEnd}|#{VariableEnd})}/o
+  WhiteSpaceTagStart          = /[ \t]*\r?\n?[ \t]*(#{TagStart}|#{VariableStart})#{WhiteSpaceControl}/o
+  WhiteSpaceTagEnd            = /#{WhiteSpaceControl}(#{TagEnd}|#{VariableEnd})[ \t]*\r?\n?[ \t]*/o
+  WhiteSpaceTrimTags          = /#{WhiteSpaceTagStart}|#{WhiteSpaceTagEnd}/o
+  WhiteSpaceTrimReplace       = '\1\2'
 end
 
 require "liquid/version"
