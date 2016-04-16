@@ -24,6 +24,8 @@ module Liquid
   ArgumentSeparator           = ','
   FilterArgumentSeparator     = ':'
   VariableAttributeSeparator  = '.'
+  WhiteSpaceControl           = /-/
+  WhiteSpace                  = /[ \t]*\r?\n?[ \t]*/
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
@@ -43,12 +45,6 @@ module Liquid
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/o
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/o
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
-  WhiteSpaceControl           = /-/
-  WhiteSpaceTrimCheck         = /(#{TagStart}|#{VariableStart})#{WhiteSpaceControl}|#{WhiteSpaceControl}(#{TagEnd}|#{VariableEnd})/o
-  WhiteSpaceTagStart          = /[ \t]*\r?\n?[ \t]*(#{TagStart}|#{VariableStart})#{WhiteSpaceControl}/o
-  WhiteSpaceTagEnd            = /#{WhiteSpaceControl}(#{TagEnd}|#{VariableEnd})[ \t]*\r?\n?[ \t]*/o
-  WhiteSpaceTrimTags          = /#{WhiteSpaceTagStart}|#{WhiteSpaceTagEnd}/o
-  WhiteSpaceTrimReplace       = '\1\2'
 end
 
 require "liquid/version"

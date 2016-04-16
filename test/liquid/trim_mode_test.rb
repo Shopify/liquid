@@ -453,4 +453,30 @@ class TrimModeTest < Test::Unit::TestCase
     END_EXPECTED
     assert_template_result(expected, text)
   end
+  def test_raw_output
+    whitespace = '        '
+    text = <<-END_TEMPLATE
+      <div>
+        {% raw %}
+          {%- if true -%}
+            <p>
+              {{- 'John' -}}
+            </p>
+          {%- endif -%}
+        {% endraw %}
+      </div>
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
+      <div>
+#{whitespace}
+          {%- if true -%}
+            <p>
+              {{- 'John' -}}
+            </p>
+          {%- endif -%}
+#{whitespace}
+      </div>
+    END_EXPECTED
+    assert_template_result(expected, text)
+  end
 end # TrimModeTest

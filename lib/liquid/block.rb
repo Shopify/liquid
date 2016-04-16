@@ -1,9 +1,16 @@
 module Liquid
   class Block < Tag
-    IsTag             = /^#{TagStart}/o
-    IsVariable        = /^#{VariableStart}/o
-    FullToken         = /^#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/o
-    ContentOfVariable = /^#{VariableStart}(.*)#{VariableEnd}$/o
+    IsTag                       = /^#{TagStart}/o
+    IsVariable                  = /^#{VariableStart}/o
+    FullToken                   = /^#{TagStart}#{WhiteSpaceControl}?\s*(\w+)\s*(.*)?#{WhiteSpaceControl}?#{TagEnd}$/o
+    ContentOfVariable           = /^#{VariableStart}#{WhiteSpaceControl}?(.*)#{WhiteSpaceControl}?#{VariableEnd}$/o
+    IsWhiteSpaceTagStart        = /^#{TagStart}#{WhiteSpaceControl}/o
+    IsWhiteSpaceTagEnd          = /#{WhiteSpaceControl}#{TagEnd}$/o
+    IsWhiteSpaceVariableStart   = /^#{VariableStart}#{WhiteSpaceControl}/o
+    IsWhiteSpaceVariableEnd     = /#{WhiteSpaceControl}#{VariableEnd}$/o
+    WhiteSpaceStart             = /\A#{WhiteSpace}/o
+    WhiteSpaceEnd               = /#{WhiteSpace}\z/o
+
 
     def blank?
       @blank || false
@@ -13,10 +20,22 @@ module Liquid
       @blank = true
       @nodelist ||= []
       @nodelist.clear
+      @@whitespace ||= false
 
       while token = tokens.shift
         case token
         when IsTag
+          @@whitespace = false
+          if token =~ IsWhiteSpaceTagEnd
+            @@whitespace = true
+          end
+          if token =~ IsWhiteSpaceTagStart
+            previous_token = @nodelist.pop
+            if previous_token.is_a?(String)
+              previous_token.gsub!(WhiteSpaceEnd, '')
+              @nodelist << previous_token
+            end
+          end
           if token =~ FullToken
 
             # if we found the proper block delimiter just end parsing here and let the outer block
@@ -40,11 +59,27 @@ module Liquid
             raise SyntaxError, "Tag '#{token}' was not properly terminated with regexp: #{TagEnd.inspect} "
           end
         when IsVariable
+          @@whitespace = false
+          if token =~ IsWhiteSpaceVariableEnd
+            @@whitespace = true
+          end
+          if token =~ IsWhiteSpaceVariableStart
+            previous_token = @nodelist.pop
+            if previous_token.is_a?(String)
+              previous_token.gsub!(WhiteSpaceEnd, '')
+              @nodelist << previous_token
+            end
+          end
           @nodelist << create_variable(token)
           @blank = false
         when ''
           # pass
+          @@whitespace = false
         else
+          if @@whitespace
+            token.gsub!(WhiteSpaceStart, '')
+          end
+          @@whitespace = false
           @nodelist << token
           @blank &&= (token =~ /\A\s*\z/)
         end

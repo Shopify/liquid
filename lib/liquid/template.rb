@@ -145,10 +145,6 @@ module Liquid
       source = source.source if source.respond_to?(:source)
       return [] if source.to_s.empty?
 
-      if source =~ WhiteSpaceTrimCheck
-          source = source.gsub(WhiteSpaceTrimTags, WhiteSpaceTrimReplace)
-      end
-
       tokens = source.split(TemplateParser)
 
       # removes the rogue empty element at the beginning of the array
