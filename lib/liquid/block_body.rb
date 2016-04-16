@@ -18,10 +18,7 @@ module Liquid
         unless token.empty?
           case
           when token.start_with?(TAGSTART)
-            if token[2] == WhitespaceControl
-              whitespace_lookback
-            end
-            parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
+            whitespace_handler(token, parse_context)
             if token =~ FullToken
               tag_name = $1
               markup = $2
@@ -39,10 +36,7 @@ module Liquid
               raise_missing_tag_terminator(token, parse_context)
             end
           when token.start_with?(VARSTART)
-            if token[2] == WhitespaceControl
-              whitespace_lookback
-            end
-            parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
+            whitespace_handler(token, parse_context)
             @nodelist << create_variable(token, parse_context)
             @blank = false
           else
@@ -60,12 +54,15 @@ module Liquid
       yield nil, nil
     end
 
-    def whitespace_lookback
-      previous_token = @nodelist.pop
-      if previous_token.is_a? String
-        previous_token.rstrip!
-        @nodelist << previous_token
+    def whitespace_handler(token, parse_context)
+      if token[2] == WhitespaceControl
+        previous_token = @nodelist.pop
+        if previous_token.is_a? String
+          previous_token.rstrip!
+          @nodelist << previous_token
+        end
       end
+      parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
     end
 
     def blank?
