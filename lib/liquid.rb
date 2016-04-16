@@ -25,7 +25,6 @@ module Liquid
   FilterArgumentSeparator     = ':'.freeze
   VariableAttributeSeparator  = '.'.freeze
   WhitespaceControl           = '-'.freeze
-  WhitespaceSignature         = /[ \t]*\r?\n?[ \t]*/
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
