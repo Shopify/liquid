@@ -21,9 +21,9 @@
 
 module Liquid
   FilterSeparator             = /\|/
-  ArgumentSeparator           = ','
-  FilterArgumentSeparator     = ':'
-  VariableAttributeSeparator  = '.'
+  ArgumentSeparator           = ','.freeze
+  FilterArgumentSeparator     = ':'.freeze
+  VariableAttributeSeparator  = '.'.freeze
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
@@ -33,37 +33,46 @@ module Liquid
   VariableIncompleteEnd       = /\}\}?/
   QuotedString                = /"[^"]*"|'[^']*'/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
-  StrictQuotedFragment        = /"[^"]+"|'[^']+'|[^\s|:,]+/
-  FirstFilterArgument         = /#{FilterArgumentSeparator}(?:#{StrictQuotedFragment})/o
-  OtherFilterArgument         = /#{ArgumentSeparator}(?:#{StrictQuotedFragment})/o
-  SpacelessFilter             = /^(?:'[^']+'|"[^"]+"|[^'"])*#{FilterSeparator}(?:#{StrictQuotedFragment})(?:#{FirstFilterArgument}(?:#{OtherFilterArgument})*)?/o
-  Expression                  = /(?:#{QuotedFragment}(?:#{SpacelessFilter})*)/o
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
   AnyStartingTag              = /\{\{|\{\%/
-  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/o
-  TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/o
+  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
+  TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
+
+  singleton_class.send(:attr_accessor, :cache_classes)
+  self.cache_classes = true
 end
 
 require "liquid/version"
+require 'liquid/lexer'
+require 'liquid/parser'
+require 'liquid/i18n'
 require 'liquid/drop'
+require 'liquid/tablerowloop_drop'
+require 'liquid/forloop_drop'
 require 'liquid/extensions'
 require 'liquid/errors'
 require 'liquid/interrupts'
 require 'liquid/strainer'
+require 'liquid/expression'
 require 'liquid/context'
+require 'liquid/parser_switching'
 require 'liquid/tag'
 require 'liquid/block'
+require 'liquid/block_body'
 require 'liquid/document'
 require 'liquid/variable'
+require 'liquid/variable_lookup'
+require 'liquid/range_lookup'
 require 'liquid/file_system'
+require 'liquid/resource_limits'
 require 'liquid/template'
-require 'liquid/htmltags'
 require 'liquid/standardfilters'
 require 'liquid/condition'
-require 'liquid/module_ex'
 require 'liquid/utils'
+require 'liquid/tokenizer'
+require 'liquid/parse_context'
 
 # Load all the tags of the standard library
 #
-Dir[File.dirname(__FILE__) + '/liquid/tags/*.rb'].each { |f| require f }
+Dir["#{__dir__}/liquid/tags/*.rb"].each { |f| require f }

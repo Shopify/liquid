@@ -1,135 +1,67 @@
 module Liquid
   class Block < Tag
-    IsTag             = /^#{TagStart}/o
-    IsVariable        = /^#{VariableStart}/o
-    FullToken         = /^#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/o
-    ContentOfVariable = /^#{VariableStart}(.*)#{VariableEnd}$/o
-
-    def blank?
-      @blank || false
+    def initialize(tag_name, markup, options)
+      super
+      @blank = true
     end
 
     def parse(tokens)
-      @blank = true
-      @nodelist ||= []
-      @nodelist.clear
-
-      while token = tokens.shift
-        case token
-        when IsTag
-          if token =~ FullToken
-
-            # if we found the proper block delimiter just end parsing here and let the outer block
-            # proceed
-            if block_delimiter == $1
-              end_tag
-              return
-            end
-
-            # fetch the tag from registered blocks
-            if tag = Template.tags[$1]
-              new_tag = tag.new($1, $2, tokens)
-              @blank &&= new_tag.blank?
-              @nodelist << new_tag
-            else
-              # this tag is not registered with the system
-              # pass it to the current block for special handling or error reporting
-              unknown_tag($1, $2, tokens)
-            end
-          else
-            raise SyntaxError, "Tag '#{token}' was not properly terminated with regexp: #{TagEnd.inspect} "
-          end
-        when IsVariable
-          @nodelist << create_variable(token)
-          @blank = false
-        when ''
-          # pass
-        else
-          @nodelist << token
-          @blank &&= (token =~ /\A\s*\z/)
-        end
+      @body = BlockBody.new
+      while parse_body(@body, tokens)
       end
-
-      # Make sure that it's ok to end parsing in the current block.
-      # Effectively this method will throw an exception unless the current block is
-      # of type Document
-      assert_missing_delimitation!
     end
 
-    def end_tag
+    def render(context)
+      @body.render(context)
     end
 
-    def unknown_tag(tag, params, tokens)
+    def blank?
+      @blank
+    end
+
+    def nodelist
+      @body.nodelist
+    end
+
+    def unknown_tag(tag, _params, _tokens)
       case tag
-      when 'else'
-        raise SyntaxError, "#{block_name} tag does not expect else tag"
-      when 'end'
-        raise SyntaxError, "'end' is not a valid delimiter for #{block_name} tags. use #{block_delimiter}"
+      when 'else'.freeze
+        raise SyntaxError.new(parse_context.locale.t("errors.syntax.unexpected_else".freeze,
+          block_name: block_name))
+      when 'end'.freeze
+        raise SyntaxError.new(parse_context.locale.t("errors.syntax.invalid_delimiter".freeze,
+          block_name: block_name,
+          block_delimiter: block_delimiter))
       else
-        raise SyntaxError, "Unknown tag '#{tag}'"
+        raise SyntaxError.new(parse_context.locale.t("errors.syntax.unknown_tag".freeze, tag: tag))
       end
-    end
-
-    def block_delimiter
-      "end#{block_name}"
     end
 
     def block_name
       @tag_name
     end
 
-    def create_variable(token)
-      token.scan(ContentOfVariable) do |content|
-        return Variable.new(content.first)
-      end
-      raise SyntaxError.new("Variable '#{token}' was not properly terminated with regexp: #{VariableEnd.inspect} ")
-    end
-
-    def render(context)
-      render_all(@nodelist, context)
+    def block_delimiter
+      @block_delimiter ||= "end#{block_name}"
     end
 
     protected
 
-    def assert_missing_delimitation!
-      raise SyntaxError.new("#{block_name} tag was never closed")
-    end
+    def parse_body(body, tokens)
+      body.parse(tokens, parse_context) do |end_tag_name, end_tag_params|
+        @blank &&= body.blank?
 
-    def render_all(list, context)
-      output = []
-      context.resource_limits[:render_length_current] = 0
-      context.resource_limits[:render_score_current] += list.length
-
-      list.each do |token|
-        # Break out if we have any unhanded interrupts.
-        break if context.has_interrupt?
-
-        begin
-          # If we get an Interrupt that means the block must stop processing. An
-          # Interrupt is any command that stops block execution such as {% break %}
-          # or {% continue %}
-          if token.is_a? Continue or token.is_a? Break
-            context.push_interrupt(token.interrupt)
-            break
-          end
-
-          token_output = (token.respond_to?(:render) ? token.render(context) : token)
-          context.resource_limits[:render_length_current] += (token_output.respond_to?(:length) ? token_output.length : 1)
-          if context.resource_limits_reached?
-            context.resource_limits[:reached] = true
-            raise MemoryError.new("Memory limits exceeded")
-          end
-          unless token.is_a?(Block) && token.blank?
-            output << token_output
-          end
-        rescue MemoryError => e
-          raise e
-        rescue ::StandardError => e
-          output << (context.handle_error(e))
+        return false if end_tag_name == block_delimiter
+        unless end_tag_name
+          raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_never_closed".freeze, block_name: block_name))
         end
+
+        # this tag is not registered with the system
+        # pass it to the current block for special handling or error reporting
+        unknown_tag(end_tag_name, end_tag_params, tokens)
       end
 
-      output.join
+      true
     end
   end
 end

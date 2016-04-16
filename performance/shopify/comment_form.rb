@@ -1,15 +1,15 @@
 class CommentForm < Liquid::Block
   Syntax = /(#{Liquid::VariableSignature}+)/
 
-  def initialize(tag_name, markup, tokens)
+  def initialize(tag_name, markup, options)
+    super
+
     if markup =~ Syntax
       @variable_name = $1
       @attributes = {}
     else
       raise SyntaxError.new("Syntax Error in 'comment_form' - Valid syntax: comment_form [article]")
     end
-
-    super
   end
 
   def render(context)
@@ -28,6 +28,6 @@ class CommentForm < Liquid::Block
   end
 
   def wrap_in_form(article, input)
-    %Q{<form id="article-#{article.id}-comment-form" class="comment-form" method="post" action="">\n#{input}\n</form>}
+    %(<form id="article-#{article.id}-comment-form" class="comment-form" method="post" action="">\n#{input}\n</form>)
   end
 end

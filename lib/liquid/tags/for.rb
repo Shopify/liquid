@@ -1,5 +1,4 @@
 module Liquid
-
   # "For" iterates over an array or collection.
   # Several useful variables are available to you within the loop.
   #
@@ -42,101 +41,155 @@ module Liquid
   #                   where 0 is the last item.
   # forloop.first:: Returns true if the item is the first item.
   # forloop.last:: Returns true if the item is the last item.
+  # forloop.parentloop:: Provides access to the parent loop, if present.
   #
   class For < Block
     Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
 
-    def initialize(tag_name, markup, tokens)
-      if markup =~ Syntax
-        @variable_name = $1
-        @collection_name = $2
-        @name = "#{$1}-#{$2}"
-        @reversed = $3
-        @attributes = {}
-        markup.scan(TagAttributes) do |key, value|
-          @attributes[key] = value
-        end
-      else
-        raise SyntaxError.new("Syntax Error in 'for loop' - Valid syntax: for [item] in [collection]")
-      end
-
-      @nodelist = @for_block = []
+    def initialize(tag_name, markup, options)
       super
+      @from = @limit = nil
+      parse_with_selected_parser(markup)
+      @for_block = BlockBody.new
+      @else_block = nil
+    end
+
+    def parse(tokens)
+      return unless parse_body(@for_block, tokens)
+      parse_body(@else_block, tokens)
+    end
+
+    def nodelist
+      @else_block ? [@for_block, @else_block] : [@for_block]
     end
 
     def unknown_tag(tag, markup, tokens)
-      return super unless tag == 'else'
-      @nodelist = @else_block = []
+      return super unless tag == 'else'.freeze
+      @else_block = BlockBody.new
     end
 
     def render(context)
-      context.registers[:for] ||= Hash.new(0)
+      segment = collection_segment(context)
 
-      collection = context[@collection_name]
-      collection = collection.to_a if collection.is_a?(Range)
-
-      # Maintains Ruby 1.8.7 String#each behaviour on 1.9
-      return render_else(context) unless iterable?(collection)
-
-      from = if @attributes['offset'] == 'continue'
-        context.registers[:for][@name].to_i
+      if segment.empty?
+        render_else(context)
       else
-        context[@attributes['offset']].to_i
+        render_segment(context, segment)
       end
+    end
 
-      limit = context[@attributes['limit']]
-      to    = limit ? limit.to_i + from : nil
+    protected
 
-
-      segment = Utils.slice_collection_using_each(collection, from, to)
-
-      return render_else(context) if segment.empty?
-
-      segment.reverse! if @reversed
-
-      result = ''
-
-      length = segment.length
-
-      # Store our progress through the collection for the continue flag
-      context.registers[:for][@name] = from + segment.length
-
-      context.stack do
-        segment.each_with_index do |item, index|
-          context[@variable_name] = item
-          context['forloop'] = {
-            'name'    => @name,
-            'length'  => length,
-            'index'   => index + 1,
-            'index0'  => index,
-            'rindex'  => length - index,
-            'rindex0' => length - index - 1,
-            'first'   => (index == 0),
-          'last'    => (index == length - 1) }
-
-          result << render_all(@for_block, context)
-
-          # Handle any interrupts if they exist.
-          if context.has_interrupt?
-            interrupt = context.pop_interrupt
-            break if interrupt.is_a? BreakInterrupt
-            next if interrupt.is_a? ContinueInterrupt
-          end
+    def lax_parse(markup)
+      if markup =~ Syntax
+        @variable_name = $1
+        collection_name = $2
+        @reversed = !!$3
+        @name = "#{@variable_name}-#{collection_name}"
+        @collection_name = Expression.parse(collection_name)
+        markup.scan(TagAttributes) do |key, value|
+          set_attribute(key, value)
         end
+      else
+        raise SyntaxError.new(options[:locale].t("errors.syntax.for".freeze))
       end
-      result
+    end
+
+    def strict_parse(markup)
+      p = Parser.new(markup)
+      @variable_name = p.consume(:id)
+      raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_in".freeze)) unless p.id?('in'.freeze)
+      collection_name = p.expression
+      @name = "#{@variable_name}-#{collection_name}"
+      @collection_name = Expression.parse(collection_name)
+      @reversed = p.id?('reversed'.freeze)
+
+      while p.look(:id) && p.look(:colon, 1)
+        unless attribute = p.id?('limit'.freeze) || p.id?('offset'.freeze)
+          raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute".freeze))
+        end
+        p.consume
+        set_attribute(attribute, p.expression)
+      end
+      p.consume(:end_of_string)
     end
 
     private
 
-      def render_else(context)
-        return @else_block ? [render_all(@else_block, context)] : ''
+    def collection_segment(context)
+      offsets = context.registers[:for] ||= Hash.new(0)
+
+      from = if @from == :continue
+        offsets[@name].to_i
+      else
+        context.evaluate(@from).to_i
       end
 
-      def iterable?(collection)
-        collection.respond_to?(:each) || Utils.non_blank_string?(collection)
+      collection = context.evaluate(@collection_name)
+      collection = collection.to_a if collection.is_a?(Range)
+
+      limit = context.evaluate(@limit)
+      to = limit ? limit.to_i + from : nil
+
+      segment = Utils.slice_collection(collection, from, to)
+      segment.reverse! if @reversed
+
+      offsets[@name] = from + segment.length
+
+      segment
+    end
+
+    def render_segment(context, segment)
+      for_stack = context.registers[:for_stack] ||= []
+      length = segment.length
+
+      result = ''
+
+      context.stack do
+        loop_vars = Liquid::ForloopDrop.new(@name, length, for_stack[-1])
+
+        for_stack.push(loop_vars)
+
+        begin
+          context['forloop'.freeze] = loop_vars
+
+          segment.each_with_index do |item, index|
+            context[@variable_name] = item
+            result << @for_block.render(context)
+            loop_vars.send(:increment!)
+
+            # Handle any interrupts if they exist.
+            if context.interrupt?
+              interrupt = context.pop_interrupt
+              break if interrupt.is_a? BreakInterrupt
+              next if interrupt.is_a? ContinueInterrupt
+            end
+          end
+        ensure
+          for_stack.pop
+        end
       end
+
+      result
+    end
+
+    def set_attribute(key, expr)
+      case key
+      when 'offset'.freeze
+        @from = if expr == 'continue'.freeze
+          :continue
+        else
+          Expression.parse(expr)
+        end
+      when 'limit'.freeze
+        @limit = Expression.parse(expr)
+      end
+    end
+
+    def render_else(context)
+      @else_block ? @else_block.render(context) : ''.freeze
+    end
   end
 
-  Template.register_tag('for', For)
+  Template.register_tag('for'.freeze, For)
 end

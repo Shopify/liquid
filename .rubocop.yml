@@ -1,0 +1,125 @@
+inherit_from: ./.rubocop_todo.yml
+
+AllCops:
+  Exclude:
+    - 'performance/shopify/*'
+    - 'pkg/**'
+
+Metrics/BlockNesting:
+  Max: 3
+  Exclude:
+    - 'lib/liquid/block_body.rb'
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Lint/AssignmentInCondition:
+  Enabled: false
+
+Lint/AmbiguousOperator:
+  Enabled: false
+
+Lint/AmbiguousRegexpLiteral:
+  Enabled: false
+
+Lint/ParenthesesAsGroupedExpression:
+  Enabled: false
+
+Lint/UnusedBlockArgument:
+  Enabled: false
+
+Lint/EndAlignment:
+  AlignWith: variable
+
+Lint/UnusedMethodArgument:
+  Enabled: false
+
+Style/SingleLineBlockParams:
+  Enabled: false
+
+Style/DoubleNegation:
+  Enabled: false
+
+Style/StringLiteralsInInterpolation:
+  Enabled: false
+
+Style/AndOr:
+  Enabled: false
+
+Style/SignalException:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: false
+
+Style/BracesAroundHashParameters:
+  Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
+
+Style/SpaceInsideBrackets:
+  Enabled: false
+
+Style/SpaceBeforeBlockBraces:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/TrailingComma:
+  Enabled: false
+
+Style/IndentHash:
+  EnforcedStyle: consistent
+
+Style/FormatString:
+  Enabled: false
+
+Style/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+Style/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/RaiseArgs:
+  Enabled: false
+
+Style/DeprecatedHashMethods:
+  Enabled: false
+
+Style/RegexpLiteral:
+  Enabled: false
+
+Style/SymbolLiteral:
+  Enabled: false
+
+Performance/Count:
+  Enabled: false
+
+Style/ConstantName:
+  Enabled: false
+
+Style/CaseIndentation:
+  Enabled: false
+
+Style/ClassVars:
+  Enabled: false
+
+Style/PerlBackrefs:
+  Enabled: false
+
+Style/TrivialAccessors:
+  AllowPredicates: true
+
+Style/WordArray:
+  Enabled: false

@@ -1,22 +1,47 @@
 module Liquid
   class Raw < Block
-    FullTokenPossiblyInvalid = /^(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/o
+    Syntax = /\A\s*\z/
+    FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
+
+    def initialize(tag_name, markup, parse_context)
+      super
+
+      ensure_valid_markup(tag_name, markup, parse_context)
+    end
 
     def parse(tokens)
-      @nodelist ||= []
-      @nodelist.clear
+      @body = ''
       while token = tokens.shift
         if token =~ FullTokenPossiblyInvalid
-          @nodelist << $1 if $1 != ""
-          if block_delimiter == $2
-            end_tag
-            return
-          end
+          @body << $1 if $1 != "".freeze
+          return if block_delimiter == $2
         end
-        @nodelist << token if not token.empty?
+        @body << token unless token.empty?
+      end
+
+      raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_never_closed".freeze, block_name: block_name))
+    end
+
+    def render(_context)
+      @body
+    end
+
+    def nodelist
+      [@body]
+    end
+
+    def blank?
+      @body.empty?
+    end
+
+    protected
+
+    def ensure_valid_markup(tag_name, markup, parse_context)
+      unless markup =~ Syntax
+        raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_unexpected_args".freeze, tag: tag_name))
       end
     end
   end
 
-  Template.register_tag('raw', Raw)
+  Template.register_tag('raw'.freeze, Raw)
 end

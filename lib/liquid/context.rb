@@ -1,5 +1,4 @@
 module Liquid
-
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
   #   context['variable'] = 'testing'
@@ -14,27 +13,35 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
+    attr_accessor :exception_handler, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = {})
-      @environments    = [environments].flatten
-      @scopes          = [(outer_scope || {})]
-      @registers       = registers
-      @errors          = []
-      @rethrow_errors  = rethrow_errors
-      @resource_limits = (resource_limits || {}).merge!({ :render_score_current => 0, :assign_score_current => 0 })
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
+      @environments     = [environments].flatten
+      @scopes           = [(outer_scope || {})]
+      @registers        = registers
+      @errors           = []
+      @partial          = false
+      @strict_variables = false
+      @resource_limits  = resource_limits || ResourceLimits.new(Template.default_resource_limits)
       squash_instance_assigns_with_environments
 
+      @this_stack_used = false
+
+      if rethrow_errors
+        self.exception_handler = ->(e) { raise }
+      end
+
       @interrupts = []
+      @filters = []
+      @global_filter = nil
     end
 
-    def resource_limits_reached?
-      (@resource_limits[:render_length_limit] && @resource_limits[:render_length_current] > @resource_limits[:render_length_limit]) ||
-      (@resource_limits[:render_score_limit]  && @resource_limits[:render_score_current]  > @resource_limits[:render_score_limit] ) ||
-      (@resource_limits[:assign_score_limit]  && @resource_limits[:assign_score_current]  > @resource_limits[:assign_score_limit] )
+    def warnings
+      @warnings ||= []
     end
 
     def strainer
-      @strainer ||= Strainer.create(self)
+      @strainer ||= Strainer.create(self, @filters)
     end
 
     # Adds filters to this context.
@@ -43,17 +50,17 @@ module Liquid
     # for that
     def add_filters(filters)
       filters = [filters].flatten.compact
+      @filters += filters
+      @strainer = nil
+    end
 
-      filters.each do |f|
-        raise ArgumentError, "Expected module but got: #{f.class}" unless f.is_a?(Module)
-        Strainer.add_known_filter(f)
-        strainer.extend(f)
-      end
+    def apply_global_filter(obj)
+      global_filter.nil? ? obj : global_filter.call(obj)
     end
 
     # are there any not handled interrupts?
-    def has_interrupt?
-      @interrupts.any?
+    def interrupt?
+      !@interrupts.empty?
     end
 
     # push an interrupt to the stack. this interrupt is considered not handled.
@@ -66,26 +73,41 @@ module Liquid
       @interrupts.pop
     end
 
-    def handle_error(e)
-      errors.push(e)
-      raise if @rethrow_errors
-
-      case e
-      when SyntaxError
-        "Liquid syntax error: #{e.message}"
-      else
-        "Liquid error: #{e.message}"
+    def handle_error(e, line_number = nil)
+      if e.is_a?(Liquid::Error)
+        e.template_name ||= template_name
+        e.line_number ||= line_number
       end
+
+      output = nil
+
+      if exception_handler
+        result = exception_handler.call(e)
+        case result
+        when Exception
+          e = result
+          if e.is_a?(Liquid::Error)
+            e.template_name ||= template_name
+            e.line_number ||= line_number
+          end
+        when String
+          output = result
+        else
+          raise if result
+        end
+      end
+      errors.push(e)
+      output || Liquid::Error.render(e)
     end
 
     def invoke(method, *args)
-      strainer.invoke(method, *args)
+      strainer.invoke(method, *args).to_liquid
     end
 
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
-    def push(new_scope={})
+    def push(new_scope = {})
       @scopes.unshift(new_scope)
-      raise StackLevelError, "Nesting too deep" if @scopes.length > 100
+      raise StackLevelError, "Nesting too deep".freeze if @scopes.length > 100
     end
 
     # Merge a hash of variables in the current local scope
@@ -107,11 +129,19 @@ module Liquid
     #   end
     #
     #   context['var]  #=> nil
-    def stack(new_scope={})
-      push(new_scope)
+    def stack(new_scope = nil)
+      old_stack_used = @this_stack_used
+      if new_scope
+        push(new_scope)
+        @this_stack_used = true
+      else
+        @this_stack_used = false
+      end
+
       yield
     ensure
-      pop
+      pop if @this_stack_used
+      @this_stack_used = old_stack_used
     end
 
     def clear_instance_assigns
@@ -120,148 +150,86 @@ module Liquid
 
     # Only allow String, Numeric, Hash, Array, Proc, Boolean or <tt>Liquid::Drop</tt>
     def []=(key, value)
+      unless @this_stack_used
+        @this_stack_used = true
+        push({})
+      end
       @scopes[0][key] = value
     end
 
-    def [](key)
-      resolve(key)
+    # Look up variable, either resolve directly after considering the name. We can directly handle
+    # Strings, digits, floats and booleans (true,false).
+    # If no match is made we lookup the variable in the current scope and
+    # later move up to the parent blocks to see if we can resolve the variable somewhere up the tree.
+    # Some special keywords return symbols. Those symbols are to be called on the rhs object in expressions
+    #
+    # Example:
+    #   products == empty #=> products.empty?
+    def [](expression)
+      evaluate(Expression.parse(expression))
     end
 
-    def has_key?(key)
-      resolve(key) != nil
+    def key?(key)
+      self[key] != nil
+    end
+
+    def evaluate(object)
+      object.respond_to?(:evaluate) ? object.evaluate(self) : object
+    end
+
+    # Fetches an object starting at the local scope and then moving up the hierachy
+    def find_variable(key)
+      # This was changed from find() to find_index() because this is a very hot
+      # path and find_index() is optimized in MRI to reduce object allocation
+      index = @scopes.find_index { |s| s.key?(key) }
+      scope = @scopes[index] if index
+
+      variable = nil
+
+      if scope.nil?
+        @environments.each do |e|
+          variable = lookup_and_evaluate(e, key)
+          unless variable.nil?
+            scope = e
+            break
+          end
+        end
+      end
+
+      scope ||= @environments.last || @scopes.last
+      variable ||= lookup_and_evaluate(scope, key)
+
+      variable = variable.to_liquid
+      variable.context = self if variable.respond_to?(:context=)
+
+      variable
+    end
+
+    def lookup_and_evaluate(obj, key)
+      if @strict_variables && obj.respond_to?(:key?) && !obj.key?(key)
+        raise Liquid::UndefinedVariable, "undefined variable #{key}"
+      end
+
+      value = obj[key]
+
+      if value.is_a?(Proc) && obj.respond_to?(:[]=)
+        obj[key] = (value.arity == 0) ? value.call : value.call(self)
+      else
+        value
+      end
     end
 
     private
-      LITERALS = {
-        nil => nil, 'nil' => nil, 'null' => nil, '' => nil,
-        'true'  => true,
-        'false' => false,
-        'blank' => :blank?,
-        'empty' => :empty?
-      }
 
-      # Look up variable, either resolve directly after considering the name. We can directly handle
-      # Strings, digits, floats and booleans (true,false).
-      # If no match is made we lookup the variable in the current scope and
-      # later move up to the parent blocks to see if we can resolve the variable somewhere up the tree.
-      # Some special keywords return symbols. Those symbols are to be called on the rhs object in expressions
-      #
-      # Example:
-      #   products == empty #=> products.empty?
-      def resolve(key)
-        if LITERALS.key?(key)
-          LITERALS[key]
-        else
-          case key
-          when /^'(.*)'$/ # Single quoted strings
-            $1
-          when /^"(.*)"$/ # Double quoted strings
-            $1
-          when /^(-?\d+)$/ # Integer and floats
-            $1.to_i
-          when /^\((\S+)\.\.(\S+)\)$/ # Ranges
-            (resolve($1).to_i..resolve($2).to_i)
-          when /^(-?\d[\d\.]+)$/ # Floats
-            $1.to_f
-          else
-            variable(key)
+    def squash_instance_assigns_with_environments
+      @scopes.last.each_key do |k|
+        @environments.each do |env|
+          if env.key?(k)
+            scopes.last[k] = lookup_and_evaluate(env, k)
+            break
           end
         end
       end
-
-      # Fetches an object starting at the local scope and then moving up the hierachy
-      def find_variable(key)
-        scope = @scopes.find { |s| s.has_key?(key) }
-        variable = nil
-
-        if scope.nil?
-          @environments.each do |e|
-            if variable = lookup_and_evaluate(e, key)
-              scope = e
-              break
-            end
-          end
-        end
-
-        scope     ||= @environments.last || @scopes.last
-        variable  ||= lookup_and_evaluate(scope, key)
-
-        variable = variable.to_liquid
-        variable.context = self if variable.respond_to?(:context=)
-
-        return variable
-      end
-
-      # Resolves namespaced queries gracefully.
-      #
-      # Example
-      #  @context['hash'] = {"name" => 'tobi'}
-      #  assert_equal 'tobi', @context['hash.name']
-      #  assert_equal 'tobi', @context['hash["name"]']
-      def variable(markup)
-        parts = markup.scan(VariableParser)
-        square_bracketed = /^\[(.*)\]$/
-
-        first_part = parts.shift
-
-        if first_part =~ square_bracketed
-          first_part = resolve($1)
-        end
-
-        if object = find_variable(first_part)
-
-          parts.each do |part|
-            part = resolve($1) if part_resolved = (part =~ square_bracketed)
-
-            # If object is a hash- or array-like object we look for the
-            # presence of the key and if its available we return it
-            if object.respond_to?(:[]) and
-              ((object.respond_to?(:has_key?) and object.has_key?(part)) or
-               (object.respond_to?(:fetch) and part.is_a?(Integer)))
-
-              # if its a proc we will replace the entry with the proc
-              res = lookup_and_evaluate(object, part)
-              object = res.to_liquid
-
-              # Some special cases. If the part wasn't in square brackets and
-              # no key with the same name was found we interpret following calls
-              # as commands and call them on the current object
-            elsif !part_resolved and object.respond_to?(part) and ['size', 'first', 'last'].include?(part)
-
-              object = object.send(part.intern).to_liquid
-
-              # No key was present with the desired value and it wasn't one of the directly supported
-              # keywords either. The only thing we got left is to return nil
-            else
-              return nil
-            end
-
-            # If we are dealing with a drop here we have to
-            object.context = self if object.respond_to?(:context=)
-          end
-        end
-
-        object
-      end # variable
-
-      def lookup_and_evaluate(obj, key)
-        if (value = obj[key]).is_a?(Proc) && obj.respond_to?(:[]=)
-          obj[key] = (value.arity == 0) ? value.call : value.call(self)
-        else
-          value
-        end
-      end # lookup_and_evaluate
-
-      def squash_instance_assigns_with_environments
-        @scopes.last.each_key do |k|
-          @environments.each do |env|
-            if env.has_key?(k)
-              scopes.last[k] = lookup_and_evaluate(env, k)
-              break
-            end
-          end
-        end
-      end # squash_instance_assigns_with_environments
+    end # squash_instance_assigns_with_environments
   end # Context
-
 end # Liquid

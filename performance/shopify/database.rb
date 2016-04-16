@@ -1,11 +1,11 @@
 require 'yaml'
-module Database
 
+module Database
   # Load the standard vision toolkit database and re-arrage it to be simply exportable
   # to liquid as assigns. All this is based on Shopify
   def self.tables
     @tables ||= begin
-      db = YAML.load_file(File.dirname(__FILE__) + '/vision.database.yml')
+      db = YAML.load_file("#{__dir__}/vision.database.yml")
 
       # From vision source
       db['products'].each do |product|
@@ -39,7 +39,7 @@ module Database
   end
 end
 
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
   p Database.tables['collections']['frontpage'].keys
-  #p Database.tables['blog']['articles']
+  # p Database.tables['blog']['articles']
 end

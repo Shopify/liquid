@@ -1,5 +1,4 @@
 module Liquid
-
   # decrement is used in a place where one needs to insert a counter
   #     into a template, and needs the counter to survive across
   #     multiple instantiations of the template.
@@ -19,21 +18,18 @@ module Liquid
   #    Hello: -3
   #
   class Decrement < Tag
-    def initialize(tag_name, markup, tokens)
-      @variable = markup.strip
-
+    def initialize(tag_name, markup, options)
       super
+      @variable = markup.strip
     end
 
     def render(context)
       value = context.environments.first[@variable] ||= 0
-      value = value - 1
+      value -= 1
       context.environments.first[@variable] = value
       value.to_s
     end
-
-    private
   end
 
-  Template.register_tag('decrement', Decrement)
+  Template.register_tag('decrement'.freeze, Decrement)
 end

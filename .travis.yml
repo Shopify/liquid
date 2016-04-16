@@ -1,13 +1,25 @@
-rvm:
-  - 1.8.7
-  - 1.9.3
-  - ree
-  - jruby-18mode
-  - jruby-19mode
-  - rbx-18mode
-  - rbx-19mode
+language: ruby
 
-script: "rake test"
+rvm:
+  - 2.0
+  - 2.1
+  - 2.2
+  - ruby-head
+  - jruby-head
+#  - rbx-2
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+    - libgmp3-dev
+
+matrix:
+  allow_failures:
+    - rvm: jruby-head
+
+script: "bundle exec rake"
 
 notifications:
   disable: true
