@@ -16,7 +16,6 @@ module Liquid
     def initialize
       @nodelist = []
       @blank = true
-      @@whitespace ||= false
     end
 
     def parse(tokenizer, parse_context)
@@ -28,7 +27,7 @@ module Liquid
             if token =~ IsWhiteSpaceTagStart
               whitespace_lookback
             end
-            @@whitespace = (token =~ IsWhiteSpaceTagEnd)
+            parse_context.trim_whitespace = (token =~ IsWhiteSpaceTagEnd)
             if token =~ FullToken
               tag_name = $1
               markup = $2
@@ -49,14 +48,14 @@ module Liquid
             if token =~ IsWhiteSpaceVariableStart
               whitespace_lookback
             end
-            @@whitespace = (token =~ IsWhiteSpaceVariableEnd)
+            parse_context.trim_whitespace = (token =~ IsWhiteSpaceVariableEnd)
             @nodelist << create_variable(token, parse_context)
             @blank = false
           else
-            if @@whitespace
+            if parse_context.trim_whitespace
               token.gsub!(WhiteSpaceStart, '')
             end
-            @@whitespace = false
+            parse_context.trim_whitespace = false
             @nodelist << token
             @blank &&= !!(token =~ /\A\s*\z/)
           end
