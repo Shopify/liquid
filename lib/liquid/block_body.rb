@@ -1,7 +1,13 @@
 module Liquid
   class BlockBody
-    FullToken = /\A#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
-    ContentOfVariable = /\A#{VariableStart}(.*)#{VariableEnd}\z/om
+    FullToken                   = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    ContentOfVariable           = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
+    IsWhiteSpaceTagStart        = /^#{TagStart}#{WhitespaceControl}/o
+    IsWhiteSpaceTagEnd          = /#{WhitespaceControl}#{TagEnd}$/o
+    IsWhiteSpaceVariableStart   = /^#{VariableStart}#{WhitespaceControl}/o
+    IsWhiteSpaceVariableEnd     = /#{WhitespaceControl}#{VariableEnd}$/o
+    WhiteSpaceStart             = /\A#{WhitespaceSignature}/o
+    WhiteSpaceEnd               = /#{WhitespaceSignature}\z/o
     TAGSTART = "{%".freeze
     VARSTART = "{{".freeze
 
@@ -10,6 +16,7 @@ module Liquid
     def initialize
       @nodelist = []
       @blank = true
+      @@whitespace ||= false
     end
 
     def parse(tokenizer, parse_context)
@@ -18,6 +25,10 @@ module Liquid
         unless token.empty?
           case
           when token.start_with?(TAGSTART)
+            if token =~ IsWhiteSpaceTagStart
+              whitespace_lookback
+            end
+            @@whitespace = (token =~ IsWhiteSpaceTagEnd)
             if token =~ FullToken
               tag_name = $1
               markup = $2
@@ -35,9 +46,17 @@ module Liquid
               raise_missing_tag_terminator(token, parse_context)
             end
           when token.start_with?(VARSTART)
+            if token =~ IsWhiteSpaceVariableStart
+              whitespace_lookback
+            end
+            @@whitespace = (token =~ IsWhiteSpaceVariableEnd)
             @nodelist << create_variable(token, parse_context)
             @blank = false
           else
+            if @@whitespace
+              token.gsub!(WhiteSpaceStart, '')
+            end
+            @@whitespace = false
             @nodelist << token
             @blank &&= !!(token =~ /\A\s*\z/)
           end
@@ -46,6 +65,14 @@ module Liquid
       end
 
       yield nil, nil
+    end
+
+    def whitespace_lookback
+      previous_token = @nodelist.pop
+      if previous_token.is_a? String
+        previous_token.gsub!(WhiteSpaceEnd, '')
+        @nodelist << previous_token
+      end
     end
 
     def blank?

@@ -24,6 +24,8 @@ module Liquid
   ArgumentSeparator           = ','.freeze
   FilterArgumentSeparator     = ':'.freeze
   VariableAttributeSeparator  = '.'.freeze
+  WhitespaceControl           = '-'.freeze
+  WhitespaceSignature         = /[ \t]*\r?\n?[ \t]*/
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
@@ -34,7 +36,7 @@ module Liquid
   QuotedString                = /"[^"]*"|'[^']*'/
   QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
   TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
-  AnyStartingTag              = /\{\{|\{\%/
+  AnyStartingTag              = /#{TagStart}|#{VariableStart}/o
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
