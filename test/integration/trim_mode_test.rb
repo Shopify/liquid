@@ -453,6 +453,7 @@ class TrimModeTest < Minitest::Test
     END_EXPECTED
     assert_template_result(expected, text)
   end
+
   def test_raw_output
     whitespace = '        '
     text = <<-END_TEMPLATE
