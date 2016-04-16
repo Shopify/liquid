@@ -16,6 +16,10 @@ module Liquid
       @blank || false
     end
 
+    def whitespace?
+      @@whitespace ||= false
+    end
+
     def parse(tokens)
       @blank = true
       @nodelist ||= []
@@ -25,17 +29,10 @@ module Liquid
       while token = tokens.shift
         case token
         when IsTag
-          @@whitespace = false
-          if token =~ IsWhiteSpaceTagEnd
-            @@whitespace = true
-          end
           if token =~ IsWhiteSpaceTagStart
-            previous_token = @nodelist.pop
-            if previous_token.is_a?(String)
-              previous_token.gsub!(WhiteSpaceEnd, '')
-              @nodelist << previous_token
-            end
+            whitespace_lookback
           end
+          @@whitespace = (token =~ IsWhiteSpaceTagEnd)
           if token =~ FullToken
 
             # if we found the proper block delimiter just end parsing here and let the outer block
@@ -59,24 +56,16 @@ module Liquid
             raise SyntaxError, "Tag '#{token}' was not properly terminated with regexp: #{TagEnd.inspect} "
           end
         when IsVariable
-          @@whitespace = false
-          if token =~ IsWhiteSpaceVariableEnd
-            @@whitespace = true
-          end
           if token =~ IsWhiteSpaceVariableStart
-            previous_token = @nodelist.pop
-            if previous_token.is_a?(String)
-              previous_token.gsub!(WhiteSpaceEnd, '')
-              @nodelist << previous_token
-            end
+            whitespace_lookback
           end
+          @@whitespace = (token =~ IsWhiteSpaceVariableEnd)
           @nodelist << create_variable(token)
           @blank = false
         when ''
           # pass
-          @@whitespace = false
         else
-          if @@whitespace
+          if whitespace?
             token.gsub!(WhiteSpaceStart, '')
           end
           @@whitespace = false
@@ -92,6 +81,14 @@ module Liquid
     end
 
     def end_tag
+    end
+
+    def whitespace_lookback
+      previous_token = @nodelist.pop
+      if previous_token.is_a? String
+        previous_token.gsub!(WhiteSpaceEnd, '')
+        @nodelist << previous_token
+      end
     end
 
     def unknown_tag(tag, params, tokens)
