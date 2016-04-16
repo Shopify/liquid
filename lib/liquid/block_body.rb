@@ -2,8 +2,6 @@ module Liquid
   class BlockBody
     FullToken                   = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable           = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
-    WhiteSpaceStart             = /\A#{WhitespaceSignature}/o
-    WhiteSpaceEnd               = /#{WhitespaceSignature}\z/o
     TAGSTART = "{%".freeze
     VARSTART = "{{".freeze
 
@@ -49,7 +47,7 @@ module Liquid
             @blank = false
           else
             if parse_context.trim_whitespace
-              token.gsub!(WhiteSpaceStart, '')
+              token.lstrip!
             end
             parse_context.trim_whitespace = false
             @nodelist << token
@@ -65,7 +63,7 @@ module Liquid
     def whitespace_lookback
       previous_token = @nodelist.pop
       if previous_token.is_a? String
-        previous_token.gsub!(WhiteSpaceEnd, '')
+        previous_token.rstrip!
         @nodelist << previous_token
       end
     end
