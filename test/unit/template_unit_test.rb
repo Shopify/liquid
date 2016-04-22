@@ -67,4 +67,10 @@ class TemplateUnitTest < Minitest::Test
     Template.tags.delete('fake')
     assert_nil Template.tags['fake']
   end
+
+  def test_tags_can_be_looped_over
+    Template.register_tag('fake', FakeTag)
+    result = Template.tags.map { |name, klass| [name, klass] }
+    assert result.include?(["fake", "TemplateUnitTest::FakeTag"])
+  end
 end
