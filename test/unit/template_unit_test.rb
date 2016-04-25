@@ -72,5 +72,7 @@ class TemplateUnitTest < Minitest::Test
     Template.register_tag('fake', FakeTag)
     result = Template.tags.map { |name, klass| [name, klass] }
     assert result.include?(["fake", "TemplateUnitTest::FakeTag"])
+  ensure
+    Template.tags.delete('fake')
   end
 end
