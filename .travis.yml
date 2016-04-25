@@ -1,14 +1,14 @@
+sudo: false
+cache: bundler
 language: ruby
 
 rvm:
   - 2.0
   - 2.1
   - 2.2
+  - 2.3.0
   - ruby-head
   - jruby-head
-#  - rbx-2
-
-sudo: false
 
 addons:
   apt:
