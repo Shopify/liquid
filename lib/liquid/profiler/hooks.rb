@@ -6,8 +6,8 @@ module Liquid
       end
     end
 
-    alias_method :render_node_without_profiling, :render_node
-    alias_method :render_node, :render_node_with_profiling
+    alias render_node_without_profiling render_node
+    alias render_node render_node_with_profiling
   end
 
   class Include < Tag
@@ -17,7 +17,7 @@ module Liquid
       end
     end
 
-    alias_method :render_without_profiling, :render
-    alias_method :render, :render_with_profiling
+    alias render_without_profiling render
+    alias render render_with_profiling
   end
 end

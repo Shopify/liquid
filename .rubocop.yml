@@ -1,6 +1,7 @@
 inherit_from: ./.rubocop_todo.yml
 
 AllCops:
+  TargetRubyVersion: 2.1
   Exclude:
     - 'performance/shopify/*'
     - 'pkg/**'
@@ -71,9 +72,6 @@ Style/Documentation:
   Enabled: false
 
 Style/ClassAndModuleChildren:
-  Enabled: false
-
-Style/TrailingComma:
   Enabled: false
 
 Style/IndentHash:

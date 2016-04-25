@@ -13,7 +13,7 @@ module Liquid
     FilterParser = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
     attr_accessor :filters, :name, :line_number
     attr_reader :parse_context
-    alias_method :options, :parse_context
+    alias options parse_context
     include ParserSwitching
 
     def initialize(markup, parse_context)

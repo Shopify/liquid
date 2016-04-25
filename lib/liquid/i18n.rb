@@ -15,7 +15,7 @@ module Liquid
     def translate(name, vars = {})
       interpolate(deep_fetch_translation(name), vars)
     end
-    alias_method :t, :translate
+    alias t translate
 
     def locale
       @locale ||= YAML.load_file(@path)
@@ -26,7 +26,7 @@ module Liquid
     def interpolate(name, vars)
       name.gsub(/%\{(\w+)\}/) do
         # raise TranslationError, "Undefined key #{$1} for interpolation in translation #{name}"  unless vars[$1.to_sym]
-        "#{vars[$1.to_sym]}"
+        (vars[$1.to_sym]).to_s
       end
     end
 

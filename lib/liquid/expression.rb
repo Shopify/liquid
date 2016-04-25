@@ -19,7 +19,7 @@ module Liquid
       'false'.freeze => false,
       'blank'.freeze => MethodLiteral.new(:blank?, '').freeze,
       'empty'.freeze => MethodLiteral.new(:empty?, '').freeze
-    }
+    }.freeze
 
     def self.parse(markup)
       if LITERALS.key?(markup)

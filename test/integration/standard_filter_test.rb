@@ -262,11 +262,11 @@ class StandardFiltersTest < Minitest::Test
   def test_map_over_drops_returning_procs
     drops = [
       {
-        "proc" => ->{ "foo" },
+        "proc" => ->{ "foo" }
       },
       {
-        "proc" => ->{ "bar" },
-      },
+        "proc" => ->{ "bar" }
+      }
     ]
     templ = '{{ drops | map: "proc" }}'
     assert_template_result "foobar", templ, "drops" => drops
@@ -306,9 +306,9 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '07/05/2006', @filters.date("2006-07-05 10:00:00", "%m/%d/%Y")
 
     assert_equal "07/16/2004", @filters.date("Fri Jul 16 01:00:00 2004", "%m/%d/%Y")
-    assert_equal "#{Date.today.year}", @filters.date('now', '%Y')
-    assert_equal "#{Date.today.year}", @filters.date('today', '%Y')
-    assert_equal "#{Date.today.year}", @filters.date('Today', '%Y')
+    assert_equal Date.today.year.to_s, @filters.date('now', '%Y')
+    assert_equal Date.today.year.to_s, @filters.date('today', '%Y')
+    assert_equal Date.today.year.to_s, @filters.date('Today', '%Y')
 
     assert_equal nil, @filters.date(nil, "%B")
 

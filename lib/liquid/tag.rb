@@ -1,7 +1,7 @@
 module Liquid
   class Tag
     attr_reader :nodelist, :tag_name, :line_number, :parse_context
-    alias_method :options, :parse_context
+    alias options parse_context
     include ParserSwitching
 
     class << self

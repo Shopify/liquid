@@ -29,11 +29,7 @@ module Liquid
 
     def message_prefix
       str = ""
-      if is_a?(SyntaxError)
-        str << "Liquid syntax error"
-      else
-        str << "Liquid error"
-      end
+      str << is_a?(SyntaxError) ? "Liquid syntax error" : "Liquid error"
 
       if line_number
         str << " ("

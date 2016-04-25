@@ -9,7 +9,7 @@ module Liquid
       '<'.freeze => '&lt;'.freeze,
       '"'.freeze => '&quot;'.freeze,
       "'".freeze => '&#39;'.freeze
-    }
+    }.freeze
     HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
 
     # Return the size of an array or of an string
@@ -35,7 +35,7 @@ module Liquid
     def escape(input)
       CGI.escapeHTML(input).untaint unless input.nil?
     end
-    alias_method :h, :escape
+    alias h escape
 
     def escape_once(input)
       input.to_s.gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)

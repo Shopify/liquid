@@ -80,7 +80,7 @@ module Liquid
 
     private
 
-    alias_method :parse_context, :options
+    alias parse_context options
     private :parse_context
 
     def load_cached_partial(template_name, context)

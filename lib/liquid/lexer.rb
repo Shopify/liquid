@@ -12,7 +12,7 @@ module Liquid
       ')'.freeze => :close_round,
       '?'.freeze => :question,
       '-'.freeze => :dash
-    }
+    }.freeze
     IDENTIFIER = /[a-zA-Z_][\w-]*\??/
     SINGLE_STRING_LITERAL = /'[^\']*'/
     DOUBLE_STRING_LITERAL = /"[^\"]*"/

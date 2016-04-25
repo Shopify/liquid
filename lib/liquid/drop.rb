@@ -54,7 +54,7 @@ module Liquid
       self.class.name
     end
 
-    alias_method :[], :invoke_drop
+    alias [] invoke_drop
 
     # Check for method existence without invoking respond_to?, which creates symbols
     def self.invokable?(method_name)
