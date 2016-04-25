@@ -3,8 +3,8 @@ cache: bundler
 language: ruby
 
 rvm:
-  - 2.1
-  - 2.2
+  - 2.1.10
+  - 2.2.4
   - 2.3.0
   - ruby-head
   - jruby-head
