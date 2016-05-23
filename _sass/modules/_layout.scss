@@ -90,7 +90,7 @@ body {
 .sidebar__nav {
   padding: $spacing-unit $spacing-unit ($spacing-unit + $logo-height); // Add a bit more padding at the bottom for consistency.
   font-weight: bold;
-  max-height: 100%;
+  max-height: calc(100% - #{$logo-height});
   overflow-y: scroll;
 
   li {
