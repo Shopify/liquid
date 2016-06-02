@@ -306,4 +306,14 @@ class TemplateTest < Minitest::Test
       t.render!({ 'x' => 'foo' }, { strict_filters: true })
     end
   end
+
+  def test_using_range_literal_works_as_expected
+    t = Template.parse("{% assign foo = (x..y) %}{{ foo }}")
+    result = t.render({ 'x' => 1, 'y' => 5 })
+    assert_equal '1..5', result
+
+    t = Template.parse("{% assign nums = (x..y) %}{% for num in nums %}{{ num }}{% endfor %}")
+    result = t.render({ 'x' => 1, 'y' => 5 })
+    assert_equal '12345', result
+  end
 end
