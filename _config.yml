@@ -16,9 +16,21 @@ exclude:
   - node_modules
 keep_files:             ["css"]
 
+# Plugins
+gems:
+  - jekyll-redirect-from
+
 # Front matter defaults
 defaults:
   - scope:
       path: "" # an empty string here means all files in the project
     values:
       layout: default
+  - scope:
+      path: "filters"
+    values:
+      type: filter
+  - scope:
+      path: "tags"
+    values:
+      type: tag
