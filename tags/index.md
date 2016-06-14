@@ -10,7 +10,7 @@ The markup used in tags does not produce any visible text. This means that you c
 {% assign tag_pages = site.pages | where: 'type', 'tag' %}
 
 {% for item in tag_pages %}
-## [{{ item.title }}]({{ item.url }})
+## [{{ item.title }}]({{ item.url | prepend: site.baseurl }})
 
 {{ item.content }}
 {% endfor %}

@@ -8,7 +8,7 @@ type: index
 {% assign filter_pages = site.pages | where: 'type', 'filter' %}
 
 {% for item in filter_pages %}
-## [{{ item.title }}]({{ item.url }})
+## [{{ item.title }}]({{ item.url | prepend: site.baseurl }})
 
 {{ item.content }}
 {% endfor %}
