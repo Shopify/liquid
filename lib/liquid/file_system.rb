@@ -8,8 +8,8 @@ module Liquid
   #
   # Example:
   #
-  # Liquid::Template.file_system = Liquid::LocalFileSystem.new(template_path)
-  # liquid = Liquid::Template.parse(template)
+  #   Liquid::Template.file_system = Liquid::LocalFileSystem.new(template_path)
+  #   liquid = Liquid::Template.parse(template)
   #
   # This will parse the template with a LocalFileSystem implementation rooted at 'template_path'.
   class BlankFileSystem
@@ -26,10 +26,10 @@ module Liquid
   #
   # Example:
   #
-  # file_system = Liquid::LocalFileSystem.new("/some/path")
+  #   file_system = Liquid::LocalFileSystem.new("/some/path")
   #
-  # file_system.full_path("mypartial")       # => "/some/path/_mypartial.liquid"
-  # file_system.full_path("dir/mypartial")   # => "/some/path/dir/_mypartial.liquid"
+  #   file_system.full_path("mypartial")       # => "/some/path/_mypartial.liquid"
+  #   file_system.full_path("dir/mypartial")   # => "/some/path/dir/_mypartial.liquid"
   #
   # Optionally in the second argument you can specify a custom pattern for template filenames.
   # The Kernel::sprintf format specification is used.
@@ -37,9 +37,9 @@ module Liquid
   #
   # Example:
   #
-  # file_system = Liquid::LocalFileSystem.new("/some/path", "%s.html")
+  #   file_system = Liquid::LocalFileSystem.new("/some/path", "%s.html")
   #
-  # file_system.full_path("index") # => "/some/path/index.html"
+  #   file_system.full_path("index") # => "/some/path/index.html"
   #
   class LocalFileSystem
     attr_accessor :root
