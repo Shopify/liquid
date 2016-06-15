@@ -64,7 +64,7 @@ Here it is a float:
 
 ### Changing variable types
 
-You might want to use a variable as a divisor, in which case you can't simply add `.0` to convert it to a float. In these cases, you can `assign` a version of your variable converted to a float using the `times` filter:
+You might want to use a variable as a divisor, in which case you can't simply add `.0` to convert it to a float. In these cases, you can `assign` a version of your variable converted to a float using the `times` filter.
 
 In this example, we're dividing by a variable that contains an integer, so we get an integer:
 
