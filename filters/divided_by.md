@@ -4,7 +4,7 @@ title: divided_by
 
 Divides a number by the specified number.
 
-The result is rounded down to the nearest integer (that is, the [floor]({{ "/filters/floor" | prepend: site.baseurl }})) if the divisor is an integer.
+The result is rounded down to the nearest integer (that is, the [floor]({{ site.baseurl }}/filters/floor)) if the divisor is an integer.
 
 <p class="code-label">Input</p>
 {% raw %}
@@ -76,7 +76,6 @@ In this example, we're dividing by a variable that contains an integer, so we ge
 ```
 {% endraw %}
 
-
 <p class="code-label">Output</p>
 ``` text
 {% assign my_integer = 7 %}
@@ -93,7 +92,6 @@ Here, we [multiply]({{ site.baseurl}}/filters/times) the variable by `1.0` to ge
 {{ 20 | divided_by: my_float }}
 ```
 {% endraw %}
-
 
 <p class="code-label">Output</p>
 ``` text
