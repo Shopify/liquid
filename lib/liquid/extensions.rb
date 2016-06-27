@@ -25,6 +25,12 @@ class Numeric # :nodoc:
   end
 end
 
+class Range # :nodoc:
+  def to_liquid
+    self
+  end
+end
+
 class Time # :nodoc:
   def to_liquid
     self
