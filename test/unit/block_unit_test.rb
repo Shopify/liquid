@@ -46,6 +46,8 @@ class BlockUnitTest < Minitest::Test
   def test_with_custom_tag
     Liquid::Template.register_tag("testtag", Block)
     assert Liquid::Template.parse("{% testtag %} {% endtesttag %}")
+  ensure
+    Liquid::Template.tags.delete('testtag')
   end
 
   private

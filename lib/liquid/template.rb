@@ -19,6 +19,8 @@ module Liquid
     @@file_system = BlankFileSystem.new
 
     class TagRegistry
+      include Enumerable
+
       def initialize
         @tags = {}
         @cache = {}
@@ -39,6 +41,10 @@ module Liquid
       def delete(tag_name)
         @tags.delete(tag_name)
         @cache.delete(tag_name)
+      end
+
+      def each(&block)
+        @tags.each(&block)
       end
 
       private
