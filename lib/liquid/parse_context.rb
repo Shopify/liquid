@@ -1,6 +1,6 @@
 module Liquid
   class ParseContext
-    attr_accessor :locale, :line_number
+    attr_accessor :locale, :line_number, :trim_whitespace
     attr_reader :partial, :warnings, :error_mode
 
     def initialize(options = {})

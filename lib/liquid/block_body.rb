@@ -1,7 +1,7 @@
 module Liquid
   class BlockBody
-    FullToken = /\A#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
-    ContentOfVariable = /\A#{VariableStart}(.*)#{VariableEnd}\z/om
+    FullToken = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    ContentOfVariable = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     TAGSTART = "{%".freeze
     VARSTART = "{{".freeze
 
@@ -18,6 +18,7 @@ module Liquid
         unless token.empty?
           case
           when token.start_with?(TAGSTART)
+            whitespace_handler(token, parse_context)
             if token =~ FullToken
               tag_name = $1
               markup = $2
@@ -35,9 +36,14 @@ module Liquid
               raise_missing_tag_terminator(token, parse_context)
             end
           when token.start_with?(VARSTART)
+            whitespace_handler(token, parse_context)
             @nodelist << create_variable(token, parse_context)
             @blank = false
           else
+            if parse_context.trim_whitespace
+              token.lstrip!
+            end
+            parse_context.trim_whitespace = false
             @nodelist << token
             @blank &&= !!(token =~ /\A\s*\z/)
           end
@@ -46,6 +52,17 @@ module Liquid
       end
 
       yield nil, nil
+    end
+
+    def whitespace_handler(token, parse_context)
+      if token[2] == WhitespaceControl
+        previous_token = @nodelist.pop
+        if previous_token.is_a? String
+          previous_token.rstrip!
+          @nodelist << previous_token
+        end
+      end
+      parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
     end
 
     def blank?
