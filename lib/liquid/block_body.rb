@@ -56,10 +56,9 @@ module Liquid
 
     def whitespace_handler(token, parse_context)
       if token[2] == WhitespaceControl
-        previous_token = @nodelist.pop
+        previous_token = @nodelist.last
         if previous_token.is_a? String
           previous_token.rstrip!
-          @nodelist << previous_token
         end
       end
       parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
