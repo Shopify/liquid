@@ -23,6 +23,10 @@ class RawTagTest < Minitest::Test
     assert_template_result ' Foobar {{ invalid 1', '{% raw %} Foobar {{ invalid {% endraw %}{{ 1 }}'
   end
 
+  def test_nested_tag_in_raw
+    assert_template_result '{{ {% test %} }}', '{% raw %}{{ {% test %} }}{% endraw %}'
+  end
+
   def test_invalid_raw
     assert_match_syntax_error(/tag was never closed/, '{% raw %} foo')
     assert_match_syntax_error(/Valid syntax/, '{% raw } foo {% endraw %}')

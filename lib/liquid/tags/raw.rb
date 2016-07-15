@@ -12,9 +12,9 @@ module Liquid
     def parse(tokens)
       @body = ''
       while token = tokens.shift
-        if token =~ FullTokenPossiblyInvalid
+        if token =~ FullTokenPossiblyInvalid and block_delimiter == $2
           @body << $1 if $1 != "".freeze
-          return if block_delimiter == $2
+          return
         end
         @body << token unless token.empty?
       end
