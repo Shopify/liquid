@@ -2,7 +2,7 @@
 title: date
 ---
 
-Converts a timestamp into another date format. The format for this syntax is the same as [`strftime`](//strftime.net).
+Converts a timestamp into another date format. The format for this syntax is the same as [`strftime`](http://strftime.net).
 
 <p class="code-label">Input</p>
 ```liquid
