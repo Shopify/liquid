@@ -62,19 +62,7 @@ module Liquid
       @child_condition = condition
     end
 
-    def or_not(condition)
-      condition.not
-      @child_relation = :or
-      @child_condition = condition
-    end
-
     def and(condition)
-      @child_relation = :and
-      @child_condition = condition
-    end
-
-    def and_not(condition)
-      condition.not
       @child_relation = :and
       @child_condition = condition
     end

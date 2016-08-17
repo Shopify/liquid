@@ -11,8 +11,9 @@ module Liquid
   #
   class If < Block
     Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
-    ExpressionsAndOperators = /(?:\b(?:\s?and(?:\snot(?=\s))?\s?|\s?or(?:\snot(?=\s))?\s?)\b|(?:\s*(?!\b(?:\s?and(?:\snot(?=\s))?\s?|\s?or(?:\snot(?=\s))?\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
-    BOOLEAN_OPERATORS = %w(and or and_not or_not)
+    ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?|\s?not\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?|\s?not\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
+    BOOLEAN_OPERATORS = %w(and or not)
+    BOOLEAN_OPERATORS_NOT = %w(not)
 
     def initialize(tag_name, markup, options)
       super
@@ -67,13 +68,23 @@ module Liquid
 
       condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
 
+      if BOOLEAN_OPERATORS_NOT.include?(expressions.last.to_s.strip)
+        condition.not
+        expressions.pop
+      end
       until expressions.empty?
-        operator = expressions.pop.to_s.strip.tr(' ', '_')
+        operator = expressions.pop.to_s.strip
 
         raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop.to_s =~ Syntax
 
         new_condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
         raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless BOOLEAN_OPERATORS.include?(operator)
+
+        if BOOLEAN_OPERATORS_NOT.include?(expressions.last.to_s.strip)
+          new_condition.not
+          expressions.pop
+        end
+
         new_condition.send(operator, condition)
         condition = new_condition
       end
@@ -89,9 +100,13 @@ module Liquid
     end
 
     def parse_binary_comparison(p)
+      n = p.id?('not'.freeze)
       condition = parse_comparison(p)
-      if op = (p.id?('and'.freeze) || p.id?('or'.freeze) || p.id?('or not'.freeze) || p.id?('and not'.freeze))
-        condition.send(op.tr(' ', '_'), parse_binary_comparison(p))
+      if op = (p.id?('and'.freeze) || p.id?('or'.freeze))
+        condition.send(op, parse_binary_comparison(p))
+      end
+      if n
+        condition.not
       end
       condition
     end

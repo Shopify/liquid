@@ -18,7 +18,6 @@ module Liquid
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
     NUMBER_LITERAL = /-?\d+(\.\d+)?/
     DOTDOT = /\.\./
-    BOOLEAN_OPERATOR = /^(and\snot|or\snot)(?=\s)/
     COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains/
 
     def initialize(input)
@@ -35,7 +34,6 @@ module Liquid
         when t = @ss.scan(SINGLE_STRING_LITERAL) then [:string, t]
         when t = @ss.scan(DOUBLE_STRING_LITERAL) then [:string, t]
         when t = @ss.scan(NUMBER_LITERAL) then [:number, t]
-        when t = @ss.scan(BOOLEAN_OPERATOR) then [:id, t]
         when t = @ss.scan(IDENTIFIER) then [:id, t]
         when t = @ss.scan(DOTDOT) then [:dotdot, t]
         else
