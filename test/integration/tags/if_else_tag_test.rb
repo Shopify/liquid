@@ -35,6 +35,26 @@ class IfElseTagTest < Minitest::Test
     assert_template_result('',      '{% if a or b or c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)
   end
 
+  def test_if_or_not
+    assert_template_result(' YES ', '{% if a or not b %} YES {% endif %}', 'a' => true, 'b' => true)
+    assert_template_result(' YES ', '{% if a or not b %} YES {% endif %}', 'a' => true, 'b' => false)
+    assert_template_result('',      '{% if a or not b %} YES {% endif %}', 'a' => false, 'b' => true)
+    assert_template_result(' YES ', '{% if a or not b %} YES {% endif %}', 'a' => false, 'b' => false)
+
+    assert_template_result(' YES ', '{% if a or not b or not c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => true)
+    assert_template_result(' YES ', '{% if a or not b or not c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)
+  end
+
+  def test_if_and_not
+    assert_template_result('',      '{% if a and not b %} YES {% endif %}', 'a' => true, 'b' => true)
+    assert_template_result(' YES ', '{% if a and not b %} YES {% endif %}', 'a' => true, 'b' => false)
+    assert_template_result('',      '{% if a and not b %} YES {% endif %}', 'a' => false, 'b' => true)
+    assert_template_result('',      '{% if a and not b %} YES {% endif %}', 'a' => false, 'b' => false)
+
+    assert_template_result(' YES ', '{% if a and not b and not c %} YES {% endif %}', 'a' => true, 'b' => false, 'c' => false)
+    assert_template_result('',      '{% if a and not b and not c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)
+  end
+
   def test_if_or_with_operators
     assert_template_result(' YES ', '{% if a == true or b == true %} YES {% endif %}', 'a' => true, 'b' => true)
     assert_template_result(' YES ', '{% if a == true or b == false %} YES {% endif %}', 'a' => true, 'b' => true)

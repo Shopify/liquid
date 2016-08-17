@@ -11,8 +11,8 @@ module Liquid
   #
   class If < Block
     Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
-    ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
-    BOOLEAN_OPERATORS = %w(and or)
+    ExpressionsAndOperators = /(?:\b(?:\s?and(?:\snot(?=\s))?\s?|\s?or(?:\snot(?=\s))?\s?)\b|(?:\s*(?!\b(?:\s?and(?:\snot(?=\s))?\s?|\s?or(?:\snot(?=\s))?\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
+    BOOLEAN_OPERATORS = %w(and or and_not or_not)
 
     def initialize(tag_name, markup, options)
       super
@@ -68,7 +68,7 @@ module Liquid
       condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
 
       until expressions.empty?
-        operator = expressions.pop.to_s.strip
+        operator = expressions.pop.to_s.strip.tr(' ', '_')
 
         raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop.to_s =~ Syntax
 
@@ -90,8 +90,8 @@ module Liquid
 
     def parse_binary_comparison(p)
       condition = parse_comparison(p)
-      if op = (p.id?('and'.freeze) || p.id?('or'.freeze))
-        condition.send(op, parse_binary_comparison(p))
+      if op = (p.id?('and'.freeze) || p.id?('or'.freeze) || p.id?('or not'.freeze) || p.id?('and not'.freeze))
+        condition.send(op.tr(' ', '_'), parse_binary_comparison(p))
       end
       condition
     end
