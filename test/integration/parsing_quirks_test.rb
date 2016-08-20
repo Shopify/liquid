@@ -50,14 +50,10 @@ class ParsingQuirksTest < Minitest::Test
 
   def test_unexpected_characters_syntax_error
     with_error_mode(:strict) do
-      assert_raises(SyntaxError) do
-        markup = "true && false"
-        Template.parse("{% if #{markup} %} YES {% endif %}")
-      end
-      assert_raises(SyntaxError) do
-        markup = "false || true"
-        Template.parse("{% if #{markup} %} YES {% endif %}")
-      end
+      assert_template_result(' Yes ', "{% if true && true %} Yes {% endif %}")
+      assert_template_result('', "{% if true && false %} Yes {% endif %}")
+      assert_template_result(' Yes ', "{% if true || false %} Yes {% endif %}")
+      assert_template_result(' Yes ', "{% if false || true %} Yes {% endif %}")
     end
   end
 

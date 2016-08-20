@@ -11,9 +11,13 @@ module Liquid
       '('.freeze => :open_round,
       ')'.freeze => :close_round,
       '?'.freeze => :question,
-      '-'.freeze => :dash
+      '-'.freeze => :dash,
+      '!'.freeze => :not,
     }
     IDENTIFIER = /[a-zA-Z_][\w-]*\??/
+    BOOLEAN_OR = /or(?=\s)|\|\|/i
+    BOOLEAN_AND = /and(?=\s)|&&/i
+    BOOLEAN_NOT = /not(?=\s)/i
     SINGLE_STRING_LITERAL = /'[^\']*'/
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
     NUMBER_LITERAL = /-?\d+(\.\d+)?/
@@ -34,6 +38,9 @@ module Liquid
         when t = @ss.scan(SINGLE_STRING_LITERAL) then [:string, t]
         when t = @ss.scan(DOUBLE_STRING_LITERAL) then [:string, t]
         when t = @ss.scan(NUMBER_LITERAL) then [:number, t]
+        when t = @ss.scan(BOOLEAN_OR) then [:or, t]
+        when t = @ss.scan(BOOLEAN_AND) then [:and, t]
+        when t = @ss.scan(BOOLEAN_NOT) then [:not, t]
         when t = @ss.scan(IDENTIFIER) then [:id, t]
         when t = @ss.scan(DOTDOT) then [:dotdot, t]
         else

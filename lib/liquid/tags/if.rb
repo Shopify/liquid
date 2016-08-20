@@ -89,9 +89,9 @@ module Liquid
     end
 
     def parse_binary_comparison(p)
-      n = p.id?('not'.freeze)
+      n = p.consume?(:not)
       condition = parse_comparison(p)
-      if op = (p.id?('and'.freeze) || p.id?('or'.freeze))
+      if op = (p.type?(:or) || p.type?(:and))
         condition.send(op, parse_binary_comparison(p))
       end
       condition.not if n

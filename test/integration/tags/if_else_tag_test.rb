@@ -61,6 +61,9 @@ class IfElseTagTest < Minitest::Test
 
       assert_template_result('',      '{% if not a or not b or not c %} YES {% endif %}', 'a' => true, 'b' => true, 'c' => true)
       assert_template_result(' YES ', '{% if not a or not b or not c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)
+
+      assert_template_result('',      '{% if !a || !b || !c %} YES {% endif %}', 'a' => true, 'b' => true, 'c' => true)
+      assert_template_result(' YES ', '{% if !a || !b || !c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)
     end
   end
 
@@ -76,6 +79,9 @@ class IfElseTagTest < Minitest::Test
 
       assert_template_result('',      '{% if not a and not b and not c %} YES {% endif %}', 'a' => true, 'b' => true, 'c' => true)
       assert_template_result(' YES ', '{% if not a and not b and not c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)
+
+      assert_template_result('',      '{% if !a && !b && !c %} YES {% endif %}', 'a' => true, 'b' => true, 'c' => true)
+      assert_template_result(' YES ', '{% if !a && !b && !c %} YES {% endif %}', 'a' => false, 'b' => false, 'c' => false)
     end
   end
 
