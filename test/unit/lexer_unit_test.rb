@@ -19,7 +19,7 @@ class LexerUnitTest < Minitest::Test
   end
 
   def test_comparison
-    tokens = Lexer.new('== <> contains').tokenize
+    tokens = Lexer.new('== <> contains ').tokenize
     assert_equal [[:comparison, '=='], [:comparison, '<>'], [:comparison, 'contains'], [:end_of_string]], tokens
   end
 

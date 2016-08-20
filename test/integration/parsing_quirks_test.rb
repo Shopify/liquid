@@ -115,4 +115,8 @@ class ParsingQuirksTest < Minitest::Test
       assert_template_result('12345', "{% for i in (1...5) %}{{ i }}{% endfor %}")
     end
   end
+
+  def test_contains_in_id
+    assert_template_result(' YES ', '{% if containsallshipments == true %} YES {% endif %}', 'containsallshipments' => true)
+  end
 end # ParsingQuirksTest
