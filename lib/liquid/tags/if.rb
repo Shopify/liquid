@@ -11,9 +11,8 @@ module Liquid
   #
   class If < Block
     Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
-    ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?|\s?not\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?|\s?not\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
+    ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
     BOOLEAN_OPERATORS = %w(and or)
-    BOOLEAN_OPERATORS_NOT = %w(not)
 
     def initialize(tag_name, markup, options)
       super
@@ -68,10 +67,6 @@ module Liquid
 
       condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
 
-      if BOOLEAN_OPERATORS_NOT.include?(expressions.last.to_s.strip)
-        condition.not
-        expressions.pop
-      end
       until expressions.empty?
         operator = expressions.pop.to_s.strip
 
@@ -79,11 +74,6 @@ module Liquid
 
         new_condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
         raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless BOOLEAN_OPERATORS.include?(operator)
-
-        if BOOLEAN_OPERATORS_NOT.include?(expressions.last.to_s.strip)
-          new_condition.not
-          expressions.pop
-        end
 
         new_condition.send(operator, condition)
         condition = new_condition
