@@ -94,9 +94,7 @@ module Liquid
       if op = (p.id?('and'.freeze) || p.id?('or'.freeze))
         condition.send(op, parse_binary_comparison(p))
       end
-      if n
-        condition.not
-      end
+      condition.not if n
       condition
     end
 

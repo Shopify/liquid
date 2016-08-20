@@ -44,9 +44,7 @@ module Liquid
     def evaluate(context = Context.new)
       result = interpret_condition(left, right, operator, context)
 
-      if @not
-        result = !result
-      end
+      result = !result if @not
       case @child_relation
       when :or
         result || @child_condition.evaluate(context)
