@@ -74,7 +74,6 @@ module Liquid
 
         new_condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
         raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless BOOLEAN_OPERATORS.include?(operator)
-
         new_condition.send(operator, condition)
         condition = new_condition
       end
