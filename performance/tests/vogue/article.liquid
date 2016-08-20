@@ -47,13 +47,13 @@
 
     <dl>
       <dt class="{% if form.errors contains 'author' %}error{% endif %}"><label for="comment_author">Your name</label></dt>
-      <dd><input type="text" id="comment_author" name="comment[author]" size="40" value="{{form.author}}" class="{% if form.errors contains 'author' %}input-error{% endif %}" /></dd>
+      <dd><input type="text" id="comment_author" name="comment[author]" size="40" value="{{ form.author }}" class="{% if form.errors contains 'author' %}input-error{% endif %}" /></dd>
 
       <dt class="{% if form.errors contains 'email' %}error{% endif %}"><label for="comment_email">Your email</label></dt>
-      <dd><input type="text" id="comment_email" name="comment[email]" size="40" value="{{form.email}}" class="{% if form.errors contains 'email' %}input-error{% endif %}" /></dd>
+      <dd><input type="text" id="comment_email" name="comment[email]" size="40" value="{{ form.email }}" class="{% if form.errors contains 'email' %}input-error{% endif %}" /></dd>
 
       <dt class="{% if form.errors contains 'body' %}error{% endif %}"><label for="comment_body">Your comment</label></dt>
-      <dd><textarea id="comment_body" name="comment[body]" cols="40" rows="5" class="{% if form.errors contains 'body' %}input-error{% endif %}">{{form.body}}</textarea></dd>
+      <dd><textarea id="comment_body" name="comment[body]" cols="40" rows="5" class="{% if form.errors contains 'body' %}input-error{% endif %}">{{ form.body }}</textarea></dd>
     </dl>
 
     {% if blog.moderated? %}

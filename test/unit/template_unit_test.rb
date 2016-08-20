@@ -5,13 +5,13 @@ class TemplateUnitTest < Minitest::Test
 
   def test_sets_default_localization_in_document
     t = Template.new
-    t.parse('{%comment%}{%endcomment%}')
+    t.parse('{%comment %}{%endcomment %}')
     assert_instance_of I18n, t.root.nodelist[0].options[:locale]
   end
 
   def test_sets_default_localization_in_context_with_quick_initialization
     t = Template.new
-    t.parse('{%comment%}{%endcomment%}', locale: I18n.new(fixture("en_locale.yml")))
+    t.parse('{%comment %}{%endcomment %}', locale: I18n.new(fixture("en_locale.yml")))
 
     locale = t.root.nodelist[0].options[:locale]
     assert_instance_of I18n, locale

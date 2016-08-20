@@ -10,10 +10,10 @@ class ForTagTest < Minitest::Test
   include Liquid
 
   def test_for
-    assert_template_result(' yo  yo  yo  yo ', '{%for item in array%} yo {%endfor%}', 'array' => [1, 2, 3, 4])
-    assert_template_result('yoyo', '{%for item in array%}yo{%endfor%}', 'array' => [1, 2])
-    assert_template_result(' yo ', '{%for item in array%} yo {%endfor%}', 'array' => [1])
-    assert_template_result('', '{%for item in array%}{%endfor%}', 'array' => [1, 2])
+    assert_template_result(' yo  yo  yo  yo ', '{% for item in array %} yo {% endfor %}', 'array' => [1, 2, 3, 4])
+    assert_template_result('yoyo', '{% for item in array %}yo{% endfor %}', 'array' => [1, 2])
+    assert_template_result(' yo ', '{% for item in array %} yo {% endfor %}', 'array' => [1])
+    assert_template_result('', '{% for item in array %}{% endfor %}', 'array' => [1, 2])
     expected = <<HERE
 
   yo
@@ -24,83 +24,83 @@ class ForTagTest < Minitest::Test
 
 HERE
     template = <<HERE
-{%for item in array%}
+{%for item in array %}
   yo
-{%endfor%}
+{%endfor %}
 HERE
     assert_template_result(expected, template, 'array' => [1, 2, 3])
   end
 
   def test_for_reversed
     assigns = { 'array' => [ 1, 2, 3] }
-    assert_template_result('321', '{%for item in array reversed %}{{item}}{%endfor%}', assigns)
+    assert_template_result('321', '{%for item in array reversed %}{{ item }}{%endfor %}', assigns)
   end
 
   def test_for_with_range
-    assert_template_result(' 1  2  3 ', '{%for item in (1..3) %} {{item}} {%endfor%}')
+    assert_template_result(' 1  2  3 ', '{%for item in (1..3) %} {{ item }} {%endfor %}')
 
     assert_raises(Liquid::ArgumentError) do
       Template.parse('{% for i in (a..2) %}{% endfor %}').render!("a" => [1, 2])
     end
 
-    assert_template_result(' 0  1  2  3 ', '{% for item in (a..3) %} {{item}} {% endfor %}', "a" => "invalid integer")
+    assert_template_result(' 0  1  2  3 ', '{% for item in (a..3) %} {{ item }} {% endfor %}', "a" => "invalid integer")
   end
 
   def test_for_with_variable_range
-    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar) %} {{item}} {%endfor%}', "foobar" => 3)
+    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar) %} {{ item }} {%endfor %}', "foobar" => 3)
   end
 
   def test_for_with_hash_value_range
     foobar = { "value" => 3 }
-    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', "foobar" => foobar)
+    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{ item }} {%endfor %}', "foobar" => foobar)
   end
 
   def test_for_with_drop_value_range
     foobar = ThingWithValue.new
-    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', "foobar" => foobar)
+    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{ item }} {%endfor %}', "foobar" => foobar)
   end
 
   def test_for_with_variable
-    assert_template_result(' 1  2  3 ', '{%for item in array%} {{item}} {%endfor%}', 'array' => [1, 2, 3])
-    assert_template_result('123', '{%for item in array%}{{item}}{%endfor%}', 'array' => [1, 2, 3])
-    assert_template_result('123', '{% for item in array %}{{item}}{% endfor %}', 'array' => [1, 2, 3])
-    assert_template_result('abcd', '{%for item in array%}{{item}}{%endfor%}', 'array' => ['a', 'b', 'c', 'd'])
-    assert_template_result('a b c', '{%for item in array%}{{item}}{%endfor%}', 'array' => ['a', ' ', 'b', ' ', 'c'])
-    assert_template_result('abc', '{%for item in array%}{{item}}{%endfor%}', 'array' => ['a', '', 'b', '', 'c'])
+    assert_template_result(' 1  2  3 ', '{% for item in array %} {{ item }} {%endfor %}', 'array' => [1, 2, 3])
+    assert_template_result('123', '{% for item in array %}{{ item }}{%endfor %}', 'array' => [1, 2, 3])
+    assert_template_result('123', '{% for item in array %}{{ item }}{% endfor %}', 'array' => [1, 2, 3])
+    assert_template_result('abcd', '{% for item in array %}{{ item }}{% endfor %}', 'array' => ['a', 'b', 'c', 'd'])
+    assert_template_result('a b c', '{% for item in array %}{{ item }}{% endfor %}', 'array' => ['a', ' ', 'b', ' ', 'c'])
+    assert_template_result('abc', '{% for item in array %}{{ item }}{% endfor %}', 'array' => ['a', '', 'b', '', 'c'])
   end
 
   def test_for_helpers
     assigns = { 'array' => [1, 2, 3] }
     assert_template_result(' 1/3  2/3  3/3 ',
-      '{%for item in array%} {{forloop.index}}/{{forloop.length}} {%endfor%}',
+      '{%for item in array %} {{ forloop.index }}/{{ forloop.length }} {%endfor %}',
       assigns)
-    assert_template_result(' 1  2  3 ', '{%for item in array%} {{forloop.index}} {%endfor%}', assigns)
-    assert_template_result(' 0  1  2 ', '{%for item in array%} {{forloop.index0}} {%endfor%}', assigns)
-    assert_template_result(' 2  1  0 ', '{%for item in array%} {{forloop.rindex0}} {%endfor%}', assigns)
-    assert_template_result(' 3  2  1 ', '{%for item in array%} {{forloop.rindex}} {%endfor%}', assigns)
-    assert_template_result(' true  false  false ', '{%for item in array%} {{forloop.first}} {%endfor%}', assigns)
-    assert_template_result(' false  false  true ', '{%for item in array%} {{forloop.last}} {%endfor%}', assigns)
+    assert_template_result(' 1  2  3 ', '{%for item in array %} {{ forloop.index }} {%endfor %}', assigns)
+    assert_template_result(' 0  1  2 ', '{%for item in array %} {{ forloop.index0 }} {%endfor %}', assigns)
+    assert_template_result(' 2  1  0 ', '{%for item in array %} {{ forloop.rindex0 }} {%endfor %}', assigns)
+    assert_template_result(' 3  2  1 ', '{%for item in array %} {{ forloop.rindex }} {%endfor %}', assigns)
+    assert_template_result(' true  false  false ', '{%for item in array %} {{ forloop.first }} {%endfor %}', assigns)
+    assert_template_result(' false  false  true ', '{%for item in array %} {{ forloop.last }} {%endfor %}', assigns)
   end
 
   def test_for_and_if
     assigns = { 'array' => [1, 2, 3] }
     assert_template_result('+--',
-      '{%for item in array%}{% if forloop.first %}+{% else %}-{% endif %}{%endfor%}',
+      '{%for item in array %}{% if forloop.first %}+{% else %}-{% endif %}{%endfor %}',
       assigns)
   end
 
   def test_for_else
-    assert_template_result('+++', '{%for item in array%}+{%else%}-{%endfor%}', 'array' => [1, 2, 3])
-    assert_template_result('-',   '{%for item in array%}+{%else%}-{%endfor%}', 'array' => [])
-    assert_template_result('-',   '{%for item in array%}+{%else%}-{%endfor%}', 'array' => nil)
+    assert_template_result('+++', '{%for item in array %}+{%else %}-{%endfor %}', 'array' => [1, 2, 3])
+    assert_template_result('-',   '{%for item in array %}+{%else %}-{%endfor %}', 'array' => [])
+    assert_template_result('-',   '{%for item in array %}+{%else %}-{%endfor %}', 'array' => nil)
   end
 
   def test_limiting
     assigns = { 'array' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] }
-    assert_template_result('12', '{%for i in array limit:2 %}{{ i }}{%endfor%}', assigns)
-    assert_template_result('1234', '{%for i in array limit:4 %}{{ i }}{%endfor%}', assigns)
-    assert_template_result('3456', '{%for i in array limit:4 offset:2 %}{{ i }}{%endfor%}', assigns)
-    assert_template_result('3456', '{%for i in array limit: 4 offset: 2 %}{{ i }}{%endfor%}', assigns)
+    assert_template_result('12', '{%for i in array limit: 2 %}{{ i }}{%endfor %}', assigns)
+    assert_template_result('1234', '{%for i in array limit: 4 %}{{ i }}{%endfor %}', assigns)
+    assert_template_result('3456', '{%for i in array limit: 4 offset: 2 %}{{ i }}{%endfor %}', assigns)
+    assert_template_result('3456', '{%for i in array limit: 4 offset: 2 %}{{ i }}{%endfor %}', assigns)
   end
 
   def test_dynamic_variable_limiting
@@ -108,27 +108,27 @@ HERE
     assigns['limit'] = 2
     assigns['offset'] = 2
 
-    assert_template_result('34', '{%for i in array limit: limit offset: offset %}{{ i }}{%endfor%}', assigns)
+    assert_template_result('34', '{%for i in array limit: limit offset: offset %}{{ i }}{%endfor %}', assigns)
   end
 
   def test_nested_for
     assigns = { 'array' => [[1, 2], [3, 4], [5, 6]] }
-    assert_template_result('123456', '{%for item in array%}{%for i in item%}{{ i }}{%endfor%}{%endfor%}', assigns)
+    assert_template_result('123456', '{%for item in array %}{%for i in item %}{{ i }}{%endfor %}{%endfor %}', assigns)
   end
 
   def test_offset_only
     assigns = { 'array' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] }
-    assert_template_result('890', '{%for i in array offset:7 %}{{ i }}{%endfor%}', assigns)
+    assert_template_result('890', '{%for i in array offset: 7 %}{{ i }}{%endfor %}', assigns)
   end
 
   def test_pause_resume
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
     markup = <<-MKUP
-      {%for i in array.items limit: 3 %}{{i}}{%endfor%}
+      {%for i in array.items limit: 3 %}{{ i }}{%endfor %}
       next
-      {%for i in array.items offset:continue limit: 3 %}{{i}}{%endfor%}
+      {%for i in array.items offset: continue limit: 3 %}{{ i }}{%endfor %}
       next
-      {%for i in array.items offset:continue limit: 3 %}{{i}}{%endfor%}
+      {%for i in array.items offset: continue limit: 3 %}{{ i }}{%endfor %}
       MKUP
     expected = <<-XPCTD
       123
@@ -143,11 +143,11 @@ HERE
   def test_pause_resume_limit
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
     markup = <<-MKUP
-      {%for i in array.items limit:3 %}{{i}}{%endfor%}
+      {%for i in array.items limit: 3 %}{{ i }}{%endfor %}
       next
-      {%for i in array.items offset:continue limit:3 %}{{i}}{%endfor%}
+      {%for i in array.items offset: continue limit: 3 %}{{ i }}{%endfor %}
       next
-      {%for i in array.items offset:continue limit:1 %}{{i}}{%endfor%}
+      {%for i in array.items offset: continue limit: 1 %}{{ i }}{%endfor %}
       MKUP
     expected = <<-XPCTD
       123
@@ -162,11 +162,11 @@ HERE
   def test_pause_resume_BIG_limit
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
     markup = <<-MKUP
-      {%for i in array.items limit:3 %}{{i}}{%endfor%}
+      {%for i in array.items limit: 3 %}{{ i }}{%endfor %}
       next
-      {%for i in array.items offset:continue limit:3 %}{{i}}{%endfor%}
+      {%for i in array.items offset: continue limit: 3 %}{{ i }}{%endfor %}
       next
-      {%for i in array.items offset:continue limit:1000 %}{{i}}{%endfor%}
+      {%for i in array.items offset: continue limit: 1000 %}{{ i }}{%endfor %}
       MKUP
     expected = <<-XPCTD
       123
@@ -180,11 +180,11 @@ HERE
 
   def test_pause_resume_BIG_offset
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
-    markup = '{%for i in array.items limit:3 %}{{i}}{%endfor%}
+    markup = '{% for i in array.items limit: 3 %}{{ i }}{%endfor %}
       next
-      {%for i in array.items offset:continue limit:3 %}{{i}}{%endfor%}
+      {% for i in array.items offset: continue limit: 3 %}{{ i }}{%endfor %}
       next
-      {%for i in array.items offset:continue limit:3 offset:1000 %}{{i}}{%endfor%}'
+      {% for i in array.items offset: continue limit: 3 offset: 1000 %}{{ i }}{%endfor %}'
     expected = '123
       next
       456
@@ -282,24 +282,24 @@ HERE
     # the functionality for backwards compatibility
 
     assert_template_result('test string',
-      '{%for val in string%}{{val}}{%endfor%}',
+      '{%for val in string %}{{ val }}{%endfor %}',
       'string' => "test string")
 
     assert_template_result('test string',
-      '{%for val in string limit:1%}{{val}}{%endfor%}',
+      '{%for val in string limit: 1 %}{{ val }}{%endfor %}',
       'string' => "test string")
 
     assert_template_result('val-string-1-1-0-1-0-true-true-test string',
-      '{%for val in string%}' \
-      '{{forloop.name}}-' \
-      '{{forloop.index}}-' \
-      '{{forloop.length}}-' \
-      '{{forloop.index0}}-' \
-      '{{forloop.rindex}}-' \
-      '{{forloop.rindex0}}-' \
-      '{{forloop.first}}-' \
-      '{{forloop.last}}-' \
-      '{{val}}{%endfor%}',
+      '{%for val in string %}' \
+      '{{ forloop.name }}-' \
+      '{{ forloop.index }}-' \
+      '{{ forloop.length }}-' \
+      '{{ forloop.index0 }}-' \
+      '{{ forloop.rindex }}-' \
+      '{{ forloop.rindex0 }}-' \
+      '{{ forloop.first }}-' \
+      '{{ forloop.last }}-' \
+      '{{ val }}{%endfor %}',
       'string' => "test string")
   end
 
@@ -335,7 +335,7 @@ HERE
 
   def test_spacing_with_variable_naming_in_for_loop
     expected = '12345'
-    template = '{% for       item   in   items %}{{item}}{% endfor %}'
+    template = '{% for item in items %}{{ item }}{% endfor %}'
     assigns  = { 'items' => [1, 2, 3, 4, 5] }
     assert_template_result(expected, template, assigns)
   end
@@ -362,7 +362,7 @@ HERE
     loader = LoaderDrop.new([1, 2, 3, 4, 5])
     assigns = { 'items' => loader }
     expected = '12345'
-    template = '{% for item in items %}{{item}}{% endfor %}'
+    template = '{% for item in items %}{{ item }}{% endfor %}'
     assert_template_result(expected, template, assigns)
     assert loader.each_called
     assert !loader.load_slice_called
@@ -372,7 +372,7 @@ HERE
     loader = LoaderDrop.new([1, 2, 3, 4, 5])
     assigns = { 'items' => loader }
     expected = '1'
-    template = '{% for item in items limit:1 %}{{item}}{% endfor %}'
+    template = '{% for item in items limit: 1 %}{{ item }}{% endfor %}'
     assert_template_result(expected, template, assigns)
     assert !loader.each_called
     assert loader.load_slice_called
@@ -382,7 +382,7 @@ HERE
     loader = LoaderDrop.new([1, 2, 3, 4, 5])
     assigns = { 'items' => loader }
     expected = '34'
-    template = '{% for item in items offset:2 limit:2 %}{{item}}{% endfor %}'
+    template = '{% for item in items offset: 2 limit: 2 %}{{ item }}{% endfor %}'
     assert_template_result(expected, template, assigns)
     assert !loader.each_called
     assert loader.load_slice_called
@@ -393,7 +393,7 @@ HERE
     loader_assigns = { 'items' => loader }
     array_assigns = { 'items' => [1, 2, 3, 4, 5] }
     expected = '34'
-    template = '{% for item in items offset:2 limit:2 %}{{item}}{% endfor %}'
+    template = '{% for item in items offset: 2 limit: 2 %}{{ item }}{% endfor %}'
     assert_template_result(expected, template, loader_assigns)
     assert_template_result(expected, template, array_assigns)
   end

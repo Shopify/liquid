@@ -10,7 +10,7 @@ class ParsingQuirksTest < Minitest::Test
 
   def test_raise_on_single_close_bracet
     assert_raises(SyntaxError) do
-      Template.parse("text {{method} oh nos!")
+      Template.parse("text {{ method} oh nos!")
     end
   end
 
@@ -27,15 +27,15 @@ class ParsingQuirksTest < Minitest::Test
   end
 
   def test_error_on_empty_filter
-    assert Template.parse("{{test}}")
+    assert Template.parse("{{ test }}")
 
     with_error_mode(:lax) do
-      assert Template.parse("{{|test}}")
+      assert Template.parse("{{ |test }}")
     end
 
     with_error_mode(:strict) do
-      assert_raises(SyntaxError) { Template.parse("{{|test}}") }
-      assert_raises(SyntaxError) { Template.parse("{{test |a|b|}}") }
+      assert_raises(SyntaxError) { Template.parse("{{ |test }}") }
+      assert_raises(SyntaxError) { Template.parse("{{ test |a|b| }}") }
     end
   end
 
@@ -58,9 +58,9 @@ class ParsingQuirksTest < Minitest::Test
   end
 
   def test_no_error_on_lax_empty_filter
-    assert Template.parse("{{test |a|b|}}", error_mode: :lax)
-    assert Template.parse("{{test}}", error_mode: :lax)
-    assert Template.parse("{{|test|}}", error_mode: :lax)
+    assert Template.parse("{{ test |a|b| }}", error_mode: :lax)
+    assert Template.parse("{{ test }}", error_mode: :lax)
+    assert Template.parse("{{ |test| }}", error_mode: :lax)
   end
 
   def test_meaningless_parens_lax
@@ -94,8 +94,8 @@ class ParsingQuirksTest < Minitest::Test
 
       # After the messed up quotes a filter without parameters (reverse) should work
       # but one with parameters (remove) shouldn't be detected.
-      assert_template_result('here',  "{{ 'hi there' | split:\"t\"\" | reverse | first}}")
-      assert_template_result('hi ',  "{{ 'hi there' | split:\"t\"\" | remove:\"i\" | first}}")
+      assert_template_result('here',  "{{ 'hi there' | split:\"t\"\" | reverse | first }}")
+      assert_template_result('hi ',  "{{ 'hi there' | split:\"t\"\" | remove:\"i\" | first }}")
     end
   end
 

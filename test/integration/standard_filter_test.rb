@@ -221,7 +221,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map
     assert_equal [1, 2, 3, 4], @filters.map([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], 'a')
-    assert_template_result 'abc', "{{ ary | map:'foo' | map:'bar' }}",
+    assert_template_result 'abc', "{{ ary | map: 'foo' | map: 'bar' }}",
       'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }]
   end
 
@@ -290,22 +290,22 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_date
-    assert_equal 'May', @filters.date(Time.parse("2006-05-05 10:00:00"), "%B")
-    assert_equal 'June', @filters.date(Time.parse("2006-06-05 10:00:00"), "%B")
-    assert_equal 'July', @filters.date(Time.parse("2006-07-05 10:00:00"), "%B")
+    assert_equal 'May', @filters.date(Time.parse("2006-05-05 10: 00: 00"), "%B")
+    assert_equal 'June', @filters.date(Time.parse("2006-06-05 10: 00: 00"), "%B")
+    assert_equal 'July', @filters.date(Time.parse("2006-07-05 10: 00: 00"), "%B")
 
-    assert_equal 'May', @filters.date("2006-05-05 10:00:00", "%B")
-    assert_equal 'June', @filters.date("2006-06-05 10:00:00", "%B")
-    assert_equal 'July', @filters.date("2006-07-05 10:00:00", "%B")
+    assert_equal 'May', @filters.date("2006-05-05 10: 00: 00", "%B")
+    assert_equal 'June', @filters.date("2006-06-05 10: 00: 00", "%B")
+    assert_equal 'July', @filters.date("2006-07-05 10: 00: 00", "%B")
 
-    assert_equal '2006-07-05 10:00:00', @filters.date("2006-07-05 10:00:00", "")
-    assert_equal '2006-07-05 10:00:00', @filters.date("2006-07-05 10:00:00", "")
-    assert_equal '2006-07-05 10:00:00', @filters.date("2006-07-05 10:00:00", "")
-    assert_equal '2006-07-05 10:00:00', @filters.date("2006-07-05 10:00:00", nil)
+    assert_equal '2006-07-05 10: 00: 00', @filters.date("2006-07-05 10: 00: 00", "")
+    assert_equal '2006-07-05 10: 00: 00', @filters.date("2006-07-05 10: 00: 00", "")
+    assert_equal '2006-07-05 10: 00: 00', @filters.date("2006-07-05 10: 00: 00", "")
+    assert_equal '2006-07-05 10: 00: 00', @filters.date("2006-07-05 10: 00: 00", nil)
 
-    assert_equal '07/05/2006', @filters.date("2006-07-05 10:00:00", "%m/%d/%Y")
+    assert_equal '07/05/2006', @filters.date("2006-07-05 10: 00: 00", "%m/%d/%Y")
 
-    assert_equal "07/16/2004", @filters.date("Fri Jul 16 01:00:00 2004", "%m/%d/%Y")
+    assert_equal "07/16/2004", @filters.date("Fri Jul 16 01: 00: 00 2004", "%m/%d/%Y")
     assert_equal "#{Date.today.year}", @filters.date('now', '%Y')
     assert_equal "#{Date.today.year}", @filters.date('today', '%Y')
     assert_equal "#{Date.today.year}", @filters.date('Today', '%Y')
@@ -372,17 +372,17 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_plus
-    assert_template_result "2", "{{ 1 | plus:1 }}"
-    assert_template_result "2.0", "{{ '1' | plus:'1.0' }}"
+    assert_template_result "2", "{{ 1 | plus: 1 }}"
+    assert_template_result "2.0", "{{ '1' | plus: '1.0' }}"
 
-    assert_template_result "5", "{{ price | plus:'2' }}", 'price' => NumberLikeThing.new(3)
+    assert_template_result "5", "{{ price | plus: '2' }}", 'price' => NumberLikeThing.new(3)
   end
 
   def test_minus
-    assert_template_result "4", "{{ input | minus:operand }}", 'input' => 5, 'operand' => 1
-    assert_template_result "2.3", "{{ '4.3' | minus:'2' }}"
+    assert_template_result "4", "{{ input | minus: operand }}", 'input' => 5, 'operand' => 1
+    assert_template_result "2.3", "{{ '4.3' | minus: '2' }}"
 
-    assert_template_result "5", "{{ price | minus:'2' }}", 'price' => NumberLikeThing.new(7)
+    assert_template_result "5", "{{ price | minus: '2' }}", 'price' => NumberLikeThing.new(7)
   end
 
   def test_abs
@@ -399,37 +399,37 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_times
-    assert_template_result "12", "{{ 3 | times:4 }}"
-    assert_template_result "0", "{{ 'foo' | times:4 }}"
-    assert_template_result "6", "{{ '2.1' | times:3 | replace: '.','-' | plus:0}}"
-    assert_template_result "7.25", "{{ 0.0725 | times:100 }}"
-    assert_template_result "-7.25", '{{ "-0.0725" | times:100 }}'
+    assert_template_result "12", "{{ 3 | times: 4 }}"
+    assert_template_result "0", "{{ 'foo' | times: 4 }}"
+    assert_template_result "6", "{{ '2.1' | times: 3 | replace: '.', '-' | plus: 0 }}"
+    assert_template_result "7.25", "{{ 0.0725 | times: 100 }}"
+    assert_template_result "-7.25", '{{ "-0.0725" | times: 100 }}'
     assert_template_result "7.25", '{{ "-0.0725" | times: -100 }}'
-    assert_template_result "4", "{{ price | times:2 }}", 'price' => NumberLikeThing.new(2)
+    assert_template_result "4", "{{ price | times: 2 }}", 'price' => NumberLikeThing.new(2)
   end
 
   def test_divided_by
-    assert_template_result "4", "{{ 12 | divided_by:3 }}"
-    assert_template_result "4", "{{ 14 | divided_by:3 }}"
+    assert_template_result "4", "{{ 12 | divided_by: 3 }}"
+    assert_template_result "4", "{{ 14 | divided_by: 3 }}"
 
-    assert_template_result "5", "{{ 15 | divided_by:3 }}"
-    assert_equal "Liquid error: divided by 0", Template.parse("{{ 5 | divided_by:0 }}").render
+    assert_template_result "5", "{{ 15 | divided_by: 3 }}"
+    assert_equal "Liquid error: divided by 0", Template.parse("{{ 5 | divided_by: 0 }}").render
 
-    assert_template_result "0.5", "{{ 2.0 | divided_by:4 }}"
+    assert_template_result "0.5", "{{ 2.0 | divided_by: 4 }}"
     assert_raises(Liquid::ZeroDivisionError) do
       assert_template_result "4", "{{ 1 | modulo: 0 }}"
     end
 
-    assert_template_result "5", "{{ price | divided_by:2 }}", 'price' => NumberLikeThing.new(10)
+    assert_template_result "5", "{{ price | divided_by: 2 }}", 'price' => NumberLikeThing.new(10)
   end
 
   def test_modulo
-    assert_template_result "1", "{{ 3 | modulo:2 }}"
+    assert_template_result "1", "{{ 3 | modulo: 2 }}"
     assert_raises(Liquid::ZeroDivisionError) do
       assert_template_result "4", "{{ 1 | modulo: 0 }}"
     end
 
-    assert_template_result "1", "{{ price | modulo:2 }}", 'price' => NumberLikeThing.new(3)
+    assert_template_result "1", "{{ price | modulo: 2 }}", 'price' => NumberLikeThing.new(3)
   end
 
   def test_round
@@ -466,8 +466,8 @@ class StandardFiltersTest < Minitest::Test
 
   def test_append
     assigns = { 'a' => 'bc', 'b' => 'd' }
-    assert_template_result('bcd', "{{ a | append: 'd'}}", assigns)
-    assert_template_result('bcd', "{{ a | append: b}}", assigns)
+    assert_template_result('bcd', "{{ a | append: 'd' }}", assigns)
+    assert_template_result('bcd', "{{ a | append: b }}", assigns)
   end
 
   def test_concat
@@ -482,8 +482,8 @@ class StandardFiltersTest < Minitest::Test
 
   def test_prepend
     assigns = { 'a' => 'bc', 'b' => 'a' }
-    assert_template_result('abc', "{{ a | prepend: 'a'}}", assigns)
-    assert_template_result('abc', "{{ a | prepend: b}}", assigns)
+    assert_template_result('abc', "{{ a | prepend: 'a' }}", assigns)
+    assert_template_result('abc', "{{ a | prepend: b }}", assigns)
   end
 
   def test_default

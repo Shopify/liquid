@@ -21,7 +21,7 @@
 
     <h2>{{ description | split: '~' | last }}</h2>
 
-    <h2>There are currently {{all_products | count}} products in the {{section}} catalog</h2>
+    <h2>There are currently {{ all_products | count }} products in the {{ section }} catalog</h2>
 
     {% if cool_products %}
       Cool products :)
@@ -33,10 +33,10 @@
 
       {% for product in all_products %}
         <li>
-          <h2>{{product.name}}</h2>
-          Only {{product.price | price }}
+          <h2>{{ product.name }}</h2>
+          Only {{ product.price | price }}
 
-          {{product.description | prettyprint | paragraph }}
+          {{ product.description | prettyprint | paragraph }}
 
           {{ 'it rocks!' | paragraph }}
 

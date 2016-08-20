@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <title>{{shop.name}} - {{page_title}}</title>
+  <title>{{ shop.name }} - {{ page_title }}</title>
 
   {{ 'textile.css'  | global_asset_url | stylesheet_tag }}
   {{ 'lightbox/v204/lightbox.css' | global_asset_url | stylesheet_tag }}
@@ -20,7 +20,7 @@
   {{ content_for_header }}
 </head>
 
-<body id="page-{{template}}">
+<body id="page-{{ template }}">
 
   <p class="hide"><a href="#rightsiders">Skip to navigation.</a></p>
     <!-- mini cart -->
@@ -30,7 +30,7 @@
       <h2>There {{ cart.item_count | pluralize: 'is', 'are' }} {{ cart.item_count }} {{ cart.item_count | pluralize: 'item', 'items' }} in <a href="/cart" title="View your cart">your cart</a>!</h2><h4 style="font-size: 16px; margin: 0 0 10px 0; padding: 0;">Your subtotal is {{ cart.total_price | money }}.</h4>
         {% for item in cart.items %}
         <div class="thumb">
-          <div class="prodimage"><a href="{{item.product.url}}" onMouseover="tooltip('{{ item.quantity }} x {{ item.title }} ({{ item.variant.title }})', 200)"; onMouseout="hidetooltip()"><img src="{{ item.product.featured_image | product_img_url: 'thumb' }}" /></a></div>
+          <div class="prodimage"><a href="{{ item.product.url }}" onMouseover="tooltip('{{ item.quantity }} x {{ item.title }} ({{ item.variant.title }})', 200)"; onMouseout="hidetooltip()"><img src="{{ item.product.featured_image | product_img_url: 'thumb' }}" /></a></div>
         </div>
         {% endfor %}
         </div>
@@ -41,7 +41,7 @@
   <div id="container">
     <div id="header">
       <!-- Begin Header -->
-        <h1 id="logo"><a href="/" title="Go Home">{{shop.name}}</a></h1>
+        <h1 id="logo"><a href="/" title="Go Home">{{ shop.name }}</a></h1>
       <div id="cartlinks">
         {% if cart.item_count > 0 %}
           <h2 id="cartcount"><a href="/cart" onMouseover="tooltip('There {{ cart.item_count | pluralize: 'is', 'are' }} {{ cart.item_count }} {{ cart.item_count | pluralize: 'item', 'items' }} in your cart!', 200)"; onMouseout="hidetooltip()">{{ cart.item_count }} {{ cart.item_count | pluralize: 'thing', 'things' }}!</a></h2>

@@ -12,7 +12,12 @@ module Liquid
       ')'.freeze => :close_round,
       '?'.freeze => :question,
       '-'.freeze => :dash,
-      '!'.freeze => :not,
+      '!'.freeze => :bang,
+      ' '.freeze => :space,
+      "\n".freeze => :newline,
+      "\r".freeze => :return,
+      "\t".freeze => :tab
+
     }
     IDENTIFIER = /[a-zA-Z_][\w-]*\??/
     BOOLEAN_OR = /or(?=\s)|\|\|/i
@@ -32,8 +37,6 @@ module Liquid
       @output = []
 
       until @ss.eos?
-        @ss.skip(/\s*/)
-        break if @ss.eos?
         tok = case
         when t = @ss.scan(COMPARISON_OPERATOR) then [:comparison, t]
         when t = @ss.scan(SINGLE_STRING_LITERAL) then [:string, t]

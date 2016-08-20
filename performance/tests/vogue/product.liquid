@@ -44,7 +44,7 @@
       // selected a valid variant
       $('purchase').removeClass('disabled'); // remove unavailable class from add-to-cart button
       $('purchase').disabled = false;           // reenable add-to-cart button
-      $('price-field').innerHTML = Shopify.formatMoney(variant.price, "{{shop.money_with_currency_format}}");  // update price field
+      $('price-field').innerHTML = Shopify.formatMoney(variant.price, "{{ shop.money_with_currency_format }}");  // update price field
     } else {
       // variant doesn't exist
       $('purchase').addClass('disabled');      // set add-to-cart button to unavailable class

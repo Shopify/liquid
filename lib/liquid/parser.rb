@@ -74,9 +74,8 @@ module Liquid
       str = ""
       # might be a keyword argument (identifier: expression)
       if look(:id) && look(:colon, 1)
-        str << consume << consume << ' '.freeze
+        str << consume << consume << consume(:space)
       end
-
       str << expression
       str
     end

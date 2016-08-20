@@ -4,16 +4,16 @@
     {% for product in collections.frontpage.products %}
       <div class="featured-prod-item">
           <p>
-        <a href="{{product.url}}"><img src="{{ product.featured_image | product_img_url: 'small' }}" alt="{{ product.title | escape }}"/></a>
+        <a href="{{ product.url }}"><img src="{{ product.featured_image | product_img_url: 'small' }}" alt="{{ product.title | escape }}"/></a>
         </p>
-        <h4><a href="{{product.url}}">{{product.title}}</a></h4>
+        <h4><a href="{{ product.url }}">{{ product.title }}</a></h4>
         {% if product.compare_at_price %}
           {% if product.price_min != product.compare_at_price %}
-            <p class="prd-price">Was:<del>{{product.compare_at_price | money}}</del></p>
-            <p class="prd-price"><ins>Now: {{product.price_min | money}}</ins></p>
+            <p class="prd-price">Was:<del>{{ product.compare_at_price | money }}</del></p>
+            <p class="prd-price"><ins>Now: {{ product.price_min | money }}</ins></p>
           {% endif %}
         {% else %}
-          <p class="prd-price"><ins>{{product.price_min | money}}</ins></p>
+          <p class="prd-price"><ins>{{ product.price_min | money }}</ins></p>
         {% endif %}
       </div>
     {% endfor %}

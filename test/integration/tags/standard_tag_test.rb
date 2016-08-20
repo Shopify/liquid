@@ -19,43 +19,43 @@ class StandardTagTest < Minitest::Test
 
   def test_has_a_block_which_does_nothing
     assert_template_result(%(the comment block should be removed  .. right?),
-      %(the comment block should be removed {%comment%} be gone.. {%endcomment%} .. right?))
+      %(the comment block should be removed {%comment %} be gone.. {%endcomment %} .. right?))
 
-    assert_template_result('', '{%comment%}{%endcomment%}')
-    assert_template_result('', '{%comment%}{% endcomment %}')
-    assert_template_result('', '{% comment %}{%endcomment%}')
+    assert_template_result('', '{%comment %}{%endcomment %}')
+    assert_template_result('', '{%comment %}{% endcomment %}')
+    assert_template_result('', '{% comment %}{%endcomment %}')
     assert_template_result('', '{% comment %}{% endcomment %}')
-    assert_template_result('', '{%comment%}comment{%endcomment%}')
+    assert_template_result('', '{%comment %}comment{%endcomment %}')
     assert_template_result('', '{% comment %}comment{% endcomment %}')
     assert_template_result('', '{% comment %} 1 {% comment %} 2 {% endcomment %} 3 {% endcomment %}')
 
-    assert_template_result('', '{%comment%}{%blabla%}{%endcomment%}')
+    assert_template_result('', '{%comment %}{%blabla %}{%endcomment %}')
     assert_template_result('', '{% comment %}{% blabla %}{% endcomment %}')
-    assert_template_result('', '{%comment%}{% endif %}{%endcomment%}')
+    assert_template_result('', '{%comment %}{% endif %}{%endcomment %}')
     assert_template_result('', '{% comment %}{% endwhatever %}{% endcomment %}')
-    assert_template_result('', '{% comment %}{% raw %} {{%%%%}}  }} { {% endcomment %} {% comment {% endraw %} {% endcomment %}')
+    assert_template_result('', '{% comment %}{% raw %} {{ %%%% }}  }} { {% endcomment %} {% comment {% endraw %} {% endcomment %}')
 
-    assert_template_result('foobar', 'foo{%comment%}comment{%endcomment%}bar')
+    assert_template_result('foobar', 'foo{%comment %}comment{%endcomment %}bar')
     assert_template_result('foobar', 'foo{% comment %}comment{% endcomment %}bar')
-    assert_template_result('foobar', 'foo{%comment%} comment {%endcomment%}bar')
+    assert_template_result('foobar', 'foo{%comment %} comment {%endcomment %}bar')
     assert_template_result('foobar', 'foo{% comment %} comment {% endcomment %}bar')
 
-    assert_template_result('foo  bar', 'foo {%comment%} {%endcomment%} bar')
-    assert_template_result('foo  bar', 'foo {%comment%}comment{%endcomment%} bar')
-    assert_template_result('foo  bar', 'foo {%comment%} comment {%endcomment%} bar')
+    assert_template_result('foo  bar', 'foo {%comment %} {%endcomment %} bar')
+    assert_template_result('foo  bar', 'foo {%comment %}comment{%endcomment %} bar')
+    assert_template_result('foo  bar', 'foo {%comment %} comment {%endcomment %} bar')
 
-    assert_template_result('foobar', 'foo{%comment%}
-                                     {%endcomment%}bar')
+    assert_template_result('foobar', 'foo{%comment %}
+                                     {%endcomment %}bar')
   end
 
   def test_hyphenated_assign
     assigns = { 'a-b' => '1' }
-    assert_template_result('a-b:1 a-b:2', 'a-b:{{a-b}} {%assign a-b = 2 %}a-b:{{a-b}}', assigns)
+    assert_template_result('a-b:1 a-b:2', 'a-b:{{ a-b }} {% assign a-b = 2 %}a-b:{{ a-b }}', assigns)
   end
 
   def test_assign_with_colon_and_spaces
     assigns = { 'var' => { 'a:b c' => { 'paged' => '1' } } }
-    assert_template_result('var2: 1', '{%assign var2 = var["a:b c"].paged %}var2: {{var2}}', assigns)
+    assert_template_result('var2: 1', '{%assign var2 = var["a:b c"].paged %}var2: {{ var2 }}', assigns)
   end
 
   def test_capture
@@ -212,20 +212,20 @@ class StandardTagTest < Minitest::Test
   end
 
   def test_assign
-    assert_template_result 'variable', '{% assign a = "variable"%}{{a}}'
+    assert_template_result 'variable', '{% assign a = "variable" %}{{ a }}'
   end
 
   def test_assign_unassigned
     assigns = { 'var' => 'content' }
-    assert_template_result('var2:  var2:content', 'var2:{{var2}} {%assign var2 = var%} var2:{{var2}}', assigns)
+    assert_template_result('var2:  var2:content', 'var2:{{ var2 }} {%assign var2 = var %} var2:{{ var2 }}', assigns)
   end
 
   def test_assign_an_empty_string
-    assert_template_result '', '{% assign a = ""%}{{a}}'
+    assert_template_result '', '{% assign a = ""%}{{ a }}'
   end
 
   def test_assign_is_global
-    assert_template_result 'variable', '{%for i in (1..2) %}{% assign a = "variable"%}{% endfor %}{{a}}'
+    assert_template_result 'variable', '{%for i in (1..2) %}{% assign a = "variable" %}{% endfor %}{{ a }}'
   end
 
   def test_case_detects_bad_syntax
@@ -251,7 +251,7 @@ class StandardTagTest < Minitest::Test
 
   def test_multiple_cycles
     assert_template_result('1 2 1 1 2 3 1',
-      '{%cycle 1,2%} {%cycle 1,2%} {%cycle 1,2%} {%cycle 1,2,3%} {%cycle 1,2,3%} {%cycle 1,2,3%} {%cycle 1,2,3%}')
+      '{%cycle 1,2 %} {%cycle 1,2 %} {%cycle 1,2 %} {%cycle 1,2,3 %} {%cycle 1,2,3 %} {%cycle 1,2,3 %} {%cycle 1,2,3 %}')
   end
 
   def test_multiple_named_cycles
@@ -284,13 +284,13 @@ class StandardTagTest < Minitest::Test
 
   def test_ifchanged
     assigns = { 'array' => [ 1, 1, 2, 2, 3, 3] }
-    assert_template_result('123', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', assigns)
+    assert_template_result('123', '{% for item in array %}{% ifchanged %}{{ item }}{% endifchanged %}{% endfor %}', assigns)
 
     assigns = { 'array' => [ 1, 1, 1, 1] }
-    assert_template_result('1', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', assigns)
+    assert_template_result('1', '{% for item in array %}{% ifchanged %}{{ item }}{% endifchanged %}{% endfor %}', assigns)
   end
 
   def test_multiline_tag
-    assert_template_result '0 1 2 3', "0{%\nfor i in (1..3)\n%} {{\ni\n}}{%\nendfor\n%}"
+    assert_template_result '0 1 2 3', "0{% for i in (1..3) %} {{ i }}{% endfor %}"
   end
 end # StandardTagTest

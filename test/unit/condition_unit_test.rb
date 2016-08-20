@@ -123,7 +123,7 @@ class ConditionUnitTest < Minitest::Test
   end
 
   def test_should_allow_custom_proc_operator
-    Condition.operators['starts_with'] = proc { |cond, left, right| left =~ %r{^#{right}} }
+    Condition.operators['starts_with'] = proc { |cond, left, right| left =~ %r{^#{right }} }
 
     assert_evaluates_true 'bob', 'starts_with', 'b'
     assert_evaluates_false 'bob', 'starts_with', 'o'

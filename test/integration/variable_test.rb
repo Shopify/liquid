@@ -4,7 +4,7 @@ class VariableTest < Minitest::Test
   include Liquid
 
   def test_simple_variable
-    template = Template.parse(%({{test}}))
+    template = Template.parse(%({{ test }}))
     assert_equal 'worked', template.render!('test' => 'worked')
     assert_equal 'worked wonderfully', template.render!('test' => 'worked wonderfully')
   end
@@ -87,6 +87,10 @@ class VariableTest < Minitest::Test
   end
 
   def test_multiline_variable
-    assert_equal 'worked', Template.parse("{{\ntest\n}}").render!('test' => 'worked')
+    with_error_mode(:strict) do
+      assert_raises(SyntaxError) do
+        Template.parse('{{ \ntest\n }}').render!('test' => 'worked')
+      end
+    end
   end
 end

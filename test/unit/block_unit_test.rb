@@ -9,21 +9,21 @@ class BlockUnitTest < Minitest::Test
   end
 
   def test_variable_beginning
-    template = Liquid::Template.parse("{{funk}}  ")
+    template = Liquid::Template.parse("{{ funk }}  ")
     assert_equal 2, template.root.nodelist.size
     assert_equal Variable, template.root.nodelist[0].class
     assert_equal String, template.root.nodelist[1].class
   end
 
   def test_variable_end
-    template = Liquid::Template.parse("  {{funk}}")
+    template = Liquid::Template.parse("  {{ funk }}")
     assert_equal 2, template.root.nodelist.size
     assert_equal String, template.root.nodelist[0].class
     assert_equal Variable, template.root.nodelist[1].class
   end
 
   def test_variable_middle
-    template = Liquid::Template.parse("  {{funk}}  ")
+    template = Liquid::Template.parse("  {{ funk }}  ")
     assert_equal 3, template.root.nodelist.size
     assert_equal String, template.root.nodelist[0].class
     assert_equal Variable, template.root.nodelist[1].class
@@ -31,7 +31,7 @@ class BlockUnitTest < Minitest::Test
   end
 
   def test_variable_many_embedded_fragments
-    template = Liquid::Template.parse("  {{funk}} {{so}} {{brother}} ")
+    template = Liquid::Template.parse("  {{ funk }} {{ so }} {{ brother }} ")
     assert_equal 7, template.root.nodelist.size
     assert_equal [String, Variable, String, Variable, String, Variable, String],
       block_types(template.root.nodelist)
