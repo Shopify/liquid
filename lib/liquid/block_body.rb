@@ -69,7 +69,7 @@ module Liquid
     end
 
     def render(context)
-      output = []
+      output = ""
       context.resource_limits.render_score += @nodelist.length
 
       @nodelist.each do |token|
@@ -80,7 +80,7 @@ module Liquid
           # If we get an Interrupt that means the block must stop processing. An
           # Interrupt is any command that stops block execution such as {% break %}
           # or {% continue %}
-          if token.is_a?(Continue) || token.is_a?(Break)
+          if token.class == Continue || token.class == Break
             context.push_interrupt(token.interrupt)
             break
           end
@@ -94,13 +94,12 @@ module Liquid
           raise e
         rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
           context.handle_error(e, token.line_number)
-          output << nil
         rescue ::StandardError => e
           output << context.handle_error(e, token.line_number)
         end
       end
 
-      output.join
+      output
     end
 
     private
@@ -113,6 +112,7 @@ module Liquid
       if context.resource_limits.reached?
         raise MemoryError.new("Memory limits exceeded".freeze)
       end
+
       node_output
     end
 
