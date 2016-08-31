@@ -10,7 +10,7 @@ module Liquid
       '"'.freeze => '&quot;'.freeze,
       "'".freeze => '&#39;'.freeze
     }
-    HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
+    HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+\d*|(#\d+)|(#[xX][\da-fA-F]+));)/
 
     # Return the size of an array or of an string
     def size(input)
