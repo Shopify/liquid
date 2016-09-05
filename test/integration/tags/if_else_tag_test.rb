@@ -174,9 +174,9 @@ class IfElseTagTest < Minitest::Test
   end
 
   def test_else_if
-    assert_template_result('0', '{% if 0 == 0 %}0{% elsif 1 == 1 %}1{% else %}2{% endif %}')
-    assert_template_result('1', '{% if 0 != 0 %}0{% elsif 1 == 1 %}1{% else %}2{% endif %}')
-    assert_template_result('2', '{% if 0 != 0 %}0{% elsif 1 != 1 %}1{% else %}2{% endif %}')
+    assert_template_result('0', '{% if 0 == 0 %}0{% elsif 1 == 1%}1{% else %}2{% endif %}')
+    assert_template_result('1', '{% if 0 != 0 %}0{% elsif 1 == 1%}1{% else %}2{% endif %}')
+    assert_template_result('2', '{% if 0 != 0 %}0{% elsif 1 != 1%}1{% else %}2{% endif %}')
 
     assert_template_result('elsif', '{% if false %}if{% elsif true %}elsif{% endif %}')
   end

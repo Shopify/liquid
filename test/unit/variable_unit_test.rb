@@ -4,20 +4,20 @@ class VariableUnitTest < Minitest::Test
   include Liquid
 
   def test_variable
-    var = create_variable(' hello ')
+    var = create_variable('hello')
     assert_equal VariableLookup.new('hello'), var.name
   end
 
   def test_filters
-    var = create_variable(' hello | textileze ')
+    var = create_variable('hello | textileze')
     assert_equal VariableLookup.new('hello'), var.name
     assert_equal [['textileze', []]], var.filters
 
-    var = create_variable(' hello | textileze | paragraph ')
+    var = create_variable('hello | textileze | paragraph')
     assert_equal VariableLookup.new('hello'), var.name
     assert_equal [['textileze', []], ['paragraph', []]], var.filters
 
-    var = create_variable(%( hello | strftime: '%Y' ))
+    var = create_variable(%( hello | strftime: '%Y'))
     assert_equal VariableLookup.new('hello'), var.name
     assert_equal [['strftime', ['%Y']]], var.filters
 
@@ -41,43 +41,43 @@ class VariableUnitTest < Minitest::Test
     assert_equal 'foo', var.name
     assert_equal [['repeat', [3, 3, 3]]], var.filters
 
-    var = create_variable(%( hello | strftime: '%Y, okay?' ))
+    var = create_variable(%( hello | strftime: '%Y, okay?'))
     assert_equal VariableLookup.new('hello'), var.name
     assert_equal [['strftime', ['%Y, okay?']]], var.filters
 
-    var = create_variable(%( hello | things: "%Y, okay?", 'the other one' ))
+    var = create_variable(%( hello | things: "%Y, okay?", 'the other one'))
     assert_equal VariableLookup.new('hello'), var.name
     assert_equal [['things', ['%Y, okay?', 'the other one']]], var.filters
   end
 
   def test_filter_with_date_parameter
-    var = create_variable(%( '2006-06-06' | date: "%m/%d/%Y" ))
+    var = create_variable(%( '2006-06-06' | date: "%m/%d/%Y"))
     assert_equal '2006-06-06', var.name
     assert_equal [['date', ['%m/%d/%Y']]], var.filters
   end
 
   def test_filters_without_whitespace
-    var = create_variable(' hello | textileze | paragraph ')
+    var = create_variable('hello | textileze | paragraph')
     assert_equal VariableLookup.new('hello'), var.name
     assert_equal [['textileze', []], ['paragraph', []]], var.filters
 
-    var = create_variable(' hello | textileze | paragraph ')
+    var = create_variable('hello|textileze|paragraph')
     assert_equal VariableLookup.new('hello'), var.name
     assert_equal [['textileze', []], ['paragraph', []]], var.filters
 
-    var = create_variable(" hello | replace: 'foo', 'bar' | textileze ")
+    var = create_variable("hello|replace:'foo','bar'|textileze")
     assert_equal VariableLookup.new('hello'), var.name
     assert_equal [['replace', ['foo', 'bar']], ['textileze', []]], var.filters
   end
 
   def test_symbol
-    var = create_variable(" http://disney.com/logo.gif | image: 'med' ", error_mode: :lax)
+    var = create_variable("http://disney.com/logo.gif | image: 'med' ", error_mode: :lax)
     assert_equal VariableLookup.new('http://disney.com/logo.gif'), var.name
     assert_equal [['image', ['med']]], var.filters
   end
 
   def test_string_to_filter
-    var = create_variable(" 'http://disney.com/logo.gif' | image: 'med' ")
+    var = create_variable("'http://disney.com/logo.gif' | image: 'med' ")
     assert_equal 'http://disney.com/logo.gif', var.name
     assert_equal [['image', ['med']]], var.filters
   end
@@ -103,8 +103,8 @@ class VariableUnitTest < Minitest::Test
   end
 
   def test_dashes
-    assert_equal VariableLookup.new('foo-bar'), create_variable(' foo-bar ').name
-    assert_equal VariableLookup.new('foo-bar-2'), create_variable(' foo-bar-2 ').name
+    assert_equal VariableLookup.new('foo-bar'), create_variable('foo-bar').name
+    assert_equal VariableLookup.new('foo-bar-2'), create_variable('foo-bar-2').name
 
     with_error_mode :strict do
       assert_raises(Liquid::SyntaxError) { create_variable('foo - bar') }
@@ -124,7 +124,7 @@ class VariableUnitTest < Minitest::Test
   end
 
   def test_filter_with_keyword_arguments
-    var = create_variable(%( hello | things: greeting: "world", farewell: 'goodbye' ))
+    var = create_variable(%( hello | things: greeting: "world", farewell: 'goodbye'))
     assert_equal VariableLookup.new('hello'), var.name
     assert_equal [['things', [], { 'greeting' => 'world', 'farewell' => 'goodbye' }]], var.filters
   end

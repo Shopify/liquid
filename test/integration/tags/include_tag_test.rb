@@ -7,7 +7,7 @@ class TestFileSystem
       "Product: {{ product.title }} "
 
     when "locale_variables"
-      "Locale: {{ echo1 }} {{ echo2 }}"
+      "Locale: {{echo1}} {{echo2}}"
 
     when "variant"
       "Variant: {{ variant.title }}"

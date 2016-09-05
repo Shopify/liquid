@@ -8,13 +8,13 @@ module Liquid
   #  {{ foo }}
   #
   class Assign < Tag
-    Syntax = /(#{VariableSignature}+)\s*=\s*(.*)(?=\s)/om
+    Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/om
 
     def initialize(tag_name, markup, options)
       super
       if markup =~ Syntax
         @to = $1
-        @from = Variable.new(" #{$2} ", options)
+        @from = Variable.new($2, options)
       else
         raise SyntaxError.new options[:locale].t("errors.syntax.assign".freeze)
       end

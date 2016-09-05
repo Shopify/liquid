@@ -15,7 +15,7 @@ module Liquid
   #     end
   #   end
   #
-  #   tmpl = Liquid::Template.parse( ' {% for product in product.top_sales %} {{ product.name }} {%endfor %} '  )
+  #   tmpl = Liquid::Template.parse( ' {% for product in product.top_sales %} {{ product.name }} {%endfor%} '  )
   #   tmpl.render('product' => ProductDrop.new ) # will invoke top_sales query.
   #
   # Your drop can either implement the methods sans any parameters

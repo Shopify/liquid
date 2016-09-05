@@ -1,5 +1,5 @@
 <div id="page">
-  <h2>{{ page.title }}</h2>
+  <h2>{{page.title}}</h2>
 
   {% paginate blog.articles by 20 %}
 
@@ -8,7 +8,7 @@
     <div class="article">
       <div class="headline">
       <h3 class="title">
-        <a href="{{ article.url }}">{{ article.title }}</a>
+        <a href="{{article.url}}">{{ article.title }}</a>
       </h3>
       <h4 class="date">Posted on {{ article.created_at | date: "%B %d, '%y" }} by {{ article.author }}.</h4>
       </div>
@@ -18,7 +18,7 @@
       </div>
 
       {% if blog.comments_enabled? %}
-        <p style="text-align: right"><a href="{{ article.url }}#comments">{{ article.comments_count }} comments</a></p>
+        <p style="text-align: right"><a href="{{article.url}}#comments">{{ article.comments_count }} comments</a></p>
       {% endif %}
     </div>
 

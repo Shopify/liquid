@@ -46,7 +46,7 @@ Liquid supports a very simple API based around the Liquid::Template class.
 For standard use you can just pass it the content of a file and call render with a parameters hash.
 
 ```ruby
-@template = Liquid::Template.parse("hi {{ name }}") # Parses and compiles the template
+@template = Liquid::Template.parse("hi {{name}}") # Parses and compiles the template
 @template.render('name' => 'tobi')                # => "hi tobi"
 ```
 
@@ -82,7 +82,7 @@ When one of these options is set to true, all errors about undefined variables a
 Here are some examples:
 
 ```ruby
-template = Liquid::Template.parse("{{ x }} {{ y }} {{ z.a }} {{ z.b }}")
+template = Liquid::Template.parse("{{x}} {{y}} {{z.a}} {{z.b}}")
 template.render({ 'x' => 1, 'z' => { 'a' => 2 } }, { strict_variables: true })
 #=> '1  2 ' # when a variable is undefined, it's rendered as nil
 template.errors
@@ -90,7 +90,7 @@ template.errors
 ```
 
 ```ruby
-template = Liquid::Template.parse("{{ x | filter1 | upcase }}")
+template = Liquid::Template.parse("{{x | filter1 | upcase}}")
 template.render({ 'x' => 'foo' }, { strict_filters: true })
 #=> '' # when at least one filter in the filter chain is undefined, a whole expression is rendered as nil
 template.errors
@@ -100,7 +100,7 @@ template.errors
 If you want to raise on a first exception instead of pushing all of them in `errors`, you can use `render!` method:
 
 ```ruby
-template = Liquid::Template.parse("{{ x }} {{ y }}")
+template = Liquid::Template.parse("{{x}} {{y}}")
 template.render!({ 'x' => 1}, { strict_variables: true })
 #=> Liquid::UndefinedVariable: Liquid error: undefined variable y
 ```

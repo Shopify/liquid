@@ -44,7 +44,7 @@
 
       {% if forloop.first %}
       <div class="product-image-large">
-        <img src="{{ image | product_img_url: 'medium'}}" alt="{{ product.title | escape }}" />
+        <img src="{{ image | product_img_url: 'medium'}}" alt="{{product.title | escape }}" />
       </div>
       {% else %}
       {% endif %}
@@ -57,7 +57,7 @@
 
       <li>
       <a href="{{ image | product_img_url: 'large' }}" class="product-thumbs" rel="lightbox[product]" title="">
-        <img src="{{ image | product_img_url: 'small'}}" alt="{{ product.title | escape }}" />
+        <img src="{{ image | product_img_url: 'small'}}" alt="{{product.title | escape }}" />
       </a>
       </li>
       {% endif %}
@@ -97,7 +97,7 @@
       // selected a valid variant
       $('add-this-to-cart').removeClassName('disabled'); // remove unavailable class from add-to-cart button
       $('add-this-to-cart').disabled = false;           // reenable add-to-cart button
-      $('price-field').innerHTML = Shopify.formatMoney(variant.price, "{{ shop.money_with_currency_format }}");  // update price field
+      $('price-field').innerHTML = Shopify.formatMoney(variant.price, "{{shop.money_with_currency_format}}");  // update price field
     } else {
       // variant doesn't exist
       $('add-this-to-cart').addClassName('disabled');      // set add-to-cart button to unavailable class

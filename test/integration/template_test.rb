@@ -80,8 +80,8 @@ class TemplateTest < Minitest::Test
   def test_lambda_is_called_once_from_persistent_assigns_over_multiple_parses_and_renders
     t = Template.new
     t.assigns['number'] = -> { @global ||= 0; @global += 1 }
-    assert_equal '1', t.parse("{{ number }}").render!
-    assert_equal '1', t.parse("{{ number }}").render!
+    assert_equal '1', t.parse("{{number}}").render!
+    assert_equal '1', t.parse("{{number}}").render!
     assert_equal '1', t.render!
     @global = nil
   end
@@ -89,8 +89,8 @@ class TemplateTest < Minitest::Test
   def test_lambda_is_called_once_from_custom_assigns_over_multiple_parses_and_renders
     t = Template.new
     assigns = { 'number' => -> { @global ||= 0; @global += 1 } }
-    assert_equal '1', t.parse("{{ number }}").render!(assigns)
-    assert_equal '1', t.parse("{{ number }}").render!(assigns)
+    assert_equal '1', t.parse("{{number}}").render!(assigns)
+    assert_equal '1', t.parse("{{number}}").render!(assigns)
     assert_equal '1', t.render!(assigns)
     @global = nil
   end
@@ -200,9 +200,9 @@ class TemplateTest < Minitest::Test
     t = Template.new
     t.registers['lulz'] = 'haha'
     drop = TemplateContextDrop.new
-    assert_equal 'fizzbuzz', t.parse('{{ foo }}').render!(drop)
-    assert_equal 'bar', t.parse('{{ bar }}').render!(drop)
-    assert_equal 'haha', t.parse("{{ baz }}").render!(drop)
+    assert_equal 'fizzbuzz', t.parse('{{foo}}').render!(drop)
+    assert_equal 'bar', t.parse('{{bar}}').render!(drop)
+    assert_equal 'haha', t.parse("{{baz}}").render!(drop)
   end
 
   def test_render_bang_force_rethrow_errors_on_passed_context
@@ -231,20 +231,20 @@ class TemplateTest < Minitest::Test
 
   def test_global_filter_option_on_render
     global_filter_proc = ->(output) { "#{output} filtered" }
-    rendered_template = Template.parse("{{ name }}").render({ "name" => "bob" }, global_filter: global_filter_proc)
+    rendered_template = Template.parse("{{name}}").render({ "name" => "bob" }, global_filter: global_filter_proc)
 
     assert_equal 'bob filtered', rendered_template
   end
 
   def test_global_filter_option_when_native_filters_exist
     global_filter_proc = ->(output) { "#{output} filtered" }
-    rendered_template = Template.parse("{{ name | upcase }}").render({ "name" => "bob" }, global_filter: global_filter_proc)
+    rendered_template = Template.parse("{{name | upcase}}").render({ "name" => "bob" }, global_filter: global_filter_proc)
 
     assert_equal 'BOB filtered', rendered_template
   end
 
   def test_undefined_variables
-    t = Template.parse("{{ x }} {{ y }} {{ z.a }} {{ z.b }} {{ z.c.d }}")
+    t = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
     result = t.render({ 'x' => 33, 'z' => { 'a' => 32, 'c' => { 'e' => 31 } } }, { strict_variables: true })
 
     assert_equal '33  32  ', result
@@ -258,7 +258,7 @@ class TemplateTest < Minitest::Test
   end
 
   def test_undefined_variables_raise
-    t = Template.parse("{{ x }} {{ y }} {{ z.a }} {{ z.b }} {{ z.c.d }}")
+    t = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
 
     assert_raises UndefinedVariable do
       t.render!({ 'x' => 33, 'z' => { 'a' => 32, 'c' => { 'e' => 31 } } }, { strict_variables: true })
@@ -285,7 +285,7 @@ class TemplateTest < Minitest::Test
   end
 
   def test_undefined_filters
-    t = Template.parse("{{ a }} {{ x | upcase | somefilter1 | somefilter2 | somefilter3 }}")
+    t = Template.parse("{{a}} {{x | upcase | somefilter1 | somefilter2 | somefilter3}}")
     filters = Module.new do
       def somefilter3(v)
         "-#{v}-"
@@ -300,7 +300,7 @@ class TemplateTest < Minitest::Test
   end
 
   def test_undefined_filters_raise
-    t = Template.parse("{{ x | somefilter1 | upcase | somefilter2 }}")
+    t = Template.parse("{{x | somefilter1 | upcase | somefilter2}}")
 
     assert_raises UndefinedFilter do
       t.render!({ 'x' => 'foo' }, { strict_filters: true })

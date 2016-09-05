@@ -98,27 +98,19 @@ module Liquid
     def strict_parse(markup)
       p = Parser.new(markup)
       @variable_name = p.consume(:id)
-      p.consume(:space)
       raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_in".freeze)) unless p.id?('in'.freeze)
-      p.consume(:space)
       collection_name = p.expression
       @name = "#{@variable_name}-#{collection_name}"
       @collection_name = Expression.parse(collection_name)
-      @reversed = false
-      if p.look(:id, 1) && p.look(:space, 2)
-        p.consume(:space)
-        @reversed = p.id?('reversed'.freeze)
-      end
-      while p.look(:id, 1) && p.look(:colon, 2)
-        p.consume(:space)
+      @reversed = p.id?('reversed'.freeze)
+
+      while p.look(:id) && p.look(:colon, 1)
         unless attribute = p.id?('limit'.freeze) || p.id?('offset'.freeze)
           raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute".freeze))
         end
-        p.consume(:colon)
-        p.consume(:space)
+        p.consume
         set_attribute(attribute, p.expression)
       end
-      p.consume(:space)
       p.consume(:end_of_string)
     end
 

@@ -54,28 +54,21 @@ module Liquid
     def strict_parse(markup)
       @filters = []
       p = Parser.new(markup)
-      p.consume(:space)
-      @name = Expression.parse(p.expression) unless p.look(:end_of_string, 1)
-      p.consume(:space)
+
+      @name = Expression.parse(p.expression)
       while p.consume?(:pipe)
-        p.consume(:space)
         filtername = p.consume(:id)
         filterargs = p.consume?(:colon) ? parse_filterargs(p) : []
         @filters << parse_filter_expressions(filtername, filterargs)
-        p.consume(:space)
       end
       p.consume(:end_of_string)
     end
 
     def parse_filterargs(p)
       # first argument
-      p.consume(:space)
       filterargs = [p.argument]
       # followed by comma separated others
-      while p.consume?(:comma)
-        p.consume(:space)
-        filterargs << p.argument
-      end
+      filterargs << p.argument while p.consume?(:comma)
       filterargs
     end
 

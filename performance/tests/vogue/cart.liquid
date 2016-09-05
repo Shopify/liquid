@@ -39,7 +39,7 @@
         </div>
       </td>
       <td class="basket-column">{{ item.price | money }}{% if item.variant.compare_at_price > item.price %}<br /><del>{{ item.variant.compare_at_price | money }}</del>{% endif %}</td>
-      <td class="basket-column"><input type="text" size="4" name="updates[{{ item.variant.id }}]" id="updates_{{ item.variant.id }}" value="{{ item.quantity }}" onfocus="this.select();"/></td>
+      <td class="basket-column"><input type="text" size="4" name="updates[{{item.variant.id}}]" id="updates_{{ item.variant.id }}" value="{{ item.quantity }}" onfocus="this.select();"/></td>
       <td class="basket-column"><a href="#" onclick="remove_item({{ item.variant.id }}); return false;">Remove</a></td>
       <td class="basket-column">{{ item.line_price | money }}</td>
     </tr>{% endfor %}

@@ -84,22 +84,14 @@ module Liquid
     def strict_parse(markup)
       p = Parser.new(markup)
       condition = parse_binary_comparison(p)
-      p.consume(:space)
       p.consume(:end_of_string)
       condition
     end
 
     def parse_binary_comparison(p)
-      if p.look(:not)
-        n = p.consume(:not)
-        p.consume(:space)
-      end
-      n = p.consume(:bang) if p.look(:bang)
+      n = p.consume?(:not)
       condition = parse_comparison(p)
-      if p.look(:or, 1) || p.look(:and, 1)
-        p.consume(:space)
-        op = (p.type?(:or) || p.type?(:and))
-        p.consume(:space)
+      if op = (p.type?(:or) || p.type?(:and))
         condition.send(op, parse_binary_comparison(p))
       end
       condition.not if n
@@ -108,10 +100,7 @@ module Liquid
 
     def parse_comparison(p)
       a = Expression.parse(p.expression)
-      if p.look(:comparison, 1)
-        p.consume(:space)
-        op = p.consume?(:comparison)
-        p.consume(:space)
+      if op = p.consume?(:comparison)
         b = Expression.parse(p.expression)
         Condition.new(a, op, b)
       else

@@ -4,7 +4,7 @@ class CaptureTest < Minitest::Test
   include Liquid
 
   def test_captures_block_content_in_variable
-    assert_template_result("test string", "{% capture 'var' %}test string{% endcapture %}{{ var }}", {})
+    assert_template_result("test string", "{% capture 'var' %}test string{% endcapture %}{{var}}", {})
   end
 
   def test_capture_with_hyphen_in_variable_name
@@ -26,7 +26,7 @@ class CaptureTest < Minitest::Test
     {% if true %}
     {% capture var %}test-string{% endcapture %}
     {% endif %}
-    {{ var }}
+    {{var}}
     END_TEMPLATE
     template = Template.parse(template_source)
     rendered = template.render!
@@ -38,7 +38,7 @@ class CaptureTest < Minitest::Test
     {% assign first = '' %}
     {% assign second = '' %}
     {% for number in (1..3) %}
-    {% capture first %}{{ number }}{% endcapture %}
+    {% capture first %}{{number}}{% endcapture %}
     {% assign second = first %}
     {% endfor %}
     {{ first }}-{{ second }}
