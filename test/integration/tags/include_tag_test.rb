@@ -217,6 +217,17 @@ class IncludeTagTest < Minitest::Test
     end
   end
 
+  def test_render_raise_argument_error_when_template_is_undefined
+    assert_raises(Liquid::ArgumentError) do
+      template = Liquid::Template.parse('{% include undefined_variable %}')
+      template.render!
+    end
+    assert_raises(Liquid::ArgumentError) do
+      template = Liquid::Template.parse('{% include nil %}')
+      template.render!
+    end
+  end
+
   def test_including_via_variable_value
     assert_template_result "from TestFileSystem", "{% assign page = 'pick_a_source' %}{% include page %}"
 
