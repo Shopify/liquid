@@ -65,9 +65,10 @@ module Liquid
       return if input.nil?
       input_str = input.to_s
       length = Utils.to_integer(length)
-      l = length - truncate_string.length
+      truncate_string_str = truncate_string.to_s
+      l = length - truncate_string_str.length
       l = 0 if l < 0
-      input_str.length > length ? input_str[0...l] + truncate_string : input_str
+      input_str.length > length ? input_str[0...l] + truncate_string_str : input_str
     end
 
     def truncatewords(input, words = 15, truncate_string = "...".freeze)

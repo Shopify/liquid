@@ -115,6 +115,7 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '...', @filters.truncate('1234567890', 0)
     assert_equal '1234567890', @filters.truncate('1234567890')
     assert_equal "测试...", @filters.truncate("测试测试测试测试", 5)
+    assert_equal '12341', @filters.truncate("1234567890", 5, 1)
   end
 
   def test_split
