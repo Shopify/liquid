@@ -125,7 +125,15 @@ module Liquid
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
       elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
-        ary.sort { |a, b| a[property] <=> b[property] }
+        ary.sort do |a, b|
+          a = a[property]
+          b = b[property]
+          if a && b
+            a <=> b
+          else
+            a ? -1 : 1
+          end
+        end
       end
     end
 
