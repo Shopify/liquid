@@ -93,10 +93,10 @@ module Liquid
         rescue MemoryError => e
           raise e
         rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
-          context.handle_error(e, token.line_number)
+          context.handle_error(e, token.line_number, token.raw)
           output << nil
         rescue ::StandardError => e
-          output << context.handle_error(e, token.line_number)
+          output << context.handle_error(e, token.line_number, token.raw)
         end
       end
 

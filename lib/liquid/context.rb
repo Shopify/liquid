@@ -73,7 +73,7 @@ module Liquid
       @interrupts.pop
     end
 
-    def handle_error(e, line_number = nil)
+    def handle_error(e, line_number = nil, raw_token = nil)
       if e.is_a?(Liquid::Error)
         e.template_name ||= template_name
         e.line_number ||= line_number
@@ -82,7 +82,9 @@ module Liquid
       output = nil
 
       if exception_handler
-        result = exception_handler.call(e)
+        args = [e]
+        args << { line_number: line_number, raw_token: raw_token } if exception_handler.arity == 2
+        result = exception_handler.call(*args)
         case result
         when Exception
           e = result
