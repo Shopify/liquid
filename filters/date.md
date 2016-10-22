@@ -41,3 +41,19 @@ Fri, Jul 17, 15
 ```text
 {{ "March 14, 2016" | date: "%b %d, %y" }}
 ```
+
+To get the current time, pass the special word `"now"` (or `"today"`) to `date`:
+
+<p class="code-label">Input</p>
+```liquid
+{% raw %}
+This page was last updated at {{ "now" | date: "%Y-%m-%d %H:%M" }}.
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+This page was last updated at {{ "now" | date: "%Y-%m-%d %H:%M" }}.
+```
+
+Note that the value will be the current time of when the page was last generated from the template, not when the page is presented to a user if caching or static site generation is involved.
