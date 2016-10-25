@@ -122,9 +122,8 @@ class StandardFiltersTest < Minitest::Test
     assert_equal ['12', '34'], @filters.split('12~34', '~')
     assert_equal ['A? ', ' ,Z'], @filters.split('A? ~ ~ ~ ,Z', '~ ~ ~')
     assert_equal ['A?Z'], @filters.split('A?Z', '~')
-    # Regexp works although Liquid does not support.
-    assert_equal ['A', 'Z'], @filters.split('AxZ', /x/)
     assert_equal [], @filters.split(nil, ' ')
+    assert_equal ['A', 'Z'], @filters.split('A1Z', 1)
   end
 
   def test_escape
