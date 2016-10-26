@@ -112,11 +112,11 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 
 <p class="code-label">Input</p>
 ```liquid
+{% raw %}
 {% for i in (3..5) %}
   {{ i }}
 {% endfor %}
 
-{% raw %}
 {% assign num = 4 %}
 {% for i in (1..num) %}
   {{ i }}
