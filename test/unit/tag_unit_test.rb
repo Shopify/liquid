@@ -11,7 +11,7 @@ class TagUnitTest < Minitest::Test
 
   def test_return_raw_text_of_tag
     tag = Tag.parse("long_tag", "param1, param2, param3", Tokenizer.new(""), ParseContext.new)
-    assert_equal("long_tag param1, param2, param3", tag.raw)
+    assert_equal("long_tag param1, param2, param3", tag.raw_liquid)
   end
 
   def test_tag_name_should_return_name_of_the_tag

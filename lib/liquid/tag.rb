@@ -24,7 +24,7 @@ module Liquid
     def parse(_tokens)
     end
 
-    def raw
+    def raw_liquid
       "#{@tag_name} #{@markup}"
     end
 

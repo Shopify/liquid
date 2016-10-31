@@ -47,7 +47,7 @@ module Liquid
       attr_reader :code, :partial, :line_number, :children
 
       def initialize(node, partial)
-        @code        = node.respond_to?(:raw) ? node.raw : node
+        @code        = node.respond_to?(:raw_liquid) ? node.raw_liquid : node
         @partial     = partial
         @line_number = node.respond_to?(:line_number) ? node.line_number : nil
         @children    = []
