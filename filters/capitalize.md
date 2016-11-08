@@ -1,5 +1,6 @@
 ---
 title: capitalize
+description: Liquid filter that capitalizes the first character in a string.
 ---
 
 Makes the first character of a string capitalized.

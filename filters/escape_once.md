@@ -1,5 +1,6 @@
 ---
 title: escape_once
+description: Liquid filter that escapes URL-unsafe characters in a string once.
 ---
 
 Escapes a string without changing existing escaped entities. It doesn't change strings that don't have anything to escape.

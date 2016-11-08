@@ -1,5 +1,6 @@
 ---
 title: default
+description: Liquid filter that specifies a fallback in case a value doesn't exist.
 ---
 
 Allows you to specify a fallback in case a value doesn't exist. `default` will show its value if the left side is `nil`, `false`, or empty.

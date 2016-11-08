@@ -4,30 +4,6 @@ title: Control flow
 
 Control flow tags can change the information Liquid shows using programming logic.
 
-## case/when
-
-Creates a switch statement to compare a variable with different values. `case` initializes the switch statement, and `when` compares its values.
-
-<p class="code-label">Input</p>
-```liquid
-{% raw %}
-{% assign handle = 'cake' %}
-{% case handle %}
-  {% when 'cake' %}
-     This is a cake
-  {% when 'cookie' %}
-     This is a cookie
-  {% else %}
-     This is not a cake nor a cookie
-{% endcase %}
-{% endraw %}
-```
-
-<p class="code-label">Output</p>
-```text
-This is a cake
-```
-
 ## if
 
 Executes a block of code only if a certain condition is `true`.
@@ -95,4 +71,28 @@ Adds more conditions within an `if` or `unless` block.
 <p class="code-label">Output</p>
 ```text
 Hey Anonymous!
+```
+
+## case/when
+
+Creates a switch statement to compare a variable with different values. `case` initializes the switch statement, and `when` compares its values.
+
+<p class="code-label">Input</p>
+```liquid
+{% raw %}
+{% assign handle = 'cake' %}
+{% case handle %}
+  {% when 'cake' %}
+     This is a cake
+  {% when 'cookie' %}
+     This is a cookie
+  {% else %}
+     This is not a cake nor a cookie
+{% endcase %}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+This is a cake
 ```

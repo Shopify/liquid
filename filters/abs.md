@@ -1,5 +1,6 @@
 ---
 title: abs
+description: Liquid filter that gets the absolute value of a number.
 ---
 
 Returns the absolute value of a number.

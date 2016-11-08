@@ -61,12 +61,6 @@ li {
   }
 }
 
-/** Headings */
-
-h1, h2, h3, h4, h5, h6 {
-  font-weight: bold;
-}
-
 /** Links */
 a {
     color: $color-blue-5;
@@ -80,19 +74,22 @@ a {
     }
 }
 
+/** Headings */
+
 h1 {
   font-size: 2em;
+  font-weight: 300;
 }
 
 h2 {
   font-size: 1.5em;
-  text-decoration: underline;
+  font-weight: 300;
   margin-top: $spacing-unit;
 }
 
 h3 {
+  margin-top: $spacing-unit;
   font-size: 1em;
-  text-decoration: underline;
 }
 
 h4 {
@@ -112,6 +109,7 @@ blockquote {
 }
 
 pre, code {
+  font-family: Menlo, Monaco, monospace;
   font-size: 15px;
   border-radius: 3px;
   background-color: lighten($color-blue-1, 0.9);

@@ -1,7 +1,5 @@
 ---
 title: Introduction
-redirect_from:
-  - /basics/
 ---
 
 Liquid code can be categorized into [**objects**](#objects), [**tags**](#tags), and [**filters**](#filters).

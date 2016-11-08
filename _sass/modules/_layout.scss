@@ -70,12 +70,17 @@ body {
 
 .sidebar__logo {
   font-size: $base-font-size * 2;
-  font-weight: bold;
+  font-weight: 300;
   text-align: center;
   height: $logo-height;
   line-height: $logo-height;
   margin-bottom: 0;
   border-bottom: 1px solid $color-blue-4;
+
+  &:after {
+    content: '💧';
+    vertical-align: middle;
+  }
 
   a {
     color: $color-white;
@@ -119,10 +124,10 @@ body {
 }
 
 .section__header {
-  font-weight: bold;
   font-size: 1em;
   text-decoration: none;
   color: $color-white;
+  margin-top: 0;
   margin-bottom: $spacing-unit / 4;
 }
 

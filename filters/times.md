@@ -1,5 +1,6 @@
 ---
 title: times
+description: Liquid filter that multiplies a number by another number.
 ---
 
 Multiplies a number by another number.
