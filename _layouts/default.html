@@ -16,12 +16,29 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
     <link rel="stylesheet" href="{{ '/css/main.css' | prepend: site.baseurl }}">
+    <link rel="icon" type="image/png" href="{{ '/images/icons/water-drop-32x.png' | prepend: site.baseurl }}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{{ '/images/icons/water-drop-64x.png' | prepend: site.baseurl }}" sizes="64x64">
+    <link rel="icon" href="{{ '/images/icons/water-drop.svg' | prepend: site.baseurl }}">
     <link rel="canonical" href="{{ page.url | replace: 'index.html','' | prepend: site.baseurl | prepend: site.url }}">
     <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" />
+
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site.url | append: site.baseurl }}">
+    <meta property="og:title" content="{{ page.title | default: site.title }}">
+    <meta property="og:description" content="{{ page.description | default: site.description }}">
+
+    <meta name="twitter:site" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:url" content="{{ site.url | append: site.baseurl }}">
+    <meta name="twitter:title" content="{{ page.title | default: site.title }}">
+    <meta name="twitter:description" content="{{ page.description | default: site.description }}">
+
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   </head>
 
   <body>
+    
     {% include sidebar.html %}
 
     <div class="content__overlay"></div>
@@ -35,6 +52,6 @@
         {{ content }}
       </div>
     </main>
+    <script src="{{ '/js/script.js' | prepend: site.baseurl }}"></script>
   </body>
-  <script src="{{ '/js/script.js' | prepend: site.baseurl }}"></script>
 </html>
