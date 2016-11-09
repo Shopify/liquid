@@ -17,6 +17,8 @@ Shopify's version of Liquid is documented in the [Shopify Help Center](https://h
 
 [Jekyll](https://jekyllrb.com) is a static site generator, a command-line tool that creates websites by merging templates with content files. Jekyll uses Liquid as its template language, and adds a few objects, tags, and filters. These include objects representing content pages, tags for including snippets of content in others, and filters for manipulating strings and URLs.
 
+Jekyll also powers [GitHub Pages](https://pages.github.com/), a web hosting service that lets you push a Jekyll installation to a GitHub repository and have the resulting website published. This website is built using GitHub Pages.
+
 Jekyll might not be using the latest version of Liquid. This means that the tags and filters listed on this site may not work in Jekyll. Often the Jekyll project will wait for a stable release of Liquid rather than using a beta or release candidate version. To see what version of Liquid Jekyll is using, check the **runtime dependencies** section of [Jekyll's gem page](https://rubygems.org/gems/jekyll).
 
 Jekyll's version of Liquid is documented in the [Templates section of Jekyll's documentation](http://jekyllrb.com/docs/templates/). If you want to try out Jekyll's version of Liquid, you can clone the Jekyll project or install Jekyll as a gem and test Liquid on a static site.
