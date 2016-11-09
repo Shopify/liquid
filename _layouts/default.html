@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="{{ '/css/main.css' | prepend: site.baseurl }}">
     <link rel="icon" type="image/png" href="{{ '/images/icons/water-drop-32x.png' | prepend: site.baseurl }}" sizes="32x32">
     <link rel="icon" type="image/png" href="{{ '/images/icons/water-drop-64x.png' | prepend: site.baseurl }}" sizes="64x64">
-    <link rel="icon" href="{{ '/images/icons/water-drop.svg' | prepend: site.baseurl }}">
     <link rel="canonical" href="{{ page.url | replace: 'index.html','' | prepend: site.baseurl | prepend: site.url }}">
     <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" />
 
@@ -34,11 +33,11 @@
     <meta name="twitter:title" content="{{ page.title | default: site.title }}">
     <meta name="twitter:description" content="{{ page.description | default: site.description }}">
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="{{ '/js/vendor/jquery-3.1.1.slim.min.js' | prepend: site.baseurl }}"></script>
   </head>
 
   <body>
-    
+
     {% include sidebar.html %}
 
     <div class="content__overlay"></div>

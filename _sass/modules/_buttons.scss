@@ -63,6 +63,7 @@
  ==============================================================================*/
 .menu-button {
   display: inline-block;
+  font-size: $small-font-size;
   background: none;
   border: none;
   margin: $spacing-unit / 2 0 $spacing-unit / 2 ($spacing-unit / 4 * -1);
@@ -75,8 +76,8 @@
 
   svg {
     margin-right: $spacing-unit / 4;
-    width: $base-font-size * 1.2;
-    height: $base-font-size * 1.2;
+    width: $base-font-size;
+    height: $base-font-size;
     vertical-align: middle;
   }
 
