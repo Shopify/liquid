@@ -1,5 +1,6 @@
 ---
 title: Introduction
+description: An overview of objects, tags, and filters in the Liquid template language.
 ---
 
 Liquid code can be categorized into [**objects**](#objects), [**tags**](#tags), and [**filters**](#filters).

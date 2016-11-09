@@ -1,5 +1,6 @@
 ---
 title: Control flow
+description: An overview of control flow and conditional tags in the Liquid template language.
 ---
 
 Control flow tags can change the information Liquid shows using programming logic.
