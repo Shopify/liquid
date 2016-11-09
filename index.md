@@ -1,5 +1,6 @@
 ---
 layout: default
+description: Documentation for the Liquid template language, created by Shopify.
 ---
 
 {% include home-banner.html %}
