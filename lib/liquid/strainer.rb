@@ -39,6 +39,7 @@ module Liquid
     end
 
     def self.global_filter(filter)
+      @@strainer_class_cache.clear
       @@global_strainer.add_filter(filter)
     end
 
