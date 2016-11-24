@@ -133,4 +133,16 @@ class StrainerUnitTest < Minitest::Test
     strainer.class.add_filter(PublicMethodOverrideFilter)
     assert strainer.class.filter_methods.include?('public_filter')
   end
+
+  module LateAddedFilter
+    def late_added_filter(input)
+      "filtered"
+    end
+  end
+
+  def test_global_filter_clears_cache
+    assert_equal 'input', Strainer.create(nil).invoke('late_added_filter', 'input')
+    Strainer.global_filter(LateAddedFilter)
+    assert_equal 'filtered', Strainer.create(nil).invoke('late_added_filter', 'input')
+  end
 end # StrainerTest
