@@ -7,10 +7,10 @@
   h1 {
     font-size: 4em;
 
-    &:after {
-      content: '\01F4A7'; // Water droplet emoji
-      vertical-align: middle;
-    }
+    // &:after {
+    //   content: '\01F4A7'; // Water droplet emoji
+    //   vertical-align: middle;
+    // }
 
     @include phone-and-up {
       font-size: 5em;

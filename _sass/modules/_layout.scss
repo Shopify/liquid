@@ -77,10 +77,10 @@ body {
   margin-bottom: 0;
   border-bottom: 1px solid $color-blue-4;
 
-  &:after {
-    content: '\01F4A7'; // Water droplet emoji
-    vertical-align: middle;
-  }
+  // &:after {
+  //   content: '\01F4A7'; // Water droplet emoji
+  //   vertical-align: middle;
+  // }
 
   a {
     color: $color-white;
