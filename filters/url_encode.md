@@ -1,5 +1,6 @@
 ---
 title: url_encode
+description: Liquid filter that encodes URL-unsafe characters in a string.
 ---
 
 Converts any URL-unsafe characters in a string into percent-encoded characters.

@@ -1,5 +1,6 @@
 ---
 title: Operators
+description: Using operators to perform calculations in the Liquid template language.
 ---
 
 Liquid includes many logical and comparison operators.

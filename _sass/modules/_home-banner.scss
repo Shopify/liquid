@@ -2,14 +2,22 @@
   text-align: center;
   border-bottom: 1px solid lighten($color-slate, 50%);
   padding-bottom: $spacing-unit;
+  margin-bottom: $spacing-unit;
 
   h1 {
-    font-weight: bold;
     font-size: 4em;
+
+    // &:after {
+    //   content: '\01F4A7'; // Water droplet emoji
+    //   vertical-align: middle;
+    // }
 
     @include phone-and-up {
       font-size: 5em;
     }
   }
-}
 
+  p {
+    color: lighten($color-slate, 20%);
+  }
+}

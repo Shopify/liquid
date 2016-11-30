@@ -1,5 +1,6 @@
 ---
 title: last
+description: Liquid filter that gets the last value in an array.
 ---
 
 Returns the last item of an array.

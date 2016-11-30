@@ -1,5 +1,6 @@
 ---
 title: replace
+description: Liquid filter that replaces all occurences of a given substring in a string.
 ---
 
 Replaces every occurrence of an argument in a string with the second argument.

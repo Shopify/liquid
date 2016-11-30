@@ -1,5 +1,6 @@
 ---
 title: reverse
+description: Liquid filter that reverses an array, or a string converted to an array.
 ---
 
 Reverses the order of the items in an array. `reverse` cannot reverse a string.

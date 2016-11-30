@@ -1,14 +1,3 @@
 ---
-title: Filters
-type: index
+redirect_to: /liquid/filters/abs
 ---
-
-**Filters** change the output of a Liquid object. You can append one or more filters to an object by separating the filter and its parameters by a pipe symbol `|`.
-
-{% assign filter_pages = site.pages | where: 'type', 'filter' %}
-
-{% for item in filter_pages %}
-## [{{ item.title }}]({{ item.url | prepend: site.baseurl }})
-
-{{ item.content }}
-{% endfor %}

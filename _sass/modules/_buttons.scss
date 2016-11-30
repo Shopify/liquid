@@ -1,5 +1,6 @@
 .btn {
   color: $color-white;
+  fill: currentColor;
   display: flex;
   background: $color-blue-5;
   align-items: center;
@@ -28,6 +29,14 @@
       margin-bottom: 0;
     }
   }
+
+  svg {
+    margin-right: $spacing-unit / 4;
+    width: $base-font-size * 1.5;
+    height: $base-font-size * 1.5;
+    vertical-align: middle;
+  }
+
 }
 
 .btn:visited {
@@ -49,17 +58,12 @@
   }
 }
 
-.icon {
-  vertical-align: middle;
-  margin-right: $spacing-unit / 4;
-}
-
-
 /*============================================================================
   Menu button
  ==============================================================================*/
 .menu-button {
   display: inline-block;
+  font-size: $small-font-size;
   background: none;
   border: none;
   margin: $spacing-unit / 2 0 $spacing-unit / 2 ($spacing-unit / 4 * -1);
@@ -69,4 +73,12 @@
   @include tablet-and-up {
     display: none;
   }
+
+  svg {
+    margin-right: $spacing-unit / 4;
+    width: $base-font-size;
+    height: $base-font-size;
+    vertical-align: middle;
+  }
+
 }

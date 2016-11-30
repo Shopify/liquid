@@ -1,5 +1,6 @@
 ---
 title: Variable
+description: An overview of tags for creating variables in the Liquid template language.
 ---
 
 Variable tags create new Liquid variables.

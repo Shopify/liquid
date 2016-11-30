@@ -1,5 +1,6 @@
 ---
 title: floor
+description: Liquid filter that gets the floor of a number by rounding down to the nearest integer.
 ---
 
 Rounds a number down to the nearest whole number. Liquid tries to convert the input to a number before the filter is applied.

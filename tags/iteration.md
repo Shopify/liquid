@@ -1,5 +1,6 @@
 ---
 title: Iteration
+description: An overview of iteration or 'loop' tags in the Liquid template language.
 ---
 
 Iteration tags run blocks of code repeatedly.

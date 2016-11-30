@@ -1,5 +1,6 @@
 ---
 title: slice
+description: Liquid filter that returns a substring from a given position in a string.
 ---
 
 Returns a substring of 1 character beginning at the index specified by the argument passed in. An optional second argument specifies the length of the substring to be returned.

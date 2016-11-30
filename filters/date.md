@@ -1,5 +1,6 @@
 ---
 title: date
+description: Liquid filter that prints and formats dates.
 ---
 
 Converts a timestamp into another date format. The format for this syntax is the same as [`strftime`](http://strftime.net).

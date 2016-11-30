@@ -1,35 +1,56 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>{% if page.title %}{{ page.title }} – {% endif %}{{ site.title }}</title>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
+    <meta name="description" content="{{ page.description | default: site.description }}">
+    <meta name="author" content="Shopify">
+
+    <meta name="robots" content="index, follow">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
     <link rel="stylesheet" href="{{ '/css/main.css' | prepend: site.baseurl }}">
-    <link href='//fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+    <link rel="icon" type="image/png" href="{{ '/images/icons/water-drop-32x.png' | prepend: site.baseurl }}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{{ '/images/icons/water-drop-64x.png' | prepend: site.baseurl }}" sizes="64x64">
+    <link rel="canonical" href="{{ page.url | replace: 'index.html','' | prepend: site.baseurl | prepend: site.url }}">
     <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" />
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site.url | append: site.baseurl }}">
+    <meta property="og:title" content="{{ page.title | default: site.title }}">
+    <meta property="og:description" content="{{ page.description | default: site.description }}">
+
+    <meta name="twitter:site" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:url" content="{{ site.url | append: site.baseurl }}">
+    <meta name="twitter:title" content="{{ page.title | default: site.title }}">
+    <meta name="twitter:description" content="{{ page.description | default: site.description }}">
+
+    <script src="{{ '/js/vendor/jquery-3.1.1.slim.min.js' | prepend: site.baseurl }}"></script>
   </head>
 
   <body>
+
     {% include sidebar.html %}
 
     <div class="content__overlay"></div>
     <main class="content__area" role="main">
       <div class="content">
         <button class="menu-button">
-          <i class="icon fa fa-2x fa-bars" aria-hidden="true"></i>
+          <span aria-hidden="true">{% include icons/three-bars.svg %}</span>
           <span>Menu</span>
         </button>
         <h1>{{ page.title }}</h1>
         {{ content }}
       </div>
     </main>
+    <script src="{{ '/js/script.js' | prepend: site.baseurl }}"></script>
   </body>
-  <script src="{{ '/js/script.js' | prepend: site.baseurl }}"></script>
 </html>

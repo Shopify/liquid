@@ -1,5 +1,6 @@
 ---
 title: append
+description: Liquid filter that appends a string to another string.
 ---
 
 Concatenates two strings and returns the concatenated value.

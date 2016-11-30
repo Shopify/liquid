@@ -1,5 +1,6 @@
 ---
 title: upcase
+description: Liquid filter that capitalizes every character in a string.
 ---
 
 Makes each character in a string uppercase. It has no effect on strings which are already all uppercase.
