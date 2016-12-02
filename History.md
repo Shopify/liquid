@@ -3,6 +3,7 @@
 ## 4.0.0 / not yet released / branch "master"
 
 ### Changed
+* Render an opaque internal error by default for non-Liquid::Error (#835) [Dylan Thacker-Smith]
 * Ruby 2.0 support dropped (#832) [Dylan Thacker-Smith]
 * Add to_number Drop method to allow custom drops to work with number filters (#731)
 * Add strict_variables and strict_filters options to detect undefined references (#691)

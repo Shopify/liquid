@@ -13,7 +13,7 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
-    attr_accessor :exception_handler, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
+    attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
       @environments     = [environments].flatten
@@ -28,7 +28,7 @@ module Liquid
       @this_stack_used = false
 
       if rethrow_errors
-        self.exception_handler = ->(e) { raise }
+        self.exception_renderer = ->(e) { raise }
       end
 
       @interrupts = []
@@ -74,32 +74,13 @@ module Liquid
     end
 
     def handle_error(e, line_number = nil, raw_token = nil)
-      if e.is_a?(Liquid::Error)
-        e.template_name ||= template_name
-        e.line_number ||= line_number
-      end
-
-      output = nil
-
-      if exception_handler
-        args = [e]
-        args << { line_number: line_number, raw_token: raw_token } if exception_handler.arity == 2
-        result = exception_handler.call(*args)
-        case result
-        when Exception
-          e = result
-          if e.is_a?(Liquid::Error)
-            e.template_name ||= template_name
-            e.line_number ||= line_number
-          end
-        when String
-          output = result
-        else
-          raise if result
-        end
-      end
+      e = internal_error unless e.is_a?(Liquid::Error)
+      e.template_name ||= template_name
+      e.line_number ||= line_number
       errors.push(e)
-      output || Liquid::Error.render(e)
+
+      e = exception_renderer.call(e) if exception_renderer
+      e.to_s
     end
 
     def invoke(method, *args)
@@ -222,6 +203,13 @@ module Liquid
     end
 
     private
+
+    def internal_error
+      # raise and catch to set backtrace and cause on exception
+      raise Liquid::InternalError, 'internal'
+    rescue Liquid::InternalError => exc
+      exc
+    end
 
     def squash_instance_assigns_with_environments
       @scopes.last.each_key do |k|
