@@ -332,6 +332,12 @@ module Liquid
       raise Liquid::ZeroDivisionError, e.message
     end
 
+    # percentage
+    def percentage_of(input, operand)
+      floating_product = apply_operation(input, 100.0, :*)
+      apply_operation(floating_product, operand, :/)
+    end
+
     def round(input, n = 0)
       result = Utils.to_number(input).round(Utils.to_number(n))
       result = result.to_f if result.is_a?(BigDecimal)
