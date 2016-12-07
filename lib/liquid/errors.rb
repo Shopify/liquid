@@ -17,14 +17,6 @@ module Liquid
       str
     end
 
-    def self.render(e)
-      if e.is_a?(Liquid::Error)
-        e.to_s
-      else
-        "Liquid error: #{e}"
-      end
-    end
-
     private
 
     def message_prefix
@@ -60,4 +52,5 @@ module Liquid
   UndefinedDropMethod = Class.new(Error)
   UndefinedFilter = Class.new(Error)
   MethodOverrideError = Class.new(Error)
+  InternalError = Class.new(Error)
 end

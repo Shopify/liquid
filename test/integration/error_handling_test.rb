@@ -202,22 +202,26 @@ class ErrorHandlingTest < Minitest::Test
     end
   end
 
-  def test_exception_handler_with_string_result
-    template = Liquid::Template.parse('This is an argument error: {{ errors.argument_error }}')
-    output = template.render({ 'errors' => ErrorDrop.new }, exception_handler: ->(e) { '' })
-    assert_equal 'This is an argument error: ', output
-    assert_equal [ArgumentError], template.errors.map(&:class)
-  end
-
-  class InternalError < Liquid::Error
-  end
-
-  def test_exception_handler_with_exception_result
+  def test_default_exception_renderer_with_internal_error
     template = Liquid::Template.parse('This is a runtime error: {{ errors.runtime_error }}', line_numbers: true)
-    handler = ->(e) { e.is_a?(Liquid::Error) ? e : InternalError.new('internal') }
-    output = template.render({ 'errors' => ErrorDrop.new }, exception_handler: handler)
+
+    output = template.render({ 'errors' => ErrorDrop.new })
+
     assert_equal 'This is a runtime error: Liquid error (line 1): internal', output
-    assert_equal [InternalError], template.errors.map(&:class)
+    assert_equal [Liquid::InternalError], template.errors.map(&:class)
+  end
+
+  def test_exception_renderer_exposing_non_liquid_error
+    template = Liquid::Template.parse('This is a runtime error: {{ errors.runtime_error }}', line_numbers: true)
+    exceptions = []
+    handler = ->(e) { exceptions << e; e.cause }
+
+    output = template.render({ 'errors' => ErrorDrop.new }, exception_renderer: handler)
+
+    assert_equal 'This is a runtime error: runtime error', output
+    assert_equal [Liquid::InternalError], exceptions.map(&:class)
+    assert_equal exceptions, template.errors
+    assert_equal '#<RuntimeError: runtime error>', exceptions.first.cause.inspect
   end
 
   class TestFileSystem
