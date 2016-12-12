@@ -27,6 +27,7 @@ module Liquid
 
       @this_stack_used = false
 
+      self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors
         self.exception_renderer = ->(e) { raise }
       end
@@ -78,9 +79,7 @@ module Liquid
       e.template_name ||= template_name
       e.line_number ||= line_number
       errors.push(e)
-
-      e = exception_renderer.call(e) if exception_renderer
-      e.to_s
+      exception_renderer.call(e).to_s
     end
 
     def invoke(method, *args)

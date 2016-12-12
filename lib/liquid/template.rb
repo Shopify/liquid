@@ -69,6 +69,11 @@ module Liquid
       # :error raises an error when tainted output is used
       attr_writer :taint_mode
 
+      attr_accessor :default_exception_renderer
+      Template.default_exception_renderer = lambda do |exception|
+        exception
+      end
+
       def file_system
         @@file_system
       end
