@@ -1,6 +1,6 @@
 # Liquid Change Log
 
-## 4.0.0 / not yet released / branch "master"
+## 4.0.0 / 2016-12-14 / branch "4-0-stable"
 
 ### Changed
 * Render an opaque internal error by default for non-Liquid::Error (#835) [Dylan Thacker-Smith]
