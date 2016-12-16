@@ -1,12 +1,17 @@
-$menuButton = $(".menu-button");
-$sidebar = $(".sidebar");
-$contentOverlay = $(".content__overlay");
+var $menuButton = document.querySelector('.menu-button');
+var $sidebar = document.querySelector('.sidebar');
+var $contentOverlay = document.querySelector('.content__overlay');
 
+document.addEventListener('DOMContentLoaded', function() {
 
-$(document).ready(function() {
-
-  $menuButton.add($contentOverlay).on("click", function() {
-    $sidebar.toggleClass("sidebar--is-visible");
-    $contentOverlay.toggleClass("content__overlay--is-active");
+  $menuButton.addEventListener('click', function() {
+    $sidebar.classList.toggle('sidebar--is-visible');
+    $contentOverlay.classList.toggle('content__overlay--is-active');
   });
-})
+
+  $contentOverlay.addEventListener('click', function() {
+    $sidebar.classList.toggle('sidebar--is-visible');
+    $contentOverlay.classList.toggle('content__overlay--is-active');
+  });
+
+});
