@@ -45,7 +45,7 @@
           <span aria-hidden="true">{% include icons/three-bars.svg %}</span>
           <span>Menu</span>
         </button>
-        <h1>{{ page.title }}</h1>
+        {% unless hide_title %}<h1>{{ page.title }}</h1>{% endunless %}
         {{ content }}
       </div>
     </main>
