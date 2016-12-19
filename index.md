@@ -1,5 +1,6 @@
 ---
 layout: default
+title: Index
 hide_title: true
 description: Documentation for the Liquid template language, created by Shopify.
 ---
