@@ -64,6 +64,11 @@ class ConditionUnitTest < Minitest::Test
     assert_evaluates_argument_error '1', '<=', 0
   end
 
+  def test_hash_compare_backwards_compatibility
+    assert_equal nil, Condition.new({}, '>', 2).evaluate
+    assert_equal nil, Condition.new(2, '>', {}).evaluate
+  end
+
   def test_contains_works_on_arrays
     @context = Liquid::Context.new
     @context['array'] = [1, 2, 3, 4, 5]
