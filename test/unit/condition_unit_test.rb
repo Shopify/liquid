@@ -67,6 +67,8 @@ class ConditionUnitTest < Minitest::Test
   def test_hash_compare_backwards_compatibility
     assert_equal nil, Condition.new({}, '>', 2).evaluate
     assert_equal nil, Condition.new(2, '>', {}).evaluate
+    assert_equal false, Condition.new({}, '==', 2).evaluate
+    assert_equal true, Condition.new({ 'a' => 2 }, 'contains', 'a').evaluate
   end
 
   def test_contains_works_on_arrays
