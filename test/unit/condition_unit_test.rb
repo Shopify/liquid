@@ -68,6 +68,7 @@ class ConditionUnitTest < Minitest::Test
     assert_equal nil, Condition.new({}, '>', 2).evaluate
     assert_equal nil, Condition.new(2, '>', {}).evaluate
     assert_equal false, Condition.new({}, '==', 2).evaluate
+    assert_equal true, Condition.new({ 'a' => 1 }, '==', { 'a' => 1 }).evaluate
     assert_equal true, Condition.new({ 'a' => 2 }, 'contains', 'a').evaluate
   end
 
