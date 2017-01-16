@@ -57,6 +57,11 @@ class ConditionUnitTest < Minitest::Test
     assert_evaluates_argument_error 1, '~~', 0
   end
 
+  def test_comparing_hash_and_integer
+    assert_evaluates_argument_error({a: 1}, '>', 1)
+    assert_evaluates_argument_error(1, '>', {a: 1})
+  end
+
   def test_comparation_of_int_and_str
     assert_evaluates_argument_error '1', '>', 0
     assert_evaluates_argument_error '1', '<', 0
