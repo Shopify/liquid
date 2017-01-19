@@ -20,7 +20,7 @@
 * Add concat filter to concatenate arrays (#429) [Diogo Beato]
 * Ruby 1.9 support dropped (#491) [Justin Li]
 * Liquid::Template.file_system's read_template_file method is no longer passed the context. (#441) [James Reid-Smith]
-* Remove support for `liquid_methods`
+* Remove `liquid_methods` (See https://github.com/Shopify/liquid/pull/568 for replacement)
 * Liquid::Template.register_filter raises when the module overrides registered public methods as private or protected (#705) [Gaurav Chande]
 
 ### Fixed
