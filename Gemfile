@@ -3,9 +3,12 @@ source 'https://rubygems.org'
 gemspec
 gem 'stackprof', platforms: :mri_21
 
+group :benchmark, :test do
+  gem 'benchmark-ips'
+end
+
 group :test do
   gem 'spy', '0.4.1'
-  gem 'benchmark-ips'
   gem 'rubocop', '0.34.2'
 
   platform :mri do
