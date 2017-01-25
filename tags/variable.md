@@ -55,6 +55,24 @@ Captures the string inside of the opening and closing tags and assigns it to a v
 ```text
 I am being captured.
 ```
+Using `capture`, you can create complex strings using other variables created with `assign`.
+
+<p class="code-label">Input</p>
+```text
+{% assign favorite_food = 'pizza' %}
+{% assign age = 35 %}
+
+{% capture about_me %}
+I am {{ age }} and my favorite food is {{ favorite_food }}.
+{% endcapture %}
+
+{{ about_me }}
+```
+
+<p class="code-label">Output</p>
+```text
+I am 35 and my favourite food is pizza.
+```
 
 ## increment
 
