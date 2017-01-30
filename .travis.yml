@@ -19,6 +19,10 @@ matrix:
   allow_failures:
     - rvm: jruby-head
 
+install:
+  - gem install rainbow -v 2.2.1
+  - bundle install
+
 script: "bundle exec rake"
 
 notifications:
