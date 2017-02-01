@@ -384,7 +384,7 @@ module Liquid
       end
 
       def join(glue)
-        to_a.join(glue)
+        to_a.join(glue.to_s)
       end
 
       def concat(args)

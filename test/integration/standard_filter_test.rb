@@ -170,6 +170,7 @@ class StandardFiltersTest < Minitest::Test
   def test_join
     assert_equal '1 2 3 4', @filters.join([1, 2, 3, 4])
     assert_equal '1 - 2 - 3 - 4', @filters.join([1, 2, 3, 4], ' - ')
+    assert_equal '1121314', @filters.join([1, 2, 3, 4], 1)
   end
 
   def test_sort
