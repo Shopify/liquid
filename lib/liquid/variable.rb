@@ -25,7 +25,7 @@ module Liquid
       parse_with_selected_parser(markup)
     end
 
-    def raw
+    def raw_liquid
       @markup
     end
 
