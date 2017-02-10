@@ -74,7 +74,7 @@ module Liquid
       @interrupts.pop
     end
 
-    def handle_error(e, line_number = nil, raw_token = nil)
+    def handle_error(e, line_number = nil)
       e = internal_error unless e.is_a?(Liquid::Error)
       e.template_name ||= template_name
       e.line_number ||= line_number

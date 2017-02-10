@@ -93,10 +93,11 @@ module Liquid
         rescue MemoryError => e
           raise e
         rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
-          context.handle_error(e, token.line_number, token.raw)
+          context.handle_error(e, token.line_number)
           output << nil
         rescue ::StandardError => e
-          output << context.handle_error(e, token.line_number, token.raw)
+          line_number = token.is_a?(String) ? nil : token.line_number
+          output << context.handle_error(e, line_number)
         end
       end
 
@@ -106,7 +107,7 @@ module Liquid
     private
 
     def render_node(node, context)
-      node_output = (node.respond_to?(:render) ? node.render(context) : node)
+      node_output = node.is_a?(String) ? node : node.render(context)
       node_output = node_output.is_a?(Array) ? node_output.join : node_output.to_s
 
       context.resource_limits.render_length += node_output.length
