@@ -107,7 +107,7 @@ module Liquid
     private
 
     def render_node(node, context)
-      node_output = (node.respond_to?(:render) ? node.render(context) : node)
+      node_output = node.is_a?(String) ? node : node.render(context)
       node_output = node_output.is_a?(Array) ? node_output.join : node_output.to_s
 
       context.resource_limits.render_length += node_output.length
