@@ -133,7 +133,7 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 
 ### reversed
 
-Reverses the order of the loop.
+Reverses the order of the loop. Note that the flag’s spelling is different to the filter `reverse`.
 
 <p class="code-label">Input</p>
 ```liquid
