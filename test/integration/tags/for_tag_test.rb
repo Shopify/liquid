@@ -111,6 +111,17 @@ HERE
     assert_template_result('34', '{%for i in array limit: limit offset: offset %}{{ i }}{%endfor%}', assigns)
   end
 
+  def test_separator
+    assigns = { 'array' => [1, 2, 3] }
+    assert_template_result('1+2+3', "{%for i in array separator: '+' %}{{ i }}{%endfor%}", assigns)
+  end
+
+  def test_dynamic_variable_separator
+    assigns = { 'array' => [1, 2, 3] }
+    assigns['separator'] = ' & '
+    assert_template_result('1 & 2 & 3', '{%for i in array separator: separator %}{{ i }}{%endfor%}', assigns)
+  end
+
   def test_nested_for
     assigns = { 'array' => [[1, 2], [3, 4], [5, 6]] }
     assert_template_result('123456', '{%for item in array%}{%for i in item%}{{ i }}{%endfor%}{%endfor%}', assigns)

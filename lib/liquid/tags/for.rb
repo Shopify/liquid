@@ -23,6 +23,12 @@ module Liquid
   #      {{ item.name }}
   #    {% end %}
   #
+  # You can also define a separator to be output between items.
+  #
+  #    {% for item in collection separator: '&' %}
+  #      {{ item.name }}
+  #    {% end %}
+  #
   #  To reverse the for loop simply use {% for item in collection reversed %}
   #
   # == Available variables:
@@ -104,8 +110,8 @@ module Liquid
       @collection_name = Expression.parse(collection_name)
       @reversed = p.id?('reversed'.freeze)
 
-      while p.look(:id) && p.look(:colon, 1)
-        unless attribute = p.id?('limit'.freeze) || p.id?('offset'.freeze)
+      while p.look(:id) && p.look(:colon, 1) || p.id?('separator'.freeze)
+        unless attribute = p.id?('limit'.freeze) || p.id?('offset'.freeze) || p.id?('separator'.freeze)
           raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute".freeze))
         end
         p.consume
@@ -143,6 +149,9 @@ module Liquid
       for_stack = context.registers[:for_stack] ||= []
       length = segment.length
 
+      separator = context.evaluate(@separator)
+      separator = separator.to_s if separator
+
       result = ''
 
       context.stack do
@@ -156,6 +165,7 @@ module Liquid
           segment.each_with_index do |item, index|
             context[@variable_name] = item
             result << @for_block.render(context)
+            result << separator if separator && index != length - 1
             loop_vars.send(:increment!)
 
             # Handle any interrupts if they exist.
@@ -183,6 +193,8 @@ module Liquid
         end
       when 'limit'.freeze
         @limit = Expression.parse(expr)
+      when 'separator'.freeze
+        @separator = Expression.parse(expr)
       end
     end
 
