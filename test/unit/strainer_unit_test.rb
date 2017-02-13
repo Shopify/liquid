@@ -145,4 +145,13 @@ class StrainerUnitTest < Minitest::Test
     Strainer.global_filter(LateAddedFilter)
     assert_equal 'filtered', Strainer.create(nil).invoke('late_added_filter', 'input')
   end
+
+  def test_add_filter_returns_nil_when_a_filter_module_was_added
+    a = Module.new
+    strainer = Context.new.strainer
+    result1 = strainer.class.add_filter(a)
+    result2 = strainer.class.add_filter(a)
+    assert_kind_of Set, result1
+    assert_kind_of NilClass, result2
+  end
 end # StrainerTest
