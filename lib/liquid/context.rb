@@ -171,7 +171,7 @@ module Liquid
       if scope.nil?
         @environments.each do |e|
           variable = lookup_and_evaluate(e, key)
-          unless variable.nil?
+          if @strict_variables || !variable.nil?
             scope = e
             break
           end
