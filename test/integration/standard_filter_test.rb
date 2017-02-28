@@ -151,7 +151,6 @@ class StandardFiltersTest < Minitest::Test
   def test_json_parse
     assert_equal({ "foo" => "bar" }, @filters.json_parse('{"foo":"bar"}'))
     assert_equal({ "foo" => 2 }, @filters.json_parse('{"foo":2}'))
-    assert_equal "Liquid error: 743: unexpected token at 'foo'", Template.parse("{{ 'foo' | json_parse }}").render
     assert_template_result "foo", '{{ \'"foo"\' | json_parse }}', {}
     assert_template_result "{\"foo\"=>{\"bar\"=>[1, 2, 3]}}", '{% assign json_result = json_data | json_parse %}{{ json_result }}', "json_data" => '{"foo":{"bar":[1,2,3]}}'
     assert_template_result "{\"bar\"=>[1, 2, 3]}", '{% assign json_result = json_data | json_parse %}{{ json_result.foo }}', "json_data" => '{"foo":{"bar":[1,2,3]}}'
