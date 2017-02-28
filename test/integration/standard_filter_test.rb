@@ -148,6 +148,23 @@ class StandardFiltersTest < Minitest::Test
     assert_equal nil, @filters.url_decode(nil)
   end
 
+  def test_json_parse
+    assert_equal({ "foo" => "bar" }, @filters.json_parse('{"foo":"bar"}'))
+    assert_equal({ "foo" => 2 }, @filters.json_parse('{"foo":2}'))
+    assert_equal "Liquid error: 743: unexpected token at 'foo'", Template.parse("{{ 'foo' | json_parse }}").render
+    assert_template_result "foo", '{{ \'"foo"\' | json_parse }}', {}
+    assert_template_result "{\"foo\"=>{\"bar\"=>[1, 2, 3]}}", '{% assign json_result = json_data | json_parse %}{{ json_result }}', "json_data" => '{"foo":{"bar":[1,2,3]}}'
+    assert_template_result "{\"bar\"=>[1, 2, 3]}", '{% assign json_result = json_data | json_parse %}{{ json_result.foo }}', "json_data" => '{"foo":{"bar":[1,2,3]}}'
+    assert_template_result "123", '{% assign json_result = json_data | json_parse %}{{ json_result.foo.bar }}', "json_data" => '{"foo":{"bar":[1,2,3]}}'
+    assert_template_result "123", '{% assign json_result = json_data | json_parse %}{{ json_result.foo["bar"] }}', "json_data" => '{"foo":{"bar":[1,2,3]}}'
+    assert_template_result "1", '{% assign json_result = json_data | json_parse %}{{ json_result.foo.bar[0] }}', "json_data" => '{"foo":{"bar":[1,2,3]}}'
+    assert_equal nil, @filters.json_parse(nil)
+    assert_equal 9, @filters.json_parse(9)
+    assert_raises(Liquid::JsonParserError) do
+      @filters.json_parse('invalid json {{')
+    end
+  end
+
   def test_truncatewords
     assert_equal 'one two three', @filters.truncatewords('one two three', 4)
     assert_equal 'one two...', @filters.truncatewords('one two three', 2)
