@@ -288,6 +288,20 @@ class TemplateTest < Minitest::Test
     end
   end
 
+  def test_undefined_drop_methods_raise_with_global_setting
+    old_strict_variables = Template.strict_variables
+    Template.strict_variables = true
+
+    d = DropWithUndefinedMethod.new
+    t = Template.new.parse('{{ foo }} {{ woot }}')
+
+    assert_raises UndefinedDropMethod do
+      t.render!(d)
+    end
+  ensure
+    Template.strict_variables = old_strict_variables
+  end
+
   def test_undefined_filters
     t = Template.parse("{{a}} {{x | upcase | somefilter1 | somefilter2 | somefilter3}}")
     filters = Module.new do
@@ -309,6 +323,19 @@ class TemplateTest < Minitest::Test
     assert_raises UndefinedFilter do
       t.render!({ 'x' => 'foo' }, { strict_filters: true })
     end
+  end
+
+  def test_undefined_filters_raise_with_global_setting
+    old_strict_filters = Template.strict_filters
+    Template.strict_filters = true
+
+    t = Template.parse("{{x | somefilter1 | upcase | somefilter2}}")
+
+    assert_raises UndefinedFilter do
+      t.render!({ 'x' => 'foo' })
+    end
+  ensure
+    Template.strict_filters = old_strict_filters
   end
 
   def test_using_range_literal_works_as_expected

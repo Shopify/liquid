@@ -54,7 +54,7 @@ For standard use you can just pass it the content of a file and call render with
 
 Setting the error mode of Liquid lets you specify how strictly you want your templates to be interpreted.
 Normally the parser is very lax and will accept almost anything without error. Unfortunately this can make
-it very hard to debug and can lead to unexpected behaviour. 
+it very hard to debug and can lead to unexpected behaviour.
 
 Liquid also comes with a stricter parser that can be used when editing templates to give better error messages
 when templates are invalid. You can enable this new parser like this:
@@ -103,4 +103,15 @@ If you want to raise on a first exception instead of pushing all of them in `err
 template = Liquid::Template.parse("{{x}} {{y}}")
 template.render!({ 'x' => 1}, { strict_variables: true })
 #=> Liquid::UndefinedVariable: Liquid error: undefined variable y
+```
+
+It is also possible to register theses settings globally:
+
+```ruby
+Liquid::Template.strict_variables = true
+Liquid::Template.strict_filters = true
+
+template = Liquid::Template.parse("{{ x | filter1 }}")
+template.render! # => Liquid::UndefinedVariable: Liquid error: undefined variable x
+template.render!({ 'x' => 'foo' }) # => Liquid::UndefinedFilter: Liquid error: undefined filter filter1
 ```

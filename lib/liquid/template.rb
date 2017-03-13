@@ -63,6 +63,8 @@ module Liquid
       # :strict will enforce correct syntax.
       attr_writer :error_mode
 
+      attr_accessor :strict_filters, :strict_variables
+
       # Sets how strict the taint checker should be.
       # :lax is the default, and ignores the taint flag completely
       # :warn adds a warning, but does not interrupt the rendering
@@ -186,6 +188,9 @@ module Liquid
       else
         raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
       end
+
+      context.strict_variables = self.class.strict_variables if self.class.strict_variables
+      context.strict_filters = self.class.strict_filters if self.class.strict_filters
 
       case args.last
       when Hash
