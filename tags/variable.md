@@ -58,7 +58,8 @@ I am being captured.
 Using `capture`, you can create complex strings using other variables created with `assign`.
 
 <p class="code-label">Input</p>
-```text
+```liquid
+{% raw %}
 {% assign favorite_food = 'pizza' %}
 {% assign age = 35 %}
 
@@ -67,6 +68,7 @@ I am {{ age }} and my favorite food is {{ favorite_food }}.
 {% endcapture %}
 
 {{ about_me }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
