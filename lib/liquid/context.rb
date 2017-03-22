@@ -160,7 +160,7 @@ module Liquid
     end
 
     # Fetches an object starting at the local scope and then moving up the hierachy
-    def find_variable(key)
+    def find_variable(key, raise_on_not_found: true)
       # This was changed from find() to find_index() because this is a very hot
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.key?(key) }
@@ -170,7 +170,7 @@ module Liquid
 
       if scope.nil?
         @environments.each do |e|
-          variable = lookup_and_evaluate(e, key)
+          variable = lookup_and_evaluate(e, key, raise_on_not_found: raise_on_not_found)
           unless variable.nil?
             scope = e
             break
@@ -179,7 +179,7 @@ module Liquid
       end
 
       scope ||= @environments.last || @scopes.last
-      variable ||= lookup_and_evaluate(scope, key)
+      variable ||= lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found)
 
       variable = variable.to_liquid
       variable.context = self if variable.respond_to?(:context=)
@@ -187,8 +187,8 @@ module Liquid
       variable
     end
 
-    def lookup_and_evaluate(obj, key)
-      if @strict_variables && obj.respond_to?(:key?) && !obj.key?(key)
+    def lookup_and_evaluate(obj, key, raise_on_not_found: true)
+      if @strict_variables && raise_on_not_found && obj.respond_to?(:key?) && !obj.key?(key)
         raise Liquid::UndefinedVariable, "undefined variable #{key}"
       end
 

@@ -24,6 +24,7 @@
 * Liquid::Template.register_filter raises when the module overrides registered public methods as private or protected (#705) [Gaurav Chande]
 
 ### Fixed
+* Fix include tag used with strict_variables (#828) [QuickPay]
 * Fix map filter when value is a Proc (#672) [Guillaume Malette]
 * Fix truncate filter when value is not a string (#672) [Guillaume Malette]
 * Fix behaviour of escape filter when input is nil (#665) [Tanel Jakobsoo]

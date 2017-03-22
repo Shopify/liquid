@@ -235,4 +235,11 @@ class IncludeTagTest < Minitest::Test
 
     assert_template_result "Product: Draft 151cm ", "{% assign page = 'product' %}{% include page for foo %}", "foo" => { 'title' => 'Draft 151cm' }
   end
+
+  def test_including_with_strict_variables
+    template = Liquid::Template.parse("{% include 'simple' %}", error_mode: :warn)
+    template.render(nil, strict_variables: true)
+
+    assert_equal [], template.errors
+  end
 end # IncludeTagTest

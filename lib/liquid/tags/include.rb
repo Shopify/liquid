@@ -50,7 +50,7 @@ module Liquid
       variable = if @variable_name_expr
         context.evaluate(@variable_name_expr)
       else
-        context.find_variable(template_name)
+        context.find_variable(template_name, raise_on_not_found: false)
       end
 
       old_template_name = context.template_name
