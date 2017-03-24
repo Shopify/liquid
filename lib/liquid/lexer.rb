@@ -18,10 +18,10 @@ module Liquid
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
     NUMBER_LITERAL = /-?\d+(\.\d+)?/
     DOTDOT = /\.\./
-    COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains/
+    COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains(?=\s)/
 
     def initialize(input)
-      @ss = StringScanner.new(input.rstrip)
+      @ss = StringScanner.new(input)
     end
 
     def tokenize
@@ -29,6 +29,7 @@ module Liquid
 
       until @ss.eos?
         @ss.skip(/\s*/)
+        break if @ss.eos?
         tok = case
         when t = @ss.scan(COMPARISON_OPERATOR) then [:comparison, t]
         when t = @ss.scan(SINGLE_STRING_LITERAL) then [:string, t]
