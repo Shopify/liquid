@@ -215,16 +215,20 @@ class TemplateTest < Minitest::Test
     assert_equal 'ruby error in drop', e.message
   end
 
-  def test_exception_handler_doesnt_reraise_if_it_returns_false
+  def test_exception_renderer_that_returns_string
     exception = nil
-    Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_handler: ->(e) { exception = e; false })
+    handler = ->(e) { exception = e; '<!-- error -->' }
+
+    output = Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_renderer: handler)
+
     assert exception.is_a?(Liquid::ZeroDivisionError)
+    assert_equal '<!-- error -->', output
   end
 
-  def test_exception_handler_does_reraise_if_it_returns_true
+  def test_exception_renderer_that_raises
     exception = nil
     assert_raises(Liquid::ZeroDivisionError) do
-      Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_handler: ->(e) { exception = e; true })
+      Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_renderer: ->(e) { exception = e; raise })
     end
     assert exception.is_a?(Liquid::ZeroDivisionError)
   end

@@ -115,15 +115,15 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '...', @filters.truncate('1234567890', 0)
     assert_equal '1234567890', @filters.truncate('1234567890')
     assert_equal "测试...", @filters.truncate("测试测试测试测试", 5)
+    assert_equal '12341', @filters.truncate("1234567890", 5, 1)
   end
 
   def test_split
     assert_equal ['12', '34'], @filters.split('12~34', '~')
     assert_equal ['A? ', ' ,Z'], @filters.split('A? ~ ~ ~ ,Z', '~ ~ ~')
     assert_equal ['A?Z'], @filters.split('A?Z', '~')
-    # Regexp works although Liquid does not support.
-    assert_equal ['A', 'Z'], @filters.split('AxZ', /x/)
     assert_equal [], @filters.split(nil, ' ')
+    assert_equal ['A', 'Z'], @filters.split('A1Z', 1)
   end
 
   def test_escape
@@ -154,6 +154,7 @@ class StandardFiltersTest < Minitest::Test
     assert_equal 'one two three', @filters.truncatewords('one two three')
     assert_equal 'Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221;...', @filters.truncatewords('Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221; x 16&#8221; x 10.5&#8221; high) with cover.', 15)
     assert_equal "测试测试测试测试", @filters.truncatewords('测试测试测试测试', 5)
+    assert_equal 'one two1', @filters.truncatewords("one two three", 2, 1)
   end
 
   def test_strip_html
@@ -169,11 +170,30 @@ class StandardFiltersTest < Minitest::Test
   def test_join
     assert_equal '1 2 3 4', @filters.join([1, 2, 3, 4])
     assert_equal '1 - 2 - 3 - 4', @filters.join([1, 2, 3, 4], ' - ')
+    assert_equal '1121314', @filters.join([1, 2, 3, 4], 1)
   end
 
   def test_sort
     assert_equal [1, 2, 3, 4], @filters.sort([4, 3, 2, 1])
     assert_equal [{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], @filters.sort([{ "a" => 4 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a")
+  end
+
+  def test_sort_when_property_is_sometimes_missing_puts_nils_last
+    input = [
+      { "price" => 4, "handle" => "alpha" },
+      { "handle" => "beta" },
+      { "price" => 1, "handle" => "gamma" },
+      { "handle" => "delta" },
+      { "price" => 2, "handle" => "epsilon" }
+    ]
+    expectation = [
+      { "price" => 1, "handle" => "gamma" },
+      { "price" => 2, "handle" => "epsilon" },
+      { "price" => 4, "handle" => "alpha" },
+      { "handle" => "delta" },
+      { "handle" => "beta" }
+    ]
+    assert_equal expectation, @filters.sort(input, "price")
   end
 
   def test_sort_empty_array

@@ -23,7 +23,7 @@ module Liquid
   #      {{ item.name }}
   #    {% end %}
   #
-  #  To reverse the for loop simply use {% for item in collection reversed %}
+  #  To reverse the for loop simply use {% for item in collection reversed %} (note that the flag's spelling is different to the filter `reverse`)
   #
   # == Available variables:
   #

@@ -27,7 +27,7 @@ module Liquid
 
     def self.add_filter(filter)
       raise ArgumentError, "Expected module but got: #{filter.class}" unless filter.is_a?(Module)
-      unless self.class.include?(filter)
+      unless self.include?(filter)
         invokable_non_public_methods = (filter.private_instance_methods + filter.protected_instance_methods).select { |m| invokable?(m) }
         if invokable_non_public_methods.any?
           raise MethodOverrideError, "Filter overrides registered public methods as non public: #{invokable_non_public_methods.join(', ')}"
@@ -39,6 +39,7 @@ module Liquid
     end
 
     def self.global_filter(filter)
+      @@strainer_class_cache.clear
       @@global_strainer.add_filter(filter)
     end
 

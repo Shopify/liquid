@@ -69,6 +69,11 @@ module Liquid
       # :error raises an error when tainted output is used
       attr_writer :taint_mode
 
+      attr_accessor :default_exception_renderer
+      Template.default_exception_renderer = lambda do |exception|
+        exception
+      end
+
       def file_system
         @@file_system
       end
@@ -167,7 +172,7 @@ module Liquid
         c = args.shift
 
         if @rethrow_errors
-          c.exception_handler = ->(e) { raise }
+          c.exception_renderer = ->(e) { raise }
         end
 
         c
@@ -241,7 +246,7 @@ module Liquid
     def apply_options_to_context(context, options)
       context.add_filters(options[:filters]) if options[:filters]
       context.global_filter = options[:global_filter] if options[:global_filter]
-      context.exception_handler = options[:exception_handler] if options[:exception_handler]
+      context.exception_renderer = options[:exception_renderer] if options[:exception_renderer]
       context.strict_variables = options[:strict_variables] if options[:strict_variables]
       context.strict_filters = options[:strict_filters] if options[:strict_filters]
     end

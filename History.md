@@ -1,8 +1,10 @@
 # Liquid Change Log
 
-## 4.0.0 / not yet released / branch "master"
+## 4.0.0 / 2016-12-14 / branch "4-0-stable"
 
 ### Changed
+* Render an opaque internal error by default for non-Liquid::Error (#835) [Dylan Thacker-Smith]
+* Ruby 2.0 support dropped (#832) [Dylan Thacker-Smith]
 * Add to_number Drop method to allow custom drops to work with number filters (#731)
 * Add strict_variables and strict_filters options to detect undefined references (#691)
 * Improve loop performance (#681) [Florian Weingarten]
@@ -18,11 +20,13 @@
 * Add concat filter to concatenate arrays (#429) [Diogo Beato]
 * Ruby 1.9 support dropped (#491) [Justin Li]
 * Liquid::Template.file_system's read_template_file method is no longer passed the context. (#441) [James Reid-Smith]
-* Remove support for `liquid_methods`
+* Remove `liquid_methods` (See https://github.com/Shopify/liquid/pull/568 for replacement)
 * Liquid::Template.register_filter raises when the module overrides registered public methods as private or protected (#705) [Gaurav Chande]
 
 ### Fixed
+
 * Fix variable names being detected as an operator when starting with contains (#788) [Michael Angell]
+* Fix include tag used with strict_variables (#828) [QuickPay]
 * Fix map filter when value is a Proc (#672) [Guillaume Malette]
 * Fix truncate filter when value is not a string (#672) [Guillaume Malette]
 * Fix behaviour of escape filter when input is nil (#665) [Tanel Jakobsoo]

@@ -65,9 +65,10 @@ module Liquid
       return if input.nil?
       input_str = input.to_s
       length = Utils.to_integer(length)
-      l = length - truncate_string.length
+      truncate_string_str = truncate_string.to_s
+      l = length - truncate_string_str.length
       l = 0 if l < 0
-      input_str.length > length ? input_str[0...l] + truncate_string : input_str
+      input_str.length > length ? input_str[0...l] + truncate_string_str : input_str
     end
 
     def truncatewords(input, words = 15, truncate_string = "...".freeze)
@@ -76,7 +77,7 @@ module Liquid
       words = Utils.to_integer(words)
       l = words - 1
       l = 0 if l < 0
-      wordlist.length > l ? wordlist[0..l].join(" ".freeze) + truncate_string : input
+      wordlist.length > l ? wordlist[0..l].join(" ".freeze) + truncate_string.to_s : input
     end
 
     # Split input string into an array of substrings separated by given pattern.
@@ -85,7 +86,7 @@ module Liquid
     #   <div class="summary">{{ post | split '//' | first }}</div>
     #
     def split(input, pattern)
-      input.to_s.split(pattern)
+      input.to_s.split(pattern.to_s)
     end
 
     def strip(input)
@@ -124,7 +125,15 @@ module Liquid
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
       elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
-        ary.sort { |a, b| a[property] <=> b[property] }
+        ary.sort do |a, b|
+          a = a[property]
+          b = b[property]
+          if a && b
+            a <=> b
+          else
+            a ? -1 : 1
+          end
+        end
       end
     end
 
@@ -375,7 +384,7 @@ module Liquid
       end
 
       def join(glue)
-        to_a.join(glue)
+        to_a.join(glue.to_s)
       end
 
       def concat(args)

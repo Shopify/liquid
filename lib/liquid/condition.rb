@@ -110,7 +110,7 @@ module Liquid
 
       if operation.respond_to?(:call)
         operation.call(self, left, right)
-      elsif left.respond_to?(operation) && right.respond_to?(operation)
+      elsif left.respond_to?(operation) && right.respond_to?(operation) && !left.is_a?(Hash) && !right.is_a?(Hash)
         begin
           left.send(operation, right)
         rescue ::ArgumentError => e

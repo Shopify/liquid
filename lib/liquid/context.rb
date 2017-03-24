@@ -13,7 +13,7 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits
-    attr_accessor :exception_handler, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
+    attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
       @environments     = [environments].flatten
@@ -27,8 +27,9 @@ module Liquid
 
       @this_stack_used = false
 
+      self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors
-        self.exception_handler = ->(e) { raise }
+        self.exception_renderer = ->(e) { raise }
       end
 
       @interrupts = []
@@ -74,30 +75,11 @@ module Liquid
     end
 
     def handle_error(e, line_number = nil)
-      if e.is_a?(Liquid::Error)
-        e.template_name ||= template_name
-        e.line_number ||= line_number
-      end
-
-      output = nil
-
-      if exception_handler
-        result = exception_handler.call(e)
-        case result
-        when Exception
-          e = result
-          if e.is_a?(Liquid::Error)
-            e.template_name ||= template_name
-            e.line_number ||= line_number
-          end
-        when String
-          output = result
-        else
-          raise if result
-        end
-      end
+      e = internal_error unless e.is_a?(Liquid::Error)
+      e.template_name ||= template_name
+      e.line_number ||= line_number
       errors.push(e)
-      output || Liquid::Error.render(e)
+      exception_renderer.call(e).to_s
     end
 
     def invoke(method, *args)
@@ -178,7 +160,7 @@ module Liquid
     end
 
     # Fetches an object starting at the local scope and then moving up the hierachy
-    def find_variable(key)
+    def find_variable(key, raise_on_not_found: true)
       # This was changed from find() to find_index() because this is a very hot
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.key?(key) }
@@ -188,7 +170,7 @@ module Liquid
 
       if scope.nil?
         @environments.each do |e|
-          variable = lookup_and_evaluate(e, key)
+          variable = lookup_and_evaluate(e, key, raise_on_not_found: raise_on_not_found)
           unless variable.nil?
             scope = e
             break
@@ -197,7 +179,7 @@ module Liquid
       end
 
       scope ||= @environments.last || @scopes.last
-      variable ||= lookup_and_evaluate(scope, key)
+      variable ||= lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found)
 
       variable = variable.to_liquid
       variable.context = self if variable.respond_to?(:context=)
@@ -205,8 +187,8 @@ module Liquid
       variable
     end
 
-    def lookup_and_evaluate(obj, key)
-      if @strict_variables && obj.respond_to?(:key?) && !obj.key?(key)
+    def lookup_and_evaluate(obj, key, raise_on_not_found: true)
+      if @strict_variables && raise_on_not_found && obj.respond_to?(:key?) && !obj.key?(key)
         raise Liquid::UndefinedVariable, "undefined variable #{key}"
       end
 
@@ -220,6 +202,13 @@ module Liquid
     end
 
     private
+
+    def internal_error
+      # raise and catch to set backtrace and cause on exception
+      raise Liquid::InternalError, 'internal'
+    rescue Liquid::InternalError => exc
+      exc
+    end
 
     def squash_instance_assigns_with_environments
       @scopes.last.each_key do |k|
