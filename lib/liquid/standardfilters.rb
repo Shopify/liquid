@@ -363,14 +363,11 @@ module Liquid
 
     # capitalize first character only unless input is either all or none caps already
     def title_case(input)
-      inputs = input.split(' ')
-      for input in inputs
-        if input.to_s == (input.to_s.downcase || input.to_s.upcase)
-          puts "case1"
-          result = input.to_s.capitalize
+      @input.split(' ').each do |e|
+        if e.to_s == e.to_s.downcase || e.to_s == e.to_s.upcase
+          result << e.to_s.capitalize
         else
-          puts "case2"
-          result = input[0].to_s.capitalize + input[1..input.length]
+          result << (e[0].to_s.capitalize + e[1..e.length])
         end
       end
     end
