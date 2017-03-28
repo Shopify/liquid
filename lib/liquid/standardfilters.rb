@@ -361,6 +361,20 @@ module Liquid
       end
     end
 
+    # capitalize first character only unless input is either all or none caps already
+    def title_case(input)
+      inputs = input.split(' ')
+      for input in inputs
+        if input.to_s == (input.to_s.downcase || input.to_s.upcase)
+          puts "case1"
+          result = input.to_s.capitalize
+        else
+          puts "case2"
+          result = input[0].to_s.capitalize + input[1..input.length]
+        end
+      end
+    end
+
     private
 
     def apply_operation(input, operand, operation)
