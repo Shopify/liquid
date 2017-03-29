@@ -32,6 +32,20 @@ module Liquid
       input.to_s.capitalize
     end
 
+    # Capitalize first character only
+    # or if input all or none caps use standard capitalization
+    def title_case(input)
+      result = []
+      input.split(' ').each do |e|
+        if e.to_s == e.to_s.downcase || e.to_s == e.to_s.upcase
+          result << e.to_s.capitalize
+        else
+          result << (e[0].to_s.capitalize + e[1..e.length])
+        end
+      end
+      result.join(' ')
+    end
+
     def escape(input)
       CGI.escapeHTML(input).untaint unless input.nil?
     end
