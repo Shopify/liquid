@@ -29,6 +29,14 @@ module Liquid
       token[1]
     end
 
+    # Like consume? Except it returns the token type rather than token contents
+    def type?(type)
+      token = @tokens[@p]
+      return false unless token && token[0] == type
+      @p += 1
+      token[0]
+    end
+
     # Like consume? Except for an :id token of a certain name
     def id?(str)
       token = @tokens[@p]

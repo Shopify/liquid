@@ -38,11 +38,13 @@ module Liquid
       @right = right
       @child_relation  = nil
       @child_condition = nil
+      @not = false
     end
 
     def evaluate(context = Context.new)
       result = interpret_condition(left, right, operator, context)
 
+      result = !result if @not
       case @child_relation
       when :or
         result || @child_condition.evaluate(context)
@@ -61,6 +63,10 @@ module Liquid
     def and(condition)
       @child_relation = :and
       @child_condition = condition
+    end
+
+    def not
+      @not = true;
     end
 
     def attach(attachment)
