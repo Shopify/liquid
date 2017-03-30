@@ -68,3 +68,17 @@ You can read more about each type of tag in their respective sections.
 ```text
 {{ "/my/fancy/url" | append: ".html" }}
 ```
+
+Multiple filters can be used on one output. They are applied from left to right.
+
+<p class="code-label">Input</p>
+```liquid
+{% raw %}
+{{ "adam!" | capitalize | prepend: "Hello " }}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+Hello Adam!
+```
