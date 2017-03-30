@@ -1,5 +1,5 @@
 ---
-title: Comments
+title: Comment
 description: An overview of comments tags in the Liquid template language.
 ---
 
