@@ -6,6 +6,9 @@ class VariableUnitTest < Minitest::Test
   def test_variable
     var = create_variable('hello')
     assert_equal VariableLookup.new('hello'), var.name
+
+    var = Variable.new('hello[goodbye ]')
+    assert_equal VariableLookup.new('hello[goodbye]'), var.name
   end
 
   def test_filters
