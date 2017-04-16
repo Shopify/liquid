@@ -8,6 +8,11 @@ class VariableUnitTest < Minitest::Test
     assert_equal VariableLookup.new('hello'), var.name
   end
 
+  def test_nested_square_brackets
+    var = Variable.new('hello[hello[0]]')
+    assert_equal VariableLookup.new('hello[0]'), var.name.instance_variable_get(:@lookups).first
+  end
+
   def test_filters
     var = create_variable('hello | textileze')
     assert_equal VariableLookup.new('hello'), var.name
