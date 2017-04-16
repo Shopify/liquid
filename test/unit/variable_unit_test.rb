@@ -8,6 +8,11 @@ class VariableUnitTest < Minitest::Test
     assert_equal VariableLookup.new('hello'), var.name
   end
 
+  def test_spaces
+    var = Variable.new('hello. goodbye | filter')
+    assert_equal VariableLookup.new('hello.goodbye'), var.name
+  end
+
   def test_filters
     var = create_variable('hello | textileze')
     assert_equal VariableLookup.new('hello'), var.name
