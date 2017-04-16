@@ -60,6 +60,10 @@ module Liquid
       end
     end
 
+    def humanize(input)
+      input.to_s.gsub('_', ' ')
+    end
+
     # Truncate a string down to x characters
     def truncate(input, length = 50, truncate_string = "...".freeze)
       return if input.nil?
