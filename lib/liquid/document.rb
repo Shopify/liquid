@@ -20,7 +20,8 @@ module Liquid
       when 'else'.freeze, 'end'.freeze
         raise SyntaxError.new(parse_context.locale.t("errors.syntax.unexpected_outer_tag".freeze, tag: tag))
       else
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.unknown_tag".freeze, tag: tag))
+        puts "[Liquid] Unknown Tag: #{tag}"
+        # raise SyntaxError.new(parse_context.locale.t("errors.syntax.unknown_tag".freeze, tag: tag))
       end
     end
   end
