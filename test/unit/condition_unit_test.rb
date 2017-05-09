@@ -130,6 +130,17 @@ class ConditionUnitTest < Minitest::Test
     assert_equal false, condition.evaluate
   end
 
+  def test_maximum_recursion_depth
+    condition = Condition.new(1, '==', 1)
+
+    assert_raises(Liquid::StackLevelError) do
+      (1..510).each do
+        condition.evaluate
+        condition.and Condition.new(2, '==', 2)
+      end
+    end
+  end
+
   def test_should_allow_custom_proc_operator
     Condition.operators['starts_with'] = proc { |cond, left, right| left =~ %r{^#{right}} }
 
