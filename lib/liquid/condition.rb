@@ -7,6 +7,7 @@ module Liquid
   #   c.evaluate #=> true
   #
   class Condition #:nodoc:
+    @@depth = 0
     @@operators = {
       '=='.freeze => ->(cond, left, right) {  cond.send(:equal_variables, left, right) },
       '!='.freeze => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
@@ -47,6 +48,11 @@ module Liquid
       when :or
         result || @child_condition.evaluate(context)
       when :and
+        @@depth += 1
+        if @@depth >= 500
+          @@depth = 0
+          raise StackLevelError, "Nesting too deep".freeze
+        end
         result && @child_condition.evaluate(context)
       else
         result
