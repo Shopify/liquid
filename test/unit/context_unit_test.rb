@@ -98,12 +98,12 @@ class ContextUnitTest < Minitest::Test
     assert_equal false, @context['bool']
 
     @context['nil'] = nil
-    assert_equal nil, @context['nil']
-    assert_equal nil, @context['nil']
+    assert_nil @context['nil']
+    assert_nil @context['nil']
   end
 
   def test_variables_not_existing
-    assert_equal nil, @context['does_not_exist']
+    assert_nil @context['does_not_exist']
   end
 
   def test_scoping
@@ -185,7 +185,7 @@ class ContextUnitTest < Minitest::Test
     @context['test'] = 'test'
     assert_equal 'test', @context['test']
     @context.pop
-    assert_equal nil, @context['test']
+    assert_nil @context['test']
   end
 
   def test_hierachical_data
@@ -300,7 +300,7 @@ class ContextUnitTest < Minitest::Test
     @context['hash'] = { 'first' => 'Hello' }
 
     assert_equal 1, @context['array.first']
-    assert_equal nil, @context['array["first"]']
+    assert_nil @context['array["first"]']
     assert_equal 'Hello', @context['hash["first"]']
   end
 
