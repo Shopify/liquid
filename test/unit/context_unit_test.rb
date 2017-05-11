@@ -70,10 +70,6 @@ class ContextUnitTest < Minitest::Test
     @context = Liquid::Context.new
   end
 
-  def teardown
-    Spy.teardown
-  end
-
   def test_variables
     @context['string'] = 'string'
     assert_equal 'string', @context['string']
@@ -450,14 +446,10 @@ class ContextUnitTest < Minitest::Test
     assert_equal @context, @context['category'].context
   end
 
-  def test_use_empty_instead_of_any_in_interrupt_handling_to_avoid_lots_of_unnecessary_object_allocations
-    mock_any = Spy.on_instance_method(Array, :any?)
-    mock_empty = Spy.on_instance_method(Array, :empty?)
-
-    @context.interrupt?
-
-    refute mock_any.has_been_called?
-    assert mock_empty.has_been_called?
+  def test_interrupt_avoids_object_allocations
+    assert_no_object_allocations do
+      @context.interrupt?
+    end
   end
 
   def test_context_initialization_with_a_proc_in_environment
@@ -479,5 +471,19 @@ class ContextUnitTest < Minitest::Test
   def test_apply_global_filter_when_no_global_filter_exist
     context = Context.new
     assert_equal 'hi', context.apply_global_filter('hi')
+  end
+
+  private
+
+  def assert_no_object_allocations
+    unless RUBY_ENGINE == 'ruby'
+      skip "stackprof needed to count object allocations"
+    end
+    require 'stackprof'
+
+    profile = StackProf.run(mode: :object) do
+      yield
+    end
+    assert_equal 0, profile[:samples]
   end
 end # ContextTest
