@@ -1,14 +1,14 @@
 source 'https://rubygems.org'
 
 gemspec
-gem 'stackprof', platforms: :mri_21
+
+gem 'stackprof', platforms: :mri
 
 group :benchmark, :test do
   gem 'benchmark-ips'
 end
 
 group :test do
-  gem 'spy', '0.4.1'
   gem 'rubocop', '0.34.2'
 
   platform :mri do
