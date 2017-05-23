@@ -1,5 +1,6 @@
 require 'cgi'
 require 'bigdecimal'
+require 'openssl'
 
 module Liquid
   module StandardFilters
@@ -351,6 +352,12 @@ module Liquid
       Utils.to_number(input).floor.to_i
     rescue ::FloatDomainError => e
       raise Liquid::FloatDomainError, e.message
+    end
+
+    def hmac_sha256(input, secret)
+      return nil if input.nil? || secret.nil?
+      digest = OpenSSL::Digest.new('sha256')
+      OpenSSL::HMAC.hexdigest(digest, secret, input)
     end
 
     def default(input, default_value = ''.freeze)

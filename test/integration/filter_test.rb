@@ -131,6 +131,12 @@ class FiltersTest < Minitest::Test
     assert_equal "Blub", Template.parse("{{ var | capitalize }}").render(@context)
   end
 
+  def test_hmac_sha256
+    @context['var'] = "foo"
+
+    assert_equal "773ba44693c7553d6ee20f61ea5d2757a9a4f4a44d2841ae4e95b52e4cd62db4", Template.parse("{{ var | hmac_sha256: 'secret' }}").render(@context)
+  end
+
   def test_nonexistent_filter_is_ignored
     @context['var'] = 1000
 
