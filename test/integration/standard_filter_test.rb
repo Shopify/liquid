@@ -134,6 +134,11 @@ class StandardFiltersTest < Minitest::Test
 
   def test_escape_once
     assert_equal '&lt;strong&gt;Hulk&lt;/strong&gt;', @filters.escape_once('&lt;strong&gt;Hulk</strong>')
+    assert_equal '&excl;1&#x00021;2&#33;', @filters.escape_once('&excl;1&#x00021;2&#33;')
+    assert_equal '&ncy;2&#x0043D;3&#1085;', @filters.escape_once('&ncy;2&#x0043D;3&#1085;')
+    assert_equal '&frac34;&#x000BE;&#190;', @filters.escape_once('&frac34;&#x000BE;&#190;')
+    assert_equal '&blk14;&#x02591;&#9617;', @filters.escape_once('&blk14;&#x02591;&#9617;')
+    assert_equal '&UpArrowBar;&DownArrowBar;', @filters.escape_once('&UpArrowBar;&DownArrowBar;')
   end
 
   def test_url_encode
