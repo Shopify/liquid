@@ -33,7 +33,7 @@ module Liquid
     end
 
     def escape(input)
-      CGI.escapeHTML(input).untaint unless input.nil?
+      CGI.escapeHTML(input.to_s).untaint unless input.nil?
     end
     alias_method :h, :escape
 
@@ -42,11 +42,11 @@ module Liquid
     end
 
     def url_encode(input)
-      CGI.escape(input) unless input.nil?
+      CGI.escape(input.to_s) unless input.nil?
     end
 
     def url_decode(input)
-      CGI.unescape(input) unless input.nil?
+      CGI.unescape(input.to_s) unless input.nil?
     end
 
     def slice(input, offset, length = nil)
