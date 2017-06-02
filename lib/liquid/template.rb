@@ -16,8 +16,6 @@ module Liquid
     attr_accessor :root
     attr_reader :resource_limits, :warnings
 
-    @@file_system = BlankFileSystem.new
-
     class TagRegistry
       include Enumerable
 
@@ -75,11 +73,11 @@ module Liquid
       end
 
       def file_system
-        @@file_system
+        Thread.current[:liquid_file_system] ||= BlankFileSystem.new
       end
 
       def file_system=(obj)
-        @@file_system = obj
+        Thread.current[:liquid_file_system] = obj
       end
 
       def register_tag(name, klass)
