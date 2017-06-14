@@ -3,6 +3,9 @@ require 'test_helper'
 class TestFileSystem
   def read_template_file(template_path)
     case template_path
+    when "products"
+      "Products: {% for product in products %}Product: {{ product.title }} {% endfor %}"
+
     when "product"
       "Product: {{ product.title }} "
 
@@ -88,6 +91,11 @@ class IncludeTagTest < Minitest::Test
   def test_include_tag_with_default_name
     assert_template_result "Product: Draft 151cm ",
       "{% include 'product' %}", "product" => { 'title' => 'Draft 151cm' }
+  end
+
+  def test_include_tag_with_array
+    assert_template_result "Products: Product: Draft 151cm Product: Element 155cm ",
+      "{% include 'products' with products %}", "products" => [ { 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' } ]
   end
 
   def test_include_tag_for
