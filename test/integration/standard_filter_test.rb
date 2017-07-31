@@ -451,7 +451,9 @@ class StandardFiltersTest < Minitest::Test
     assert_raises(Liquid::ZeroDivisionError) do
       assert_template_result "4", "{{ 1 | modulo: 0 }}"
     end
-
+    assert_raises(Liquid::ZeroDivisionError) do
+      assert_template_result "4", "{{ 1.0 | modulo: 0.0 }}"
+    end
     assert_template_result "5", "{{ price | divided_by:2 }}", 'price' => NumberLikeThing.new(10)
   end
 
@@ -460,7 +462,9 @@ class StandardFiltersTest < Minitest::Test
     assert_raises(Liquid::ZeroDivisionError) do
       assert_template_result "4", "{{ 1 | modulo: 0 }}"
     end
-
+    assert_raises(Liquid::ZeroDivisionError) do
+      assert_template_result "4", "{{ 1.0 | divided_by: 0.0 }}"
+    end
     assert_template_result "1", "{{ price | modulo:2 }}", 'price' => NumberLikeThing.new(3)
   end
 
@@ -469,7 +473,7 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "4", "{{ '4.3' | round }}"
     assert_template_result "4.56", "{{ input | round: 2 }}", 'input' => 4.5612
     assert_raises(Liquid::FloatDomainError) do
-      assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | round }}"
+      assert_template_result "4", "{{ not_a_number | round }}", 'not_a_number' => Float::NAN
     end
 
     assert_template_result "5", "{{ price | round }}", 'price' => NumberLikeThing.new(4.6)
@@ -480,7 +484,7 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "5", "{{ input | ceil }}", 'input' => 4.6
     assert_template_result "5", "{{ '4.3' | ceil }}"
     assert_raises(Liquid::FloatDomainError) do
-      assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | ceil }}"
+      assert_template_result "4", "{{ not_a_number | ceil }}", 'not_a_number' => Float::NAN
     end
 
     assert_template_result "5", "{{ price | ceil }}", 'price' => NumberLikeThing.new(4.6)
@@ -490,7 +494,7 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "4", "{{ input | floor }}", 'input' => 4.6
     assert_template_result "4", "{{ '4.3' | floor }}"
     assert_raises(Liquid::FloatDomainError) do
-      assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | floor }}"
+      assert_template_result "4", "{{ not_a_number | floor }}", 'not_a_number' => Float::NAN
     end
 
     assert_template_result "5", "{{ price | floor }}", 'price' => NumberLikeThing.new(5.4)

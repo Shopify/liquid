@@ -321,15 +321,13 @@ module Liquid
 
     # division
     def divided_by(input, operand)
+      raise Liquid::ZeroDivisionError, 'divided by 0' if operand == 0
       apply_operation(input, operand, :/)
-    rescue ::ZeroDivisionError => e
-      raise Liquid::ZeroDivisionError, e.message
     end
 
     def modulo(input, operand)
+      raise Liquid::ZeroDivisionError, 'divided by 0' if operand == 0
       apply_operation(input, operand, :%)
-    rescue ::ZeroDivisionError => e
-      raise Liquid::ZeroDivisionError, e.message
     end
 
     def round(input, n = 0)
