@@ -440,6 +440,18 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "4", "{{ price | times:2 }}", 'price' => NumberLikeThing.new(2)
   end
 
+  def test_to_power
+    assert_template_result "9", "{{ 3 | to_power:2 }}"
+    assert_template_result "4", "{{ 4 | to_power:1 }}"
+    assert_template_result "3.0", '{{ 9 | to_power:"0.5" }}'
+    assert_template_result "1", "{{ 1 | to_power:3 }}"
+    assert_template_result "0", "{{ 0 | to_power:4 }}"
+    assert_template_result "0", "{{ 'foo' | to_power:2 }}"
+    assert_template_result "4", '{{ "-2" | to_power:2 }}'
+    assert_template_result "-27", '{{ "-3" | to_power:3 }}'
+    assert_template_result "32", "{{ price | to_power:5 }}", 'price' => NumberLikeThing.new(2)
+  end
+
   def test_divided_by
     assert_template_result "4", "{{ 12 | divided_by:3 }}"
     assert_template_result "4", "{{ 14 | divided_by:3 }}"
