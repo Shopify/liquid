@@ -319,6 +319,10 @@ module Liquid
       apply_operation(input, operand, :*)
     end
 
+    def to_power(input, operand)
+      apply_operation(input, operand, :**)
+    end
+
     # division
     def divided_by(input, operand)
       apply_operation(input, operand, :/)
