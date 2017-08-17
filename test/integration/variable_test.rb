@@ -89,4 +89,8 @@ class VariableTest < Minitest::Test
   def test_multiline_variable
     assert_equal 'worked', Template.parse("{{\ntest\n}}").render!('test' => 'worked')
   end
+
+  def test_render_symbol
+    assert_template_result 'bar', '{{ foo }}', 'foo' => :bar
+  end
 end
