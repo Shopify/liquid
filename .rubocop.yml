@@ -73,9 +73,6 @@ Style/Documentation:
 Style/ClassAndModuleChildren:
   Enabled: false
 
-Style/TrailingComma:
-  Enabled: false
-
 Style/IndentHash:
   EnforcedStyle: consistent
 
