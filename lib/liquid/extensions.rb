@@ -7,6 +7,12 @@ class String # :nodoc:
   end
 end
 
+class Symbol # :nodoc:
+  def to_liquid
+    to_s
+  end
+end
+
 class Array # :nodoc:
   def to_liquid
     self
