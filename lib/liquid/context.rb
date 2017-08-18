@@ -173,7 +173,7 @@ module Liquid
           variable = lookup_and_evaluate(e, key, raise_on_not_found: raise_on_not_found)
           # When lookup returned a value OR there is no value but the lookup also did not raise
           # then it is the value we are looking for.
-          if variable != nil || @strict_variables && raise_on_not_found
+          if !variable.nil? || @strict_variables && raise_on_not_found
             scope = e
             break
           end
