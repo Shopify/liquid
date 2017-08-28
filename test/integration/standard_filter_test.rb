@@ -362,8 +362,10 @@ class StandardFiltersTest < Minitest::Test
   def test_replace
     assert_equal '2 2 2 2', @filters.replace('1 1 1 1', '1', 2)
     assert_equal '2 2 2 2', @filters.replace('1 1 1 1', 1, 2)
+    assert_equal "\\& \\& \\& \\&", @filters.replace('1 1 1 1', '1', "\\&")
     assert_equal '2 1 1 1', @filters.replace_first('1 1 1 1', '1', 2)
     assert_equal '2 1 1 1', @filters.replace_first('1 1 1 1', 1, 2)
+    assert_equal '\\& 1 1 1', @filters.replace_first("1 1 1 1", '1', "\\&")
     assert_template_result '2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}"
   end
 
