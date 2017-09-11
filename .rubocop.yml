@@ -34,7 +34,13 @@ Lint/UnusedBlockArgument:
 Lint/EndAlignment:
   AlignWith: variable
 
+Lint/LiteralInCondition:
+  Enabled: false
+
 Lint/UnusedMethodArgument:
+  Enabled: false
+
+Style/InfiniteLoop:
   Enabled: false
 
 Style/SingleLineBlockParams:
