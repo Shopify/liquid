@@ -143,11 +143,19 @@ module Liquid
       ary = InputIterator.new(input)
 
       if property.nil?
-        ary.sort { |a, b| a.casecmp(b) }
+        ary.sort { |a, b| a.to_s.casecmp(b.to_s) }
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
       elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
-        ary.sort { |a, b| a[property].casecmp(b[property]) }
+        ary.sort do |a, b|
+          a = a[property]
+          b = b[property]
+          if a && b
+            a[property].to_s.casecmp(b[property].to_s)
+          else
+            a ? -1 : 1
+          end
+        end
       end
     end
 
