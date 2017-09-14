@@ -190,6 +190,11 @@ class StandardFiltersTest < Minitest::Test
     assert_equal [{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], @filters.sort([{ "a" => 4 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a")
   end
 
+  def test_sort_with_nils
+    assert_equal [1, 2, 3, 4, nil], @filters.sort([nil, 4, 3, 2, 1])
+    assert_equal [{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }, {}], @filters.sort([{ "a" => 4 }, { "a" => 3 }, {}, { "a" => 1 }, { "a" => 2 }], "a")
+  end
+
   def test_sort_when_property_is_sometimes_missing_puts_nils_last
     input = [
       { "price" => 4, "handle" => "alpha" },
@@ -206,6 +211,16 @@ class StandardFiltersTest < Minitest::Test
       { "handle" => "beta" }
     ]
     assert_equal expectation, @filters.sort(input, "price")
+  end
+
+  def test_sort_natural
+    assert_equal ["a", "B", "c", "D"], @filters.sort_natural(["c", "D", "a", "B"])
+    assert_equal [{ "a" => "a" }, { "a" => "B" }, { "a" => "c" }, { "a" => "D" }], @filters.sort_natural([{ "a" => "D" }, { "a" => "c" }, { "a" => "a" }, { "a" => "B" }], "a")
+  end
+
+  def test_sort_natural_with_nils
+    assert_equal ["a", "B", "c", "D", nil], @filters.sort_natural([nil, "c", "D", "a", "B"])
+    assert_equal [{ "a" => "a" }, { "a" => "B" }, { "a" => "c" }, { "a" => "D" }, {}], @filters.sort_natural([{ "a" => "D" }, { "a" => "c" }, {}, { "a" => "a" }, { "a" => "B" }], "a")
   end
 
   def test_sort_natural_when_property_is_sometimes_missing_puts_nils_last
