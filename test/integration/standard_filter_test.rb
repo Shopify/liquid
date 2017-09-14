@@ -208,6 +208,47 @@ class StandardFiltersTest < Minitest::Test
     assert_equal expectation, @filters.sort(input, "price")
   end
 
+  def test_sort_natural_when_property_is_sometimes_missing_puts_nils_last
+    input = [
+      { "price" => "4", "handle" => "alpha" },
+      { "handle" => "beta" },
+      { "price" => "1", "handle" => "gamma" },
+      { "handle" => "delta" },
+      { "price" => 2, "handle" => "epsilon" }
+    ]
+    expectation = [
+      { "price" => "1", "handle" => "gamma" },
+      { "price" => 2, "handle" => "epsilon" },
+      { "price" => "4", "handle" => "alpha" },
+      { "handle" => "delta" },
+      { "handle" => "beta" }
+    ]
+    assert_equal expectation, @filters.sort_natural(input, "price")
+  end
+
+  def test_sort_natural_case_check
+    input = [
+      { "key" => "X" },
+      { "key" => "Y" },
+      { "key" => "Z" },
+      { "fake" => "t" },
+      { "key" => "a" },
+      { "key" => "b" },
+      { "key" => "c" }
+    ]
+    expectation = [
+      { "key" => "a" },
+      { "key" => "b" },
+      { "key" => "c" },
+      { "key" => "X" },
+      { "key" => "Y" },
+      { "key" => "Z" },
+      { "fake" => "t" }
+    ]
+    assert_equal expectation, @filters.sort_natural(input, "key")
+    assert_equal ["a", "b", "c", "X", "Y", "Z"], @filters.sort_natural(["X", "Y", "Z", "a", "b", "c"])
+  end
+
   def test_sort_empty_array
     assert_equal [], @filters.sort([], "a")
   end

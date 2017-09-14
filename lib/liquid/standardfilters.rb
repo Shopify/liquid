@@ -151,7 +151,7 @@ module Liquid
           a = a[property]
           b = b[property]
           if a && b
-            a[property].to_s.casecmp(b[property].to_s)
+            a.to_s.casecmp(b.to_s)
           else
             a ? -1 : 1
           end
