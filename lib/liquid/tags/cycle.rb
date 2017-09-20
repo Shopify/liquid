@@ -30,7 +30,7 @@ module Liquid
     end
 
     def render(context)
-      context.registers[:cycle] ||= Hash.new
+      context.registers[:cycle] ||= {}
 
       context.stack do
         key = context.evaluate(@name)
