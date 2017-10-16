@@ -3,7 +3,7 @@ require 'rake/testtask'
 $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
 require "liquid/version"
 
-task default: [:rubocop, :test]
+task default: [:test, :rubocop]
 
 desc 'run test suite with default parser'
 Rake::TestTask.new(:base_test) do |t|
