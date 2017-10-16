@@ -10,6 +10,12 @@ module Liquid
     def blank?
       true
     end
+
+    def parse(tokens)
+      @body = CommentBody.new
+      while parse_body(@body, tokens)
+      end
+    end
   end
 
   Template.register_tag('comment'.freeze, Comment)
