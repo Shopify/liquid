@@ -123,7 +123,7 @@ module Liquid
       elsif left.respond_to?(operation) && right.respond_to?(operation) && !left.is_a?(Hash) && !right.is_a?(Hash)
         begin
           left.send(operation, right)
-        rescue ::ArgumentError => e
+        rescue ::ArgumentError, TypeError => e
           raise Liquid::ArgumentError.new(e.message)
         end
       end
