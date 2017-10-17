@@ -120,7 +120,7 @@ module Liquid
     private
 
     def collection_segment(context)
-      offsets = context.registers[:for] ||= Hash.new(0)
+      offsets = context.registers[:for] ||= {}
 
       from = if @from == :continue
         offsets[@name].to_i
