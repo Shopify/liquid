@@ -137,7 +137,7 @@ class IncludeTagTest < Minitest::Test
 
     Liquid::Template.file_system = infinite_file_system.new
 
-    assert_raises(Liquid::StackLevelError, SystemStackError) do
+    assert_raises(Liquid::StackLevelError) do
       Template.parse("{% include 'loop' %}").render!
     end
   end
@@ -234,5 +234,12 @@ class IncludeTagTest < Minitest::Test
     assert_template_result "Product: Draft 151cm ", "{% assign page = 'product' %}{% include page %}", "product" => { 'title' => 'Draft 151cm' }
 
     assert_template_result "Product: Draft 151cm ", "{% assign page = 'product' %}{% include page for foo %}", "foo" => { 'title' => 'Draft 151cm' }
+  end
+
+  def test_including_with_strict_variables
+    template = Liquid::Template.parse("{% include 'simple' %}", error_mode: :warn)
+    template.render(nil, strict_variables: true)
+
+    assert_equal [], template.errors
   end
 end # IncludeTagTest

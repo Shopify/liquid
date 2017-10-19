@@ -63,4 +63,18 @@ class SecurityTest < Minitest::Test
 
     assert_equal [], (Symbol.all_symbols - current_symbols)
   end
+
+  def test_max_depth_nested_blocks_does_not_raise_exception
+    depth = Liquid::Block::MAX_DEPTH
+    code = "{% if true %}" * depth + "rendered" + "{% endif %}" * depth
+    assert_equal "rendered", Template.parse(code).render!
+  end
+
+  def test_more_than_max_depth_nested_blocks_raises_exception
+    depth = Liquid::Block::MAX_DEPTH + 1
+    code = "{% if true %}" * depth + "rendered" + "{% endif %}" * depth
+    assert_raises(Liquid::StackLevelError) do
+      Template.parse(code).render!
+    end
+  end
 end # SecurityTest

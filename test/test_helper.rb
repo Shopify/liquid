@@ -2,7 +2,6 @@
 
 ENV["MT_NO_EXPECTATIONS"] = "1"
 require 'minitest/autorun'
-require 'spy/integration'
 
 $LOAD_PATH.unshift(File.join(File.expand_path(__dir__), '..', 'lib'))
 require 'liquid.rb'

@@ -74,7 +74,7 @@ module Liquid
       @interrupts.pop
     end
 
-    def handle_error(e, line_number = nil, raw_token = nil)
+    def handle_error(e, line_number = nil)
       e = internal_error unless e.is_a?(Liquid::Error)
       e.template_name ||= template_name
       e.line_number ||= line_number
@@ -89,7 +89,7 @@ module Liquid
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
     def push(new_scope = {})
       @scopes.unshift(new_scope)
-      raise StackLevelError, "Nesting too deep".freeze if @scopes.length > 100
+      raise StackLevelError, "Nesting too deep".freeze if @scopes.length > Block::MAX_DEPTH
     end
 
     # Merge a hash of variables in the current local scope
@@ -160,7 +160,7 @@ module Liquid
     end
 
     # Fetches an object starting at the local scope and then moving up the hierachy
-    def find_variable(key)
+    def find_variable(key, raise_on_not_found: true)
       # This was changed from find() to find_index() because this is a very hot
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.key?(key) }
@@ -170,8 +170,10 @@ module Liquid
 
       if scope.nil?
         @environments.each do |e|
-          variable = lookup_and_evaluate(e, key)
-          unless variable.nil?
+          variable = lookup_and_evaluate(e, key, raise_on_not_found: raise_on_not_found)
+          # When lookup returned a value OR there is no value but the lookup also did not raise
+          # then it is the value we are looking for.
+          if !variable.nil? || @strict_variables && raise_on_not_found
             scope = e
             break
           end
@@ -179,7 +181,7 @@ module Liquid
       end
 
       scope ||= @environments.last || @scopes.last
-      variable ||= lookup_and_evaluate(scope, key)
+      variable ||= lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found)
 
       variable = variable.to_liquid
       variable.context = self if variable.respond_to?(:context=)
@@ -187,8 +189,8 @@ module Liquid
       variable
     end
 
-    def lookup_and_evaluate(obj, key)
-      if @strict_variables && obj.respond_to?(:key?) && !obj.key?(key)
+    def lookup_and_evaluate(obj, key, raise_on_not_found: true)
+      if @strict_variables && raise_on_not_found && obj.respond_to?(:key?) && !obj.key?(key)
         raise Liquid::UndefinedVariable, "undefined variable #{key}"
       end
 

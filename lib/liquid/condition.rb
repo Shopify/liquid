@@ -41,16 +41,22 @@ module Liquid
     end
 
     def evaluate(context = Context.new)
-      result = interpret_condition(left, right, operator, context)
+      condition = self
+      result = nil
+      loop do
+        result = interpret_condition(condition.left, condition.right, condition.operator, context)
 
-      case @child_relation
-      when :or
-        result || @child_condition.evaluate(context)
-      when :and
-        result && @child_condition.evaluate(context)
-      else
-        result
+        case condition.child_relation
+        when :or
+          break if result
+        when :and
+          break unless result
+        else
+          break
+        end
+        condition = condition.child_condition
       end
+      result
     end
 
     def or(condition)
@@ -74,6 +80,10 @@ module Liquid
     def inspect
       "#<Condition #{[@left, @operator, @right].compact.join(' '.freeze)}>"
     end
+
+    protected
+
+    attr_reader :child_relation, :child_condition
 
     private
 
@@ -110,7 +120,7 @@ module Liquid
 
       if operation.respond_to?(:call)
         operation.call(self, left, right)
-      elsif left.respond_to?(operation) && right.respond_to?(operation)
+      elsif left.respond_to?(operation) && right.respond_to?(operation) && !left.is_a?(Hash) && !right.is_a?(Hash)
         begin
           left.send(operation, right)
         rescue ::ArgumentError => e

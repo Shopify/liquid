@@ -261,6 +261,15 @@ class TemplateTest < Minitest::Test
     assert_equal 'Liquid error: undefined variable d', t.errors[2].message
   end
 
+  def test_nil_value_does_not_raise
+    Liquid::Template.error_mode = :strict
+    t = Template.parse("some{{x}}thing")
+    result = t.render!({ 'x' => nil }, strict_variables: true)
+
+    assert_equal 0, t.errors.count
+    assert_equal 'something', result
+  end
+
   def test_undefined_variables_raise
     t = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
 

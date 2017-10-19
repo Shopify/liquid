@@ -7,8 +7,6 @@ AllCops:
 
 Metrics/BlockNesting:
   Max: 3
-  Exclude:
-    - 'lib/liquid/block_body.rb'
 
 Metrics/ModuleLength:
   Enabled: false

@@ -23,7 +23,7 @@ module Liquid
   #      {{ item.name }}
   #    {% end %}
   #
-  #  To reverse the for loop simply use {% for item in collection reversed %}
+  #  To reverse the for loop simply use {% for item in collection reversed %} (note that the flag's spelling is different to the filter `reverse`)
   #
   # == Available variables:
   #
@@ -45,6 +45,9 @@ module Liquid
   #
   class For < Block
     Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
+
+    attr_reader :collection_name
+    attr_reader :variable_name
 
     def initialize(tag_name, markup, options)
       super
@@ -117,7 +120,7 @@ module Liquid
     private
 
     def collection_segment(context)
-      offsets = context.registers[:for] ||= Hash.new(0)
+      offsets = context.registers[:for] ||= {}
 
       from = if @from == :continue
         offsets[@name].to_i

@@ -33,7 +33,7 @@ module Liquid
     end
 
     def escape(input)
-      CGI.escapeHTML(input).untaint unless input.nil?
+      CGI.escapeHTML(input.to_s).untaint unless input.nil?
     end
     alias_method :h, :escape
 
@@ -42,11 +42,11 @@ module Liquid
     end
 
     def url_encode(input)
-      CGI.escape(input) unless input.nil?
+      CGI.escape(input.to_s) unless input.nil?
     end
 
     def url_decode(input)
-      CGI.unescape(input) unless input.nil?
+      CGI.unescape(input.to_s) unless input.nil?
     end
 
     def slice(input, offset, length = nil)
@@ -201,12 +201,14 @@ module Liquid
 
     # Replace occurrences of a string with another
     def replace(input, string, replacement = ''.freeze)
-      input.to_s.gsub(string.to_s, replacement.to_s)
+      replacement = replacement.to_s
+      input.to_s.gsub(string.to_s) { replacement }
     end
 
     # Replace the first occurrences of a string with another
     def replace_first(input, string, replacement = ''.freeze)
-      input.to_s.sub(string.to_s, replacement.to_s)
+      replacement = replacement.to_s
+      input.to_s.sub(string.to_s) { replacement }
     end
 
     # remove a substring
@@ -384,7 +386,7 @@ module Liquid
       end
 
       def join(glue)
-        to_a.join(glue)
+        to_a.join(glue.to_s)
       end
 
       def concat(args)

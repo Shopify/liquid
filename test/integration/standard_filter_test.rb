@@ -128,8 +128,16 @@ class StandardFiltersTest < Minitest::Test
 
   def test_escape
     assert_equal '&lt;strong&gt;', @filters.escape('<strong>')
-    assert_equal nil, @filters.escape(nil)
+    assert_equal '1', @filters.escape(1)
+    assert_equal '2001-02-03', @filters.escape(Date.new(2001, 2, 3))
+    assert_nil @filters.escape(nil)
+  end
+
+  def test_h
     assert_equal '&lt;strong&gt;', @filters.h('<strong>')
+    assert_equal '1', @filters.h(1)
+    assert_equal '2001-02-03', @filters.h(Date.new(2001, 2, 3))
+    assert_nil @filters.h(nil)
   end
 
   def test_escape_once
@@ -138,14 +146,18 @@ class StandardFiltersTest < Minitest::Test
 
   def test_url_encode
     assert_equal 'foo%2B1%40example.com', @filters.url_encode('foo+1@example.com')
-    assert_equal nil, @filters.url_encode(nil)
+    assert_equal '1', @filters.url_encode(1)
+    assert_equal '2001-02-03', @filters.url_encode(Date.new(2001, 2, 3))
+    assert_nil @filters.url_encode(nil)
   end
 
   def test_url_decode
     assert_equal 'foo bar', @filters.url_decode('foo+bar')
     assert_equal 'foo bar', @filters.url_decode('foo%20bar')
     assert_equal 'foo+1@example.com', @filters.url_decode('foo%2B1%40example.com')
-    assert_equal nil, @filters.url_decode(nil)
+    assert_equal '1', @filters.url_decode(1)
+    assert_equal '2001-02-03', @filters.url_decode(Date.new(2001, 2, 3))
+    assert_nil @filters.url_decode(nil)
   end
 
   def test_truncatewords
@@ -170,6 +182,7 @@ class StandardFiltersTest < Minitest::Test
   def test_join
     assert_equal '1 2 3 4', @filters.join([1, 2, 3, 4])
     assert_equal '1 - 2 - 3 - 4', @filters.join([1, 2, 3, 4], ' - ')
+    assert_equal '1121314', @filters.join([1, 2, 3, 4], 1)
   end
 
   def test_sort
@@ -329,7 +342,7 @@ class StandardFiltersTest < Minitest::Test
     assert_equal "#{Date.today.year}", @filters.date('today', '%Y')
     assert_equal "#{Date.today.year}", @filters.date('Today', '%Y')
 
-    assert_equal nil, @filters.date(nil, "%B")
+    assert_nil @filters.date(nil, "%B")
 
     assert_equal '', @filters.date('', "%B")
 
@@ -342,15 +355,17 @@ class StandardFiltersTest < Minitest::Test
   def test_first_last
     assert_equal 1, @filters.first([1, 2, 3])
     assert_equal 3, @filters.last([1, 2, 3])
-    assert_equal nil, @filters.first([])
-    assert_equal nil, @filters.last([])
+    assert_nil @filters.first([])
+    assert_nil @filters.last([])
   end
 
   def test_replace
     assert_equal '2 2 2 2', @filters.replace('1 1 1 1', '1', 2)
     assert_equal '2 2 2 2', @filters.replace('1 1 1 1', 1, 2)
+    assert_equal "\\& \\& \\& \\&", @filters.replace('1 1 1 1', '1', "\\&")
     assert_equal '2 1 1 1', @filters.replace_first('1 1 1 1', '1', 2)
     assert_equal '2 1 1 1', @filters.replace_first('1 1 1 1', 1, 2)
+    assert_equal '\\& 1 1 1', @filters.replace_first("1 1 1 1", '1', "\\&")
     assert_template_result '2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}"
   end
 

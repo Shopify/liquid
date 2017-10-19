@@ -145,4 +145,20 @@ class StrainerUnitTest < Minitest::Test
     Strainer.global_filter(LateAddedFilter)
     assert_equal 'filtered', Strainer.create(nil).invoke('late_added_filter', 'input')
   end
+
+  def test_add_filter_does_not_include_already_included_module
+    mod = Module.new do
+      class << self
+        attr_accessor :include_count
+        def included(mod)
+          self.include_count += 1
+        end
+      end
+      self.include_count = 0
+    end
+    strainer = Context.new.strainer
+    strainer.class.add_filter(mod)
+    strainer.class.add_filter(mod)
+    assert_equal 1, mod.include_count
+  end
 end # StrainerTest
