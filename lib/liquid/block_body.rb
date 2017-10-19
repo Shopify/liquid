@@ -15,38 +15,35 @@ module Liquid
     def parse(tokenizer, parse_context)
       parse_context.line_number = tokenizer.line_number
       while token = tokenizer.shift
-        unless token.empty?
-          case
-          when token.start_with?(TAGSTART)
-            whitespace_handler(token, parse_context)
-            if token =~ FullToken
-              tag_name = $1
-              markup = $2
-              # fetch the tag from registered blocks
-              if tag = registered_tags[tag_name]
-                new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
-                @blank &&= new_tag.blank?
-                @nodelist << new_tag
-              else
-                # end parsing if we reach an unknown tag and let the caller decide
-                # determine how to proceed
-                return yield tag_name, markup
-              end
-            else
-              raise_missing_tag_terminator(token, parse_context)
-            end
-          when token.start_with?(VARSTART)
-            whitespace_handler(token, parse_context)
-            @nodelist << create_variable(token, parse_context)
-            @blank = false
-          else
-            if parse_context.trim_whitespace
-              token.lstrip!
-            end
-            parse_context.trim_whitespace = false
-            @nodelist << token
-            @blank &&= !!(token =~ /\A\s*\z/)
+        next if token.empty?
+        case
+        when token.start_with?(TAGSTART)
+          whitespace_handler(token, parse_context)
+          unless token =~ FullToken
+            raise_missing_tag_terminator(token, parse_context)
           end
+          tag_name = $1
+          markup = $2
+          # fetch the tag from registered blocks
+          unless tag = registered_tags[tag_name]
+            # end parsing if we reach an unknown tag and let the caller decide
+            # determine how to proceed
+            return yield tag_name, markup
+          end
+          new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
+          @blank &&= new_tag.blank?
+          @nodelist << new_tag
+        when token.start_with?(VARSTART)
+          whitespace_handler(token, parse_context)
+          @nodelist << create_variable(token, parse_context)
+          @blank = false
+        else
+          if parse_context.trim_whitespace
+            token.lstrip!
+          end
+          parse_context.trim_whitespace = false
+          @nodelist << token
+          @blank &&= !!(token =~ /\A\s*\z/)
         end
         parse_context.line_number = tokenizer.line_number
       end
