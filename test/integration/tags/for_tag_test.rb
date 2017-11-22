@@ -159,7 +159,7 @@ HERE
     assert_template_result(expected, markup, assigns)
   end
 
-  def test_pause_resume_BIG_limit
+  def test_pause_resume_big_limit
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
     markup = <<-MKUP
       {%for i in array.items limit:3 %}{{i}}{%endfor%}
@@ -178,7 +178,7 @@ HERE
     assert_template_result(expected, markup, assigns)
   end
 
-  def test_pause_resume_BIG_offset
+  def test_pause_resume_big_offset
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
     markup = '{%for i in array.items limit:3 %}{{i}}{%endfor%}
       next
