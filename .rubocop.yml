@@ -30,7 +30,7 @@ Lint/UnusedBlockArgument:
   Enabled: false
 
 Lint/EndAlignment:
-  AlignWith: variable
+  EnforcedStyleAlignWith: variable
 
 Lint/UnusedMethodArgument:
   Enabled: false
@@ -59,10 +59,10 @@ Style/BracesAroundHashParameters:
 Style/NumericLiterals:
   Enabled: false
 
-Style/SpaceInsideBrackets:
+Layout/SpaceInsideBrackets:
   Enabled: false
 
-Style/SpaceBeforeBlockBraces:
+Layout/SpaceBeforeBlockBraces:
   Enabled: false
 
 Style/Documentation:
@@ -71,19 +71,19 @@ Style/Documentation:
 Style/ClassAndModuleChildren:
   Enabled: false
 
-Style/TrailingComma:
+Style/TrailingCommaInLiteral:
   Enabled: false
 
-Style/IndentHash:
+Layout/IndentHash:
   EnforcedStyle: consistent
 
 Style/FormatString:
   Enabled: false
 
-Style/AlignParameters:
+Layout/AlignParameters:
   EnforcedStyle: with_fixed_indentation
 
-Style/MultilineOperationIndentation:
+Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
 
 Style/IfUnlessModifier:
@@ -92,7 +92,7 @@ Style/IfUnlessModifier:
 Style/RaiseArgs:
   Enabled: false
 
-Style/DeprecatedHashMethods:
+Style/PreferredHashMethods:
   Enabled: false
 
 Style/RegexpLiteral:
@@ -107,7 +107,7 @@ Performance/Count:
 Style/ConstantName:
   Enabled: false
 
-Style/CaseIndentation:
+Layout/CaseIndentation:
   Enabled: false
 
 Style/ClassVars:
@@ -121,3 +121,7 @@ Style/TrivialAccessors:
 
 Style/WordArray:
   Enabled: false
+
+Naming/MethodName:
+  Exclude:
+    - 'example/server/liquid_servlet.rb'
