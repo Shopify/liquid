@@ -355,6 +355,22 @@ module Liquid
       raise Liquid::FloatDomainError, e.message
     end
 
+    def max(input, n)
+      max_value = Utils.to_number(n)
+
+      result = Utils.to_number(input)
+      result = max_value if result > max_value
+      result.is_a?(BigDecimal) ? result.to_f : result
+    end
+
+    def min(input, n)
+      min_value = Utils.to_number(n)
+
+      result = Utils.to_number(input)
+      result = min_value if result < min_value
+      result.is_a?(BigDecimal) ? result.to_f : result
+    end
+
     def default(input, default_value = ''.freeze)
       if !input || input.respond_to?(:empty?) && input.empty?
         default_value
