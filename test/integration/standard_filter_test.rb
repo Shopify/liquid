@@ -518,6 +518,15 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "6", "{{ 5 | at_least: width }}", 'width' => NumberLikeThing.new(6)
   end
 
+  def test_insert
+    assert_equal 'Xabcd', @filters.insert("abcd", 0, 'X')
+    assert_equal 'abcXd', @filters.insert("abcd", 3, 'X')
+    assert_equal 'abcdX', @filters.insert("abcd", 4, 'X')
+    assert_equal 'abXcd', @filters.insert("abcd", -3, 'X')
+    assert_equal 'abcd', @filters.insert("abcd", 1, '')
+    assert_equal 'aXtebcd', @filters.insert("abcd", 1, 'Xte')
+  end
+
   def test_append
     assigns = { 'a' => 'bc', 'b' => 'd' }
     assert_template_result('bcd', "{{ a | append: 'd'}}", assigns)
