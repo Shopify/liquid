@@ -7,6 +7,7 @@
 * [Version history](History.md)
 * [Liquid documentation from Shopify](http://docs.shopify.com/themes/liquid-basics)
 * [Liquid Wiki at GitHub](https://github.com/Shopify/liquid/wiki)
+* [Liquid Cheet Sheet](http://cheat.markdunkley.com/)
 * [Website](http://liquidmarkup.org/)
 
 ## Introduction
