@@ -353,19 +353,19 @@ module Liquid
       raise Liquid::FloatDomainError, e.message
     end
 
-    def max(input, n)
-      max_value = Utils.to_number(n)
-
-      result = Utils.to_number(input)
-      result = max_value if max_value > result
-      result.is_a?(BigDecimal) ? result.to_f : result
-    end
-
-    def min(input, n)
+    def at_least(input, n)
       min_value = Utils.to_number(n)
 
       result = Utils.to_number(input)
-      result = min_value if min_value < result
+      result = min_value if min_value > result
+      result.is_a?(BigDecimal) ? result.to_f : result
+    end
+
+    def at_most(input, n)
+      max_value = Utils.to_number(n)
+
+      result = Utils.to_number(input)
+      result = max_value if max_value < result
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
