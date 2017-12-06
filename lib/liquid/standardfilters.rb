@@ -219,6 +219,13 @@ module Liquid
       input.to_s.sub(string.to_s, ''.freeze)
     end
 
+    # Inserts other_str before the character at the given index, modifying str.
+    # Negative indices count from the end of the string, and insert after the given
+    # character. The intent is insert aString so that it starts at the given index.
+    def insert(input, index, other_string)
+      input.to_s.insert(index, other_string)
+    end
+
     # add one string to another
     def append(input, string)
       input.to_s + string.to_s
