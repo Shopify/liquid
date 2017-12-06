@@ -357,7 +357,7 @@ module Liquid
       max_value = Utils.to_number(n)
 
       result = Utils.to_number(input)
-      result = max_value if result > max_value
+      result = max_value if max_value > result
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
@@ -365,7 +365,7 @@ module Liquid
       min_value = Utils.to_number(n)
 
       result = Utils.to_number(input)
-      result = min_value if result < min_value
+      result = min_value if min_value < result
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 

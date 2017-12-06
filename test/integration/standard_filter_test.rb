@@ -496,26 +496,26 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "5", "{{ price | floor }}", 'price' => NumberLikeThing.new(5.4)
   end
 
-  def test_max
-    assert_template_result "4", "{{ 5 | max:4 }}"
-    assert_template_result "5", "{{ 5 | max:5 }}"
-    assert_template_result "5", "{{ 5 | max:6 }}"
+  def test_min
+    assert_template_result "4", "{{ 5 | min:4 }}"
+    assert_template_result "5", "{{ 5 | min:5 }}"
+    assert_template_result "5", "{{ 5 | min:6 }}"
 
-    assert_template_result "4.5", "{{ 4.5 | max:5 }}"
-    assert_template_result "5", "{{ width | max:5 }}", 'width' => NumberLikeThing.new(6)
-    assert_template_result "4", "{{ width | max:5 }}", 'width' => NumberLikeThing.new(4)
-    assert_template_result "4", "{{ 5 | max: width }}", 'width' => NumberLikeThing.new(4)
+    assert_template_result "4.5", "{{ 4.5 | min:5 }}"
+    assert_template_result "5", "{{ width | min:5 }}", 'width' => NumberLikeThing.new(6)
+    assert_template_result "4", "{{ width | min:5 }}", 'width' => NumberLikeThing.new(4)
+    assert_template_result "4", "{{ 5 | min: width }}", 'width' => NumberLikeThing.new(4)
   end
 
-  def test_min
-    assert_template_result "5", "{{ 5 | min:4 }}"
-    assert_template_result "5", "{{ 5 | min:5 }}"
-    assert_template_result "6", "{{ 5 | min:6 }}"
+  def test_max
+    assert_template_result "5", "{{ 5 | max:4 }}"
+    assert_template_result "5", "{{ 5 | max:5 }}"
+    assert_template_result "6", "{{ 5 | max:6 }}"
 
-    assert_template_result "5", "{{ 4.5 | min:5 }}"
-    assert_template_result "6", "{{ width | min:5 }}", 'width' => NumberLikeThing.new(6)
-    assert_template_result "5", "{{ width | min:5 }}", 'width' => NumberLikeThing.new(4)
-    assert_template_result "6", "{{ 5 | min: width }}", 'width' => NumberLikeThing.new(6)
+    assert_template_result "5", "{{ 4.5 | max:5 }}"
+    assert_template_result "6", "{{ width | max:5 }}", 'width' => NumberLikeThing.new(6)
+    assert_template_result "5", "{{ width | max:5 }}", 'width' => NumberLikeThing.new(4)
+    assert_template_result "6", "{{ 5 | max: width }}", 'width' => NumberLikeThing.new(6)
   end
 
   def test_append
