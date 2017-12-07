@@ -3,7 +3,7 @@ title: Types
 description: An overview of data types in the Liquid template language.
 ---
 
-Liquid objects can have one of six types:
+Liquid objects can have one of five types:
 
 - [String](#string)
 - [Number](#number)
