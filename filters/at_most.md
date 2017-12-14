@@ -13,11 +13,9 @@ Limits a number to a maximum value.
 {% endraw %}
 
 <p class="code-label">Output</p>
-{% raw %}
 ```
 4
 ```
-{% endraw %}
 
 <p class="code-label">Input</p>
 {% raw %}
@@ -27,8 +25,6 @@ Limits a number to a maximum value.
 {% endraw %}
 
 <p class="code-label">Output</p>
-{% raw %}
 ```
 3
 ```
-{% endraw %}
