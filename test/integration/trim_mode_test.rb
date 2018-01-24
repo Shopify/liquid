@@ -496,6 +496,10 @@ class TrimModeTest < Minitest::Test
     assert_template_result(expected, text)
   end
 
+  def test_right_trim_followed_by_tag
+    assert_template_result('ab c', '{{ "a" -}}{{ "b" }} c')
+  end
+
   def test_raw_output
     whitespace = '        '
     text = <<-END_TEMPLATE
