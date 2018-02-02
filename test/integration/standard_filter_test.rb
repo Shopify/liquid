@@ -367,12 +367,24 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result '2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}"
   end
 
+  def test_regex_replace
+    assert_equal 'foo bar baz baz', @filters.regex_replace('foo bar 123 456', '\d+', 'baz')
+    assert_equal 'foo bar baz 456', @filters.regex_replace_first('foo bar 123 456', '\d+', 'baz')
+    assert_template_result 'foo bar baz 456', "{{ 'foo bar 123 456' | regex_replace_first: '\\d+', 'baz' }}"
+  end
+
   def test_remove
     assert_equal '   ', @filters.remove("a a a a", 'a')
     assert_equal '   ', @filters.remove("1 1 1 1", 1)
     assert_equal 'a a a', @filters.remove_first("a a a a", 'a ')
     assert_equal ' 1 1 1', @filters.remove_first("1 1 1 1", 1)
     assert_template_result 'a a a', "{{ 'a a a a' | remove_first: 'a ' }}"
+  end
+
+  def test_regex_remove
+    assert_equal 'foo bar  ', @filters.regex_remove('foo bar 123 456', '\d+')
+    assert_equal 'foo bar  456', @filters.regex_remove_first('foo bar 123 456', '\d+')
+    assert_template_result 'foo bar ', "{{ 'foo bar 123' | regex_remove_first: '\\d+' }}"
   end
 
   def test_pipes_in_string_arguments
