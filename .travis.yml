@@ -5,6 +5,7 @@ rvm:
   - 2.2
   - 2.3
   - 2.4
+  - 2.5
   - ruby-head
   - jruby-head
 #  - rbx-2
@@ -18,13 +19,14 @@ addons:
 
 matrix:
   allow_failures:
+    - rvm: ruby-head
     - rvm: jruby-head
 
 install:
   - gem install rainbow -v 2.2.1
   - bundle install
 
-script: "bundle exec rake"
+script: bundle exec rake
 
 notifications:
   disable: true
