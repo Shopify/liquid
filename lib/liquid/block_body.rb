@@ -82,10 +82,8 @@ module Liquid
             break
           end
 
-          node_output = render_node(token, context)
-
           unless token.is_a?(Block) && token.blank?
-            output << node_output
+            output << render_node(token, context)
           end
         rescue MemoryError => e
           raise e
