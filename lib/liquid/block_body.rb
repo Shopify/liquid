@@ -2,6 +2,7 @@ module Liquid
   class BlockBody
     FullToken = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
+    WhitespaceOrNothing = /\A\s*\z/
     TAGSTART = "{%".freeze
     VARSTART = "{{".freeze
 
@@ -43,7 +44,7 @@ module Liquid
           end
           parse_context.trim_whitespace = false
           @nodelist << token
-          @blank &&= !!(token =~ /\A\s*\z/)
+          @blank &&= !!(token =~ WhitespaceOrNothing)
         end
         parse_context.line_number = tokenizer.line_number
       end

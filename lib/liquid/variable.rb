@@ -10,10 +10,16 @@ module Liquid
   #   {{ user | link }}
   #
   class Variable
+    FilterMarkupRegex = /#{FilterSeparator}\s*(.*)/om
     FilterParser = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
+    FilterArgsRegex = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o
+    JustTagAttributes = /\A#{TagAttributes}\z/o
+    MarkupWithQuotedFragment = /(#{QuotedFragment})(.*)/om
+
     attr_accessor :filters, :name, :line_number
     attr_reader :parse_context
     alias_method :options, :parse_context
+
     include ParserSwitching
 
     def initialize(markup, parse_context)
@@ -35,17 +41,17 @@ module Liquid
 
     def lax_parse(markup)
       @filters = []
-      return unless markup =~ /(#{QuotedFragment})(.*)/om
+      return unless markup =~ MarkupWithQuotedFragment
 
       name_markup = $1
       filter_markup = $2
       @name = Expression.parse(name_markup)
-      if filter_markup =~ /#{FilterSeparator}\s*(.*)/om
+      if filter_markup =~ FilterMarkupRegex
         filters = $1.scan(FilterParser)
         filters.each do |f|
           next unless f =~ /\w+/
           filtername = Regexp.last_match(0)
-          filterargs = f.scan(/(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o).flatten
+          filterargs = f.scan(FilterArgsRegex).flatten
           @filters << parse_filter_expressions(filtername, filterargs)
         end
       end
@@ -91,7 +97,7 @@ module Liquid
       filter_args = []
       keyword_args = {}
       unparsed_args.each do |a|
-        if matches = a.match(/\A#{TagAttributes}\z/o)
+        if matches = a.match(JustTagAttributes)
           keyword_args[matches[1]] = Expression.parse(matches[2])
         else
           filter_args << Expression.parse(a)
