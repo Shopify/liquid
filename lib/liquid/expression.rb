@@ -21,20 +21,24 @@ module Liquid
       'empty'.freeze => MethodLiteral.new(:empty?, '').freeze
     }
 
+    SINGLE_QUOTED_STRING = /\A'(.*)'\z/m
+    DOUBLE_QUOTED_STRING = /\A"(.*)"\z/m
+    INTEGERS_REGEX       = /\A(-?\d+)\z/
+    FLOATS_REGEX         = /\A(-?\d[\d\.]+)\z/
+    RANGES_REGEX         = /\A\((\S+)\.\.(\S+)\)\z/
+
     def self.parse(markup)
       if LITERALS.key?(markup)
         LITERALS[markup]
       else
         case markup
-        when /\A'(.*)'\z/m # Single quoted strings
+        when SINGLE_QUOTED_STRING, DOUBLE_QUOTED_STRING
           $1
-        when /\A"(.*)"\z/m # Double quoted strings
-          $1
-        when /\A(-?\d+)\z/ # Integer and floats
+        when INTEGERS_REGEX
           $1.to_i
-        when /\A\((\S+)\.\.(\S+)\)\z/ # Ranges
+        when RANGES_REGEX
           RangeLookup.parse($1, $2)
-        when /\A(-?\d[\d\.]+)\z/ # Floats
+        when FLOATS_REGEX
           $1.to_f
         else
           VariableLookup.parse(markup)

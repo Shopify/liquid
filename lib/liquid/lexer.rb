@@ -19,6 +19,7 @@ module Liquid
     NUMBER_LITERAL = /-?\d+(\.\d+)?/
     DOTDOT = /\.\./
     COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains(?=\s)/
+    WHITESPACE_OR_NOTHING = /\s*/
 
     def initialize(input)
       @ss = StringScanner.new(input)
@@ -28,7 +29,7 @@ module Liquid
       @output = []
 
       until @ss.eos?
-        @ss.skip(/\s*/)
+        @ss.skip(WHITESPACE_OR_NOTHING)
         break if @ss.eos?
         tok = case
         when t = @ss.scan(COMPARISON_OPERATOR) then [:comparison, t]
