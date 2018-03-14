@@ -24,7 +24,7 @@ module Liquid
     SINGLE_QUOTED_STRING = /\A'(.*)'\z/m
     DOUBLE_QUOTED_STRING = /\A"(.*)"\z/m
     INTEGERS_REGEX       = /\A(-?\d+)\z/
-    FLOATS_REGEX         = /\A(-?\d+\.\d+)\z/
+    FLOATS_REGEX         = /\A(-?\d[\d\.]+)\z/
     RANGES_REGEX         = /\A\((\S+)\.\.(\S+)\)\z/
 
     def self.parse(markup)
