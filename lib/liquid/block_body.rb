@@ -1,4 +1,6 @@
 module Liquid
+  using RubyBackports
+
   class BlockBody
     FullToken = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
@@ -44,7 +46,7 @@ module Liquid
           end
           parse_context.trim_whitespace = false
           @nodelist << token
-          @blank &&= !!(token =~ WhitespaceOrNothing)
+          @blank &&= token.match?(WhitespaceOrNothing)
         end
         parse_context.line_number = tokenizer.line_number
       end

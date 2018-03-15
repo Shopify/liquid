@@ -45,6 +45,7 @@ module Liquid
 end
 
 require "liquid/version"
+require "liquid/ruby_backports"
 require 'liquid/lexer'
 require 'liquid/parser'
 require 'liquid/i18n'
