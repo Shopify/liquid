@@ -33,7 +33,7 @@ module Liquid
         tablerowloop = Liquid::TablerowloopDrop.new(length, cols)
         context['tablerowloop'.freeze] = tablerowloop
 
-        collection.each_with_index do |item, index|
+        collection.each do |item|
           context[@variable_name] = item
 
           result << "<td class=\"col#{tablerowloop.col}\">" << super << '</td>'

@@ -156,7 +156,7 @@ module Liquid
         begin
           context['forloop'.freeze] = loop_vars
 
-          segment.each_with_index do |item, index|
+          segment.each do |item|
             context[@variable_name] = item
             result << @for_block.render(context)
             loop_vars.send(:increment!)
