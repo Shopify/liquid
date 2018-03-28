@@ -73,6 +73,11 @@ require 'liquid/condition'
 require 'liquid/utils'
 require 'liquid/tokenizer'
 require 'liquid/parse_context'
+require 'liquid/array'
+require 'liquid/date'
+require 'liquid/mixed'
+require 'liquid/number'
+require 'liquid/string'
 
 # Load all the tags of the standard library
 #
