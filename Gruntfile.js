@@ -1,6 +1,6 @@
 // Gruntfile
-module.exports = function(grunt) {
-require('load-grunt-tasks')(grunt);
+module.exports = function (grunt) {
+  require('load-grunt-tasks')(grunt)
 
   // Project configuration.
   grunt.initConfig({
@@ -16,7 +16,7 @@ require('load-grunt-tasks')(grunt);
         }
       },
       jekyll: {
-        files: ['index.md', '_includes/*.html', 'filters/*.*',  '_layouts/*.*', 'tags/*.*', 'basics/*.*'],
+        files: ['index.md', '_includes/*.html', 'filters/*.*', '_layouts/*.*', 'tags/*.*', 'basics/*.*'],
         tasks: ['shell:jekyllBuild']
       }
     },
@@ -24,22 +24,22 @@ require('load-grunt-tasks')(grunt);
     sass: {
       dist: {
         options: {
-          style: 'expanded',
+          style: 'compact',
           sourcemap: 'none'
         },
         files: {
-          '_site/css/main.css':'_sass/main.scss'
+          '_site/css/main.css': '_sass/main.scss'
         }
       }
     },
 
     shell: {
       jekyllServe: {
-        command: 'jekyll serve --no-watch'
+        command: 'bundle exec jekyll serve --no-watch'
       },
 
       jekyllBuild: {
-        command: 'jekyll build'
+        command: 'bundle exec jekyll build'
       }
     },
 
@@ -47,7 +47,7 @@ require('load-grunt-tasks')(grunt);
       options: {
         map: true,
         processors: [
-          require('autoprefixer-core')({browsers: 'last 2 versions'})
+          require('autoprefixer')({browsers: 'last 2 versions'})
         ]
       },
       dist: {
@@ -61,12 +61,12 @@ require('load-grunt-tasks')(grunt);
         logConcurrentOutput: true
       }
     }
-  });
+  })
 
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-sass');
-  grunt.loadNpmTasks('grunt-postcss');
-  grunt.loadNpmTasks('grunt-concurrent');
+  grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.loadNpmTasks('grunt-contrib-sass')
+  grunt.loadNpmTasks('grunt-postcss')
+  grunt.loadNpmTasks('grunt-concurrent')
 
-  grunt.registerTask('default', ['concurrent']);
-};
+  grunt.registerTask('default', ['concurrent'])
+}
