@@ -1,3 +1,3 @@
 ---
-redirect_to: /liquid/basics/introduction
+redirect_to: /basics/introduction
 ---

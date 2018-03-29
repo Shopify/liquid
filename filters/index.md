@@ -1,3 +1,3 @@
 ---
-redirect_to: /liquid/filters/abs
+redirect_to: /filters/abs
 ---
