@@ -1,6 +1,10 @@
 <div class="sidebar">
   <header class="sidebar__logo" role="banner">
-    <a href="{{ "/" | prepend: site.baseurl }}">Liquid</a>
+    {% if page.home %}
+      Liquid
+    {% else %}
+      <a href="{{ "/" | relative_url }}">Liquid</a>
+    {% endif %}
   </header>
   <nav class="sidebar__nav"> {% assign sections = "basics, tags, filters" | split: ", " %}
 
