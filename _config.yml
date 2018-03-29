@@ -15,7 +15,7 @@ exclude:
 keep_files:             ["css"]
 
 # Plugins
-gems:
+plugins:
   - jekyll-redirect-from
 
 # Front matter defaults
