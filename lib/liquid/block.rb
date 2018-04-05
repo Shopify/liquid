@@ -26,12 +26,12 @@ module Liquid
     end
 
     def unknown_tag(tag, _params, _tokens)
-      case tag
-      when 'else'.freeze
+      if tag == 'else'.freeze
         raise SyntaxError.new(parse_context.locale.t("errors.syntax.unexpected_else".freeze,
           block_name: block_name))
-      when 'end'.freeze
+      elsif tag.start_with?('end'.freeze)
         raise SyntaxError.new(parse_context.locale.t("errors.syntax.invalid_delimiter".freeze,
+          tag: tag,
           block_name: block_name,
           block_delimiter: block_delimiter))
       else
