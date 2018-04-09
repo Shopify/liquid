@@ -17,6 +17,8 @@ module Liquid
       end
     end
 
+    @@strainer_invoke_cache ||= {}
+
     def initialize(context)
       @context = context
     end
@@ -52,15 +54,18 @@ module Liquid
     end
 
     def invoke(method, *args)
-      if self.class.invokable?(method)
-        send(method, *args)
-      elsif @context && @context.strict_filters
-        raise Liquid::UndefinedFilter, "undefined filter #{method}"
-      else
-        args.first
+      @@strainer_invoke_cache[method] ||= {}
+      @@strainer_invoke_cache[method][args.flatten] ||= begin
+        if self.class.invokable?(method)
+          send(method, *args)
+        elsif @context && @context.strict_filters
+          raise Liquid::UndefinedFilter, "undefined filter #{method}"
+        else
+          args.first
+        end
+      rescue ::ArgumentError => e
+        raise Liquid::ArgumentError, e.message, e.backtrace
       end
-    rescue ::ArgumentError => e
-      raise Liquid::ArgumentError, e.message, e.backtrace
     end
   end
 end
