@@ -70,33 +70,27 @@ module Liquid
       output = []
       context.resource_limits.render_score += @nodelist.length
 
-      @nodelist.each do |token|
-        # Break out if we have any unhanded interrupts.
-        break if context.interrupt?
-
-        begin
+      idx = 0
+      while node = @nodelist[idx]
+        case node
+        when String
+          check_resources(context, node)
+          output << node
+        when Variable
+          render_node_to_output(node, output, context)
+        when Block
+          render_node_to_output(node, output, context, node.blank?)
+          break if context.interrupt? # might have happened in a for-block
+        when Continue, Break
           # If we get an Interrupt that means the block must stop processing. An
           # Interrupt is any command that stops block execution such as {% break %}
           # or {% continue %}
-          if token.is_a?(Continue) || token.is_a?(Break)
-            context.push_interrupt(token.interrupt)
-            break
-          end
-
-          node_output = render_node(token, context)
-
-          unless token.is_a?(Block) && token.blank?
-            output << node_output
-          end
-        rescue MemoryError => e
-          raise e
-        rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
-          context.handle_error(e, token.line_number)
-          output << nil
-        rescue ::StandardError => e
-          line_number = token.is_a?(String) ? nil : token.line_number
-          output << context.handle_error(e, line_number)
+          context.push_interrupt(node.interrupt)
+          break
+        else # Other non-Block tags
+          render_node_to_output(node, output, context)
         end
+        idx += 1
       end
 
       output.join
@@ -104,15 +98,25 @@ module Liquid
 
     private
 
-    def render_node(node, context)
-      node_output = node.is_a?(String) ? node : node.render(context)
+    def render_node_to_output(node, output, context, skip_output = false)
+      node_output = node.render(context)
       node_output = node_output.is_a?(Array) ? node_output.join : node_output.to_s
+      check_resources(context, node_output)
+      output << node_output unless skip_output
+    rescue MemoryError => e
+      raise e
+    rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
+      context.handle_error(e, node.line_number)
+      output << nil
+    rescue ::StandardError => e
+      line_number = node.is_a?(String) ? nil : node.line_number
+      output << context.handle_error(e, line_number)
+    end
 
+    def check_resources(context, node_output)
       context.resource_limits.render_length += node_output.length
-      if context.resource_limits.reached?
-        raise MemoryError.new("Memory limits exceeded".freeze)
-      end
-      node_output
+      return unless context.resource_limits.reached?
+      raise MemoryError.new("Memory limits exceeded".freeze)
     end
 
     def create_variable(token, parse_context)
