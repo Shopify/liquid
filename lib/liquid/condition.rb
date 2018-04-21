@@ -42,8 +42,7 @@ module Liquid
 
     def evaluate(context = Context.new)
       condition = self
-      result = nil
-      loop do
+      while true
         result = interpret_condition(condition.left, condition.right, condition.operator, context)
 
         case condition.child_relation
