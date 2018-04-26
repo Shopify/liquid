@@ -42,6 +42,8 @@ Liquid is a template engine which was written with very specific requirements:
 
 ## How to use Liquid
 
+Install Liquid by adding `gem 'liquid'` to your gemfile.
+
 Liquid supports a very simple API based around the Liquid::Template class.
 For standard use you can just pass it the content of a file and call render with a parameters hash.
 
