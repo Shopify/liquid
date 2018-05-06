@@ -204,9 +204,19 @@ module Liquid
       input.to_s.gsub(string.to_s, replacement.to_s)
     end
 
+    # Replace occurrences of a string which matches the regular expression with another
+    def regex_replace(input, regex, replacement = ''.freeze)
+      input.to_s.gsub(Regexp.new(regex.to_s), replacement.to_s)
+    end
+
     # Replace the first occurrences of a string with another
     def replace_first(input, string, replacement = ''.freeze)
       input.to_s.sub(string.to_s, replacement.to_s)
+    end
+
+    # Replace the first occurrences of a string which matches the regular expression with another
+    def regex_replace_first(input, regex, replacement = ''.freeze)
+      input.to_s.sub(Regexp.new(regex.to_s), replacement.to_s)
     end
 
     # remove a substring
@@ -214,9 +224,19 @@ module Liquid
       input.to_s.gsub(string.to_s, ''.freeze)
     end
 
+    # remove a substring which matches the regular expression
+    def regex_remove(input, regex)
+      input.to_s.gsub(Regexp.new(regex.to_s), ''.freeze)
+    end
+
     # remove the first occurrences of a substring
     def remove_first(input, string)
       input.to_s.sub(string.to_s, ''.freeze)
+    end
+
+    # remove the first occurrences of a substring which matches the regular expression
+    def regex_remove_first(input, regex)
+      input.to_s.sub(Regexp.new(regex.to_s), ''.freeze)
     end
 
     # add one string to another
