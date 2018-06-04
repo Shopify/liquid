@@ -455,6 +455,21 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "5", "{{ price | divided_by:2 }}", 'price' => NumberLikeThing.new(10)
   end
 
+  def test_percentage_of
+    assert_template_result "300.0", "{{ 120 | percentage_of: 40 }}"
+    assert_template_result "300.0", "{{ 120.0 | percentage_of: 40 }}"
+    assert_template_result "33.333333333333336", "{{ 40 | percentage_of: 120 }}"
+
+    # dividing a float by 0 yields "Infinity"
+    assert_template_result "Infinity", "{{ 40 | percentage_of: 0 }}"
+
+    assert_template_result "33", "{{ 40 | percentage_of: 120 | round }}"
+    assert_template_result "33.33", "{{ 40 | percentage_of: 120 | round: 2 }}"
+
+    assert_template_result "30.0", "{{ price | percentage_of: 150 }}", 'price' => NumberLikeThing.new(45)
+    assert_template_result "30.0", "{{ current | percentage_of: original | round: 2 }}", 'current' => 45, 'original' => 150
+  end
+
   def test_modulo
     assert_template_result "1", "{{ 3 | modulo:2 }}"
     assert_raises(Liquid::ZeroDivisionError) do
