@@ -16,6 +16,8 @@ module Liquid
   class Include < Tag
     Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/o
 
+    attr_reader :template_name_expr, :variable_name_expr, :attributes
+
     def initialize(tag_name, markup, options)
       super
 

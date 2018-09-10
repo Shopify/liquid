@@ -2,6 +2,8 @@ module Liquid
   class TableRow < Block
     Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
 
+    attr_reader :variable_name, :collection_name, :attributes
+
     def initialize(tag_name, markup, options)
       super
       if markup =~ Syntax

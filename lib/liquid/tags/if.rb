@@ -14,19 +14,21 @@ module Liquid
     ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
     BOOLEAN_OPERATORS = %w(and or)
 
+    attr_reader :blocks
+
     def initialize(tag_name, markup, options)
       super
       @blocks = []
       push_block('if'.freeze, markup)
     end
 
+    def nodelist
+      @blocks.map(&:attachment)
+    end
+
     def parse(tokens)
       while parse_body(@blocks.last.attachment, tokens)
       end
-    end
-
-    def nodelist
-      @blocks.map(&:attachment)
     end
 
     def unknown_tag(tag, markup, tokens)

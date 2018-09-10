@@ -15,6 +15,8 @@ module Liquid
     SimpleSyntax = /\A#{QuotedFragment}+/o
     NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om
 
+    attr_reader :variables
+
     def initialize(tag_name, markup, options)
       super
       case markup

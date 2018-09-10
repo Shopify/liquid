@@ -10,6 +10,8 @@ module Liquid
   class Assign < Tag
     Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/om
 
+    attr_reader :to, :from
+
     def initialize(tag_name, markup, options)
       super
       if markup =~ Syntax
