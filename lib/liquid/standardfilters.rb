@@ -151,6 +151,20 @@ module Liquid
       end
     end
 
+    # Filter the elements of an array to those with a certain property value.
+    # By default the target is any truthy value.
+    def where(input, property, target_value = nil)
+      ary = InputIterator.new(input)
+
+      if ary.empty?
+        []
+      elsif ary.first.respond_to?(:[]) && target_value.nil?
+        ary.where_present(property)
+      elsif ary.first.respond_to?(:[])
+        ary.where(property, target_value)
+      end
+    end
+
     # Remove duplicate elements from an array
     # provide optional property with which to determine uniqueness
     def uniq(input, property = nil)
@@ -428,6 +442,24 @@ module Liquid
         @input.each do |e|
           yield(e.respond_to?(:to_liquid) ? e.to_liquid : e)
         end
+      end
+
+      def where(property, target_value)
+        select do |item|
+          item[property] == target_value
+        end
+      rescue TypeError
+        # Cannot index with the given property type (eg. indexing integers with strings
+        # which are only allowed to be indexed by other integers).
+        raise ArgumentError.new("cannot select the property `#{property}`")
+      end
+
+      def where_present(property)
+        select { |item| item[property] }
+      rescue TypeError
+        # Cannot index with the given property type (eg. indexing integers with strings
+        # which are only allowed to be indexed by other integers).
+        raise ArgumentError.new("cannot select the property `#{property}`")
       end
     end
   end
