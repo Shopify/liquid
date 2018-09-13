@@ -190,6 +190,13 @@ class StandardFiltersTest < Minitest::Test
     assert_equal [{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], @filters.sort([{ "a" => 4 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a")
   end
 
+  def test_sort_numeric
+    assert_equal ['1', '2', '3', '10'], @filters.sort_numeric(['10', '3', '2', '1'])
+
+    assert_equal [{ "a" => '1' }, { "a" => '2' }, { "a" => '3' }, { "a" => '10' }],
+      @filters.sort_numeric([{ "a" => '10' }, { "a" => '3' }, { "a" => '1' }, { "a" => '2' }], "a")
+  end
+
   def test_sort_when_property_is_sometimes_missing_puts_nils_last
     input = [
       { "price" => 4, "handle" => "alpha" },
@@ -214,6 +221,10 @@ class StandardFiltersTest < Minitest::Test
 
   def test_sort_natural_empty_array
     assert_equal [], @filters.sort_natural([], "a")
+  end
+
+  def test_sort_numeric_empty_array
+    assert_equal [], @filters.sort_numeric([], "a")
   end
 
   def test_legacy_sort_hash
