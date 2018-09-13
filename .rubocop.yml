@@ -71,7 +71,10 @@ Style/Documentation:
 Style/ClassAndModuleChildren:
   Enabled: false
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
   Enabled: false
 
 Layout/IndentHash:
