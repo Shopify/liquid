@@ -1,5 +1,6 @@
 require 'cgi'
 require 'bigdecimal'
+require 'json'
 
 module Liquid
   module StandardFilters
@@ -47,6 +48,12 @@ module Liquid
 
     def url_decode(input)
       CGI.unescape(input.to_s) unless input.nil?
+    end
+
+    def json_parse(input)
+      JSON.parse(input.to_s) unless input.nil?
+    rescue JSON::ParserError => e
+      raise Liquid::JsonParserError, e.message
     end
 
     def slice(input, offset, length = nil)
