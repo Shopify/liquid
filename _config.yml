@@ -3,14 +3,16 @@ description: Liquid is a template language and accompanying rendering engine. It
 
 # Build settings
 baseurl:                /liquid # the subpath of your site, e.g. /blog/
-url:                    http://liquidmarkup.org # the base hostname & protocol for your site
+url:                    https://shopify.github.io # the base hostname & protocol for your site
 permalink:              pretty
 exclude:
   - README.md
   - CNAME
   - Gemfile
+  - Gemfile.lock
   - Gruntfile.js
   - package.json
+  - package-lock.json
   - node_modules
 keep_files:             ["css"]
 

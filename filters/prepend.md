@@ -22,7 +22,7 @@ You can also `prepend` variables:
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{% assign url = "liquidmarkup.com" %}
+{% assign url = "example.com" %}
 
 {{ "/index.html" | prepend: url }}
 {% endraw %}
@@ -30,7 +30,7 @@ You can also `prepend` variables:
 
 <p class="code-label">Output</p>
 ```text
-{% assign url = "liquidmarkup.com" %}
+{% assign url = "example.com" %}
 
 {{ "/index.html" | prepend: url }}
 ```
