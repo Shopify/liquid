@@ -9,8 +9,10 @@ exclude:
   - README.md
   - CNAME
   - Gemfile
+  - Gemfile.lock
   - Gruntfile.js
   - package.json
+  - package-lock.json
   - node_modules
 keep_files:             ["css"]
 
