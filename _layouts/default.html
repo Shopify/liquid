@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8" />
@@ -15,21 +15,21 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-    <link rel="stylesheet" href="{{ '/css/main.css' | prepend: site.baseurl }}">
-    <link rel="icon" type="image/png" href="{{ '/images/icons/water-drop-32x.png' | prepend: site.baseurl }}" sizes="32x32">
-    <link rel="icon" type="image/png" href="{{ '/images/icons/water-drop-64x.png' | prepend: site.baseurl }}" sizes="64x64">
-    <link rel="canonical" href="{{ page.url | replace: 'index.html','' | prepend: site.baseurl | prepend: site.url }}">
-    <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" />
+    <link rel="stylesheet" href="{{ '/css/main.css' | relative_url }}">
+    <link rel="icon" type="image/png" href="{{ '/images/icons/water-drop-32x.png' | relative_url }}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{{ '/images/icons/water-drop-64x.png' | relative_url }}" sizes="64x64">
+    <link rel="canonical" href="{{ page.url | replace: 'index.html','' | absolute_url }}">
+    <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/feed.xml" | relative_url }}" />
 
     <meta property="og:site_name" content="{{ site.title }}">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ site.url | append: site.baseurl }}">
+    <meta property="og:url" content="{{ page.url | relative_url }}">
     <meta property="og:title" content="{{ page.title | default: site.title }}">
     <meta property="og:description" content="{{ page.description | default: site.description }}">
 
     <meta name="twitter:site" content="{{ site.title }}">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:url" content="{{ site.url | append: site.baseurl }}">
+    <meta name="twitter:url" content="{{ site.url | relative_url }}">
     <meta name="twitter:title" content="{{ page.title | default: site.title }}">
     <meta name="twitter:description" content="{{ page.description | default: site.description }}">
   </head>
@@ -49,6 +49,6 @@
         {{ content }}
       </div>
     </main>
-    <script src="{{ '/js/script.js' | prepend: site.baseurl }}"></script>
+    <script src="{{ '/js/script.js' | relative_url }}"></script>
   </body>
 </html>

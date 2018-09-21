@@ -1,6 +1,10 @@
 <div class="sidebar">
   <header class="sidebar__logo" role="banner">
-    <a href="{{ "/" | prepend: site.baseurl }}">Liquid</a>
+    {% if page.home %}
+      Liquid
+    {% else %}
+      <a href="{{ "/" | relative_url }}">Liquid</a>
+    {% endif %}
   </header>
   <nav class="sidebar__nav"> {% assign sections = "basics, tags, filters" | split: ", " %}
 
@@ -9,7 +13,7 @@
 
     <ul class="section__links">
     {% for item in site.pages %}{% if item.url contains section/ %}{% unless item.path contains "index" %}
-      <li><a href="{{ item.url | prepend: site.baseurl }}" class="section__link{% if item.url contains page.url and page.url != '/' and page.type != 'index' %} section__link--is-active{% endif %}">{{ item.title }}</a></li>
+      <li><a href="{{ item.url | relative_url }}" class="section__link{% if item.url contains page.url and page.url != '/' and page.type != 'index' %} section__link--is-active{% endif %}">{{ item.title }}</a></li>
     {% endunless %}{% endif %}{% endfor %}
     </ul>
     {% endfor %}

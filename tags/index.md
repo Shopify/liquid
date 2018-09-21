@@ -1,3 +1,3 @@
 ---
-redirect_to: /liquid/tags/control-flow
+redirect_to: /tags/control-flow
 ---

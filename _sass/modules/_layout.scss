@@ -69,13 +69,15 @@ body {
 }
 
 .sidebar__logo {
+  border-bottom: 1px solid $color-blue-4;
+  color: $color-white;
   font-size: $base-font-size * 2;
   font-weight: 300;
-  text-align: center;
   height: $logo-height;
   line-height: $logo-height;
   margin-bottom: 0;
-  border-bottom: 1px solid $color-blue-4;
+  text-align: center;
+
 
   // &:after {
   //   content: '\01F4A7'; // Water droplet emoji
