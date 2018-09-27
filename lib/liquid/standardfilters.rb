@@ -11,6 +11,12 @@ module Liquid
       "'".freeze => '&#39;'.freeze
     }
     HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
+    STRIP_HTML = Regexp.union(
+      /<script.*?<\/script>/m,
+      /<!--.*?-->/m,
+      /<style.*?<\/style>/m,
+      /<.*?>/m,
+    )
 
     # Return the size of an array or of an string
     def size(input)
@@ -102,8 +108,7 @@ module Liquid
     end
 
     def strip_html(input)
-      empty = ''.freeze
-      input.to_s.gsub(/<script.*?<\/script>/m, empty).gsub(/<!--.*?-->/m, empty).gsub(/<style.*?<\/style>/m, empty).gsub(/<.*?>/m, empty)
+      input.to_s.gsub(STRIP_HTML, ''.freeze)
     end
 
     # Remove all newlines from the string
