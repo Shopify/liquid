@@ -15,7 +15,7 @@ module Liquid
       /<script.*?<\/script>/m,
       /<!--.*?-->/m,
       /<style.*?<\/style>/m,
-      /<.*?>/m,
+      /<.*?>/m
     )
 
     # Return the size of an array or of an string
