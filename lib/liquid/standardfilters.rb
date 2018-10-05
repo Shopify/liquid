@@ -121,17 +121,23 @@ module Liquid
     def sort(input, property = nil)
       ary = InputIterator.new(input)
       if property.nil?
-        ary.sort
+        ary.sort do |a, b|
+          if !a.nil? && !b.nil?
+            a <=> b
+          else
+            a.nil? ? 1 : -1
+          end
+        end
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
-      elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
+      elsif ary.all? { |el| el.respond_to?(:[]) }
         ary.sort do |a, b|
           a = a[property]
           b = b[property]
-          if a && b
+          if !a.nil? && !b.nil?
             a <=> b
           else
-            a ? -1 : 1
+            a.nil? ? 1 : -1
           end
         end
       end
@@ -143,11 +149,25 @@ module Liquid
       ary = InputIterator.new(input)
 
       if property.nil?
-        ary.sort { |a, b| a.casecmp(b) }
+        ary.sort do |a, b|
+          if !a.nil? && !b.nil?
+            a.to_s.casecmp(b.to_s)
+          else
+            a.nil? ? 1 : -1
+          end
+        end
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
-      elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
-        ary.sort { |a, b| a[property].casecmp(b[property]) }
+      elsif ary.all? { |el| el.respond_to?(:[]) }
+        ary.sort do |a, b|
+          a = a[property]
+          b = b[property]
+          if !a.nil? && !b.nil?
+            a.to_s.casecmp(b.to_s)
+          else
+            a.nil? ? 1 : -1
+          end
+        end
       end
     end
 
