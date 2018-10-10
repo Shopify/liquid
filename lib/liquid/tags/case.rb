@@ -82,6 +82,12 @@ module Liquid
       block.attach(BlockBody.new)
       @blocks << block
     end
+
+    class Traversal < Liquid::Traversal
+      def children
+        [@node.left] + @node.blocks
+      end
+    end
   end
 
   Template.register_tag('case'.freeze, Case)

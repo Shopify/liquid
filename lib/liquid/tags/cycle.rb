@@ -53,6 +53,12 @@ module Liquid
         $1 ? Expression.parse($1) : nil
       end.compact
     end
+
+    class Traversal < Liquid::Traversal
+      def children
+        Array(@node.variables)
+      end
+    end
   end
 
   Template.register_tag('cycle', Cycle)

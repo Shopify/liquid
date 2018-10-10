@@ -109,6 +109,15 @@ module Liquid
 
       file_system.read_template_file(context.evaluate(@template_name_expr))
     end
+
+    class Traversal < Liquid::Traversal
+      def children
+        [
+          @node.template_name_expr,
+          @node.variable_name_expr
+        ] + @node.attributes.values
+      end
+    end
   end
 
   Template.register_tag('include'.freeze, Include)

@@ -78,5 +78,11 @@ module Liquid
     def state
       [@name, @lookups, @command_flags]
     end
+
+    class Traversal < Liquid::Traversal
+      def children
+        @node.lookups
+      end
+    end
   end
 end

@@ -110,6 +110,12 @@ module Liquid
         Condition.new(a)
       end
     end
+
+    class Traversal < Liquid::Traversal
+      def children
+        @node.blocks
+      end
+    end
   end
 
   Template.register_tag('if'.freeze, If)

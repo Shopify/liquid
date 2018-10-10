@@ -138,5 +138,11 @@ module Liquid
         raise error
       end
     end
+
+    class Traversal < Liquid::Traversal
+      def children
+        [@node.name] + @node.filters.flatten
+      end
+    end
   end
 end

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'liquid/traversal'
 
 class TraversalTest < Minitest::Test
   include Liquid

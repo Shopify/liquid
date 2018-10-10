@@ -50,6 +50,12 @@ module Liquid
       result << "</tr>\n"
       result
     end
+
+    class Traversal < Liquid::Traversal
+      def children
+        super + @node.attributes.values + [@node.collection_name]
+      end
+    end
   end
 
   Template.register_tag('tablerow'.freeze, TableRow)

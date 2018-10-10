@@ -47,6 +47,12 @@ module Liquid
         1
       end
     end
+
+    class Traversal < Liquid::Traversal
+      def children
+        [@node.from]
+      end
+    end
   end
 
   Template.register_tag('assign'.freeze, Assign)

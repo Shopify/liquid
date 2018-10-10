@@ -128,6 +128,15 @@ module Liquid
         end
       end
     end
+
+    class Traversal < Liquid::Traversal
+      def children
+        [
+          @node.left, @node.right,
+          @node.child_condition, @node.attachment
+        ].compact
+      end
+    end
   end
 
   class ElseCondition < Condition
