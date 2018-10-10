@@ -15,7 +15,7 @@ module Liquid
       @callbacks = callbacks
     end
 
-    def callback_for(*classes, &block)
+    def add_callback_for(*classes, &block)
       callback = block
       callback = ->(node, _) { block.call(node) } if block.arity.abs == 1
       callback = ->(_, _) { block.call } if block.arity.zero?
