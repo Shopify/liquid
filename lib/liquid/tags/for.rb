@@ -192,7 +192,7 @@ module Liquid
       @else_block ? @else_block.render(context) : ''.freeze
     end
 
-    class Traversal < Liquid::Traversal
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
         (super + [@node.limit, @node.from, @node.collection_name]).compact
       end

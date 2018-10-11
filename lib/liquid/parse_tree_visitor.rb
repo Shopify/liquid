@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 module Liquid
-  class Traversal
+  class ParseTreeVisitor
     def self.for(node, callbacks = Hash.new(proc {}))
-      if defined?(node.class::Traversal)
-        node.class::Traversal
+      if defined?(node.class::ParseTreeVisitor)
+        node.class::ParseTreeVisitor
       else
         self
       end.new(node, callbacks)
@@ -23,12 +23,12 @@ module Liquid
       self
     end
 
-    def traverse(context = nil)
+    def visit(context = nil)
       children.map do |node|
         item, new_context = @callbacks[node.class].call(node, context)
         [
           item,
-          Traversal.for(node, @callbacks).traverse(new_context || context)
+          ParseTreeVisitor.for(node, @callbacks).visit(new_context || context)
         ]
       end
     end

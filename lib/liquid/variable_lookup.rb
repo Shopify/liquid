@@ -79,7 +79,7 @@ module Liquid
       [@name, @lookups, @command_flags]
     end
 
-    class Traversal < Liquid::Traversal
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
         @node.lookups
       end

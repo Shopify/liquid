@@ -51,7 +51,7 @@ module Liquid
       result
     end
 
-    class Traversal < Liquid::Traversal
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
         super + @node.attributes.values + [@node.collection_name]
       end

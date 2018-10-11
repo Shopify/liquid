@@ -54,7 +54,7 @@ module Liquid
       end.compact
     end
 
-    class Traversal < Liquid::Traversal
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
         Array(@node.variables)
       end

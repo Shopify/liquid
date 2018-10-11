@@ -83,7 +83,7 @@ module Liquid
       @blocks << block
     end
 
-    class Traversal < Liquid::Traversal
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
         [@node.left] + @node.blocks
       end

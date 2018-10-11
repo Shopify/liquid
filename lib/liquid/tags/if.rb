@@ -111,7 +111,7 @@ module Liquid
       end
     end
 
-    class Traversal < Liquid::Traversal
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
         @node.blocks
       end

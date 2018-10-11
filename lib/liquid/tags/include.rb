@@ -110,7 +110,7 @@ module Liquid
       file_system.read_template_file(context.evaluate(@template_name_expr))
     end
 
-    class Traversal < Liquid::Traversal
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
         [
           @node.template_name_expr,

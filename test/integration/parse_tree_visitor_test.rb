@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class TraversalTest < Minitest::Test
+class ParseTreeVisitorTest < Minitest::Test
   include Liquid
 
   def test_variable
