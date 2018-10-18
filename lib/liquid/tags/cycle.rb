@@ -15,6 +15,8 @@ module Liquid
     SimpleSyntax = /\A#{QuotedFragment}+/o
     NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om
 
+    attr_reader :variables
+
     def initialize(tag_name, markup, options)
       super
       case markup
@@ -50,6 +52,12 @@ module Liquid
         var =~ /\s*(#{QuotedFragment})\s*/o
         $1 ? Expression.parse($1) : nil
       end.compact
+    end
+
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children
+        Array(@node.variables)
+      end
     end
   end
 

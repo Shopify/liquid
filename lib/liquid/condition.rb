@@ -29,7 +29,7 @@ module Liquid
       @@operators
     end
 
-    attr_reader :attachment
+    attr_reader :attachment, :child_condition
     attr_accessor :left, :operator, :right
 
     def initialize(left = nil, operator = nil, right = nil)
@@ -83,7 +83,7 @@ module Liquid
 
     protected
 
-    attr_reader :child_relation, :child_condition
+    attr_reader :child_relation
 
     private
 
@@ -126,6 +126,15 @@ module Liquid
         rescue ::ArgumentError => e
           raise Liquid::ArgumentError.new(e.message)
         end
+      end
+    end
+
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children
+        [
+          @node.left, @node.right,
+          @node.child_condition, @node.attachment
+        ].compact
       end
     end
   end

@@ -3,6 +3,8 @@ module Liquid
     Syntax     = /(#{QuotedFragment})/o
     WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*\,\s*)(#{QuotedFragment}.*))?/om
 
+    attr_reader :blocks, :left
+
     def initialize(tag_name, markup, options)
       super
       @blocks = []
@@ -79,6 +81,12 @@ module Liquid
       block = ElseCondition.new
       block.attach(BlockBody.new)
       @blocks << block
+    end
+
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children
+        [@node.left] + @node.blocks
+      end
     end
   end
 

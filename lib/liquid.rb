@@ -45,6 +45,7 @@ module Liquid
 end
 
 require "liquid/version"
+require 'liquid/parse_tree_visitor'
 require 'liquid/lexer'
 require 'liquid/parser'
 require 'liquid/i18n'

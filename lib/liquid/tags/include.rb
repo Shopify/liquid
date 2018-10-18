@@ -16,6 +16,8 @@ module Liquid
   class Include < Tag
     Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/o
 
+    attr_reader :template_name_expr, :variable_name_expr, :attributes
+
     def initialize(tag_name, markup, options)
       super
 
@@ -106,6 +108,15 @@ module Liquid
       file_system = context.registers[:file_system] || Liquid::Template.file_system
 
       file_system.read_template_file(context.evaluate(@template_name_expr))
+    end
+
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children
+        [
+          @node.template_name_expr,
+          @node.variable_name_expr
+        ] + @node.attributes.values
+      end
     end
   end
 
