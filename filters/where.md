@@ -3,7 +3,7 @@ title: where
 description: Liquid filter that selects from arrays.
 ---
 
-Creates an array including only the objects with a given property value, or any [truthy]({{ "/basics/truthy-and-falsy/truthy" | prepend: site.baseurl }}) value by default.
+Creates an array including only the objects with a given property value, or any [truthy]({{ "/basics/truthy-and-falsy#truthy" | prepend: site.baseurl }}) value by default.
 
 In this example, assume you have a list of products and you want to show your kitchen products separately. Using `where`, you can create an array containing only the products that have a `"type"` of `"kitchen"`.
 
@@ -38,21 +38,21 @@ Kitchen products:
 
 ```
 
-Say instead you have a list of products and you only want to show those that are available to buy. You can `where` with a property name but no target value to include all products with a [truthy]({{ "/basics/truthy-and-falsy/truthy" | prepend: site.baseurl }}) `"available"` value.
+Say instead you have a list of products and you only want to show those that are available to buy. You can `where` with a property name but no target value to include all products with a [truthy]({{ "/basics/truthy-and-falsy#truthy" | prepend: site.baseurl }}) `"available"` value.
 
 <p class="code-label">Input</p>
 {% raw %}
 ```liquid
 All products:
 {% for product in products %} 
-- {% product.title %}
+- {{ product.title }}
 {% endfor %}
 
 {% assign available_products = products | where: "available" %}
 
 Available products:
 {% for product in available_products %} 
-- {% product.title %}
+- {{ product.title }}
 {% endfor %}
 
 ```
@@ -80,7 +80,7 @@ The `where` filter can also be used to find a single object in an array when com
 ```liquid
 {% assign new_shirt = products | where: "type", "shirt" | first %}
 
-Featured product: {% new_shirt.title %}
+Featured product: {{ new_shirt.title }}
 ```
 {% endraw %}
 
