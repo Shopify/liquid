@@ -71,10 +71,7 @@ Style/Documentation:
 Style/ClassAndModuleChildren:
   Enabled: false
 
-Style/TrailingCommaInArrayLiteral:
-  Enabled: false
-
-Style/TrailingCommaInHashLiteral:
+Style/TrailingCommaInLiteral:
   Enabled: false
 
 Layout/IndentHash:
@@ -125,6 +122,6 @@ Style/TrivialAccessors:
 Style/WordArray:
   Enabled: false
 
-Naming/MethodName:
+Style/MethodName:
   Exclude:
     - 'example/server/liquid_servlet.rb'

@@ -120,25 +120,16 @@ module Liquid
     # provide optional property with which to sort an array of hashes or drops
     def sort(input, property = nil)
       ary = InputIterator.new(input)
+
+      return [] if ary.empty?
+
       if property.nil?
         ary.sort do |a, b|
-          if !a.nil? && !b.nil?
-            a <=> b
-          else
-            a.nil? ? 1 : -1
-          end
+          nil_safe_compare(a, b)
         end
-      elsif ary.empty? # The next two cases assume a non-empty array.
-        []
       elsif ary.all? { |el| el.respond_to?(:[]) }
         ary.sort do |a, b|
-          a = a[property]
-          b = b[property]
-          if !a.nil? && !b.nil?
-            a <=> b
-          else
-            a.nil? ? 1 : -1
-          end
+          nil_safe_compare(a[property], b[property])
         end
       end
     end
@@ -148,25 +139,15 @@ module Liquid
     def sort_natural(input, property = nil)
       ary = InputIterator.new(input)
 
+      return [] if ary.empty?
+
       if property.nil?
         ary.sort do |a, b|
-          if !a.nil? && !b.nil?
-            a.to_s.casecmp(b.to_s)
-          else
-            a.nil? ? 1 : -1
-          end
+          nil_safe_casecmp(a, b)
         end
-      elsif ary.empty? # The next two cases assume a non-empty array.
-        []
       elsif ary.all? { |el| el.respond_to?(:[]) }
         ary.sort do |a, b|
-          a = a[property]
-          b = b[property]
-          if !a.nil? && !b.nil?
-            a.to_s.casecmp(b.to_s)
-          else
-            a.nil? ? 1 : -1
-          end
+          nil_safe_casecmp(a[property], b[property])
         end
       end
     end
@@ -416,6 +397,22 @@ module Liquid
     def apply_operation(input, operand, operation)
       result = Utils.to_number(input).send(operation, Utils.to_number(operand))
       result.is_a?(BigDecimal) ? result.to_f : result
+    end
+
+    def nil_safe_compare(a, b)
+      if !a.nil? && !b.nil?
+        a <=> b
+      else
+        a.nil? ? 1 : -1
+      end
+    end
+
+    def nil_safe_casecmp(a, b)
+      if !a.nil? && !b.nil?
+        a.to_s.casecmp(b.to_s)
+      else
+        a.nil? ? 1 : -1
+      end
     end
 
     class InputIterator
