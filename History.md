@@ -9,6 +9,7 @@
 * Add strict_variables and strict_filters options to detect undefined references (#691)
 * Improve loop performance (#681) [Florian Weingarten]
 * Rename Drop method `before_method` to `liquid_method_missing` (#661) [Thierry Joyal]
+* liquid_method_missing does not support methods starting with a number like before_method did.
 * Add url_decode filter to invert url_encode (#645) [Larry Archer]
 * Add global_filter to apply a filter to all output (#610) [Loren Hale]
 * Add compact filter (#600) [Carson Reinke]
