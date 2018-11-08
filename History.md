@@ -12,7 +12,7 @@
 * Add url_decode filter to invert url_encode (#645) [Larry Archer]
 * Add global_filter to apply a filter to all output (#610) [Loren Hale]
 * Add compact filter (#600) [Carson Reinke]
-* Rename deprecated "has_key?" and "has_interrupt?" methods (#593) [Florian Weingarten]
+* Rename deprecated "has_key?" and "has_interrupt?" methods to "key?" and "interrupt?" (#593) [Florian Weingarten]
 * Include template name with line numbers in render errors (574) [Dylan Thacker-Smith]
 * Add sort_natural filter (#554) [Martin Hanzel]
 * Add forloop.parentloop as a reference to the parent loop (#520) [Justin Li]
