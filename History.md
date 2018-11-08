@@ -22,7 +22,7 @@
 * Liquid::Template.file_system's read_template_file method is no longer passed the context. (#441) [James Reid-Smith]
 * Remove `liquid_methods` (See https://github.com/Shopify/liquid/pull/568 for replacement)
 * Liquid::Template.register_filter raises when the module overrides registered public methods as private or protected (#705) [Gaurav Chande]
-* overriding to_str on a drop doesn't do anything anymore, override to_s instead.
+* Overriding to_str on a drop doesn't do anything anymore, override to_s instead
 
 ### Fixed
 
