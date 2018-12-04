@@ -1,5 +1,42 @@
 # Liquid Change Log
 
+## 4.0.1 / 2018-10-09
+
+### Changed
+* Add benchmark group in Gemfile (#855) [Jerry Liu]
+* Allow benchmarks to benchmark render by itself (#851) [Jerry Liu]
+* Avoid calling `line_number` on String node when rescuing a render error. (#860) [Dylan Thacker-Smith]
+* Avoid duck typing to detect whether to call render on a node. [Dylan Thacker-Smith]
+* Clarify spelling of `reversed` on `for` block tag (#843) [Mark Crossfield]
+* Replace recursion with loop to avoid potential stack overflow from malicious input (#891, #892) [Dylan Thacker-Smith]
+* Limit block tag nesting to 100 (#894) [Dylan Thacker-Smith]
+* Replace `assert_equal nil` with `assert_nil` (#895) [Dylan Thacker-Smith]
+* Remove Spy Gem (#896) [Dylan Thacker-Smith]
+* Add `collection_name` and `variable_name` reader to `For` block (#909)
+* Symbols render as strings (#920) [Justin Li]
+* Remove default value from Hash objects (#932) [Maxime Bedard]
+* Remove one level of nesting (#944) [Dylan Thacker-Smith]
+* Update Rubocop version (#952) [Justin Li]
+* Add `at_least` and `at_most` filters (#954, #958) [Nithin Bekal]
+* Add a regression test for a liquid-c trim mode bug (#972) [Dylan Thacker-Smith]
+* Use https rather than git protocol to fetch liquid-c [Dylan Thacker-Smith]
+* Add tests against Ruby 2.4 (#963) and 2.5 (#981)
+* Replace RegExp literals with constants (#988) [Ashwin Maroli]
+* Replace unnecessary `#each_with_index` with `#each` (#992) [Ashwin Maroli]
+* Improve the unexpected end delimiter message for block tags. (#1003) [Dylan Thacker-Smith]
+* Refactor and optimize rendering (#1005) [Christopher Aue]
+* Add installation instruction (#1006) [Ben Gift]
+* Remove Circle CI (#1010)
+* Rename deprecated `BigDecimal.new` to `BigDecimal` (#1024) [Koichi ITO]
+* Rename deprecated Rubocop name (#1027) [Justin Li]
+
+### Fixed
+* Handle `join` filter on non String joiners (#857) [Richard Monette]
+* Fix duplicate inclusion condition logic error of `Liquid::Strainer.add_filter` method (#861)
+* Fix `escape`, `url_encode`, `url_decode` not handling non-string values (#898) [Thierry Joyal]
+* Fix raise when variable is defined but nil when using `strict_variables` [Pascal Betz]
+* Fix `sort` and `sort_natural` to handle arrays with nils (#930) [Eric Chan]
+
 ## 4.0.0 / 2016-12-14 / branch "4-0-stable"
 
 ### Changed
