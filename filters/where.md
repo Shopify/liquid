@@ -15,7 +15,7 @@ All products:
 - {{ product.title }}
 {% endfor %} 
 
-{% assign kitchen_products = site.pages | where: "type", "kitchen" %}
+{% assign kitchen_products = products | where: "type", "kitchen" %}
 
 Kitchen products:
 {% for product in kitchen_products %}
