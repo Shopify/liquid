@@ -12,13 +12,6 @@ Layout/ClosingParenthesisIndentation:
   Exclude:
     - 'test/integration/error_handling_test.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowForAlignment, ForceEqualSignAlignment.
-Layout/ExtraSpacing:
-  Exclude:
-    - 'test/integration/parsing_quirks_test.rb'
-
 # Offense count: 5
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
