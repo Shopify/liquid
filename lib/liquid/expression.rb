@@ -19,7 +19,7 @@ module Liquid
       'false'.freeze => false,
       'blank'.freeze => MethodLiteral.new(:blank?, '').freeze,
       'empty'.freeze => MethodLiteral.new(:empty?, '').freeze
-    }
+    }.freeze
 
     SINGLE_QUOTED_STRING = /\A'(.*)'\z/m
     DOUBLE_QUOTED_STRING = /\A"(.*)"\z/m

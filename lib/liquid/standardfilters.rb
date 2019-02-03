@@ -9,7 +9,7 @@ module Liquid
       '<'.freeze => '&lt;'.freeze,
       '"'.freeze => '&quot;'.freeze,
       "'".freeze => '&#39;'.freeze
-    }
+    }.freeze
     HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
 
     # Return the size of an array or of an string

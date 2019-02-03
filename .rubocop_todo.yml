@@ -130,17 +130,6 @@ Style/GuardClause:
 Style/MethodName:
   EnforcedStyle: snake_case
 
-# Offense count: 6
-# Cop supports --auto-correct.
-Style/MutableConstant:
-  Exclude:
-    - 'lib/liquid/expression.rb'
-    - 'lib/liquid/lexer.rb'
-    - 'lib/liquid/standardfilters.rb'
-    - 'lib/liquid/tags/if.rb'
-    - 'lib/liquid/variable_lookup.rb'
-    - 'lib/liquid/version.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, MinBodyLength, SupportedStyles.
