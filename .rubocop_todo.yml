@@ -197,13 +197,6 @@ Style/TernaryParentheses:
     - 'lib/liquid/context.rb'
     - 'lib/liquid/utils.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/UnneededInterpolation:
-  Exclude:
-    - 'lib/liquid/i18n.rb'
-    - 'test/integration/standard_filter_test.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Style/UnneededPercentQ:
