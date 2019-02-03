@@ -24,9 +24,9 @@ class ConditionUnitTest < Minitest::Test
     assert_evaluates_true 1, '<=', 1
     # negative numbers
     assert_evaluates_true 1, '>', -1
-    assert_evaluates_true (-1), '<', 1
+    assert_evaluates_true -1, '<', 1
     assert_evaluates_true 1.0, '>', -1.0
-    assert_evaluates_true (-1.0), '<', 1.0
+    assert_evaluates_true -1.0, '<', 1.0
   end
 
   def test_default_operators_evalute_false

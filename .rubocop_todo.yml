@@ -160,12 +160,6 @@ Style/PercentLiteralDelimiters:
     - 'test/integration/assign_test.rb'
     - 'test/integration/standard_filter_test.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/RedundantParentheses:
-  Exclude:
-    - 'test/unit/condition_unit_test.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/RedundantSelf:
