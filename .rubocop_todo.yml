@@ -14,12 +14,6 @@ Layout/ClosingParenthesisIndentation:
 
 # Offense count: 1
 # Cop supports --auto-correct.
-Layout/EmptyLineAfterMagicComment:
-  Exclude:
-    - 'lib/liquid/version.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
 # Configuration parameters: AllowForAlignment, ForceEqualSignAlignment.
 Layout/ExtraSpacing:
   Exclude:
