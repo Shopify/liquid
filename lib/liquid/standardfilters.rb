@@ -128,8 +128,10 @@ module Liquid
           nil_safe_compare(a, b)
         end
       elsif ary.all? { |el| el.respond_to?(:[]) }
-        ary.sort do |a, b|
-          nil_safe_compare(a[property], b[property])
+        begin
+          ary.sort { |a, b| nil_safe_compare(a[property], b[property]) }
+        rescue TypeError
+          raise_property_error(property)
         end
       end
     end
@@ -146,8 +148,10 @@ module Liquid
           nil_safe_casecmp(a, b)
         end
       elsif ary.all? { |el| el.respond_to?(:[]) }
-        ary.sort do |a, b|
-          nil_safe_casecmp(a[property], b[property])
+        begin
+          ary.sort { |a, b| nil_safe_casecmp(a[property], b[property]) }
+        rescue TypeError
+          raise_property_error(property)
         end
       end
     end
@@ -160,9 +164,17 @@ module Liquid
       if ary.empty?
         []
       elsif ary.first.respond_to?(:[]) && target_value.nil?
-        ary.where_present(property)
+        begin
+          ary.select { |item| item[property] }
+        rescue TypeError
+          raise_property_error(property)
+        end
       elsif ary.first.respond_to?(:[])
-        ary.where(property, target_value)
+        begin
+          ary.select { |item| item[property] == target_value }
+        rescue TypeError
+          raise_property_error(property)
+        end
       end
     end
 
@@ -176,7 +188,11 @@ module Liquid
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
       elsif ary.first.respond_to?(:[])
-        ary.uniq{ |a| a[property] }
+        begin
+          ary.uniq { |a| a[property] }
+        rescue TypeError
+          raise_property_error(property)
+        end
       end
     end
 
@@ -198,6 +214,8 @@ module Liquid
           r.is_a?(Proc) ? r.call : r
         end
       end
+    rescue TypeError
+      raise_property_error(property)
     end
 
     # Remove nils within an array
@@ -210,7 +228,11 @@ module Liquid
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
       elsif ary.first.respond_to?(:[])
-        ary.reject{ |a| a[property].nil? }
+        begin
+          ary.reject { |a| a[property].nil? }
+        rescue TypeError
+          raise_property_error(property)
+        end
       end
     end
 
@@ -394,6 +416,10 @@ module Liquid
 
     private
 
+    def raise_property_error(property)
+      raise Liquid::ArgumentError.new("cannot select the property '#{property}'")
+    end
+
     def apply_operation(input, operand, operation)
       result = Utils.to_number(input).send(operation, Utils.to_number(operand))
       result.is_a?(BigDecimal) ? result.to_f : result
@@ -459,24 +485,6 @@ module Liquid
         @input.each do |e|
           yield(e.respond_to?(:to_liquid) ? e.to_liquid : e)
         end
-      end
-
-      def where(property, target_value)
-        select do |item|
-          item[property] == target_value
-        end
-      rescue TypeError
-        # Cannot index with the given property type (eg. indexing integers with strings
-        # which are only allowed to be indexed by other integers).
-        raise ArgumentError.new("cannot select the property `#{property}`")
-      end
-
-      def where_present(property)
-        select { |item| item[property] }
-      rescue TypeError
-        # Cannot index with the given property type (eg. indexing integers with strings
-        # which are only allowed to be indexed by other integers).
-        raise ArgumentError.new("cannot select the property `#{property}`")
       end
     end
   end
