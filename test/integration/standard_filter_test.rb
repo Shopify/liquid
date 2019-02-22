@@ -268,8 +268,32 @@ class StandardFiltersTest < Minitest::Test
     assert_equal [], @filters.sort([], "a")
   end
 
+  def test_sort_invalid_property
+    foo = [
+      [1],
+      [2],
+      [3]
+    ]
+
+    assert_raises Liquid::ArgumentError do
+      @filters.sort(foo, "bar")
+    end
+  end
+
   def test_sort_natural_empty_array
     assert_equal [], @filters.sort_natural([], "a")
+  end
+
+  def test_sort_natural_invalid_property
+    foo = [
+      [1],
+      [2],
+      [3]
+    ]
+
+    assert_raises Liquid::ArgumentError do
+      @filters.sort_natural(foo, "bar")
+    end
   end
 
   def test_legacy_sort_hash
@@ -295,8 +319,32 @@ class StandardFiltersTest < Minitest::Test
     assert_equal [], @filters.uniq([], "a")
   end
 
+  def test_uniq_invalid_property
+    foo = [
+      [1],
+      [2],
+      [3]
+    ]
+
+    assert_raises Liquid::ArgumentError do
+      @filters.uniq(foo, "bar")
+    end
+  end
+
   def test_compact_empty_array
     assert_equal [], @filters.compact([], "a")
+  end
+
+  def test_compact_invalid_property
+    foo = [
+      [1],
+      [2],
+      [3]
+    ]
+
+    assert_raises Liquid::ArgumentError do
+      @filters.compact(foo, "bar")
+    end
   end
 
   def test_reverse
@@ -362,6 +410,29 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map_works_on_enumerables
     assert_template_result "123", '{{ foo | map: "foo" }}', "foo" => TestEnumerable.new
+  end
+
+  def test_map_returns_empty_on_2d_input_array
+    foo = [
+      [1],
+      [2],
+      [3]
+    ]
+
+    assert_raises Liquid::ArgumentError do
+      @filters.map(foo, "bar")
+    end
+  end
+
+  def test_map_returns_empty_with_no_property
+    foo = [
+      [1],
+      [2],
+      [3]
+    ]
+    assert_raises Liquid::ArgumentError do
+      @filters.map(foo, nil)
+    end
   end
 
   def test_sort_works_on_enumerables
