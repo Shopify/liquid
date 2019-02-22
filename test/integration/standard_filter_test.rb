@@ -177,6 +177,9 @@ class StandardFiltersTest < Minitest::Test
     assert_equal 'test', @filters.strip_html("<div\nclass='multiline'>test</div>")
     assert_equal 'test', @filters.strip_html("<!-- foo bar \n test -->test")
     assert_equal '', @filters.strip_html(nil)
+
+    # Quirk of the existing implementation
+    assert_equal 'foo;', @filters.strip_html("<<<script </script>script>foo;</script>")
   end
 
   def test_join
