@@ -12,7 +12,7 @@ module Liquid
   class If < Block
     Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
     ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
-    BOOLEAN_OPERATORS = %w(and or)
+    BOOLEAN_OPERATORS = %w(and or).freeze
 
     attr_reader :blocks
 

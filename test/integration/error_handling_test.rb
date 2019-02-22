@@ -123,7 +123,7 @@ class ErrorHandlingTest < Minitest::Test
             ',
       error_mode: :warn,
       line_numbers: true
-                                     )
+    )
 
     assert_equal ['Liquid syntax error (line 4): Unexpected character = in "1 =! 2"'],
       template.warnings.map(&:message)
@@ -140,7 +140,7 @@ class ErrorHandlingTest < Minitest::Test
                 ',
         error_mode: :strict,
         line_numbers: true
-                            )
+      )
     end
 
     assert_equal 'Liquid syntax error (line 4): Unexpected character = in "1 =! 2"', err.message
@@ -158,7 +158,7 @@ class ErrorHandlingTest < Minitest::Test
           bla
                 ',
         line_numbers: true
-                            )
+      )
     end
 
     assert_equal "Liquid syntax error (line 5): Unknown tag 'foo'", err.message

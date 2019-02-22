@@ -99,7 +99,7 @@ class ParsingQuirksTest < Minitest::Test
       # After the messed up quotes a filter without parameters (reverse) should work
       # but one with parameters (remove) shouldn't be detected.
       assert_template_result('here',  "{{ 'hi there' | split:\"t\"\" | reverse | first}}")
-      assert_template_result('hi ',  "{{ 'hi there' | split:\"t\"\" | remove:\"i\" | first}}")
+      assert_template_result('hi ', "{{ 'hi there' | split:\"t\"\" | remove:\"i\" | first}}")
     end
   end
 
