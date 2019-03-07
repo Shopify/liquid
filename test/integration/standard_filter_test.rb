@@ -158,6 +158,10 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '1', @filters.url_decode(1)
     assert_equal '2001-02-03', @filters.url_decode(Date.new(2001, 2, 3))
     assert_nil @filters.url_decode(nil)
+    exception = assert_raises Liquid::ArgumentError do
+      @filters.url_decode('%ff')
+    end
+    assert_equal 'Liquid error: invalid byte sequence in UTF-8', exception.message
   end
 
   def test_truncatewords
