@@ -1,5 +1,16 @@
 # Liquid Change Log
 
+## 4.0.2 / 2019-03-08
+
+### Changed
+* Add `where` filter (#1026) [Samuel Doiron]
+* Add `ParseTreeVisitor` to iterate the Liquid AST (#1025) [Stephen Paul Weber]
+* Improve `strip_html` performance (#1032) [printercu]
+
+### Fixed
+* Add error checking for invalid combinations of inputs to sort, sort_natural, where, uniq, map, compact filters (#1059) [Garland Zhang]
+* Validate the character encoding in url_decode (#1070) [Clayton Smith]
+
 ## 4.0.1 / 2018-10-09
 
 ### Changed
