@@ -52,7 +52,12 @@ module Liquid
     end
 
     def url_decode(input)
-      CGI.unescape(input.to_s) unless input.nil?
+      return if input.nil?
+
+      result = CGI.unescape(input.to_s)
+      raise Liquid::ArgumentError, "invalid byte sequence in #{result.encoding}" unless result.valid_encoding?
+
+      result
     end
 
     def slice(input, offset, length = nil)
