@@ -1,4 +1,5 @@
 module Liquid
+
   # "For" iterates over an array or collection.
   # Several useful variables are available to you within the loop.
   #
@@ -128,7 +129,14 @@ module Liquid
       end
 
       collection = context.evaluate(@collection_name)
-      collection = collection.to_a if collection.is_a?(Range)
+      if collection.is_a?(Range)
+        score_limit = context.resource_limits.render_score_limit
+        if score_limit && score_limit < collection.size
+          context.resource_limits.render_score += collection.size
+          raise MemoryError.new("Memory limits exceeded".freeze)
+        end
+        collection = collection.to_a
+      end
 
       limit = context.evaluate(@limit)
       to = limit ? limit.to_i + from : nil
