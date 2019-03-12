@@ -30,6 +30,9 @@ class TestFileSystem
     when 'assignments'
       "{% assign foo = 'bar' %}"
 
+    when 'break'
+      "{% break %}"
+
     else
       template_path
     end
@@ -241,5 +244,10 @@ class IncludeTagTest < Minitest::Test
     template.render(nil, strict_variables: true)
 
     assert_equal [], template.errors
+  end
+
+  def test_break_through_include
+    assert_template_result "1", "{% for i in (1..3) %}{{ i }}{% break %}{{ i }}{% endfor %}"
+    assert_template_result "1", "{% for i in (1..3) %}{{ i }}{% include 'break' %}{{ i }}{% endfor %}"
   end
 end # IncludeTagTest

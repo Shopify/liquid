@@ -89,6 +89,7 @@ module Liquid
           break
         else # Other non-Block tags
           render_node_to_output(node, output, context)
+          break if context.interrupt? # might have happened through an include
         end
         idx += 1
       end
