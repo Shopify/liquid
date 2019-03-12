@@ -1,5 +1,10 @@
 # Liquid Change Log
 
+## 4.0.3 / 2019-03-12
+
+### Fixed
+* Fix break and continue tags inside included templates in loops (#1072) [Justin Li]
+
 ## 4.0.2 / 2019-03-08
 
 ### Changed
