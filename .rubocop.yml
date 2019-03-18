@@ -1,4 +1,6 @@
-inherit_from: ./.rubocop_todo.yml
+inherit_from:
+  - .rubocop_todo.yml
+  - ./.rubocop_todo.yml
 
 AllCops:
   Exclude:
@@ -29,7 +31,7 @@ Lint/ParenthesesAsGroupedExpression:
 Lint/UnusedBlockArgument:
   Enabled: false
 
-Lint/EndAlignment:
+Layout/EndAlignment:
   EnforcedStyleAlignWith: variable
 
 Lint/UnusedMethodArgument:
@@ -59,7 +61,7 @@ Style/BracesAroundHashParameters:
 Style/NumericLiterals:
   Enabled: false
 
-Layout/SpaceInsideBrackets:
+Layout/SpaceInsideArrayLiteralBrackets:
   Enabled: false
 
 Layout/SpaceBeforeBlockBraces:
@@ -71,7 +73,10 @@ Style/Documentation:
 Style/ClassAndModuleChildren:
   Enabled: false
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
   Enabled: false
 
 Layout/IndentHash:
@@ -104,7 +109,7 @@ Style/SymbolLiteral:
 Performance/Count:
   Enabled: false
 
-Style/ConstantName:
+Naming/ConstantName:
   Enabled: false
 
 Layout/CaseIndentation:
@@ -122,6 +127,6 @@ Style/TrivialAccessors:
 Style/WordArray:
   Enabled: false
 
-Style/MethodName:
+Naming/MethodName:
   Exclude:
     - 'example/server/liquid_servlet.rb'
