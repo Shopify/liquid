@@ -74,6 +74,32 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '', @filters.upcase(nil)
   end
 
+  def test_upcase_first
+    input = <<-EOF
+      the quick brown
+      FOX jumped
+      over the
+      lazy dog.
+    EOF
+
+    output = <<-EOF
+      The quick brown
+      FOX jumped
+      over the
+      lazy dog.
+    EOF
+
+    assert_equal output, @filters.upcase_first(input)
+    assert_equal 'This is a SENTENCE.', @filters.upcase_first("this is a SENTENCE.")
+    assert_equal '', @filters.upcase_first(nil)
+  end
+
+  def test_capitalize
+    assert_equal 'Testing', @filters.capitalize("testing")
+    assert_equal 'This is a sentence.', @filters.capitalize("this is a SENTENCE.")
+    assert_equal '', @filters.capitalize(nil)
+  end
+
   def test_slice
     assert_equal 'oob', @filters.slice('foobar', 1, 3)
     assert_equal 'oobar', @filters.slice('foobar', 1, 1000)

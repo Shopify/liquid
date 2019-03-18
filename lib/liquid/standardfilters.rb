@@ -23,17 +23,22 @@ module Liquid
       input.respond_to?(:size) ? input.size : 0
     end
 
-    # convert an input string to DOWNCASE
+    # Convert an input string to downcase
     def downcase(input)
       input.to_s.downcase
     end
 
-    # convert an input string to UPCASE
+    # Convert an input string to upcase
     def upcase(input)
       input.to_s.upcase
     end
 
-    # capitalize words in the input centence
+    # Convert the first letter of an input string to upcase and keep the rest
+    def upcase_first(input)
+      input.to_s.sub(/\S/, &:upcase)
+    end
+
+    # Convert the first letter of an input string to upcase and the rest to downcase
     def capitalize(input)
       input.to_s.capitalize
     end
