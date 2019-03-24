@@ -25,7 +25,7 @@ module Liquid
     end
 
     def raw
-      "#{@tag_name} #{@markup}"
+      @raw ||= "#{@tag_name} #{@markup}".strip
     end
 
     def name
