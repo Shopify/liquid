@@ -433,7 +433,7 @@ module Liquid
     end
 
 
-  def lambda_exp(input, *x, expr)
+  def lambda_expr(input, *x, expr)
     inputhash = {}
     hashCounter = 0
     while(hashCounter != x.size())
@@ -464,7 +464,6 @@ module Liquid
       end
       
     end
-
     return eval(expr)
   end
 
