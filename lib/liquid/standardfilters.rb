@@ -432,6 +432,42 @@ module Liquid
       input.split('').map(&:ord).map{ |n| n.to_s(16) }
     end
 
+
+  def lambdaExp(input, *x, expr)
+    inputhash = {}
+    hashCounter = 0
+    while(hashCounter != x.size())
+      inputhash.merge!(x[hashCounter])
+      hashCounter = hashCounter + 1
+    end
+
+    counter = 0
+    while(counter != inputhash.size())
+
+      if(expr.include? inputhash.keys[counter])
+        if(inputhash.keys[counter].class == String)
+          rep = inputhash.values[counter]
+          expr[inputhash.keys[counter]] = %("#{rep}")
+        else
+          expr[inputhash.keys[counter]] = inputhash.values[counter].to_s
+        end
+      end
+      counter = counter + 1
+
+    end
+      
+    if /[a-zA-Z]/.match(expr) 
+      if input.class == String
+        expr[/[a-zA-Z]/] = %("#{input}")
+      else
+        expr[/[a-zA-Z]/] = input.to_s
+      end
+      
+    end
+
+    return eval(expr)
+  end
+
     private
 
     def raise_property_error(property)
