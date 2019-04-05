@@ -445,7 +445,7 @@ module Liquid
     while(counter != inputhash.size())
 
       if(expr.include? inputhash.keys[counter])
-        if(inputhash.keys[counter].class == String)
+        if(inputhash.values[counter].is_a? String)
           rep = inputhash.values[counter]
           expr[inputhash.keys[counter]] = %("#{rep}")
         else
