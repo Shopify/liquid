@@ -427,6 +427,11 @@ module Liquid
       end
     end
 
+    #Convert a string to ascii (in hex)
+    def string_to_ascii(input)
+      input.split('').map(&:ord).map{ |n| n.to_s(16) }
+    end
+
     private
 
     def raise_property_error(property)
