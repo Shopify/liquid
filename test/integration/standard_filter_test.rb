@@ -687,6 +687,11 @@ class StandardFiltersTest < Minitest::Test
     assert_equal ["54", "65", "73", "74", "69", "6e", "67"], @filters.string_to_ascii("Testing")
   end
 
+  def test_lambda_expr
+    assert_equal [1,2,3,4,5], @filters.lambda_expr({"x" => 1}, "y[x]")
+    assert_equals "Str-ing", @filter.lambda_expr({"y"=>"-"}, "str.split(y)")
+  end
+
   def test_cannot_access_private_methods
     assert_template_result('a', "{{ 'a' | to_number }}")
   end

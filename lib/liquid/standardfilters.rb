@@ -433,7 +433,7 @@ module Liquid
     end
 
 
-  def lambdaExp(input, *x, expr)
+  def lambda_exp(input, *x, expr)
     inputhash = {}
     hashCounter = 0
     while(hashCounter != x.size())
@@ -456,11 +456,11 @@ module Liquid
 
     end
       
-    if /[a-zA-Z]/.match(expr) 
+    if /[a-zA-Z]*/.match(expr) 
       if input.class == String
-        expr[/[a-zA-Z]/] = %("#{input}")
+        expr[/[a-zA-Z]*/] = %("#{input}")
       else
-        expr[/[a-zA-Z]/] = input.to_s
+        expr[/[a-zA-Z]*/] = input.to_s
       end
       
     end
