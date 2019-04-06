@@ -427,9 +427,14 @@ module Liquid
       end
     end
 
-    #Convert a string to ascii (in hex)
-    def string_to_ascii(input)
-      input.split('').map(&:ord).map{ |n| n.to_s(16) }
+    #Convert a string to ascii
+    def to_ascii(input)
+      input.chars.map{ |c| c.ord }
+    end
+
+    #Convert to hexadecimal
+    def to_hex(input)
+      input.map{ |c| c.to_s(16) }
     end
 
     private

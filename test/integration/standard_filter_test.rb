@@ -683,8 +683,12 @@ class StandardFiltersTest < Minitest::Test
     assert_equal "bar", @filters.default({}, "bar")
   end
 
-  def test_string_to_ascii
-    assert_equal ["54", "65", "73", "74", "69", "6e", "67"], @filters.string_to_ascii("Testing")
+  def test_to_ascii
+    assert_equal [84, 101, 115, 116, 105, 110, 103], @filters.to_ascii("Testing")
+  end
+
+  def test_to_hex
+    assert_equal ["54", "65", "73", "74", "69", "6e", "67"], @filters.to_hex([84, 101, 115, 116, 105, 110, 103])
   end
 
   def test_cannot_access_private_methods
