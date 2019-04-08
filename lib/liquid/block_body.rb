@@ -27,11 +27,11 @@ module Liquid
     private def parse_for_liquid_tag(tokenizer, parse_context)
       while token = tokenizer.shift
         case
-        when token.empty?
-          # pass
+        when token.empty? || token =~ WhitespaceOrNothing
+          # pass, but assign line_number below, since it could change even when
+          # the token is empty
         else
           unless token =~ LiquidTagToken
-            next if token =~ WhitespaceOrNothing
             # line isn't empty but didn't match tag syntax, yield and let the
             # caller raise a syntax error
             return yield token, token
