@@ -21,16 +21,17 @@ class LiquidTagTest < Minitest::Test
     -%}
     LIQUID
 
-    assert_template_result('4 8 12', <<~LIQUID, 'array' => [1, 2, 3])
+    assert_template_result('4 8 12 6', <<~LIQUID, 'array' => [1, 2, 3])
     {%- liquid
       for value in array
-        local double_value = value | times: 2
+        assign double_value = value | times: 2
         echo double_value | times: 2
         unless forloop.last
           echo " "
         endunless
       endfor
 
+      echo " "
       echo double_value
     -%}
     LIQUID
