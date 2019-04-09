@@ -3,7 +3,6 @@
     syntax:
       tag_unexpected_args: "Syntax Error in '%{tag}' - Valid syntax: %{tag}"
       assign: "Syntax Error in 'assign' - Valid syntax: assign [var] = [source]"
-      local: "Syntax Error in 'local' - Valid syntax: local [var] = [source]"
       capture: "Syntax Error in 'capture' - Valid syntax: capture [var]"
       case: "Syntax Error in 'case' - Valid syntax: case [condition]"
       case_invalid_when: "Syntax Error in tag 'case' - Valid when condition: {% when [condition] [or condition2...] %}"

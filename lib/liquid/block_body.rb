@@ -26,11 +26,7 @@ module Liquid
 
     private def parse_for_liquid_tag(tokenizer, parse_context)
       while token = tokenizer.shift
-        case
-        when token.empty? || token =~ WhitespaceOrNothing
-          # pass, but assign line_number below, since it could change even when
-          # the token is empty
-        else
+        unless token.empty? || token =~ WhitespaceOrNothing
           unless token =~ LiquidTagToken
             # line isn't empty but didn't match tag syntax, yield and let the
             # caller raise a syntax error
@@ -73,7 +69,7 @@ module Liquid
 
           if tag_name == 'liquid'.freeze
             liquid_tag_tokenizer = Tokenizer.new(markup, line_number: parse_context.line_number, for_liquid_tag: true)
-            next parse(liquid_tag_tokenizer, parse_context, &block)
+            next parse_for_liquid_tag(liquid_tag_tokenizer, parse_context, &block)
           end
 
           unless tag = registered_tags[tag_name]
