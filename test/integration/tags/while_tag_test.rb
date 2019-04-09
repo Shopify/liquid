@@ -13,6 +13,10 @@ class WhileTagTest < Minitest::Test
 
     assert_template_result('0123', '{%while myval %}{%increment counter %}{% if counter > 3 %}{% assign myval = false %}{%endif%}{%endwhile%}', 'myval' => true)
 
+    # test and/or
+    assert_template_result(' yo ', '{%while myval1 or myval2 %} yo {%assign myval1 = false%}{%endwhile%}', 'myval1' => true, 'myval2' => false)
+    assert_template_result('', '{%while myval1 and myval2 %} yo {%endwhile%}', 'myval1' => true, 'myval2' => false)
+
     # test binary comparators ==, !=, <, <=, >, >= with constants and with two variables
     # test ==
     assert_template_result('0', '{%while myval == 0 %}{{myval}}{%assign myval = myval | plus: 1 %}{%endwhile%}', 'myval' => 0)
@@ -37,6 +41,10 @@ class WhileTagTest < Minitest::Test
     # test >=
     assert_template_result('87654', '{%while myval >= 4 %}{{myval}}{%assign myval = myval | minus: 1 %}{%endwhile%}', 'myval' => 8)
     assert_template_result('87654', '{%while myval1 >= myval2 %}{{myval1}}{%assign myval1 = myval1 | minus: 1 %}{%endwhile%}', {'myval1' => 8, 'myval2' => 4})
+
+    # test compound expressions
+    assert_template_result('', '{%while true and 3 > 4 %} yo {%endwhile%}')
+    assert_template_result(' yo ', '{%while true and true or 3 > 4%} yo {%break%}{%endwhile%}')
   end
 
   def test_while_with_break
