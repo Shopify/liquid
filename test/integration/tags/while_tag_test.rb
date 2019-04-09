@@ -4,8 +4,39 @@ class WhileTagTest < Minitest::Test
   include Liquid
 
   def test_while
+    # test value to be truthy/falsy
     assert_template_result(' yo ', '{%while myval %} yo {%assign myval = false%}{%endwhile%}', 'myval' => true)
-    assert_template_result('0123', '{%while myval %}{%increment myval %}{% if myval > 3 %}{% assign myval = false %}{%endif%}{%endwhile%}', 'myval' => 0)
+    assert_template_result(' yo ', '{%while myval %} yo {%assign myval = false%}{%endwhile%}', 'myval' => 0)
+    assert_template_result(' yo ', '{%while myval %} yo {%assign myval = false%}{%endwhile%}', 'myval' => 'test')
+    assert_template_result('', '{%while myval %} yo {%assign myval = true%}{%endwhile%}', 'myval' => false)
+    assert_template_result('', '{%while myval %} yo {%assign myval = true%}{%endwhile%}', 'myval' => nil)
+
+    assert_template_result('0123', '{%while myval %}{%increment counter %}{% if counter > 3 %}{% assign myval = false %}{%endif%}{%endwhile%}', 'myval' => true)
+
+    # test binary comparators ==, !=, <, <=, >, >= with constants and with two variables
+    # test ==
+    assert_template_result('0', '{%while myval == 0 %}{{myval}}{%assign myval = myval | plus: 1 %}{%endwhile%}', 'myval' => 0)
+    assert_template_result('0', '{%while myval1 == myval2 %}{{myval1}}{%assign myval1 = myval1 | plus: 1 %}{%endwhile%}', {'myval1' => 0, 'myval2' => 0})
+
+    # test !=
+    assert_template_result('0123', '{%while myval != 4 %}{{myval}}{%assign myval = myval | plus: 1 %}{%endwhile%}', 'myval' => 0)
+    assert_template_result('0123', '{%while myval1 != myval2 %}{{myval1}}{%assign myval1 = myval1 | plus: 1 %}{%endwhile%}', {'myval1' => 0, 'myval2' => 4})
+
+    # test <
+    assert_template_result('0123', '{%while myval < 4 %}{{myval}}{%assign myval = myval | plus: 1 %}{%endwhile%}', 'myval' => 0)
+    assert_template_result('0123', '{%while myval1 < myval2 %}{{myval1}}{%assign myval1 = myval1 | plus: 1 %}{%endwhile%}', {'myval1' => 0, 'myval2' => 4})
+
+    # test <=
+    assert_template_result('01234', '{%while myval <= 4 %}{{myval}}{%assign myval = myval | plus: 1 %}{%endwhile%}', 'myval' => 0)
+    assert_template_result('01234', '{%while myval1 <= myval2 %}{{myval1}}{%assign myval1 = myval1 | plus: 1 %}{%endwhile%}', {'myval1' => 0, 'myval2' => 4})
+
+    # test >
+    assert_template_result('8765', '{%while myval > 4 %}{{myval}}{%assign myval = myval | minus: 1 %}{%endwhile%}', 'myval' => 8)
+    assert_template_result('8765', '{%while myval1 > myval2 %}{{myval1}}{%assign myval1 = myval1 | minus: 1 %}{%endwhile%}', {'myval1' => 8, 'myval2' => 4})
+
+    # test >=
+    assert_template_result('87654', '{%while myval >= 4 %}{{myval}}{%assign myval = myval | minus: 1 %}{%endwhile%}', 'myval' => 8)
+    assert_template_result('87654', '{%while myval1 >= myval2 %}{{myval1}}{%assign myval1 = myval1 | minus: 1 %}{%endwhile%}', {'myval1' => 8, 'myval2' => 4})
   end
 
   def test_while_with_break
