@@ -143,7 +143,8 @@ module Liquid
 
     # Fetches an object starting at the local scope and then moving up the hierachy
     def find_variable(key, raise_on_not_found: true)
-      scope = @scope if @scope.key?(key)
+      value = @scope[key]
+      scope = @scope if value != nil
 
       if scope.nil?
         index = @environments.find_index do |e|

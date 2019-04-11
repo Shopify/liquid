@@ -368,6 +368,23 @@ HERE
     assert_template_result(expected, template, assigns)
   end
 
+  def test_overwriting_internal_variable
+    template = <<-END_TEMPLATE
+    {% assign forloop = 'first' %}
+
+    {% for item in items %}
+      {{ forloop }}
+      {% assign forloop = 'second' %}
+      {{ forloop }}
+    {% endfor %}
+
+    {{ forloop }}
+    END_TEMPLATE
+
+    result = Liquid::Template.parse(template).render('items' => '1')
+    assert_equal 'Liquid::ForloopDrop Liquid::ForloopDrop second', result.split.map(&:strip).join(' ')
+  end
+
   class LoaderDrop < Liquid::Drop
     attr_accessor :each_called, :load_slice_called
 
