@@ -60,7 +60,7 @@ module Liquid
       begin
         context.template_name = template_name
         context.partial = true
-        context.stack do
+        context.stack(context_variable_name, *@attributes.keys) do
           @attributes.each do |key, value|
             context[key] = context.evaluate(value)
           end

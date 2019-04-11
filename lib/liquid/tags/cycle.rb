@@ -34,15 +34,13 @@ module Liquid
     def render(context)
       context.registers[:cycle] ||= {}
 
-      context.stack do
-        key = context.evaluate(@name)
-        iteration = context.registers[:cycle][key].to_i
-        result = context.evaluate(@variables[iteration])
-        iteration += 1
-        iteration  = 0 if iteration >= @variables.size
-        context.registers[:cycle][key] = iteration
-        result
-      end
+      key = context.evaluate(@name)
+      iteration = context.registers[:cycle][key].to_i
+      result = context.evaluate(@variables[iteration])
+      iteration += 1
+      iteration  = 0 if iteration >= @variables.size
+      context.registers[:cycle][key] = iteration
+      result
     end
 
     private

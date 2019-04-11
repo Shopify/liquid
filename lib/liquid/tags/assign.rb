@@ -24,7 +24,7 @@ module Liquid
 
     def render(context)
       val = @from.render(context)
-      context.scopes.last[@to] = val
+      context[@to] = val
       context.resource_limits.assign_score += assign_score_of(val)
       ''.freeze
     end

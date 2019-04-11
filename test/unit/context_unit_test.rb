@@ -102,21 +102,6 @@ class ContextUnitTest < Minitest::Test
     assert_nil @context['does_not_exist']
   end
 
-  def test_scoping
-    @context.push
-    @context.pop
-
-    assert_raises(Liquid::ContextError) do
-      @context.pop
-    end
-
-    assert_raises(Liquid::ContextError) do
-      @context.push
-      @context.pop
-      @context.pop
-    end
-  end
-
   def test_length_query
     @context['numbers'] = [1, 2, 3, 4]
 
@@ -170,18 +155,41 @@ class ContextUnitTest < Minitest::Test
 
   def test_add_item_in_outer_scope
     @context['test'] = 'test'
-    @context.push
-    assert_equal 'test', @context['test']
-    @context.pop
+
+    @context.stack('test') do
+      assert_equal 'test', @context['test']
+    end
+
     assert_equal 'test', @context['test']
   end
 
   def test_add_item_in_inner_scope
-    @context.push
-    @context['test'] = 'test'
-    assert_equal 'test', @context['test']
-    @context.pop
+    @context.stack('test') do
+      @context['test'] = 'test'
+      assert_equal 'test', @context['test']
+    end
+
     assert_nil @context['test']
+  end
+
+  def test_nested_scopes
+    @context['test'] = 1
+
+    @context.stack('test') do
+      assert_equal 1, @context['test']
+      @context['test'] = 2
+      assert_equal 2, @context['test']
+
+      @context.stack('test') do
+        assert_equal 2, @context['test']
+        @context['test'] = 3
+        assert_equal 3, @context['test']
+      end
+
+      assert_equal 2, @context['test']
+    end
+
+    assert_equal 1, @context['test']
   end
 
   def test_hierachical_data
