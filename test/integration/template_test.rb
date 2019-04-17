@@ -177,31 +177,31 @@ class TemplateTest < Minitest::Test
 
   def test_render_length_persists_between_blocks
     t = Template.parse("{% if true %}aaaa{% endif %}")
-    t.resource_limits.render_length_limit = 7
+    t.resource_limits.render_length_limit = 3
     assert_equal "Liquid error: Memory limits exceeded", t.render
-    t.resource_limits.render_length_limit = 8
+    t.resource_limits.render_length_limit = 4
     assert_equal "aaaa", t.render
 
     t = Template.parse("{% if true %}aaaa{% endif %}{% if true %}bbb{% endif %}")
-    t.resource_limits.render_length_limit = 13
+    t.resource_limits.render_length_limit = 6
     assert_equal "Liquid error: Memory limits exceeded", t.render
-    t.resource_limits.render_length_limit = 14
+    t.resource_limits.render_length_limit = 7
     assert_equal "aaaabbb", t.render
 
     t = Template.parse("{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}")
+    t.resource_limits.render_length_limit = 4
+    assert_equal "Liquid error: Memory limits exceeded", t.render
     t.resource_limits.render_length_limit = 5
     assert_equal "Liquid error: Memory limits exceeded", t.render
-    t.resource_limits.render_length_limit = 11
-    assert_equal "Liquid error: Memory limits exceeded", t.render
-    t.resource_limits.render_length_limit = 12
+    t.resource_limits.render_length_limit = 6
     assert_equal "ababab", t.render
   end
 
   def test_render_length_uses_number_of_bytes_not_characters
     t = Template.parse("{% if true %}すごい{% endif %}")
-    t.resource_limits.render_length_limit = 10
+    t.resource_limits.render_length_limit = 8
     assert_equal "Liquid error: Memory limits exceeded", t.render
-    t.resource_limits.render_length_limit = 18
+    t.resource_limits.render_length_limit = 9
     assert_equal "すごい", t.render
   end
 

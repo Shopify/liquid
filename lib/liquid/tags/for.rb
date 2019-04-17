@@ -70,13 +70,13 @@ module Liquid
       @else_block = BlockBody.new
     end
 
-    def render(context)
+    def render(context, output = '')
       segment = collection_segment(context)
 
       if segment.empty?
-        render_else(context)
+        render_else(context, output)
       else
-        render_segment(context, segment)
+        render_segment(context, output, segment)
       end
     end
 
@@ -141,11 +141,9 @@ module Liquid
       segment
     end
 
-    def render_segment(context, segment)
+    def render_segment(context, output, segment)
       for_stack = context.registers[:for_stack] ||= []
       length = segment.length
-
-      result = ''
 
       context.stack do
         loop_vars = Liquid::ForloopDrop.new(@name, length, for_stack[-1])
@@ -157,7 +155,7 @@ module Liquid
 
           segment.each do |item|
             context[@variable_name] = item
-            result << @for_block.render(context)
+            @for_block.render(context, output)
             loop_vars.send(:increment!)
 
             # Handle any interrupts if they exist.
@@ -172,7 +170,7 @@ module Liquid
         end
       end
 
-      result
+      output
     end
 
     def set_attribute(key, expr)
@@ -188,8 +186,12 @@ module Liquid
       end
     end
 
-    def render_else(context)
-      @else_block ? @else_block.render(context) : ''.freeze
+    def render_else(context, output)
+      if @else_block
+        @else_block.render(context, output)
+      else
+        output
+      end
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor

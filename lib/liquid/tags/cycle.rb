@@ -31,18 +31,29 @@ module Liquid
       end
     end
 
-    def render(context)
+    def render(context, output = '')
       context.registers[:cycle] ||= {}
 
       context.stack do
         key = context.evaluate(@name)
         iteration = context.registers[:cycle][key].to_i
-        result = context.evaluate(@variables[iteration])
+
+        val = context.evaluate(@variables[iteration])
+
+        if val.is_a?(Array)
+          val = val.join
+        elsif !val.is_a?(String)
+          val = val.to_s
+        end
+
+        output << val
+
         iteration += 1
         iteration  = 0 if iteration >= @variables.size
         context.registers[:cycle][key] = iteration
-        result
       end
+
+      output
     end
 
     private

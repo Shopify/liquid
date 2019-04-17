@@ -12,7 +12,7 @@ class CommentForm < Liquid::Block
     end
   end
 
-  def render(context)
+  def render(context, output = '')
     article = context[@variable_name]
 
     context.stack do
@@ -23,7 +23,9 @@ class CommentForm < Liquid::Block
         'email'  => context['comment.email'],
         'body'   => context['comment.body']
       }
-      wrap_in_form(article, render_all(@nodelist, context))
+
+      output << wrap_in_form(article, render_all(@nodelist, context, output))
+      output
     end
   end
 

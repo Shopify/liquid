@@ -32,8 +32,8 @@ module Liquid
       self.class.name.downcase
     end
 
-    def render(_context)
-      ''.freeze
+    def render(_context, output = '')
+      output
     end
 
     def blank?

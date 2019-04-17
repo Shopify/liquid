@@ -78,7 +78,7 @@ module Liquid
       filterargs
     end
 
-    def render(context)
+    def render(context, output = '')
       obj = @filters.inject(context.evaluate(@name)) do |output, (filter_name, filter_args, filter_kwargs)|
         filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
         context.invoke(filter_name, output, *filter_args)
@@ -88,7 +88,20 @@ module Liquid
 
       taint_check(context, obj)
 
-      obj
+      if output
+        if obj.is_a?(Array)
+          output << obj.join
+        elsif obj.nil?
+        elsif !obj.is_a?(String)
+          output << obj.to_s
+        else
+          output << obj
+        end
+
+        output
+      else
+        obj
+      end
     end
 
     private

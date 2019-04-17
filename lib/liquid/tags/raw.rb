@@ -22,8 +22,9 @@ module Liquid
       raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_never_closed".freeze, block_name: block_name))
     end
 
-    def render(_context)
-      @body
+    def render(_context, output = '')
+      output << @body
+      output
     end
 
     def nodelist

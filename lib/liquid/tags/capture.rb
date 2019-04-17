@@ -22,11 +22,11 @@ module Liquid
       end
     end
 
-    def render(context)
-      output = super
+    def render(context, output = '')
+      super
       context.scopes.last[@to] = output
-      context.resource_limits.assign_score += output.bytesize
-      ''.freeze
+      context.resource_limits.assign_score = output.bytesize
+      output
     end
 
     def blank?

@@ -66,8 +66,7 @@ module Liquid
       @blank
     end
 
-    def render(context)
-      output = []
+    def render(context, output = '')
       context.resource_limits.render_score += @nodelist.length
 
       idx = 0
@@ -77,9 +76,9 @@ module Liquid
           check_resources(context, node)
           output << node
         when Variable
-          render_node_to_output(node, output, context)
+          render_node(context, output, node)
         when Block
-          render_node_to_output(node, output, context, node.blank?)
+          render_node(context, node.blank? ? '' : output, node)
           break if context.interrupt? # might have happened in a for-block
         when Continue, Break
           # If we get an Interrupt that means the block must stop processing. An
@@ -88,34 +87,31 @@ module Liquid
           context.push_interrupt(node.interrupt)
           break
         else # Other non-Block tags
-          render_node_to_output(node, output, context)
+          render_node(context, output, node)
           break if context.interrupt? # might have happened through an include
         end
         idx += 1
       end
 
-      output.join
+      output
     end
 
     private
 
-    def render_node_to_output(node, output, context, skip_output = false)
-      node_output = node.render(context)
-      node_output = node_output.is_a?(Array) ? node_output.join : node_output.to_s
-      check_resources(context, node_output)
-      output << node_output unless skip_output
+    def render_node(context, output, node)
+      node.render(context, output)
+      check_resources(context, output)
     rescue MemoryError => e
       raise e
     rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
       context.handle_error(e, node.line_number)
-      output << nil
     rescue ::StandardError => e
       line_number = node.is_a?(String) ? nil : node.line_number
       output << context.handle_error(e, line_number)
     end
 
-    def check_resources(context, node_output)
-      context.resource_limits.render_length += node_output.bytesize
+    def check_resources(context, output)
+      context.resource_limits.render_length = output.bytesize
       return unless context.resource_limits.reached?
       raise MemoryError.new("Memory limits exceeded".freeze)
     end

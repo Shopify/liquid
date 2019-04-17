@@ -6,23 +6,23 @@ module Liquid
   #   {% unless x < 0 %} x is greater than zero {% endunless %}
   #
   class Unless < If
-    def render(context)
+    def render(context, output = '')
       context.stack do
         # First condition is interpreted backwards ( if not )
         first_block = @blocks.first
         unless first_block.evaluate(context)
-          return first_block.attachment.render(context)
+          return first_block.attachment.render(context, output)
         end
 
         # After the first condition unless works just like if
         @blocks[1..-1].each do |block|
           if block.evaluate(context)
-            return block.attachment.render(context)
+            return block.attachment.render(context, output)
           end
         end
-
-        ''.freeze
       end
+
+      output
     end
   end
 
