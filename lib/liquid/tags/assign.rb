@@ -37,7 +37,7 @@ module Liquid
 
     def assign_score_of(val)
       if val.instance_of?(String)
-        val.length
+        val.bytesize
       elsif val.instance_of?(Array) || val.instance_of?(Hash)
         sum = 1
         # Uses #each to avoid extra allocations.

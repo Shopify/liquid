@@ -139,6 +139,16 @@ class TemplateTest < Minitest::Test
     refute_nil t.resource_limits.assign_score
   end
 
+  def test_resource_limits_assign_score_counts_bytes_not_characters
+    t = Template.parse("{% assign foo = 'すごい' %}")
+    t.render
+    assert_equal 9, t.resource_limits.assign_score
+
+    t = Template.parse("{% capture foo %}すごい{% endcapture %}")
+    t.render
+    assert_equal 9, t.resource_limits.assign_score
+  end
+
   def test_resource_limits_assign_score_nested
     t = Template.parse("{% assign foo = 'aaaa' | reverse %}")
 
@@ -185,6 +195,14 @@ class TemplateTest < Minitest::Test
     assert_equal "Liquid error: Memory limits exceeded", t.render
     t.resource_limits.render_length_limit = 12
     assert_equal "ababab", t.render
+  end
+
+  def test_render_length_uses_number_of_bytes_not_characters
+    t = Template.parse("{% if true %}すごい{% endif %}")
+    t.resource_limits.render_length_limit = 10
+    assert_equal "Liquid error: Memory limits exceeded", t.render
+    t.resource_limits.render_length_limit = 18
+    assert_equal "すごい", t.render
   end
 
   def test_default_resource_limits_unaffected_by_render_with_context
