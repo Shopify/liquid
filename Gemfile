@@ -5,10 +5,13 @@ end
 
 gemspec
 
-gem 'stackprof', platforms: :mri
-
 group :benchmark, :test do
   gem 'benchmark-ips'
+  gem 'memory_profiler'
+
+  install_if -> { RUBY_PLATFORM !~ /mingw|mswin/ } do
+    gem 'stackprof'
+  end
 end
 
 group :test do

@@ -85,6 +85,13 @@ namespace :profile do
   end
 end
 
+namespace :memory_profile do
+  desc "Run memory profiler"
+  task :run do
+    ruby "./performance/memory_profile.rb"
+  end
+end
+
 desc "Run example"
 task :example do
   ruby "-w -d -Ilib example/server/server.rb"
