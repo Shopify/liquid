@@ -66,14 +66,19 @@ module Liquid
       @blank
     end
 
-    def render(context, output = '')
+    def render(context)
+      render_to_output_buffer(context, '')
+    end
+
+    def render_to_output_buffer(context, output)
       context.resource_limits.render_score += @nodelist.length
 
       idx = 0
       while node = @nodelist[idx]
+        previous_output_size = output.bytesize
+
         case node
         when String
-          check_resources(context, node)
           output << node
         when Variable
           render_node(context, output, node)
@@ -91,6 +96,8 @@ module Liquid
           break if context.interrupt? # might have happened through an include
         end
         idx += 1
+
+        raise_if_resource_limits_reached(context, output.bytesize - previous_output_size)
       end
 
       output
@@ -99,10 +106,7 @@ module Liquid
     private
 
     def render_node(context, output, node)
-      node.render(context, output)
-      check_resources(context, output)
-    rescue MemoryError => e
-      raise e
+      node.render_to_output_buffer(context, output)
     rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
       context.handle_error(e, node.line_number)
     rescue ::StandardError => e
@@ -110,8 +114,8 @@ module Liquid
       output << context.handle_error(e, line_number)
     end
 
-    def check_resources(context, output)
-      context.resource_limits.render_length = output.bytesize
+    def raise_if_resource_limits_reached(context, length)
+      context.resource_limits.render_length += length
       return unless context.resource_limits.reached?
       raise MemoryError.new("Memory limits exceeded".freeze)
     end

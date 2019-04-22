@@ -39,11 +39,11 @@ module Liquid
       end
     end
 
-    def render(context, output)
+    def render_to_output_buffer(context, output)
       context.stack do
         @blocks.each do |block|
           if block.evaluate(context)
-            return block.attachment.render(context, output)
+            return block.attachment.render_to_output_buffer(context, output)
           end
         end
       end

@@ -1,6 +1,6 @@
 module Liquid
   class Comment < Block
-    def render(_context, output = '')
+    def render_to_output_buffer(_context, output)
       output
     end
 

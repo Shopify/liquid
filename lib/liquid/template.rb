@@ -207,11 +207,9 @@ module Liquid
       begin
         # render the nodelist.
         # for performance reasons we get an array back here. join will make a string out of it.
-        result = with_profiling(context) do
-          output ||= self.class.output_buffer.clear
-          @root.render(context, output)
+        with_profiling(context) do
+          @root.render_to_output_buffer(context, output || '')
         end
-        result.respond_to?(:join) ? result.join : result
       rescue Liquid::MemoryError => e
         context.handle_error(e)
       ensure
@@ -219,13 +217,13 @@ module Liquid
       end
     end
 
-    def self.output_buffer
-      @output_buffer ||= String.new(capacity: 1024)
-    end
-
     def render!(*args)
       @rethrow_errors = true
       render(*args)
+    end
+
+    def render_to_output_buffer(context, output)
+      render(context, output: output)
     end
 
     private

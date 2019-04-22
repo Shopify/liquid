@@ -18,7 +18,7 @@ module Liquid
       end
     end
 
-    def render(context, output = '')
+    def render_to_output_buffer(context, output)
       collection = context.evaluate(@collection_name) or return ''.freeze
 
       from = @attributes.key?('offset'.freeze) ? context.evaluate(@attributes['offset'.freeze]).to_i : 0

@@ -12,7 +12,7 @@ class CommentForm < Liquid::Block
     end
   end
 
-  def render(context, output = '')
+  def render_to_output_buffer(context, output)
     article = context[@variable_name]
 
     context.stack do

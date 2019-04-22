@@ -66,7 +66,7 @@ class CustomInclude < Liquid::Tag
   def parse(tokens)
   end
 
-  def render(context, output = '')
+  def render_to_output_buffer(context, output)
     output << @template_name[1..-2]
     output
   end

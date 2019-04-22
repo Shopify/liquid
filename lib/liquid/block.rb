@@ -13,8 +13,9 @@ module Liquid
       end
     end
 
-    def render(context, output = '')
-      @body.render(context, output)
+    # For backwards compatibility
+    def render(context)
+      @body.render(context)
     end
 
     def blank?

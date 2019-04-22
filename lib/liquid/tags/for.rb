@@ -70,7 +70,7 @@ module Liquid
       @else_block = BlockBody.new
     end
 
-    def render(context, output = '')
+    def render_to_output_buffer(context, output)
       segment = collection_segment(context)
 
       if segment.empty?
@@ -78,6 +78,8 @@ module Liquid
       else
         render_segment(context, output, segment)
       end
+
+      output
     end
 
     protected
@@ -155,7 +157,7 @@ module Liquid
 
           segment.each do |item|
             context[@variable_name] = item
-            @for_block.render(context, output)
+            @for_block.render_to_output_buffer(context, output)
             loop_vars.send(:increment!)
 
             # Handle any interrupts if they exist.
@@ -188,7 +190,7 @@ module Liquid
 
     def render_else(context, output)
       if @else_block
-        @else_block.render(context, output)
+        @else_block.render_to_output_buffer(context, output)
       else
         output
       end

@@ -23,7 +23,7 @@ module Liquid
       @variable = markup.strip
     end
 
-    def render(context, output = '')
+    def render_to_output_buffer(context, output)
       value = context.environments.first[@variable] ||= 0
       value -= 1
       context.environments.first[@variable] = value

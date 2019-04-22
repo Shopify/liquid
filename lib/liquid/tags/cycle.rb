@@ -31,7 +31,7 @@ module Liquid
       end
     end
 
-    def render(context, output = '')
+    def render_to_output_buffer(context, output)
       context.registers[:cycle] ||= {}
 
       context.stack do

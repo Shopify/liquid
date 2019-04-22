@@ -78,30 +78,28 @@ module Liquid
       filterargs
     end
 
-    def render(context, output = '')
+    def render(context)
       obj = @filters.inject(context.evaluate(@name)) do |output, (filter_name, filter_args, filter_kwargs)|
         filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
         context.invoke(filter_name, output, *filter_args)
       end
 
       obj = context.apply_global_filter(obj)
-
       taint_check(context, obj)
+      obj
+    end
 
-      if output
-        if obj.is_a?(Array)
-          output << obj.join
-        elsif obj.nil?
-        elsif !obj.is_a?(String)
-          output << obj.to_s
-        else
-          output << obj
-        end
+    def render_to_output_buffer(context, output)
+      obj = render(context)
 
-        output
+      if obj.is_a?(Array)
+        output << obj.join
+      elsif obj.nil?
       else
-        obj
+        output << obj.to_s
       end
+
+      output
     end
 
     private

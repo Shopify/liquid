@@ -22,7 +22,7 @@ module Liquid
       raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_never_closed".freeze, block_name: block_name))
     end
 
-    def render(_context, output = '')
+    def render_to_output_buffer(_context, output)
       output << @body
       output
     end

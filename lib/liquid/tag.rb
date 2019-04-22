@@ -32,7 +32,15 @@ module Liquid
       self.class.name.downcase
     end
 
-    def render(_context, output = '')
+    def render(_context)
+      ''.freeze
+    end
+
+    # For backwards compatibility with custom tags. In a future release, the semantics
+    # of the `render_to_output_buffer` method will become the default and the `render`
+    # method will be removed.
+    def render_to_output_buffer(context, output)
+      output << render(context)
       output
     end
 

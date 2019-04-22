@@ -84,6 +84,13 @@ module Minitest
     ensure
       Liquid::Template.error_mode = old_mode
     end
+
+    def with_custom_tag(tag_name, tag_class)
+      Liquid::Template.register_tag(tag_name, tag_class)
+      yield
+    ensure
+      Liquid::Template.tags.delete(tag_name)
+    end
   end
 end
 

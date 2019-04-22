@@ -42,7 +42,7 @@ module Liquid
     def parse(_tokens)
     end
 
-    def render(context, output)
+    def render_to_output_buffer(context, output)
       template_name = context.evaluate(@template_name_expr)
       raise ArgumentError.new(options[:locale].t("errors.argument.include")) unless template_name
 
@@ -68,11 +68,11 @@ module Liquid
           if variable.is_a?(Array)
             variable.each do |var|
               context[context_variable_name] = var
-              partial.render(context, output: output)
+              partial.render_to_output_buffer(context, output)
             end
           else
             context[context_variable_name] = variable
-            partial.render(context, output: output)
+            partial.render_to_output_buffer(context, output)
           end
         end
       ensure
