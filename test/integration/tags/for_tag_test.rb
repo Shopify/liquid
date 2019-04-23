@@ -103,6 +103,34 @@ HERE
     assert_template_result('3456', '{%for i in array limit: 4 offset: 2 %}{{ i }}{%endfor%}', assigns)
   end
 
+  def test_limiting_with_invalid_limit
+    assigns = { 'array' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] }
+    template = <<-MKUP
+      {% for i in array limit: true offset: 1 %}
+        {{ i }}
+      {% endfor %}
+    MKUP
+
+    exception = assert_raises(Liquid::ArgumentError) do
+      Template.parse(template).render!(assigns)
+    end
+    assert_equal("Liquid error: invalid integer", exception.message)
+  end
+
+  def test_limiting_with_invalid_offset
+    assigns = { 'array' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] }
+    template = <<-MKUP
+      {% for i in array limit: 1 offset: true %}
+        {{ i }}
+      {% endfor %}
+    MKUP
+
+    exception = assert_raises(Liquid::ArgumentError) do
+      Template.parse(template).render!(assigns)
+    end
+    assert_equal("Liquid error: invalid integer", exception.message)
+  end
+
   def test_dynamic_variable_limiting
     assigns = { 'array' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] }
     assigns['limit'] = 2

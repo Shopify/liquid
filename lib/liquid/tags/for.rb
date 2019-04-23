@@ -124,14 +124,23 @@ module Liquid
       from = if @from == :continue
         offsets[@name].to_i
       else
-        context.evaluate(@from).to_i
+        from_value = context.evaluate(@from)
+        if from_value.nil?
+          0
+        else
+          Utils.to_integer(from_value)
+        end
       end
 
       collection = context.evaluate(@collection_name)
       collection = collection.to_a if collection.is_a?(Range)
 
-      limit = context.evaluate(@limit)
-      to = limit ? limit.to_i + from : nil
+      limit_value = context.evaluate(@limit)
+      to = if limit_value.nil?
+        nil
+      else
+        Utils.to_integer(limit_value) + from
+      end
 
       segment = Utils.slice_collection(collection, from, to)
       segment.reverse! if @reversed
