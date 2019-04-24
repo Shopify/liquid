@@ -22,12 +22,12 @@ module Liquid
       end
     end
 
-    def render_to_output_buffer(context, output)
-      previous_output_size = output.bytesize
+    def render_to_output_buffer(context)
+      previous_output_size = context.output.bytesize
       super
-      context.scopes.last[@to] = output
-      context.resource_limits.assign_score += (output.bytesize - previous_output_size)
-      output
+      context.scopes.last[@to] = context.output
+      context.resource_limits.assign_score += (context.output.bytesize - previous_output_size)
+      context.output
     end
 
     def blank?

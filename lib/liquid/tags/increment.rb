@@ -20,11 +20,11 @@ module Liquid
       @variable = markup.strip
     end
 
-    def render_to_output_buffer(context, output)
+    def render_to_output_buffer(context)
       value = context.environments.first[@variable] ||= 0
       context.environments.first[@variable] = value + 1
-      output << value.to_s
-      output
+      context.output << value.to_s
+      context.output
     end
   end
 

@@ -67,23 +67,23 @@ module Liquid
     end
 
     def render(context)
-      render_to_output_buffer(context, '')
+      render_to_output_buffer(context)
     end
 
-    def render_to_output_buffer(context, output)
+    def render_to_output_buffer(context)
       context.resource_limits.render_score += @nodelist.length
 
       idx = 0
       while node = @nodelist[idx]
-        previous_output_size = output.bytesize
+        previous_output_size = context.output.bytesize
 
         case node
         when String
-          output << node
+          context.output << node
         when Variable
-          render_node(context, output, node)
+          render_node(context, node)
         when Block
-          render_node(context, node.blank? ? '' : output, node)
+          render_node(context, node, node.blank?)
           break if context.interrupt? # might have happened in a for-block
         when Continue, Break
           # If we get an Interrupt that means the block must stop processing. An
@@ -92,26 +92,42 @@ module Liquid
           context.push_interrupt(node.interrupt)
           break
         else # Other non-Block tags
-          render_node(context, output, node)
+          render_node(context, node)
           break if context.interrupt? # might have happened through an include
         end
         idx += 1
 
-        raise_if_resource_limits_reached(context, output.bytesize - previous_output_size)
+        raise_if_resource_limits_reached(context, context.output.bytesize - previous_output_size)
       end
 
-      output
+      context.output
     end
 
     private
 
-    def render_node(context, output, node)
-      node.render_to_output_buffer(context, output)
+    def with_blank_buffer(context, node, blank)
+      if blank
+        previous_output_buffer = context.output
+        begin
+          context.output = ''
+          yield
+        ensure
+          context.output = previous_output_buffer
+        end
+      else
+        yield
+      end
+    end
+
+    def render_node(context, node, blank = false)
+      with_blank_buffer(context, node, blank) do
+        node.render_to_output_buffer(context)
+      end
     rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
       context.handle_error(e, node.line_number)
     rescue ::StandardError => e
       line_number = node.is_a?(String) ? nil : node.line_number
-      output << context.handle_error(e, line_number)
+      context.output << context.handle_error(e, line_number)
     end
 
     def raise_if_resource_limits_reached(context, length)

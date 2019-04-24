@@ -31,7 +31,7 @@ module Liquid
       end
     end
 
-    def render_to_output_buffer(context, output)
+    def render_to_output_buffer(context)
       context.registers[:cycle] ||= {}
 
       context.stack do
@@ -46,14 +46,14 @@ module Liquid
           val = val.to_s
         end
 
-        output << val
+        context.output << val
 
         iteration += 1
         iteration  = 0 if iteration >= @variables.size
         context.registers[:cycle][key] = iteration
       end
 
-      output
+      context.output
     end
 
     private

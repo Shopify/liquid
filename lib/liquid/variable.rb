@@ -89,17 +89,17 @@ module Liquid
       obj
     end
 
-    def render_to_output_buffer(context, output)
+    def render_to_output_buffer(context)
       obj = render(context)
 
       if obj.is_a?(Array)
-        output << obj.join
+        context.output << obj.join
       elsif obj.nil?
       else
-        output << obj.to_s
+        context.output << obj.to_s
       end
 
-      output
+      context.output
     end
 
     private

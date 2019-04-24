@@ -39,16 +39,16 @@ module Liquid
       end
     end
 
-    def render_to_output_buffer(context, output)
+    def render_to_output_buffer(context)
       context.stack do
         @blocks.each do |block|
           if block.evaluate(context)
-            return block.attachment.render_to_output_buffer(context, output)
+            return block.attachment.render_to_output_buffer(context)
           end
         end
       end
 
-      output
+      context.output
     end
 
     private

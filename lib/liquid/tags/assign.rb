@@ -22,11 +22,11 @@ module Liquid
       end
     end
 
-    def render_to_output_buffer(context, output)
+    def render_to_output_buffer(context)
       val = @from.render(context)
       context.scopes.last[@to] = val
       context.resource_limits.assign_score += assign_score_of(val)
-      output
+      context.output
     end
 
     def blank?

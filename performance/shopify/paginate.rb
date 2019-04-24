@@ -21,7 +21,7 @@ class Paginate < Liquid::Block
     end
   end
 
-  def render_to_output_buffer(context, output)
+  def render_to_output_buffer(context)
     @context = context
 
     context.stack do
