@@ -39,6 +39,16 @@ module Liquid
       @output = ''
     end
 
+    def with_output(new_output)
+      previous_output = @output
+      begin
+        @output = new_output
+        yield
+      ensure
+        @output = previous_output
+      end
+    end
+
     def warnings
       @warnings ||= []
     end

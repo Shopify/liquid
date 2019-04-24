@@ -190,9 +190,8 @@ module Liquid
       case args.last
       when Hash
         options = args.pop
-
+        context.output = options[:output] if options[:output]
         registers.merge!(options[:registers]) if options[:registers].is_a?(Hash)
-
         apply_options_to_context(context, options)
       when Module, Array
         context.add_filters(args.pop)

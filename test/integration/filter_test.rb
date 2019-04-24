@@ -77,9 +77,17 @@ class FiltersTest < Minitest::Test
     @context['case_sensitive'] = ['sensitive', 'Expected', 'case']
 
     assert_equal '1 2 3 4', Template.parse("{{numbers | sort | join}}").render(@context)
+
+    @context.output = ''
     assert_equal 'alphabetic as expected', Template.parse("{{words | sort | join}}").render(@context)
+
+    @context.output = ''
     assert_equal '3', Template.parse("{{value | sort}}").render(@context)
+
+    @context.output = ''
     assert_equal 'are flower', Template.parse("{{arrays | sort | join}}").render(@context)
+
+    @context.output = ''
     assert_equal 'Expected case sensitive', Template.parse("{{case_sensitive | sort | join}}").render(@context)
   end
 
@@ -89,12 +97,15 @@ class FiltersTest < Minitest::Test
     @context['objects'] = [TestObject.new('A'), TestObject.new('b'), TestObject.new('C')]
 
     # Test strings
+    @context.output = ''
     assert_equal 'Assert case Insensitive', Template.parse("{{words | sort_natural | join}}").render(@context)
 
     # Test hashes
+    @context.output = ''
     assert_equal 'A b C', Template.parse("{{hashes | sort_natural: 'a' | map: 'a' | join}}").render(@context)
 
     # Test objects
+    @context.output = ''
     assert_equal 'A b C', Template.parse("{{objects | sort_natural: 'a' | map: 'a' | join}}").render(@context)
   end
 
@@ -104,12 +115,15 @@ class FiltersTest < Minitest::Test
     @context['objects'] = [TestObject.new('A'), TestObject.new(nil), TestObject.new('C')]
 
     # Test strings
+    @context.output = ''
     assert_equal 'a b c', Template.parse("{{words | compact | join}}").render(@context)
 
     # Test hashes
+    @context.output = ''
     assert_equal 'A C', Template.parse("{{hashes | compact: 'a' | map: 'a' | join}}").render(@context)
 
     # Test objects
+    @context.output = ''
     assert_equal 'A C', Template.parse("{{objects | compact: 'a' | map: 'a' | join}}").render(@context)
   end
 

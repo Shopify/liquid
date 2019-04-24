@@ -67,7 +67,9 @@ module Liquid
     end
 
     def render(context)
-      render_to_output_buffer(context)
+      context.with_output('') do
+        render_to_output_buffer(context)
+      end
     end
 
     def render_to_output_buffer(context)
@@ -105,22 +107,12 @@ module Liquid
 
     private
 
-    def with_blank_buffer(context, node, blank)
+    def render_node(context, node, blank = false)
       if blank
-        previous_output_buffer = context.output
-        begin
-          context.output = ''
-          yield
-        ensure
-          context.output = previous_output_buffer
+        context.with_output('') do
+          node.render_to_output_buffer(context)
         end
       else
-        yield
-      end
-    end
-
-    def render_node(context, node, blank = false)
-      with_blank_buffer(context, node, blank) do
         node.render_to_output_buffer(context)
       end
     rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
