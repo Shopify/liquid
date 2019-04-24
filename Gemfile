@@ -9,7 +9,7 @@ group :benchmark, :test do
   gem 'benchmark-ips'
   gem 'memory_profiler'
 
-  install_if -> { RUBY_PLATFORM !~ /mingw|mswin/ } do
+  install_if -> { RUBY_PLATFORM !~ /mingw|mswin|java/ } do
     gem 'stackprof'
   end
 end
