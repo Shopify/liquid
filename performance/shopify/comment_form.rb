@@ -15,7 +15,7 @@ class CommentForm < Liquid::Block
   def render(context)
     article = context[@variable_name]
 
-    context.stack do
+    context.stack('form') do
       context['form'] = {
         'posted_successfully?' => context.registers[:posted_successfully],
         'errors' => context['comment.errors'],

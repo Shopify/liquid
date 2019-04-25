@@ -405,11 +405,11 @@ class StandardFiltersTest < Minitest::Test
   def test_map_over_drops_returning_procs
     drops = [
       {
-        "proc" => ->{ "foo" },
+        "proc" => ->{ "foo" }
       },
       {
-        "proc" => ->{ "bar" },
-      },
+        "proc" => ->{ "bar" }
+      }
     ]
     templ = '{{ drops | map: "proc" }}'
     assert_template_result "foobar", templ, "drops" => drops

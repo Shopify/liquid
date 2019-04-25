@@ -24,7 +24,7 @@ class Paginate < Liquid::Block
   def render(context)
     @context = context
 
-    context.stack do
+    context.stack('paginate') do
       current_page  = context['current_page'].to_i
 
       pagination = {

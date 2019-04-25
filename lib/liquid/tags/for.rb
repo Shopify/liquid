@@ -156,7 +156,7 @@ module Liquid
 
       result = ''
 
-      context.stack do
+      context.stack('forloop', @variable_name) do
         loop_vars = Liquid::ForloopDrop.new(@name, length, for_stack[-1])
 
         for_stack.push(loop_vars)
