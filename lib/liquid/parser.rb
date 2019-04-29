@@ -44,7 +44,7 @@ module Liquid
       tok[0] == type
     end
 
-    CONSUME_TOKENS = [:string, :number]
+    CONSUME_TOKENS = [:string, :number].freeze
     private_constant :CONSUME_TOKENS
 
     def expression
