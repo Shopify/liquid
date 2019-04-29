@@ -44,11 +44,14 @@ module Liquid
       tok[0] == type
     end
 
+    CONSUME_TOKENS = [:string, :number]
+    private_constant :CONSUME_TOKENS
+
     def expression
       token = @tokens[@p]
       if token[0] == :id
         variable_signature
-      elsif [:string, :number].include? token[0]
+      elsif CONSUME_TOKENS.include? token[0]
         consume
       elsif token.first == :open_round
         consume
