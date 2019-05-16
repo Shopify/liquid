@@ -610,6 +610,13 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "4", "{{ price | round }}", 'price' => NumberLikeThing.new(4.3)
   end
 
+  def test_round_to_s
+    assert_template_result "5", "{{ input | round_to_s }}", 'input' => 4.6
+    assert_template_result "4.600", "{{ input | round_to_s:3 }}", 'input' => 4.6
+    assert_template_result "Inf", "{{ 1.0 | divided_by: 0.0 | round_to_s }}"
+    assert_template_result "5", "{{ price | round_to_s }}", 'price' => NumberLikeThing.new(4.6)
+  end
+
   def test_ceil
     assert_template_result "5", "{{ input | ceil }}", 'input' => 4.6
     assert_template_result "5", "{{ '4.3' | ceil }}"

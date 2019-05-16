@@ -391,6 +391,11 @@ module Liquid
       raise Liquid::FloatDomainError, e.message
     end
 
+    def round_to_s(input, n = 0)
+      result = Utils.to_number(input)
+      sprintf("%.#{n}f", result)
+    end
+
     def ceil(input)
       Utils.to_number(input).ceil.to_i
     rescue ::FloatDomainError => e
