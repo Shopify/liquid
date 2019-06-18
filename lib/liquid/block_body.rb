@@ -1,6 +1,6 @@
 module Liquid
   class BlockBody
-    FullToken = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    FullToken = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)\s*#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
     TAGSTART = "{%".freeze
