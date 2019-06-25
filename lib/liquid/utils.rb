@@ -1,6 +1,8 @@
 module Liquid
   module Utils
     def self.slice_collection(collection, from, to)
+      return collection.load_slice(from, to) if collection.is_a?(ReversableRange)
+
       if (from != 0 || !to.nil?) && collection.respond_to?(:load_slice)
         collection.load_slice(from, to)
       else

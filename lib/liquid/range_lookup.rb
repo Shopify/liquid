@@ -6,7 +6,7 @@ module Liquid
       if start_obj.respond_to?(:evaluate) || end_obj.respond_to?(:evaluate)
         new(start_obj, end_obj)
       else
-        start_obj.to_i..end_obj.to_i
+        ReversableRange.new(start_obj.to_i, end_obj.to_i)
       end
     end
 
@@ -18,7 +18,7 @@ module Liquid
     def evaluate(context)
       start_int = to_integer(context.evaluate(@start_obj))
       end_int = to_integer(context.evaluate(@end_obj))
-      start_int..end_int
+      ReversableRange.new(start_int, end_int)
     end
 
     private

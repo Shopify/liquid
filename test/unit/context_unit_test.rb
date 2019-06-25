@@ -349,9 +349,9 @@ class ContextUnitTest < Minitest::Test
 
   def test_ranges
     @context.merge("test" => '5')
-    assert_equal (1..5), @context['(1..5)']
-    assert_equal (1..5), @context['(1..test)']
-    assert_equal (5..5), @context['(test..test)']
+    assert_equal ReversableRange.new(1, 5), @context['(1..5)']
+    assert_equal ReversableRange.new(1, 5), @context['(1..test)']
+    assert_equal ReversableRange.new(5, 5), @context['(test..test)']
   end
 
   def test_cents_through_drop_nestedly

@@ -133,7 +133,6 @@ module Liquid
       end
 
       collection = context.evaluate(@collection_name)
-      collection = collection.to_a if collection.is_a?(Range)
 
       limit_value = context.evaluate(@limit)
       to = if limit_value.nil?
@@ -145,14 +144,14 @@ module Liquid
       segment = Utils.slice_collection(collection, from, to)
       segment.reverse! if @reversed
 
-      offsets[@name] = from + segment.length
+      offsets[@name] = from + segment.size
 
       segment
     end
 
     def render_segment(context, segment)
       for_stack = context.registers[:for_stack] ||= []
-      length = segment.length
+      length = segment.size
 
       result = ''
 
