@@ -7,3 +7,4 @@ pkg
 .ruby-version
 Gemfile.lock
 .bundle
+.byebug_history

@@ -18,7 +18,7 @@ module Liquid
       end
     end
 
-    def render(context)
+    def render_to_output_buffer(context, output)
       collection = context.evaluate(@collection_name) or return ''.freeze
 
       from = @attributes.key?('offset'.freeze) ? context.evaluate(@attributes['offset'.freeze]).to_i : 0
@@ -30,7 +30,7 @@ module Liquid
 
       cols = context.evaluate(@attributes['cols'.freeze]).to_i
 
-      result = "<tr class=\"row1\">\n"
+      output << "<tr class=\"row1\">\n"
       context.stack do
         tablerowloop = Liquid::TablerowloopDrop.new(length, cols)
         context['tablerowloop'.freeze] = tablerowloop
@@ -38,17 +38,20 @@ module Liquid
         collection.each do |item|
           context[@variable_name] = item
 
-          result << "<td class=\"col#{tablerowloop.col}\">" << super << '</td>'
+          output << "<td class=\"col#{tablerowloop.col}\">"
+          super
+          output << '</td>'
 
           if tablerowloop.col_last && !tablerowloop.last
-            result << "</tr>\n<tr class=\"row#{tablerowloop.row + 1}\">"
+            output << "</tr>\n<tr class=\"row#{tablerowloop.row + 1}\">"
           end
 
           tablerowloop.send(:increment!)
         end
       end
-      result << "</tr>\n"
-      result
+
+      output << "</tr>\n"
+      output
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor

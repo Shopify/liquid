@@ -85,10 +85,21 @@ module Liquid
       end
 
       obj = context.apply_global_filter(obj)
-
       taint_check(context, obj)
-
       obj
+    end
+
+    def render_to_output_buffer(context, output)
+      obj = render(context)
+
+      if obj.is_a?(Array)
+        output << obj.join
+      elsif obj.nil?
+      else
+        output << obj.to_s
+      end
+
+      output
     end
 
     private

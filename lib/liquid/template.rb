@@ -187,9 +187,12 @@ module Liquid
         raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
       end
 
+      output = nil
+
       case args.last
       when Hash
         options = args.pop
+        output = options[:output] if options[:output]
 
         registers.merge!(options[:registers]) if options[:registers].is_a?(Hash)
 
@@ -204,10 +207,9 @@ module Liquid
       begin
         # render the nodelist.
         # for performance reasons we get an array back here. join will make a string out of it.
-        result = with_profiling(context) do
-          @root.render(context)
+        with_profiling(context) do
+          @root.render_to_output_buffer(context, output || '')
         end
-        result.respond_to?(:join) ? result.join : result
       rescue Liquid::MemoryError => e
         context.handle_error(e)
       ensure
@@ -218,6 +220,10 @@ module Liquid
     def render!(*args)
       @rethrow_errors = true
       render(*args)
+    end
+
+    def render_to_output_buffer(context, output)
+      render(context, output: output)
     end
 
     private

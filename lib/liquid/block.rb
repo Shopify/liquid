@@ -13,6 +13,7 @@ module Liquid
       end
     end
 
+    # For backwards compatibility
     def render(context)
       @body.render(context)
     end
