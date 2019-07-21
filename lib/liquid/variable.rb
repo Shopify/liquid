@@ -94,8 +94,7 @@ module Liquid
 
       if obj.is_a?(Array)
         output << obj.join
-      elsif obj.nil?
-      else
+      elsif !obj.nil?
         output << obj.to_s
       end
 
