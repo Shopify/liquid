@@ -473,6 +473,64 @@ class ContextUnitTest < Minitest::Test
     assert_equal 'hi', context.apply_global_filter('hi')
   end
 
+  def test_new_isolated_subcontext_does_not_inherit_variables
+    super_context = Context.new
+    super_context['my_variable'] = 'some value'
+    subcontext = super_context.new_isolated_subcontext
+
+    assert_nil subcontext['my_variable']
+  end
+
+  def test_new_isolated_subcontext_inherits_environment
+    super_context = Context.new('my_environment_value' => 'my value')
+    subcontext = super_context.new_isolated_subcontext
+
+    assert_equal 'my value',subcontext['my_environment_value']
+  end
+
+  def test_new_isolated_subcontext_inherits_resource_limits
+    resource_limits = ResourceLimits.new({})
+    super_context = Context.new({}, {}, {}, false, resource_limits)
+    subcontext = super_context.new_isolated_subcontext
+    assert_equal resource_limits, subcontext.resource_limits
+  end
+
+  def test_new_isolated_subcontext_inherits_exception_renderer
+    super_context = Context.new
+    super_context.exception_renderer = -> (_e) { 'my exception message' }
+    subcontext = super_context.new_isolated_subcontext
+    assert_equal 'my exception message', subcontext.handle_error(Liquid::Error.new)
+  end
+
+  def test_new_isolated_subcontext_does_not_inherit_non_static_registers
+    registers = {
+      my_register: :my_value
+    }
+    super_context = Context.new({}, {}, registers)
+    subcontext = super_context.new_isolated_subcontext
+    assert_nil subcontext.registers[:my_register]
+  end
+
+  def test_new_isolated_subcontext_inherits_static_registers
+    super_context = Context.build(static_registers: { my_register: :my_value })
+    subcontext = super_context.new_isolated_subcontext
+    assert_equal :my_value, subcontext.static_registers[:my_register]
+  end
+
+  def test_new_isolated_subcontext_inherits_filters
+    my_filter = Module.new do
+      def my_filter(*)
+        'my filter result'
+      end
+    end
+
+    super_context = Context.new
+    super_context.add_filters([my_filter])
+    subcontext = super_context.new_isolated_subcontext
+    template = Template.parse('{{ 123 | my_filter }}')
+    assert_equal 'my filter result', template.render(subcontext)
+  end
+
   private
 
   def assert_no_object_allocations

@@ -12,13 +12,18 @@ module Liquid
   #
   #   context['bob']  #=> nil  class Context
   class Context
-    attr_reader :scopes, :errors, :registers, :environments, :resource_limits
+    attr_reader :scopes, :errors, :registers, :environments, :resource_limits, :static_registers
     attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
+    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_registers: {})
+      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_registers)
+    end
+
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_registers = {})
       @environments     = [environments].flatten
       @scopes           = [(outer_scope || {})]
       @registers        = registers
+      @static_registers = static_registers.tap(&:freeze)
       @errors           = []
       @partial          = false
       @strict_variables = false
@@ -124,6 +129,19 @@ module Liquid
     ensure
       pop if @this_stack_used
       @this_stack_used = old_stack_used
+    end
+
+    # Creates a new context inheriting resource limits, filters, environment etc.,
+    # but with an isolated scope.
+    def new_isolated_subcontext
+      Context.build(
+        environments: environments,
+        resource_limits: resource_limits,
+        static_registers: static_registers
+      ).tap do |subcontext|
+        subcontext.exception_renderer = exception_renderer
+        subcontext.add_filters(@filters)
+      end
     end
 
     def clear_instance_assigns
