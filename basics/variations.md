@@ -11,7 +11,7 @@ This site documents the latest version of **Liquid** including betas and release
 
 Shopify always uses the latest version of Liquid as a base, but Shopify adds a significant number of objects, tags, and filters to Liquid for use in merchants' stores. These include objects representing store, product, and customer information, and filters for displaying store data and manipulating storefront assets like product images.
 
-Shopify's version of Liquid is documented in the [Shopify Help Center](https://help.shopify.com/themes/liquid). If you want to try out Shopify's version of Liquid, you can [start a free trial of Shopify](https://www.shopify.com/signup) or use a sandbox like [DropPen](http://droppen.org/).
+Shopify's version of Liquid is documented in the [Shopify Help Center](https://help.shopify.com/themes/liquid). If you want to try out Shopify's version of Liquid, you can create a development store through the [Shopify Partner Dashboard](https://help.shopify.com/en/partners/dashboard/development-stores).
 
 ## Jekyll
 
