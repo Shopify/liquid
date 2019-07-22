@@ -50,7 +50,9 @@ module Liquid
       private
 
       def lookup_class(name)
-        name.split("::").reject(&:empty?).reduce(Object) { |scope, const| scope.const_get(const) }
+        names = name.split("::".freeze)
+        names.reject!(&:empty?)
+        names.reduce(Object) { |scope, const| scope.const_get(const) }
       end
     end
 
