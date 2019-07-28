@@ -15,14 +15,10 @@
         <h3 class="section__header">{{ section | capitalize }}</h3>
 
         <ul class="section__links">
-        {%- for item in site.pages -%}
-          {%- if item.url contains section/ -%}
-            {%- unless item.path contains "index" -%}
-              <li class="section__item">
-                <a href="{{ item.url | relative_url }}" class="section__link {% if item.url contains page.url and page.url != '/' and page.type != 'index' %} section__link--is-active{% endif %}">{{ item.title }}</a>
-              </li>
-            {%- endunless -%}
-          {%- endif -%}
+        {%- for item in site[section] -%}
+            <li class="section__item">
+                <a href="{{ item.url | relative_url }}" class="section__link{% if item.url == page.url %} section__link--is-active{% endif %}">{{ item.title }}</a>
+            </li>
         {%- endfor -%}
         </ul>
       {%- endfor -%}

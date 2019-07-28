@@ -16,6 +16,15 @@ exclude:
   - node_modules
 keep_files:             ["css"]
 
+# Collections
+collections:
+  basics:
+    output: true
+  tags:
+    output: true
+  filters:
+    output: true
+
 # Plugins
 plugins:
   - jekyll-redirect-from
@@ -26,11 +35,3 @@ defaults:
       path: "" # an empty string here means all files in the project
     values:
       layout: default
-  - scope:
-      path: "filters"
-    values:
-      type: filter
-  - scope:
-      path: "tags"
-    values:
-      type: tag
