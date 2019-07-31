@@ -468,6 +468,16 @@ class ContextUnitTest < Minitest::Test
     assert_equal 'hi filtered', context.apply_global_filter('hi')
   end
 
+  def test_static_environments_are_read_with_lower_priority_than_environments
+    context = Context.build(
+      static_environments: { 'shadowed' => 'static', 'unshadowed' => 'static' },
+      environments: { 'shadowed' => 'dynamic' }
+    )
+
+    assert_equal 'dynamic', context['shadowed']
+    assert_equal 'static', context['unshadowed']
+  end
+
   def test_apply_global_filter_when_no_global_filter_exist
     context = Context.new
     assert_equal 'hi', context.apply_global_filter('hi')
@@ -481,11 +491,11 @@ class ContextUnitTest < Minitest::Test
     assert_nil subcontext['my_variable']
   end
 
-  def test_new_isolated_subcontext_inherits_environment
-    super_context = Context.new('my_environment_value' => 'my value')
+  def test_new_isolated_subcontext_inherits_static_environment
+    super_context = Context.build(static_environments: { 'my_environment_value' => 'my value' })
     subcontext = super_context.new_isolated_subcontext
 
-    assert_equal 'my value',subcontext['my_environment_value']
+    assert_equal 'my value', subcontext['my_environment_value']
   end
 
   def test_new_isolated_subcontext_inherits_resource_limits
@@ -497,7 +507,7 @@ class ContextUnitTest < Minitest::Test
 
   def test_new_isolated_subcontext_inherits_exception_renderer
     super_context = Context.new
-    super_context.exception_renderer = -> (_e) { 'my exception message' }
+    super_context.exception_renderer = ->(_e) { 'my exception message' }
     subcontext = super_context.new_isolated_subcontext
     assert_equal 'my exception message', subcontext.handle_error(Liquid::Error.new)
   end
