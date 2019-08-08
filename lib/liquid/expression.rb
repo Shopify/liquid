@@ -45,5 +45,16 @@ module Liquid
         end
       end
     end
+
+    def self.format(expression)
+      case expression
+      when String
+        "'#{expression}'"
+      when VariableLookup
+        expression.format
+      else
+        expression.to_s
+      end
+    end
   end
 end

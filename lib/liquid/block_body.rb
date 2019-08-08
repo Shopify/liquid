@@ -70,6 +70,21 @@ module Liquid
       render_to_output_buffer(context, '')
     end
 
+    def format(output)
+      idx = 0
+      while node = @nodelist[idx]
+        output << case node
+        when String
+          node
+        else
+          node.format
+        end
+        idx += 1
+      end
+
+      output
+    end
+
     def render_to_output_buffer(context, output)
       context.resource_limits.render_score += @nodelist.length
 

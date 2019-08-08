@@ -35,6 +35,44 @@ module Liquid
       @markup
     end
 
+    def format
+      output = Expression.format(name)
+
+      filters.each_index do |i|
+        first_filter = true
+        output << " | #{filters[i][0]}"
+        first_sub_filter = true
+        filters[i][1].each do |j|
+          if first_filter
+            output << ':'
+            first_filter = false
+          end
+          unless first_sub_filter
+            output << ','
+          end
+          output << " "
+          output << Expression.format(j)
+          first_sub_filter = false
+        end
+        filters[i][2].each do |j, k|
+          if first_filter
+            output << ':'
+            first_filter = false
+          end
+          unless first_sub_filter
+            output << ','
+          end
+          output << " "
+          output << j
+          output << ": "
+          output << Expression.format(k)
+          first_sub_filter = false
+        end
+
+      end
+      "{{ #{output} }}"
+    end
+
     def markup_context(markup)
       "in \"{{#{markup}}}\""
     end
