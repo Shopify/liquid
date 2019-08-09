@@ -39,38 +39,46 @@ module Liquid
       output = Expression.format(name)
 
       filters.each_index do |i|
-        first_filter = true
-        output << " | #{filters[i][0]}"
-        first_sub_filter = true
-        filters[i][1].each do |j|
-          if first_filter
-            output << ':'
-            first_filter = false
-          end
-          unless first_sub_filter
-            output << ','
-          end
-          output << " "
-          output << Expression.format(j)
-          first_sub_filter = false
+        output << " | "
+        output << filters[i][0]
+        if !filters[i][2].empty? || !filters[i][1].empty?
+          output << ':'
         end
-        filters[i][2].each do |j, k|
-          if first_filter
-            output << ':'
-            first_filter = false
-          end
-          unless first_sub_filter
-            output << ','
-          end
-          output << " "
-          output << j
-          output << ": "
-          output << Expression.format(k)
-          first_sub_filter = false
-        end
-
+        output << format_standard_filters(filters[i][1])
+        output << format_argument_filters(filters[i][2], filters[i][1].empty?)
       end
       "{{ #{output} }}"
+    end
+
+    def format_standard_filters(filters)
+      output = ""
+      first_sub_filter = true
+      filters.each do |j|
+        unless first_sub_filter
+          output << ','
+        end
+        output << " "
+        output << Expression.format(j)
+        first_sub_filter = false
+      end
+
+      output
+    end
+
+    def format_argument_filters(filters, first_sub_filter)
+      output = ""
+      filters.each do |j, k|
+        unless first_sub_filter
+          output << ','
+        end
+        output << " "
+        output << j
+        output << ": "
+        output << Expression.format(k)
+        first_sub_filter = false
+      end
+
+      output
     end
 
     def markup_context(markup)

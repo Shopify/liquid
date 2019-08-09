@@ -35,13 +35,13 @@ module Liquid
       output = name.to_s
       @lookups.each_index do |i|
         output << case lookups[i]
-                 when String
-                   ".#{lookups[i]}"
-                 when VariableLookup
-                   "[#{lookups[i].format}]"
-                 else
-                   ".#{lookups[i]}"
-                 end
+                  when String
+                    ".#{lookups[i]}"
+                  when VariableLookup
+                    "[#{lookups[i].format}]"
+                  else
+                    ".#{lookups[i]}"
+        end
       end
       output
     end
