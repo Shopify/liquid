@@ -16,7 +16,6 @@ module Liquid
       output << super
       output << "{%#{"-" if left} endcomment #{"-" if right}%}"
     end
-
   end
 
   Template.register_tag('comment'.freeze, Comment)
