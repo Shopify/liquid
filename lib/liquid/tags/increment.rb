@@ -26,6 +26,10 @@ module Liquid
       output << value.to_s
       output
     end
+
+    def format(left, right)
+      "{%#{"-" if left} increment #{@variable} #{"-" if right}%}"
+    end
   end
 
   Template.register_tag('increment'.freeze, Increment)

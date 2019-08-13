@@ -46,7 +46,7 @@ class AssignTest < Minitest::Test
     end
   end
 
-  def test_render
+  def test_format
     assert_template_format("{% assign hello = 'what' %}", '{% assign hello = "what" %}')
     assert_template_format("{%- assign hello = 'what' -%}", '{%- assign hello = "what" -%}')
   end
