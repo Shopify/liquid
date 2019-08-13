@@ -13,6 +13,12 @@ module Liquid
 
       output
     end
+
+    def format(left, right)
+      output = "{%#{"-" if left} ifchanged #{"-" if right}%}"
+      output << @body.format("")
+      output << "{%#{"-" if left} endifchanged #{"-" if right}%}"
+    end
   end
 
   Template.register_tag('ifchanged'.freeze, Ifchanged)

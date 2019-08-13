@@ -307,6 +307,10 @@ class StandardTagTest < Minitest::Test
     assert_template_result('1', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', assigns)
   end
 
+  def test_format_ifchanged
+    assert_template_format('{% ifchanged %}{{ item }}{% endifchanged %}', '{%ifchanged%}{{item}}{% endifchanged %}')
+  end
+
   def test_multiline_tag
     assert_template_result '0 1 2 3', "0{%\nfor i in (1..3)\n%} {{\ni\n}}{%\nendfor\n%}"
   end
