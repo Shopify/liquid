@@ -18,6 +18,10 @@ module Liquid
       @body.render(context)
     end
 
+    def format(left, right)
+      @body.format("")
+    end
+
     def blank?
       @blank
     end
