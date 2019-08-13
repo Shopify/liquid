@@ -36,6 +36,11 @@ class FormatTest < Minitest::Test
     assert_template_format('{{ 1.0 }}', '{{ 1.0 }}')
   end
 
+  def test_whitespace
+    assert_template_format('foo   {{- nil -}}   bar', 'foo   {{- nil -}}   bar')
+    assert_template_format('{{- nil -}}', '{{- nil -}}')
+  end
+
   def test_raises_error_when_no_format
     klass1 = Class.new(Tag) do
       def render(*)
