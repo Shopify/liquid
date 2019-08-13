@@ -65,8 +65,6 @@ module Liquid
       result << "}}"
     end
 
-
-
     def format_standard_filters(filters)
       output = ""
       first_sub_filter = true
