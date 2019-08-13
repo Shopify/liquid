@@ -12,6 +12,10 @@ module Liquid
     def interrupt
       BreakInterrupt.new
     end
+
+    def format(left, right)
+      "{%#{"-" if left} break #{"-" if right}%}"
+    end
   end
 
   Template.register_tag('break'.freeze, Break)
