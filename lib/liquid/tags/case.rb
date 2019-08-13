@@ -25,11 +25,11 @@ module Liquid
 
     def format(left, right)
       output = "{%#{"-" if left} case #{Expression.format(@left)} #{"-" if right}%}"
-      output << format_blocks("", false, "")
+      output << format_blocks
       output << "{%#{"-" if left} endcase #{"-" if right}%}"
     end
 
-    def format_blocks(last, open, output)
+    def format_blocks(last = "", open = false, output = "")
       @blocks.each do |block|
         case block
         when ElseCondition
