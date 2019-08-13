@@ -73,11 +73,12 @@ module Liquid
     def format(output)
       idx = 0
       while node = @nodelist[idx]
-        output << case node
+        case node
         when String
-          node
+          output << node
         else
-          node.format
+          raise FormatError.new("Unable to format ".freeze + node.class.name) unless node.respond_to?(:format)
+          output << node.format
         end
         idx += 1
       end

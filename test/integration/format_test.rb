@@ -22,4 +22,22 @@ class FormatTest < Minitest::Test
       %({{ input | substitute: hello, 'two', first_name: surname, last_name: 'doe' | substitute: hello, 'two', first_name: surname, last_name: 'doe' }})
     )
   end
+
+  def test_raises_error_when_no_format
+    klass1 = Class.new(Tag) do
+      def render(*)
+        'hello'
+      end
+
+      def self.name
+        'blabla'
+      end
+    end
+
+    with_custom_tag('blabla', klass1) do
+      assert_raises(FormatError) do
+        Template.parse("{% blabla %}").format
+      end
+    end
+  end
 end
