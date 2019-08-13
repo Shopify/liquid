@@ -48,6 +48,11 @@ class StandardTagTest < Minitest::Test
                                      {%endcomment%}bar')
   end
 
+  def test_render
+    assert_template_format('{% comment %}{% endcomment %}', '{%comment%}{%endcomment%}')
+    assert_template_format('{% comment %} 1 {% comment %} 2 {% endcomment %} 3 {% endcomment %}', '{% comment %} 1 {% comment %} 2 {% endcomment %} 3 {% endcomment %}')
+  end
+
   def test_hyphenated_assign
     assigns = { 'a-b' => '1' }
     assert_template_result('a-b:1 a-b:2', 'a-b:{{a-b}} {%assign a-b = 2 %}a-b:{{a-b}}', assigns)

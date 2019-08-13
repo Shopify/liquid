@@ -35,6 +35,12 @@ module Liquid
       @body.empty?
     end
 
+    def format(left, right)
+      output = "{%#{"-" if left} raw #{"-" if right}%}"
+      output << super
+      output << "{%#{"-" if left} endraw #{"-" if right}%}"
+    end
+
     protected
 
     def ensure_valid_markup(tag_name, markup, parse_context)

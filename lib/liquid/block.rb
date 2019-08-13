@@ -19,7 +19,12 @@ module Liquid
     end
 
     def format(left, right)
-      @body.format("")
+      case @body
+      when String
+        @body
+      else
+        @body.format("")
+      end
     end
 
     def blank?
