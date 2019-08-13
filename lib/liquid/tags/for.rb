@@ -82,6 +82,17 @@ module Liquid
       output
     end
 
+    def format(left, right)
+      output = "{%#{"-" if left} for #{@variable_name} in #{Expression.format(@collection_name)}"
+      output << " reversed" if @reversed
+      output << " offset: #{Expression.format(@from)}" if @from
+      output << " limit: #{Expression.format(@limit)}" if @limit
+      output << " #{"-" if right}%}"
+      output << @for_block.format("")
+      output << "{% else %}#{@else_block.format("")}" if @else_block
+      output << "{%#{"-" if left} endfor #{"-" if right}%}"
+    end
+
     protected
 
     def lax_parse(markup)
