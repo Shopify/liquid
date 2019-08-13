@@ -23,6 +23,36 @@ module Liquid
       end
     end
 
+    def format(left, right)
+      output = "{%#{"-" if left} case #{Expression.format(@left)} #{"-" if right}%}"
+      output << format_blocks("", false, "")
+      output << "{%#{"-" if left} endcase #{"-" if right}%}"
+    end
+
+    def format_blocks(last, open, output)
+      @blocks.each do |block|
+        case block
+        when ElseCondition
+          output << " %}#{last.format("")}{% else" if open
+          last = block.attachment
+          open = true
+        when Condition
+          output << "{% when " unless open
+          if block.attachment == last
+            output << " or #{Expression.format(block.right)}"
+          else
+            output << " %}#{last.format("")}{% when " if open
+            last = block.attachment
+            output << Expression.format(block.right)
+            open = true
+          end
+        else
+          output << block
+        end
+      end
+      output << " %}#{last.format("")}" if open
+    end
+
     def nodelist
       @blocks.map(&:attachment)
     end

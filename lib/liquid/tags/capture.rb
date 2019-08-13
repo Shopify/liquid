@@ -32,7 +32,7 @@ module Liquid
 
     def format(left, right)
       output = "{%#{"-" if left} capture #{@to} #{"-" if right}%}"
-      output << super
+      output << @body.format("")
       output << "{%#{"-" if left} endcapture #{"-" if right}%}"
     end
 

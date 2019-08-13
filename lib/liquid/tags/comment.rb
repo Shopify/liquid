@@ -13,7 +13,7 @@ module Liquid
 
     def format(left, right)
       output = "{%#{"-" if left} comment #{"-" if right}%}"
-      output << super
+      output << @body.format("")
       output << "{%#{"-" if left} endcomment #{"-" if right}%}"
     end
   end

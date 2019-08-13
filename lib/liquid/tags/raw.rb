@@ -37,7 +37,7 @@ module Liquid
 
     def format(left, right)
       output = "{%#{"-" if left} raw #{"-" if right}%}"
-      output << super
+      output << @body
       output << "{%#{"-" if left} endraw #{"-" if right}%}"
     end
 

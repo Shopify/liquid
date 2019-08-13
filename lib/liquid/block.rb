@@ -18,15 +18,6 @@ module Liquid
       @body.render(context)
     end
 
-    def format(left, right)
-      case @body
-      when String
-        @body
-      else
-        @body.format("")
-      end
-    end
-
     def blank?
       @blank
     end
