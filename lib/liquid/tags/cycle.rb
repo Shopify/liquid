@@ -31,6 +31,18 @@ module Liquid
       end
     end
 
+    def format(left, right)
+      output = "{%#{"-" if left} cycle "
+      output << "#{Expression.format(@name)}: " unless @name == @variables.to_s
+      first = true
+      @variables.each do |variable|
+        output << ", " unless first
+        output << Expression.format(variable)
+        first = false
+      end
+      output << " #{"-" if right}%}"
+    end
+
     def render_to_output_buffer(context, output)
       context.registers[:cycle] ||= {}
 

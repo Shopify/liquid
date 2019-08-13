@@ -277,6 +277,11 @@ class StandardTagTest < Minitest::Test
       '{%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %}', assigns)
   end
 
+  def test_cycle_format
+    assert_template_format("{% cycle 'text-align: left', 'text-align: right' %} {% cycle 'text-align: left', 'text-align: right' %}", '{%cycle "text-align: left", "text-align: right" %} {%cycle "text-align: left", "text-align: right"%}')
+    assert_template_format("{% cycle 1: 'one', 'two' %}", '{%cycle 1: "one", "two" %}')
+  end
+
   def test_size_of_array
     assigns = { "array" => [1, 2, 3, 4] }
     assert_template_result('array has 4 elements', "array has {{ array.size }} elements", assigns)
