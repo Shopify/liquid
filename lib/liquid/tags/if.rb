@@ -31,6 +31,29 @@ module Liquid
       end
     end
 
+    def format(left, right)
+      format_blocks(left, right)
+    end
+
+    def format_blocks(left, right, type = "if", output = "")
+      first = true
+      @blocks.each do |block|
+        case block
+        when ElseCondition
+          output << "{% else %}"
+          output << block.attachment.format("")
+        when Condition
+          output << "{% #{first ? type : "elsif"} #{block.format} %}"
+          output << block.attachment.format("")
+          first = false
+        else
+          output << ""
+        end
+      end
+      output << "{%#{"-" if left} end#{type} #{"-" if right}%}"
+      output
+    end
+
     def unknown_tag(tag, markup, tokens)
       if ['elsif'.freeze, 'else'.freeze].include?(tag)
         push_block(tag, markup)

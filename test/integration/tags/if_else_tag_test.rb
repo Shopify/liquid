@@ -185,4 +185,16 @@ class IfElseTagTest < Minitest::Test
       assert_template_result expected.to_s, tpl, assigns, assigns.to_s
     end
   end
+
+  def test_format
+    assert_template_format('{% if false %} NO {% else %} YES {% endif %}', '{% if false %} NO {% else %} YES {% endif %}')
+    assert_template_format('{% if a or b or c %} YES {% endif %}', '{% if a or b or c %} YES {% endif %}')
+    assert_template_format('{% if 0 == 0 %}0{% elsif 1 == 1 %}1{% else %}2{% endif %}', '{% if 0 == 0 %}0{% elsif 1 == 1%}1{% else %}2{% endif %}')
+  end
+
+  def test_format_unless
+    assert_template_format('{% unless false %} NO {% else %} YES {% endunless %}', '{% unless false %} NO {% else %} YES {% endunless %}')
+    assert_template_format('{% unless a or b or c %} YES {% endunless %}', '{% unless a or b or c %} YES {% endunless %}')
+    assert_template_format('{% unless 0 == 0 %}0{% elsif 1 == 1 %}1{% else %}2{% endunless %}', '{% unless 0 == 0 %}0{% elsif 1 == 1%}1{% else %}2{% endunless %}')
+  end
 end
