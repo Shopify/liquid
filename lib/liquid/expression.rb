@@ -11,6 +11,17 @@ module Liquid
       def to_liquid
         to_s
       end
+
+      def format
+        case method_name
+        when :blank?
+          "blank".freeze
+        when :empty?
+          "empty".freeze
+        else
+          "".freeze
+        end
+      end
     end
 
     LITERALS = {
@@ -50,8 +61,16 @@ module Liquid
       case expression
       when String
         "'#{expression}'"
+      when nil
+        "nil"
       when VariableLookup
         expression.format
+      when MethodLiteral
+        expression.format
+      when RangeLookup
+        expression.format
+      when Range
+        "(#{expression})"
       else
         expression.to_s
       end

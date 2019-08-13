@@ -23,6 +23,19 @@ class FormatTest < Minitest::Test
     )
   end
 
+  def test_basic_types
+    assert_template_format('{{ nil }}', '{{nil}}')
+    assert_template_format('{{ nil }}', '{{null}}')
+    assert_template_format('{{ true }}', '{{ true }}')
+    assert_template_format('{{ false }}', '{{ false }}')
+    assert_template_format('{{ blank }}', '{{ blank }}')
+    assert_template_format('{{ empty }}', '{{ empty }}')
+    assert_template_format('{{ 1 }}', '{{ 1 }}')
+    assert_template_format('{{ (1..5) }}', '{{ (1..5) }}')
+    assert_template_format('{{ (foo..bar) }}', '{{ (foo..bar) }}')
+    assert_template_format('{{ 1.0 }}', '{{ 1.0 }}')
+  end
+
   def test_raises_error_when_no_format
     klass1 = Class.new(Tag) do
       def render(*)
