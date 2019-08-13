@@ -5,7 +5,7 @@ module Liquid
     def initialize(source, line_numbers = false)
       @source = source
       @line_number = line_numbers ? 1 : nil
-      @tokens = tokenize
+      @tokens = tokenize(source)
     end
 
     def shift
@@ -14,13 +14,17 @@ module Liquid
       token
     end
 
+    def prepend(source)
+      @tokens = tokenize(source) + @tokens
+    end
+
     private
 
-    def tokenize
-      @source = @source.source if @source.respond_to?(:source)
-      return [] if @source.to_s.empty?
+    def tokenize(source)
+      source = source.source if source.respond_to?(:source)
+      return [] if source.to_s.empty?
 
-      tokens = @source.split(TemplateParser)
+      tokens = source.split(TemplateParser)
 
       # removes the rogue empty element at the beginning of the array
       tokens.shift if tokens[0] && tokens[0].empty?
