@@ -100,3 +100,9 @@ end
 task :console do
   exec 'irb -I lib -r liquid'
 end
+
+task :dump_portable_ast, [:filename] do |_task, args|
+  require 'liquid/ast_to_portable_json'
+  ast = Liquid::Template.parse(File.read(args[:filename]))
+  puts(Liquid::ASTToPortableJSON.dump(ast))
+end
