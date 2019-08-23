@@ -9,9 +9,9 @@ group :benchmark, :test do
   gem 'benchmark-ips'
   gem 'memory_profiler'
 
-  install_if -> { RUBY_PLATFORM !~ /mingw|mswin|java/ } do
-    gem 'stackprof'
-  end
+  # install_if -> { RUBY_PLATFORM !~ /mingw|mswin|java/ } do
+  #   gem 'stackprof'
+  # end
 end
 
 group :test do
@@ -21,3 +21,7 @@ group :test do
     gem 'liquid-c', github: 'Shopify/liquid-c', ref: '9168659de45d6d576fce30c735f857e597fa26f6'
   end
 end
+
+# gem "byebug", "~> 11.0"
+
+gem "pry", "~> 0.12.2"

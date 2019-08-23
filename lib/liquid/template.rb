@@ -1,3 +1,4 @@
+require 'liquid/ast_to_portable_json'
 module Liquid
   # Templates are central to liquid.
   # Interpretating templates is a two step process. First you compile the
@@ -130,6 +131,8 @@ module Liquid
       @line_numbers = options[:line_numbers] || @profiling
       parse_context = options.is_a?(ParseContext) ? options : ParseContext.new(options)
       @root = Document.parse(tokenize(source), parse_context)
+      @json = ASTToPortableJSON.dump(self)
+
       @warnings = parse_context.warnings
       self
     end
@@ -197,6 +200,15 @@ module Liquid
       when Module, Array
         context.add_filters(args.pop)
       end
+
+      unless @truffle_context
+        environment = context.environments.first
+        @truffle_context = Polyglot.eval('liquid', @json)
+        environment.each do |key, value|
+          @truffle_context[key] = value
+        end
+      end
+      return @truffle_context[:render].call
 
       # Retrying a render resets resource usage
       context.resource_limits.reset

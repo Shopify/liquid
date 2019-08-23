@@ -24,7 +24,7 @@ class ThemeRunner
   # Initialize a new liquid ThemeRunner instance
   # Will load all templates into memory, do this now so that we don't profile IO.
   def initialize
-    @tests = Dir[__dir__ + '/tests/**/*.liquid'].collect do |test|
+    @tests = Dir[__dir__ + '/tests/ripen/product.liquid'].collect do |test|
       next if File.basename(test) == 'theme.liquid'
 
       theme_path = File.dirname(test) + '/theme.liquid'
