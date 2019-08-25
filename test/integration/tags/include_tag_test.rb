@@ -251,4 +251,11 @@ class IncludeTagTest < Minitest::Test
     assert_template_result "1", "{% for i in (1..3) %}{{ i }}{% break %}{{ i }}{% endfor %}"
     assert_template_result "1", "{% for i in (1..3) %}{{ i }}{% include 'break' %}{{ i }}{% endfor %}"
   end
+
+  def test_format
+    assert_template_format("{% include 'product' with products.0 %}", "{% include 'product' with products[0] %}")
+    assert_template_format("{% include 'locale_variables' echo1: 'test123', echo2: 'test321' %}", "{% include 'locale_variables' echo1: 'test123', echo2: 'test321' %}")
+    assert_template_format("{% include 'nested_product_template' with product %}", "{% include 'nested_product_template' with product %}")
+    assert_template_format("{%- include 'nested_product_template' with product -%}", "{%- include 'nested_product_template' with product -%}")
+  end
 end # IncludeTagTest
