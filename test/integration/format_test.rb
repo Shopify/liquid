@@ -10,6 +10,9 @@ class FormatTest < Minitest::Test
 
   def test_variable_only
     assert_template_format('{{ foo }}', '{{foo}}')
+    assert_template_format('{{ \'foo\' }}', '{{"foo"}}')
+    assert_template_format('{{ \'foo"\' }}', '{{\'foo"\'}}')
+    assert_template_format('{{ "foo\'" }}', '{{"foo\'"}}')
     assert_template_format('{{ foo.bar }}', '{{foo.bar}}')
     assert_template_format('{{ foo.hello }}', '{{ foo["hello"] }}')
     assert_template_format('{{ foo[hello] }}', '{{ foo[hello] }}')

@@ -60,7 +60,11 @@ module Liquid
     def self.format(expression)
       case expression
       when String
-        "'#{expression}'"
+        if expression.include? "'"
+          "\"#{expression}\""
+        else
+          "'#{expression}'"
+        end
       when nil
         "nil"
       when VariableLookup
