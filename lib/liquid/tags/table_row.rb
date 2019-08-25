@@ -18,6 +18,12 @@ module Liquid
       end
     end
 
+    def format(left, right)
+      tag_main = "#{block_name} #{@variable_name} in #{Expression.format(@collection_name)}"
+      args = @attributes.map { |k, v| "#{k}: #{Expression.format(v)}" }.join(", ")
+      "{%#{"-" if left} #{tag_main} #{args} %}#{@body.format("")}{% #{block_delimiter} #{"-" if right}%}"
+    end
+
     def render_to_output_buffer(context, output)
       collection = context.evaluate(@collection_name) or return ''.freeze
 
