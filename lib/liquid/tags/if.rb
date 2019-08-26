@@ -37,21 +37,27 @@ module Liquid
 
     def format_blocks(left, right, type = "if", output = "")
       first = true
-      @blocks.each do |block|
+      @blocks.each_index do |idx|
+        block_last = @blocks[idx - 1]
+        block = @blocks[idx]
         case block
         when ElseCondition
-          output << "{% else %}"
+          output << "{%#{"-" if block_last.attachment.nodelist[-1].is_a?(Whitespace)} else #{"-" if block.attachment.nodelist[0].is_a?(Whitespace)}%}"
           output << block.attachment.format("")
         when Condition
-          output << "{% #{first ? type : "elsif"} #{block.format} %}"
+          output << "{%#{"-" if left && first}#{whitespace_last(block_last, first)} #{first ? type : "elsif"} #{block.format} #{"-" if block.attachment.nodelist[0].is_a?(Whitespace)}%}"
           output << block.attachment.format("")
           first = false
         else
           output << ""
         end
       end
-      output << "{%#{"-" if left} end#{type} #{"-" if right}%}"
+      output << "{%#{"-" if @blocks[-1].attachment.nodelist[-1].is_a?(Whitespace)} end#{type} #{"-" if right}%}"
       output
+    end
+
+    def whitespace_last(block_last, first)
+      "-" if block_last.attachment.nodelist[-1].is_a?(Whitespace) && !first
     end
 
     def unknown_tag(tag, markup, tokens)

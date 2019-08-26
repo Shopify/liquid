@@ -221,6 +221,9 @@ class StandardTagTest < Minitest::Test
     assert_template_format("{% case condition %}{% when 1 or 'string' or nil %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}", '{% case condition %}{% when 1 or "string" or null %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}')
     assert_template_format("{% case true %}{% when true %}true{% when false %}false{% else %}else{% endcase %}", '{% case true %}{% when true %}true{% when false %}false{% else %}else{% endcase %}')
     assert_template_format("{% case true %}{% when true %}true{% else %}else{% endcase %}", '{% case true %}{% when true %}true{% else %}else{% endcase %}')
+    assert_template_format("{%- case true -%}{%- when true -%}true{%- else -%}else{%- endcase -%}", '{%- case true -%}{%- when true -%}true{%- else -%}else{%- endcase -%}')
+    assert_template_format("{%- case true %}{% when true -%}true{% else -%}else{% endcase %}", '{%- case true %}{% when true -%}true{% else -%}else{% endcase %}')
+    assert_template_format("{% case true %}{% when true -%}true{% else -%}else{%- endcase -%}", '{% case true %}{% when true -%}true{% else -%}else{%- endcase -%}')
   end
 
   def test_assign

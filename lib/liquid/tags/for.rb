@@ -87,10 +87,18 @@ module Liquid
       output << " reversed" if @reversed
       output << " offset: #{Expression.format(@from)}" if @from
       output << " limit: #{Expression.format(@limit)}" if @limit
-      output << " #{"-" if right}%}"
+      output << " #{format_whitespace(@for_block, 0)}%}"
       output << @for_block.format("")
-      output << "{% else %}#{@else_block.format("")}" if @else_block
-      output << "{%#{"-" if left} endfor #{"-" if right}%}"
+      if @else_block
+        output << "{%#{format_whitespace(@for_block, -1)} else #{format_whitespace(@else_block, 0)}%}#{@else_block.format("")}"
+        output << "{%#{format_whitespace(@else_block, -1)} endfor #{"-" if right}%}"
+      else
+        output << "{%#{format_whitespace(@for_block, -1)} endfor #{"-" if right}%}"
+      end
+    end
+
+    def format_whitespace(block, pos)
+      "-" if block.nodelist[pos].is_a?(Whitespace)
     end
 
     protected

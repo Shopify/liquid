@@ -443,5 +443,9 @@ HERE
     assert_template_format('{% for item in array %}+{% else %}-{% endfor %}', '{%for item in array%}+{%else%}-{%endfor%}')
     assert_template_format('{% for item in array reversed %}{{ item }}{% endfor %}', '{%for item in array reversed %}{{item}}{%endfor%}')
     assert_template_format('{% for i in array.items offset: continue limit: 3 %}{{ i }}{% endfor %}', '{%for i in array.items offset:continue limit: 3 %}{{i}}{%endfor%}')
+    assert_template_format('{%- for item in array -%}+{%- else -%}-{%- endfor -%}', '{%- for item in array -%}+{%-else-%}-{%-endfor-%}')
+    assert_template_format('{%- for item in array -%}+{%- else -%}-{% endfor %}', '{%- for item in array -%}+{%-else-%}-{%endfor%}')
+    assert_template_format('{% for item in array %}+{%- else -%}-{%- endfor -%}', '{% for item in array %}+{%-else-%}-{%-endfor-%}')
+    assert_template_format('{%- for item in array %}+{%- else %}-{%- endfor %}', '{%- for item in array %}+{%-else%}-{%-endfor%}')
   end
 end

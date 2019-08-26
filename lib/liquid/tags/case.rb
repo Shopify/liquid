@@ -24,24 +24,25 @@ module Liquid
     end
 
     def format(left, right)
-      output = "{%#{"-" if left} case #{Expression.format(@left)} #{"-" if right}%}"
+      output = "{%#{"-" if left} case #{Expression.format(@left)} #{"-" if @blocks[0].attachment.nodelist[-1].is_a?(Whitespace)}%}"
       output << format_blocks
-      output << "{%#{"-" if left} endcase #{"-" if right}%}"
+      output << "{%#{"-" if @blocks[-1].attachment.nodelist[-1].is_a?(Whitespace)} endcase #{"-" if right}%}"
     end
 
     def format_blocks(last = "", open = false, output = "")
-      @blocks.each do |block|
+      @blocks.each_index do |idx|
+        block = @blocks[idx]
         case block
         when ElseCondition
-          output << " %}#{last.format("")}{% else" if open
+          output << " #{format_whitespace(last, 0)}%}#{last.format("")}{%#{format_whitespace(last, -1)} else" if open
           last = block.attachment
           open = true
         when Condition
-          output << "{% when " unless open
+          output << "{%#{format_whitespace(@blocks[0].attachment, -1)} when " unless open
           if block.attachment == last
             output << " or #{Expression.format(block.right)}"
           else
-            output << " %}#{last.format("")}{% when " if open
+            output << " #{format_whitespace(last, 0)}%}#{last.format("")}{%#{format_whitespace(last, -1)} when " if open
             last = block.attachment
             output << Expression.format(block.right)
             open = true
@@ -50,7 +51,11 @@ module Liquid
           output << block
         end
       end
-      output << " %}#{last.format("")}" if open
+      output << " #{format_whitespace(last, 0)}%}#{last.format("")}" if open
+    end
+
+    def format_whitespace(block, pos)
+      "-" if block.nodelist[pos].is_a?(Whitespace)
     end
 
     def nodelist

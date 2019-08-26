@@ -99,7 +99,7 @@ module Liquid
           output << node
         else
           raise FormatError.new("Unable to format ".freeze + node.class.name) unless node.respond_to?(:format)
-          output << node.format(@nodelist[idx - 1].is_a?(Whitespace), @nodelist[idx + 1].is_a?(Whitespace))
+          output << node.format(idx > 0 && @nodelist[idx - 1].is_a?(Whitespace), @nodelist[idx + 1].is_a?(Whitespace))
         end
         idx += 1
       end
