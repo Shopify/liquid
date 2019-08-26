@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class VariableUnitTest < Minitest::Test
@@ -67,7 +69,7 @@ class VariableUnitTest < Minitest::Test
 
     var = create_variable("hello|replace:'foo','bar'|textileze")
     assert_equal VariableLookup.new('hello'), var.name
-    assert_equal [['replace', ['foo', 'bar']], ['textileze', []]], var.filters
+    assert_equal [['replace', %w[foo bar]], ['textileze', []]], var.filters
   end
 
   def test_symbol
@@ -132,7 +134,7 @@ class VariableUnitTest < Minitest::Test
   def test_lax_filter_argument_parsing
     var = create_variable(%( number_of_comments | pluralize: 'comment': 'comments' ), error_mode: :lax)
     assert_equal VariableLookup.new('number_of_comments'), var.name
-    assert_equal [['pluralize', ['comment', 'comments']]], var.filters
+    assert_equal [['pluralize', %w[comment comments]]], var.filters
   end
 
   def test_strict_filter_argument_parsing
@@ -145,13 +147,13 @@ class VariableUnitTest < Minitest::Test
 
   def test_output_raw_source_of_variable
     var = create_variable(%( name_of_variable | upcase ))
-    assert_equal " name_of_variable | upcase ", var.raw
+    assert_equal ' name_of_variable | upcase ', var.raw
   end
 
   def test_variable_lookup_interface
     lookup = VariableLookup.new('a.b.c')
     assert_equal 'a', lookup.name
-    assert_equal ['b', 'c'], lookup.lookups
+    assert_equal %w[b c], lookup.lookups
   end
 
   private

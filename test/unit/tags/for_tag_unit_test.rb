@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ForTagUnitTest < Minitest::Test
@@ -8,6 +10,6 @@ class ForTagUnitTest < Minitest::Test
 
   def test_for_else_nodelist
     template = Liquid::Template.parse('{% for item in items %}FOR{% else %}ELSE{% endfor %}')
-    assert_equal ['FOR', 'ELSE'], template.root.nodelist[0].nodelist.map(&:nodelist).flatten
+    assert_equal %w[FOR ELSE], template.root.nodelist[0].nodelist.map(&:nodelist).flatten
   end
 end

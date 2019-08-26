@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class RenderProfilingTest < Minitest::Test
@@ -72,7 +74,7 @@ class RenderProfilingTest < Minitest::Test
     t = Template.parse("{% include 'a_template' %}", profile: true)
     t.render!
 
-    assert t.profiler.total_render_time >= 0, "Total render time was not calculated"
+    assert t.profiler.total_render_time >= 0, 'Total render time was not calculated'
   end
 
   def test_profiling_uses_include_to_mark_children
@@ -89,7 +91,7 @@ class RenderProfilingTest < Minitest::Test
 
     include_node = t.profiler[1]
     include_node.children.each do |child|
-      assert_equal "a_template", child.partial
+      assert_equal 'a_template', child.partial
     end
   end
 
@@ -99,12 +101,12 @@ class RenderProfilingTest < Minitest::Test
 
     a_template = t.profiler[1]
     a_template.children.each do |child|
-      assert_equal "a_template", child.partial
+      assert_equal 'a_template', child.partial
     end
 
     b_template = t.profiler[2]
     b_template.children.each do |child|
-      assert_equal "b_template", child.partial
+      assert_equal 'b_template', child.partial
     end
   end
 
@@ -114,12 +116,12 @@ class RenderProfilingTest < Minitest::Test
 
     a_template1 = t.profiler[1]
     a_template1.children.each do |child|
-      assert_equal "a_template", child.partial
+      assert_equal 'a_template', child.partial
     end
 
     a_template2 = t.profiler[2]
     a_template2.children.each do |child|
-      assert_equal "a_template", child.partial
+      assert_equal 'a_template', child.partial
     end
   end
 
@@ -128,7 +130,7 @@ class RenderProfilingTest < Minitest::Test
     t.render!
 
     timing_count = 0
-    t.profiler.each do |timing|
+    t.profiler.each do |_timing|
       timing_count += 1
     end
 
@@ -136,7 +138,7 @@ class RenderProfilingTest < Minitest::Test
   end
 
   def test_profiling_marks_children_of_if_blocks
-    t = Template.parse("{% if true %} {% increment test %} {{ test }} {% endif %}", profile: true)
+    t = Template.parse('{% if true %} {% increment test %} {{ test }} {% endif %}', profile: true)
     t.render!
 
     assert_equal 1, t.profiler.length
@@ -144,8 +146,8 @@ class RenderProfilingTest < Minitest::Test
   end
 
   def test_profiling_marks_children_of_for_blocks
-    t = Template.parse("{% for item in collection %} {{ item }} {% endfor %}", profile: true)
-    t.render!({ "collection" => ["one", "two"] })
+    t = Template.parse('{% for item in collection %} {{ item }} {% endfor %}', profile: true)
+    t.render!('collection' => %w[one two])
 
     assert_equal 1, t.profiler.length
     # Will profile each invocation of the for block

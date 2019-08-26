@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ThingWithValue < Liquid::Drop
@@ -23,16 +25,16 @@ class ForTagTest < Minitest::Test
   yo
 
 HERE
-    template = <<HERE
-{%for item in array%}
-  yo
-{%endfor%}
-HERE
+    template = <<~HERE
+      {%for item in array%}
+        yo
+      {%endfor%}
+    HERE
     assert_template_result(expected, template, 'array' => [1, 2, 3])
   end
 
   def test_for_reversed
-    assigns = { 'array' => [ 1, 2, 3] }
+    assigns = { 'array' => [1, 2, 3] }
     assert_template_result('321', '{%for item in array reversed %}{{item}}{%endfor%}', assigns)
   end
 
@@ -40,31 +42,31 @@ HERE
     assert_template_result(' 1  2  3 ', '{%for item in (1..3) %} {{item}} {%endfor%}')
 
     assert_raises(Liquid::ArgumentError) do
-      Template.parse('{% for i in (a..2) %}{% endfor %}').render!("a" => [1, 2])
+      Template.parse('{% for i in (a..2) %}{% endfor %}').render!('a' => [1, 2])
     end
 
-    assert_template_result(' 0  1  2  3 ', '{% for item in (a..3) %} {{item}} {% endfor %}', "a" => "invalid integer")
+    assert_template_result(' 0  1  2  3 ', '{% for item in (a..3) %} {{item}} {% endfor %}', 'a' => 'invalid integer')
   end
 
   def test_for_with_variable_range
-    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar) %} {{item}} {%endfor%}', "foobar" => 3)
+    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar) %} {{item}} {%endfor%}', 'foobar' => 3)
   end
 
   def test_for_with_hash_value_range
-    foobar = { "value" => 3 }
-    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', "foobar" => foobar)
+    foobar = { 'value' => 3 }
+    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', 'foobar' => foobar)
   end
 
   def test_for_with_drop_value_range
     foobar = ThingWithValue.new
-    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', "foobar" => foobar)
+    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', 'foobar' => foobar)
   end
 
   def test_for_with_variable
     assert_template_result(' 1  2  3 ', '{%for item in array%} {{item}} {%endfor%}', 'array' => [1, 2, 3])
     assert_template_result('123', '{%for item in array%}{{item}}{%endfor%}', 'array' => [1, 2, 3])
     assert_template_result('123', '{% for item in array %}{{item}}{% endfor %}', 'array' => [1, 2, 3])
-    assert_template_result('abcd', '{%for item in array%}{{item}}{%endfor%}', 'array' => ['a', 'b', 'c', 'd'])
+    assert_template_result('abcd', '{%for item in array%}{{item}}{%endfor%}', 'array' => %w[a b c d])
     assert_template_result('a b c', '{%for item in array%}{{item}}{%endfor%}', 'array' => ['a', ' ', 'b', ' ', 'c'])
     assert_template_result('abc', '{%for item in array%}{{item}}{%endfor%}', 'array' => ['a', '', 'b', '', 'c'])
   end
@@ -72,8 +74,8 @@ HERE
   def test_for_helpers
     assigns = { 'array' => [1, 2, 3] }
     assert_template_result(' 1/3  2/3  3/3 ',
-      '{%for item in array%} {{forloop.index}}/{{forloop.length}} {%endfor%}',
-      assigns)
+                           '{%for item in array%} {{forloop.index}}/{{forloop.length}} {%endfor%}',
+                           assigns)
     assert_template_result(' 1  2  3 ', '{%for item in array%} {{forloop.index}} {%endfor%}', assigns)
     assert_template_result(' 0  1  2 ', '{%for item in array%} {{forloop.index0}} {%endfor%}', assigns)
     assert_template_result(' 2  1  0 ', '{%for item in array%} {{forloop.rindex0}} {%endfor%}', assigns)
@@ -85,8 +87,8 @@ HERE
   def test_for_and_if
     assigns = { 'array' => [1, 2, 3] }
     assert_template_result('+--',
-      '{%for item in array%}{% if forloop.first %}+{% else %}-{% endif %}{%endfor%}',
-      assigns)
+                           '{%for item in array%}{% if forloop.first %}+{% else %}-{% endif %}{%endfor%}',
+                           assigns)
   end
 
   def test_for_else
@@ -114,7 +116,7 @@ HERE
     exception = assert_raises(Liquid::ArgumentError) do
       Template.parse(template).render!(assigns)
     end
-    assert_equal("Liquid error: invalid integer", exception.message)
+    assert_equal('Liquid error: invalid integer', exception.message)
   end
 
   def test_limiting_with_invalid_offset
@@ -128,7 +130,7 @@ HERE
     exception = assert_raises(Liquid::ArgumentError) do
       Template.parse(template).render!(assigns)
     end
-    assert_equal("Liquid error: invalid integer", exception.message)
+    assert_equal('Liquid error: invalid integer', exception.message)
   end
 
   def test_dynamic_variable_limiting
@@ -157,14 +159,14 @@ HERE
       {%for i in array.items offset:continue limit: 3 %}{{i}}{%endfor%}
       next
       {%for i in array.items offset:continue limit: 3 %}{{i}}{%endfor%}
-      MKUP
+    MKUP
     expected = <<-XPCTD
       123
       next
       456
       next
       789
-      XPCTD
+    XPCTD
     assert_template_result(expected, markup, assigns)
   end
 
@@ -176,14 +178,14 @@ HERE
       {%for i in array.items offset:continue limit:3 %}{{i}}{%endfor%}
       next
       {%for i in array.items offset:continue limit:1 %}{{i}}{%endfor%}
-      MKUP
+    MKUP
     expected = <<-XPCTD
       123
       next
       456
       next
       7
-      XPCTD
+    XPCTD
     assert_template_result(expected, markup, assigns)
   end
 
@@ -195,14 +197,14 @@ HERE
       {%for i in array.items offset:continue limit:3 %}{{i}}{%endfor%}
       next
       {%for i in array.items offset:continue limit:1000 %}{{i}}{%endfor%}
-      MKUP
+    MKUP
     expected = <<-XPCTD
       123
       next
       456
       next
       7890
-      XPCTD
+    XPCTD
     assert_template_result(expected, markup, assigns)
   end
 
@@ -225,19 +227,19 @@ HERE
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }
 
     markup = '{% for i in array.items %}{% break %}{% endfor %}'
-    expected = ""
+    expected = ''
     assert_template_result(expected, markup, assigns)
 
     markup = '{% for i in array.items %}{{ i }}{% break %}{% endfor %}'
-    expected = "1"
+    expected = '1'
     assert_template_result(expected, markup, assigns)
 
     markup = '{% for i in array.items %}{% break %}{{ i }}{% endfor %}'
-    expected = ""
+    expected = ''
     assert_template_result(expected, markup, assigns)
 
     markup = '{% for i in array.items %}{{ i }}{% if i > 3 %}{% break %}{% endif %}{% endfor %}'
-    expected = "1234"
+    expected = '1234'
     assert_template_result(expected, markup, assigns)
 
     # tests to ensure it only breaks out of the local for loop
@@ -265,23 +267,23 @@ HERE
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5] } }
 
     markup = '{% for i in array.items %}{% continue %}{% endfor %}'
-    expected = ""
+    expected = ''
     assert_template_result(expected, markup, assigns)
 
     markup = '{% for i in array.items %}{{ i }}{% continue %}{% endfor %}'
-    expected = "12345"
+    expected = '12345'
     assert_template_result(expected, markup, assigns)
 
     markup = '{% for i in array.items %}{% continue %}{{ i }}{% endfor %}'
-    expected = ""
+    expected = ''
     assert_template_result(expected, markup, assigns)
 
     markup = '{% for i in array.items %}{% if i > 3 %}{% continue %}{% endif %}{{ i }}{% endfor %}'
-    expected = "123"
+    expected = '123'
     assert_template_result(expected, markup, assigns)
 
     markup = '{% for i in array.items %}{% if i == 3 %}{% continue %}{% else %}{{ i }}{% endif %}{% endfor %}'
-    expected = "1245"
+    expected = '1245'
     assert_template_result(expected, markup, assigns)
 
     # tests to ensure it only continues the local for loop and not all of them.
@@ -310,41 +312,41 @@ HERE
     # the functionality for backwards compatibility
 
     assert_template_result('test string',
-      '{%for val in string%}{{val}}{%endfor%}',
-      'string' => "test string")
+                           '{%for val in string%}{{val}}{%endfor%}',
+                           'string' => 'test string')
 
     assert_template_result('test string',
-      '{%for val in string limit:1%}{{val}}{%endfor%}',
-      'string' => "test string")
+                           '{%for val in string limit:1%}{{val}}{%endfor%}',
+                           'string' => 'test string')
 
     assert_template_result('val-string-1-1-0-1-0-true-true-test string',
-      '{%for val in string%}' \
-      '{{forloop.name}}-' \
-      '{{forloop.index}}-' \
-      '{{forloop.length}}-' \
-      '{{forloop.index0}}-' \
-      '{{forloop.rindex}}-' \
-      '{{forloop.rindex0}}-' \
-      '{{forloop.first}}-' \
-      '{{forloop.last}}-' \
-      '{{val}}{%endfor%}',
-      'string' => "test string")
+                           '{%for val in string%}' \
+                           '{{forloop.name}}-' \
+                           '{{forloop.index}}-' \
+                           '{{forloop.length}}-' \
+                           '{{forloop.index0}}-' \
+                           '{{forloop.rindex}}-' \
+                           '{{forloop.rindex0}}-' \
+                           '{{forloop.first}}-' \
+                           '{{forloop.last}}-' \
+                           '{{val}}{%endfor%}',
+                           'string' => 'test string')
   end
 
   def test_for_parentloop_references_parent_loop
     assert_template_result('1.1 1.2 1.3 2.1 2.2 2.3 ',
-      '{% for inner in outer %}{% for k in inner %}' \
-      '{{ forloop.parentloop.index }}.{{ forloop.index }} ' \
-      '{% endfor %}{% endfor %}',
-      'outer' => [[1, 1, 1], [1, 1, 1]])
+                           '{% for inner in outer %}{% for k in inner %}' \
+                           '{{ forloop.parentloop.index }}.{{ forloop.index }} ' \
+                           '{% endfor %}{% endfor %}',
+                           'outer' => [[1, 1, 1], [1, 1, 1]])
   end
 
   def test_for_parentloop_nil_when_not_present
     assert_template_result('.1 .2 ',
-      '{% for inner in outer %}' \
-      '{{ forloop.parentloop.index }}.{{ forloop.index }} ' \
-      '{% endfor %}',
-      'outer' => [[1, 1, 1], [1, 1, 1]])
+                           '{% for inner in outer %}' \
+                           '{{ forloop.parentloop.index }}.{{ forloop.index }} ' \
+                           '{% endfor %}',
+                           'outer' => [[1, 1, 1], [1, 1, 1]])
   end
 
   def test_inner_for_over_empty_input
@@ -352,7 +354,7 @@ HERE
   end
 
   def test_blank_string_not_iterable
-    assert_template_result('', "{% for char in characters %}I WILL NOT BE OUTPUT{% endfor %}", 'characters' => '')
+    assert_template_result('', '{% for char in characters %}I WILL NOT BE OUTPUT{% endfor %}', 'characters' => '')
   end
 
   def test_bad_variable_naming_in_for_loop

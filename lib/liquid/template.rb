@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Templates are central to liquid.
   # Interpretating templates is a two step process. First you compile the
@@ -16,7 +18,11 @@ module Liquid
     attr_accessor :root
     attr_reader :resource_limits, :warnings
 
-    @@file_system = BlankFileSystem.new
+    @file_system = BlankFileSystem.new
+
+    class << self
+      attr_accessor :file_system
+    end
 
     class TagRegistry
       include Enumerable
@@ -72,14 +78,6 @@ module Liquid
       attr_accessor :default_exception_renderer
       Template.default_exception_renderer = lambda do |exception|
         exception
-      end
-
-      def file_system
-        @@file_system
-      end
-
-      def file_system=(obj)
-        @@file_system = obj
       end
 
       def register_tag(name, klass)
@@ -165,15 +163,13 @@ module Liquid
     #    filters and tags and might be useful to integrate liquid more with its host application
     #
     def render(*args)
-      return ''.freeze if @root.nil?
+      return '' if @root.nil?
 
       context = case args.first
       when Liquid::Context
         c = args.shift
 
-        if @rethrow_errors
-          c.exception_renderer = ->(e) { raise }
-        end
+        c.exception_renderer = ->(_e) { raise } if @rethrow_errors
 
         c
       when Liquid::Drop
@@ -184,7 +180,7 @@ module Liquid
       when nil
         Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
       else
-        raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
+        raise ArgumentError, 'Expected Hash or Liquid::Context as parameter'
       end
 
       output = nil
@@ -208,7 +204,7 @@ module Liquid
         # render the nodelist.
         # for performance reasons we get an array back here. join will make a string out of it.
         with_profiling(context) do
-          @root.render_to_output_buffer(context, output || '')
+          @root.render_to_output_buffer(context, output || ''.dup)
         end
       rescue Liquid::MemoryError => e
         context.handle_error(e)

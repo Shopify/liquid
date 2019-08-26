@@ -1,29 +1,31 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class BlockUnitTest < Minitest::Test
   include Liquid
 
   def test_blankspace
-    template = Liquid::Template.parse("  ")
-    assert_equal ["  "], template.root.nodelist
+    template = Liquid::Template.parse('  ')
+    assert_equal ['  '], template.root.nodelist
   end
 
   def test_variable_beginning
-    template = Liquid::Template.parse("{{funk}}  ")
+    template = Liquid::Template.parse('{{funk}}  ')
     assert_equal 2, template.root.nodelist.size
     assert_equal Variable, template.root.nodelist[0].class
     assert_equal String, template.root.nodelist[1].class
   end
 
   def test_variable_end
-    template = Liquid::Template.parse("  {{funk}}")
+    template = Liquid::Template.parse('  {{funk}}')
     assert_equal 2, template.root.nodelist.size
     assert_equal String, template.root.nodelist[0].class
     assert_equal Variable, template.root.nodelist[1].class
   end
 
   def test_variable_middle
-    template = Liquid::Template.parse("  {{funk}}  ")
+    template = Liquid::Template.parse('  {{funk}}  ')
     assert_equal 3, template.root.nodelist.size
     assert_equal String, template.root.nodelist[0].class
     assert_equal Variable, template.root.nodelist[1].class
@@ -31,21 +33,21 @@ class BlockUnitTest < Minitest::Test
   end
 
   def test_variable_many_embedded_fragments
-    template = Liquid::Template.parse("  {{funk}} {{so}} {{brother}} ")
+    template = Liquid::Template.parse('  {{funk}} {{so}} {{brother}} ')
     assert_equal 7, template.root.nodelist.size
     assert_equal [String, Variable, String, Variable, String, Variable, String],
-      block_types(template.root.nodelist)
+                 block_types(template.root.nodelist)
   end
 
   def test_with_block
-    template = Liquid::Template.parse("  {% comment %} {% endcomment %} ")
+    template = Liquid::Template.parse('  {% comment %} {% endcomment %} ')
     assert_equal [String, Comment, String], block_types(template.root.nodelist)
     assert_equal 3, template.root.nodelist.size
   end
 
   def test_with_custom_tag
     with_custom_tag('testtag', Block) do
-      assert Liquid::Template.parse("{% testtag %} {% endtesttag %}")
+      assert Liquid::Template.parse('{% testtag %} {% endtesttag %}')
     end
   end
 
@@ -57,11 +59,11 @@ class BlockUnitTest < Minitest::Test
     end
 
     with_custom_tag('blabla', klass1) do
-      template = Liquid::Template.parse("{% blabla %} bla {% endblabla %}")
+      template = Liquid::Template.parse('{% blabla %} bla {% endblabla %}')
 
       assert_equal 'hello', template.render
 
-      buf = ''
+      buf = ''.dup
       output = template.render({}, output: buf)
       assert_equal 'hello', output
       assert_equal 'hello', buf
@@ -75,11 +77,11 @@ class BlockUnitTest < Minitest::Test
     end
 
     with_custom_tag('blabla', klass2) do
-      template = Liquid::Template.parse("{% blabla %} foo {% endblabla %}")
+      template = Liquid::Template.parse('{% blabla %} foo {% endblabla %}')
 
       assert_equal 'foohellobar', template.render
 
-      buf = ''
+      buf = ''.dup
       output = template.render({}, output: buf)
       assert_equal 'foohellobar', output
       assert_equal 'foohellobar', buf

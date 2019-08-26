@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class VariableTest < Minitest::Test
@@ -25,12 +27,12 @@ class VariableTest < Minitest::Test
   end
 
   def test_using_blank_as_variable_name
-    template = Template.parse("{% assign foo = blank %}{{ foo }}")
+    template = Template.parse('{% assign foo = blank %}{{ foo }}')
     assert_equal '', template.render!
   end
 
   def test_using_empty_as_variable_name
-    template = Template.parse("{% assign foo = empty %}{{ foo }}")
+    template = Template.parse('{% assign foo = empty %}{{ foo }}')
     assert_equal '', template.render!
   end
 
@@ -40,12 +42,12 @@ class VariableTest < Minitest::Test
   end
 
   def test_false_renders_as_false
-    assert_equal 'false', Template.parse("{{ foo }}").render!('foo' => false)
-    assert_equal 'false', Template.parse("{{ false }}").render!
+    assert_equal 'false', Template.parse('{{ foo }}').render!('foo' => false)
+    assert_equal 'false', Template.parse('{{ false }}').render!
   end
 
   def test_nil_renders_as_empty_string
-    assert_equal '', Template.parse("{{ nil }}").render!
+    assert_equal '', Template.parse('{{ nil }}').render!
     assert_equal 'cat', Template.parse("{{ nil | append: 'cat' }}").render!
   end
 
@@ -76,7 +78,7 @@ class VariableTest < Minitest::Test
 
   def test_hash_with_default_proc
     template = Template.parse(%(Hello {{ test }}))
-    assigns = Hash.new { |h, k| raise "Unknown variable '#{k}'" }
+    assigns = Hash.new { |_h, k| raise "Unknown variable '#{k}'" }
     assigns['test'] = 'Tobi'
     assert_equal 'Hello Tobi', template.render!(assigns)
     assigns.delete('test')

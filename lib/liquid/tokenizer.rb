@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Tokenizer
     attr_reader :line_number
@@ -20,10 +22,10 @@ module Liquid
       @source = @source.source if @source.respond_to?(:source)
       return [] if @source.to_s.empty?
 
-      tokens = @source.split(TemplateParser)
+      tokens = @source.split(TEMPLATE_PARSER)
 
       # removes the rogue empty element at the beginning of the array
-      tokens.shift if tokens[0] && tokens[0].empty?
+      tokens.shift if tokens[0]&.empty?
 
       tokens
     end

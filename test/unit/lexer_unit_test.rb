@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class LexerUnitTest < Minitest::Test
@@ -45,7 +47,7 @@ class LexerUnitTest < Minitest::Test
 
   def test_unexpected_character
     assert_raises(SyntaxError) do
-      Lexer.new("%").tokenize
+      Lexer.new('%').tokenize
     end
   end
 end

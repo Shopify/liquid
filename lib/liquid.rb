@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) 2005 Tobias Luetke
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -20,31 +22,31 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module Liquid
-  FilterSeparator             = /\|/
-  ArgumentSeparator           = ','.freeze
-  FilterArgumentSeparator     = ':'.freeze
-  VariableAttributeSeparator  = '.'.freeze
-  WhitespaceControl           = '-'.freeze
-  TagStart                    = /\{\%/
-  TagEnd                      = /\%\}/
-  VariableSignature           = /\(?[\w\-\.\[\]]\)?/
-  VariableSegment             = /[\w\-]/
-  VariableStart               = /\{\{/
-  VariableEnd                 = /\}\}/
-  VariableIncompleteEnd       = /\}\}?/
-  QuotedString                = /"[^"]*"|'[^']*'/
-  QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
-  TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
-  AnyStartingTag              = /#{TagStart}|#{VariableStart}/o
-  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
-  TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
-  VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
+  FILTER_SEPARATOR = /\|/.freeze
+  ARGUMENT_SEPARATOR = ','
+  FILTER_ARGUMENT_SEPARATOR = ':'
+  VARIABLE_ATTRIBUTE_SEPARATOR = '.'
+  WHITESPACE_CONTROL = '-'
+  TAG_START = /\{\%/.freeze
+  TAG_END = /\%\}/.freeze
+  VARIABLE_SIGNATURE = /\(?[\w\-\.\[\]]\)?/.freeze
+  VARIABLE_SEGMENT = /[\w\-]/.freeze
+  VARIABLE_START = /\{\{/.freeze
+  VARIABLE_END = /\}\}/.freeze
+  VARIABLE_INCOMPLETE_END = /\}\}?/.freeze
+  QUOTED_STRING = /"[^"]*"|'[^']*'/.freeze
+  QUOTED_FRAGMENT = /#{QUOTED_STRING}|(?:[^\s,\|'"]|#{QUOTED_STRING})+/o.freeze
+  TAG_ATTRIBUTES = /(\w+)\s*\:\s*(#{QUOTED_FRAGMENT})/o.freeze
+  ANY_STARTING_TAG = /#{TAG_START}|#{VARIABLE_START}/o.freeze
+  PARTIAL_TEMPLATE_PARSER = /#{TAG_START}.*?#{TAG_END}|#{VARIABLE_START}.*?#{VARIABLE_INCOMPLETE_END}/om.freeze
+  TEMPLATE_PARSER = /(#{PARTIAL_TEMPLATE_PARSER}|#{ANY_STARTING_TAG})/om.freeze
+  VARIABLE_PARSER = /\[[^\]]+\]|#{VARIABLE_SEGMENT}+\??/o.freeze
 
   singleton_class.send(:attr_accessor, :cache_classes)
   self.cache_classes = true
 end
 
-require "liquid/version"
+require 'liquid/version'
 require 'liquid/parse_tree_visitor'
 require 'liquid/lexer'
 require 'liquid/parser'

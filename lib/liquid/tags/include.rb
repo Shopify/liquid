@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Include allows templates to relate with other templates
   #
@@ -14,40 +16,39 @@ module Liquid
   #   {% include 'product' for products %}
   #
   class Include < Tag
-    Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/o
+    SYNTAX = /(#{QUOTED_FRAGMENT}+)(\s+(?:with|for)\s+(#{QUOTED_FRAGMENT}+))?/o.freeze
 
     attr_reader :template_name_expr, :variable_name_expr, :attributes
 
     def initialize(tag_name, markup, options)
       super
 
-      if markup =~ Syntax
+      if markup =~ SYNTAX
 
-        template_name = $1
-        variable_name = $3
+        template_name = Regexp.last_match(1)
+        variable_name = Regexp.last_match(3)
 
         @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
         @template_name_expr = Expression.parse(template_name)
         @attributes = {}
 
-        markup.scan(TagAttributes) do |key, value|
+        markup.scan(TAG_ATTRIBUTES) do |key, value|
           @attributes[key] = Expression.parse(value)
         end
 
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.include".freeze))
+        raise SyntaxError, options[:locale].t('errors.syntax.include')
       end
     end
 
-    def parse(_tokens)
-    end
+    def parse(_tokens); end
 
     def render_to_output_buffer(context, output)
       template_name = context.evaluate(@template_name_expr)
-      raise ArgumentError.new(options[:locale].t("errors.argument.include")) unless template_name
+      raise ArgumentError, options[:locale].t('errors.argument.include') unless template_name
 
       partial = load_cached_partial(template_name, context)
-      context_variable_name = template_name.split('/'.freeze).last
+      context_variable_name = template_name.split('/').last
 
       variable = if @variable_name_expr
         context.evaluate(@variable_name_expr)
@@ -91,9 +92,10 @@ module Liquid
     def load_cached_partial(template_name, context)
       cached_partials = context.registers[:cached_partials] || {}
 
-      if cached = cached_partials[template_name]
+      if (cached = cached_partials[template_name])
         return cached
       end
+
       source = read_template_from_file_system(context)
       begin
         parse_context.partial = true
@@ -116,11 +118,11 @@ module Liquid
       def children
         [
           @node.template_name_expr,
-          @node.variable_name_expr
+          @node.variable_name_expr,
         ] + @node.attributes.values
       end
     end
   end
 
-  Template.register_tag('include'.freeze, Include)
+  Template.register_tag('include', Include)
 end

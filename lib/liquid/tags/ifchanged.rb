@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Liquid
   class Ifchanged < Block
     def render_to_output_buffer(context, output)
       context.stack do
-        block_output = ''
+        block_output = ''.dup
         super(context, block_output)
 
         if block_output != context.registers[:ifchanged]
@@ -15,5 +17,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('ifchanged'.freeze, Ifchanged)
+  Template.register_tag('ifchanged', Ifchanged)
 end

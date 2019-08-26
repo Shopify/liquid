@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Cycle is usually used within a loop to alternate between values, like colors or DOM classes.
   #
@@ -12,22 +14,22 @@ module Liquid
   #    <div class="green"> Item five</div>
   #
   class Cycle < Tag
-    SimpleSyntax = /\A#{QuotedFragment}+/o
-    NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om
+    SIMPLE_SYNTAX = /\A#{QUOTED_FRAGMENT}+/o.freeze
+    NAMED_SYNTAX  = /\A(#{QUOTED_FRAGMENT})\s*\:\s*(.*)/om.freeze
 
     attr_reader :variables
 
     def initialize(tag_name, markup, options)
       super
       case markup
-      when NamedSyntax
-        @variables = variables_from_string($2)
-        @name = Expression.parse($1)
-      when SimpleSyntax
+      when NAMED_SYNTAX
+        @variables = variables_from_string(Regexp.last_match(2))
+        @name = Expression.parse(Regexp.last_match(1))
+      when SIMPLE_SYNTAX
         @variables = variables_from_string(markup)
         @name = @variables.to_s
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.cycle".freeze))
+        raise SyntaxError, options[:locale].t('errors.syntax.cycle')
       end
     end
 
@@ -60,8 +62,8 @@ module Liquid
 
     def variables_from_string(markup)
       markup.split(',').collect do |var|
-        var =~ /\s*(#{QuotedFragment})\s*/o
-        $1 ? Expression.parse($1) : nil
+        var =~ /\s*(#{QUOTED_FRAGMENT})\s*/o
+        Regexp.last_match(1) ? Expression.parse(Regexp.last_match(1)) : nil
       end.compact
     end
 

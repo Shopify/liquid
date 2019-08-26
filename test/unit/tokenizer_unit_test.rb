@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class TokenizerTest < Minitest::Test
@@ -18,12 +20,12 @@ class TokenizerTest < Minitest::Test
     assert_equal [' ', '{%comment%}', ' '], tokenize(' {%comment%} ')
 
     assert_equal [' ', '{%comment%}', ' ', '{%endcomment%}', ' '], tokenize(' {%comment%} {%endcomment%} ')
-    assert_equal ['  ', '{% comment %}', ' ', '{% endcomment %}', ' '], tokenize("  {% comment %} {% endcomment %} ")
+    assert_equal ['  ', '{% comment %}', ' ', '{% endcomment %}', ' '], tokenize('  {% comment %} {% endcomment %} ')
   end
 
   def test_calculate_line_numbers_per_token_with_profiling
-    assert_equal [1],       tokenize_line_numbers("{{funk}}")
-    assert_equal [1, 1, 1], tokenize_line_numbers(" {{funk}} ")
+    assert_equal [1],       tokenize_line_numbers('{{funk}}')
+    assert_equal [1, 1, 1], tokenize_line_numbers(' {{funk}} ')
     assert_equal [1, 2, 2], tokenize_line_numbers("\n{{funk}}\n")
     assert_equal [1, 1, 3], tokenize_line_numbers(" {{\n funk \n}} ")
   end
@@ -33,7 +35,7 @@ class TokenizerTest < Minitest::Test
   def tokenize(source)
     tokenizer = Liquid::Tokenizer.new(source)
     tokens = []
-    while t = tokenizer.shift
+    while (t = tokenizer.shift)
       tokens << t
     end
     tokens

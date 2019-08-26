@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class IfElseTagTest < Minitest::Test
@@ -6,7 +8,7 @@ class IfElseTagTest < Minitest::Test
   def test_if
     assert_template_result('  ', ' {% if false %} this text should not go into the output {% endif %} ')
     assert_template_result('  this text should go into the output  ',
-      ' {% if true %} this text should go into the output {% endif %} ')
+                           ' {% if true %} this text should go into the output {% endif %} ')
     assert_template_result('  you rock ?', '{% if false %} you suck {% endif %} {% if true %} you rock {% endif %}?')
   end
 
@@ -49,12 +51,12 @@ class IfElseTagTest < Minitest::Test
 
   def test_comparison_of_expressions_starting_with_and_or_or
     assigns = { 'order' => { 'items_count' => 0 }, 'android' => { 'name' => 'Roy' } }
-    assert_template_result("YES",
-      "{% if android.name == 'Roy' %}YES{% endif %}",
-      assigns)
-    assert_template_result("YES",
-      "{% if order.items_count == 0 %}YES{% endif %}",
-      assigns)
+    assert_template_result('YES',
+                           "{% if android.name == 'Roy' %}YES{% endif %}",
+                           assigns)
+    assert_template_result('YES',
+                           '{% if order.items_count == 0 %}YES{% endif %}',
+                           assigns)
   end
 
   def test_if_and
@@ -75,14 +77,14 @@ class IfElseTagTest < Minitest::Test
     assert_template_result('', '{% if foo.bar %} NO {% endif %}', 'foo' => nil)
     assert_template_result('', '{% if foo.bar %} NO {% endif %}', 'foo' => true)
 
-    assert_template_result(' YES ', '{% if var %} YES {% endif %}', 'var' => "text")
+    assert_template_result(' YES ', '{% if var %} YES {% endif %}', 'var' => 'text')
     assert_template_result(' YES ', '{% if var %} YES {% endif %}', 'var' => true)
     assert_template_result(' YES ', '{% if var %} YES {% endif %}', 'var' => 1)
     assert_template_result(' YES ', '{% if var %} YES {% endif %}', 'var' => {})
     assert_template_result(' YES ', '{% if var %} YES {% endif %}', 'var' => [])
     assert_template_result(' YES ', '{% if "foo" %} YES {% endif %}')
     assert_template_result(' YES ', '{% if foo.bar %} YES {% endif %}', 'foo' => { 'bar' => true })
-    assert_template_result(' YES ', '{% if foo.bar %} YES {% endif %}', 'foo' => { 'bar' => "text" })
+    assert_template_result(' YES ', '{% if foo.bar %} YES {% endif %}', 'foo' => { 'bar' => 'text' })
     assert_template_result(' YES ', '{% if foo.bar %} YES {% endif %}', 'foo' => { 'bar' => 1 })
     assert_template_result(' YES ', '{% if foo.bar %} YES {% endif %}', 'foo' => { 'bar' => {} })
     assert_template_result(' YES ', '{% if foo.bar %} YES {% endif %}', 'foo' => { 'bar' => [] })
@@ -90,11 +92,11 @@ class IfElseTagTest < Minitest::Test
     assert_template_result(' YES ', '{% if var %} NO {% else %} YES {% endif %}', 'var' => false)
     assert_template_result(' YES ', '{% if var %} NO {% else %} YES {% endif %}', 'var' => nil)
     assert_template_result(' YES ', '{% if var %} YES {% else %} NO {% endif %}', 'var' => true)
-    assert_template_result(' YES ', '{% if "foo" %} YES {% else %} NO {% endif %}', 'var' => "text")
+    assert_template_result(' YES ', '{% if "foo" %} YES {% else %} NO {% endif %}', 'var' => 'text')
 
     assert_template_result(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', 'foo' => { 'bar' => false })
     assert_template_result(' YES ', '{% if foo.bar %} YES {% else %} NO {% endif %}', 'foo' => { 'bar' => true })
-    assert_template_result(' YES ', '{% if foo.bar %} YES {% else %} NO {% endif %}', 'foo' => { 'bar' => "text" })
+    assert_template_result(' YES ', '{% if foo.bar %} YES {% else %} NO {% endif %}', 'foo' => { 'bar' => 'text' })
     assert_template_result(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', 'foo' => { 'notbar' => true })
     assert_template_result(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', 'foo' => {})
     assert_template_result(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', 'notfoo' => { 'bar' => true })
@@ -132,7 +134,7 @@ class IfElseTagTest < Minitest::Test
   end
 
   def test_syntax_error_no_variable
-    assert_raises(SyntaxError){ assert_template_result('', '{% if jerry == 1 %}') }
+    assert_raises(SyntaxError) { assert_template_result('', '{% if jerry == 1 %}') }
   end
 
   def test_syntax_error_no_expression
@@ -154,7 +156,7 @@ class IfElseTagTest < Minitest::Test
     Condition.operators['contains'] = :[]
 
     assert_template_result('yes',
-      %({% if 'gnomeslab-and-or-liquid' contains 'gnomeslab-and-or-liquid' %}yes{% endif %}))
+                           %({% if 'gnomeslab-and-or-liquid' contains 'gnomeslab-and-or-liquid' %}yes{% endif %}))
   ensure
     Condition.operators['contains'] = original_op
   end
@@ -166,7 +168,7 @@ class IfElseTagTest < Minitest::Test
   end
 
   def test_multiple_conditions
-    tpl = "{% if a or b and c %}true{% else %}false{% endif %}"
+    tpl = '{% if a or b and c %}true{% else %}false{% endif %}'
 
     tests = {
       [true, true, true] => true,

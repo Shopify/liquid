@@ -1,23 +1,25 @@
+# frozen_string_literal: true
+
 class Paginate < Liquid::Block
-  Syntax     = /(#{Liquid::QuotedFragment})\s*(by\s*(\d+))?/
+  SYNTAX = /(#{Liquid::QUOTED_FRAGMENT})\s*(by\s*(\d+))?/.freeze
 
   def initialize(tag_name, markup, options)
     super
 
-    if markup =~ Syntax
-      @collection_name = $1
-      @page_size = if $2
-        $3.to_i
+    if markup =~ SYNTAX
+      @collection_name = Regexp.last_match(1)
+      @page_size = if Regexp.last_match(2)
+        Regexp.last_match(3).to_i
       else
         20
       end
 
       @attributes = { 'window_size' => 3 }
-      markup.scan(Liquid::TagAttributes) do |key, value|
+      markup.scan(Liquid::TAG_ATTRIBUTES) do |key, value|
         @attributes[key] = value
       end
     else
-      raise SyntaxError.new("Syntax Error in tag 'paginate' - Valid syntax: paginate [collection] by number")
+      raise SyntaxError, "Syntax Error in tag 'paginate' - Valid syntax: paginate [collection] by number"
     end
   end
 
@@ -25,25 +27,25 @@ class Paginate < Liquid::Block
     @context = context
 
     context.stack do
-      current_page  = context['current_page'].to_i
+      current_page = context['current_page'].to_i
 
       pagination = {
-        'page_size'      => @page_size,
-        'current_page'   => 5,
-        'current_offset' => @page_size * 5
+        'page_size' => @page_size,
+        'current_page' => 5,
+        'current_offset' => @page_size * 5,
       }
 
       context['paginate'] = pagination
 
-      collection_size  = context[@collection_name].size
+      collection_size = context[@collection_name].size
 
-      raise ArgumentError.new("Cannot paginate array '#{@collection_name}'. Not found.") if collection_size.nil?
+      raise ArgumentError, "Cannot paginate array '#{@collection_name}'. Not found." if collection_size.nil?
 
       page_count = (collection_size.to_f / @page_size.to_f).to_f.ceil + 1
 
       pagination['items']      = collection_size
       pagination['pages']      = page_count - 1
-      pagination['previous']   = link('&laquo; Previous', current_page - 1)  unless 1 >= current_page
+      pagination['previous']   = link('&laquo; Previous', current_page - 1)  unless current_page <= 1
       pagination['next']       = link('Next &raquo;', current_page + 1)      unless page_count <= current_page + 1
       pagination['parts']      = []
 
@@ -59,6 +61,7 @@ class Paginate < Liquid::Block
             pagination['parts'] << link(page, page)
           elsif page <= current_page - @attributes['window_size'] || page >= current_page + @attributes['window_size']
             next if hellip_break
+
             pagination['parts'] << no_link('&hellip;')
             hellip_break = true
             next
@@ -85,6 +88,6 @@ class Paginate < Liquid::Block
   end
 
   def current_url
-    "/collections/frontpage"
+    '/collections/frontpage'
   end
 end

@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Liquid
   class Raw < Block
-    Syntax = /\A\s*\z/
-    FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
+    SYNTAX = /\A\s*\z/.freeze
+    FULL_TOKEN_POSSIBLY_INVALID = /\A(.*)#{TAG_START}\s*(\w+)\s*(.*)?#{TAG_END}\z/om.freeze
 
     def initialize(tag_name, markup, parse_context)
       super
@@ -10,16 +12,16 @@ module Liquid
     end
 
     def parse(tokens)
-      @body = ''
-      while token = tokens.shift
-        if token =~ FullTokenPossiblyInvalid
-          @body << $1 if $1 != "".freeze
-          return if block_delimiter == $2
+      @body = ''.dup
+      while (token = tokens.shift)
+        if token =~ FULL_TOKEN_POSSIBLY_INVALID
+          @body << Regexp.last_match(1) if Regexp.last_match(1) != ''
+          return if block_delimiter == Regexp.last_match(2)
         end
         @body << token unless token.empty?
       end
 
-      raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_never_closed".freeze, block_name: block_name))
+      raise SyntaxError, parse_context.locale.t('errors.syntax.tag_never_closed', block_name: block_name)
     end
 
     def render_to_output_buffer(_context, output)
@@ -38,11 +40,9 @@ module Liquid
     protected
 
     def ensure_valid_markup(tag_name, markup, parse_context)
-      unless markup =~ Syntax
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_unexpected_args".freeze, tag: tag_name))
-      end
+      raise SyntaxError, parse_context.locale.t('errors.syntax.tag_unexpected_args', tag: tag_name) unless markup =~ SYNTAX
     end
   end
 
-  Template.register_tag('raw'.freeze, Raw)
+  Template.register_tag('raw', Raw)
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Parser
     def initialize(input)
@@ -12,9 +14,8 @@ module Liquid
 
     def consume(type = nil)
       token = @tokens[@p]
-      if type && token[0] != type
-        raise SyntaxError, "Expected #{type} but found #{@tokens[@p].first}"
-      end
+      raise SyntaxError, "Expected #{type} but found #{@tokens[@p].first}" if type && token[0] != type
+
       @p += 1
       token[1]
     end
@@ -25,6 +26,7 @@ module Liquid
     def consume?(type)
       token = @tokens[@p]
       return false unless token && token[0] == type
+
       @p += 1
       token[1]
     end
@@ -34,6 +36,7 @@ module Liquid
       token = @tokens[@p]
       return false unless token && token[0] == :id
       return false unless token[1] == str
+
       @p += 1
       token[1]
     end
@@ -41,17 +44,18 @@ module Liquid
     def look(type, ahead = 0)
       tok = @tokens[@p + ahead]
       return false unless tok
+
       tok[0] == type
     end
 
-    SINGLE_TOKEN_EXPRESSION_TYPES = [:string, :number].freeze
+    SINGLE_TOKEN_EXPRESSION_TYPES = %i[string number].freeze
     private_constant :SINGLE_TOKEN_EXPRESSION_TYPES
 
     def expression
       token = @tokens[@p]
       if token[0] == :id
         variable_signature
-      elsif SINGLE_TOKEN_EXPRESSION_TYPES.include? token[0]
+      elsif SINGLE_TOKEN_EXPRESSION_TYPES.include?(token[0])
         consume
       elsif token.first == :open_round
         consume
@@ -66,11 +70,9 @@ module Liquid
     end
 
     def argument
-      str = ""
+      str = ''.dup
       # might be a keyword argument (identifier: expression)
-      if look(:id) && look(:colon, 1)
-        str << consume << consume << ' '.freeze
-      end
+      str << consume << consume << ' ' if look(:id) && look(:colon, 1)
 
       str << expression
       str

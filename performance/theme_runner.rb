@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This profiler run simulates Shopify.
 # We are looking in the tests directory for liquid files and render them within the designated layout file.
 # We will also export a substantial database to liquid which the templates can render values of.
@@ -31,7 +33,7 @@ class ThemeRunner
       {
         liquid: File.read(test),
         layout: (File.file?(theme_path) ? File.read(theme_path) : nil),
-        template_name: test
+        template_name: test,
       }
     end.compact
 

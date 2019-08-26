@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Liquid
   class VariableLookup
-    SQUARE_BRACKETED = /\A\[(.*)\]\z/m
-    COMMAND_METHODS = ['size'.freeze, 'first'.freeze, 'last'.freeze].freeze
+    SQUARE_BRACKETED = /\A\[(.*)\]\z/m.freeze
+    COMMAND_METHODS = %w[size first last].freeze
 
     attr_reader :name, :lookups
 
@@ -10,12 +12,10 @@ module Liquid
     end
 
     def initialize(markup)
-      lookups = markup.scan(VariableParser)
+      lookups = markup.scan(VARIABLE_PARSER)
 
       name = lookups.shift
-      if name =~ SQUARE_BRACKETED
-        name = Expression.parse($1)
-      end
+      name = Expression.parse(Regexp.last_match(1)) if name =~ SQUARE_BRACKETED
       @name = name
 
       @lookups = lookups
@@ -24,7 +24,7 @@ module Liquid
       @lookups.each_index do |i|
         lookup = lookups[i]
         if lookup =~ SQUARE_BRACKETED
-          lookups[i] = Expression.parse($1)
+          lookups[i] = Expression.parse(Regexp.last_match(1))
         elsif COMMAND_METHODS.include?(lookup)
           @command_flags |= 1 << i
         end
@@ -41,8 +41,8 @@ module Liquid
         # If object is a hash- or array-like object we look for the
         # presence of the key and if its available we return it
         if object.respond_to?(:[]) &&
-            ((object.respond_to?(:key?) && object.key?(key)) ||
-             (object.respond_to?(:fetch) && key.is_a?(Integer)))
+           ((object.respond_to?(:key?) && object.key?(key)) ||
+            (object.respond_to?(:fetch) && key.is_a?(Integer)))
 
           # if its a proc we will replace the entry with the proc
           res = context.lookup_and_evaluate(object, key)
@@ -59,6 +59,7 @@ module Liquid
           # raise an exception if `strict_variables` option is set to true
         else
           return nil unless context.strict_variables
+
           raise Liquid::UndefinedVariable, "undefined variable #{key}"
         end
 

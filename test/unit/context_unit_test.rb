@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class HundredCentes
@@ -49,8 +51,7 @@ class CounterDrop < Liquid::Drop
 end
 
 class ArrayLike
-  def fetch(index)
-  end
+  def fetch(index); end
 
   def [](index)
     @counts ||= []
@@ -83,7 +84,7 @@ class ContextUnitTest < Minitest::Test
     @context['date'] = Date.today
     assert_equal Date.today, @context['date']
 
-    now = DateTime.now
+    now = Time.now
     @context['datetime'] = now
     assert_equal now, @context['datetime']
 
@@ -162,10 +163,10 @@ class ContextUnitTest < Minitest::Test
     end
 
     context = Context.new
-    assert_equal "Wookie", context.invoke("hi", "Wookie")
+    assert_equal 'Wookie', context.invoke('hi', 'Wookie')
 
     context.add_filters(filter)
-    assert_equal "Wookie hi!", context.invoke("hi", "Wookie")
+    assert_equal 'Wookie hi!', context.invoke('hi', 'Wookie')
   end
 
   def test_add_item_in_outer_scope
@@ -185,7 +186,7 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_hierachical_data
-    @context['hash'] = { "name" => 'tobi' }
+    @context['hash'] = { 'name' => 'tobi' }
     assert_equal 'tobi', @context['hash.name']
     assert_equal 'tobi', @context['hash["name"]']
   end
@@ -201,14 +202,14 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_strings
-    assert_equal "hello!", @context['"hello!"']
-    assert_equal "hello!", @context["'hello!'"]
+    assert_equal 'hello!', @context['"hello!"']
+    assert_equal 'hello!', @context["'hello!'"]
   end
 
   def test_merge
-    @context.merge({ "test" => "test" })
+    @context.merge('test' => 'test')
     assert_equal 'test', @context['test']
-    @context.merge({ "test" => "newvalue", "foo" => "bar" })
+    @context.merge('test' => 'newvalue', 'foo' => 'bar')
     assert_equal 'newvalue', @context['test']
     assert_equal 'bar', @context['foo']
   end
@@ -235,10 +236,10 @@ class ContextUnitTest < Minitest::Test
 
   def test_hash_to_array_transition
     @context['colors'] = {
-      'Blue'    => ['003366', '336699', '6699CC', '99CCFF'],
-      'Green'   => ['003300', '336633', '669966', '99CC99'],
-      'Yellow'  => ['CC9900', 'FFCC00', 'FFFF99', 'FFFFCC'],
-      'Red'     => ['660000', '993333', 'CC6666', 'FF9999']
+      'Blue' => %w[003366 336699 6699CC 99CCFF],
+      'Green' => %w[003300 336633 669966 99CC99],
+      'Yellow' => %w[CC9900 FFCC00 FFFF99 FFFFCC],
+      'Red' => %w[660000 993333 CC6666 FF9999],
     }
 
     assert_equal '003366', @context['colors.Blue[0]']
@@ -262,8 +263,8 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_access_hashes_with_hash_notation
-    @context['products'] = { 'count' => 5, 'tags' => ['deepsnow', 'freestyle'] }
-    @context['product'] = { 'variants' => [ { 'title' => 'draft151cm' }, { 'title' => 'element151cm' } ] }
+    @context['products'] = { 'count' => 5, 'tags' => %w[deepsnow freestyle] }
+    @context['product'] = { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] }
 
     assert_equal 5, @context['products["count"]']
     assert_equal 'deepsnow', @context['products["tags"][0]']
@@ -285,7 +286,7 @@ class ContextUnitTest < Minitest::Test
   def test_access_hashes_with_hash_access_variables
     @context['var'] = 'tags'
     @context['nested'] = { 'var' => 'tags' }
-    @context['products'] = { 'count' => 5, 'tags' => ['deepsnow', 'freestyle'] }
+    @context['products'] = { 'count' => 5, 'tags' => %w[deepsnow freestyle] }
 
     assert_equal 'deepsnow', @context['products[var].first']
     assert_equal 'freestyle', @context['products[nested.var].last']
@@ -301,7 +302,7 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_first_can_appear_in_middle_of_callchain
-    @context['product'] = { 'variants' => [ { 'title' => 'draft151cm' }, { 'title' => 'element151cm' } ] }
+    @context['product'] = { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] }
 
     assert_equal 'draft151cm', @context['product.variants[0].title']
     assert_equal 'element151cm', @context['product.variants[1].title']
@@ -310,55 +311,55 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_cents
-    @context.merge("cents" => HundredCentes.new)
+    @context.merge('cents' => HundredCentes.new)
     assert_equal 100, @context['cents']
   end
 
   def test_nested_cents
-    @context.merge("cents" => { 'amount' => HundredCentes.new })
+    @context.merge('cents' => { 'amount' => HundredCentes.new })
     assert_equal 100, @context['cents.amount']
 
-    @context.merge("cents" => { 'cents' => { 'amount' => HundredCentes.new } })
+    @context.merge('cents' => { 'cents' => { 'amount' => HundredCentes.new } })
     assert_equal 100, @context['cents.cents.amount']
   end
 
   def test_cents_through_drop
-    @context.merge("cents" => CentsDrop.new)
+    @context.merge('cents' => CentsDrop.new)
     assert_equal 100, @context['cents.amount']
   end
 
   def test_nested_cents_through_drop
-    @context.merge("vars" => { "cents" => CentsDrop.new })
+    @context.merge('vars' => { 'cents' => CentsDrop.new })
     assert_equal 100, @context['vars.cents.amount']
   end
 
   def test_drop_methods_with_question_marks
-    @context.merge("cents" => CentsDrop.new)
+    @context.merge('cents' => CentsDrop.new)
     assert @context['cents.non_zero?']
   end
 
   def test_context_from_within_drop
-    @context.merge("test" => '123', "vars" => ContextSensitiveDrop.new)
+    @context.merge('test' => '123', 'vars' => ContextSensitiveDrop.new)
     assert_equal '123', @context['vars.test']
   end
 
   def test_nested_context_from_within_drop
-    @context.merge("test" => '123', "vars" => { "local" => ContextSensitiveDrop.new })
+    @context.merge('test' => '123', 'vars' => { 'local' => ContextSensitiveDrop.new })
     assert_equal '123', @context['vars.local.test']
   end
 
   def test_ranges
-    @context.merge("test" => '5')
+    @context.merge('test' => '5')
     assert_equal (1..5), @context['(1..5)']
     assert_equal (1..5), @context['(1..test)']
     assert_equal (5..5), @context['(test..test)']
   end
 
   def test_cents_through_drop_nestedly
-    @context.merge("cents" => { "cents" => CentsDrop.new })
+    @context.merge('cents' => { 'cents' => CentsDrop.new })
     assert_equal 100, @context['cents.cents.amount']
 
-    @context.merge("cents" => { "cents" => { "cents" => CentsDrop.new } })
+    @context.merge('cents' => { 'cents' => { 'cents' => CentsDrop.new } })
     assert_equal 100, @context['cents.cents.cents.amount']
   end
 
@@ -391,7 +392,7 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_nested_lambda_as_variable
-    @context['dynamic'] = { "lambda" => proc { 'Hello' } }
+    @context['dynamic'] = { 'lambda' => proc { 'Hello' } }
 
     assert_equal 'Hello', @context['dynamic.lambda']
   end
@@ -403,7 +404,11 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_lambda_is_called_once
-    @context['callcount'] = proc { @global ||= 0; @global += 1; @global.to_s }
+    @context['callcount'] = proc {
+      @global ||= 0
+      @global += 1
+      @global.to_s
+    }
 
     assert_equal '1', @context['callcount']
     assert_equal '1', @context['callcount']
@@ -413,7 +418,11 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_nested_lambda_is_called_once
-    @context['callcount'] = { "lambda" => proc { @global ||= 0; @global += 1; @global.to_s } }
+    @context['callcount'] = { 'lambda' => proc {
+      @global ||= 0
+      @global += 1
+      @global.to_s
+    } }
 
     assert_equal '1', @context['callcount.lambda']
     assert_equal '1', @context['callcount.lambda']
@@ -423,7 +432,11 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_lambda_in_array_is_called_once
-    @context['callcount'] = [1, 2, proc { @global ||= 0; @global += 1; @global.to_s }, 4, 5]
+    @context['callcount'] = [1, 2, proc {
+      @global ||= 0
+      @global += 1
+      @global.to_s
+    }, 4, 5]
 
     assert_equal '1', @context['callcount[2]']
     assert_equal '1', @context['callcount[2]']
@@ -433,15 +446,15 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_access_to_context_from_proc
-    @context.registers[:magic] = 345392
+    @context.registers[:magic] = 345_392
 
     @context['magic'] = proc { @context.registers[:magic] }
 
-    assert_equal 345392, @context['magic']
+    assert_equal 345_392, @context['magic']
   end
 
   def test_to_liquid_and_context_at_first_level
-    @context['category'] = Category.new("foobar")
+    @context['category'] = Category.new('foobar')
     assert_kind_of CategoryDrop, @context['category']
     assert_equal @context, @context['category'].context
   end
@@ -453,7 +466,7 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_context_initialization_with_a_proc_in_environment
-    contx = Context.new([test: ->(c) { c['poutine'] }], { test: :foo })
+    contx = Context.new([test: ->(c) { c['poutine'] }], test: :foo)
 
     assert contx
     assert_nil contx['poutine']
@@ -476,9 +489,7 @@ class ContextUnitTest < Minitest::Test
   private
 
   def assert_no_object_allocations
-    unless RUBY_ENGINE == 'ruby'
-      skip "stackprof needed to count object allocations"
-    end
+    skip 'stackprof needed to count object allocations' unless RUBY_ENGINE == 'ruby'
     require 'stackprof'
 
     profile = StackProf.run(mode: :object) do

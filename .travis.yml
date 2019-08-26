@@ -1,14 +1,13 @@
 language: ruby
 
 rvm:
-  - 2.1
-  - 2.2
-  - 2.3
   - 2.4
   - 2.5
+  - 2.6
+  - 2.7
   - ruby-head
   - jruby-head
-#  - rbx-2
+  - truffleruby
 
 sudo: false
 
@@ -21,6 +20,10 @@ matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
+
+before_install:
+  - gem update --system
+  - gem install bundler
 
 install:
   - bundle install

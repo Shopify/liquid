@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ConditionUnitTest < Minitest::Test
@@ -24,9 +26,9 @@ class ConditionUnitTest < Minitest::Test
     assert_evaluates_true 1, '<=', 1
     # negative numbers
     assert_evaluates_true 1, '>', -1
-    assert_evaluates_true -1, '<', 1
+    assert_evaluates_true(-1, '<', 1)
     assert_evaluates_true 1.0, '>', -1.0
-    assert_evaluates_true -1.0, '<', 1.0
+    assert_evaluates_true(-1.0, '<', 1.0)
   end
 
   def test_default_operators_evalute_false
@@ -68,14 +70,14 @@ class ConditionUnitTest < Minitest::Test
     assert_nil Condition.new({}, '>', 2).evaluate
     assert_nil Condition.new(2, '>', {}).evaluate
     assert_equal false, Condition.new({}, '==', 2).evaluate
-    assert_equal true, Condition.new({ 'a' => 1 }, '==', { 'a' => 1 }).evaluate
+    assert_equal true, Condition.new({ 'a' => 1 }, '==', 'a' => 1).evaluate
     assert_equal true, Condition.new({ 'a' => 2 }, 'contains', 'a').evaluate
   end
 
   def test_contains_works_on_arrays
     @context = Liquid::Context.new
     @context['array'] = [1, 2, 3, 4, 5]
-    array_expr = VariableLookup.new("array")
+    array_expr = VariableLookup.new('array')
 
     assert_evaluates_false array_expr, 'contains', 0
     assert_evaluates_true array_expr, 'contains', 1
@@ -84,7 +86,7 @@ class ConditionUnitTest < Minitest::Test
     assert_evaluates_true array_expr, 'contains', 4
     assert_evaluates_true array_expr, 'contains', 5
     assert_evaluates_false array_expr, 'contains', 6
-    assert_evaluates_false array_expr, 'contains', "1"
+    assert_evaluates_false array_expr, 'contains', '1'
   end
 
   def test_contains_returns_false_for_nil_operands
@@ -107,11 +109,11 @@ class ConditionUnitTest < Minitest::Test
 
     assert_equal false, condition.evaluate
 
-    condition.or Condition.new(2, '==', 1)
+    condition.or(Condition.new(2, '==', 1))
 
     assert_equal false, condition.evaluate
 
-    condition.or Condition.new(1, '==', 1)
+    condition.or(Condition.new(1, '==', 1))
 
     assert_equal true, condition.evaluate
   end
@@ -121,41 +123,41 @@ class ConditionUnitTest < Minitest::Test
 
     assert_equal true, condition.evaluate
 
-    condition.and Condition.new(2, '==', 2)
+    condition.and(Condition.new(2, '==', 2))
 
     assert_equal true, condition.evaluate
 
-    condition.and Condition.new(2, '==', 1)
+    condition.and(Condition.new(2, '==', 1))
 
     assert_equal false, condition.evaluate
   end
 
   def test_should_allow_custom_proc_operator
-    Condition.operators['starts_with'] = proc { |cond, left, right| left =~ %r{^#{right}} }
+    Condition.operators['starts_with'] = proc { |_cond, left, right| left =~ /^#{right}/ }
 
     assert_evaluates_true 'bob', 'starts_with', 'b'
     assert_evaluates_false 'bob', 'starts_with', 'o'
   ensure
-    Condition.operators.delete 'starts_with'
+    Condition.operators.delete('starts_with')
   end
 
   def test_left_or_right_may_contain_operators
     @context = Liquid::Context.new
-    @context['one'] = @context['another'] = "gnomeslab-and-or-liquid"
+    @context['one'] = @context['another'] = 'gnomeslab-and-or-liquid'
 
-    assert_evaluates_true VariableLookup.new("one"), '==', VariableLookup.new("another")
+    assert_evaluates_true VariableLookup.new('one'), '==', VariableLookup.new('another')
   end
 
   private
 
   def assert_evaluates_true(left, op, right)
     assert Condition.new(left, op, right).evaluate(@context),
-      "Evaluated false: #{left} #{op} #{right}"
+           "Evaluated false: #{left} #{op} #{right}"
   end
 
   def assert_evaluates_false(left, op, right)
     assert !Condition.new(left, op, right).evaluate(@context),
-      "Evaluated true: #{left} #{op} #{right}"
+           "Evaluated true: #{left} #{op} #{right}"
   end
 
   def assert_evaluates_argument_error(left, op, right)

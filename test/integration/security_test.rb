@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 module SecurityFilter
@@ -57,22 +59,22 @@ class SecurityTest < Minitest::Test
     current_symbols = Symbol.all_symbols
 
     assigns = { 'drop' => Drop.new }
-    assert_equal "", Template.parse("{{ drop.custom_method_1 }}", assigns).render!
-    assert_equal "", Template.parse("{{ drop.custom_method_2 }}", assigns).render!
-    assert_equal "", Template.parse("{{ drop.custom_method_3 }}", assigns).render!
+    assert_equal '', Template.parse('{{ drop.custom_method_1 }}', assigns).render!
+    assert_equal '', Template.parse('{{ drop.custom_method_2 }}', assigns).render!
+    assert_equal '', Template.parse('{{ drop.custom_method_3 }}', assigns).render!
 
     assert_equal [], (Symbol.all_symbols - current_symbols)
   end
 
   def test_max_depth_nested_blocks_does_not_raise_exception
     depth = Liquid::Block::MAX_DEPTH
-    code = "{% if true %}" * depth + "rendered" + "{% endif %}" * depth
-    assert_equal "rendered", Template.parse(code).render!
+    code = '{% if true %}' * depth + 'rendered' + '{% endif %}' * depth
+    assert_equal 'rendered', Template.parse(code).render!
   end
 
   def test_more_than_max_depth_nested_blocks_raises_exception
     depth = Liquid::Block::MAX_DEPTH + 1
-    code = "{% if true %}" * depth + "rendered" + "{% endif %}" * depth
+    code = '{% if true %}' * depth + 'rendered' + '{% endif %}' * depth
     assert_raises(Liquid::StackLevelError) do
       Template.parse(code).render!
     end

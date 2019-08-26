@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'liquid/profiler/hooks'
 
 module Liquid
@@ -97,9 +99,9 @@ module Liquid
     end
 
     def initialize
-      @partial_stack = ["<root>"]
+      @partial_stack = ['<root>']
 
-      @root_timing = Timing.new("", current_partial)
+      @root_timing = Timing.new('', current_partial)
       @timing_stack = [@root_timing]
 
       @render_start_at = Time.now

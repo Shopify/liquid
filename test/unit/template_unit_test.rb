@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class TemplateUnitTest < Minitest::Test
@@ -11,11 +13,11 @@ class TemplateUnitTest < Minitest::Test
 
   def test_sets_default_localization_in_context_with_quick_initialization
     t = Template.new
-    t.parse('{%comment%}{%endcomment%}', locale: I18n.new(fixture("en_locale.yml")))
+    t.parse('{%comment%}{%endcomment%}', locale: I18n.new(fixture('en_locale.yml')))
 
     locale = t.root.nodelist[0].options[:locale]
     assert_instance_of I18n, locale
-    assert_equal fixture("en_locale.yml"), locale.path
+    assert_equal fixture('en_locale.yml'), locale.path
   end
 
   def test_with_cache_classes_tags_returns_the_same_class
@@ -71,7 +73,7 @@ class TemplateUnitTest < Minitest::Test
   def test_tags_can_be_looped_over
     Template.register_tag('fake', FakeTag)
     result = Template.tags.map { |name, klass| [name, klass] }
-    assert result.include?(["fake", "TemplateUnitTest::FakeTag"])
+    assert result.include?(['fake', 'TemplateUnitTest::FakeTag'])
   ensure
     Template.tags.delete('fake')
   end

@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 module FunnyFilter
-  def make_funny(input)
+  def make_funny(_input)
     'LOL'
   end
 
@@ -9,11 +11,11 @@ module FunnyFilter
     "LOL: #{input}"
   end
 
-  def add_smiley(input, smiley = ":-)")
+  def add_smiley(input, smiley = ':-)')
     "#{input} #{smiley}"
   end
 
-  def add_tag(input, tag = "p", id = "foo")
+  def add_tag(input, tag = 'p', id = 'foo')
     %(<#{tag} id="#{id}">#{input}</#{tag}>)
   end
 
@@ -32,7 +34,7 @@ class OutputTest < Minitest::Test
   def setup
     @assigns = {
       'best_cars' => 'bmw',
-      'car' => { 'bmw' => 'good', 'gm' => 'bad' }
+      'car' => { 'bmw' => 'good', 'gm' => 'bad' },
     }
   end
 
@@ -45,9 +47,9 @@ class OutputTest < Minitest::Test
 
   def test_variable_traversing_with_two_brackets
     text = %({{ site.data.menu[include.menu][include.locale] }})
-    assert_equal "it works!", Template.parse(text).render!(
-      "site" => { "data" => { "menu" => { "foo" => { "bar" => "it works!" } } } },
-      "include" => { "menu" => "foo", "locale" => "bar" }
+    assert_equal 'it works!', Template.parse(text).render!(
+      'site' => { 'data' => { 'menu' => { 'foo' => { 'bar' => 'it works!' } } } },
+      'include' => { 'menu' => 'foo', 'locale' => 'bar' }
     )
   end
 

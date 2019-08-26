@@ -274,7 +274,7 @@ Yanked from rubygems, as it contained too many changes that broke compatibility.
 * Fixed bad error reporting when a filter called a method which doesn't exist. Liquid told you that it couldn't find the filter which was obviously misleading [Tobias Luetke]
 * Removed count helper from standard lib. use size [Tobias Luetke]
 * Fixed bug with string filter parameters failing to tolerate commas in strings. [Paul Hammond]
-* Improved filter parameters. Filter parameters are now context sensitive; Types are resolved according to the rules of the context. Multiple parameters are now separated by the Liquid::ArgumentSeparator: , by default [Paul Hammond]
+* Improved filter parameters. Filter parameters are now context sensitive; Types are resolved according to the rules of the context. Multiple parameters are now separated by the Liquid::ARGUMENT_SEPARATOR: , by default [Paul Hammond]
     {{ 'Typo' | link_to: 'http://typo.leetsoft.com', 'Typo - a modern weblog engine' }}
 * Added Liquid::Drop. A base class which you can use for exporting proxy objects to liquid which can acquire more data when used in liquid. [Tobias Luetke]
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   module Utils
     def self.slice_collection(collection, from, to)
@@ -19,13 +21,9 @@ module Liquid
       return [] unless collection.respond_to?(:each)
 
       collection.each do |item|
-        if to && to <= index
-          break
-        end
+        break if to && to <= index
 
-        if from <= index
-          segments << item
-        end
+        segments << item if from <= index
 
         index += 1
       end
@@ -35,11 +33,12 @@ module Liquid
 
     def self.to_integer(num)
       return num if num.is_a?(Integer)
+
       num = num.to_s
       begin
         Integer(num)
       rescue ::ArgumentError
-        raise Liquid::ArgumentError, "invalid integer"
+        raise Liquid::ArgumentError, 'invalid integer'
       end
     end
 
@@ -50,7 +49,7 @@ module Liquid
       when Numeric
         obj
       when String
-        (obj.strip =~ /\A-?\d+\.\d+\z/) ? BigDecimal(obj) : obj.to_i
+        obj.strip =~ /\A-?\d+\.\d+\z/ ? BigDecimal(obj) : obj.to_i
       else
         if obj.respond_to?(:to_number)
           obj.to_number
@@ -65,11 +64,12 @@ module Liquid
 
       if obj.is_a?(String)
         return nil if obj.empty?
+
         obj = obj.downcase
       end
 
       case obj
-      when 'now'.freeze, 'today'.freeze
+      when 'now', 'today'
         Time.now
       when /\A\d+\z/, Integer
         Time.at(obj.to_i)

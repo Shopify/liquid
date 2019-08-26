@@ -4,6 +4,7 @@
 pkg
 *.rbc
 .rvmrc
+.idea
 .ruby-version
 Gemfile.lock
 .bundle

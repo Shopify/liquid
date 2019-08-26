@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class StrainerUnitTest < Minitest::Test
@@ -5,11 +7,11 @@ class StrainerUnitTest < Minitest::Test
 
   module AccessScopeFilters
     def public_filter
-      "public"
+      'public'
     end
 
     def private_filter
-      "private"
+      'private'
     end
     private :private_filter
   end
@@ -19,24 +21,25 @@ class StrainerUnitTest < Minitest::Test
   def test_strainer
     strainer = Strainer.create(nil)
     assert_equal 5, strainer.invoke('size', 'input')
-    assert_equal "public", strainer.invoke("public_filter")
+    assert_equal 'public', strainer.invoke('public_filter')
   end
 
   def test_stainer_raises_argument_error
     strainer = Strainer.create(nil)
     assert_raises(Liquid::ArgumentError) do
-      strainer.invoke("public_filter", 1)
+      strainer.invoke('public_filter', 1)
     end
   end
 
   def test_stainer_argument_error_contains_backtrace
     strainer = Strainer.create(nil)
     begin
-      strainer.invoke("public_filter", 1)
+      strainer.invoke('public_filter', 1)
     rescue Liquid::ArgumentError => e
       assert_match(
         /\ALiquid error: wrong number of arguments \((1 for 0|given 1, expected 0)\)\z/,
-        e.message)
+        e.message
+      )
       assert_equal e.backtrace[0].split(':')[0], __FILE__
     end
   end
@@ -52,20 +55,20 @@ class StrainerUnitTest < Minitest::Test
 
   def test_strainer_returns_nil_if_no_filter_method_found
     strainer = Strainer.create(nil)
-    assert_nil strainer.invoke("private_filter")
-    assert_nil strainer.invoke("undef_the_filter")
+    assert_nil strainer.invoke('private_filter')
+    assert_nil strainer.invoke('undef_the_filter')
   end
 
   def test_strainer_returns_first_argument_if_no_method_and_arguments_given
     strainer = Strainer.create(nil)
-    assert_equal "password", strainer.invoke("undef_the_method", "password")
+    assert_equal 'password', strainer.invoke('undef_the_method', 'password')
   end
 
   def test_strainer_only_allows_methods_defined_in_filters
     strainer = Strainer.create(nil)
-    assert_equal "1 + 1", strainer.invoke("instance_eval", "1 + 1")
-    assert_equal "puts",  strainer.invoke("__send__", "puts", "Hi Mom")
-    assert_equal "has_method?", strainer.invoke("invoke", "has_method?", "invoke")
+    assert_equal '1 + 1', strainer.invoke('instance_eval', '1 + 1')
+    assert_equal 'puts',  strainer.invoke('__send__', 'puts', 'Hi Mom')
+    assert_equal 'has_method?', strainer.invoke('invoke', 'has_method?', 'invoke')
   end
 
   def test_strainer_uses_a_class_cache_to_avoid_method_cache_invalidation
@@ -92,7 +95,7 @@ class StrainerUnitTest < Minitest::Test
     private
 
     def public_filter
-      "overriden as private"
+      'overriden as private'
     end
   end
 
@@ -109,7 +112,7 @@ class StrainerUnitTest < Minitest::Test
     protected
 
     def public_filter
-      "overriden as protected"
+      'overriden as protected'
     end
   end
 
@@ -124,7 +127,7 @@ class StrainerUnitTest < Minitest::Test
 
   module PublicMethodOverrideFilter
     def public_filter
-      "public"
+      'public'
     end
   end
 
@@ -135,8 +138,8 @@ class StrainerUnitTest < Minitest::Test
   end
 
   module LateAddedFilter
-    def late_added_filter(input)
-      "filtered"
+    def late_added_filter(_input)
+      'filtered'
     end
   end
 
@@ -150,7 +153,7 @@ class StrainerUnitTest < Minitest::Test
     mod = Module.new do
       class << self
         attr_accessor :include_count
-        def included(mod)
+        def included(_mod)
           self.include_count += 1
         end
       end

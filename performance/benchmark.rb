@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'benchmark/ips'
 require_relative 'theme_runner'
 
@@ -12,7 +14,7 @@ Benchmark.ips do |x|
   puts "Running benchmark for #{x.time} seconds (with #{x.warmup} seconds warmup)."
   puts
 
-  x.report("parse:") { profiler.compile }
-  x.report("render:") { profiler.render }
-  x.report("parse & render:") { profiler.run }
+  x.report('parse:') { profiler.compile }
+  x.report('render:') { profiler.render }
+  x.report('parse & render:') { profiler.run }
 end

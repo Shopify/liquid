@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
@@ -28,9 +30,7 @@ module Liquid
       @this_stack_used = false
 
       self.exception_renderer = Template.default_exception_renderer
-      if rethrow_errors
-        self.exception_renderer = ->(e) { raise }
-      end
+      self.exception_renderer = ->(_e) { raise } if rethrow_errors
 
       @interrupts = []
       @filters = []
@@ -89,7 +89,7 @@ module Liquid
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
     def push(new_scope = {})
       @scopes.unshift(new_scope)
-      raise StackLevelError, "Nesting too deep".freeze if @scopes.length > Block::MAX_DEPTH
+      raise StackLevelError, 'Nesting too deep' if @scopes.length > Block::MAX_DEPTH
     end
 
     # Merge a hash of variables in the current local scope
@@ -100,6 +100,7 @@ module Liquid
     # Pop from the stack. use <tt>Context#stack</tt> instead
     def pop
       raise ContextError if @scopes.size == 1
+
       @scopes.shift
     end
 
@@ -190,14 +191,12 @@ module Liquid
     end
 
     def lookup_and_evaluate(obj, key, raise_on_not_found: true)
-      if @strict_variables && raise_on_not_found && obj.respond_to?(:key?) && !obj.key?(key)
-        raise Liquid::UndefinedVariable, "undefined variable #{key}"
-      end
+      raise Liquid::UndefinedVariable, "undefined variable #{key}" if @strict_variables && raise_on_not_found && obj.respond_to?(:key?) && !obj.key?(key)
 
       value = obj[key]
 
       if value.is_a?(Proc) && obj.respond_to?(:[]=)
-        obj[key] = (value.arity == 0) ? value.call : value.call(self)
+        obj[key] = value.arity == 0 ? value.call : value.call(self)
       else
         value
       end
@@ -208,8 +207,8 @@ module Liquid
     def internal_error
       # raise and catch to set backtrace and cause on exception
       raise Liquid::InternalError, 'internal'
-    rescue Liquid::InternalError => exc
-      exc
+    rescue Liquid::InternalError => e
+      e
     end
 
     def squash_instance_assigns_with_environments

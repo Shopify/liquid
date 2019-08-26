@@ -1,25 +1,27 @@
-require "strscan"
+# frozen_string_literal: true
+
+require 'strscan'
 module Liquid
   class Lexer
     SPECIALS = {
-      '|'.freeze => :pipe,
-      '.'.freeze => :dot,
-      ':'.freeze => :colon,
-      ','.freeze => :comma,
-      '['.freeze => :open_square,
-      ']'.freeze => :close_square,
-      '('.freeze => :open_round,
-      ')'.freeze => :close_round,
-      '?'.freeze => :question,
-      '-'.freeze => :dash
+      '|' => :pipe,
+      '.' => :dot,
+      ':' => :colon,
+      ',' => :comma,
+      '[' => :open_square,
+      ']' => :close_square,
+      '(' => :open_round,
+      ')' => :close_round,
+      '?' => :question,
+      '-' => :dash,
     }.freeze
-    IDENTIFIER = /[a-zA-Z_][\w-]*\??/
-    SINGLE_STRING_LITERAL = /'[^\']*'/
-    DOUBLE_STRING_LITERAL = /"[^\"]*"/
-    NUMBER_LITERAL = /-?\d+(\.\d+)?/
-    DOTDOT = /\.\./
-    COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains(?=\s)/
-    WHITESPACE_OR_NOTHING = /\s*/
+    IDENTIFIER = /[a-zA-Z_][\w-]*\??/.freeze
+    SINGLE_STRING_LITERAL = /'[^\']*'/.freeze
+    DOUBLE_STRING_LITERAL = /"[^\"]*"/.freeze
+    NUMBER_LITERAL = /-?\d+(\.\d+)?/.freeze
+    DOTDOT = /\.\./.freeze
+    COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains(?=\s)/.freeze
+    WHITESPACE_OR_NOTHING = /\s*/.freeze
 
     def initialize(input)
       @ss = StringScanner.new(input)
@@ -31,16 +33,16 @@ module Liquid
       until @ss.eos?
         @ss.skip(WHITESPACE_OR_NOTHING)
         break if @ss.eos?
-        tok = case
-        when t = @ss.scan(COMPARISON_OPERATOR) then [:comparison, t]
-        when t = @ss.scan(SINGLE_STRING_LITERAL) then [:string, t]
-        when t = @ss.scan(DOUBLE_STRING_LITERAL) then [:string, t]
-        when t = @ss.scan(NUMBER_LITERAL) then [:number, t]
-        when t = @ss.scan(IDENTIFIER) then [:id, t]
-        when t = @ss.scan(DOTDOT) then [:dotdot, t]
+
+        tok = if (t = @ss.scan(COMPARISON_OPERATOR)) then [:comparison, t]
+        elsif (t = @ss.scan(SINGLE_STRING_LITERAL)) then [:string, t]
+        elsif (t = @ss.scan(DOUBLE_STRING_LITERAL)) then [:string, t]
+        elsif (t = @ss.scan(NUMBER_LITERAL)) then [:number, t]
+        elsif (t = @ss.scan(IDENTIFIER)) then [:id, t]
+        elsif (t = @ss.scan(DOTDOT)) then [:dotdot, t]
         else
           c = @ss.getch
-          if s = SPECIALS[c]
+          if (s = SPECIALS[c])
             [s, c]
           else
             raise SyntaxError, "Unexpected character #{c}"

@@ -22,5 +22,5 @@ Liquid::Template.error_mode = ARGV.first.to_sym if ARGV.first
 
 profiler = ThemeRunner.new
 
-profile("Parsing") { profiler.compile }
-profile("Rendering") { profiler.render }
+profile('Parsing') { profiler.compile }
+profile('Rendering') { profiler.render }

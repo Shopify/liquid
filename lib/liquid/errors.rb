@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Error < ::StandardError
     attr_accessor :line_number
@@ -5,12 +7,12 @@ module Liquid
     attr_accessor :markup_context
 
     def to_s(with_prefix = true)
-      str = ""
+      str = ''.dup
       str << message_prefix if with_prefix
       str << super()
 
       if markup_context
-        str << " "
+        str << ' '
         str << markup_context
       end
 
@@ -20,20 +22,20 @@ module Liquid
     private
 
     def message_prefix
-      str = ""
-      if is_a?(SyntaxError)
-        str << "Liquid syntax error"
+      str = ''.dup
+      str << if is_a?(SyntaxError)
+        'Liquid syntax error'
       else
-        str << "Liquid error"
+        'Liquid error'
       end
 
       if line_number
-        str << " ("
-        str << template_name << " " if template_name
-        str << "line " << line_number.to_s << ")"
+        str << ' ('
+        str << template_name << ' ' if template_name
+        str << 'line ' << line_number.to_s << ')'
       end
 
-      str << ": "
+      str << ': '
       str
     end
   end
