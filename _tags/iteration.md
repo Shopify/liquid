@@ -23,6 +23,26 @@ Repeatedly executes a block of code. For a full list of attributes available wit
 hat shirt pants
 ```
 
+### else
+
+Specifies a fallback case for a `for` loop which will run if the loop has zero length.
+
+<p class="code-label">Input</p>
+```liquid
+{% raw %}
+{% for product in collection.products %}
+  {{ product.title }}
+{% else %}
+  The collection is empty.
+{% endfor %}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+The collection is empty.
+```
+
 ### break
 
 Causes the loop to stop iterating when it encounters the `break` tag.
