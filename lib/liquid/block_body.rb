@@ -44,7 +44,7 @@ module Liquid
           token.lstrip! if parse_context.trim_whitespace
           parse_context.trim_whitespace = false
           @nodelist << token
-          @blank &&= !!(token =~ WHITESPACE_OR_NOTHING)
+          @blank &&= token.match?(WHITESPACE_OR_NOTHING)
         end
         parse_context.line_number = tokenizer.line_number
       end
