@@ -12,7 +12,7 @@ module Liquid
     end
 
     def parse(tokens)
-      @body = ''.dup
+      @body = +''
       while (token = tokens.shift)
         if token =~ FULL_TOKEN_POSSIBLY_INVALID
           @body << Regexp.last_match(1) if Regexp.last_match(1) != ''

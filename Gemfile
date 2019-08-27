@@ -18,6 +18,7 @@ end
 
 group :test do
   gem 'rubocop', '~> 0.74.0', require: false
+  gem 'rubocop-performance', require: false
 
   platform :mri, :truffleruby do
     gem 'liquid-c', github: 'Shopify/liquid-c', ref: '7ba926791ef8411984d0f3e41c6353fd716041c6'

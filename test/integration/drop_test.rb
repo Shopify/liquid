@@ -33,7 +33,7 @@ class ProductDrop < Liquid::Drop
 
   class CatchallDrop < Liquid::Drop
     def liquid_method_missing(method)
-      'catchall_method: '.dup << method.to_s
+      +'catchall_method: ' << method.to_s
     end
   end
 
@@ -50,7 +50,7 @@ class ProductDrop < Liquid::Drop
   end
 
   def user_input
-    'foo'.dup.taint
+    (+'foo').taint
   end
 
   protected

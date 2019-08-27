@@ -7,7 +7,7 @@ module Liquid
     attr_accessor :markup_context
 
     def to_s(with_prefix = true)
-      str = ''.dup
+      str = +''
       str << message_prefix if with_prefix
       str << super()
 
@@ -22,7 +22,7 @@ module Liquid
     private
 
     def message_prefix
-      str = ''.dup
+      str = +''
       str << if is_a?(SyntaxError)
         'Liquid syntax error'
       else

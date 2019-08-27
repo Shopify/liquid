@@ -204,7 +204,7 @@ module Liquid
         # render the nodelist.
         # for performance reasons we get an array back here. join will make a string out of it.
         with_profiling(context) do
-          @root.render_to_output_buffer(context, output || ''.dup)
+          @root.render_to_output_buffer(context, output || +'')
         end
       rescue Liquid::MemoryError => e
         context.handle_error(e)

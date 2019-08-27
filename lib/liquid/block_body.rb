@@ -65,7 +65,7 @@ module Liquid
     end
 
     def render(context)
-      render_to_output_buffer(context, ''.dup)
+      render_to_output_buffer(context, +'')
     end
 
     def render_to_output_buffer(context, output)
@@ -81,7 +81,7 @@ module Liquid
         when Variable
           render_node(context, output, node)
         when Block
-          render_node(context, node.blank? ? ''.dup : output, node)
+          render_node(context, node.blank? ? +'' : output, node)
           break if context.interrupt? # might have happened in a for-block
         when Continue, Break
           # If we get an Interrupt that means the block must stop processing. An

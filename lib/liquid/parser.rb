@@ -70,7 +70,7 @@ module Liquid
     end
 
     def argument
-      str = ''.dup
+      str = +''
       # might be a keyword argument (identifier: expression)
       str << consume << consume << ' ' if look(:id) && look(:colon, 1)
 

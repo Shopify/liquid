@@ -1,5 +1,10 @@
 inherit_from:
   - .rubocop.shopify.yml
 
+require: rubocop-performance
+
+Performance:
+  Enabled: true
+
 Metrics/LineLength:
   Enabled: false
