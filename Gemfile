@@ -8,6 +8,7 @@ gemspec
 group :benchmark, :test do
   gem 'benchmark-ips'
   gem 'memory_profiler'
+  gem 'terminal-table'
 
   install_if -> { RUBY_PLATFORM !~ /mingw|mswin|java/ } do
     gem 'stackprof'
