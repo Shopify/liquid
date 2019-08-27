@@ -1,29 +1,21 @@
 language: ruby
 
 rvm:
-  - 2.1
-  - 2.2
-  - 2.3
   - 2.4
   - 2.5
+  - 2.6
+  - 2.7
   - ruby-head
   - jruby-head
-#  - rbx-2
-
-sudo: false
-
-addons:
-  apt:
-    packages:
-    - libgmp3-dev
+  - truffleruby
 
 matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
+    - rvm: truffleruby
 
-install:
-  - bundle install
+cache: bundler
 
 script: bundle exec rake
 
