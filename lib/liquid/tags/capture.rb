@@ -24,7 +24,7 @@ module Liquid
 
     def render(context)
       output = super
-      context[@to] = output
+      context.set_root(@to, output)
       context.resource_limits.assign_score += output.bytesize
       ''.freeze
     end

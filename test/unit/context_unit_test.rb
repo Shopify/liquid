@@ -163,35 +163,6 @@ class ContextUnitTest < Minitest::Test
     assert_equal 'test', @context['test']
   end
 
-  def test_add_item_in_inner_scope
-    @context.stack('test') do
-      @context['test'] = 'test'
-      assert_equal 'test', @context['test']
-    end
-
-    assert_nil @context['test']
-  end
-
-  def test_nested_scopes
-    @context['test'] = 1
-
-    @context.stack('test') do
-      assert_equal 1, @context['test']
-      @context['test'] = 2
-      assert_equal 2, @context['test']
-
-      @context.stack('test') do
-        assert_equal 2, @context['test']
-        @context['test'] = 3
-        assert_equal 3, @context['test']
-      end
-
-      assert_equal 2, @context['test']
-    end
-
-    assert_equal 1, @context['test']
-  end
-
   def test_hierachical_data
     @context['hash'] = { "name" => 'tobi' }
     assert_equal 'tobi', @context['hash.name']

@@ -369,7 +369,7 @@ HERE
   end
 
   def test_overwriting_internal_variable
-    template = <<-END_TEMPLATE
+    template = <<-HEREDOC
     {% assign forloop = 'first' %}
 
     {% for item in items %}
@@ -379,7 +379,7 @@ HERE
     {% endfor %}
 
     {{ forloop }}
-    END_TEMPLATE
+    HEREDOC
 
     result = Liquid::Template.parse(template).render('items' => '1')
     assert_equal 'Liquid::ForloopDrop Liquid::ForloopDrop second', result.split.map(&:strip).join(' ')

@@ -168,6 +168,7 @@ module Liquid
             context[@variable_name] = item
             result << @for_block.render(context)
             loop_vars.send(:increment!)
+            context.unset(@variable_name)
 
             # Handle any interrupts if they exist.
             if context.interrupt?
@@ -176,6 +177,8 @@ module Liquid
               next if interrupt.is_a? ContinueInterrupt
             end
           end
+
+          context.unset('forloop'.freeze)
         ensure
           for_stack.pop
         end

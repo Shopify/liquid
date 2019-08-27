@@ -88,7 +88,7 @@ module Liquid
 
     # Merge a hash of variables in the current local scope
     def merge(new_scopes)
-      @scope.merge!(new_scopes)
+      new_scopes.each { |k, v| self[k] = v }
     end
 
     # Pushes a new local scope on the stack, pops it at the end of the block
@@ -100,25 +100,19 @@ module Liquid
     #
     #   context['var]  #=> nil
     def stack(*variable_names)
-      previous_values = {}
-      variable_names.each do |variable_name|
-        previous_values[variable_name] = @scope[variable_name]
-      end
-
       @stack_level += 1
       raise StackLevelError, "Nesting too deep".freeze if @stack_level > Block::MAX_DEPTH
 
       begin
         yield
       ensure
-        @scope.merge!(previous_values)
         @stack_level -= 1
       end
     end
 
     # Only allow String, Numeric, Hash, Array, Proc, Boolean or <tt>Liquid::Drop</tt>
     def []=(key, value)
-      @scope[key] = value
+      (@scope[key] ||= [nil]) << value
     end
 
     # Look up variable, either resolve directly after considering the name. We can directly handle
@@ -133,6 +127,19 @@ module Liquid
       evaluate(Expression.parse(expression))
     end
 
+    def unset(key)
+      if @scope[key].size <= 1
+        @scope.delete(key)
+      else
+        @scope[key].pop
+      end
+    end
+
+    def set_root(key, val)
+      @scope[key] ||= []
+      @scope[key][0] = val
+    end
+
     def key?(key)
       self[key] != nil
     end
@@ -143,8 +150,10 @@ module Liquid
 
     # Fetches an object starting at the local scope and then moving up the hierachy
     def find_variable(key, raise_on_not_found: true)
+      trigger = false
       value = @scope[key]
-      scope = @scope if value != nil
+      scope = @scope unless value.nil?
+      trigger = true unless value.nil?
 
       if scope.nil?
         index = @environments.find_index do |e|
@@ -157,7 +166,7 @@ module Liquid
         scope = @environments[index || -1]
       end
 
-      variable ||= lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found)
+      variable ||= lookup_and_evaluate(scope, key, trigger, raise_on_not_found: raise_on_not_found)
 
       variable = variable.to_liquid
       variable.context = self if variable.respond_to?(:context=)
@@ -165,12 +174,16 @@ module Liquid
       variable
     end
 
-    def lookup_and_evaluate(obj, key, raise_on_not_found: true)
+    def lookup_and_evaluate(obj, key, trigger = false, raise_on_not_found: true)
       if @strict_variables && raise_on_not_found && obj.respond_to?(:key?) && !obj.key?(key)
         raise Liquid::UndefinedVariable, "undefined variable #{key}"
       end
 
-      value = obj[key]
+      value = if trigger == true
+        obj[key][-1]
+      else
+        obj[key]
+      end
 
       if value.is_a?(Proc) && obj.respond_to?(:[]=)
         obj[key] = (value.arity == 0) ? value.call : value.call(self)
@@ -192,7 +205,7 @@ module Liquid
       @scope.each_key do |k|
         @environments.each do |env|
           if env.key?(k)
-            @scope[k] = lookup_and_evaluate(env, k)
+            @scope[k] = [lookup_and_evaluate(env, k)]
             break
           end
         end
