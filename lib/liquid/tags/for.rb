@@ -163,13 +163,12 @@ module Liquid
 
         begin
           context['forloop'.freeze] = loop_vars
+          level = context.create_level(@variable_name)
 
           segment.each do |item|
-            context[@variable_name] = item
+            context.set_level(@variable_name, item, level)
             result << @for_block.render(context)
             loop_vars.send(:increment!)
-            context.unset(@variable_name)
-
             # Handle any interrupts if they exist.
             if context.interrupt?
               interrupt = context.pop_interrupt
@@ -177,9 +176,10 @@ module Liquid
               next if interrupt.is_a? ContinueInterrupt
             end
           end
-
+          context.unset(@variable_name)
           context.unset('forloop'.freeze)
         ensure
+
           for_stack.pop
         end
       end

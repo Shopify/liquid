@@ -140,6 +140,16 @@ module Liquid
       @scope[key][0] = val
     end
 
+    def set_level(key, val, int)
+      @scope[key] ||= []
+      @scope[key][int] = val
+    end
+
+    def create_level(key)
+      (@scope[key] ||= [nil]) << nil
+      @scope[key].size - 1
+    end
+
     def key?(key)
       self[key] != nil
     end
