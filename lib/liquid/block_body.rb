@@ -1,6 +1,7 @@
 module Liquid
   class BlockBody
-    FullToken = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    LiquidTagToken = /\A\s*(\w+)\s*(.*?)\z/o
+    FullToken = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
     TAGSTART = "{%".freeze
@@ -13,8 +14,42 @@ module Liquid
       @blank = true
     end
 
-    def parse(tokenizer, parse_context)
+    def parse(tokenizer, parse_context, &block)
       parse_context.line_number = tokenizer.line_number
+
+      if tokenizer.for_liquid_tag
+        parse_for_liquid_tag(tokenizer, parse_context, &block)
+      else
+        parse_for_document(tokenizer, parse_context, &block)
+      end
+    end
+
+    private def parse_for_liquid_tag(tokenizer, parse_context)
+      while token = tokenizer.shift
+        unless token.empty? || token =~ WhitespaceOrNothing
+          unless token =~ LiquidTagToken
+            # line isn't empty but didn't match tag syntax, yield and let the
+            # caller raise a syntax error
+            return yield token, token
+          end
+          tag_name = $1
+          markup = $2
+          unless tag = registered_tags[tag_name]
+            # end parsing if we reach an unknown tag and let the caller decide
+            # determine how to proceed
+            return yield tag_name, markup
+          end
+          new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
+          @blank &&= new_tag.blank?
+          @nodelist << new_tag
+        end
+        parse_context.line_number = tokenizer.line_number
+      end
+
+      yield nil, nil
+    end
+
+    private def parse_for_document(tokenizer, parse_context, &block)
       while token = tokenizer.shift
         next if token.empty?
         case
@@ -23,9 +58,20 @@ module Liquid
           unless token =~ FullToken
             raise_missing_tag_terminator(token, parse_context)
           end
-          tag_name = $1
-          markup = $2
-          # fetch the tag from registered blocks
+          tag_name = $2
+          markup = $4
+
+          if parse_context.line_number
+            # newlines inside the tag should increase the line number,
+            # particularly important for multiline {% liquid %} tags
+            parse_context.line_number += $1.count("\n".freeze) + $3.count("\n".freeze)
+          end
+
+          if tag_name == 'liquid'.freeze
+            liquid_tag_tokenizer = Tokenizer.new(markup, line_number: parse_context.line_number, for_liquid_tag: true)
+            next parse_for_liquid_tag(liquid_tag_tokenizer, parse_context, &block)
+          end
+
           unless tag = registered_tags[tag_name]
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed

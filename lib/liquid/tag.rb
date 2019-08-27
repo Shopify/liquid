@@ -5,8 +5,8 @@ module Liquid
     include ParserSwitching
 
     class << self
-      def parse(tag_name, markup, tokenizer, options)
-        tag = new(tag_name, markup, options)
+      def parse(tag_name, markup, tokenizer, parse_context)
+        tag = new(tag_name, markup, parse_context)
         tag.parse(tokenizer)
         tag
       end
