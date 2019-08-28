@@ -14,7 +14,7 @@ if env_mode = ENV['LIQUID_PARSER_MODE']
 end
 Liquid::Template.error_mode = mode
 
-if ENV['LIQUID-C'] == '1'
+if ENV['LIQUID_C'] == '1'
   puts "-- LIQUID C"
   require 'liquid/c'
 end

@@ -19,8 +19,10 @@ task :warn_test do
 end
 
 task :rubocop do
-  require 'rubocop/rake_task'
-  RuboCop::RakeTask.new
+  if RUBY_ENGINE == 'ruby'
+    require 'rubocop/rake_task'
+    RuboCop::RakeTask.new
+  end
 end
 
 desc 'runs test suite with both strict and lax parsers'
@@ -32,8 +34,8 @@ task :test do
   Rake::Task['base_test'].reenable
   Rake::Task['base_test'].invoke
 
-  if RUBY_ENGINE == 'ruby'
-    ENV['LIQUID-C'] = '1'
+  if RUBY_ENGINE == 'ruby' || RUBY_ENGINE == 'truffleruby'
+    ENV['LIQUID_C'] = '1'
 
     ENV['LIQUID_PARSER_MODE'] = 'lax'
     Rake::Task['base_test'].reenable

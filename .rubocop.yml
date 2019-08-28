@@ -2,9 +2,15 @@ inherit_from:
   - .rubocop_todo.yml
   - ./.rubocop_todo.yml
 
+require: rubocop-performance
+
+Performance:
+  Enabled: true
+
 AllCops:
   Exclude:
     - 'performance/shopify/*'
+    - 'vendor/bundle/**/*'
     - 'pkg/**'
 
 Metrics/BlockNesting:
@@ -79,9 +85,6 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   Enabled: false
 
-Layout/IndentHash:
-  EnforcedStyle: consistent
-
 Style/FormatString:
   Enabled: false
 
@@ -104,9 +107,6 @@ Style/RegexpLiteral:
   Enabled: false
 
 Style/SymbolLiteral:
-  Enabled: false
-
-Performance/Count:
   Enabled: false
 
 Naming/ConstantName:
