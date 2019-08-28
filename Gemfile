@@ -8,6 +8,7 @@ gemspec
 group :benchmark, :test do
   gem 'benchmark-ips'
   gem 'memory_profiler'
+  gem 'terminal-table'
 
   install_if -> { RUBY_PLATFORM !~ /mingw|mswin|java/ && RUBY_ENGINE != 'truffleruby' } do
     gem 'stackprof'
@@ -19,6 +20,6 @@ group :test do
   gem 'rubocop-performance', require: false
 
   platform :mri, :truffleruby do
-    gem 'liquid-c', github: 'Shopify/liquid-c', ref: '7ba926791ef8411984d0f3e41c6353fd716041c6'
+    gem 'liquid-c', github: 'Shopify/liquid-c', ref: 'liquid-tag'
   end
 end

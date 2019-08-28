@@ -3,13 +3,18 @@ language: ruby
 rvm:
   - 2.4
   - 2.5
-  - 2.6
+  - &latest_ruby 2.6
   - 2.7
   - ruby-head
   - jruby-head
   - truffleruby
 
+
 matrix:
+  include:
+    - rvm: *latest_ruby
+      script: bundle exec rake memory_profile:run
+      name: Profiling Memory Usage
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
