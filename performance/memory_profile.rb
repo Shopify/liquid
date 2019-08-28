@@ -30,6 +30,7 @@ class Profiler
     @retained  << "#{report.scale_bytes(report.total_retained_memsize)} (#{report.total_retained} objects)"
 
     return if ENV['CI']
+
     require 'fileutils'
     report_file = File.join(REPORTS_DIR, "#{sanitize(phase)}.txt")
     FileUtils.mkdir_p(REPORTS_DIR)
