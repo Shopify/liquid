@@ -20,21 +20,17 @@ module Liquid
       @scopes           = [(outer_scope || {})]
       @registers        = registers
       @errors           = []
+      @interrupts       = []
+      @filters          = []
+      @global_filter    = nil
       @partial          = false
       @strict_variables = false
       @resource_limits  = resource_limits || ResourceLimits.new(Template.default_resource_limits)
-      squash_instance_assigns_with_environments
-
-      @this_stack_used = false
 
       self.exception_renderer = Template.default_exception_renderer
-      if rethrow_errors
-        self.exception_renderer = ->(e) { raise }
-      end
+      self.exception_renderer = ->(e) { raise } if rethrow_errors
 
-      @interrupts = []
-      @filters = []
-      @global_filter = nil
+      squash_instance_assigns_with_environments
     end
 
     def warnings
@@ -87,9 +83,9 @@ module Liquid
     end
 
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
-    def push(new_scope = {})
-      @scopes.unshift(new_scope)
-      raise StackLevelError, "Nesting too deep".freeze if @scopes.length > Block::MAX_DEPTH
+    def push
+      @scopes.unshift({})
+      raise StackLevelError, "Nesting too deep".freeze if @scopes.length > (Block::MAX_DEPTH + 1)
     end
 
     # Merge a hash of variables in the current local scope
@@ -111,31 +107,15 @@ module Liquid
     #   end
     #
     #   context['var]  #=> nil
-    def stack(new_scope = nil)
-      old_stack_used = @this_stack_used
-      if new_scope
-        push(new_scope)
-        @this_stack_used = true
-      else
-        @this_stack_used = false
-      end
-
+    def stack
+      push
       yield
     ensure
-      pop if @this_stack_used
-      @this_stack_used = old_stack_used
-    end
-
-    def clear_instance_assigns
-      @scopes[0] = {}
+      pop
     end
 
     # Only allow String, Numeric, Hash, Array, Proc, Boolean or <tt>Liquid::Drop</tt>
     def []=(key, value)
-      unless @this_stack_used
-        @this_stack_used = true
-        push({})
-      end
       @scopes[0][key] = value
     end
 
@@ -166,24 +146,9 @@ module Liquid
       index = @scopes.find_index { |s| s.key?(key) }
       scope = @scopes[index] if index
 
-      variable = nil
+      scope ||= @environments.find { |e| !e[key].nil? || @strict_variables && raise_on_not_found } || {}
 
-      if scope.nil?
-        @environments.each do |e|
-          variable = lookup_and_evaluate(e, key, raise_on_not_found: raise_on_not_found)
-          # When lookup returned a value OR there is no value but the lookup also did not raise
-          # then it is the value we are looking for.
-          if !variable.nil? || @strict_variables && raise_on_not_found
-            scope = e
-            break
-          end
-        end
-      end
-
-      scope ||= @environments.last || @scopes.last
-      variable ||= lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found)
-
-      variable = variable.to_liquid
+      variable = lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found).to_liquid
       variable.context = self if variable.respond_to?(:context=)
 
       variable
