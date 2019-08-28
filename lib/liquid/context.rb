@@ -143,10 +143,10 @@ module Liquid
     def find_variable(key, raise_on_not_found: true)
       # This was changed from find() to find_index() because this is a very hot
       # path and find_index() is optimized in MRI to reduce object allocation
-      index = @scopes.find_index { |s| s.key?(key) }
-      scope = @scopes[index] if index
 
-      scope ||= @environments.find { |e| !e[key].nil? || @strict_variables && raise_on_not_found } || {}
+      scope = (index = @scopes.find_index { |s| s.key?(key)  }) && @scopes[index]
+      scope ||= (index = @environments.find_index { |s| s.key?(key) }) && @environments[index]
+      scope ||= {}
 
       variable = lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found).to_liquid
       variable.context = self if variable.respond_to?(:context=)
