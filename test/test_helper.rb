@@ -121,3 +121,17 @@ class ErrorDrop < Liquid::Drop
     raise Exception, 'exception'
   end
 end
+
+class StubFileSystem
+  attr_reader :file_read_count
+
+  def initialize(values)
+    @file_read_count = 0
+    @values = values
+  end
+
+  def read_template_file(template_path)
+    @file_read_count += 1
+    @values.fetch(template_path)
+  end
+end
