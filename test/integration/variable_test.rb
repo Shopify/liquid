@@ -80,10 +80,7 @@ class VariableTest < Minitest::Test
     assigns['test'] = 'Tobi'
     assert_equal 'Hello Tobi', template.render!(assigns)
     assigns.delete('test')
-    e = assert_raises(RuntimeError) do
-      template.render!(assigns)
-    end
-    assert_equal "Unknown variable 'test'", e.message
+    assert_equal "Hello ", template.render!(assigns)
   end
 
   def test_multiline_variable
