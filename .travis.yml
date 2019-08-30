@@ -1,4 +1,5 @@
 language: ruby
+cache: bundler
 
 rvm:
   - 2.4
@@ -8,7 +9,6 @@ rvm:
   - ruby-head
   - jruby-head
   - truffleruby
-
 
 matrix:
   include:
@@ -20,9 +20,11 @@ matrix:
     - rvm: jruby-head
     - rvm: truffleruby
 
-cache: bundler
-
-script: bundle exec rake
+branches:
+  only:
+    - master
+    - gh-pages
+    - /.*-stable/
 
 notifications:
   disable: true

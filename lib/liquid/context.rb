@@ -12,17 +12,25 @@ module Liquid
   #
   #   context['bob']  #=> nil  class Context
   class Context
-    attr_reader :scopes, :errors, :registers, :environments, :resource_limits
+    attr_reader :scopes, :errors, :registers, :environments, :resource_limits, :static_registers, :static_environments
     attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
-      @environments     = [environments].flatten
-      @scopes           = [(outer_scope || {})]
-      @registers        = registers
-      @errors           = []
-      @partial          = false
-      @strict_variables = false
-      @resource_limits  = resource_limits || ResourceLimits.new(Template.default_resource_limits)
+    # rubocop:disable Metrics/ParameterLists
+    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_registers: {}, static_environments: {})
+      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_registers, static_environments)
+    end
+
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_registers = {}, static_environments = {})
+      @environments        = [environments].flatten
+      @static_environments = [static_environments].flatten.map(&:freeze).freeze
+      @scopes              = [(outer_scope || {})]
+      @registers           = registers
+      @static_registers    = static_registers.freeze
+      @errors              = []
+      @partial             = false
+      @strict_variables    = false
+      @resource_limits     = resource_limits || ResourceLimits.new(Template.default_resource_limits)
+      @base_scope_depth    = 0
       squash_instance_assigns_with_environments
 
       @this_stack_used = false
@@ -36,6 +44,7 @@ module Liquid
       @filters = []
       @global_filter = nil
     end
+    # rubocop:enable Metrics/ParameterLists
 
     def warnings
       @warnings ||= []
@@ -89,7 +98,7 @@ module Liquid
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
     def push(new_scope = {})
       @scopes.unshift(new_scope)
-      raise StackLevelError, "Nesting too deep".freeze if @scopes.length > Block::MAX_DEPTH
+      check_overflow
     end
 
     # Merge a hash of variables in the current local scope
@@ -124,6 +133,25 @@ module Liquid
     ensure
       pop if @this_stack_used
       @this_stack_used = old_stack_used
+    end
+
+    # Creates a new context inheriting resource limits, filters, environment etc.,
+    # but with an isolated scope.
+    def new_isolated_subcontext
+      check_overflow
+
+      Context.build(
+        resource_limits: resource_limits,
+        static_environments: static_environments,
+        static_registers: static_registers
+      ).tap do |subcontext|
+        subcontext.base_scope_depth = base_scope_depth + 1
+        subcontext.exception_renderer = exception_renderer
+        subcontext.filters = @filters
+        subcontext.strainer = nil
+        subcontext.errors = errors
+        subcontext.warnings = warnings
+      end
     end
 
     def clear_instance_assigns
@@ -165,6 +193,7 @@ module Liquid
       # path and find_index() is optimized in MRI to reduce object allocation
       scope = (index = @scopes.find_index { |s| s.key?(key) }) && @scopes[index]
       scope ||= (index = @environments.find_index { |s| s.key?(key) || !s.default_proc.nil? }) && @environments[index]
+      scope ||= (index = @static_environments.find_index { |s| s.key?(key) }) && @environments[index]
       scope ||= {}
 
       variable = lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found).to_liquid
@@ -187,7 +216,21 @@ module Liquid
       end
     end
 
+    protected
+
+    attr_writer :base_scope_depth, :warnings, :errors, :strainer, :filters
+
     private
+
+    attr_reader :base_scope_depth
+
+    def check_overflow
+      raise StackLevelError, "Nesting too deep".freeze if overflow?
+    end
+
+    def overflow?
+      base_scope_depth + @scopes.length > Block::MAX_DEPTH
+    end
 
     def internal_error
       # raise and catch to set backtrace and cause on exception

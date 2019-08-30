@@ -46,7 +46,12 @@ module Liquid
       template_name = context.evaluate(@template_name_expr)
       raise ArgumentError.new(options[:locale].t("errors.argument.include")) unless template_name
 
-      partial = load_cached_partial(template_name, context)
+      partial = PartialCache.load(
+        template_name,
+        context: context,
+        parse_context: parse_context
+      )
+
       context_variable_name = template_name.split('/'.freeze).last
 
       variable = if @variable_name_expr
@@ -83,34 +88,8 @@ module Liquid
       output
     end
 
-    private
-
     alias_method :parse_context, :options
     private :parse_context
-
-    def load_cached_partial(template_name, context)
-      cached_partials = context.registers[:cached_partials] || {}
-
-      if cached = cached_partials[template_name]
-        return cached
-      end
-      source = read_template_from_file_system(context)
-      begin
-        parse_context.partial = true
-        partial = Liquid::Template.parse(source, parse_context)
-      ensure
-        parse_context.partial = false
-      end
-      cached_partials[template_name] = partial
-      context.registers[:cached_partials] = cached_partials
-      partial
-    end
-
-    def read_template_from_file_system(context)
-      file_system = context.registers[:file_system] || Liquid::Template.file_system
-
-      file_system.read_template_file(context.evaluate(@template_name_expr))
-    end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
