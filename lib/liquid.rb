@@ -75,6 +75,7 @@ require 'liquid/utils'
 require 'liquid/tokenizer'
 require 'liquid/parse_context'
 require 'liquid/partial_cache'
+require 'liquid/usage'
 
 # Load all the tags of the standard library
 #
