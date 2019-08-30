@@ -3,7 +3,7 @@ title: sort
 description: Liquid filter that sorts an array in case-sensitive order.
 ---
 
-Sorts items in an array by a property of an item in the array. The order of the sorted array is case-sensitive.
+Sorts items in an array in case-sensitive order.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -19,4 +19,15 @@ Sorts items in an array by a property of an item in the array. The order of the 
 {% assign my_array = "zebra, octopus, giraffe, Sally Snake" | split: ", " %}
 
 {{ my_array | sort | join: ", " }}
+```
+
+An optional parameter specifies which property of the array's items to use for sorting.
+
+```liquid
+{% raw %}
+{% assign products_by_price = collection.products | sort: "price" %}
+{% for product in products_by_price %}
+  <h4>{{ product.title }}</h4>
+{% endfor %}
+{% endraw %}
 ```

@@ -87,3 +87,28 @@ You can use multiple operators in a tag:
 ```
 
 `contains` can only search strings. You cannot use it to check for an object in an array of objects.
+
+## Order of operations
+
+In tags with more than one `and` or `or` operator, operators are checked in order *from right to left*. You cannot change the order of operations using parentheses — parentheses are invalid characters in Liquid and will prevent your tags from working.
+
+```liquid
+{% raw %}
+{% if true or false and false %}
+  This evaluates to true, since the 'and' condition is checked first.
+{% endif %}
+{% endraw %}
+```
+
+```liquid
+{% raw %}
+{% if true and false and false or true %}
+  This evaluates to false, since the tags are checked like this:
+
+  true and (false and (false or true))
+  true and (false and true)
+  true and false
+  false
+{% endif %}
+{% endraw %}
+```

@@ -36,3 +36,13 @@ Returns the last item of an array.
 
 {{ my_array.last }}
 ```
+
+You can use `last` with dot notation when you need to use the filter inside a tag.
+
+```liquid
+{% raw %}
+{% if my_array.last == "tiger" %}
+  There goes a tiger!
+{% endif %}
+{% endraw %}
+```
