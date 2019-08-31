@@ -391,6 +391,12 @@ module Liquid
       raise Liquid::FloatDomainError, e.message
     end
 
+    def format(input, n = 2, thousands = ',', decimal = '.')
+      return input if (precision = Utils.to_number(n).to_i) < 0
+      whole_part, decimal_part = Kernel.format("%.#{precision}f", Utils.to_number(input)).split('.')
+      [whole_part.gsub(/(\d)(?=\d{3}+$)/, "\\1#{thousands}"), decimal_part].compact.join(decimal.to_s)
+    end
+
     def ceil(input)
       Utils.to_number(input).ceil.to_i
     rescue ::FloatDomainError => e
