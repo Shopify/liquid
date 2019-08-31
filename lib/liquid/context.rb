@@ -109,26 +109,11 @@ module Liquid
     #   end
     #
     #   context['var]  #=> nil
-    #
-    # false or {} can be used to control if a new scope is needed
-    #
-    # Example:
-    #   new_scope = false
-    #   context.stack(new_scope) do
-    #      # no scope created
-    #   end
-    #
-    # Example:
-    #   new_scope = {}
-    #   context.stack(new_scope) do
-    #      # scope created
-    #   end
-    #
     def stack(new_scope = {})
-      push(new_scope) unless new_scope == false
+      push(new_scope)
       yield
     ensure
-      pop unless new_scope == false
+      pop
     end
 
     def clear_instance_assigns
