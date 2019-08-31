@@ -4,7 +4,11 @@ module Liquid
     @messages = {}
     class << self
       def enable
-        Dir["#{__dir__}/usages/*.rb"].each { |f| require f }
+        Liquid::Context.send(:alias_method, :try_variable_find_in_environments, :try_variable_find_in_environments_usage)
+      end
+
+      def disable
+        Liquid::Context.send(:alias_method, :try_variable_find_in_environments, :try_variable_find_in_environments_original)
       end
 
       def track(message)

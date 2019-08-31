@@ -80,3 +80,7 @@ require 'liquid/usage'
 # Load all the tags of the standard library
 #
 Dir["#{__dir__}/liquid/tags/*.rb"].each { |f| require f }
+
+# Load all usage tracking
+#
+Dir["#{__dir__}/liquid/usages/*.rb"].each { |f| require f }
