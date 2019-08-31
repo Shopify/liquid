@@ -194,7 +194,7 @@ module Liquid
       # This was changed from find() to find_index() because this is a very hot
       # path and find_index() is optimized in MRI to reduce object allocation
       scope = (index = @scopes.find_index { |s| s.key?(key) }) && @scopes[index]
-      scope ||= (index = @environments.find_index { |s| s.key?(key) || !s.default_proc.nil? }) && @environments[index]
+      scope ||= (index = @environments.find_index { |s| s.key?(key) || s.default_proc }) && @environments[index]
       scope ||= (index = @static_environments.find_index { |s| s.key?(key) }) && @static_environments[index]
       scope ||= BLANK_SCOPE
 
