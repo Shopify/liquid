@@ -15,6 +15,8 @@ module Liquid
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits, :static_registers, :static_environments
     attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
+    BLANK_SCOPE = {}
+
     # rubocop:disable Metrics/ParameterLists
     def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_registers: {}, static_environments: {})
       new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_registers, static_environments)
@@ -194,7 +196,7 @@ module Liquid
       scope = (index = @scopes.find_index { |s| s.key?(key) }) && @scopes[index]
       scope ||= (index = @environments.find_index { |s| s.key?(key) || !s.default_proc.nil? }) && @environments[index]
       scope ||= (index = @static_environments.find_index { |s| s.key?(key) }) && @static_environments[index]
-      scope ||= {}
+      scope ||= BLANK_SCOPE
 
       variable = lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found).to_liquid
       variable.context = self if variable.respond_to?(:context=)
