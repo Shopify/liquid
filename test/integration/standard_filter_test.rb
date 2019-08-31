@@ -619,12 +619,13 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "4.30", "{{ price | format: 2 }}", 'price' => NumberLikeThing.new(4.3)
     assert_template_result "5.0000000", "{{ price | format: 7 }}", 'price' => 5
     assert_template_result "50", "{{ price | format: -1 }}", 'price' => 50
-    assert_template_result "50", "{{ price | format: A }}", 'price' => 50
+    assert_template_result "50.00", "{{ price | format: A }}", 'price' => 50
     assert_template_result "50.00", "{{ price | format: '2e' }}", 'price' => 50
-    assert_template_result "50,000,000", "{{ price | format: 0 }}", 'price' => 50000000
-    assert_template_result "50,000,000.00", "{{ price | format }}", 'price' => 50000000
+    assert_template_result "50 000 000", "{{ price | format: 0 }}", 'price' => 50000000
+    assert_template_result "50 000 000.00", "{{ price | format }}", 'price' => 50000000
     assert_template_result "50000000.00", "{{ price | format: 2, '', '.'}}", 'price' => 50000000
     assert_template_result "50$000$000#00", "{{ price | format: 2, '$', '#'}}", 'price' => 50000000
+    assert_template_result "-50$000$000#00", "{{ price | format: 2, '$', '#'}}", 'price' => -50000000
   end
 
   def test_ceil

@@ -391,7 +391,11 @@ module Liquid
       raise Liquid::FloatDomainError, e.message
     end
 
-    def format(input, n = 2, thousands = ',', decimal = '.')
+    # Defaults are passed as nil so systems can easily override
+    def format(input, n = nil, thousands = nil, decimal = nil)
+      n = 2 if n.nil?
+      thousands = " ".freeze if thousands.nil?
+      decimal = ".".freeze if decimal.nil?
       return input if (precision = Utils.to_number(n).to_i) < 0
       whole_part, decimal_part = Kernel.format("%.#{precision}f", Utils.to_number(input)).split('.')
       [whole_part.gsub(/(\d)(?=\d{3}+$)/, "\\1#{thousands}"), decimal_part].compact.join(decimal.to_s)
