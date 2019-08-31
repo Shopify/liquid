@@ -110,7 +110,7 @@ class RenderTagTest < Minitest::Test
     file_system = StubFileSystem.new('snippet' => 'echo')
     assert_equal 'echoecho',
       Template.parse('{% render "snippet" %}{% render "snippet" %}')
-              .render!({}, registers: { file_system: file_system })
+      .render!({}, registers: { file_system: file_system })
     assert_equal 1, file_system.file_read_count
   end
 
