@@ -7,19 +7,19 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       if markup =~ Syntax
-        @variable_name = $1
-        @collection_name = Expression.parse($2)
+        @variable_name = Regexp.last_match(1)
+        @collection_name = Expression.parse(Regexp.last_match(2))
         @attributes = {}
         markup.scan(TagAttributes) do |key, value|
           @attributes[key] = Expression.parse(value)
         end
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.table_row".freeze))
+        raise SyntaxError, options[:locale].t("errors.syntax.table_row".freeze)
       end
     end
 
     def render_to_output_buffer(context, output)
-      collection = context.evaluate(@collection_name) or return ''.freeze
+      (collection = context.evaluate(@collection_name)) || (return ''.freeze)
 
       from = @attributes.key?('offset'.freeze) ? context.evaluate(@attributes['offset'.freeze]).to_i : 0
       to = @attributes.key?('limit'.freeze) ? from + context.evaluate(@attributes['limit'.freeze]).to_i : nil

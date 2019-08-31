@@ -14,7 +14,7 @@ module Liquid
 
       name = lookups.shift
       if name =~ SQUARE_BRACKETED
-        name = Expression.parse($1)
+        name = Expression.parse(Regexp.last_match(1))
       end
       @name = name
 
@@ -24,7 +24,7 @@ module Liquid
       @lookups.each_index do |i|
         lookup = lookups[i]
         if lookup =~ SQUARE_BRACKETED
-          lookups[i] = Expression.parse($1)
+          lookups[i] = Expression.parse(Regexp.last_match(1))
         elsif COMMAND_METHODS.include?(lookup)
           @command_flags |= 1 << i
         end

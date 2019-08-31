@@ -7,9 +7,9 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
 
-      raise SyntaxError.new(options[:locale].t("errors.syntax.render".freeze)) unless markup =~ Syntax
+      raise SyntaxError, options[:locale].t("errors.syntax.render".freeze) unless markup =~ Syntax
 
-      template_name = $1
+      template_name = Regexp.last_match(1)
 
       @template_name_expr = Expression.parse(template_name)
 
@@ -22,7 +22,7 @@ module Liquid
     def render_to_output_buffer(context, output)
       # Though we evaluate this here we will only ever parse it as a string literal.
       template_name = context.evaluate(@template_name_expr)
-      raise ArgumentError.new(options[:locale].t("errors.argument.include")) unless template_name
+      raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
 
       partial = PartialCache.load(
         template_name,

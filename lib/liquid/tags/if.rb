@@ -66,17 +66,17 @@ module Liquid
 
     def lax_parse(markup)
       expressions = markup.scan(ExpressionsAndOperators)
-      raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop =~ Syntax
+      raise SyntaxError, options[:locale].t("errors.syntax.if".freeze) unless expressions.pop =~ Syntax
 
-      condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
+      condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2), Expression.parse(Regexp.last_match(3)))
 
       until expressions.empty?
         operator = expressions.pop.to_s.strip
 
-        raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless expressions.pop.to_s =~ Syntax
+        raise SyntaxError, options[:locale].t("errors.syntax.if".freeze) unless expressions.pop.to_s =~ Syntax
 
-        new_condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
-        raise(SyntaxError.new(options[:locale].t("errors.syntax.if".freeze))) unless BOOLEAN_OPERATORS.include?(operator)
+        new_condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2), Expression.parse(Regexp.last_match(3)))
+        raise SyntaxError, options[:locale].t("errors.syntax.if".freeze) unless BOOLEAN_OPERATORS.include?(operator)
         new_condition.send(operator, condition)
         condition = new_condition
       end

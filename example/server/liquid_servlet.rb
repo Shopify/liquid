@@ -9,12 +9,12 @@ class LiquidServlet < WEBrick::HTTPServlet::AbstractServlet
 
   private
 
-  def handle(type, req, res)
+  def handle(_type, req, res)
     @request = req
     @response = res
 
     @request.path_info =~ /(\w+)\z/
-    @action = $1 || 'index'
+    @action = Regexp.last_match(1) || 'index'
     @assigns = send(@action) if respond_to?(@action)
 
     @response['Content-Type'] = "text/html"

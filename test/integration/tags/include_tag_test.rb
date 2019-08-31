@@ -40,14 +40,14 @@ class TestFileSystem
 end
 
 class OtherFileSystem
-  def read_template_file(template_path)
+  def read_template_file(_template_path)
     'from OtherFileSystem'
   end
 end
 
 class CountingFileSystem
   attr_reader :count
-  def read_template_file(template_path)
+  def read_template_file(_template_path)
     @count ||= 0
     @count += 1
     'from CountingFileSystem'
@@ -59,14 +59,14 @@ class CustomInclude < Liquid::Tag
 
   def initialize(tag_name, markup, tokens)
     markup =~ Syntax
-    @template_name = $1
+    @template_name = Regexp.last_match(1)
     super
   end
 
   def parse(tokens)
   end
 
-  def render_to_output_buffer(context, output)
+  def render_to_output_buffer(_context, output)
     output << @template_name[1..-2]
     output
   end
@@ -86,7 +86,7 @@ class IncludeTagTest < Minitest::Test
 
   def test_include_tag_with
     assert_template_result "Product: Draft 151cm ",
-      "{% include 'product' with products[0] %}", "products" => [ { 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' } ]
+      "{% include 'product' with products[0] %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }]
   end
 
   def test_include_tag_with_default_name
@@ -96,7 +96,7 @@ class IncludeTagTest < Minitest::Test
 
   def test_include_tag_for
     assert_template_result "Product: Draft 151cm Product: Element 155cm ",
-      "{% include 'product' for products %}", "products" => [ { 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' } ]
+      "{% include 'product' for products %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }]
   end
 
   def test_include_tag_with_local_variables
@@ -134,7 +134,7 @@ class IncludeTagTest < Minitest::Test
 
   def test_recursively_included_template_does_not_produce_endless_loop
     infinite_file_system = Class.new do
-      def read_template_file(template_path)
+      def read_template_file(_template_path)
         "-{% include 'loop' %}"
       end
     end

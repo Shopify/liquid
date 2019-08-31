@@ -43,11 +43,11 @@ module Liquid
       @filters = []
       return unless markup =~ MarkupWithQuotedFragment
 
-      name_markup = $1
-      filter_markup = $2
+      name_markup = Regexp.last_match(1)
+      filter_markup = Regexp.last_match(2)
       @name = Expression.parse(name_markup)
       if filter_markup =~ FilterMarkupRegex
-        filters = $1.scan(FilterParser)
+        filters = Regexp.last_match(1).scan(FilterParser)
         filters.each do |f|
           next unless f =~ /\w+/
           filtername = Regexp.last_match(0)
@@ -121,7 +121,7 @@ module Liquid
     end
 
     def evaluate_filter_expressions(context, filter_args, filter_kwargs)
-      parsed_args = filter_args.map{ |expr| context.evaluate(expr) }
+      parsed_args = filter_args.map { |expr| context.evaluate(expr) }
       if filter_kwargs
         parsed_kwargs = {}
         filter_kwargs.each do |key, expr|

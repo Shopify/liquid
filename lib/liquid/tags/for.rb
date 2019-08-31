@@ -86,23 +86,23 @@ module Liquid
 
     def lax_parse(markup)
       if markup =~ Syntax
-        @variable_name = $1
-        collection_name = $2
-        @reversed = !!$3
+        @variable_name = Regexp.last_match(1)
+        collection_name = Regexp.last_match(2)
+        @reversed = !!Regexp.last_match(3)
         @name = "#{@variable_name}-#{collection_name}"
         @collection_name = Expression.parse(collection_name)
         markup.scan(TagAttributes) do |key, value|
           set_attribute(key, value)
         end
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.for".freeze))
+        raise SyntaxError, options[:locale].t("errors.syntax.for".freeze)
       end
     end
 
     def strict_parse(markup)
       p = Parser.new(markup)
       @variable_name = p.consume(:id)
-      raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_in".freeze)) unless p.id?('in'.freeze)
+      raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in".freeze) unless p.id?('in'.freeze)
       collection_name = p.expression
       @name = "#{@variable_name}-#{collection_name}"
       @collection_name = Expression.parse(collection_name)
@@ -110,7 +110,7 @@ module Liquid
 
       while p.look(:id) && p.look(:colon, 1)
         unless attribute = p.id?('limit'.freeze) || p.id?('offset'.freeze)
-          raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute".freeze))
+          raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_attribute".freeze)
         end
         p.consume
         set_attribute(attribute, p.expression)
@@ -170,11 +170,10 @@ module Liquid
             loop_vars.send(:increment!)
 
             # Handle any interrupts if they exist.
-            if context.interrupt?
-              interrupt = context.pop_interrupt
-              break if interrupt.is_a? BreakInterrupt
-              next if interrupt.is_a? ContinueInterrupt
-            end
+            next unless context.interrupt?
+            interrupt = context.pop_interrupt
+            break if interrupt.is_a?(BreakInterrupt)
+            next if interrupt.is_a?(ContinueInterrupt)
           end
         ensure
           for_stack.pop

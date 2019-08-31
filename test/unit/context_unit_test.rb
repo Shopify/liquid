@@ -206,9 +206,9 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_merge
-    @context.merge({ "test" => "test" })
+    @context.merge("test" => "test")
     assert_equal 'test', @context['test']
-    @context.merge({ "test" => "newvalue", "foo" => "bar" })
+    @context.merge("test" => "newvalue", "foo" => "bar")
     assert_equal 'newvalue', @context['test']
     assert_equal 'bar', @context['foo']
   end
@@ -235,10 +235,10 @@ class ContextUnitTest < Minitest::Test
 
   def test_hash_to_array_transition
     @context['colors'] = {
-      'Blue'    => ['003366', '336699', '6699CC', '99CCFF'],
-      'Green'   => ['003300', '336633', '669966', '99CC99'],
-      'Yellow'  => ['CC9900', 'FFCC00', 'FFFF99', 'FFFFCC'],
-      'Red'     => ['660000', '993333', 'CC6666', 'FF9999']
+      'Blue' => ['003366', '336699', '6699CC', '99CCFF'],
+      'Green' => ['003300', '336633', '669966', '99CC99'],
+      'Yellow' => ['CC9900', 'FFCC00', 'FFFF99', 'FFFFCC'],
+      'Red' => ['660000', '993333', 'CC6666', 'FF9999'],
     }
 
     assert_equal '003366', @context['colors.Blue[0]']
@@ -263,7 +263,7 @@ class ContextUnitTest < Minitest::Test
 
   def test_access_hashes_with_hash_notation
     @context['products'] = { 'count' => 5, 'tags' => ['deepsnow', 'freestyle'] }
-    @context['product'] = { 'variants' => [ { 'title' => 'draft151cm' }, { 'title' => 'element151cm' } ] }
+    @context['product'] = { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] }
 
     assert_equal 5, @context['products["count"]']
     assert_equal 'deepsnow', @context['products["tags"][0]']
@@ -301,7 +301,7 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_first_can_appear_in_middle_of_callchain
-    @context['product'] = { 'variants' => [ { 'title' => 'draft151cm' }, { 'title' => 'element151cm' } ] }
+    @context['product'] = { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] }
 
     assert_equal 'draft151cm', @context['product.variants[0].title']
     assert_equal 'element151cm', @context['product.variants[1].title']
@@ -453,7 +453,7 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_context_initialization_with_a_proc_in_environment
-    contx = Context.new([test: ->(c) { c['poutine'] }], { test: :foo })
+    contx = Context.new([test: ->(c) { c['poutine'] }], test: :foo)
 
     assert contx
     assert_nil contx['poutine']
@@ -514,7 +514,7 @@ class ContextUnitTest < Minitest::Test
 
   def test_new_isolated_subcontext_does_not_inherit_non_static_registers
     registers = {
-      my_register: :my_value
+      my_register: :my_value,
     }
     super_context = Context.new({}, {}, registers)
     subcontext = super_context.new_isolated_subcontext

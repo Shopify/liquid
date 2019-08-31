@@ -17,7 +17,7 @@ class TestThing
     "woot: #{@foo}"
   end
 
-  def [](whatever)
+  def [](_whatever)
     to_s
   end
 
@@ -37,7 +37,7 @@ class TestEnumerable < Liquid::Drop
   include Enumerable
 
   def each(&block)
-    [ { "foo" => 1, "bar" => 2 }, { "foo" => 2, "bar" => 1 }, { "foo" => 3, "bar" => 3 } ].each(&block)
+    [{ "foo" => 1, "bar" => 2 }, { "foo" => 2, "bar" => 1 }, { "foo" => 3, "bar" => 3 }].each(&block)
   end
 end
 
@@ -208,14 +208,14 @@ class StandardFiltersTest < Minitest::Test
       { "handle" => "beta" },
       { "price" => 1, "handle" => "gamma" },
       { "handle" => "delta" },
-      { "price" => 2, "handle" => "epsilon" }
+      { "price" => 2, "handle" => "epsilon" },
     ]
     expectation = [
       { "price" => 1, "handle" => "gamma" },
       { "price" => 2, "handle" => "epsilon" },
       { "price" => 4, "handle" => "alpha" },
       { "handle" => "delta" },
-      { "handle" => "beta" }
+      { "handle" => "beta" },
     ]
     assert_equal expectation, @filters.sort(input, "price")
   end
@@ -236,14 +236,14 @@ class StandardFiltersTest < Minitest::Test
       { "handle" => "beta" },
       { "price" => "1", "handle" => "gamma" },
       { "handle" => "delta" },
-      { "price" => 2, "handle" => "epsilon" }
+      { "price" => 2, "handle" => "epsilon" },
     ]
     expectation = [
       { "price" => "1", "handle" => "gamma" },
       { "price" => 2, "handle" => "epsilon" },
       { "price" => "4", "handle" => "alpha" },
       { "handle" => "delta" },
-      { "handle" => "beta" }
+      { "handle" => "beta" },
     ]
     assert_equal expectation, @filters.sort_natural(input, "price")
   end
@@ -256,7 +256,7 @@ class StandardFiltersTest < Minitest::Test
       { "fake" => "t" },
       { "key" => "a" },
       { "key" => "b" },
-      { "key" => "c" }
+      { "key" => "c" },
     ]
     expectation = [
       { "key" => "a" },
@@ -265,7 +265,7 @@ class StandardFiltersTest < Minitest::Test
       { "key" => "X" },
       { "key" => "Y" },
       { "key" => "Z" },
-      { "fake" => "t" }
+      { "fake" => "t" },
     ]
     assert_equal expectation, @filters.sort_natural(input, "key")
     assert_equal ["a", "b", "c", "X", "Y", "Z"], @filters.sort_natural(["X", "Y", "Z", "a", "b", "c"])
@@ -279,7 +279,7 @@ class StandardFiltersTest < Minitest::Test
     foo = [
       [1],
       [2],
-      [3]
+      [3],
     ]
 
     assert_raises Liquid::ArgumentError do
@@ -295,7 +295,7 @@ class StandardFiltersTest < Minitest::Test
     foo = [
       [1],
       [2],
-      [3]
+      [3],
     ]
 
     assert_raises Liquid::ArgumentError do
@@ -304,7 +304,7 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_legacy_sort_hash
-    assert_equal [{ a: 1, b: 2 }], @filters.sort({ a: 1, b: 2 })
+    assert_equal [{ a: 1, b: 2 }], @filters.sort(a: 1, b: 2)
   end
 
   def test_numerical_vs_lexicographical_sort
@@ -330,7 +330,7 @@ class StandardFiltersTest < Minitest::Test
     foo = [
       [1],
       [2],
-      [3]
+      [3],
     ]
 
     assert_raises Liquid::ArgumentError do
@@ -346,7 +346,7 @@ class StandardFiltersTest < Minitest::Test
     foo = [
       [1],
       [2],
-      [3]
+      [3],
     ]
 
     assert_raises Liquid::ArgumentError do
@@ -380,7 +380,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map_on_hashes
     assert_template_result "4217", '{{ thing | map: "foo" | map: "bar" }}',
-      "thing" => { "foo" => [ { "bar" => 42 }, { "bar" => 17 } ] }
+      "thing" => { "foo" => [{ "bar" => 42 }, { "bar" => 17 }] }
   end
 
   def test_legacy_map_on_hashes_with_dynamic_key
@@ -397,7 +397,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map_over_proc
     drop = TestDrop.new
-    p = proc{ drop }
+    p = proc { drop }
     templ = '{{ procs | map: "test" }}'
     assert_template_result "testfoo", templ, "procs" => [p]
   end
@@ -405,10 +405,10 @@ class StandardFiltersTest < Minitest::Test
   def test_map_over_drops_returning_procs
     drops = [
       {
-        "proc" => ->{ "foo" },
+        "proc" => -> { "foo" },
       },
       {
-        "proc" => ->{ "bar" },
+        "proc" => -> { "bar" },
       },
     ]
     templ = '{{ drops | map: "proc" }}'
@@ -423,7 +423,7 @@ class StandardFiltersTest < Minitest::Test
     foo = [
       [1],
       [2],
-      [3]
+      [3],
     ]
 
     assert_raises Liquid::ArgumentError do
@@ -435,7 +435,7 @@ class StandardFiltersTest < Minitest::Test
     foo = [
       [1],
       [2],
-      [3]
+      [3],
     ]
     assert_raises Liquid::ArgumentError do
       @filters.map(foo, nil)
@@ -697,12 +697,12 @@ class StandardFiltersTest < Minitest::Test
       { "handle" => "alpha", "ok" => true },
       { "handle" => "beta", "ok" => false },
       { "handle" => "gamma", "ok" => false },
-      { "handle" => "delta", "ok" => true }
+      { "handle" => "delta", "ok" => true },
     ]
 
     expectation = [
       { "handle" => "alpha", "ok" => true },
-      { "handle" => "delta", "ok" => true }
+      { "handle" => "delta", "ok" => true },
     ]
 
     assert_equal expectation, @filters.where(input, "ok", true)
@@ -714,12 +714,12 @@ class StandardFiltersTest < Minitest::Test
       { "handle" => "alpha", "ok" => true },
       { "handle" => "beta" },
       { "handle" => "gamma" },
-      { "handle" => "delta", "ok" => true }
+      { "handle" => "delta", "ok" => true },
     ]
 
     expectation = [
       { "handle" => "alpha", "ok" => true },
-      { "handle" => "delta", "ok" => true }
+      { "handle" => "delta", "ok" => true },
     ]
 
     assert_equal expectation, @filters.where(input, "ok", true)
@@ -740,7 +740,7 @@ class StandardFiltersTest < Minitest::Test
     input = [
       { "message" => "Bonjour!", "language" => "French" },
       { "message" => "Hello!", "language" => "English" },
-      { "message" => "Hallo!", "language" => "German" }
+      { "message" => "Hallo!", "language" => "German" },
     ]
 
     assert_equal [{ "message" => "Bonjour!", "language" => "French" }], @filters.where(input, "language", "French")
@@ -758,7 +758,7 @@ class StandardFiltersTest < Minitest::Test
       { "foo" => false },
       { "foo" => true },
       { "foo" => "for sure" },
-      { "bar" => true }
+      { "bar" => true },
     ]
 
     assert_equal [{ "foo" => true }, { "foo" => "for sure" }], @filters.where(input, "foo")

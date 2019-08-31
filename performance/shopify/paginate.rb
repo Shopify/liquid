@@ -1,13 +1,13 @@
 class Paginate < Liquid::Block
-  Syntax     = /(#{Liquid::QuotedFragment})\s*(by\s*(\d+))?/
+  Syntax = /(#{Liquid::QuotedFragment})\s*(by\s*(\d+))?/
 
   def initialize(tag_name, markup, options)
     super
 
     if markup =~ Syntax
-      @collection_name = $1
-      @page_size = if $2
-        $3.to_i
+      @collection_name = Regexp.last_match(1)
+      @page_size = if Regexp.last_match(2)
+        Regexp.last_match(3).to_i
       else
         20
       end
@@ -17,7 +17,7 @@ class Paginate < Liquid::Block
         @attributes[key] = value
       end
     else
-      raise SyntaxError.new("Syntax Error in tag 'paginate' - Valid syntax: paginate [collection] by number")
+      raise SyntaxError, "Syntax Error in tag 'paginate' - Valid syntax: paginate [collection] by number"
     end
   end
 
@@ -25,19 +25,19 @@ class Paginate < Liquid::Block
     @context = context
 
     context.stack do
-      current_page  = context['current_page'].to_i
+      current_page = context['current_page'].to_i
 
       pagination = {
-        'page_size'      => @page_size,
-        'current_page'   => 5,
-        'current_offset' => @page_size * 5
+        'page_size' => @page_size,
+        'current_page' => 5,
+        'current_offset' => @page_size * 5,
       }
 
       context['paginate'] = pagination
 
-      collection_size  = context[@collection_name].size
+      collection_size = context[@collection_name].size
 
-      raise ArgumentError.new("Cannot paginate array '#{@collection_name}'. Not found.") if collection_size.nil?
+      raise ArgumentError, "Cannot paginate array '#{@collection_name}'. Not found." if collection_size.nil?
 
       page_count = (collection_size.to_f / @page_size.to_f).to_f.ceil + 1
 

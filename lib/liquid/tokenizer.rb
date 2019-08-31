@@ -10,7 +10,7 @@ module Liquid
     end
 
     def shift
-      token = @tokens.shift or return
+      (token = @tokens.shift) || return
 
       if @line_number
         @line_number += @for_liquid_tag ? 1 : token.count("\n")
@@ -29,7 +29,7 @@ module Liquid
       tokens = @source.split(TemplateParser)
 
       # removes the rogue empty element at the beginning of the array
-      tokens.shift if tokens[0] && tokens[0].empty?
+      tokens.shift if tokens[0]&.empty?
 
       tokens
     end

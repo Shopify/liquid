@@ -31,7 +31,7 @@ class ThemeRunner
       {
         liquid: File.read(test),
         layout: (File.file?(theme_path) ? File.read(theme_path) : nil),
-        template_name: test
+        template_name: test,
       }
     end.compact
 

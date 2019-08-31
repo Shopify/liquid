@@ -201,9 +201,9 @@ class DropsTest < Minitest::Test
   end
 
   def test_scope_though_proc
-    assert_equal '1', Liquid::Template.parse('{{ s }}').render!('context' => ContextDrop.new, 's' => proc{ |c| c['context.scopes'] })
-    assert_equal '2', Liquid::Template.parse('{%for i in dummy%}{{ s }}{%endfor%}').render!('context' => ContextDrop.new, 's' => proc{ |c| c['context.scopes'] }, 'dummy' => [1])
-    assert_equal '3', Liquid::Template.parse('{%for i in dummy%}{%for i in dummy%}{{ s }}{%endfor%}{%endfor%}').render!('context' => ContextDrop.new, 's' => proc{ |c| c['context.scopes'] }, 'dummy' => [1])
+    assert_equal '1', Liquid::Template.parse('{{ s }}').render!('context' => ContextDrop.new, 's' => proc { |c| c['context.scopes'] })
+    assert_equal '2', Liquid::Template.parse('{%for i in dummy%}{{ s }}{%endfor%}').render!('context' => ContextDrop.new, 's' => proc { |c| c['context.scopes'] }, 'dummy' => [1])
+    assert_equal '3', Liquid::Template.parse('{%for i in dummy%}{%for i in dummy%}{{ s }}{%endfor%}{%endfor%}').render!('context' => ContextDrop.new, 's' => proc { |c| c['context.scopes'] }, 'dummy' => [1])
   end
 
   def test_scope_with_assigns
@@ -241,7 +241,7 @@ class DropsTest < Minitest::Test
   end
 
   def test_some_enumerable_methods_still_get_invoked
-    [ :count, :max ].each do |method|
+    [:count, :max].each do |method|
       assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => RealEnumerableDrop.new)
       assert_equal "3", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render!('collection' => RealEnumerableDrop.new)
       assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => EnumerableDrop.new)
@@ -250,7 +250,7 @@ class DropsTest < Minitest::Test
 
     assert_equal "yes", Liquid::Template.parse("{% if collection contains 3 %}yes{% endif %}").render!('collection' => RealEnumerableDrop.new)
 
-    [ :min, :first ].each do |method|
+    [:min, :first].each do |method|
       assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => RealEnumerableDrop.new)
       assert_equal "1", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render!('collection' => RealEnumerableDrop.new)
       assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => EnumerableDrop.new)

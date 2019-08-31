@@ -32,8 +32,8 @@ module Liquid
             # caller raise a syntax error
             return yield token, token
           end
-          tag_name = $1
-          markup = $2
+          tag_name = Regexp.last_match(1)
+          markup = Regexp.last_match(2)
           unless tag = registered_tags[tag_name]
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
@@ -58,13 +58,13 @@ module Liquid
           unless token =~ FullToken
             raise_missing_tag_terminator(token, parse_context)
           end
-          tag_name = $2
-          markup = $4
+          tag_name = Regexp.last_match(2)
+          markup = Regexp.last_match(4)
 
           if parse_context.line_number
             # newlines inside the tag should increase the line number,
             # particularly important for multiline {% liquid %} tags
-            parse_context.line_number += $1.count("\n".freeze) + $3.count("\n".freeze)
+            parse_context.line_number += Regexp.last_match(1).count("\n".freeze) + Regexp.last_match(3).count("\n".freeze)
           end
 
           if tag_name == 'liquid'.freeze
@@ -101,7 +101,7 @@ module Liquid
     def whitespace_handler(token, parse_context)
       if token[2] == WhitespaceControl
         previous_token = @nodelist.last
-        if previous_token.is_a? String
+        if previous_token.is_a?(String)
           previous_token.rstrip!
         end
       end
@@ -163,7 +163,7 @@ module Liquid
     def raise_if_resource_limits_reached(context, length)
       context.resource_limits.render_length += length
       return unless context.resource_limits.reached?
-      raise MemoryError.new("Memory limits exceeded".freeze)
+      raise MemoryError, "Memory limits exceeded".freeze
     end
 
     def create_variable(token, parse_context)
@@ -175,11 +175,11 @@ module Liquid
     end
 
     def raise_missing_tag_terminator(token, parse_context)
-      raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_termination".freeze, token: token, tag_end: TagEnd.inspect))
+      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_termination".freeze, token: token, tag_end: TagEnd.inspect)
     end
 
     def raise_missing_variable_terminator(token, parse_context)
-      raise SyntaxError.new(parse_context.locale.t("errors.syntax.variable_termination".freeze, token: token, tag_end: VariableEnd.inspect))
+      raise SyntaxError, parse_context.locale.t("errors.syntax.variable_termination".freeze, token: token, tag_end: VariableEnd.inspect)
     end
 
     def registered_tags

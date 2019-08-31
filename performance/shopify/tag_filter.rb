@@ -13,11 +13,11 @@ module TagFilter
 
   def link_to_add_tag(label, tag)
     tags = (@context['current_tags'] + [tag]).uniq
-    "<a title=\"Show tag #{tag}\" href=\"/collections/#{@context['handle']}/#{tags.join("+")}\">#{label}</a>"
+    "<a title=\"Show tag #{tag}\" href=\"/collections/#{@context['handle']}/#{tags.join('+')}\">#{label}</a>"
   end
 
   def link_to_remove_tag(label, tag)
     tags = (@context['current_tags'] - [tag]).uniq
-    "<a title=\"Show tag #{tag}\" href=\"/collections/#{@context['handle']}/#{tags.join("+")}\">#{label}</a>"
+    "<a title=\"Show tag #{tag}\" href=\"/collections/#{@context['handle']}/#{tags.join('+')}\">#{label}</a>"
   end
 end

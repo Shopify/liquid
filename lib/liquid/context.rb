@@ -39,7 +39,7 @@ module Liquid
 
       self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors
-        self.exception_renderer = ->(e) { raise }
+        self.exception_renderer = ->(_e) { raise }
       end
 
       @interrupts = []
@@ -215,7 +215,7 @@ module Liquid
       value = obj[key]
 
       if value.is_a?(Proc) && obj.respond_to?(:[]=)
-        obj[key] = (value.arity == 0) ? value.call : value.call(self)
+        obj[key] = value.arity == 0 ? value.call : value.call(self)
       else
         value
       end

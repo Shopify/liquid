@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class FoobarTag < Liquid::Tag
-  def render_to_output_buffer(context, output)
+  def render_to_output_buffer(_context, output)
     output << ' '
     output
   end

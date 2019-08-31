@@ -19,10 +19,10 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       if markup =~ Syntax
-        @to = $1
-        @from = Variable.new($2, options)
+        @to = Regexp.last_match(1)
+        @from = Variable.new(Regexp.last_match(2), options)
       else
-        raise SyntaxError.new(options[:locale].t(self.class.syntax_error_translation_key))
+        raise SyntaxError, options[:locale].t(self.class.syntax_error_translation_key)
       end
     end
 

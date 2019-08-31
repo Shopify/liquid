@@ -23,16 +23,16 @@ class ForTagTest < Minitest::Test
   yo
 
 HERE
-    template = <<HERE
-{%for item in array%}
-  yo
-{%endfor%}
-HERE
+    template = <<~HERE
+      {%for item in array%}
+        yo
+      {%endfor%}
+    HERE
     assert_template_result(expected, template, 'array' => [1, 2, 3])
   end
 
   def test_for_reversed
-    assigns = { 'array' => [ 1, 2, 3] }
+    assigns = { 'array' => [1, 2, 3] }
     assert_template_result('321', '{%for item in array reversed %}{{item}}{%endfor%}', assigns)
   end
 

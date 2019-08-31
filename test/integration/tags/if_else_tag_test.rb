@@ -132,7 +132,7 @@ class IfElseTagTest < Minitest::Test
   end
 
   def test_syntax_error_no_variable
-    assert_raises(SyntaxError){ assert_template_result('', '{% if jerry == 1 %}') }
+    assert_raises(SyntaxError) { assert_template_result('', '{% if jerry == 1 %}') }
   end
 
   def test_syntax_error_no_expression

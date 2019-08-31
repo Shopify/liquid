@@ -2,23 +2,23 @@ require 'test_helper'
 
 module MoneyFilter
   def money(input)
-    sprintf(' %d$ ', input)
+    format(' %d$ ', input)
   end
 
   def money_with_underscore(input)
-    sprintf(' %d$ ', input)
+    format(' %d$ ', input)
   end
 end
 
 module CanadianMoneyFilter
   def money(input)
-    sprintf(' %d$ CAD ', input)
+    format(' %d$ CAD ', input)
   end
 end
 
 module SubstituteFilter
   def substitute(input, params = {})
-    input.gsub(/%\{(\w+)\}/) { |match| params[$1] }
+    input.gsub(/%\{(\w+)\}/) { |_match| params[Regexp.last_match(1)] }
   end
 end
 
@@ -26,7 +26,7 @@ class FiltersTest < Minitest::Test
   include Liquid
 
   module OverrideObjectMethodFilter
-    def tap(input)
+    def tap(_input)
       "tap overridden"
     end
   end
@@ -149,7 +149,7 @@ class FiltersTest < Minitest::Test
     assert_equal "tap overridden", Template.parse("{{var | tap}}").render!({ 'var' => 1000 }, filters: [OverrideObjectMethodFilter])
 
     # tap still treated as a non-existent filter
-    assert_equal "1000", Template.parse("{{var | tap}}").render!({ 'var' => 1000 })
+    assert_equal "1000", Template.parse("{{var | tap}}").render!('var' => 1000)
   end
 end
 

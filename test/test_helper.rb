@@ -41,7 +41,7 @@ module Minitest
     end
 
     def assert_template_result_matches(expected, template, assigns = {}, message = nil)
-      return assert_template_result(expected, template, assigns, message) unless expected.is_a? Regexp
+      return assert_template_result(expected, template, assigns, message) unless expected.is_a?(Regexp)
 
       assert_match expected, Template.parse(template, line_numbers: true).render!(assigns), message
     end
