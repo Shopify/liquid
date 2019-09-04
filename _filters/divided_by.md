@@ -3,7 +3,7 @@ title: divided_by
 description: Liquid filter that divides a number by another number.
 ---
 
-Divides a number by the specified number.
+Divides a number by another number.
 
 The result is rounded down to the nearest integer (that is, the [floor]({{ "/filters/floor/" | prepend: site.baseurl }})) if the divisor is an integer.
 

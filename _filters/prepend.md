@@ -17,7 +17,7 @@ Adds the specified string to the beginning of another string.
 {{ "apples, oranges, and bananas" | prepend: "Some fruit: " }}
 ```
 
-You can also `prepend` variables:
+`prepend` can also be used with variables:
 
 <p class="code-label">Input</p>
 ```liquid

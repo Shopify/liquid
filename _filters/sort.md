@@ -21,7 +21,7 @@ Sorts items in an array in case-sensitive order.
 {{ my_array | sort | join: ", " }}
 ```
 
-An optional parameter specifies which property of the array's items to use for sorting.
+An optional argument specifies which property of the array's items to use for sorting.
 
 ```liquid
 {% raw %}

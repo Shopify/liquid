@@ -1,6 +1,6 @@
 ---
 title: at_least
-description: Liquid filter that limits a number to a minimum value
+description: Liquid filter that limits a number to a minimum value.
 ---
 
 Limits a number to a minimum value.

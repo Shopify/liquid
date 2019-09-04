@@ -1,6 +1,6 @@
 ---
 title: downcase
-description: Liquid filter that coverts a string to lowercase.
+description: Liquid filter that converts a string to lowercase.
 ---
 
 Makes each character in a string lowercase. It has no effect on strings which are already all lowercase.

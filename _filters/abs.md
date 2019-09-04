@@ -1,6 +1,6 @@
 ---
 title: abs
-description: Liquid filter that gets the absolute value of a number.
+description: Liquid filter that returns the absolute value of a number.
 redirect_from: /filters/
 ---
 
@@ -30,7 +30,7 @@ Returns the absolute value of a number.
 {{ 4 | abs }}
 ```
 
-`abs` will also work on a string if the string only contains a number.
+`abs` will also work on a string that only contains a number:
 
 <p class="code-label">Input</p>
 ```liquid

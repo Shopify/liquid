@@ -1,9 +1,9 @@
 ---
 title: truncatewords
-description: Liquid filter that truncates a string to the given number of words.
+description: Liquid filter that truncates a string to a given number of words.
 ---
 
-Shortens a string down to the number of words passed as the argument. If the specified number of words is less than the number of words in the string, an ellipsis (...) is appended to the string.
+Shortens a string down to the number of words passed as an argument. If the specified number of words is less than the number of words in the string, an ellipsis (...) is appended to the string.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -19,7 +19,7 @@ Shortens a string down to the number of words passed as the argument. If the spe
 
 ### Custom ellipsis
 
-`truncatewords` takes an optional second parameter that specifies the sequence of characters to be appended to the truncated string. By default this is an ellipsis (...), but you can specify a different sequence.
+`truncatewords` takes an optional second argument that specifies the sequence of characters to be appended to the truncated string. By default this is an ellipsis (...), but you can specify a different sequence.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -35,7 +35,7 @@ Shortens a string down to the number of words passed as the argument. If the spe
 
 ### No ellipsis
 
-You can avoid showing trailing characters by passing a blank string as the second parameter:
+You can avoid showing trailing characters by passing a blank string as the second argument:
 
 <p class="code-label">Input</p>
 ```liquid

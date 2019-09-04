@@ -1,6 +1,6 @@
 ---
 title: at_most
-description: Liquid filter that limits a number to a maximum value
+description: Liquid filter that limits a number to a maximum value.
 ---
 
 Limits a number to a maximum value.

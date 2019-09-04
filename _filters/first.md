@@ -33,7 +33,7 @@ Returns the first item of an array.
 {{ my_array.first }}
 ```
 
-You can use `first` with dot notation when you need to use the filter inside a tag.
+You can use `first` with dot notation when you need to use the filter inside a tag:
 
 ```liquid
 {% raw %}

@@ -1,6 +1,6 @@
 ---
 title: last
-description: Liquid filter that gets the last value in an array.
+description: Liquid filter that returns the last item of an array.
 ---
 
 Returns the last item of an array.
@@ -33,7 +33,7 @@ Returns the last item of an array.
 {{ my_array.last }}
 ```
 
-You can use `last` with dot notation when you need to use the filter inside a tag.
+You can use `last` with dot notation when you need to use the filter inside a tag:
 
 ```liquid
 {% raw %}

@@ -24,7 +24,7 @@ Creates a new variable.
 This statement is valid.
 ```
 
-Wrap a variable in quotations `"` to save it as a string.
+Wrap a variable value in quotations `"` to save it as a string.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -41,7 +41,7 @@ bar
 
 ## capture
 
-Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created through `{% raw %}{% capture %}{% endraw %}` are strings.
+Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created through `capture` are strings.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -56,7 +56,7 @@ Captures the string inside of the opening and closing tags and assigns it to a v
 I am being captured.
 ```
 
-Using `capture`, you can create complex strings using other variables created with `assign`.
+Using `capture`, you can create complex strings using other variables created with `assign`:
 
 <p class="code-label">Input</p>
 ```liquid

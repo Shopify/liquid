@@ -1,9 +1,9 @@
 ---
 title: newline_to_br
-description: Liquid filter that converts newlines in an input string to HTML <br> tags.
+description: Liquid filter that converts newlines in a string to HTML <br /> tags.
 ---
 
-Replaces every newline (`\n`) with an HTML line break (`<br>`).
+Replaces every newline (`\n`) in a string with an HTML line break (`<br />`).
 
 <p class="code-label">Input</p>
 ```liquid

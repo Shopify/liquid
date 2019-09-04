@@ -1,6 +1,6 @@
 ---
 title: capitalize
-description: Liquid filter that capitalizes the first character in a string.
+description: Liquid filter that capitalizes the first character of a string.
 ---
 
 Makes the first character of a string capitalized.
@@ -17,7 +17,7 @@ Makes the first character of a string capitalized.
 {{ "title" | capitalize }}
 ```
 
-`capitalize` only capitalizes the first character of the string, so later words are not affected:
+`capitalize` only capitalizes the first character of a string, so later words are not affected:
 
  <p class="code-label">Input</p>
 ```liquid

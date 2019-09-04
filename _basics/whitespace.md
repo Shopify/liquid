@@ -5,7 +5,7 @@ description: An overview of controlling whitespace between code in the Liquid te
 
 In Liquid, you can include a hyphen in your tag syntax `{% raw %}{{-{% endraw %}`, `{% raw %}-}}{% endraw %}`, `{% raw %}{%-{% endraw %}`, and `{% raw %}-%}{% endraw %}` to strip whitespace from the left or right side of a rendered tag.
 
-Normally, even if it doesn't output text, any line of Liquid in your template will still output a blank line in your rendered HTML:
+Normally, even if it doesn't print text, any line of Liquid in your template will still print a blank line in your rendered HTML:
 
 <p class="code-label">Input</p>
 ```liquid
@@ -38,7 +38,7 @@ By including hyphens in your `assign` tag, you can strip the generated whitespac
 tomato
 ```
 
-If you don't want any of your tags to output whitespace, as a general rule you can add hyphens to both sides of all your tags (`{% raw %}{%-{% endraw %}` and `{% raw %}-%}{% endraw %}`):
+If you don't want any of your tags to print whitespace, as a general rule you can add hyphens to both sides of all your tags (`{% raw %}{%-{% endraw %}` and `{% raw %}-%}{% endraw %}`):
 
 <p class="code-label">Input</p>
 ```liquid

@@ -33,7 +33,7 @@ Returns the number of characters in a string or the number of items in an array.
 {{ my_array.size }}
 ```
 
-You can use `size` with dot notation when you need to use the filter inside a tag.
+You can use `size` with dot notation when you need to use the filter inside a tag:
 
 ```liquid
 {% raw %}

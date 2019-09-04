@@ -1,6 +1,6 @@
 ---
 title: plus
-description: Liquid filter that adds a number to another number.
+description: Liquid filter that adds one number to another number.
 ---
 
 Adds a number to another number.
