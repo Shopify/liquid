@@ -123,6 +123,7 @@ pre {
   padding: 8px 12px;
   border: 1px solid $color-blue-2;
   word-wrap: break-word;
+  white-space: pre-wrap;
 
   > code {
     border: 0;
