@@ -10,7 +10,6 @@ Liquid code can be categorized into [**objects**](#objects), [**tags**](#tags), 
 
 **Objects** tell Liquid where to show content on a page. Objects and variable names are denoted by double curly braces: `{% raw %}{{{% endraw %}` and `{% raw %}}}{% endraw %}`.
 
-
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
@@ -52,7 +51,6 @@ Tags can be categorized into three types:
 - [Variable assignments]({{ "/tags/variable" | prepend: site.baseurl }})
 
 You can read more about each type of tag in their respective sections.
-
 
 ## Filters
 

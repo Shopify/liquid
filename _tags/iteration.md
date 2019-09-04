@@ -12,9 +12,9 @@ Repeatedly executes a block of code. For a full list of attributes available wit
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-  {% for product in collection.products %}
-    {{ product.title }}
-  {% endfor %}
+{% for product in collection.products %}
+  {{ product.title }}
+{% endfor %}
 {% endraw %}
 ```
 
@@ -196,8 +196,8 @@ one
 
 Uses for `cycle` include:
 
--   applying odd/even classes to rows in a table
--   applying a unique class to the last product thumbnail in a row
+- applying odd/even classes to rows in a table
+- applying a unique class to the last product thumbnail in a row
 
 ## cycle (parameters)
 

@@ -21,7 +21,7 @@ Creates a new variable.
 
 <p class="code-label">Output</p>
 ```text
-  This statement is valid.
+This statement is valid.
 ```
 
 Wrap a variable in quotations `"` to save it as a string.
@@ -55,6 +55,7 @@ Captures the string inside of the opening and closing tags and assigns it to a v
 ```text
 I am being captured.
 ```
+
 Using `capture`, you can create complex strings using other variables created with `assign`.
 
 <p class="code-label">Input</p>
