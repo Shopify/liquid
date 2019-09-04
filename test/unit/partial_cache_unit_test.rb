@@ -4,7 +4,7 @@ class PartialCacheUnitTest < Minitest::Test
   def test_uses_the_file_system_register_if_present
     context = Liquid::Context.build(
       registers: {
-        file_system: StubFileSystem.new('my_partial' => 'my partial body')
+        file_system: StubFileSystem.new('my_partial' => 'my partial body'),
       }
     )
 
@@ -41,12 +41,12 @@ class PartialCacheUnitTest < Minitest::Test
     )
     context_one = Liquid::Context.build(
       registers: {
-        file_system: shared_file_system
+        file_system: shared_file_system,
       }
     )
     context_two = Liquid::Context.build(
       registers: {
-        file_system: shared_file_system
+        file_system: shared_file_system,
       }
     )
 

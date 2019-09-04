@@ -1,13 +1,13 @@
 module Liquid
   class Render < Tag
-    Syntax = /(#{QuotedString})#{QuotedFragment}*/o
+    SYNTAX = /(#{QuotedString})#{QuotedFragment}*/o
 
     attr_reader :template_name_expr, :attributes
 
     def initialize(tag_name, markup, options)
       super
 
-      raise SyntaxError.new(options[:locale].t("errors.syntax.render".freeze)) unless markup =~ Syntax
+      raise SyntaxError.new(options[:locale].t("errors.syntax.render".freeze)) unless markup =~ SYNTAX
 
       template_name = $1
 
