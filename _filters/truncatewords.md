@@ -22,14 +22,14 @@ Shortens a string down to the number of words passed as the argument. If the spe
 `truncatewords` takes an optional second parameter that specifies the sequence of characters to be appended to the truncated string. By default this is an ellipsis (...), but you can specify a different sequence.
 
 <p class="code-label">Input</p>
+```liquid
 {% raw %}
-``` liquid
 {{ "Ground control to Major Tom." | truncatewords: 3, "--" }}
-```
 {% endraw %}
+```
 
 <p class="code-label">Output</p>
-``` text
+```text
 {{ "Ground control to Major Tom." | truncatewords: 3, "--" }}
 ```
 
@@ -38,13 +38,13 @@ Shortens a string down to the number of words passed as the argument. If the spe
 You can avoid showing trailing characters by passing a blank string as the second parameter:
 
 <p class="code-label">Input</p>
+```liquid
 {% raw %}
-``` liquid
 {{ "Ground control to Major Tom." | truncatewords: 3, "" }}
-```
 {% endraw %}
+```
 
 <p class="code-label">Output</p>
-``` text
+```text
 {{ "Ground control to Major Tom." | truncatewords: 3, "" }}
 ```

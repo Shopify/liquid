@@ -95,9 +95,7 @@ To access all the items in an array, you can loop through each item in the array
 
 <p class="code-label">Output</p>
 ```text
-{% raw %}
 Tobi Laura Tetsuro Adam
-{% endraw %}
 ```
 
 ### Accessing specific items in arrays
