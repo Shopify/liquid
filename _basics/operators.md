@@ -70,7 +70,7 @@ You can use multiple operators in a tag:
 
 ```liquid
 {% raw %}
-{% if product.title contains 'Pack' %}
+{% if product.title contains "Pack" %}
   This product's title contains the word Pack.
 {% endif %}
 {% endraw %}
@@ -80,8 +80,8 @@ You can use multiple operators in a tag:
 
 ```liquid
 {% raw %}
-{% if product.tags contains 'Hello' %}
-  This product has been tagged with 'Hello'.
+{% if product.tags contains "Hello" %}
+  This product has been tagged with "Hello".
 {% endif %}
 {% endraw %}
 ```
@@ -95,7 +95,7 @@ In tags with more than one `and` or `or` operator, operators are checked in orde
 ```liquid
 {% raw %}
 {% if true or false and false %}
-  This evaluates to true, since the 'and' condition is checked first.
+  This evaluates to true, since the `and` condition is checked first.
 {% endif %}
 {% endraw %}
 ```

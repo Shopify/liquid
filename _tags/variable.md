@@ -61,7 +61,7 @@ Using `capture`, you can create complex strings using other variables created wi
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{% assign favorite_food = 'pizza' %}
+{% assign favorite_food = "pizza" %}
 {% assign age = 35 %}
 
 {% capture about_me %}

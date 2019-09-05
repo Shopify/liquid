@@ -1,6 +1,6 @@
 ---
 title: Iteration
-description: An overview of iteration or 'loop' tags in the Liquid template language.
+description: An overview of iteration or "loop" tags in the Liquid template language.
 ---
 
 Iteration tags run blocks of code repeatedly.
@@ -179,10 +179,10 @@ Loops through a group of strings and outputs them in the order that they were pa
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{% cycle 'one', 'two', 'three' %}
-{% cycle 'one', 'two', 'three' %}
-{% cycle 'one', 'two', 'three' %}
-{% cycle 'one', 'two', 'three' %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
 {% endraw %}
 ```
 
