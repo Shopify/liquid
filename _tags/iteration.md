@@ -203,6 +203,24 @@ Uses for `cycle` include:
 
 `cycle` accepts a parameter called `cycle group` in cases where you need multiple `cycle` blocks in one template. If no name is supplied for the cycle group, then it is assumed that multiple calls with the same parameters are one group.
 
+<p class="code-label">Input</p>
+```liquid
+{% raw %}
+{% cycle "first": "one", "two", "three" %}
+{% cycle "second": "one", "two", "three" %}
+{% cycle "second": "one", "two", "three" %}
+{% cycle "first": "one", "two", "three" %}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+one
+one
+two
+two
+```
+
 ## tablerow
 
 Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags.

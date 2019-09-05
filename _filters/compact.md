@@ -13,20 +13,20 @@ For this example, assume `site.pages` is an array of content pages for a website
 {% assign site_categories = site.pages | map: 'category' %}
 
 {% for category in site_categories %}
-  {{ category }}
+- {{ category }}
 {% endfor %}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-  business
-  celebrities
-
-  lifestyle
-  sports
-
-  technology
+- business
+- celebrities
+-
+- lifestyle
+- sports
+-
+- technology
 ```
 
 By using `compact` when we create our `site_categories` array, we can remove all the `nil` values in the array.
@@ -37,16 +37,16 @@ By using `compact` when we create our `site_categories` array, we can remove all
 {% assign site_categories = site.pages | map: 'category' | compact %}
 
 {% for category in site_categories %}
-  {{ category }}
+- {{ category }}
 {% endfor %}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-  business
-  celebrities
-  lifestyle
-  sports
-  technology
+- business
+- celebrities
+- lifestyle
+- sports
+- technology
 ```

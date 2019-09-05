@@ -15,7 +15,7 @@ Returns the absolute value of a number.
 
 <p class="code-label">Output</p>
 ```text
-17
+{{ -17 | abs }}
 ```
 
 <p class="code-label">Input</p>
@@ -27,7 +27,7 @@ Returns the absolute value of a number.
 
 <p class="code-label">Output</p>
 ```text
-4
+{{ 4 | abs }}
 ```
 
 `abs` will also work on a string if the string only contains a number.
@@ -41,5 +41,5 @@ Returns the absolute value of a number.
 
 <p class="code-label">Output</p>
 ```text
-19.86
+{{ "-19.86" | abs }}
 ```

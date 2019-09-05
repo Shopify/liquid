@@ -13,7 +13,7 @@ Limits a number to a minimum value.
 ```
 
 <p class="code-label">Output</p>
-```
+```text
 5
 ```
 
@@ -25,6 +25,6 @@ Limits a number to a minimum value.
 ```
 
 <p class="code-label">Output</p>
-```
+```text
 4
 ```

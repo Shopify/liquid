@@ -13,7 +13,7 @@ Limits a number to a maximum value.
 ```
 
 <p class="code-label">Output</p>
-```
+```text
 4
 ```
 
@@ -25,6 +25,6 @@ Limits a number to a maximum value.
 ```
 
 <p class="code-label">Output</p>
-```
+```text
 3
 ```

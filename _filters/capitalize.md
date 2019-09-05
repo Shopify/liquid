@@ -14,7 +14,7 @@ Makes the first character of a string capitalized.
 
 <p class="code-label">Output</p>
 ```text
-Title
+{{ "title" | capitalize }}
 ```
 
 `capitalize` only capitalizes the first character of the string, so later words are not affected:
@@ -28,5 +28,5 @@ Title
 
 <p class="code-label">Output</p>
 ```text
-My great title
+{{ "my great title" | capitalize }}
 ```

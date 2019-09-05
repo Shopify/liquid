@@ -22,7 +22,7 @@ Returns the number of characters in a string or the number of items in an array.
 {% raw %}
 {% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
-{{ my_array | size }}
+{{ my_array.size }}
 {% endraw %}
 ```
 
@@ -30,7 +30,7 @@ Returns the number of characters in a string or the number of items in an array.
 ```text
 {% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
-{{ my_array | size }}
+{{ my_array.size }}
 ```
 
 You can use `size` with dot notation when you need to use the filter inside a tag.
