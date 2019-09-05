@@ -3,6 +3,7 @@
 *.swp
 pkg
 *.rbc
+.idea
 .rvmrc
 .ruby-version
 Gemfile.lock

@@ -53,4 +53,5 @@ module Liquid
   UndefinedFilter = Class.new(Error)
   MethodOverrideError = Class.new(Error)
   InternalError = Class.new(Error)
+  FormatError = Class.new(Error)
 end

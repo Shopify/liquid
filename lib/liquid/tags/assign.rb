@@ -33,6 +33,10 @@ module Liquid
       output
     end
 
+    def format(left, right)
+      "{%#{"-" if left} assign #{@to} = #{@from.format_variable} #{"-" if right}%}"
+    end
+
     def blank?
       true
     end

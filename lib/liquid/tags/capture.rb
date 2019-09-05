@@ -30,6 +30,12 @@ module Liquid
       output
     end
 
+    def format(left, right)
+      output = "{%#{"-" if left} capture #{@to} #{"-" if right}%}"
+      output << @body.format("")
+      output << "{%#{"-" if left} endcapture #{"-" if right}%}"
+    end
+
     def blank?
       true
     end

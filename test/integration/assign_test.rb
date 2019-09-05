@@ -45,4 +45,9 @@ class AssignTest < Minitest::Test
       assert Template.parse("{% assign foo = ('X' | downcase) %}")
     end
   end
+
+  def test_format
+    assert_template_format("{% assign hello = 'what' %}", '{% assign hello = "what" %}')
+    assert_template_format("{%- assign hello = 'what' -%}", '{%- assign hello = "what" -%}')
+  end
 end # AssignTest

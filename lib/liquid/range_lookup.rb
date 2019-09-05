@@ -21,6 +21,10 @@ module Liquid
       start_int..end_int
     end
 
+    def format
+      "(#{Expression.format(@start_obj)}..#{Expression.format(@end_obj)})"
+    end
+
     private
 
     def to_integer(input)

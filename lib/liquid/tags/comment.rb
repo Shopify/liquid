@@ -10,6 +10,12 @@ module Liquid
     def blank?
       true
     end
+
+    def format(left, right)
+      output = "{%#{"-" if left} comment #{"-" if right}%}"
+      output << @body.format("")
+      output << "{%#{"-" if left} endcomment #{"-" if right}%}"
+    end
   end
 
   Template.register_tag('comment'.freeze, Comment)

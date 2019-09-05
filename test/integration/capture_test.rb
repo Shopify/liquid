@@ -47,4 +47,8 @@ class CaptureTest < Minitest::Test
     rendered = template.render!
     assert_equal "3-3", rendered.gsub(/\s/, '')
   end
+
+  def test_render
+    assert_template_format("{% capture hello %}what{% endcapture %}", '{% capture hello %}what{% endcapture %}')
+  end
 end # CaptureTest

@@ -435,4 +435,17 @@ HERE
 
     assert context.registers[:for_stack].empty?
   end
+
+  def test_render
+    assert_template_format('{% for item in items offset: 2 limit: 2 %}{{ item }}{% endfor %}', '{% for item in items offset:2 limit:2 %}{{item}}{% endfor %}')
+    assert_template_format('{% for i in array.items %}{% break %}{{ i }}{% endfor %}', '{% for i in array.items %}{% break %}{{ i }}{% endfor %}')
+    assert_template_format('{% for i in array offset: offset limit: limit %}{{ i }}{% endfor %}', '{%for i in array limit: limit offset: offset %}{{ i }}{%endfor%}')
+    assert_template_format('{% for item in array %}+{% else %}-{% endfor %}', '{%for item in array%}+{%else%}-{%endfor%}')
+    assert_template_format('{% for item in array reversed %}{{ item }}{% endfor %}', '{%for item in array reversed %}{{item}}{%endfor%}')
+    assert_template_format('{% for i in array.items offset: continue limit: 3 %}{{ i }}{% endfor %}', '{%for i in array.items offset:continue limit: 3 %}{{i}}{%endfor%}')
+    assert_template_format('{%- for item in array -%}+{%- else -%}-{%- endfor -%}', '{%- for item in array -%}+{%-else-%}-{%-endfor-%}')
+    assert_template_format('{%- for item in array -%}+{%- else -%}-{% endfor %}', '{%- for item in array -%}+{%-else-%}-{%endfor%}')
+    assert_template_format('{% for item in array %}+{%- else -%}-{%- endfor -%}', '{% for item in array %}+{%-else-%}-{%-endfor-%}')
+    assert_template_format('{%- for item in array %}+{%- else %}-{%- endfor %}', '{%- for item in array %}+{%-else%}-{%-endfor%}')
+  end
 end

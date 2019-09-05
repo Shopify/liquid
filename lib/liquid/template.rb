@@ -134,6 +134,11 @@ module Liquid
       self
     end
 
+    def format
+      return ''.freeze if @root.nil?
+      @root.format('')
+    end
+
     def registers
       @registers ||= {}
     end

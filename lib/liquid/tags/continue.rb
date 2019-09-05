@@ -12,6 +12,10 @@ module Liquid
     def interrupt
       ContinueInterrupt.new
     end
+
+    def format(left, right)
+      "{%#{"-" if left} continue #{"-" if right}%}"
+    end
   end
 
   Template.register_tag('continue'.freeze, Continue)

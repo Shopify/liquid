@@ -6,6 +6,8 @@ module Liquid
     WhitespaceOrNothing = /\A\s*\z/
     TAGSTART = "{%".freeze
     VARSTART = "{{".freeze
+    WhitespaceStart = /\A(\s*)/
+    WhitespaceEnd = /(\s*)\z/
 
     attr_reader :nodelist
 
@@ -86,7 +88,7 @@ module Liquid
           @blank = false
         else
           if parse_context.trim_whitespace
-            token.lstrip!
+            lstrip(token)
           end
           parse_context.trim_whitespace = false
           @nodelist << token
@@ -95,12 +97,31 @@ module Liquid
         parse_context.line_number = tokenizer.line_number
       end
 
+      if parse_context.trim_whitespace
+        @nodelist << Whitespace.new("")
+      end
+
       yield nil, nil
+    end
+
+    def lstrip(token)
+      @nodelist << if token =~ WhitespaceStart
+                     Whitespace.new($1)
+                   else
+                     Whitespace.new("")
+                   end
+      token.lstrip!
     end
 
     def whitespace_handler(token, parse_context)
       if token[2] == WhitespaceControl
         previous_token = @nodelist.last
+        @nodelist << if previous_token =~ WhitespaceEnd
+                       Whitespace.new($1)
+                     else
+                       Whitespace.new("")
+                     end
+
         if previous_token.is_a? String
           previous_token.rstrip!
         end
@@ -116,6 +137,22 @@ module Liquid
       render_to_output_buffer(context, '')
     end
 
+    def format(output)
+      idx = 0
+      while node = @nodelist[idx]
+        case node
+        when String
+          output << node
+        else
+          raise FormatError.new("Unable to format ".freeze + node.class.name) unless node.respond_to?(:format)
+          output << node.format(idx > 0 && @nodelist[idx - 1].is_a?(Whitespace), @nodelist[idx + 1].is_a?(Whitespace))
+        end
+        idx += 1
+      end
+
+      output
+    end
+
     def render_to_output_buffer(context, output)
       context.resource_limits.render_score += @nodelist.length
 
@@ -126,6 +163,8 @@ module Liquid
         case node
         when String
           output << node
+        when Whitespace
+          output
         when Variable
           render_node(context, output, node)
         when Block

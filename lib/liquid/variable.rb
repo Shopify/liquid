@@ -35,6 +35,67 @@ module Liquid
       @markup
     end
 
+    def format(left, right)
+      format_inner(left, right, true)
+    end
+
+    def format_variable
+      format_inner(false, false, false)
+    end
+
+    def format_inner(left, right, tag)
+      output = Expression.format(name)
+
+      filters.each_index do |i|
+        output << " | "
+        output << filters[i][0]
+        if !filters[i][2].empty? || !filters[i][1].empty?
+          output << ':'
+        end
+        output << format_standard_filters(filters[i][1])
+        output << format_argument_filters(filters[i][2], filters[i][1].empty?)
+      end
+      return output unless tag
+      result = "{{"
+      result << "-" if left
+      result << " "
+      result << output
+      result << " "
+      result << "-" if right
+      result << "}}"
+    end
+
+    def format_standard_filters(filters)
+      output = ""
+      first_sub_filter = true
+      filters.each do |j|
+        unless first_sub_filter
+          output << ','
+        end
+        output << " "
+        output << Expression.format(j)
+        first_sub_filter = false
+      end
+
+      output
+    end
+
+    def format_argument_filters(filters, first_sub_filter)
+      output = ""
+      filters.each do |j, k|
+        unless first_sub_filter
+          output << ','
+        end
+        output << " "
+        output << j
+        output << ": "
+        output << Expression.format(k)
+        first_sub_filter = false
+      end
+
+      output
+    end
+
     def markup_context(markup)
       "in \"{{#{markup}}}\""
     end

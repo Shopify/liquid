@@ -24,6 +24,10 @@ module Liquid
 
       output
     end
+
+    def format(left, right)
+      format_blocks(left, right, "unless")
+    end
   end
 
   Template.register_tag('unless'.freeze, Unless)

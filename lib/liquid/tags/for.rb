@@ -82,6 +82,25 @@ module Liquid
       output
     end
 
+    def format(left, right)
+      output = "{%#{"-" if left} for #{@variable_name} in #{Expression.format(@collection_name)}"
+      output << " reversed" if @reversed
+      output << " offset: #{Expression.format(@from)}" if @from
+      output << " limit: #{Expression.format(@limit)}" if @limit
+      output << " #{format_whitespace(@for_block, 0)}%}"
+      output << @for_block.format("")
+      if @else_block
+        output << "{%#{format_whitespace(@for_block, -1)} else #{format_whitespace(@else_block, 0)}%}#{@else_block.format("")}"
+        output << "{%#{format_whitespace(@else_block, -1)} endfor #{"-" if right}%}"
+      else
+        output << "{%#{format_whitespace(@for_block, -1)} endfor #{"-" if right}%}"
+      end
+    end
+
+    def format_whitespace(block, pos)
+      "-" if block.nodelist[pos].is_a?(Whitespace)
+    end
+
     protected
 
     def lax_parse(markup)

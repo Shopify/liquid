@@ -12,4 +12,8 @@ class ContinueTagTest < Minitest::Test
 
     assert_template_result(expected, markup, assigns)
   end
+
+  def test_render
+    assert_template_format("{% continue %}", '{% continue %}')
+  end
 end

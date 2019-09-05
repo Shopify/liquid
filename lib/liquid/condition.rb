@@ -81,6 +81,20 @@ module Liquid
       "#<Condition #{[@left, @operator, @right].compact.join(' '.freeze)}>"
     end
 
+    def format
+      condition = self
+      output = ""
+      loop do
+        output << Expression.format(condition.left)
+        output << " #{condition.operator}" if condition.operator
+        output << " #{Expression.format(condition.right)}" if condition.right
+        output << " #{child_relation} " if condition.child_relation
+        break unless condition.child_relation
+        condition = condition.child_condition
+      end
+      output
+    end
+
     protected
 
     attr_reader :child_relation

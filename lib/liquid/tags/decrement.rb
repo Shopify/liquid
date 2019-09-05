@@ -30,6 +30,10 @@ module Liquid
       output << value.to_s
       output
     end
+
+    def format(left, right)
+      "{%#{"-" if left} decrement #{@variable} #{"-" if right}%}"
+    end
   end
 
   Template.register_tag('decrement'.freeze, Decrement)

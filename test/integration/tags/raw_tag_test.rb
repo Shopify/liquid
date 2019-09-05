@@ -28,4 +28,9 @@ class RawTagTest < Minitest::Test
     assert_match_syntax_error(/Valid syntax/, '{% raw } foo {% endraw %}')
     assert_match_syntax_error(/Valid syntax/, '{% raw } foo %}{% endraw %}')
   end
+
+  def test_render
+    assert_template_format '{% raw %} Foobar invalid }} {% endraw %}', '{% raw %} Foobar invalid }} {% endraw %}'
+    assert_template_format '{% raw %} Foobar {% invalid {% {% endraw {% endraw %}', '{% raw %} Foobar {% invalid {% {% endraw {% endraw %}'
+  end
 end

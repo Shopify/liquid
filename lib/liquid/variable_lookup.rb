@@ -31,6 +31,21 @@ module Liquid
       end
     end
 
+    def format
+      output = name.to_s
+      @lookups.each_index do |i|
+        output << case lookups[i]
+                  when String
+                    ".#{lookups[i]}"
+                  when VariableLookup
+                    "[#{lookups[i].format}]"
+                  else
+                    ".#{lookups[i]}"
+        end
+      end
+      output
+    end
+
     def evaluate(context)
       name = context.evaluate(@name)
       object = context.find_variable(name)

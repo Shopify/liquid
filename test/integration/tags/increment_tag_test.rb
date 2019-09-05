@@ -20,4 +20,9 @@ class IncrementTagTest < Minitest::Test
       '{%increment port %} {%decrement port%} ' \
       '{%decrement starboard %}', { 'port' => 1, 'starboard' => 5 })
   end
+
+  def test_format
+    assert_template_format("{% increment port %}", '{% increment port %}')
+    assert_template_format("{% decrement port %}", '{% decrement port %}')
+  end
 end

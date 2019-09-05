@@ -42,6 +42,21 @@ module Liquid
     def parse(_tokens)
     end
 
+    def format(left, right)
+      segments = [@tag_name, Expression.format(@template_name_expr)]
+
+      if @variable_name_expr
+        segments << "with"
+        segments << Expression.format(@variable_name_expr)
+      end
+
+      unless @attributes.empty?
+        segments << @attributes.map { |k, v| "#{k}: #{Expression.format(v)}" }.join(", ")
+      end
+
+      "{%#{"-" if left} #{segments.join(' ')} #{"-" if right}%}"
+    end
+
     def render_to_output_buffer(context, output)
       template_name = context.evaluate(@template_name_expr)
       raise ArgumentError.new(options[:locale].t("errors.argument.include")) unless template_name

@@ -48,6 +48,11 @@ class StandardTagTest < Minitest::Test
                                      {%endcomment%}bar')
   end
 
+  def test_render
+    assert_template_format('{% comment %}{% endcomment %}', '{%comment%}{%endcomment%}')
+    assert_template_format('{% comment %} 1 {% comment %} 2 {% endcomment %} 3 {% endcomment %}', '{% comment %} 1 {% comment %} 2 {% endcomment %} 3 {% endcomment %}')
+  end
+
   def test_hyphenated_assign
     assigns = { 'a-b' => '1' }
     assert_template_result('a-b:1 a-b:2', 'a-b:{{a-b}} {%assign a-b = 2 %}a-b:{{a-b}}', assigns)
@@ -211,6 +216,16 @@ class StandardTagTest < Minitest::Test
     assert_template_result('', code, { 'condition' => 'something else' })
   end
 
+  def test_case_format
+    assert_template_format("{% case condition %}{% when 1 or 2 or 3 %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}", '{% case condition %}{% when 1, 2, 3 %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}')
+    assert_template_format("{% case condition %}{% when 1 or 'string' or nil %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}", '{% case condition %}{% when 1 or "string" or null %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}')
+    assert_template_format("{% case true %}{% when true %}true{% when false %}false{% else %}else{% endcase %}", '{% case true %}{% when true %}true{% when false %}false{% else %}else{% endcase %}')
+    assert_template_format("{% case true %}{% when true %}true{% else %}else{% endcase %}", '{% case true %}{% when true %}true{% else %}else{% endcase %}')
+    assert_template_format("{%- case true -%}{%- when true -%}true{%- else -%}else{%- endcase -%}", '{%- case true -%}{%- when true -%}true{%- else -%}else{%- endcase -%}')
+    assert_template_format("{%- case true %}{% when true -%}true{% else -%}else{% endcase %}", '{%- case true %}{% when true -%}true{% else -%}else{% endcase %}')
+    assert_template_format("{% case true %}{% when true -%}true{% else -%}else{%- endcase -%}", '{% case true %}{% when true -%}true{% else -%}else{%- endcase -%}')
+  end
+
   def test_assign
     assert_template_result 'variable', '{% assign a = "variable"%}{{a}}'
   end
@@ -265,6 +280,11 @@ class StandardTagTest < Minitest::Test
       '{%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %}', assigns)
   end
 
+  def test_cycle_format
+    assert_template_format("{% cycle 'text-align: left', 'text-align: right' %} {% cycle 'text-align: left', 'text-align: right' %}", '{%cycle "text-align: left", "text-align: right" %} {%cycle "text-align: left", "text-align: right"%}')
+    assert_template_format("{% cycle 1: 'one', 'two' %}", '{%cycle 1: "one", "two" %}')
+  end
+
   def test_size_of_array
     assigns = { "array" => [1, 2, 3, 4] }
     assert_template_result('array has 4 elements', "array has {{ array.size }} elements", assigns)
@@ -288,6 +308,10 @@ class StandardTagTest < Minitest::Test
 
     assigns = { 'array' => [ 1, 1, 1, 1] }
     assert_template_result('1', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', assigns)
+  end
+
+  def test_format_ifchanged
+    assert_template_format('{% ifchanged %}{{ item }}{% endifchanged %}', '{%ifchanged%}{{item}}{% endifchanged %}')
   end
 
   def test_multiline_tag
