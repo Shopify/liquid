@@ -5,7 +5,7 @@ description: Liquid filter that divides a number by another number.
 
 Divides a number by the specified number.
 
-The result is rounded down to the nearest integer (that is, the [floor]({{ site.baseurl }}/filters/floor)) if the divisor is an integer.
+The result is rounded down to the nearest integer (that is, the [floor]({{ "/filters/floor/" | prepend: site.baseurl }})) if the divisor is an integer.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -83,7 +83,7 @@ In this example, we're dividing by a variable that contains an integer, so we ge
 {{ 20 | divided_by: my_integer }}
 ```
 
-Here, we [multiply]({{ site.baseurl}}/filters/times) the variable by `1.0` to get a float, then divide by the float instead:
+Here, we [multiply]({{ "/filters/times/" | prepend: site.baseurl }}) the variable by `1.0` to get a float, then divide by the float instead:
 
 <p class="code-label">Input</p>
 ```liquid

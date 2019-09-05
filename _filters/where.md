@@ -3,7 +3,7 @@ title: where
 description: Liquid filter that selects from arrays.
 ---
 
-Creates an array including only the objects with a given property value, or any [truthy]({{ "/basics/truthy-and-falsy#truthy" | prepend: site.baseurl }}) value by default.
+Creates an array including only the objects with a given property value, or any [truthy]({{ "/basics/truthy-and-falsy/#truthy" | prepend: site.baseurl }}) value by default.
 
 In this example, assume you have a list of products and you want to show your kitchen products separately. Using `where`, you can create an array containing only the products that have a `"type"` of `"kitchen"`.
 
@@ -37,7 +37,7 @@ Kitchen products:
 - Garlic press
 ```
 
-Say instead you have a list of products and you only want to show those that are available to buy. You can `where` with a property name but no target value to include all products with a [truthy]({{ "/basics/truthy-and-falsy#truthy" | prepend: site.baseurl }}) `"available"` value.
+Say instead you have a list of products and you only want to show those that are available to buy. You can `where` with a property name but no target value to include all products with a [truthy]({{ "/basics/truthy-and-falsy/#truthy" | prepend: site.baseurl }}) `"available"` value.
 
 <p class="code-label">Input</p>
 ```liquid

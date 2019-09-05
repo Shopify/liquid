@@ -3,7 +3,7 @@ title: url_decode
 description: Liquid filter that decodes percent-encoded characters in a string.
 ---
 
-Decodes a string that has been encoded as a URL or by [`url_encode`]({{ '/filters/url_encode' | prepend: site.baseurl }}).
+Decodes a string that has been encoded as a URL or by [url_encode]({{ "/filters/url_encode/" | prepend: site.baseurl }}).
 
 <p class="code-label">Input</p>
 ```liquid

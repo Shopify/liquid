@@ -7,7 +7,7 @@ Iteration tags run blocks of code repeatedly.
 
 ## for
 
-Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://docs.shopify.com/themes/liquid/objects/for-loops).
+Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://help.shopify.com/themes/liquid/objects/for-loops).
 
 <p class="code-label">Input</p>
 ```liquid
