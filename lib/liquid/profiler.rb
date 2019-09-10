@@ -66,7 +66,7 @@ module Liquid
       end
 
       def render_time
-        @end_time - @start_time
+        @render_time = @end_time - @start_time
       end
     end
 
