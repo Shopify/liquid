@@ -1,6 +1,6 @@
 module Liquid
-  # An interrupt is any command that breaks processing of a block (ex: a for loop).
-  class Interrupt
+  # A block interrupt is any command that breaks processing of a block (ex: a for loop).
+  class BlockInterrupt
     attr_reader :message
 
     def initialize(message = nil)
@@ -9,8 +9,8 @@ module Liquid
   end
 
   # Interrupt that is thrown whenever a {% break %} is called.
-  class BreakInterrupt < RuntimeError; end
+  class BreakInterrupt < BlockInterrupt; end
 
   # Interrupt that is thrown whenever a {% continue %} is called.
-  class ContinueInterrupt < RuntimeError; end
+  class ContinueInterrupt < BlockInterrupt; end
 end
