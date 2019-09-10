@@ -52,6 +52,7 @@ module Liquid
         @line_number = node.respond_to?(:line_number) ? node.line_number : nil
         @children    = []
         @render_time = node.render_time
+        pp 'hello1212'
       end
 
       def self.start(node, partial)
