@@ -106,3 +106,9 @@ template = Liquid::Template.parse("{{x}} {{y}}")
 template.render!({ 'x' => 1}, { strict_variables: true })
 #=> Liquid::UndefinedVariable: Liquid error: undefined variable y
 ```
+
+### Usage tracking
+
+To help determine if a feature or code path is used in production we have included opt-in usage tracking. To achieve this we provide an empty `Liquid::Usage.increment` method that can be implemented. This was designed to be paired with https://github.com/Shopify/statsd-instrument , however it's implementation is up to you.
+
+Once you have enabled usage tracking we recommend reporting any logged events through Github Issues that your system may be reporting. It is highly likely this event has been added to consider deprecating or improving code specific to this event, so please raise any concerns.

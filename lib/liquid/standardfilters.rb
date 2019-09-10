@@ -421,6 +421,7 @@ module Liquid
 
     def default(input, default_value = ''.freeze)
       if !input || input.respond_to?(:empty?) && input.empty?
+        Usage.increment("liquid.default_filter_received_false_value") if input == false # See https://github.com/Shopify/liquid/issues/1127
         default_value
       else
         input
