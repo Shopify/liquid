@@ -44,15 +44,13 @@ module Liquid
     include Enumerable
 
     class Timing
-      attr_reader :code, :partial, :line_number, :children, :render_time
+      attr_reader :code, :partial, :line_number, :children, :total_time, :self_time
 
       def initialize(node, partial)
         @code        = node.respond_to?(:raw) ? node.raw : node
         @partial     = partial
         @line_number = node.respond_to?(:line_number) ? node.line_number : nil
         @children    = []
-        @render_time = node.render_time
-        pp 'hello1212'
       end
 
       def self.start(node, partial)
@@ -65,6 +63,18 @@ module Liquid
 
       def finish
         @end_time = Time.now
+        @total_time = @end_time - @start_time
+        if @children.size == 0
+          @self_time = @total_time
+        else
+          total_children_time = 0
+
+          @children.each do |child|
+            total_children_time += child.total_time
+          end
+
+          @self_time = @total_time - total_children_time
+        end
       end
 
       def render_time
