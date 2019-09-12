@@ -67,7 +67,7 @@ module Liquid
 
         if include?(Enumerable)
           blacklist += Enumerable.public_instance_methods
-          blacklist -= [:sort, :count, :first, :min, :max, :include?]
+          blacklist -= [:sort, :count, :first, :min, :max]
         end
 
         whitelist = [:to_liquid] + (public_instance_methods - blacklist)
