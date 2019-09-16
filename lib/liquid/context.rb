@@ -35,8 +35,6 @@ module Liquid
       @base_scope_depth    = 0
       squash_instance_assigns_with_environments
 
-      @this_stack_used = false
-
       self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors
         self.exception_renderer = ->(e) { raise }
@@ -122,19 +120,11 @@ module Liquid
     #   end
     #
     #   context['var]  #=> nil
-    def stack(new_scope = nil)
-      old_stack_used = @this_stack_used
-      if new_scope
-        push(new_scope)
-        @this_stack_used = true
-      else
-        @this_stack_used = false
-      end
-
+    def stack(new_scope = {})
+      push(new_scope)
       yield
     ensure
-      pop if @this_stack_used
-      @this_stack_used = old_stack_used
+      pop
     end
 
     # Creates a new context inheriting resource limits, filters, environment etc.,
@@ -162,10 +152,6 @@ module Liquid
 
     # Only allow String, Numeric, Hash, Array, Proc, Boolean or <tt>Liquid::Drop</tt>
     def []=(key, value)
-      unless @this_stack_used
-        @this_stack_used = true
-        push({})
-      end
       @scopes[0][key] = value
     end
 

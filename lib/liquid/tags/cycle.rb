@@ -34,24 +34,22 @@ module Liquid
     def render_to_output_buffer(context, output)
       context.registers[:cycle] ||= {}
 
-      context.stack do
-        key = context.evaluate(@name)
-        iteration = context.registers[:cycle][key].to_i
+      key = context.evaluate(@name)
+      iteration = context.registers[:cycle][key].to_i
 
-        val = context.evaluate(@variables[iteration])
+      val = context.evaluate(@variables[iteration])
 
-        if val.is_a?(Array)
-          val = val.join
-        elsif !val.is_a?(String)
-          val = val.to_s
-        end
-
-        output << val
-
-        iteration += 1
-        iteration  = 0 if iteration >= @variables.size
-        context.registers[:cycle][key] = iteration
+      if val.is_a?(Array)
+        val = val.join
+      elsif !val.is_a?(String)
+        val = val.to_s
       end
+
+      output << val
+
+      iteration += 1
+      iteration  = 0 if iteration >= @variables.size
+      context.registers[:cycle][key] = iteration
 
       output
     end
