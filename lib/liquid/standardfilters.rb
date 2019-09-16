@@ -8,13 +8,13 @@ module Liquid
       '>'.freeze => '&gt;'.freeze,
       '<'.freeze => '&lt;'.freeze,
       '"'.freeze => '&quot;'.freeze,
-      "'".freeze => '&#39;'.freeze
+      "'".freeze => '&#39;'.freeze,
     }.freeze
     HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
     STRIP_HTML_BLOCKS = Regexp.union(
-      /<script.*?<\/script>/m,
+      %r{<script.*?</script>}m,
       /<!--.*?-->/m,
-      /<style.*?<\/style>/m
+      %r{<style.*?</style>}m
     )
     STRIP_HTML_TAGS = /<.*?>/m
 
@@ -276,7 +276,7 @@ module Liquid
 
     def concat(input, array)
       unless array.respond_to?(:to_ary)
-        raise ArgumentError.new("concat filter requires an array argument")
+        raise ArgumentError, "concat filter requires an array argument"
       end
       InputIterator.new(input).concat(array)
     end
@@ -430,7 +430,7 @@ module Liquid
     private
 
     def raise_property_error(property)
-      raise Liquid::ArgumentError.new("cannot select the property '#{property}'")
+      raise Liquid::ArgumentError, "cannot select the property '#{property}'"
     end
 
     def apply_operation(input, operand, operation)

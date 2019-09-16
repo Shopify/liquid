@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 lib = File.expand_path('../lib/', __FILE__)
-$LOAD_PATH.unshift lib unless $LOAD_PATH.include?(lib)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require "liquid/version"
 
@@ -26,6 +26,6 @@ Gem::Specification.new do |s|
 
   s.require_path = "lib"
 
-  s.add_development_dependency 'rake', '~> 11.3'
-  s.add_development_dependency 'minitest'
+  s.add_development_dependency('rake', '~> 11.3')
+  s.add_development_dependency('minitest')
 end

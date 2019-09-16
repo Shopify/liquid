@@ -27,7 +27,7 @@ module Liquid
 
     def self.add_filter(filter)
       raise ArgumentError, "Expected module but got: #{filter.class}" unless filter.is_a?(Module)
-      unless self.include?(filter)
+      unless include?(filter)
         invokable_non_public_methods = (filter.private_instance_methods + filter.protected_instance_methods).select { |m| invokable?(m) }
         if invokable_non_public_methods.any?
           raise MethodOverrideError, "Filter overrides registered public methods as non public: #{invokable_non_public_methods.join(', ')}"
@@ -54,7 +54,7 @@ module Liquid
     def invoke(method, *args)
       if self.class.invokable?(method)
         send(method, *args)
-      elsif @context && @context.strict_filters
+      elsif @context&.strict_filters
         raise Liquid::UndefinedFilter, "undefined filter #{method}"
       else
         args.first

@@ -69,7 +69,7 @@ class StandardTagTest < Minitest::Test
     assert_raises(SyntaxError) do
       assert_template_result('content foo content foo ',
         '{{ var2 }}{% capture %}{{ var }} foo {% endcapture %}{{ var2 }}{{ var2 }}',
-        { 'var' => 'content' })
+        'var' => 'content')
     end
   end
 
@@ -183,32 +183,32 @@ class StandardTagTest < Minitest::Test
 
   def test_case_when_or
     code = '{% case condition %}{% when 1 or 2 or 3 %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}'
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 1 })
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 2 })
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 3 })
-    assert_template_result(' its 4 ', code, { 'condition' => 4 })
-    assert_template_result('', code, { 'condition' => 5 })
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 1)
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 2)
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 3)
+    assert_template_result(' its 4 ', code, 'condition' => 4)
+    assert_template_result('', code, 'condition' => 5)
 
     code = '{% case condition %}{% when 1 or "string" or null %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}'
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 1 })
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 'string' })
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => nil })
-    assert_template_result('', code, { 'condition' => 'something else' })
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 1)
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 'string')
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => nil)
+    assert_template_result('', code, 'condition' => 'something else')
   end
 
   def test_case_when_comma
     code = '{% case condition %}{% when 1, 2, 3 %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}'
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 1 })
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 2 })
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 3 })
-    assert_template_result(' its 4 ', code, { 'condition' => 4 })
-    assert_template_result('', code, { 'condition' => 5 })
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 1)
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 2)
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 3)
+    assert_template_result(' its 4 ', code, 'condition' => 4)
+    assert_template_result('', code, 'condition' => 5)
 
     code = '{% case condition %}{% when 1, "string", null %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}'
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 1 })
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 'string' })
-    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => nil })
-    assert_template_result('', code, { 'condition' => 'something else' })
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 1)
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 'string')
+    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => nil)
+    assert_template_result('', code, 'condition' => 'something else')
   end
 
   def test_assign
@@ -283,10 +283,10 @@ class StandardTagTest < Minitest::Test
   end
 
   def test_ifchanged
-    assigns = { 'array' => [ 1, 1, 2, 2, 3, 3] }
+    assigns = { 'array' => [1, 1, 2, 2, 3, 3] }
     assert_template_result('123', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', assigns)
 
-    assigns = { 'array' => [ 1, 1, 1, 1] }
+    assigns = { 'array' => [1, 1, 1, 1] }
     assert_template_result('1', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', assigns)
   end
 

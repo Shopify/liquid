@@ -227,7 +227,7 @@ class ParseTreeVisitorTest < Minitest::Test
       [[nil, [
         [nil, [[nil, [["other", []]]]]],
         ["test", []],
-        ["xs", []]
+        ["xs", []],
       ]]],
       traversal(%({% for x in xs offset: test %}{{ other }}{% endfor %})).visit
     )

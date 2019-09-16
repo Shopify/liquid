@@ -51,7 +51,7 @@ module Liquid
       token = @tokens[@p]
       if token[0] == :id
         variable_signature
-      elsif SINGLE_TOKEN_EXPRESSION_TYPES.include? token[0]
+      elsif SINGLE_TOKEN_EXPRESSION_TYPES.include?(token[0])
         consume
       elsif token.first == :open_round
         consume

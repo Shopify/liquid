@@ -28,15 +28,15 @@ module Liquid
 
     def unknown_tag(tag, _params, _tokens)
       if tag == 'else'.freeze
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.unexpected_else".freeze,
-          block_name: block_name))
+        raise SyntaxError, parse_context.locale.t("errors.syntax.unexpected_else".freeze,
+          block_name: block_name)
       elsif tag.start_with?('end'.freeze)
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.invalid_delimiter".freeze,
+        raise SyntaxError, parse_context.locale.t("errors.syntax.invalid_delimiter".freeze,
           tag: tag,
           block_name: block_name,
-          block_delimiter: block_delimiter))
+          block_delimiter: block_delimiter)
       else
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.unknown_tag".freeze, tag: tag))
+        raise SyntaxError, parse_context.locale.t("errors.syntax.unknown_tag".freeze, tag: tag)
       end
     end
 
@@ -61,7 +61,7 @@ module Liquid
 
           return false if end_tag_name == block_delimiter
           unless end_tag_name
-            raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_never_closed".freeze, block_name: block_name))
+            raise SyntaxError, parse_context.locale.t("errors.syntax.tag_never_closed".freeze, block_name: block_name)
           end
 
           # this tag is not registered with the system

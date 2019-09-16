@@ -68,7 +68,7 @@ class ConditionUnitTest < Minitest::Test
     assert_nil Condition.new({}, '>', 2).evaluate
     assert_nil Condition.new(2, '>', {}).evaluate
     assert_equal false, Condition.new({}, '==', 2).evaluate
-    assert_equal true, Condition.new({ 'a' => 1 }, '==', { 'a' => 1 }).evaluate
+    assert_equal true, Condition.new({ 'a' => 1 }, '==', 'a' => 1).evaluate
     assert_equal true, Condition.new({ 'a' => 2 }, 'contains', 'a').evaluate
   end
 
@@ -107,11 +107,11 @@ class ConditionUnitTest < Minitest::Test
 
     assert_equal false, condition.evaluate
 
-    condition.or Condition.new(2, '==', 1)
+    condition.or(Condition.new(2, '==', 1))
 
     assert_equal false, condition.evaluate
 
-    condition.or Condition.new(1, '==', 1)
+    condition.or(Condition.new(1, '==', 1))
 
     assert_equal true, condition.evaluate
   end
@@ -121,22 +121,22 @@ class ConditionUnitTest < Minitest::Test
 
     assert_equal true, condition.evaluate
 
-    condition.and Condition.new(2, '==', 2)
+    condition.and(Condition.new(2, '==', 2))
 
     assert_equal true, condition.evaluate
 
-    condition.and Condition.new(2, '==', 1)
+    condition.and(Condition.new(2, '==', 1))
 
     assert_equal false, condition.evaluate
   end
 
   def test_should_allow_custom_proc_operator
-    Condition.operators['starts_with'] = proc { |cond, left, right| left =~ %r{^#{right}} }
+    Condition.operators['starts_with'] = proc { |_cond, left, right| left =~ /^#{right}/ }
 
     assert_evaluates_true 'bob', 'starts_with', 'b'
     assert_evaluates_false 'bob', 'starts_with', 'o'
   ensure
-    Condition.operators.delete 'starts_with'
+    Condition.operators.delete('starts_with')
   end
 
   def test_left_or_right_may_contain_operators

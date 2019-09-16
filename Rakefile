@@ -1,18 +1,18 @@
 require 'rake'
 require 'rake/testtask'
-$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+$LOAD_PATH.unshift(File.expand_path("../lib", __FILE__))
 require "liquid/version"
 
-task default: [:test, :rubocop]
+task(default: [:test, :rubocop])
 
-desc 'run test suite with default parser'
+desc('run test suite with default parser')
 Rake::TestTask.new(:base_test) do |t|
   t.libs << '.' << 'lib' << 'test'
   t.test_files = FileList['test/{integration,unit}/**/*_test.rb']
   t.verbose = false
 end
 
-desc 'run test suite with warn error mode'
+desc('run test suite with warn error mode')
 task :warn_test do
   ENV['LIQUID_PARSER_MODE'] = 'warn'
   Rake::Task['base_test'].invoke
@@ -25,7 +25,7 @@ task :rubocop do
   end
 end
 
-desc 'runs test suite with both strict and lax parsers'
+desc('runs test suite with both strict and lax parsers')
 task :test do
   ENV['LIQUID_PARSER_MODE'] = 'lax'
   Rake::Task['base_test'].invoke
@@ -47,7 +47,7 @@ task :test do
   end
 end
 
-task gem: :build
+task(gem: :build)
 task :build do
   system "gem build liquid.gemspec"
 end
@@ -94,7 +94,7 @@ namespace :memory_profile do
   end
 end
 
-desc "Run example"
+desc("Run example")
 task :example do
   ruby "-w -d -Ilib example/server/server.rb"
 end

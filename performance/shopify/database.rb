@@ -16,9 +16,10 @@ module Database
       end
 
       # key the tables by handles, as this is how liquid expects it.
-      db = db.inject({}) do |assigns, (key, values)|
-        assigns[key] = values.inject({}) { |h, v| h[v['handle']] = v; h; }
-        assigns
+      db = db.each_with_object({}) do |(key, values), assigns|
+        assigns[key] = values.each_with_object({}) do |v, h|
+          h[v['handle']] = v
+        end
       end
 
       # Some standard direct accessors so that the specialized templates
@@ -30,8 +31,8 @@ module Database
 
       db['cart']       = {
         'total_price' => db['line_items'].values.inject(0) { |sum, item| sum += item['line_price'] * item['quantity'] },
-        'item_count'  => db['line_items'].values.inject(0) { |sum, item| sum += item['quantity'] },
-        'items'       => db['line_items'].values
+        'item_count' => db['line_items'].values.inject(0) { |sum, item| sum += item['quantity'] },
+        'items' => db['line_items'].values,
       }
 
       db
@@ -40,6 +41,6 @@ module Database
 end
 
 if __FILE__ == $PROGRAM_NAME
-  p Database.tables['collections']['frontpage'].keys
+  p(Database.tables['collections']['frontpage'].keys)
   # p Database.tables['blog']['articles']
 end

@@ -10,17 +10,15 @@ module Liquid
       @blocks = []
 
       if markup =~ Syntax
-        @left = Expression.parse($1)
+        @left = Expression.parse(Regexp.last_match(1))
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.case".freeze))
+        raise SyntaxError, options[:locale].t("errors.syntax.case".freeze)
       end
     end
 
     def parse(tokens)
       body = BlockBody.new
-      while parse_body(body, tokens)
-        body = @blocks.last.attachment
-      end
+      body = @blocks.last.attachment while parse_body(body, tokens)
     end
 
     def nodelist
@@ -60,12 +58,12 @@ module Liquid
 
       while markup
         unless markup =~ WhenSyntax
-          raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_when".freeze))
+          raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_when".freeze)
         end
 
-        markup = $2
+        markup = Regexp.last_match(2)
 
-        block = Condition.new(@left, '=='.freeze, Expression.parse($1))
+        block = Condition.new(@left, '=='.freeze, Expression.parse(Regexp.last_match(1)))
         block.attach(body)
         @blocks << block
       end
@@ -73,7 +71,7 @@ module Liquid
 
     def record_else_condition(markup)
       unless markup.strip.empty?
-        raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_else".freeze))
+        raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_else".freeze)
       end
 
       block = ElseCondition.new
