@@ -392,13 +392,14 @@ module Liquid
     end
 
     # Defaults are passed as nil so systems can easily override
-    def format(input, n = nil, thousands = nil, decimal = nil)
-      n = 2 if n.nil?
-      thousands = " ".freeze if thousands.nil?
-      decimal = ".".freeze if decimal.nil?
-      return input if (precision = Utils.to_number(n).to_i) < 0
-      whole_part, decimal_part = Kernel.format("%.#{precision}f", Utils.to_number(input)).split('.')
-      [whole_part.gsub(/(\d)(?=\d{3}+$)/, "\\1#{thousands}"), decimal_part].compact.join(decimal.to_s)
+    def format_number(input, options = {})
+      options = {} unless options.is_a?(Hash)
+      precision = options['precision'] || 2
+      delimiter = options['delimiter'] || " ".freeze
+      separator = options['separator'] || ".".freeze
+      return input if (prec = Utils.to_number(precision).to_i) < 0
+      whole_part, decimal_part = Kernel.format("%.#{prec}f", Utils.to_number(input)).split('.')
+      [whole_part.gsub(/(\d)(?=\d{3}+$)/, "\\1#{delimiter}"), decimal_part].compact.join(separator.to_s)
     end
 
     def ceil(input)
