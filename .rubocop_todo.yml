@@ -83,7 +83,7 @@ Style/ClassVars:
 Style/DateTime:
   Exclude:
     - 'test/unit/context_unit_test.rb'
-    -
+
 # Offense count: 9
 # Cop supports --auto-correct.
 # Configuration parameters: AllowAsExpressionSeparator.
