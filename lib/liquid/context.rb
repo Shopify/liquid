@@ -21,9 +21,7 @@ module Liquid
     end
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_registers = {}, static_environments = {})
-      @environments = [environments]
-      @environments.flatten!
-
+      @environments        = environments.is_a?(Array) ? environments : [environments]
       @static_environments = [static_environments].flat_map(&:freeze).freeze
       @scopes              = [(outer_scope || {})]
       @registers           = registers
@@ -33,16 +31,14 @@ module Liquid
       @strict_variables    = false
       @resource_limits     = resource_limits || ResourceLimits.new(Template.default_resource_limits)
       @base_scope_depth    = 0
-      squash_instance_assigns_with_environments
+      @interrupts          = []
+      @filters             = []
+      @global_filter       = nil
 
       self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors
         self.exception_renderer = ->(_e) { raise }
       end
-
-      @interrupts = []
-      @filters = []
-      @global_filter = nil
     end
     # rubocop:enable Metrics/ParameterLists
 
@@ -245,16 +241,5 @@ module Liquid
     rescue Liquid::InternalError => exc
       exc
     end
-
-    def squash_instance_assigns_with_environments
-      @scopes.last.each_key do |k|
-        @environments.each do |env|
-          if env.key?(k)
-            scopes.last[k] = lookup_and_evaluate(env, k)
-            break
-          end
-        end
-      end
-    end # squash_instance_assigns_with_environments
   end # Context
 end # Liquid

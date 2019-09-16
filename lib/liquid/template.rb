@@ -143,7 +143,12 @@ module Liquid
     end
 
     def instance_assigns
-      @instance_assigns ||= {}
+      @instance_assigns ||= []
+    end
+
+    def new_outer_scope
+      @instance_assigns.unshift(last = {})
+      last
     end
 
     def errors
@@ -178,11 +183,11 @@ module Liquid
         c
       when Liquid::Drop
         drop = args.shift
-        drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        drop.context = Context.new([drop, assigns].concat(instance_assigns), new_outer_scope, registers, @rethrow_errors, @resource_limits)
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        Context.new([args.shift, assigns].concat(instance_assigns), new_outer_scope, registers, @rethrow_errors, @resource_limits)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
+        Context.new([assigns].concat(instance_assigns), new_outer_scope, registers, @rethrow_errors, @resource_limits)
       else
         raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
       end
