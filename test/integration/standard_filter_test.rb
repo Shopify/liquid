@@ -625,8 +625,8 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result "50 000 000.00", "{{ price | format_number }}", 'price' => 50000000
     assert_template_result "50000000.00", "{{ price | format_number: precision: 2, delimiter: '', separator: '.'}}", 'price' => 50000000
     assert_template_result "50$000$000#00", "{{ price | format_number: precision: 2, delimiter: '$', separator:'#'}}", 'price' => 50000000
-    assert_template_result "-50$000$000#00", "{{ price | format_number: precision: 2, delimiter: '$',separator: '#'}}", 'price' => -50000000
-    assert_template_result "-50 000 000.00", "{{ price | format_number: precision: A, delimiter: A,separator: A}}", 'price' => -50000000
+    assert_template_result "-50$000$000#00", "{{ price | format_number: precision: 2, delimiter: '$', separator: '#'}}", 'price' => -50000000
+    assert_template_result "-50 000 000.00", "{{ price | format_number: precision: A, delimiter: A, separator: A}}", 'price' => -50000000
   end
 
   def test_ceil
