@@ -33,7 +33,7 @@ class ProductDrop < Liquid::Drop
 
   class CatchallDrop < Liquid::Drop
     def liquid_method_missing(method)
-      +'catchall_method: ' << method.to_s
+      "catchall_method: #{method}"
     end
   end
 
