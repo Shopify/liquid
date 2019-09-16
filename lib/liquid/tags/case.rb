@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Case < Block
     Syntax     = /(#{QuotedFragment})/o
@@ -12,7 +14,7 @@ module Liquid
       if markup =~ Syntax
         @left = Expression.parse(Regexp.last_match(1))
       else
-        raise SyntaxError, options[:locale].t("errors.syntax.case".freeze)
+        raise SyntaxError, options[:locale].t("errors.syntax.case")
       end
     end
 
@@ -27,9 +29,9 @@ module Liquid
 
     def unknown_tag(tag, markup, tokens)
       case tag
-      when 'when'.freeze
+      when 'when'
         record_when_condition(markup)
-      when 'else'.freeze
+      when 'else'
         record_else_condition(markup)
       else
         super
@@ -58,12 +60,12 @@ module Liquid
 
       while markup
         unless markup =~ WhenSyntax
-          raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_when".freeze)
+          raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_when")
         end
 
         markup = Regexp.last_match(2)
 
-        block = Condition.new(@left, '=='.freeze, Expression.parse(Regexp.last_match(1)))
+        block = Condition.new(@left, '==', Expression.parse(Regexp.last_match(1)))
         block.attach(body)
         @blocks << block
       end
@@ -71,7 +73,7 @@ module Liquid
 
     def record_else_condition(markup)
       unless markup.strip.empty?
-        raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_else".freeze)
+        raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_else")
       end
 
       block = ElseCondition.new
@@ -86,5 +88,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('case'.freeze, Case)
+  Template.register_tag('case', Case)
 end

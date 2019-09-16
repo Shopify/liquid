@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MoneyFilter
   def money_with_currency(money)
     return '' if money.nil?

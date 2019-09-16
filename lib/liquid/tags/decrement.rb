@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # decrement is used in a place where one needs to insert a counter
   #     into a template, and needs the counter to survive across
@@ -32,5 +34,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('decrement'.freeze, Decrement)
+  Template.register_tag('decrement', Decrement)
 end

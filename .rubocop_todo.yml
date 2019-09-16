@@ -83,14 +83,7 @@ Style/ClassVars:
 Style/DateTime:
   Exclude:
     - 'test/unit/context_unit_test.rb'
-
-# Offense count: 119
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: always, never
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
+    -
 # Offense count: 9
 # Cop supports --auto-correct.
 # Configuration parameters: AllowAsExpressionSeparator.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Continue tag to be used to break out of a for loop.
   #
@@ -14,5 +16,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('continue'.freeze, Continue)
+  Template.register_tag('continue', Continue)
 end

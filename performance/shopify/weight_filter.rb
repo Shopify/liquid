@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module WeightFilter
   def weight(grams)
     format("%.2f", grams / 1000)

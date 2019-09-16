@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Parser
     def initialize(input)
@@ -66,10 +68,10 @@ module Liquid
     end
 
     def argument
-      str = ""
+      str = +""
       # might be a keyword argument (identifier: expression)
       if look(:id) && look(:colon, 1)
-        str << consume << consume << ' '.freeze
+        str << consume << consume << ' '
       end
 
       str << expression

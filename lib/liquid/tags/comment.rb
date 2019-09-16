@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Comment < Block
     def render_to_output_buffer(_context, output)
@@ -12,5 +14,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('comment'.freeze, Comment)
+  Template.register_tag('comment', Comment)
 end

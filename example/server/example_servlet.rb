@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ProductsFilter
   def price(integer)
     format("$%.2d USD", integer / 100.0)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CommentForm < Liquid::Block
   Syntax = /(#{Liquid::VariableSignature}+)/
 

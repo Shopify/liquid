@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Include allows templates to relate with other templates
   #
@@ -35,7 +37,7 @@ module Liquid
         end
 
       else
-        raise SyntaxError, options[:locale].t("errors.syntax.include".freeze)
+        raise SyntaxError, options[:locale].t("errors.syntax.include")
       end
     end
 
@@ -52,7 +54,7 @@ module Liquid
         parse_context: parse_context
       )
 
-      context_variable_name = template_name.split('/'.freeze).last
+      context_variable_name = template_name.split('/').last
 
       variable = if @variable_name_expr
         context.evaluate(@variable_name_expr)
@@ -101,5 +103,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('include'.freeze, Include)
+  Template.register_tag('include', Include)
 end

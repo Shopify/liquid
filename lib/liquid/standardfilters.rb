@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require 'cgi'
 require 'bigdecimal'
 
 module Liquid
   module StandardFilters
     HTML_ESCAPE = {
-      '&'.freeze => '&amp;'.freeze,
-      '>'.freeze => '&gt;'.freeze,
-      '<'.freeze => '&lt;'.freeze,
-      '"'.freeze => '&quot;'.freeze,
-      "'".freeze => '&#39;'.freeze,
+      '&' => '&amp;',
+      '>' => '&gt;',
+      '<' => '&lt;',
+      '"' => '&quot;',
+      "'" => '&#39;',
     }.freeze
     HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
     STRIP_HTML_BLOCKS = Regexp.union(
@@ -72,7 +74,7 @@ module Liquid
     end
 
     # Truncate a string down to x characters
-    def truncate(input, length = 50, truncate_string = "...".freeze)
+    def truncate(input, length = 50, truncate_string = "...")
       return if input.nil?
       input_str = input.to_s
       length = Utils.to_integer(length)
@@ -82,13 +84,13 @@ module Liquid
       input_str.length > length ? input_str[0...l].concat(truncate_string_str) : input_str
     end
 
-    def truncatewords(input, words = 15, truncate_string = "...".freeze)
+    def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
       wordlist = input.to_s.split
       words = Utils.to_integer(words)
       l = words - 1
       l = 0 if l < 0
-      wordlist.length > l ? wordlist[0..l].join(" ".freeze).concat(truncate_string.to_s) : input
+      wordlist.length > l ? wordlist[0..l].join(" ").concat(truncate_string.to_s) : input
     end
 
     # Split input string into an array of substrings separated by given pattern.
@@ -113,7 +115,7 @@ module Liquid
     end
 
     def strip_html(input)
-      empty = ''.freeze
+      empty = ''
       result = input.to_s.gsub(STRIP_HTML_BLOCKS, empty)
       result.gsub!(STRIP_HTML_TAGS, empty)
       result
@@ -121,11 +123,11 @@ module Liquid
 
     # Remove all newlines from the string
     def strip_newlines(input)
-      input.to_s.gsub(/\r?\n/, ''.freeze)
+      input.to_s.gsub(/\r?\n/, '')
     end
 
     # Join elements of the array with certain character between them
-    def join(input, glue = ' '.freeze)
+    def join(input, glue = ' ')
       InputIterator.new(input).join(glue)
     end
 
@@ -220,7 +222,7 @@ module Liquid
       InputIterator.new(input).map do |e|
         e = e.call if e.is_a?(Proc)
 
-        if property == "to_liquid".freeze
+        if property == "to_liquid"
           e
         elsif e.respond_to?(:[])
           r = e[property]
@@ -250,23 +252,23 @@ module Liquid
     end
 
     # Replace occurrences of a string with another
-    def replace(input, string, replacement = ''.freeze)
+    def replace(input, string, replacement = '')
       input.to_s.gsub(string.to_s, replacement.to_s)
     end
 
     # Replace the first occurrences of a string with another
-    def replace_first(input, string, replacement = ''.freeze)
+    def replace_first(input, string, replacement = '')
       input.to_s.sub(string.to_s, replacement.to_s)
     end
 
     # remove a substring
     def remove(input, string)
-      input.to_s.gsub(string.to_s, ''.freeze)
+      input.to_s.gsub(string.to_s, '')
     end
 
     # remove the first occurrences of a substring
     def remove_first(input, string)
-      input.to_s.sub(string.to_s, ''.freeze)
+      input.to_s.sub(string.to_s, '')
     end
 
     # add one string to another
@@ -288,7 +290,7 @@ module Liquid
 
     # Add <br /> tags in front of all newlines in input string
     def newline_to_br(input)
-      input.to_s.gsub(/\n/, "<br />\n".freeze)
+      input.to_s.gsub(/\n/, "<br />\n")
     end
 
     # Reformat a date using Ruby's core Time#strftime( string ) -> string
@@ -419,7 +421,7 @@ module Liquid
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
-    def default(input, default_value = ''.freeze)
+    def default(input, default_value = '')
       if !input || input.respond_to?(:empty?) && input.empty?
         Usage.increment("default_filter_received_false_value") if input == false # See https://github.com/Shopify/liquid/issues/1127
         default_value

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Paginate < Liquid::Block
   Syntax = /(#{Liquid::QuotedFragment})\s*(by\s*(\d+))?/
 

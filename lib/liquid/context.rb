@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
@@ -232,7 +234,7 @@ module Liquid
     end
 
     def check_overflow
-      raise StackLevelError, "Nesting too deep".freeze if overflow?
+      raise StackLevelError, "Nesting too deep" if overflow?
     end
 
     def overflow?

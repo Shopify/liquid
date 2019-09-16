@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Capture stores the result of a block into a variable without rendering it inplace.
   #
@@ -35,5 +37,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('capture'.freeze, Capture)
+  Template.register_tag('capture', Capture)
 end

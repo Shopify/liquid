@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
 require "strscan"
 module Liquid
   class Lexer
     SPECIALS = {
-      '|'.freeze => :pipe,
-      '.'.freeze => :dot,
-      ':'.freeze => :colon,
-      ','.freeze => :comma,
-      '['.freeze => :open_square,
-      ']'.freeze => :close_square,
-      '('.freeze => :open_round,
-      ')'.freeze => :close_round,
-      '?'.freeze => :question,
-      '-'.freeze => :dash,
+      '|' => :pipe,
+      '.' => :dot,
+      ':' => :colon,
+      ',' => :comma,
+      '[' => :open_square,
+      ']' => :close_square,
+      '(' => :open_round,
+      ')' => :close_round,
+      '?' => :question,
+      '-' => :dash,
     }.freeze
     IDENTIFIER = /[a-zA-Z_][\w-]*\??/
     SINGLE_STRING_LITERAL = /'[^\']*'/

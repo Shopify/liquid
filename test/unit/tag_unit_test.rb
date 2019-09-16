@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class TagUnitTest < Minitest::Test
@@ -31,7 +33,7 @@ class TagUnitTest < Minitest::Test
 
       assert_equal 'hello', template.render
 
-      buf = ''
+      buf = +''
       output = template.render({}, output: buf)
       assert_equal 'hello', output
       assert_equal 'hello', buf
@@ -49,7 +51,7 @@ class TagUnitTest < Minitest::Test
 
       assert_equal 'foohellobar', template.render
 
-      buf = ''
+      buf = +''
       output = template.render({}, output: buf)
       assert_equal 'foohellobar', output
       assert_equal 'foohellobar', buf

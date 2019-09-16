@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) 2005 Tobias Luetke
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -21,10 +23,10 @@
 
 module Liquid
   FilterSeparator             = /\|/
-  ArgumentSeparator           = ','.freeze
-  FilterArgumentSeparator     = ':'.freeze
-  VariableAttributeSeparator  = '.'.freeze
-  WhitespaceControl           = '-'.freeze
+  ArgumentSeparator           = ','
+  FilterArgumentSeparator     = ':'
+  VariableAttributeSeparator  = '.'
+  WhitespaceControl           = '-'
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/

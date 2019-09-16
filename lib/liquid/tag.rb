@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Tag
     attr_reader :nodelist, :tag_name, :line_number, :parse_context
@@ -33,7 +35,7 @@ module Liquid
     end
 
     def render(_context)
-      ''.freeze
+      ''
     end
 
     # For backwards compatibility with custom tags. In a future release, the semantics

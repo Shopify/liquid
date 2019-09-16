@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'yaml'
 
 module Liquid
@@ -31,7 +33,7 @@ module Liquid
     end
 
     def deep_fetch_translation(name)
-      name.split('.'.freeze).reduce(locale) do |level, cur|
+      name.split('.').reduce(locale) do |level, cur|
         level[cur] || raise(TranslationError, "Translation for #{name} does not exist in locale #{path}")
       end
     end

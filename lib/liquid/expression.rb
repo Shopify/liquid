@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Expression
     class MethodLiteral
@@ -14,11 +16,11 @@ module Liquid
     end
 
     LITERALS = {
-      nil => nil, 'nil'.freeze => nil, 'null'.freeze => nil, ''.freeze => nil,
-      'true'.freeze => true,
-      'false'.freeze => false,
-      'blank'.freeze => MethodLiteral.new(:blank?, '').freeze,
-      'empty'.freeze => MethodLiteral.new(:empty?, '').freeze
+      nil => nil, 'nil' => nil, 'null' => nil, '' => nil,
+      'true' => true,
+      'false' => false,
+      'blank' => MethodLiteral.new(:blank?, '').freeze,
+      'empty' => MethodLiteral.new(:empty?, '').freeze
     }.freeze
 
     SINGLE_QUOTED_STRING = /\A'(.*)'\z/m

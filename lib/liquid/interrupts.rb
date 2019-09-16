@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Liquid
   # An interrupt is any command that breaks processing of a block (ex: a for loop).
   class Interrupt
     attr_reader :message
 
     def initialize(message = nil)
-      @message = message || "interrupt".freeze
+      @message = message || "interrupt"
     end
   end
 
