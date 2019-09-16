@@ -21,9 +21,7 @@ module Liquid
     end
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_registers = {}, static_environments = {})
-      @environments = [environments]
-      @environments.flatten!
-
+      @environments        = environments.is_a?(Array) ? environments : [environments]
       @static_environments = [static_environments].flat_map(&:freeze).freeze
       @scopes              = [(outer_scope || {})]
       @registers           = registers
