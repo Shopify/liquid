@@ -143,11 +143,12 @@ module Liquid
     end
 
     def instance_assigns
-      @instance_assigns ||= {}
+      @instance_assigns ||= []
     end
 
     def new_outer_scope
-      @instance_assigns = {}
+      @instance_assigns.unshift(last = {})
+      last
     end
 
     def errors

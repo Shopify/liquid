@@ -42,6 +42,18 @@ class TemplateTest < Minitest::Test
     assert_equal 'from instance assigns', t.parse("{{ foo }}").render!
   end
 
+  def test_instance_assigns_persist_on_same_template_object_between_many_parses
+    t = Template.new
+    assert_equal 'from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render!
+    assert_equal 'from instance assigns', t.parse("{{ foo }}").render!
+    assert_equal 'from instance assigns', t.parse("{{ foo }}").render!
+    assert_equal 'from instance assigns', t.parse("{{ foo }}").render!
+    assert_equal 'from instance assigns second', t.parse("{% assign foo = 'from instance assigns second' %}{{ foo }}").render!
+    assert_equal 'from instance assigns second', t.parse("{{ foo }}").render!
+    assert_equal 'from instance assigns second', t.parse("{{ foo }}").render!
+    assert_equal 'from instance assigns second', t.parse("{{ foo }}").render!
+  end
+
   def test_warnings_is_not_exponential_time
     str = "false"
     100.times do
@@ -55,6 +67,14 @@ class TemplateTest < Minitest::Test
   def test_instance_assigns_persist_on_same_template_parsing_between_renders
     t = Template.new.parse("{{ foo }}{% assign foo = 'foo' %}{{ foo }}")
     assert_equal 'foo', t.render!
+    assert_equal 'foofoo', t.render!
+  end
+
+  def test_instance_assigns_persist_on_same_template_parsing_between_many_renders
+    t = Template.new.parse("{{ foo }}{% assign foo = 'foo' %}{{ foo }}")
+    assert_equal 'foo', t.render!
+    assert_equal 'foofoo', t.render!
+    assert_equal 'foofoo', t.render!
     assert_equal 'foofoo', t.render!
   end
 
