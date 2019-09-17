@@ -171,7 +171,7 @@ module Liquid
     end
 
     def freeze_registers
-      @registers = FrozenRegister.new(@registers.dup)
+      @registers = FrozenRegister.new(@registers.dup) unless @registers.is_a?(FrozenRegister)
       self
     end
 
