@@ -25,6 +25,10 @@ module Liquid
       end
     end
 
+    def delete(key)
+      @registers.delete(key)
+    end
+
     def frozen
       @frozen_registers
     end
