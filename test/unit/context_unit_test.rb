@@ -512,19 +512,20 @@ class ContextUnitTest < Minitest::Test
     assert_equal 'my exception message', subcontext.handle_error(Liquid::Error.new)
   end
 
-  def test_new_isolated_subcontext_does_not_inherit_non_static_registers
+  def test_new_isolated_subcontext_does_not_inherit_non_frozen_registers
     registers = {
       my_register: :my_value,
     }
-    super_context = Context.new({}, {}, registers)
+    super_context = Context.new({}, {}, registers).freeze_registers
+    super_context.registers[:my_register] = :my_alt_value
     subcontext = super_context.new_isolated_subcontext
-    assert_nil subcontext.registers[:my_register]
+    assert_equal :my_value, subcontext.registers[:my_register]
   end
 
   def test_new_isolated_subcontext_inherits_static_registers
-    super_context = Context.build(static_registers: { my_register: :my_value })
+    super_context = Context.build(registers: { my_register: :my_value })
     subcontext = super_context.new_isolated_subcontext
-    assert_equal :my_value, subcontext.static_registers[:my_register]
+    assert_equal :my_value, subcontext.registers[:my_register]
   end
 
   def test_new_isolated_subcontext_inherits_filters
