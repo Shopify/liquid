@@ -22,11 +22,11 @@ module Liquid
     end
 
     def fetch(key, default = nil)
-      self[key] || default
+      key?(key) ? self[key] : default
     end
 
     def key?(key)
-      self[key] != nil
+      @registers.key?(key) || @static_registers.key?(key)
     end
 
     def static
