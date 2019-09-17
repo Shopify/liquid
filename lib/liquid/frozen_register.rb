@@ -38,7 +38,7 @@ module Liquid
     end
 
     def extract!(*keys)
-      keys.each_with_object(@registers.class.new) { |key, result| result[key] = delete(key) if has_key?(key) }
+      keys.each_with_object(@registers.class.new) { |key, result| result[key] = delete(key) if key?(key) }
     end
 
     def frozen
