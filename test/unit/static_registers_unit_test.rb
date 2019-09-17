@@ -178,4 +178,32 @@ class StaticRegistersUnitTest < Minitest::Test
     assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, new_register.static_registers)
     assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, newest_register.static_registers)
   end
+
+  def test_multiple_instances_are_unique
+    static_register = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
+    static_register["one"] = 1
+    static_register["two"] = 2
+    static_register["three"] = 3
+
+    new_register = StaticRegisters.new(foo: :bar)
+    assert_equal({}, new_register.registers)
+
+    new_register["one"] = 4
+    new_register["two"] = 5
+    new_register["three"] = 6
+
+    newest_register = StaticRegisters.new(bar: :foo)
+    assert_equal({}, newest_register.registers)
+
+    newest_register["one"] = 7
+    newest_register["two"] = 8
+    newest_register["three"] = 9
+
+    assert_equal({ "one" => 1, "two" => 2, "three" => 3 }, static_register.registers)
+    assert_equal({ "one" => 4, "two" => 5, "three" => 6 }, new_register.registers)
+    assert_equal({ "one" => 7, "two" => 8, "three" => 9 }, newest_register.registers)
+    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, static_register.static_registers)
+    assert_equal({ foo: :bar }, new_register.static_registers)
+    assert_equal({ bar: :foo }, newest_register.static_registers)
+  end
 end
