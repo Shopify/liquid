@@ -9,7 +9,7 @@ module Liquid
     end
 
     def initialize(registers = {})
-      @frozen_registers = registers.freeze
+      @frozen_registers = registers.dup.freeze
       @registers = {}
     end
 
