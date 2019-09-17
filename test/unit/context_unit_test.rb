@@ -516,7 +516,7 @@ class ContextUnitTest < Minitest::Test
     registers = {
       my_register: :my_value,
     }
-    super_context = Context.new({}, {}, registers).freeze_registers
+    super_context = Context.new({}, {}, FrozenRegister.new(registers))
     super_context.registers[:my_register] = :my_alt_value
     subcontext = super_context.new_isolated_subcontext
     assert_equal :my_value, subcontext.registers[:my_register]
