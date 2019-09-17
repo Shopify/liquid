@@ -138,15 +138,15 @@ class StaticRegistersUnitTest < Minitest::Test
 
     static = static_register.static_registers
 
-    assert_raises(FrozenError) do
+    assert_raises(RuntimeError) do
       static["two"] = "foo"
     end
 
-    assert_raises(FrozenError) do
+    assert_raises(RuntimeError) do
       static["unknown"] = "foo"
     end
 
-    assert_raises(FrozenError) do
+    assert_raises(RuntimeError) do
       static.delete("two")
     end
   end
