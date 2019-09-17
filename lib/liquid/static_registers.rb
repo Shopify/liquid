@@ -1,7 +1,7 @@
 module Liquid
-  class FrozenRegister
+  class StaticRegisters
     def initialize(registers = {})
-      @frozen_registers = registers.is_a?(FrozenRegister) ? registers.frozen : registers
+      @static_registers = registers.is_a?(StaticRegisters) ? registers.static : registers
       @registers = {}
     end
 
@@ -13,7 +13,7 @@ module Liquid
       if @registers.key?(key)
         @registers[key]
       else
-        @frozen_registers[key]
+        @static_registers[key]
       end
     end
 
@@ -29,8 +29,8 @@ module Liquid
       self[key] != nil
     end
 
-    def frozen
-      @frozen_registers
+    def static
+      @static_registers
     end
   end
 end
