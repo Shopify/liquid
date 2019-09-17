@@ -33,6 +33,10 @@ module Liquid
       self[key]
     end
 
+    def key?(key)
+      self[key] != nil
+    end
+
     def frozen
       @frozen_registers
     end
