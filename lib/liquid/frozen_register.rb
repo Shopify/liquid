@@ -1,15 +1,7 @@
 module Liquid
   class FrozenRegister
-    def self.new_with_frozen(existing)
-      if existing.is_a?(FrozenRegister)
-        FrozenRegister.new(existing.frozen)
-      else
-        FrozenRegister.new(existing)
-      end
-    end
-
     def initialize(registers = {})
-      @frozen_registers = registers.freeze
+      @frozen_registers = registers.is_a?(FrozenRegister) ? registers.frozen : registers
       @registers = {}
     end
 
@@ -35,10 +27,6 @@ module Liquid
 
     def key?(key)
       self[key] != nil
-    end
-
-    def extract!(*keys)
-      keys.each_with_object(@registers.class.new) { |key, result| result[key] = delete(key) if key?(key) }
     end
 
     def frozen
