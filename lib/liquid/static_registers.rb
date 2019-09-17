@@ -1,7 +1,7 @@
 module Liquid
   class StaticRegisters
     def initialize(registers = {})
-      @static_registers = registers.is_a?(StaticRegisters) ? registers.static : registers
+      @static_registers = registers.is_a?(StaticRegisters) ? registers.static : registers.freeze
       @registers = {}
     end
 
