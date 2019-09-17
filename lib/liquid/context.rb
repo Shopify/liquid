@@ -171,7 +171,7 @@ module Liquid
     end
 
     def freeze_registers
-      @registers = FrozenRegister.new(@registers)
+      @registers = FrozenRegister.new(@registers.dup)
       self
     end
 
