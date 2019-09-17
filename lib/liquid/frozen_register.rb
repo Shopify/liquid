@@ -29,8 +29,8 @@ module Liquid
       @registers.delete(key)
     end
 
-    def fetch(key)
-      self[key]
+    def fetch(key, default = nil)
+      self[key] || default
     end
 
     def key?(key)
