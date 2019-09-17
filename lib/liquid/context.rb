@@ -170,11 +170,6 @@ module Liquid
       self[key] != nil
     end
 
-    def freeze_registers
-      @registers = FrozenRegister.new(@registers.dup) unless @registers.is_a?(FrozenRegister)
-      self
-    end
-
     def evaluate(object)
       object.respond_to?(:evaluate) ? object.evaluate(self) : object
     end

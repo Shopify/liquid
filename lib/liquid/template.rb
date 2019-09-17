@@ -203,7 +203,6 @@ module Liquid
 
       # Retrying a render resets resource usage
       context.resource_limits.reset
-      context.freeze_registers
 
       begin
         # render the nodelist.
