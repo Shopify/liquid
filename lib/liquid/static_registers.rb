@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class StaticRegisters
     attr_reader :static_registers, :registers
