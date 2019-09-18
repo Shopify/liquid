@@ -18,18 +18,17 @@ module Liquid
     attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
     # rubocop:disable Metrics/ParameterLists
-    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_registers: {}, static_environments: {})
-      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_registers, static_environments)
+    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {})
+      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments)
     end
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_registers = {}, static_environments = {})
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {})
       @environments = [environments]
       @environments.flatten!
 
       @static_environments = [static_environments].flat_map(&:freeze).freeze
       @scopes              = [(outer_scope || {})]
       @registers           = registers
-      @static_registers    = static_registers.freeze
       @errors              = []
       @partial             = false
       @strict_variables    = false
@@ -137,7 +136,7 @@ module Liquid
       Context.build(
         resource_limits: resource_limits,
         static_environments: static_environments,
-        static_registers: static_registers
+        registers: StaticRegisters.new(registers)
       ).tap do |subcontext|
         subcontext.base_scope_depth = base_scope_depth + 1
         subcontext.exception_renderer = exception_renderer

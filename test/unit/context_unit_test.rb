@@ -518,15 +518,23 @@ class ContextUnitTest < Minitest::Test
     registers = {
       my_register: :my_value,
     }
-    super_context = Context.new({}, {}, registers)
+    super_context = Context.new({}, {}, StaticRegisters.new(registers))
+    super_context.registers[:my_register] = :my_alt_value
     subcontext = super_context.new_isolated_subcontext
-    assert_nil subcontext.registers[:my_register]
+    assert_equal :my_value, subcontext.registers[:my_register]
   end
 
   def test_new_isolated_subcontext_inherits_static_registers
-    super_context = Context.build(static_registers: { my_register: :my_value })
+    super_context = Context.build(registers: { my_register: :my_value })
     subcontext = super_context.new_isolated_subcontext
-    assert_equal :my_value, subcontext.static_registers[:my_register]
+    assert_equal :my_value, subcontext.registers[:my_register]
+  end
+
+  def test_new_isolated_subcontext_registers_do_not_pollute_context
+    super_context = Context.build(registers: { my_register: :my_value })
+    subcontext = super_context.new_isolated_subcontext
+    subcontext.registers[:my_register] = :my_alt_value
+    assert_equal :my_value, super_context.registers[:my_register]
   end
 
   def test_new_isolated_subcontext_inherits_filters
