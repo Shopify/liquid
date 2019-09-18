@@ -2,8 +2,8 @@
 
 module Liquid
   class Raw < Block
-    Syntax = /\A\s*\z/
-    FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
+    SYNTAX = /\A\s*\z/
+    FULL_TOKEN_POSSIBLY_INVALID = /\A(.*)#{TAG_START}\s*(\w+)\s*(.*)?#{TAG_END}\z/om
 
     def initialize(tag_name, markup, parse_context)
       super
@@ -14,7 +14,7 @@ module Liquid
     def parse(tokens)
       @body = +''
       while token = tokens.shift
-        if token =~ FullTokenPossiblyInvalid
+        if token =~ FULL_TOKEN_POSSIBLY_INVALID
           @body << Regexp.last_match(1) if Regexp.last_match(1) != ""
           return if block_delimiter == Regexp.last_match(2)
         end
@@ -40,7 +40,7 @@ module Liquid
     protected
 
     def ensure_valid_markup(tag_name, markup, parse_context)
-      unless markup =~ Syntax
+      unless markup =~ SYNTAX
         raise SyntaxError, parse_context.locale.t("errors.syntax.tag_unexpected_args", tag: tag_name)
       end
     end

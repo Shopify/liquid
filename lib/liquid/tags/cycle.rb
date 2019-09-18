@@ -14,18 +14,18 @@ module Liquid
   #    <div class="green"> Item five</div>
   #
   class Cycle < Tag
-    SimpleSyntax = /\A#{QuotedFragment}+/o
-    NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om
+    SIMPLE_SYNTAX = /\A#{QUOTED_FRAGMENT}+/o
+    NAMED_SYNTAX  = /\A(#{QUOTED_FRAGMENT})\s*\:\s*(.*)/om
 
     attr_reader :variables
 
     def initialize(tag_name, markup, options)
       super
       case markup
-      when NamedSyntax
+      when NAMED_SYNTAX
         @variables = variables_from_string(Regexp.last_match(2))
         @name = Expression.parse(Regexp.last_match(1))
-      when SimpleSyntax
+      when SIMPLE_SYNTAX
         @variables = variables_from_string(markup)
         @name = @variables.to_s
       else
@@ -60,7 +60,7 @@ module Liquid
 
     def variables_from_string(markup)
       markup.split(',').collect do |var|
-        var =~ /\s*(#{QuotedFragment})\s*/o
+        var =~ /\s*(#{QUOTED_FRAGMENT})\s*/o
         Regexp.last_match(1) ? Expression.parse(Regexp.last_match(1)) : nil
       end.compact
     end

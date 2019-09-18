@@ -2,7 +2,7 @@
 
 module Liquid
   class Render < Tag
-    SYNTAX = /(#{QuotedString})#{QuotedFragment}*/o
+    SYNTAX = /(#{QUOTED_STRING})#{QUOTED_FRAGMENT}*/o
 
     attr_reader :template_name_expr, :attributes
 
@@ -16,7 +16,7 @@ module Liquid
       @template_name_expr = Expression.parse(template_name)
 
       @attributes = {}
-      markup.scan(TagAttributes) do |key, value|
+      markup.scan(TAG_ATTRIBUTES) do |key, value|
         @attributes[key] = Expression.parse(value)
       end
     end

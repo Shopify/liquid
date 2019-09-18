@@ -2,17 +2,17 @@
 
 module Liquid
   class TableRow < Block
-    Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
+    SYNTAX = /(\w+)\s+in\s+(#{QUOTED_FRAGMENT}+)/o
 
     attr_reader :variable_name, :collection_name, :attributes
 
     def initialize(tag_name, markup, options)
       super
-      if markup =~ Syntax
+      if markup =~ SYNTAX
         @variable_name = Regexp.last_match(1)
         @collection_name = Expression.parse(Regexp.last_match(2))
         @attributes = {}
-        markup.scan(TagAttributes) do |key, value|
+        markup.scan(TAG_ATTRIBUTES) do |key, value|
           @attributes[key] = Expression.parse(value)
         end
       else
