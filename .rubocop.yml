@@ -1,5 +1,5 @@
 inherit_from:
-  - https://shopify.github.io/ruby-style-guide/rubocop.yml
+  - 'https://shopify.github.io/ruby-style-guide/rubocop.yml'
   - .rubocop_todo.yml
 
 require: rubocop-performance
@@ -10,7 +10,7 @@ Performance:
 AllCops:
   Exclude:
     - 'vendor/bundle/**/*'
-      
+
 Naming/MethodName:
   Exclude:
     - 'example/server/liquid_servlet.rb'
