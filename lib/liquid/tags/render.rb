@@ -22,6 +22,13 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
+      context.registers['disabled_tags']&.disable('include') do
+        return render_tag(context, output)
+      end
+      render_tag(context, output)
+    end
+
+    def render_tag(context, output)
       # Though we evaluate this here we will only ever parse it as a string literal.
       template_name = context.evaluate(@template_name_expr)
       raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name

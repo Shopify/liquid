@@ -92,6 +92,14 @@ module Liquid
         @tags ||= TagRegistry.new
       end
 
+      def register_register(name, klass)
+        registers[name.to_s] = klass
+      end
+
+      def registers
+        @registers ||= {}
+      end
+
       def error_mode
         @error_mode ||= :lax
       end
@@ -202,6 +210,8 @@ module Liquid
       when Module, Array
         context.add_filters(args.pop)
       end
+
+      registers.merge!(Template.registers) if Template.registers.is_a?(Hash)
 
       # Retrying a render resets resource usage
       context.resource_limits.reset
