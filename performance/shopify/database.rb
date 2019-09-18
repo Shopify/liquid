@@ -32,8 +32,8 @@ module Database
       db['article']    = db['blog']['articles'].first
 
       db['cart']       = {
-        'total_price' => db['line_items'].values.inject(0) { |sum, item| sum += item['line_price'] * item['quantity'] },
-        'item_count' => db['line_items'].values.inject(0) { |sum, item| sum += item['quantity'] },
+        'total_price' => db['line_items'].values.inject(0) { |sum, item| sum + item['line_price'] * item['quantity'] },
+        'item_count' => db['line_items'].values.inject(0) { |sum, item| sum + item['quantity'] },
         'items' => db['line_items'].values,
       }
 

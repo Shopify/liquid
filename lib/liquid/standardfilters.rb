@@ -327,7 +327,7 @@ module Liquid
     def date(input, format)
       return input if format.to_s.empty?
 
-      return input unless date = Utils.to_date(input)
+      return input unless (date = Utils.to_date(input))
 
       date.strftime(format.to_s)
     end

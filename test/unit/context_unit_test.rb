@@ -85,7 +85,7 @@ class ContextUnitTest < Minitest::Test
     @context['date'] = Date.today
     assert_equal Date.today, @context['date']
 
-    now = DateTime.now
+    now = Time.now
     @context['datetime'] = now
     assert_equal now, @context['datetime']
 
@@ -405,7 +405,11 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_lambda_is_called_once
-    @context['callcount'] = proc { @global ||= 0; @global += 1; @global.to_s }
+    @context['callcount'] = proc {
+      @global ||= 0
+      @global += 1
+      @global.to_s
+    }
 
     assert_equal '1', @context['callcount']
     assert_equal '1', @context['callcount']
@@ -415,7 +419,11 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_nested_lambda_is_called_once
-    @context['callcount'] = { "lambda" => proc { @global ||= 0; @global += 1; @global.to_s } }
+    @context['callcount'] = { "lambda" => proc {
+                                            @global ||= 0
+                                            @global += 1
+                                            @global.to_s
+                                          } }
 
     assert_equal '1', @context['callcount.lambda']
     assert_equal '1', @context['callcount.lambda']
@@ -425,7 +433,11 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_lambda_in_array_is_called_once
-    @context['callcount'] = [1, 2, proc { @global ||= 0; @global += 1; @global.to_s }, 4, 5]
+    @context['callcount'] = [1, 2, proc {
+                                     @global ||= 0
+                                     @global += 1
+                                     @global.to_s
+                                   }, 4, 5]
 
     assert_equal '1', @context['callcount[2]']
     assert_equal '1', @context['callcount[2]']
