@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ShopFilter
   def asset_url(input)
     "/files/1/[shop_id]/[shop_id]/assets/#{input}"

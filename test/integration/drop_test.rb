@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ContextDrop < Liquid::Drop
@@ -31,7 +33,7 @@ class ProductDrop < Liquid::Drop
 
   class CatchallDrop < Liquid::Drop
     def liquid_method_missing(method)
-      'catchall_method: ' << method.to_s
+      "catchall_method: #{method}"
     end
   end
 
@@ -48,7 +50,7 @@ class ProductDrop < Liquid::Drop
   end
 
   def user_input
-    "foo".taint
+    (+"foo").taint
   end
 
   protected

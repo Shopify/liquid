@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module TagFilter
   def link_to_tag(label, tag)
     "<a title=\"Show tag #{tag}\" href=\"/collections/#{@context['handle']}/#{tag}\">#{label}</a>"

@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 module Liquid
   class BlockBody
     LiquidTagToken = /\A\s*(\w+)\s*(.*?)\z/o
     FullToken = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
-    TAGSTART = "{%".freeze
-    VARSTART = "{{".freeze
+    TAGSTART = "{%"
+    VARSTART = "{{"
 
     attr_reader :nodelist
 
@@ -64,10 +66,10 @@ module Liquid
           if parse_context.line_number
             # newlines inside the tag should increase the line number,
             # particularly important for multiline {% liquid %} tags
-            parse_context.line_number += Regexp.last_match(1).count("\n".freeze) + Regexp.last_match(3).count("\n".freeze)
+            parse_context.line_number += Regexp.last_match(1).count("\n") + Regexp.last_match(3).count("\n")
           end
 
-          if tag_name == 'liquid'.freeze
+          if tag_name == 'liquid'
             liquid_tag_tokenizer = Tokenizer.new(markup, line_number: parse_context.line_number, for_liquid_tag: true)
             next parse_for_liquid_tag(liquid_tag_tokenizer, parse_context, &block)
           end
@@ -113,7 +115,7 @@ module Liquid
     end
 
     def render(context)
-      render_to_output_buffer(context, '')
+      render_to_output_buffer(context, +'')
     end
 
     def render_to_output_buffer(context, output)
@@ -129,7 +131,7 @@ module Liquid
         when Variable
           render_node(context, output, node)
         when Block
-          render_node(context, node.blank? ? '' : output, node)
+          render_node(context, node.blank? ? +'' : output, node)
           break if context.interrupt? # might have happened in a for-block
         when Continue, Break
           # If we get an Interrupt that means the block must stop processing. An
@@ -163,7 +165,7 @@ module Liquid
     def raise_if_resource_limits_reached(context, length)
       context.resource_limits.render_length += length
       return unless context.resource_limits.reached?
-      raise MemoryError, "Memory limits exceeded".freeze
+      raise MemoryError, "Memory limits exceeded"
     end
 
     def create_variable(token, parse_context)
@@ -175,11 +177,11 @@ module Liquid
     end
 
     def raise_missing_tag_terminator(token, parse_context)
-      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_termination".freeze, token: token, tag_end: TagEnd.inspect)
+      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_termination", token: token, tag_end: TagEnd.inspect)
     end
 
     def raise_missing_variable_terminator(token, parse_context)
-      raise SyntaxError, parse_context.locale.t("errors.syntax.variable_termination".freeze, token: token, tag_end: VariableEnd.inspect)
+      raise SyntaxError, parse_context.locale.t("errors.syntax.variable_termination", token: token, tag_end: VariableEnd.inspect)
     end
 
     def registered_tags

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Container for liquid nodes which conveniently wraps decision making logic
   #
@@ -8,14 +10,14 @@ module Liquid
   #
   class Condition #:nodoc:
     @@operators = {
-      '=='.freeze => ->(cond, left, right) {  cond.send(:equal_variables, left, right) },
-      '!='.freeze => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
-      '<>'.freeze => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
-      '<'.freeze => :<,
-      '>'.freeze => :>,
-      '>='.freeze => :>=,
-      '<='.freeze => :<=,
-      'contains'.freeze => lambda do |_cond, left, right|
+      '==' => ->(cond, left, right) {  cond.send(:equal_variables, left, right) },
+      '!=' => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
+      '<>' => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
+      '<' => :<,
+      '>' => :>,
+      '>=' => :>=,
+      '<=' => :<=,
+      'contains' => lambda do |_cond, left, right|
         if left && right && left.respond_to?(:include?)
           right = right.to_s if left.is_a?(String)
           left.include?(right)
@@ -78,7 +80,7 @@ module Liquid
     end
 
     def inspect
-      "#<Condition #{[@left, @operator, @right].compact.join(' '.freeze)}>"
+      "#<Condition #{[@left, @operator, @right].compact.join(' ')}>"
     end
 
     protected

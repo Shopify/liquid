@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LiquidServlet < WEBrick::HTTPServlet::AbstractServlet
   def do_GET(req, res)
     handle(:get, req, res)

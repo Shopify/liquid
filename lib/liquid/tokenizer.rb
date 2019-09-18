@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Tokenizer
     attr_reader :line_number, :for_liquid_tag

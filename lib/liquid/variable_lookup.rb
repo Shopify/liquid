@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Liquid
   class VariableLookup
     SQUARE_BRACKETED = /\A\[(.*)\]\z/m
-    COMMAND_METHODS = ['size'.freeze, 'first'.freeze, 'last'.freeze].freeze
+    COMMAND_METHODS = ['size', 'first', 'last'].freeze
 
     attr_reader :name, :lookups
 

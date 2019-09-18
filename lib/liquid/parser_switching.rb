@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   module ParserSwitching
     def parse_with_selected_parser(markup)

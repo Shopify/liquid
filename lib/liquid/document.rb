@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Document < BlockBody
     def self.parse(tokens, parse_context)
@@ -17,10 +19,10 @@ module Liquid
 
     def unknown_tag(tag, parse_context)
       case tag
-      when 'else'.freeze, 'end'.freeze
-        raise SyntaxError, parse_context.locale.t("errors.syntax.unexpected_outer_tag".freeze, tag: tag)
+      when 'else', 'end'
+        raise SyntaxError, parse_context.locale.t("errors.syntax.unexpected_outer_tag", tag: tag)
       else
-        raise SyntaxError, parse_context.locale.t("errors.syntax.unknown_tag".freeze, tag: tag)
+        raise SyntaxError, parse_context.locale.t("errors.syntax.unknown_tag", tag: tag)
       end
     end
   end

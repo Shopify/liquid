@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Render < Tag
     SYNTAX = /(#{QuotedString})#{QuotedFragment}*/o
@@ -7,7 +9,7 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
 
-      raise SyntaxError, options[:locale].t("errors.syntax.render".freeze) unless markup =~ SYNTAX
+      raise SyntaxError, options[:locale].t("errors.syntax.render") unless markup =~ SYNTAX
 
       template_name = Regexp.last_match(1)
 
@@ -50,5 +52,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('render'.freeze, Render)
+  Template.register_tag('render', Render)
 end

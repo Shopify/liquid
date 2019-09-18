@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class BlockBody
     def render_node_with_profiling(context, output, node)

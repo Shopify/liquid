@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # A Liquid file system is a way to let your templates retrieve other templates for use with the include tag.
   #
@@ -44,7 +46,7 @@ module Liquid
   class LocalFileSystem
     attr_accessor :root
 
-    def initialize(root, pattern = "_%s.liquid".freeze)
+    def initialize(root, pattern = "_%s.liquid")
       @root = root
       @pattern = pattern
     end
@@ -59,7 +61,7 @@ module Liquid
     def full_path(template_path)
       raise FileSystemError, "Illegal template name '#{template_path}'" unless template_path =~ %r{\A[^./][a-zA-Z0-9_/]+\z}
 
-      full_path = if template_path.include?('/'.freeze)
+      full_path = if template_path.include?('/')
         File.join(root, File.dirname(template_path), @pattern % File.basename(template_path))
       else
         File.join(root, @pattern % template_path)

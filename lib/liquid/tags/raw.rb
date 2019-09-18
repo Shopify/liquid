@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Raw < Block
     Syntax = /\A\s*\z/
@@ -10,16 +12,16 @@ module Liquid
     end
 
     def parse(tokens)
-      @body = ''
+      @body = +''
       while token = tokens.shift
         if token =~ FullTokenPossiblyInvalid
-          @body << Regexp.last_match(1) if Regexp.last_match(1) != "".freeze
+          @body << Regexp.last_match(1) if Regexp.last_match(1) != ""
           return if block_delimiter == Regexp.last_match(2)
         end
         @body << token unless token.empty?
       end
 
-      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_never_closed".freeze, block_name: block_name)
+      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_never_closed", block_name: block_name)
     end
 
     def render_to_output_buffer(_context, output)
@@ -39,10 +41,10 @@ module Liquid
 
     def ensure_valid_markup(tag_name, markup, parse_context)
       unless markup =~ Syntax
-        raise SyntaxError, parse_context.locale.t("errors.syntax.tag_unexpected_args".freeze, tag: tag_name)
+        raise SyntaxError, parse_context.locale.t("errors.syntax.tag_unexpected_args", tag: tag_name)
       end
     end
   end
 
-  Template.register_tag('raw'.freeze, Raw)
+  Template.register_tag('raw', Raw)
 end

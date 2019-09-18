@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Templates are central to liquid.
   # Interpretating templates is a two step process. First you compile the
@@ -165,7 +167,7 @@ module Liquid
     #    filters and tags and might be useful to integrate liquid more with its host application
     #
     def render(*args)
-      return ''.freeze if @root.nil?
+      return '' if @root.nil?
 
       context = case args.first
       when Liquid::Context
@@ -208,7 +210,7 @@ module Liquid
         # render the nodelist.
         # for performance reasons we get an array back here. join will make a string out of it.
         with_profiling(context) do
-          @root.render_to_output_buffer(context, output || '')
+          @root.render_to_output_buffer(context, output || +'')
         end
       rescue Liquid::MemoryError => e
         context.handle_error(e)

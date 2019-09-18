@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class TablerowloopDrop < Drop
     def initialize(length, cols)

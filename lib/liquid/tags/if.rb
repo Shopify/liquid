@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # If is the conditional block
   #
@@ -19,7 +21,7 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       @blocks = []
-      push_block('if'.freeze, markup)
+      push_block('if', markup)
     end
 
     def nodelist
@@ -32,7 +34,7 @@ module Liquid
     end
 
     def unknown_tag(tag, markup, tokens)
-      if ['elsif'.freeze, 'else'.freeze].include?(tag)
+      if ['elsif', 'else'].include?(tag)
         push_block(tag, markup)
       else
         super
@@ -52,7 +54,7 @@ module Liquid
     private
 
     def push_block(tag, markup)
-      block = if tag == 'else'.freeze
+      block = if tag == 'else'
         ElseCondition.new
       else
         parse_with_selected_parser(markup)
@@ -64,17 +66,17 @@ module Liquid
 
     def lax_parse(markup)
       expressions = markup.scan(ExpressionsAndOperators)
-      raise SyntaxError, options[:locale].t("errors.syntax.if".freeze) unless expressions.pop =~ Syntax
+      raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop =~ Syntax
 
       condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2), Expression.parse(Regexp.last_match(3)))
 
       until expressions.empty?
         operator = expressions.pop.to_s.strip
 
-        raise SyntaxError, options[:locale].t("errors.syntax.if".freeze) unless expressions.pop.to_s =~ Syntax
+        raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop.to_s =~ Syntax
 
         new_condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2), Expression.parse(Regexp.last_match(3)))
-        raise SyntaxError, options[:locale].t("errors.syntax.if".freeze) unless BOOLEAN_OPERATORS.include?(operator)
+        raise SyntaxError, options[:locale].t("errors.syntax.if") unless BOOLEAN_OPERATORS.include?(operator)
         new_condition.send(operator, condition)
         condition = new_condition
       end
@@ -92,7 +94,7 @@ module Liquid
     def parse_binary_comparisons(p)
       condition = parse_comparison(p)
       first_condition = condition
-      while op = (p.id?('and'.freeze) || p.id?('or'.freeze))
+      while op = (p.id?('and') || p.id?('or'))
         child_condition = parse_comparison(p)
         condition.send(op, child_condition)
         condition = child_condition
@@ -117,5 +119,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('if'.freeze, If)
+  Template.register_tag('if', If)
 end
