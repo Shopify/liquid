@@ -24,8 +24,8 @@
 module Liquid
   FILTER_SEPARATOR             = /\|/
   ARGUMENT_SEPARATOR           = ','
-  FILTER_ARGUMENT_SEPARATOR     = ':'
-  VARIABLE_ATTRIBUTE_SEPARATOR  = '.'
+  FILTER_ARGUMENT_SEPARATOR    = ':'
+  VARIABLE_ATTRIBUTE_SEPARATOR = '.'
   WHITESPACE_CONTROL           = '-'
   TAG_START                    = /\{\%/
   TAG_END                      = /\%\}/
@@ -33,12 +33,12 @@ module Liquid
   VARIABLE_SEGMENT             = /[\w\-]/
   VARIABLE_START               = /\{\{/
   VARIABLE_END                 = /\}\}/
-  VARIABLE_INCOMPLETE_END = /\}\}?/
+  VARIABLE_INCOMPLETE_END      = /\}\}?/
   QUOTED_STRING                = /"[^"]*"|'[^']*'/
   QUOTED_FRAGMENT              = /#{QUOTED_STRING}|(?:[^\s,\|'"]|#{QUOTED_STRING})+/o
   TAG_ATTRIBUTES               = /(\w+)\s*\:\s*(#{QUOTED_FRAGMENT})/o
-  ANY_STARTING_TAG              = /#{TAG_START}|#{VARIABLE_START}/o
-  PARTIAL_TEMPLATE_PARSER       = /#{TAG_START}.*?#{TAG_END}|#{VARIABLE_START}.*?#{VARIABLE_INCOMPLETE_END}/om
+  ANY_STARTING_TAG             = /#{TAG_START}|#{VARIABLE_START}/o
+  PARTIAL_TEMPLATE_PARSER      = /#{TAG_START}.*?#{TAG_END}|#{VARIABLE_START}.*?#{VARIABLE_INCOMPLETE_END}/om
   TEMPLATE_PARSER              = /(#{PARTIAL_TEMPLATE_PARSER}|#{ANY_STARTING_TAG})/om
   VARIABLE_PARSER              = /\[[^\]]+\]|#{VARIABLE_SEGMENT}+\??/o
 
