@@ -1,6 +1,6 @@
 ---
 title: minus
-description: Liquid filter that subtracts one number from another.
+description: Liquid filter that subtracts one number from another number.
 ---
 
 Subtracts a number from another number.

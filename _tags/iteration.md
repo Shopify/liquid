@@ -1,20 +1,20 @@
 ---
 title: Iteration
-description: An overview of iteration or 'loop' tags in the Liquid template language.
+description: An overview of iteration or "loop" tags in the Liquid template language.
 ---
 
 Iteration tags run blocks of code repeatedly.
 
 ## for
 
-Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://docs.shopify.com/themes/liquid/objects/for-loops).
+Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://help.shopify.com/themes/liquid/objects/for-loops).
 
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-  {% for product in collection.products %}
-    {{ product.title }}
-  {% endfor %}
+{% for product in collection.products %}
+  {{ product.title }}
+{% endfor %}
 {% endraw %}
 ```
 
@@ -153,7 +153,7 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 
 ### reversed
 
-Reverses the order of the loop. Note that the flag’s spelling is different to the filter `reverse`.
+Reverses the order of the loop. Note that this flag's spelling is different from the filter `reverse`.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -172,17 +172,17 @@ Reverses the order of the loop. Note that the flag’s spelling is different to 
 
 ## cycle
 
-Loops through a group of strings and outputs them in the order that they were passed as parameters. Each time `cycle` is called, the next string that was passed as a parameter is output.
+Loops through a group of strings and prints them in the order that they were passed as arguments. Each time `cycle` is called, the next string argument is printed.
 
 `cycle` must be used within a [for](#for) loop block.
 
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{% cycle 'one', 'two', 'three' %}
-{% cycle 'one', 'two', 'three' %}
-{% cycle 'one', 'two', 'three' %}
-{% cycle 'one', 'two', 'three' %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
 {% endraw %}
 ```
 
@@ -196,12 +196,30 @@ one
 
 Uses for `cycle` include:
 
--   applying odd/even classes to rows in a table
--   applying a unique class to the last product thumbnail in a row
+- applying odd/even classes to rows in a table
+- applying a unique class to the last product thumbnail in a row
 
 ## cycle (parameters)
 
-`cycle` accepts a parameter called `cycle group` in cases where you need multiple `cycle` blocks in one template. If no name is supplied for the cycle group, then it is assumed that multiple calls with the same parameters are one group.
+`cycle` accepts a "cycle group" parameter in cases where you need multiple `cycle` blocks in one template. If no name is supplied for the cycle group, then it is assumed that multiple calls with the same parameters are one group.
+
+<p class="code-label">Input</p>
+```liquid
+{% raw %}
+{% cycle "first": "one", "two", "three" %}
+{% cycle "second": "one", "two", "three" %}
+{% cycle "second": "one", "two", "three" %}
+{% cycle "first": "one", "two", "three" %}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+one
+one
+two
+two
+```
 
 ## tablerow
 

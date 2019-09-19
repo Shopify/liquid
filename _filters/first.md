@@ -8,17 +8,13 @@ Returns the first item of an array.
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
-
-{{ my_array.first }}
+{{ "Ground control to Major Tom." | split: " " | first }}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
-
-{{ my_array.first }}
+{{ "Ground control to Major Tom." | split: " " | first }}
 ```
 
 <p class="code-label">Input</p>
@@ -37,7 +33,7 @@ Returns the first item of an array.
 {{ my_array.first }}
 ```
 
-You can use `first` with dot notation when you need to use the filter inside a tag.
+You can use `first` with dot notation when you need to use the filter inside a tag:
 
 ```liquid
 {% raw %}

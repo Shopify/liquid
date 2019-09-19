@@ -10,7 +10,6 @@ Liquid code can be categorized into [**objects**](#objects), [**tags**](#tags), 
 
 **Objects** tell Liquid where to show content on a page. Objects and variable names are denoted by double curly braces: `{% raw %}{{{% endraw %}` and `{% raw %}}}{% endraw %}`.
 
-
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
@@ -20,7 +19,7 @@ Liquid code can be categorized into [**objects**](#objects), [**tags**](#tags), 
 
 <p class="code-label">Output</p>
 ```text
-Introduction
+{{ page.title }}
 ```
 
 In this case, Liquid is rendering the content of an object called `page.title`, and that object contains the text `Introduction`.
@@ -47,12 +46,11 @@ Hello Adam!
 
 Tags can be categorized into three types:
 
-- [Control flow]({{ "/tags/control-flow" | prepend: site.baseurl }})
-- [Iteration]({{ "/tags/iteration" | prepend: site.baseurl }})
-- [Variable assignments]({{ "/tags/variable" | prepend: site.baseurl }})
+- [Control flow]({{ "/tags/control-flow/" | prepend: site.baseurl }})
+- [Iteration]({{ "/tags/iteration/" | prepend: site.baseurl }})
+- [Variable assignments]({{ "/tags/variable/" | prepend: site.baseurl }})
 
 You can read more about each type of tag in their respective sections.
-
 
 ## Filters
 
@@ -81,5 +79,5 @@ Multiple filters can be used on one output. They are applied from left to right.
 
 <p class="code-label">Output</p>
 ```text
-Hello Adam!
+{{ "adam!" | capitalize | prepend: "Hello " }}
 ```

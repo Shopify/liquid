@@ -1,9 +1,9 @@
 ---
 title: strip
-description: Liquid filter that removes whitespace from the left and right sides of a string.
+description: Liquid filter that removes all whitespace from the left and right sides of a string.
 ---
 
-Removes all whitespace (tabs, spaces, and newlines) from both the left and right side of a string. It does not affect spaces between words.
+Removes all whitespace (tabs, spaces, and newlines) from both the left and right sides of a string. It does not affect spaces between words.
 
 <p class="code-label">Input</p>
 ```liquid

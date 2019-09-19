@@ -17,13 +17,12 @@ Adds the specified string to the beginning of another string.
 {{ "apples, oranges, and bananas" | prepend: "Some fruit: " }}
 ```
 
-You can also `prepend` variables:
+`prepend` can also be used with variables:
 
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
 {% assign url = "example.com" %}
-
 {{ "/index.html" | prepend: url }}
 {% endraw %}
 ```
@@ -31,6 +30,5 @@ You can also `prepend` variables:
 <p class="code-label">Output</p>
 ```text
 {% assign url = "example.com" %}
-
 {{ "/index.html" | prepend: url }}
 ```

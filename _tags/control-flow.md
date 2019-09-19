@@ -13,7 +13,7 @@ Executes a block of code only if a certain condition is `true`.
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{% if product.title == 'Awesome Shoes' %}
+{% if product.title == "Awesome Shoes" %}
   These shoes are awesome!
 {% endif %}
 {% endraw %}
@@ -31,7 +31,7 @@ The opposite of `if` – executes a block of code only if a certain condition is
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{% unless product.title == 'Awesome Shoes' %}
+{% unless product.title == "Awesome Shoes" %}
   These shoes are not awesome.
 {% endunless %}
 {% endraw %}
@@ -46,7 +46,7 @@ This would be the equivalent of doing the following:
 
 ```liquid
 {% raw %}
-{% if product.title != 'Awesome Shoes' %}
+{% if product.title != "Awesome Shoes" %}
   These shoes are not awesome.
 {% endif %}
 {% endraw %}
@@ -59,10 +59,10 @@ Adds more conditions within an `if` or `unless` block.
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-<!-- If customer.name = 'anonymous' -->
-{% if customer.name == 'kevin' %}
+<!-- If customer.name = "anonymous" -->
+{% if customer.name == "kevin" %}
   Hey Kevin!
-{% elsif customer.name == 'anonymous' %}
+{% elsif customer.name == "anonymous" %}
   Hey Anonymous!
 {% else %}
   Hi Stranger!
@@ -82,11 +82,11 @@ Creates a switch statement to compare a variable with different values. `case` i
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{% assign handle = 'cake' %}
+{% assign handle = "cake" %}
 {% case handle %}
-  {% when 'cake' %}
+  {% when "cake" %}
      This is a cake
-  {% when 'cookie' %}
+  {% when "cookie" %}
      This is a cookie
   {% else %}
      This is not a cake nor a cookie

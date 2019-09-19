@@ -21,4 +21,4 @@ Jekyll also powers [GitHub Pages](https://pages.github.com/), a web hosting serv
 
 Jekyll might not be using the latest version of Liquid. This means that the tags and filters listed on this site may not work in Jekyll. Often the Jekyll project will wait for a stable release of Liquid rather than using a beta or release candidate version. To see what version of Liquid Jekyll is using, check the **runtime dependencies** section of [Jekyll's gem page](https://rubygems.org/gems/jekyll).
 
-Jekyll's version of Liquid is documented in the [Templates section of Jekyll's documentation](http://jekyllrb.com/docs/templates/). If you want to try out Jekyll's version of Liquid, you can clone the Jekyll project or install Jekyll as a gem and test Liquid on a static site.
+Jekyll's version of Liquid is documented in the [Liquid section of Jekyll's documentation](https://jekyllrb.com/docs/liquid/). If you want to try out Jekyll's version of Liquid, you can clone the Jekyll project or install Jekyll as a gem and test Liquid on a static site.

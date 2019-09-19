@@ -6,8 +6,8 @@ description: Liquid filter that concatenates arrays.
 Concatenates (joins together) multiple arrays. The resulting array contains all the items from the input arrays.
 
 <p class="code-label">Input</p>
-{% raw %}
 ```liquid
+{% raw %}
 {% assign fruits = "apples, oranges, peaches" | split: ", " %}
 {% assign vegetables = "carrots, turnips, potatoes" | split: ", " %}
 
@@ -16,8 +16,8 @@ Concatenates (joins together) multiple arrays. The resulting array contains all 
 {% for item in everything %}
 - {{ item }}
 {% endfor %}
-```
 {% endraw %}
+```
 
 <p class="code-label">Output</p>
 ```text
@@ -32,8 +32,8 @@ Concatenates (joins together) multiple arrays. The resulting array contains all 
 You can string together `concat` filters to join more than two arrays:
 
 <p class="code-label">Input</p>
-{% raw %}
 ```liquid
+{% raw %}
 {% assign furniture = "chairs, tables, shelves" | split: ", " %}
 
 {% assign everything = fruits | concat: vegetables | concat: furniture %}
@@ -41,8 +41,8 @@ You can string together `concat` filters to join more than two arrays:
 {% for item in everything %}
 - {{ item }}
 {% endfor %}
-```
 {% endraw %}
+```
 
 <p class="code-label">Output</p>
 ```text

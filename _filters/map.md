@@ -13,16 +13,16 @@ In this example, assume the object `site.pages` contains all the metadata for a 
 {% assign all_categories = site.pages | map: "category" %}
 
 {% for item in all_categories %}
-{{ item }}
+- {{ item }}
 {% endfor %}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-business
-celebrities
-lifestyle
-sports
-technology
+- business
+- celebrities
+- lifestyle
+- sports
+- technology
 ```
