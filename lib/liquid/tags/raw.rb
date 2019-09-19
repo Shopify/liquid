@@ -40,7 +40,7 @@ module Liquid
     protected
 
     def ensure_valid_markup(tag_name, markup, parse_context)
-      unless markup =~ Syntax
+      unless Syntax.match?(markup)
         raise SyntaxError, parse_context.locale.t("errors.syntax.tag_unexpected_args", tag: tag_name)
       end
     end
