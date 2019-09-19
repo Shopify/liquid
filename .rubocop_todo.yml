@@ -7,43 +7,12 @@
 # versions of RuboCop, may require this file to be generated again.
 
 # Offense count: 2
-Lint/AmbiguousOperator:
-  Exclude:
-    - 'test/unit/condition_unit_test.rb'
-
-# Offense count: 21
-# Configuration parameters: AllowSafeAssignment.
-Lint/AssignmentInCondition:
-  Exclude:
-    - 'lib/liquid/block_body.rb'
-    - 'lib/liquid/lexer.rb'
-    - 'lib/liquid/standardfilters.rb'
-    - 'lib/liquid/tags/for.rb'
-    - 'lib/liquid/tags/if.rb'
-    - 'lib/liquid/tags/raw.rb'
-    - 'lib/liquid/variable.rb'
-    - 'performance/profile.rb'
-    - 'test/test_helper.rb'
-    - 'test/unit/tokenizer_unit_test.rb'
-
-# Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: runtime_error, standard_error
 Lint/InheritException:
   Exclude:
     - 'lib/liquid/interrupts.rb'
-
-# Offense count: 2
-Lint/UselessAssignment:
-  Exclude:
-    - 'performance/shopify/database.rb'
-
-# Offense count: 1
-# Configuration parameters: CheckForMethodsWithNoSideEffects.
-Lint/Void:
-  Exclude:
-    - 'lib/liquid/parse_context.rb'
 
 # Offense count: 98
 # Cop supports --auto-correct.
@@ -77,18 +46,3 @@ Style/ClassVars:
     - 'lib/liquid/condition.rb'
     - 'lib/liquid/strainer.rb'
     - 'lib/liquid/template.rb'
-
-# Offense count: 1
-# Configuration parameters: AllowCoercion.
-Style/DateTime:
-  Exclude:
-    - 'test/unit/context_unit_test.rb'
-
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: AllowAsExpressionSeparator.
-Style/Semicolon:
-  Exclude:
-    - 'test/integration/error_handling_test.rb'
-    - 'test/integration/template_test.rb'
-    - 'test/unit/context_unit_test.rb'

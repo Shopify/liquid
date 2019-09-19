@@ -81,7 +81,10 @@ class TemplateTest < Minitest::Test
 
   def test_lambda_is_called_once_from_persistent_assigns_over_multiple_parses_and_renders
     t = Template.new
-    t.assigns['number'] = -> { @global ||= 0; @global += 1 }
+    t.assigns['number'] = -> {
+      @global ||= 0
+      @global += 1
+    }
     assert_equal '1', t.parse("{{number}}").render!
     assert_equal '1', t.parse("{{number}}").render!
     assert_equal '1', t.render!
@@ -90,7 +93,10 @@ class TemplateTest < Minitest::Test
 
   def test_lambda_is_called_once_from_custom_assigns_over_multiple_parses_and_renders
     t = Template.new
-    assigns = { 'number' => -> { @global ||= 0; @global += 1 } }
+    assigns = { 'number' => -> {
+                              @global ||= 0
+                              @global += 1
+                            } }
     assert_equal '1', t.parse("{{number}}").render!(assigns)
     assert_equal '1', t.parse("{{number}}").render!(assigns)
     assert_equal '1', t.render!(assigns)
@@ -237,7 +243,10 @@ class TemplateTest < Minitest::Test
 
   def test_exception_renderer_that_returns_string
     exception = nil
-    handler = ->(e) { exception = e; '<!-- error -->' }
+    handler = ->(e) {
+      exception = e
+      '<!-- error -->'
+    }
 
     output = Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_renderer: handler)
 
@@ -248,7 +257,10 @@ class TemplateTest < Minitest::Test
   def test_exception_renderer_that_raises
     exception = nil
     assert_raises(Liquid::ZeroDivisionError) do
-      Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_renderer: ->(e) { exception = e; raise })
+      Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_renderer: ->(e) {
+                                                                                 exception = e
+                                                                                 raise
+                                                                               })
     end
     assert exception.is_a?(Liquid::ZeroDivisionError)
   end

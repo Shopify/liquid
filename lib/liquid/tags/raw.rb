@@ -13,7 +13,7 @@ module Liquid
 
     def parse(tokens)
       @body = +''
-      while token = tokens.shift
+      while (token = tokens.shift)
         if token =~ FullTokenPossiblyInvalid
           @body << Regexp.last_match(1) if Regexp.last_match(1) != ""
           return if block_delimiter == Regexp.last_match(2)

@@ -21,7 +21,6 @@ module Liquid
       @partial = value
       @options = value ? partial_options : @template_options
       @error_mode = @options[:error_mode] || Template.error_mode
-      value
     end
 
     def partial_options
