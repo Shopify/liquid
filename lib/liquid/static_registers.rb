@@ -2,10 +2,10 @@
 
 module Liquid
   class StaticRegisters
-    attr_reader :static_registers, :registers
+    attr_reader :static, :registers
 
     def initialize(registers = {})
-      @static_registers = registers.is_a?(StaticRegisters) ? registers.static_registers : registers.freeze
+      @static = registers.is_a?(StaticRegisters) ? registers.static : registers
       @registers = {}
     end
 
@@ -17,7 +17,7 @@ module Liquid
       if @registers.key?(key)
         @registers[key]
       else
-        @static_registers[key]
+        @static[key]
       end
     end
 
@@ -30,7 +30,7 @@ module Liquid
     end
 
     def key?(key)
-      @registers.key?(key) || @static_registers.key?(key)
+      @registers.key?(key) || @static.key?(key)
     end
   end
 end
