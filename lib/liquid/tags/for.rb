@@ -111,7 +111,7 @@ module Liquid
       @reversed = p.id?('reversed')
 
       while p.look(:id) && p.look(:colon, 1)
-        unless attribute = p.id?('limit') || p.id?('offset')
+        unless (attribute = p.id?('limit') || p.id?('offset'))
           raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_attribute")
         end
         p.consume
