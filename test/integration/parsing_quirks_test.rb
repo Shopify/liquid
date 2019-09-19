@@ -72,7 +72,7 @@ class ParsingQuirksTest < Minitest::Test
   def test_meaningless_parens_lax
     with_error_mode(:lax) do
       assigns = { 'b' => 'bar', 'c' => 'baz' }
-      markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
+      markup  = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
       assert_template_result(' YES ', "{% if #{markup} %} YES {% endif %}", assigns)
     end
   end

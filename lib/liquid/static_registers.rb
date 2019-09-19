@@ -5,7 +5,7 @@ module Liquid
     attr_reader :static, :registers
 
     def initialize(registers = {})
-      @static = registers.is_a?(StaticRegisters) ? registers.static : registers
+      @static    = registers.is_a?(StaticRegisters) ? registers.static : registers
       @registers = {}
     end
 

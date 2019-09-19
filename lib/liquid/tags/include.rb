@@ -30,7 +30,7 @@ module Liquid
 
         @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
         @template_name_expr = Expression.parse(template_name)
-        @attributes = {}
+        @attributes         = {}
 
         markup.scan(TAG_ATTRIBUTES) do |key, value|
           @attributes[key] = Expression.parse(value)
@@ -63,10 +63,10 @@ module Liquid
       end
 
       old_template_name = context.template_name
-      old_partial = context.partial
+      old_partial       = context.partial
       begin
         context.template_name = template_name
-        context.partial = true
+        context.partial       = true
         context.stack do
           @attributes.each do |key, value|
             context[key] = context.evaluate(value)
@@ -84,7 +84,7 @@ module Liquid
         end
       ensure
         context.template_name = old_template_name
-        context.partial = old_partial
+        context.partial       = old_partial
       end
 
       output

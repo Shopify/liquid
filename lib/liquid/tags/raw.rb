@@ -2,7 +2,7 @@
 
 module Liquid
   class Raw < Block
-    SYNTAX = /\A\s*\z/
+    SYNTAX                      = /\A\s*\z/
     FULL_TOKEN_POSSIBLY_INVALID = /\A(.*)#{TAG_START}\s*(\w+)\s*(.*)?#{TAG_END}\z/om
 
     def initialize(tag_name, markup, parse_context)
@@ -12,7 +12,7 @@ module Liquid
     end
 
     def parse(tokens)
-      @body = +''
+      @body        = +''
       while (token = tokens.shift)
         if token =~ FULL_TOKEN_POSSIBLY_INVALID
           @body << Regexp.last_match(1) if Regexp.last_match(1) != ""

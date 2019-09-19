@@ -101,21 +101,21 @@ module Liquid
     def initialize
       @partial_stack = ["<root>"]
 
-      @root_timing = Timing.new("", current_partial)
+      @root_timing  = Timing.new("", current_partial)
       @timing_stack = [@root_timing]
 
       @render_start_at = Time.now
-      @render_end_at = @render_start_at
+      @render_end_at   = @render_start_at
     end
 
     def start
       Thread.current[:liquid_profiler] = self
-      @render_start_at = Time.now
+      @render_start_at                 = Time.now
     end
 
     def stop
       Thread.current[:liquid_profiler] = nil
-      @render_end_at = Time.now
+      @render_end_at                   = Time.now
     end
 
     def total_render_time

@@ -32,9 +32,9 @@ module Liquid
         parse_context: parse_context
       )
 
-      inner_context = context.new_isolated_subcontext
+      inner_context               = context.new_isolated_subcontext
       inner_context.template_name = template_name
-      inner_context.partial = true
+      inner_context.partial       = true
       @attributes.each do |key, value|
         inner_context[key] = context.evaluate(value)
       end

@@ -6,10 +6,10 @@ class StaticRegistersUnitTest < Minitest::Test
   include Liquid
 
   def set
-    static_register = StaticRegisters.new
-    static_register[nil] = true
-    static_register[1] = :one
-    static_register[:one] = "one"
+    static_register        = StaticRegisters.new
+    static_register[nil]   = true
+    static_register[1]     = :one
+    static_register[:one]  = "one"
     static_register["two"] = "three"
     static_register["two"] = 3
     static_register[false] = nil
@@ -77,10 +77,10 @@ class StaticRegistersUnitTest < Minitest::Test
   end
 
   def set_with_static
-    static_register = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
-    static_register[nil] = false
+    static_register        = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
+    static_register[nil]   = false
     static_register["two"] = 4
-    static_register[true] = "foo"
+    static_register[true]  = "foo"
 
     assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, static_register.static)
     assert_equal({ nil => false, "two" => 4, true => "foo" }, static_register.registers)
@@ -154,23 +154,23 @@ class StaticRegistersUnitTest < Minitest::Test
   end
 
   def test_new_static_retains_static
-    static_register = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
-    static_register["one"] = 1
-    static_register["two"] = 2
+    static_register          = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
+    static_register["one"]   = 1
+    static_register["two"]   = 2
     static_register["three"] = 3
 
     new_register = StaticRegisters.new(static_register)
     assert_equal({}, new_register.registers)
 
-    new_register["one"] = 4
-    new_register["two"] = 5
+    new_register["one"]   = 4
+    new_register["two"]   = 5
     new_register["three"] = 6
 
     newest_register = StaticRegisters.new(new_register)
     assert_equal({}, newest_register.registers)
 
-    newest_register["one"] = 7
-    newest_register["two"] = 8
+    newest_register["one"]   = 7
+    newest_register["two"]   = 8
     newest_register["three"] = 9
 
     assert_equal({ "one" => 1, "two" => 2, "three" => 3 }, static_register.registers)
@@ -182,23 +182,23 @@ class StaticRegistersUnitTest < Minitest::Test
   end
 
   def test_multiple_instances_are_unique
-    static_register = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
-    static_register["one"] = 1
-    static_register["two"] = 2
+    static_register          = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
+    static_register["one"]   = 1
+    static_register["two"]   = 2
     static_register["three"] = 3
 
     new_register = StaticRegisters.new(foo: :bar)
     assert_equal({}, new_register.registers)
 
-    new_register["one"] = 4
-    new_register["two"] = 5
+    new_register["one"]   = 4
+    new_register["two"]   = 5
     new_register["three"] = 6
 
     newest_register = StaticRegisters.new(bar: :foo)
     assert_equal({}, newest_register.registers)
 
-    newest_register["one"] = 7
-    newest_register["two"] = 8
+    newest_register["one"]   = 7
+    newest_register["two"]   = 8
     newest_register["three"] = 9
 
     assert_equal({ "one" => 1, "two" => 2, "three" => 3 }, static_register.registers)
@@ -210,9 +210,9 @@ class StaticRegistersUnitTest < Minitest::Test
   end
 
   def test_can_update_static_directly_and_updates_all_instances
-    static_register = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
-    static_register["one"] = 1
-    static_register["two"] = 2
+    static_register          = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
+    static_register["one"]   = 1
+    static_register["two"]   = 2
     static_register["three"] = 3
 
     new_register = StaticRegisters.new(static_register)
@@ -220,9 +220,9 @@ class StaticRegistersUnitTest < Minitest::Test
 
     assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, static_register.static)
 
-    new_register["one"] = 4
-    new_register["two"] = 5
-    new_register["three"] = 6
+    new_register["one"]         = 4
+    new_register["two"]         = 5
+    new_register["three"]       = 6
     new_register.static["four"] = 10
 
     newest_register = StaticRegisters.new(new_register)
@@ -230,9 +230,9 @@ class StaticRegistersUnitTest < Minitest::Test
 
     assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil, "four" => 10 }, new_register.static)
 
-    newest_register["one"] = 7
-    newest_register["two"] = 8
-    newest_register["three"] = 9
+    newest_register["one"]      = 7
+    newest_register["two"]      = 8
+    newest_register["three"]    = 9
     new_register.static["four"] = 5
     new_register.static["five"] = 15
 

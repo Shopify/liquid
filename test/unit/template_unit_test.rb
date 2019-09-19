@@ -22,7 +22,7 @@ class TemplateUnitTest < Minitest::Test
 
   def test_with_cache_classes_tags_returns_the_same_class
     original_cache_setting = Liquid.cache_classes
-    Liquid.cache_classes = true
+    Liquid.cache_classes   = true
 
     original_klass = Class.new
     Object.send(:const_set, :CustomTag, original_klass)
@@ -42,7 +42,7 @@ class TemplateUnitTest < Minitest::Test
 
   def test_without_cache_classes_tags_reloads_the_class
     original_cache_setting = Liquid.cache_classes
-    Liquid.cache_classes = false
+    Liquid.cache_classes   = false
 
     original_klass = Class.new
     Object.send(:const_set, :CustomTag, original_klass)

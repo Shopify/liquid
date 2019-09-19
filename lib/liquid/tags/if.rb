@@ -12,9 +12,9 @@ module Liquid
   #    There are {% if count < 5 %} less {% else %} more {% endif %} items than you need.
   #
   class If < Block
-    SYNTAX = /(#{QUOTED_FRAGMENT})\s*([=!<>a-z_]+)?\s*(#{QUOTED_FRAGMENT})?/o
+    SYNTAX                    = /(#{QUOTED_FRAGMENT})\s*([=!<>a-z_]+)?\s*(#{QUOTED_FRAGMENT})?/o
     EXPRESSIONS_AND_OPERATORS = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QUOTED_FRAGMENT}|\S+)\s*)+)/o
-    BOOLEAN_OPERATORS = %w(and or).freeze
+    BOOLEAN_OPERATORS         = %w(and or).freeze
 
     attr_reader :blocks
 
@@ -78,32 +78,32 @@ module Liquid
         new_condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2), Expression.parse(Regexp.last_match(3)))
         raise SyntaxError, options[:locale].t("errors.syntax.if") unless BOOLEAN_OPERATORS.include?(operator)
         new_condition.send(operator, condition)
-        condition = new_condition
+        condition     = new_condition
       end
 
       condition
     end
 
     def strict_parse(markup)
-      p = Parser.new(markup)
+      p         = Parser.new(markup)
       condition = parse_binary_comparisons(p)
       p.consume(:end_of_string)
       condition
     end
 
     def parse_binary_comparisons(p)
-      condition = parse_comparison(p)
+      condition       = parse_comparison(p)
       first_condition = condition
-      while (op = (p.id?('and') || p.id?('or')))
+      while (op       = (p.id?('and') || p.id?('or')))
         child_condition = parse_comparison(p)
         condition.send(op, child_condition)
-        condition = child_condition
+        condition       = child_condition
       end
       first_condition
     end
 
     def parse_comparison(p)
-      a = Expression.parse(p.expression)
+      a      = Expression.parse(p.expression)
       if (op = p.consume?(:comparison))
         b = Expression.parse(p.expression)
         Condition.new(a, op, b)

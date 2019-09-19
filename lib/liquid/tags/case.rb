@@ -2,7 +2,7 @@
 
 module Liquid
   class Case < Block
-    SYNTAX = /(#{QUOTED_FRAGMENT})/o
+    SYNTAX      = /(#{QUOTED_FRAGMENT})/o
     WHEN_SYNTAX = /(#{QUOTED_FRAGMENT})(?:(?:\s+or\s+|\s*\,\s*)(#{QUOTED_FRAGMENT}.*))?/om
 
     attr_reader :blocks, :left

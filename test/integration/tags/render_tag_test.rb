@@ -47,7 +47,7 @@ class RenderTagTest < Minitest::Test
 
     with_taint_mode :error do
       template = Liquid::Template.parse('{% render "snippet", unsafe: unsafe %}')
-      context = Context.new('unsafe' => (+'unsafe').tap(&:taint))
+      context  = Context.new('unsafe' => (+'unsafe').tap(&:taint))
       template.render(context)
 
       assert_equal [Liquid::TaintedError], template.errors.map(&:class)
@@ -60,7 +60,7 @@ class RenderTagTest < Minitest::Test
 
     with_taint_mode :warn do
       template = Liquid::Template.parse('{% render "snippet", unsafe: unsafe %}')
-      context = Context.new('unsafe' => (+'unsafe').tap(&:taint))
+      context  = Context.new('unsafe' => (+'unsafe').tap(&:taint))
       template.render(context)
 
       assert_equal [Liquid::TaintedError], context.warnings.map(&:class)

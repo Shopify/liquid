@@ -73,29 +73,29 @@ class TemplateTest < Minitest::Test
   end
 
   def test_persistent_assigns_squash_instance_assigns
-    t = Template.new
+    t                = Template.new
     assert_equal 'from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render!
     t.assigns['foo'] = 'from persistent assigns'
     assert_equal 'from persistent assigns', t.parse("{{ foo }}").render!
   end
 
   def test_lambda_is_called_once_from_persistent_assigns_over_multiple_parses_and_renders
-    t = Template.new
+    t                   = Template.new
     t.assigns['number'] = -> {
       @global ||= 0
-      @global += 1
+      @global  += 1
     }
     assert_equal '1', t.parse("{{number}}").render!
     assert_equal '1', t.parse("{{number}}").render!
     assert_equal '1', t.render!
-    @global = nil
+    @global             = nil
   end
 
   def test_lambda_is_called_once_from_custom_assigns_over_multiple_parses_and_renders
-    t = Template.new
+    t       = Template.new
     assigns = { 'number' => -> {
                               @global ||= 0
-                              @global += 1
+                              @global  += 1
                             } }
     assert_equal '1', t.parse("{{number}}").render!(assigns)
     assert_equal '1', t.parse("{{number}}").render!(assigns)
@@ -104,13 +104,13 @@ class TemplateTest < Minitest::Test
   end
 
   def test_resource_limits_works_with_custom_length_method
-    t = Template.parse("{% assign foo = bar %}")
+    t                                     = Template.parse("{% assign foo = bar %}")
     t.resource_limits.render_length_limit = 42
     assert_equal "", t.render!("bar" => SomethingWithLength.new)
   end
 
   def test_resource_limits_render_length
-    t = Template.parse("0123456789")
+    t                                     = Template.parse("0123456789")
     t.resource_limits.render_length_limit = 5
     assert_equal "Liquid error: Memory limits exceeded", t.render
     assert t.resource_limits.reached?
@@ -121,12 +121,12 @@ class TemplateTest < Minitest::Test
   end
 
   def test_resource_limits_render_score
-    t = Template.parse("{% for a in (1..10) %} {% for a in (1..10) %} foo {% endfor %} {% endfor %}")
+    t                                    = Template.parse("{% for a in (1..10) %} {% for a in (1..10) %} foo {% endfor %} {% endfor %}")
     t.resource_limits.render_score_limit = 50
     assert_equal "Liquid error: Memory limits exceeded", t.render
     assert t.resource_limits.reached?
 
-    t = Template.parse("{% for a in (1..100) %} foo {% endfor %}")
+    t                                    = Template.parse("{% for a in (1..100) %} foo {% endfor %}")
     t.resource_limits.render_score_limit = 50
     assert_equal "Liquid error: Memory limits exceeded", t.render
     assert t.resource_limits.reached?
@@ -137,7 +137,7 @@ class TemplateTest < Minitest::Test
   end
 
   def test_resource_limits_assign_score
-    t = Template.parse("{% assign foo = 42 %}{% assign bar = 23 %}")
+    t                                    = Template.parse("{% assign foo = 42 %}{% assign bar = 23 %}")
     t.resource_limits.assign_score_limit = 1
     assert_equal "Liquid error: Memory limits exceeded", t.render
     assert t.resource_limits.reached?
@@ -169,7 +169,7 @@ class TemplateTest < Minitest::Test
   end
 
   def test_resource_limits_aborts_rendering_after_first_error
-    t = Template.parse("{% for a in (1..100) %} foo1 {% endfor %} bar {% for a in (1..100) %} foo2 {% endfor %}")
+    t                                    = Template.parse("{% for a in (1..100) %} foo1 {% endfor %} bar {% for a in (1..100) %} foo2 {% endfor %}")
     t.resource_limits.render_score_limit = 50
     assert_equal "Liquid error: Memory limits exceeded", t.render
     assert t.resource_limits.reached?
@@ -184,19 +184,19 @@ class TemplateTest < Minitest::Test
   end
 
   def test_render_length_persists_between_blocks
-    t = Template.parse("{% if true %}aaaa{% endif %}")
+    t                                     = Template.parse("{% if true %}aaaa{% endif %}")
     t.resource_limits.render_length_limit = 7
     assert_equal "Liquid error: Memory limits exceeded", t.render
     t.resource_limits.render_length_limit = 8
     assert_equal "aaaa", t.render
 
-    t = Template.parse("{% if true %}aaaa{% endif %}{% if true %}bbb{% endif %}")
+    t                                     = Template.parse("{% if true %}aaaa{% endif %}{% if true %}bbb{% endif %}")
     t.resource_limits.render_length_limit = 13
     assert_equal "Liquid error: Memory limits exceeded", t.render
     t.resource_limits.render_length_limit = 14
     assert_equal "aaaabbb", t.render
 
-    t = Template.parse("{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}")
+    t                                     = Template.parse("{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}")
     t.resource_limits.render_length_limit = 5
     assert_equal "Liquid error: Memory limits exceeded", t.render
     t.resource_limits.render_length_limit = 11
@@ -206,7 +206,7 @@ class TemplateTest < Minitest::Test
   end
 
   def test_render_length_uses_number_of_bytes_not_characters
-    t = Template.parse("{% if true %}すごい{% endif %}")
+    t                                     = Template.parse("{% if true %}すごい{% endif %}")
     t.resource_limits.render_length_limit = 10
     assert_equal "Liquid error: Memory limits exceeded", t.render
     t.resource_limits.render_length_limit = 18
@@ -215,7 +215,7 @@ class TemplateTest < Minitest::Test
 
   def test_default_resource_limits_unaffected_by_render_with_context
     context = Context.new
-    t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
+    t       = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
     t.render!(context)
     assert context.resource_limits.assign_score > 0
     assert context.resource_limits.render_score > 0
@@ -223,9 +223,9 @@ class TemplateTest < Minitest::Test
   end
 
   def test_can_use_drop_as_context
-    t = Template.new
+    t                   = Template.new
     t.registers['lulz'] = 'haha'
-    drop = TemplateContextDrop.new
+    drop                = TemplateContextDrop.new
     assert_equal 'fizzbuzz', t.parse('{{foo}}').render!(drop)
     assert_equal 'bar', t.parse('{{bar}}').render!(drop)
     assert_equal 'haha', t.parse("{{baz}}").render!(drop)
@@ -233,7 +233,7 @@ class TemplateTest < Minitest::Test
 
   def test_render_bang_force_rethrow_errors_on_passed_context
     context = Context.new('drop' => ErroneousDrop.new)
-    t = Template.new.parse('{{ drop.bad_method }}')
+    t       = Template.new.parse('{{ drop.bad_method }}')
 
     e = assert_raises RuntimeError do
       t.render!(context)
@@ -243,7 +243,7 @@ class TemplateTest < Minitest::Test
 
   def test_exception_renderer_that_returns_string
     exception = nil
-    handler = ->(e) {
+    handler   = ->(e) {
       exception = e
       '<!-- error -->'
     }
@@ -267,20 +267,20 @@ class TemplateTest < Minitest::Test
 
   def test_global_filter_option_on_render
     global_filter_proc = ->(output) { "#{output} filtered" }
-    rendered_template = Template.parse("{{name}}").render({ "name" => "bob" }, global_filter: global_filter_proc)
+    rendered_template  = Template.parse("{{name}}").render({ "name" => "bob" }, global_filter: global_filter_proc)
 
     assert_equal 'bob filtered', rendered_template
   end
 
   def test_global_filter_option_when_native_filters_exist
     global_filter_proc = ->(output) { "#{output} filtered" }
-    rendered_template = Template.parse("{{name | upcase}}").render({ "name" => "bob" }, global_filter: global_filter_proc)
+    rendered_template  = Template.parse("{{name | upcase}}").render({ "name" => "bob" }, global_filter: global_filter_proc)
 
     assert_equal 'BOB filtered', rendered_template
   end
 
   def test_undefined_variables
-    t = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
+    t      = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
     result = t.render({ 'x' => 33, 'z' => { 'a' => 32, 'c' => { 'e' => 31 } } }, strict_variables: true)
 
     assert_equal '33  32  ', result
@@ -295,8 +295,8 @@ class TemplateTest < Minitest::Test
 
   def test_nil_value_does_not_raise
     Liquid::Template.error_mode = :strict
-    t = Template.parse("some{{x}}thing")
-    result = t.render!({ 'x' => nil }, strict_variables: true)
+    t                           = Template.parse("some{{x}}thing")
+    result                      = t.render!({ 'x' => nil }, strict_variables: true)
 
     assert_equal 0, t.errors.count
     assert_equal 'something', result
@@ -311,8 +311,8 @@ class TemplateTest < Minitest::Test
   end
 
   def test_undefined_drop_methods
-    d = DropWithUndefinedMethod.new
-    t = Template.new.parse('{{ foo }} {{ woot }}')
+    d      = DropWithUndefinedMethod.new
+    t      = Template.new.parse('{{ foo }} {{ woot }}')
     result = t.render(d, strict_variables: true)
 
     assert_equal 'foo ', result
@@ -330,13 +330,13 @@ class TemplateTest < Minitest::Test
   end
 
   def test_undefined_filters
-    t = Template.parse("{{a}} {{x | upcase | somefilter1 | somefilter2 | somefilter3}}")
+    t       = Template.parse("{{a}} {{x | upcase | somefilter1 | somefilter2 | somefilter3}}")
     filters = Module.new do
       def somefilter3(v)
         "-#{v}-"
       end
     end
-    result = t.render({ 'a' => 123, 'x' => 'foo' }, filters: [filters], strict_filters: true)
+    result  = t.render({ 'a' => 123, 'x' => 'foo' }, filters: [filters], strict_filters: true)
 
     assert_equal '123 ', result
     assert_equal 1, t.errors.count
@@ -353,11 +353,11 @@ class TemplateTest < Minitest::Test
   end
 
   def test_using_range_literal_works_as_expected
-    t = Template.parse("{% assign foo = (x..y) %}{{ foo }}")
+    t      = Template.parse("{% assign foo = (x..y) %}{{ foo }}")
     result = t.render('x' => 1, 'y' => 5)
     assert_equal '1..5', result
 
-    t = Template.parse("{% assign nums = (x..y) %}{% for num in nums %}{{ num }}{% endfor %}")
+    t      = Template.parse("{% assign nums = (x..y) %}{% for num in nums %}{{ num }}{% endfor %}")
     result = t.render('x' => 1, 'y' => 5)
     assert_equal '12345', result
   end
