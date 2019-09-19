@@ -153,4 +153,19 @@ class RenderProfilingTest < Minitest::Test
     # Will profile each invocation of the for block
     assert_equal 2, t.profiler[0].children.length
   end
+
+  def test_total_time_equals_self_time_in_leaf
+    t = Template.parse("{% for item in collection %} {{ item }} {% endfor %}", profile: true)
+    t.render!("collection" => ["one", "two"])
+    leaf = t.profiler[0].children[0]
+
+    assert_equal leaf.total_time, leaf.self_time
+  end
+
+  def test_total_time_greater_than_self_time_in_node
+    t = Template.parse("{% if true %} {% increment test %} {{ test }} {% endif %}", profile: true)
+    t.render!
+
+    assert_operator t.profiler[0].total_time, :>, t.profiler[0].self_time
+  end
 end

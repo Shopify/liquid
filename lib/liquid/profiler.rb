@@ -46,7 +46,7 @@ module Liquid
     include Enumerable
 
     class Timing
-      attr_reader :code, :partial, :line_number, :children
+      attr_reader :code, :partial, :line_number, :children, :total_time, :self_time
 
       def initialize(node, partial)
         @code        = node.respond_to?(:raw) ? node.raw : node
@@ -65,6 +65,17 @@ module Liquid
 
       def finish
         @end_time = Time.now
+        @total_time = @end_time - @start_time
+
+        if @children.empty?
+          @self_time = @total_time
+        else
+          total_children_time = 0
+          @children.each do |child|
+            total_children_time += child.total_time
+          end
+          @self_time = @total_time - total_children_time
+        end
       end
 
       def render_time
@@ -98,8 +109,8 @@ module Liquid
       Thread.current[:liquid_profiler]
     end
 
-    def initialize
-      @partial_stack = ["<root>"]
+    def initialize(partial_name = "<root>")
+      @partial_stack = [partial_name]
 
       @root_timing = Timing.new("", current_partial)
       @timing_stack = [@root_timing]
