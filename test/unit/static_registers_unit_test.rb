@@ -135,6 +135,24 @@ class StaticRegistersUnitTest < Minitest::Test
     assert_equal true, static_register.key?(true)
   end
 
+  def test_static_register_can_be_frozen
+    static_register = set_with_static
+
+    static = static_register.static.freeze
+
+    assert_raises(RuntimeError) do
+      static["two"] = "foo"
+    end
+
+    assert_raises(RuntimeError) do
+      static["unknown"] = "foo"
+    end
+
+    assert_raises(RuntimeError) do
+      static.delete("two")
+    end
+  end
+
   def test_new_static_retains_static
     static_register = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
     static_register["one"] = 1
