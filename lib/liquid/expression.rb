@@ -7,7 +7,7 @@ module Liquid
 
       def initialize(method_name, to_s)
         @method_name = method_name
-        @to_s        = to_s
+        @to_s = to_s
       end
 
       def to_liquid

@@ -11,7 +11,7 @@ module Database
 
       # From vision source
       db['products'].each do |product|
-        collections            = db['collections'].find_all do |collection|
+        collections = db['collections'].find_all do |collection|
           collection['products'].any? { |p| p['id'].to_i == product['id'].to_i }
         end
         product['collections'] = collections

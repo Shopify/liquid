@@ -34,15 +34,15 @@ class TokenizerTest < Minitest::Test
 
   def tokenize(source)
     tokenizer = Liquid::Tokenizer.new(source)
-    tokens    = []
-    while (t  = tokenizer.shift)
+    tokens = []
+    while (t = tokenizer.shift)
       tokens << t
     end
     tokens
   end
 
   def tokenize_line_numbers(source)
-    tokenizer    = Liquid::Tokenizer.new(source, true)
+    tokenizer = Liquid::Tokenizer.new(source, true)
     line_numbers = []
     loop do
       line_number = tokenizer.line_number

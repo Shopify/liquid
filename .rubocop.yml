@@ -7,9 +7,6 @@ require: rubocop-performance
 Performance:
   Enabled: true
 
-Layout/ExtraSpacing:
-  ForceEqualSignAlignment: true
-
 AllCops:
   TargetRubyVersion: 2.4
   Exclude:
