@@ -66,9 +66,6 @@ module Liquid
           s = S_VAR
           output << current
           current = t
-        elsif t == T_VAR_OPEN && s == S_TAG
-          s = S_VAR
-          current += t
         elsif t == T_SIN_QUOT && s == S_TAG
           s = S_TAG_SIN
           current += t
