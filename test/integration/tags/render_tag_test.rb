@@ -153,7 +153,7 @@ class RenderTagTest < Minitest::Test
       'test_include' => '{% include "foo" %}'
     )
 
-    assert_template_result 'include usage has been disabled in this context.', '{% render "test_include" %}'
+    assert_template_result 'include usage is not allowed in this context', '{% render "test_include" %}'
   end
 
   def test_includes_will_not_render_inside_nested_sibling_tags
@@ -163,6 +163,6 @@ class RenderTagTest < Minitest::Test
       'test_include' => '{% include "foo" %}'
     )
 
-    assert_template_result 'include usage has been disabled in this context.include usage has been disabled in this context.', '{% render "nested_render_with_sibling_include" %}'
+    assert_template_result 'include usage is not allowed in this contextinclude usage is not allowed in this context', '{% render "nested_render_with_sibling_include" %}'
   end
 end

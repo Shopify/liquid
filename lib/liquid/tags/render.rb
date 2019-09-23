@@ -3,7 +3,7 @@
 module Liquid
   class Render < Tag
     SYNTAX = /(#{QuotedString})#{QuotedFragment}*/o
-    DISABLED_TAGS = %w(include)
+    DISABLED_TAGS = %w(include).freeze
 
     attr_reader :template_name_expr, :attributes
 

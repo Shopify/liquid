@@ -23,13 +23,13 @@ class DisabledTagsTest < Minitest::Test
 
   def test_disables_raw
     with_custom_tag('disable', DisableRaw) do
-      assert_template_result 'raw usage has been disabled in this context.foo', '{% disable %}{% raw %}Foobar{% endraw %}{% echo "foo" %}{% enddisable %}'
+      assert_template_result 'raw usage is not allowed in this contextfoo', '{% disable %}{% raw %}Foobar{% endraw %}{% echo "foo" %}{% enddisable %}'
     end
   end
 
   def test_disables_echo_and_raw
     with_custom_tag('disable', DisableRawEcho) do
-      assert_template_result 'raw usage has been disabled in this context.echo usage has been disabled in this context.', '{% disable %}{% raw %}Foobar{% endraw %}{% echo "foo" %}{% enddisable %}'
+      assert_template_result 'raw usage is not allowed in this contextecho usage is not allowed in this context', '{% disable %}{% raw %}Foobar{% endraw %}{% echo "foo" %}{% enddisable %}'
     end
   end
 end
