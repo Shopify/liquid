@@ -10,19 +10,19 @@ module Liquid
     end
 
     def disable(tag)
-      incr(tag)
+      increment(tag)
       yield
     ensure
-      decr(tag)
+      decrement(tag)
     end
 
     private
 
-    def incr(tag)
+    def increment(tag)
       @disabled_tags[tag] = @disabled_tags[tag] + 1
     end
 
-    def decr(tag)
+    def decrement(tag)
       @disabled_tags[tag] = @disabled_tags[tag] - 1
     end
   end

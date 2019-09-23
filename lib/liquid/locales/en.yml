@@ -26,4 +26,4 @@
     argument:
       include: "Argument error in tag 'include' - Illegal template name"
     disabled:
-      include: "'include' usage has been disabled in this context, consider using 'render'."
+      tag: "usage has been disabled in this context."
