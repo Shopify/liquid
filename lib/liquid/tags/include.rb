@@ -45,7 +45,7 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      return output << disabled_response if disabled?(context)
+      disabled?(context, output) && return
       template_name = context.evaluate(@template_name_expr)
       raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
 

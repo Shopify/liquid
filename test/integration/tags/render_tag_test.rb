@@ -146,4 +146,23 @@ class RenderTagTest < Minitest::Test
     Liquid::Template.file_system = StubFileSystem.new('decr' => '{% decrement %}')
     assert_template_result '-1-2-1', '{% decrement %}{% decrement %}{% render "decr" %}'
   end
+
+  def test_includes_will_not_render_inside_render_tag
+    Liquid::Template.file_system = StubFileSystem.new(
+      'foo' => 'bar',
+      'test_include' => '{% include "foo" %}'
+    )
+
+    assert_template_result 'include usage has been disabled in this context.', '{% render "test_include" %}'
+  end
+
+  def test_includes_will_not_render_inside_nested_sibling_tags
+    Liquid::Template.file_system = StubFileSystem.new(
+      'foo' => 'bar',
+      'nested_render_with_sibling_include' => '{% render "test_include" %}{% include "foo" %}',
+      'test_include' => '{% include "foo" %}'
+    )
+
+    assert_template_result 'include usage has been disabled in this context.include usage has been disabled in this context.', '{% render "nested_render_with_sibling_include" %}'
+  end
 end
