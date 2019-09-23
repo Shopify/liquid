@@ -40,18 +40,16 @@ module Liquid
 
     def disabled?(context, output)
       if context.registers['disabled_tags']&.disabled?(tag_name)
-        output << disabled_response
+        output << disabled_error_message
       end
     end
 
-    def disabled_response
+    def disabled_error_message
       "#{tag_name} #{options[:locale].t('errors.disabled.tag')}"
     end
 
-    def disable_tags(context, tags)
-      context.registers['disabled_tags'].disable(tags) do
-        yield
-      end
+    def disable_tags(context, tags, &block)
+      context.registers['disabled_tags'].disable(tags, &block)
     end
 
     # For backwards compatibility with custom tags. In a future release, the semantics

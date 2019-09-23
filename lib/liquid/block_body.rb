@@ -154,7 +154,7 @@ module Liquid
     private
 
     def render_node(context, output, node)
-      node.disabled?(context, output) && return if node.is_a?(Tag)
+      return if node.is_a?(Tag) && node.disabled?(context, output)
       node.render_to_output_buffer(context, output)
     rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
       context.handle_error(e, node.line_number)

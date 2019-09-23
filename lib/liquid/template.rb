@@ -92,7 +92,7 @@ module Liquid
         @tags ||= TagRegistry.new
       end
 
-      def register_register(name, klass)
+      def add_register(name, klass)
         registers[name.to_s] = klass
       end
 

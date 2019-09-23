@@ -3,6 +3,7 @@
 module Liquid
   class Render < Tag
     SYNTAX = /(#{QuotedString})#{QuotedFragment}*/o
+    DISABLED_TAGS = %w(include)
 
     attr_reader :template_name_expr, :attributes
 
@@ -22,7 +23,7 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      disable_tags(context, %w(include)) do
+      disable_tags(context, DISABLED_TAGS) do
         render_tag(context, output)
       end
     end
