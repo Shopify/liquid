@@ -52,7 +52,7 @@ module Liquid
       when Numeric
         obj
       when String
-        obj.strip =~ /\A-?\d+\.\d+\z/ ? BigDecimal(obj) : obj.to_i
+        /\A-?\d+\.\d+\z/.match?(obj.strip) ? BigDecimal(obj) : obj.to_i
       else
         if obj.respond_to?(:to_number)
           obj.to_number

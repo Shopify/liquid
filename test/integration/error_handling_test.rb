@@ -211,7 +211,10 @@ class ErrorHandlingTest < Minitest::Test
   def test_setting_default_exception_renderer
     old_exception_renderer = Liquid::Template.default_exception_renderer
     exceptions = []
-    Liquid::Template.default_exception_renderer = ->(e) { exceptions << e; '' }
+    Liquid::Template.default_exception_renderer = ->(e) {
+      exceptions << e
+      ''
+    }
     template = Liquid::Template.parse('This is a runtime error: {{ errors.argument_error }}')
 
     output = template.render('errors' => ErrorDrop.new)
@@ -225,7 +228,10 @@ class ErrorHandlingTest < Minitest::Test
   def test_exception_renderer_exposing_non_liquid_error
     template = Liquid::Template.parse('This is a runtime error: {{ errors.runtime_error }}', line_numbers: true)
     exceptions = []
-    handler = ->(e) { exceptions << e; e.cause }
+    handler = ->(e) {
+      exceptions << e
+      e.cause
+    }
 
     output = template.render({ 'errors' => ErrorDrop.new }, exception_renderer: handler)
 

@@ -27,7 +27,7 @@ module Liquid
     end
 
     private def parse_for_liquid_tag(tokenizer, parse_context)
-      while token = tokenizer.shift
+      while (token = tokenizer.shift)
         unless token.empty? || token =~ WhitespaceOrNothing
           unless token =~ LiquidTagToken
             # line isn't empty but didn't match tag syntax, yield and let the
@@ -36,7 +36,7 @@ module Liquid
           end
           tag_name = Regexp.last_match(1)
           markup = Regexp.last_match(2)
-          unless tag = registered_tags[tag_name]
+          unless (tag = registered_tags[tag_name])
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
             return yield tag_name, markup
@@ -52,7 +52,7 @@ module Liquid
     end
 
     private def parse_for_document(tokenizer, parse_context, &block)
-      while token = tokenizer.shift
+      while (token = tokenizer.shift)
         next if token.empty?
         case
         when token.start_with?(TAGSTART)
@@ -74,7 +74,7 @@ module Liquid
             next parse_for_liquid_tag(liquid_tag_tokenizer, parse_context, &block)
           end
 
-          unless tag = registered_tags[tag_name]
+          unless (tag = registered_tags[tag_name])
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
             return yield tag_name, markup
@@ -122,7 +122,7 @@ module Liquid
       context.resource_limits.render_score += @nodelist.length
 
       idx = 0
-      while node = @nodelist[idx]
+      while (node = @nodelist[idx])
         previous_output_size = output.bytesize
 
         case node

@@ -35,7 +35,7 @@ class TokenizerTest < Minitest::Test
   def tokenize(source)
     tokenizer = Liquid::Tokenizer.new(source)
     tokens = []
-    while t = tokenizer.shift
+    while (t = tokenizer.shift)
       tokens << t
     end
     tokens

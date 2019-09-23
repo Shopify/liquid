@@ -94,7 +94,7 @@ module Liquid
     def parse_binary_comparisons(p)
       condition = parse_comparison(p)
       first_condition = condition
-      while op = (p.id?('and') || p.id?('or'))
+      while (op = (p.id?('and') || p.id?('or')))
         child_condition = parse_comparison(p)
         condition.send(op, child_condition)
         condition = child_condition
@@ -104,7 +104,7 @@ module Liquid
 
     def parse_comparison(p)
       a = Expression.parse(p.expression)
-      if op = p.consume?(:comparison)
+      if (op = p.consume?(:comparison))
         b = Expression.parse(p.expression)
         Condition.new(a, op, b)
       else
