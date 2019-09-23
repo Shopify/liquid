@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class DisabledTagsTest < Minitest::Test
+class DisabledTagsUnitTest < Minitest::Test
   include Liquid
 
   def test_disables_tag_specified
