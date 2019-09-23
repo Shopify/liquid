@@ -89,14 +89,12 @@ class RenderTagTest < Minitest::Test
     end
   end
 
-  def test_includes_and_renders_count_towards_the_same_recursion_limit
+  def test_sub_contexts_count_towards_the_same_recursion_limit
     Liquid::Template.file_system = StubFileSystem.new(
-      'loop_render' => '{% render "loop_include" %}',
-      'loop_include' => '{% include "loop_render" %}'
+      'loop_render' => '{% render "loop_render" %}',
     )
-
-    assert_raises Liquid::StackLevelError  do
-      Template.parse('{% render "loop_include" %}').render!
+    assert_raises Liquid::StackLevelError do
+      Template.parse('{% render "loop_render" %}').render!
     end
   end
 

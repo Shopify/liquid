@@ -39,11 +39,11 @@ module Liquid
     end
 
     def disabled?(context)
-     context.registers['disabled_tags']&.disabled?(tag_name)
+      context.registers['disabled_tags']&.disabled?(tag_name)
     end
 
     def disabled_response
-      "#{tag_name} #{options[:locale].t("errors.disabled.tag")}"
+      "#{tag_name} #{options[:locale].t('errors.disabled.tag')}"
     end
 
     # For backwards compatibility with custom tags. In a future release, the semantics
