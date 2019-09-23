@@ -48,6 +48,12 @@ module Liquid
       "#{tag_name} #{options[:locale].t('errors.disabled.tag')}"
     end
 
+    def disable_tags(context, tags)
+      context.registers['disabled_tags'].disable(tags) do
+        yield
+      end
+    end
+
     # For backwards compatibility with custom tags. In a future release, the semantics
     # of the `render_to_output_buffer` method will become the default and the `render`
     # method will be removed.

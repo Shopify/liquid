@@ -9,11 +9,11 @@ module Liquid
       @disabled_tags[tag] > 0
     end
 
-    def disable(tag)
-      increment(tag)
+    def disable(tags)
+      tags.each { |tag| increment(tag) }
       yield
     ensure
-      decrement(tag)
+      tags.each { |tag| decrement(tag) }
     end
 
     private

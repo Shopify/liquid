@@ -22,7 +22,7 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      context.registers['disabled_tags'].disable('include') do
+      disable_tags(context, %w(include)) do
         render_tag(context, output)
       end
     end
