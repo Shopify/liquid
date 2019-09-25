@@ -4,7 +4,7 @@ module Liquid
   class Render < Tag
     SYNTAX = /(#{QuotedString})#{QuotedFragment}*/o
 
-    disable_nested_tags "include"
+    disable_tags "include"
 
     attr_reader :template_name_expr, :attributes
 

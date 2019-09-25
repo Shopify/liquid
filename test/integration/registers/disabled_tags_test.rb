@@ -6,11 +6,11 @@ class DisabledTagsTest < Minitest::Test
   include Liquid
 
   class DisableRaw < Block
-    disable_nested_tags "raw"
+    disable_tags "raw"
   end
 
   class DisableRawEcho < Block
-    disable_nested_tags "raw", "echo"
+    disable_tags "raw", "echo"
   end
 
   def test_disables_raw

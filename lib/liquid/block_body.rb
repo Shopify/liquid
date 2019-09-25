@@ -154,8 +154,8 @@ module Liquid
     private
 
     def render_node(context, output, node)
-      return if node.is_a?(Tag) && node.disabled?(context, output)
-      disable_tags(context, node.is_a?(Tag) ? node.disabled_tags : nil) do
+      return if node.disabled?(context, output)
+      disable_tags(context, node.disabled_tags) do
         node.render_to_output_buffer(context, output)
       end
     rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e

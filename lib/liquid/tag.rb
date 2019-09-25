@@ -13,8 +13,8 @@ module Liquid
         tag
       end
 
-      def disable_nested_tags(*tags)
-        @disabled_tags = tags
+      def disable_tags(*tags)
+        disabled_tags.push(*tags)
       end
 
       private :new
