@@ -46,10 +46,8 @@ module Liquid
       ''
     end
 
-    def disabled?(context, output)
-      if context.registers['disabled_tags'].disabled?(tag_name)
-        output << disabled_error_message
-      end
+    def disabled?(context)
+      context.registers['disabled_tags'].disabled?(tag_name)
     end
 
     def disabled_error_message

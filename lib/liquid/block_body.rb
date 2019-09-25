@@ -154,7 +154,10 @@ module Liquid
     private
 
     def render_node(context, output, node)
-      return if node.disabled?(context, output)
+      if node.disabled?(context)
+        output << node.disabled_error_message
+        return
+      end
       disable_tags(context, node.disabled_tags) do
         node.render_to_output_buffer(context, output)
       end

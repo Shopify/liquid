@@ -104,7 +104,7 @@ module Liquid
       output
     end
 
-    def disabled?(_context, _output)
+    def disabled?(_context)
       false
     end
 
