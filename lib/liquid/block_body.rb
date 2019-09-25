@@ -169,7 +169,7 @@ module Liquid
     end
 
     def disable_tags(context, tags, &block)
-      return yield unless tags
+      return yield if tags.empty?
       context.registers['disabled_tags'].disable(tags, &block)
     end
 
