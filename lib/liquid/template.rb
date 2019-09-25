@@ -92,6 +92,14 @@ module Liquid
         @tags ||= TagRegistry.new
       end
 
+      def add_register(name, klass)
+        registers[name.to_s] = klass
+      end
+
+      def registers
+        @registers ||= {}
+      end
+
       def error_mode
         @error_mode ||= :lax
       end
@@ -191,16 +199,24 @@ module Liquid
 
       output = nil
 
+      context_register = context.registers.is_a?(StaticRegisters) ? context.registers.static : context.registers
+
       case args.last
       when Hash
         options = args.pop
         output = options[:output] if options[:output]
 
-        registers.merge!(options[:registers]) if options[:registers].is_a?(Hash)
+        options[:registers]&.each do |key, register|
+          context_register[key] = register
+        end
 
         apply_options_to_context(context, options)
       when Module, Array
         context.add_filters(args.pop)
+      end
+
+      Template.registers.each do |key, register|
+        context_register[key] = register
       end
 
       # Retrying a render resets resource usage

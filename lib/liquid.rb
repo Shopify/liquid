@@ -78,8 +78,10 @@ require 'liquid/tokenizer'
 require 'liquid/parse_context'
 require 'liquid/partial_cache'
 require 'liquid/usage'
+require 'liquid/register'
 require 'liquid/static_registers'
 
 # Load all the tags of the standard library
 #
 Dir["#{__dir__}/liquid/tags/*.rb"].each { |f| require f }
+Dir["#{__dir__}/liquid/registers/*.rb"].each { |f| require f }

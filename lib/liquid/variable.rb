@@ -104,6 +104,14 @@ module Liquid
       output
     end
 
+    def disabled?(_context)
+      false
+    end
+
+    def disabled_tags
+      []
+    end
+
     private
 
     def parse_filter_expressions(filter_name, unparsed_args)

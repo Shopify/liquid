@@ -4,6 +4,8 @@ module Liquid
   class Render < Tag
     SYNTAX = /(#{QuotedString})#{QuotedFragment}*/o
 
+    disable_tags "include"
+
     attr_reader :template_name_expr, :attributes
 
     def initialize(tag_name, markup, options)
@@ -22,6 +24,10 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
+      render_tag(context, output)
+    end
+
+    def render_tag(context, output)
       # Though we evaluate this here we will only ever parse it as a string literal.
       template_name = context.evaluate(@template_name_expr)
       raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
