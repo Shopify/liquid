@@ -155,12 +155,19 @@ module Liquid
 
     def render_node(context, output, node)
       return if node.is_a?(Tag) && node.disabled?(context, output)
-      node.render_to_output_buffer(context, output)
+      disable_tags(context, node.is_a?(Tag) ? node.disabled_tags : nil) do
+        node.render_to_output_buffer(context, output)
+      end
     rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
       context.handle_error(e, node.line_number)
     rescue ::StandardError => e
       line_number = node.is_a?(String) ? nil : node.line_number
       output << context.handle_error(e, line_number)
+    end
+
+    def disable_tags(context, tags, &block)
+      return yield unless tags
+      context.registers['disabled_tags'].disable(tags, &block)
     end
 
     def raise_if_resource_limits_reached(context, length)

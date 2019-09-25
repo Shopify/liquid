@@ -13,7 +13,15 @@ module Liquid
         tag
       end
 
+      def disable_nested_tags(*tags)
+        @disabled_tags = tags
+      end
+
       private :new
+
+      def disabled_tags
+        @disabled_tags ||= []
+      end
     end
 
     def initialize(tag_name, markup, parse_context)
@@ -48,10 +56,6 @@ module Liquid
       "#{tag_name} #{options[:locale].t('errors.disabled.tag')}"
     end
 
-    def disable_tags(context, tags, &block)
-      context.registers['disabled_tags'].disable(tags, &block)
-    end
-
     # For backwards compatibility with custom tags. In a future release, the semantics
     # of the `render_to_output_buffer` method will become the default and the `render`
     # method will be removed.
@@ -62,6 +66,10 @@ module Liquid
 
     def blank?
       false
+    end
+
+    def disabled_tags
+      self.class.disabled_tags
     end
   end
 end

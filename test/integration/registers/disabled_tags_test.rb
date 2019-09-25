@@ -6,19 +6,11 @@ class DisabledTagsTest < Minitest::Test
   include Liquid
 
   class DisableRaw < Block
-    def render(context)
-      disable_tags(context, ["raw"]) do
-        @body.render(context)
-      end
-    end
+    disable_nested_tags "raw"
   end
 
   class DisableRawEcho < Block
-    def render(context)
-      disable_tags(context, ["raw", "echo"]) do
-        @body.render(context)
-      end
-    end
+    disable_nested_tags "raw", "echo"
   end
 
   def test_disables_raw
