@@ -28,5 +28,5 @@ module Liquid
     end
   end
 
-  Template.add_register('disabled_tags', DisabledTags.new)
+  Template.add_register(:disabled_tags, DisabledTags.new)
 end

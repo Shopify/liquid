@@ -170,7 +170,7 @@ module Liquid
 
     def disable_tags(context, tags, &block)
       return yield if tags.empty?
-      context.registers['disabled_tags'].disable(tags, &block)
+      context.registers[:disabled_tags].disable(tags, &block)
     end
 
     def raise_if_resource_limits_reached(context, length)

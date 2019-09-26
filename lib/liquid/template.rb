@@ -93,7 +93,7 @@ module Liquid
       end
 
       def add_register(name, klass)
-        registers[name.to_s] = klass
+        registers[name.to_sym] = klass
       end
 
       def registers
