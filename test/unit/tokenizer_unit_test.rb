@@ -30,6 +30,67 @@ class TokenizerTest < Minitest::Test
     assert_equal [1, 1, 3], tokenize_line_numbers(" {{\n funk \n}} ")
   end
 
+  def test_tokenize_quirks
+    assert_equal ['{%comment%}'], tokenize('{%comment%}')
+    assert_equal [' ', '{%comment%}', ' '], tokenize(' {%comment%} ')
+
+    assert_equal [' ', '{%comment%}', ' ', '{%endcomment%}', ' '], tokenize(' {%comment%} {%endcomment%} ')
+    assert_equal ['  ', '{% "{% comment" %}', ' ', '{% endcomment %}', ' '], tokenize('  {% "{% comment" %} {% endcomment %} ')
+    assert_equal ['  ', '{% "{% comment %}" %}', ' ', '{% endcomment %}', ' '], tokenize('  {% "{% comment %}" %} {% endcomment %} ')
+    assert_equal ['  ', '{% "comment %}" %}', ' ', '{% endcomment %}', ' '], tokenize('  {% "comment %}" %} {% endcomment %} ')
+    assert_equal ['  ', '{% "{{ comment" %}', ' ', '{% endcomment %}', ' '], tokenize('  {% "{{ comment" %} {% endcomment %} ')
+    assert_equal ['  ', '{% "{{ comment }}" %}', ' ', '{% endcomment %}', ' '], tokenize('  {% "{{ comment }}" %} {% endcomment %} ')
+    assert_equal ['  ', '{% "comment }}" %}', ' ', '{% endcomment %}', ' '], tokenize('  {% "comment }}" %} {% endcomment %} ')
+    assert_equal ['  ', '{% "comment }" %}', ' ', '{% endcomment %}', ' '], tokenize('  {% "comment }" %} {% endcomment %} ')
+
+    assert_equal [" ", "{%comment%}", " ", "{%endcomment%}", " "], tokenize(" {%comment%} {%endcomment%} ")
+    assert_equal ["  ", "{% '{% comment' %}", " ", "{% endcomment %}", " "], tokenize("  {% '{% comment' %} {% endcomment %} ")
+    assert_equal ["  ", "{% '{% comment %}' %}", " ", "{% endcomment %}", " "], tokenize("  {% '{% comment %}' %} {% endcomment %} ")
+    assert_equal ["  ", "{% 'comment %}' %}", " ", "{% endcomment %}", " "], tokenize("  {% 'comment %}' %} {% endcomment %} ")
+    assert_equal ["  ", "{% '{{ comment' %}", " ", "{% endcomment %}", " "], tokenize("  {% '{{ comment' %} {% endcomment %} ")
+    assert_equal ["  ", "{% '{{ comment }}' %}", " ", "{% endcomment %}", " "], tokenize("  {% '{{ comment }}' %} {% endcomment %} ")
+    assert_equal ["  ", "{% 'comment }}' %}", " ", "{% endcomment %}", " "], tokenize("  {% 'comment }}' %} {% endcomment %} ")
+    assert_equal ["  ", "{% 'comment }' %}", " ", "{% endcomment %}", " "], tokenize("  {% 'comment }' %} {% endcomment %} ")
+
+    assert_equal [' ', '{{comment}}', ' ', '{{endcomment}}', ' '], tokenize(' {{comment}} {{endcomment}} ')
+    assert_equal ['  ', '{{ "{{ comment" }}', ' ', '{{ endcomment }}', ' '], tokenize('  {{ "{{ comment" }} {{ endcomment }} ')
+    assert_equal ['  ', '{{ "{{ comment }}" }}', ' ', '{{ endcomment }}', ' '], tokenize('  {{ "{{ comment }}" }} {{ endcomment }} ')
+    assert_equal ['  ', '{{ "comment }}" }}', ' ', '{{ endcomment }}', ' '], tokenize('  {{ "comment }}" }} {{ endcomment }} ')
+    assert_equal ['  ', '{{ "{{ comment" }}', ' ', '{{ endcomment }}', ' '], tokenize('  {{ "{{ comment" }} {{ endcomment }} ')
+    assert_equal ['  ', '{{ "{{ comment }}" }}', ' ', '{{ endcomment }}', ' '], tokenize('  {{ "{{ comment }}" }} {{ endcomment }} ')
+    assert_equal ['  ', '{{ "comment }}" }}', ' ', '{{ endcomment }}', ' '], tokenize('  {{ "comment }}" }} {{ endcomment }} ')
+    assert_equal ['  ', '{{ "comment }" }}', ' ', '{{ endcomment }}', ' '], tokenize('  {{ "comment }" }} {{ endcomment }} ')
+
+    assert_equal [" ", "{{comment}}", " ", "{{endcomment}}", " "], tokenize(" {{comment}} {{endcomment}} ")
+    assert_equal ["  ", "{{ '{% comment' }}", " ", "{{ endcomment }}", " "], tokenize("  {{ '{% comment' }} {{ endcomment }} ")
+    assert_equal ["  ", "{{ '{% comment }}' }}", " ", "{{ endcomment }}", " "], tokenize("  {{ '{% comment }}' }} {{ endcomment }} ")
+    assert_equal ["  ", "{{ 'comment }}' }}", " ", "{{ endcomment }}", " "], tokenize("  {{ 'comment }}' }} {{ endcomment }} ")
+    assert_equal ["  ", "{{ '{{ comment' }}", " ", "{{ endcomment }}", " "], tokenize("  {{ '{{ comment' }} {{ endcomment }} ")
+    assert_equal ["  ", "{{ '{{ comment }}' }}", " ", "{{ endcomment }}", " "], tokenize("  {{ '{{ comment }}' }} {{ endcomment }} ")
+    assert_equal ["  ", "{{ 'comment }}' }}", " ", "{{ endcomment }}", " "], tokenize("  {{ 'comment }}' }} {{ endcomment }} ")
+    assert_equal ["  ", "{{ 'comment }' }}", " ", "{{ endcomment }}", " "], tokenize("  {{ 'comment }' }} {{ endcomment }} ")
+
+    assert_equal [' ', '{{comment}', ' ', '{{endcomment}', ' '], tokenize(' {{comment} {{endcomment} ')
+    assert_equal ['  ', '{{ "{% comment" }', ' ', '{{ endcomment }', ' '], tokenize('  {{ "{% comment" } {{ endcomment } ')
+    assert_equal ['  ', '{{ "{% comment }" }', ' ', '{{ endcomment }', ' '], tokenize('  {{ "{% comment }" } {{ endcomment } ')
+    assert_equal ['  ', '{{ "comment }" }', ' ', '{{ endcomment }', ' '], tokenize('  {{ "comment }" } {{ endcomment } ')
+    assert_equal ['  ', '{{ "{{ comment" }', ' ', '{{ endcomment }', ' '], tokenize('  {{ "{{ comment" } {{ endcomment } ')
+    assert_equal ['  ', '{{ "{{ comment }}" }', ' ', '{{ endcomment }', ' '], tokenize('  {{ "{{ comment }}" } {{ endcomment } ')
+    assert_equal ['  ', '{{ "comment }}" }', ' ', '{{ endcomment }', ' '], tokenize('  {{ "comment }}" } {{ endcomment } ')
+    assert_equal ['  ', '{{ "comment }" }', ' ', '{{ endcomment }', ' '], tokenize('  {{ "comment }" } {{ endcomment } ')
+
+    assert_equal [" ", "{{comment}", " ", "{{endcomment}", " "], tokenize(" {{comment} {{endcomment} ")
+    assert_equal ["  ", "{{ '{{ comment' }", " ", "{{ endcomment }", " "], tokenize("  {{ '{{ comment' } {{ endcomment } ")
+    assert_equal ["  ", "{{ '{{ comment }' }", " ", "{{ endcomment }", " "], tokenize("  {{ '{{ comment }' } {{ endcomment } ")
+    assert_equal ["  ", "{{ 'comment }' }", " ", "{{ endcomment }", " "], tokenize("  {{ 'comment }' } {{ endcomment } ")
+    assert_equal ["  ", "{{ '{{ comment' }", " ", "{{ endcomment }", " "], tokenize("  {{ '{{ comment' } {{ endcomment } ")
+    assert_equal ["  ", "{{ '{{ comment }}' }", " ", "{{ endcomment }", " "], tokenize("  {{ '{{ comment }}' } {{ endcomment } ")
+    assert_equal ["  ", "{{ 'comment }}' }", " ", "{{ endcomment }", " "], tokenize("  {{ 'comment }}' } {{ endcomment } ")
+    assert_equal ["  ", "{{ 'comment }' }", " ", "{{ endcomment }", " "], tokenize("  {{ 'comment }' } {{ endcomment } ")
+
+    assert_equal ['{{funk | replace: "}", \'}}\' }}'], tokenize('{{funk | replace: "}", \'}}\' }}')
+  end
+
   private
 
   def tokenize(source)

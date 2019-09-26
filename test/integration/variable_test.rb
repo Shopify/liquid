@@ -95,4 +95,21 @@ class VariableTest < Minitest::Test
   def test_render_symbol
     assert_template_result 'bar', '{{ foo }}', 'foo' => :bar
   end
+
+  def test_quoted_single_curly_braces
+    assert_template_result "{user}", "{{ variable | prepend: '{' | append: '}' }}", 'variable' => 'user'
+  end
+
+  def test_string_with_curly_brackets
+    json = '{ "key": { "nested": "value" }}'
+    assert_template_result(json, "{{ '#{json}' }}")
+  end
+
+  def test_liquid_issue_344
+    assert_template_result "blah xx yy }}", "{{ 'blah {{ yy }}' | replace: '{{', 'xx' }}"
+  end
+
+  def test_liquid_issue_213
+    assert_template_result "blah", "{{ 'blah}' | remove: '}' }}"
+  end
 end

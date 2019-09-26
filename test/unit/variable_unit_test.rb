@@ -156,6 +156,12 @@ class VariableUnitTest < Minitest::Test
     assert_equal ['b', 'c'], lookup.lookups
   end
 
+  def test_filters_with_properly_quoted_curlies
+    var = create_variable("hello | replace: \"}\", '}}'")
+    assert_equal VariableLookup.new('hello'), var.name
+    assert_equal [['replace', ['}', '}}']]], var.filters
+  end
+
   private
 
   def create_variable(markup, options = {})

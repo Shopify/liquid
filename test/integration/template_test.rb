@@ -361,4 +361,9 @@ class TemplateTest < Minitest::Test
     result = t.render('x' => 1, 'y' => 5)
     assert_equal '12345', result
   end
+
+  def test_curly_braces
+    assert_template_result "{}", "{{ '{}' }}"
+    assert_template_result "{}", "{% assign test = '{}' %}{{ test }}"
+  end
 end
