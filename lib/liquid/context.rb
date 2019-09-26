@@ -219,12 +219,16 @@ module Liquid
     def try_variable_find_in_environments(key, raise_on_not_found:)
       @environments.each do |environment|
         found_variable = lookup_and_evaluate(environment, key, raise_on_not_found: raise_on_not_found)
+        Usage.increment("environment_has_a_default_proc") if environment.respond_to?(:default_proc) && environment.default_proc
+        Usage.increment("environment_has_key_but_is_nil") if environment.respond_to?(:key?) && environment.key?(key) && found_variable.nil?
         if !found_variable.nil? || @strict_variables && raise_on_not_found
           return found_variable
         end
       end
       @static_environments.each do |environment|
         found_variable = lookup_and_evaluate(environment, key, raise_on_not_found: raise_on_not_found)
+        Usage.increment("static_environment_has_a_default_proc") if environment.respond_to?(:default_proc) && environment.default_proc
+        Usage.increment("static_environment_has_key_but_is_nil") if environment.respond_to?(:key?) && environment.key?(key) && found_variable.nil?
         if !found_variable.nil? || @strict_variables && raise_on_not_found
           return found_variable
         end
