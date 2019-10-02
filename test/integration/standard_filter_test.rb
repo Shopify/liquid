@@ -684,12 +684,12 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_default_handle_false
-    assert_equal "foo", @filters.default("foo", "bar", false)
-    assert_equal "bar", @filters.default(nil, "bar", false)
-    assert_equal "bar", @filters.default("", "bar", false)
-    assert_equal false, @filters.default(false, "bar", false)
-    assert_equal "bar", @filters.default([], "bar", false)
-    assert_equal "bar", @filters.default({}, "bar", false)
+    assert_equal "foo", @filters.default("foo", "bar", allow_false: true)
+    assert_equal "bar", @filters.default(nil, "bar", allow_false: true)
+    assert_equal "bar", @filters.default("", "bar", allow_false: true)
+    assert_equal false, @filters.default(false, "bar", allow_false: true)
+    assert_equal "bar", @filters.default([], "bar", allow_false: true)
+    assert_equal "bar", @filters.default({}, "bar", allow_false: true)
   end
 
   def test_cannot_access_private_methods

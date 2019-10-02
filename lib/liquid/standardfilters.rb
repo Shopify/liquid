@@ -419,8 +419,8 @@ module Liquid
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
-    def default(input, default_value = ''.freeze, false_as_missing = true)
-      if (false_as_missing ? !input : input.nil?) || input.respond_to?(:empty?) && input.empty?
+    def default(input, default_value = ''.freeze, allow_false: false)
+      if (allow_false ? input.nil? : !input) || input.respond_to?(:empty?) && input.empty?
         default_value
       else
         input
