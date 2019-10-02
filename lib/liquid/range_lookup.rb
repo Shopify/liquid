@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class RangeLookup
     def self.parse(start_markup, end_markup)

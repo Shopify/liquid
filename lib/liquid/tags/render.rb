@@ -1,15 +1,19 @@
+# frozen_string_literal: true
+
 module Liquid
   class Render < Tag
-    Syntax = /(#{QuotedString})#{QuotedFragment}*/o
+    SYNTAX = /(#{QuotedString})#{QuotedFragment}*/o
+
+    disable_tags "include"
 
     attr_reader :template_name_expr, :attributes
 
     def initialize(tag_name, markup, options)
       super
 
-      raise SyntaxError.new(options[:locale].t("errors.syntax.render".freeze)) unless markup =~ Syntax
+      raise SyntaxError, options[:locale].t("errors.syntax.render") unless markup =~ SYNTAX
 
-      template_name = $1
+      template_name = Regexp.last_match(1)
 
       @template_name_expr = Expression.parse(template_name)
 
@@ -20,9 +24,13 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
+      render_tag(context, output)
+    end
+
+    def render_tag(context, output)
       # Though we evaluate this here we will only ever parse it as a string literal.
       template_name = context.evaluate(@template_name_expr)
-      raise ArgumentError.new(options[:locale].t("errors.argument.include")) unless template_name
+      raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
 
       partial = PartialCache.load(
         template_name,
@@ -50,5 +58,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('render'.freeze, Render)
+  Template.register_tag('render', Render)
 end

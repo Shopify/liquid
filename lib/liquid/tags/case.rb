@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Case < Block
     Syntax     = /(#{QuotedFragment})/o
@@ -10,17 +12,15 @@ module Liquid
       @blocks = []
 
       if markup =~ Syntax
-        @left = Expression.parse($1)
+        @left = Expression.parse(Regexp.last_match(1))
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.case".freeze))
+        raise SyntaxError, options[:locale].t("errors.syntax.case")
       end
     end
 
     def parse(tokens)
       body = BlockBody.new
-      while parse_body(body, tokens)
-        body = @blocks.last.attachment
-      end
+      body = @blocks.last.attachment while parse_body(body, tokens)
     end
 
     def nodelist
@@ -29,9 +29,9 @@ module Liquid
 
     def unknown_tag(tag, markup, tokens)
       case tag
-      when 'when'.freeze
+      when 'when'
         record_when_condition(markup)
-      when 'else'.freeze
+      when 'else'
         record_else_condition(markup)
       else
         super
@@ -39,16 +39,14 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      context.stack do
-        execute_else_block = true
+      execute_else_block = true
 
-        @blocks.each do |block|
-          if block.else?
-            block.attachment.render_to_output_buffer(context, output) if execute_else_block
-          elsif block.evaluate(context)
-            execute_else_block = false
-            block.attachment.render_to_output_buffer(context, output)
-          end
+      @blocks.each do |block|
+        if block.else?
+          block.attachment.render_to_output_buffer(context, output) if execute_else_block
+        elsif block.evaluate(context)
+          execute_else_block = false
+          block.attachment.render_to_output_buffer(context, output)
         end
       end
 
@@ -62,12 +60,12 @@ module Liquid
 
       while markup
         unless markup =~ WhenSyntax
-          raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_when".freeze))
+          raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_when")
         end
 
-        markup = $2
+        markup = Regexp.last_match(2)
 
-        block = Condition.new(@left, '=='.freeze, Expression.parse($1))
+        block = Condition.new(@left, '==', Expression.parse(Regexp.last_match(1)))
         block.attach(body)
         @blocks << block
       end
@@ -75,7 +73,7 @@ module Liquid
 
     def record_else_condition(markup)
       unless markup.strip.empty?
-        raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_else".freeze))
+        raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_else")
       end
 
       block = ElseCondition.new
@@ -90,5 +88,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('case'.freeze, Case)
+  Template.register_tag('case', Case)
 end

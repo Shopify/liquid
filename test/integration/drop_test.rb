@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ContextDrop < Liquid::Drop
@@ -31,7 +33,7 @@ class ProductDrop < Liquid::Drop
 
   class CatchallDrop < Liquid::Drop
     def liquid_method_missing(method)
-      'catchall_method: ' << method.to_s
+      "catchall_method: #{method}"
     end
   end
 
@@ -48,7 +50,7 @@ class ProductDrop < Liquid::Drop
   end
 
   def user_input
-    "foo".taint
+    (+"foo").taint
   end
 
   protected
@@ -201,9 +203,9 @@ class DropsTest < Minitest::Test
   end
 
   def test_scope_though_proc
-    assert_equal '1', Liquid::Template.parse('{{ s }}').render!('context' => ContextDrop.new, 's' => proc{ |c| c['context.scopes'] })
-    assert_equal '2', Liquid::Template.parse('{%for i in dummy%}{{ s }}{%endfor%}').render!('context' => ContextDrop.new, 's' => proc{ |c| c['context.scopes'] }, 'dummy' => [1])
-    assert_equal '3', Liquid::Template.parse('{%for i in dummy%}{%for i in dummy%}{{ s }}{%endfor%}{%endfor%}').render!('context' => ContextDrop.new, 's' => proc{ |c| c['context.scopes'] }, 'dummy' => [1])
+    assert_equal '1', Liquid::Template.parse('{{ s }}').render!('context' => ContextDrop.new, 's' => proc { |c| c['context.scopes'] })
+    assert_equal '2', Liquid::Template.parse('{%for i in dummy%}{{ s }}{%endfor%}').render!('context' => ContextDrop.new, 's' => proc { |c| c['context.scopes'] }, 'dummy' => [1])
+    assert_equal '3', Liquid::Template.parse('{%for i in dummy%}{%for i in dummy%}{{ s }}{%endfor%}{%endfor%}').render!('context' => ContextDrop.new, 's' => proc { |c| c['context.scopes'] }, 'dummy' => [1])
   end
 
   def test_scope_with_assigns
@@ -241,7 +243,7 @@ class DropsTest < Minitest::Test
   end
 
   def test_some_enumerable_methods_still_get_invoked
-    [ :count, :max ].each do |method|
+    [:count, :max].each do |method|
       assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => RealEnumerableDrop.new)
       assert_equal "3", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render!('collection' => RealEnumerableDrop.new)
       assert_equal "3", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => EnumerableDrop.new)
@@ -250,7 +252,7 @@ class DropsTest < Minitest::Test
 
     assert_equal "yes", Liquid::Template.parse("{% if collection contains 3 %}yes{% endif %}").render!('collection' => RealEnumerableDrop.new)
 
-    [ :min, :first ].each do |method|
+    [:min, :first].each do |method|
       assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => RealEnumerableDrop.new)
       assert_equal "1", Liquid::Template.parse("{{collection[\"#{method}\"]}}").render!('collection' => RealEnumerableDrop.new)
       assert_equal "1", Liquid::Template.parse("{{collection.#{method}}}").render!('collection' => EnumerableDrop.new)
@@ -269,5 +271,12 @@ class DropsTest < Minitest::Test
   def test_default_to_s_on_drops
     assert_equal 'ProductDrop', Liquid::Template.parse("{{ product }}").render!('product' => ProductDrop.new)
     assert_equal 'EnumerableDrop', Liquid::Template.parse('{{ collection }}').render!('collection' => EnumerableDrop.new)
+  end
+
+  def test_invokable_methods
+    assert_equal %w(to_liquid catchall user_input context texts).to_set, ProductDrop.invokable_methods
+    assert_equal %w(to_liquid scopes_as_array loop_pos scopes).to_set, ContextDrop.invokable_methods
+    assert_equal %w(to_liquid size max min first count).to_set, EnumerableDrop.invokable_methods
+    assert_equal %w(to_liquid max min sort count first).to_set, RealEnumerableDrop.invokable_methods
   end
 end # DropsTest

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Echo outputs an expression
   #
@@ -16,9 +18,9 @@ module Liquid
     end
 
     def render(context)
-      @variable.render_to_output_buffer(context, '')
+      @variable.render_to_output_buffer(context, +'')
     end
   end
 
-  Template.register_tag('echo'.freeze, Echo)
+  Template.register_tag('echo', Echo)
 end

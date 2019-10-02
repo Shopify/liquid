@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 module FunnyFilter
-  def make_funny(input)
+  def make_funny(_input)
     'LOL'
   end
 
@@ -32,7 +34,7 @@ class OutputTest < Minitest::Test
   def setup
     @assigns = {
       'best_cars' => 'bmw',
-      'car' => { 'bmw' => 'good', 'gm' => 'bad' }
+      'car' => { 'bmw' => 'good', 'gm' => 'bad' },
     }
   end
 

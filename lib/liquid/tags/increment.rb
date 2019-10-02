@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # increment is used in a place where one needs to insert a counter
   #     into a template, and needs the counter to survive across
@@ -29,5 +31,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('increment'.freeze, Increment)
+  Template.register_tag('increment', Increment)
 end

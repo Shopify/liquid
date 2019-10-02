@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 module ProductsFilter
   def price(integer)
-    sprintf("$%.2d USD", integer / 100.0)
+    format("$%.2d USD", integer / 100.0)
   end
 
   def prettyprint(text)

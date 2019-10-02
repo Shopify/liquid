@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class VariableTest < Minitest::Test
@@ -76,7 +78,7 @@ class VariableTest < Minitest::Test
 
   def test_hash_with_default_proc
     template = Template.parse(%(Hello {{ test }}))
-    assigns = Hash.new { |h, k| raise "Unknown variable '#{k}'" }
+    assigns = Hash.new { |_h, k| raise "Unknown variable '#{k}'" }
     assigns['test'] = 'Tobi'
     assert_equal 'Hello Tobi', template.render!(assigns)
     assigns.delete('test')

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Capture stores the result of a block into a variable without rendering it inplace.
   #
@@ -16,9 +18,9 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       if markup =~ Syntax
-        @to = $1
+        @to = Regexp.last_match(1)
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.capture"))
+        raise SyntaxError, options[:locale].t("errors.syntax.capture")
       end
     end
 
@@ -35,5 +37,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('capture'.freeze, Capture)
+  Template.register_tag('capture', Capture)
 end

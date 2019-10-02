@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Include allows templates to relate with other templates
   #
@@ -23,8 +25,8 @@ module Liquid
 
       if markup =~ Syntax
 
-        template_name = $1
-        variable_name = $3
+        template_name = Regexp.last_match(1)
+        variable_name = Regexp.last_match(3)
 
         @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
         @template_name_expr = Expression.parse(template_name)
@@ -35,7 +37,7 @@ module Liquid
         end
 
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.include".freeze))
+        raise SyntaxError, options[:locale].t("errors.syntax.include")
       end
     end
 
@@ -44,7 +46,7 @@ module Liquid
 
     def render_to_output_buffer(context, output)
       template_name = context.evaluate(@template_name_expr)
-      raise ArgumentError.new(options[:locale].t("errors.argument.include")) unless template_name
+      raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
 
       partial = PartialCache.load(
         template_name,
@@ -52,7 +54,7 @@ module Liquid
         parse_context: parse_context
       )
 
-      context_variable_name = template_name.split('/'.freeze).last
+      context_variable_name = template_name.split('/').last
 
       variable = if @variable_name_expr
         context.evaluate(@variable_name_expr)
@@ -95,11 +97,11 @@ module Liquid
       def children
         [
           @node.template_name_expr,
-          @node.variable_name_expr
+          @node.variable_name_expr,
         ] + @node.attributes.values
       end
     end
   end
 
-  Template.register_tag('include'.freeze, Include)
+  Template.register_tag('include', Include)
 end

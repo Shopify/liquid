@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
@@ -16,18 +18,17 @@ module Liquid
     attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
     # rubocop:disable Metrics/ParameterLists
-    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_registers: {}, static_environments: {})
-      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_registers, static_environments)
+    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {})
+      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments)
     end
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_registers = {}, static_environments = {})
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {})
       @environments = [environments]
       @environments.flatten!
 
       @static_environments = [static_environments].flat_map(&:freeze).freeze
       @scopes              = [(outer_scope || {})]
       @registers           = registers
-      @static_registers    = static_registers.freeze
       @errors              = []
       @partial             = false
       @strict_variables    = false
@@ -35,11 +36,9 @@ module Liquid
       @base_scope_depth    = 0
       squash_instance_assigns_with_environments
 
-      @this_stack_used = false
-
       self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors
-        self.exception_renderer = ->(e) { raise }
+        self.exception_renderer = ->(_e) { raise }
       end
 
       @interrupts = []
@@ -122,19 +121,11 @@ module Liquid
     #   end
     #
     #   context['var]  #=> nil
-    def stack(new_scope = nil)
-      old_stack_used = @this_stack_used
-      if new_scope
-        push(new_scope)
-        @this_stack_used = true
-      else
-        @this_stack_used = false
-      end
-
+    def stack(new_scope = {})
+      push(new_scope)
       yield
     ensure
-      pop if @this_stack_used
-      @this_stack_used = old_stack_used
+      pop
     end
 
     # Creates a new context inheriting resource limits, filters, environment etc.,
@@ -145,7 +136,7 @@ module Liquid
       Context.build(
         resource_limits: resource_limits,
         static_environments: static_environments,
-        static_registers: static_registers
+        registers: StaticRegisters.new(registers)
       ).tap do |subcontext|
         subcontext.base_scope_depth = base_scope_depth + 1
         subcontext.exception_renderer = exception_renderer
@@ -162,10 +153,6 @@ module Liquid
 
     # Only allow String, Numeric, Hash, Array, Proc, Boolean or <tt>Liquid::Drop</tt>
     def []=(key, value)
-      unless @this_stack_used
-        @this_stack_used = true
-        push({})
-      end
       @scopes[0][key] = value
     end
 
@@ -215,7 +202,7 @@ module Liquid
       value = obj[key]
 
       if value.is_a?(Proc) && obj.respond_to?(:[]=)
-        obj[key] = (value.arity == 0) ? value.call : value.call(self)
+        obj[key] = value.arity == 0 ? value.call : value.call(self)
       else
         value
       end
@@ -246,7 +233,7 @@ module Liquid
     end
 
     def check_overflow
-      raise StackLevelError, "Nesting too deep".freeze if overflow?
+      raise StackLevelError, "Nesting too deep" if overflow?
     end
 
     def overflow?

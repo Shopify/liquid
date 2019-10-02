@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class HashOrderingTest < Minitest::Test
   module MoneyFilter
     def money(input)
-      sprintf(' %d$ ', input)
+      format(' %d$ ', input)
     end
   end
 
   module CanadianMoneyFilter
     def money(input)
-      sprintf(' %d$ CAD ', input)
+      format(' %d$ CAD ', input)
     end
   end
 

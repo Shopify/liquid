@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Assign sets a variable in your template.
   #
@@ -11,7 +13,7 @@ module Liquid
     Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/om
 
     def self.syntax_error_translation_key
-      "errors.syntax.assign".freeze
+      "errors.syntax.assign"
     end
 
     attr_reader :to, :from
@@ -19,10 +21,10 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       if markup =~ Syntax
-        @to = $1
-        @from = Variable.new($2, options)
+        @to = Regexp.last_match(1)
+        @from = Variable.new(Regexp.last_match(2), options)
       else
-        raise SyntaxError.new(options[:locale].t(self.class.syntax_error_translation_key))
+        raise SyntaxError, options[:locale].t(self.class.syntax_error_translation_key)
       end
     end
 
@@ -59,5 +61,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('assign'.freeze, Assign)
+  Template.register_tag('assign', Assign)
 end

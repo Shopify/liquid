@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 ENV["MT_NO_EXPECTATIONS"] = "1"
 require 'minitest/autorun'
@@ -8,7 +9,7 @@ require 'liquid.rb'
 require 'liquid/profiler'
 
 mode = :strict
-if env_mode = ENV['LIQUID_PARSER_MODE']
+if (env_mode = ENV['LIQUID_PARSER_MODE'])
   puts "-- #{env_mode.upcase} ERROR MODE"
   mode = env_mode.to_sym
 end
@@ -41,7 +42,7 @@ module Minitest
     end
 
     def assert_template_result_matches(expected, template, assigns = {}, message = nil)
-      return assert_template_result(expected, template, assigns, message) unless expected.is_a? Regexp
+      return assert_template_result(expected, template, assigns, message) unless expected.is_a?(Regexp)
 
       assert_match expected, Template.parse(template, line_numbers: true).render!(assigns), message
     end

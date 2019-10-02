@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class Expression
     class MethodLiteral
@@ -14,11 +16,11 @@ module Liquid
     end
 
     LITERALS = {
-      nil => nil, 'nil'.freeze => nil, 'null'.freeze => nil, ''.freeze => nil,
-      'true'.freeze  => true,
-      'false'.freeze => false,
-      'blank'.freeze => MethodLiteral.new(:blank?, '').freeze,
-      'empty'.freeze => MethodLiteral.new(:empty?, '').freeze
+      nil => nil, 'nil' => nil, 'null' => nil, '' => nil,
+      'true' => true,
+      'false' => false,
+      'blank' => MethodLiteral.new(:blank?, '').freeze,
+      'empty' => MethodLiteral.new(:empty?, '').freeze
     }.freeze
 
     SINGLE_QUOTED_STRING = /\A'(.*)'\z/m
@@ -33,13 +35,13 @@ module Liquid
       else
         case markup
         when SINGLE_QUOTED_STRING, DOUBLE_QUOTED_STRING
-          $1
+          Regexp.last_match(1)
         when INTEGERS_REGEX
-          $1.to_i
+          Regexp.last_match(1).to_i
         when RANGES_REGEX
-          RangeLookup.parse($1, $2)
+          RangeLookup.parse(Regexp.last_match(1), Regexp.last_match(2))
         when FLOATS_REGEX
-          $1.to_f
+          Regexp.last_match(1).to_f
         else
           VariableLookup.parse(markup)
         end

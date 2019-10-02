@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class PartialCache
     def self.load(template_name, context:, parse_context:)

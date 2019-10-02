@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'stackprof'
 require_relative 'theme_runner'
 
@@ -13,7 +15,7 @@ profiler.run
     end
   end
 
-  if profile_type == :cpu && graph_filename = ENV['GRAPH_FILENAME']
+  if profile_type == :cpu && (graph_filename = ENV['GRAPH_FILENAME'])
     File.open(graph_filename, 'w') do |f|
       StackProf::Report.new(results).print_graphviz(nil, f)
     end
