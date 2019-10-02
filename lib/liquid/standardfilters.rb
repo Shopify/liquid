@@ -421,8 +421,9 @@ module Liquid
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
-    def default(input, default_value = '', allow_false: false)
-      if (allow_false ? input.nil? : !input) || (input.respond_to?(:empty?) && input.empty?)
+    def default(input, default_value = '', options = {})
+      options = {} unless options.is_a?(Hash)
+      if (options["allow_false"] == true ? input.nil? : !input) || (input.respond_to?(:empty?) && input.empty?)
         default_value
       else
         input
