@@ -780,7 +780,6 @@ class StandardFiltersTest < Minitest::Test
       { 1 => "bar" },
       ["foo", 123, nil, true, false, Drop, ["foo"], { foo: "bar" }],
     ]
-    errors = []
     test_types.each do |first|
       test_types.each do |other|
         (@filters.methods - Object.methods).each do |method|
@@ -790,15 +789,12 @@ class StandardFiltersTest < Minitest::Test
           inputs << ([other] * (arg_count - 1)) if arg_count > 1
           begin
             @filters.send(method, *inputs)
-          rescue Liquid::ArgumentError => e
-            errors << "#{method} returned #{e.message}"
-          rescue Liquid::ZeroDivisionError => e
-            errors << "#{method} returned #{e.message}"
+          rescue Liquid::ArgumentError, Liquid::ZeroDivisionError
+            nil
           end
         end
       end
     end
-    errors
   end
 
   def test_where_no_target_value
