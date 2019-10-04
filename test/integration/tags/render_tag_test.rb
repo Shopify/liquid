@@ -89,14 +89,12 @@ class RenderTagTest < Minitest::Test
     end
   end
 
-  def test_includes_and_renders_count_towards_the_same_recursion_limit
+  def test_sub_contexts_count_towards_the_same_recursion_limit
     Liquid::Template.file_system = StubFileSystem.new(
-      'loop_render' => '{% render "loop_include" %}',
-      'loop_include' => '{% include "loop_render" %}'
+      'loop_render' => '{% render "loop_render" %}',
     )
-
-    assert_raises Liquid::StackLevelError  do
-      Template.parse('{% render "loop_include" %}').render!
+    assert_raises Liquid::StackLevelError do
+      Template.parse('{% render "loop_render" %}').render!
     end
   end
 
@@ -147,5 +145,24 @@ class RenderTagTest < Minitest::Test
   def test_decrement_is_isolated_between_renders
     Liquid::Template.file_system = StubFileSystem.new('decr' => '{% decrement %}')
     assert_template_result '-1-2-1', '{% decrement %}{% decrement %}{% render "decr" %}'
+  end
+
+  def test_includes_will_not_render_inside_render_tag
+    Liquid::Template.file_system = StubFileSystem.new(
+      'foo' => 'bar',
+      'test_include' => '{% include "foo" %}'
+    )
+
+    assert_template_result 'include usage is not allowed in this context', '{% render "test_include" %}'
+  end
+
+  def test_includes_will_not_render_inside_nested_sibling_tags
+    Liquid::Template.file_system = StubFileSystem.new(
+      'foo' => 'bar',
+      'nested_render_with_sibling_include' => '{% render "test_include" %}{% include "foo" %}',
+      'test_include' => '{% include "foo" %}'
+    )
+
+    assert_template_result 'include usage is not allowed in this contextinclude usage is not allowed in this context', '{% render "nested_render_with_sibling_include" %}'
   end
 end
