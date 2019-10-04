@@ -202,8 +202,8 @@ class StandardFiltersTest < Minitest::Test
     assert_equal ['1', '2', '3', '10'], @filters.sort_numeric(['10', '3', '2', '1'])
     assert_equal [{ "a" => '1' }, { "a" => '2' }, { "a" => '3' }, { "a" => '10' }],
       @filters.sort_numeric([{ "a" => '10' }, { "a" => '3' }, { "a" => '1' }, { "a" => '2' }], "a")
-  end  
-    
+  end
+
   def test_sort_with_nils
     assert_equal [1, 2, 3, 4, nil], @filters.sort([nil, 4, 3, 2, 1])
     assert_equal [{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }, {}], @filters.sort([{ "a" => 4 }, { "a" => 3 }, {}, { "a" => 1 }, { "a" => 2 }], "a")
@@ -301,7 +301,7 @@ class StandardFiltersTest < Minitest::Test
   def test_sort_numeric_empty_array
     assert_equal [], @filters.sort_numeric([], "a")
   end
-  
+
   def test_sort_natural_invalid_property
     foo = [
       [1],
