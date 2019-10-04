@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'set'
 
 module Liquid
@@ -25,7 +27,7 @@ module Liquid
 
     # Catch all for the method
     def liquid_method_missing(method)
-      return nil unless @context && @context.strict_variables
+      return nil unless @context&.strict_variables
       raise Liquid::UndefinedDropMethod, "undefined method #{method}"
     end
 
@@ -67,7 +69,7 @@ module Liquid
 
         if include?(Enumerable)
           blacklist += Enumerable.public_instance_methods
-          blacklist -= [:sort, :count, :first, :min, :max, :include?]
+          blacklist -= [:sort, :count, :first, :min, :max]
         end
 
         whitelist = [:to_liquid] + (public_instance_methods - blacklist)

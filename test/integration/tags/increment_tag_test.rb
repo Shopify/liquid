@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class IncrementTagTest < Minitest::Test
@@ -13,11 +15,11 @@ class IncrementTagTest < Minitest::Test
   end
 
   def test_dec
-    assert_template_result('9', '{%decrement port %}', { 'port' => 10 })
+    assert_template_result('9', '{%decrement port %}', 'port' => 10)
     assert_template_result('-1 -2', '{%decrement port %} {%decrement port%}', {})
     assert_template_result('1 5 2 2 5',
       '{%increment port %} {%increment starboard%} ' \
       '{%increment port %} {%decrement port%} ' \
-      '{%decrement starboard %}', { 'port' => 1, 'starboard' => 5 })
+      '{%decrement starboard %}', 'port' => 1, 'starboard' => 5)
   end
 end

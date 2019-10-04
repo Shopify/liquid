@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module TagFilter
   def link_to_tag(label, tag)
     "<a title=\"Show tag #{tag}\" href=\"/collections/#{@context['handle']}/#{tag}\">#{label}</a>"
@@ -13,11 +15,11 @@ module TagFilter
 
   def link_to_add_tag(label, tag)
     tags = (@context['current_tags'] + [tag]).uniq
-    "<a title=\"Show tag #{tag}\" href=\"/collections/#{@context['handle']}/#{tags.join("+")}\">#{label}</a>"
+    "<a title=\"Show tag #{tag}\" href=\"/collections/#{@context['handle']}/#{tags.join('+')}\">#{label}</a>"
   end
 
   def link_to_remove_tag(label, tag)
     tags = (@context['current_tags'] - [tag]).uniq
-    "<a title=\"Show tag #{tag}\" href=\"/collections/#{@context['handle']}/#{tags.join("+")}\">#{label}</a>"
+    "<a title=\"Show tag #{tag}\" href=\"/collections/#{@context['handle']}/#{tags.join('+')}\">#{label}</a>"
   end
 end

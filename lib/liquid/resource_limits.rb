@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class ResourceLimits
     attr_accessor :render_length, :render_score, :assign_score,

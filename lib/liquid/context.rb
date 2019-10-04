@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
@@ -12,30 +14,38 @@ module Liquid
   #
   #   context['bob']  #=> nil  class Context
   class Context
-    attr_reader :scopes, :errors, :registers, :environments, :resource_limits
+    attr_reader :scopes, :errors, :registers, :environments, :resource_limits, :static_registers, :static_environments
     attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil)
-      @environments     = [environments].flatten
-      @scopes           = [(outer_scope || {})]
-      @registers        = registers
-      @errors           = []
-      @partial          = false
-      @strict_variables = false
-      @resource_limits  = resource_limits || ResourceLimits.new(Template.default_resource_limits)
-      squash_instance_assigns_with_environments
+    # rubocop:disable Metrics/ParameterLists
+    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {})
+      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments)
+    end
 
-      @this_stack_used = false
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {})
+      @environments = [environments]
+      @environments.flatten!
+
+      @static_environments = [static_environments].flat_map(&:freeze).freeze
+      @scopes              = [(outer_scope || {})]
+      @registers           = registers
+      @errors              = []
+      @partial             = false
+      @strict_variables    = false
+      @resource_limits     = resource_limits || ResourceLimits.new(Template.default_resource_limits)
+      @base_scope_depth    = 0
+      squash_instance_assigns_with_environments
 
       self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors
-        self.exception_renderer = ->(e) { raise }
+        self.exception_renderer = ->(_e) { raise }
       end
 
       @interrupts = []
       @filters = []
       @global_filter = nil
     end
+    # rubocop:enable Metrics/ParameterLists
 
     def warnings
       @warnings ||= []
@@ -89,7 +99,7 @@ module Liquid
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
     def push(new_scope = {})
       @scopes.unshift(new_scope)
-      raise StackLevelError, "Nesting too deep".freeze if @scopes.length > Block::MAX_DEPTH
+      check_overflow
     end
 
     # Merge a hash of variables in the current local scope
@@ -111,19 +121,30 @@ module Liquid
     #   end
     #
     #   context['var]  #=> nil
-    def stack(new_scope = nil)
-      old_stack_used = @this_stack_used
-      if new_scope
-        push(new_scope)
-        @this_stack_used = true
-      else
-        @this_stack_used = false
-      end
-
+    def stack(new_scope = {})
+      push(new_scope)
       yield
     ensure
-      pop if @this_stack_used
-      @this_stack_used = old_stack_used
+      pop
+    end
+
+    # Creates a new context inheriting resource limits, filters, environment etc.,
+    # but with an isolated scope.
+    def new_isolated_subcontext
+      check_overflow
+
+      Context.build(
+        resource_limits: resource_limits,
+        static_environments: static_environments,
+        registers: StaticRegisters.new(registers)
+      ).tap do |subcontext|
+        subcontext.base_scope_depth = base_scope_depth + 1
+        subcontext.exception_renderer = exception_renderer
+        subcontext.filters = @filters
+        subcontext.strainer = nil
+        subcontext.errors = errors
+        subcontext.warnings = warnings
+      end
     end
 
     def clear_instance_assigns
@@ -132,10 +153,6 @@ module Liquid
 
     # Only allow String, Numeric, Hash, Array, Proc, Boolean or <tt>Liquid::Drop</tt>
     def []=(key, value)
-      unless @this_stack_used
-        @this_stack_used = true
-        push({})
-      end
       @scopes[0][key] = value
     end
 
@@ -164,24 +181,12 @@ module Liquid
       # This was changed from find() to find_index() because this is a very hot
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.key?(key) }
-      scope = @scopes[index] if index
 
-      variable = nil
-
-      if scope.nil?
-        @environments.each do |e|
-          variable = lookup_and_evaluate(e, key, raise_on_not_found: raise_on_not_found)
-          # When lookup returned a value OR there is no value but the lookup also did not raise
-          # then it is the value we are looking for.
-          if !variable.nil? || @strict_variables && raise_on_not_found
-            scope = e
-            break
-          end
-        end
+      variable = if index
+        lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
+      else
+        try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
       end
-
-      scope ||= @environments.last || @scopes.last
-      variable ||= lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found)
 
       variable = variable.to_liquid
       variable.context = self if variable.respond_to?(:context=)
@@ -197,13 +202,43 @@ module Liquid
       value = obj[key]
 
       if value.is_a?(Proc) && obj.respond_to?(:[]=)
-        obj[key] = (value.arity == 0) ? value.call : value.call(self)
+        obj[key] = value.arity == 0 ? value.call : value.call(self)
       else
         value
       end
     end
 
+    protected
+
+    attr_writer :base_scope_depth, :warnings, :errors, :strainer, :filters
+
     private
+
+    attr_reader :base_scope_depth
+
+    def try_variable_find_in_environments(key, raise_on_not_found:)
+      @environments.each do |environment|
+        found_variable = lookup_and_evaluate(environment, key, raise_on_not_found: raise_on_not_found)
+        if !found_variable.nil? || @strict_variables && raise_on_not_found
+          return found_variable
+        end
+      end
+      @static_environments.each do |environment|
+        found_variable = lookup_and_evaluate(environment, key, raise_on_not_found: raise_on_not_found)
+        if !found_variable.nil? || @strict_variables && raise_on_not_found
+          return found_variable
+        end
+      end
+      nil
+    end
+
+    def check_overflow
+      raise StackLevelError, "Nesting too deep" if overflow?
+    end
+
+    def overflow?
+      base_scope_depth + @scopes.length > Block::MAX_DEPTH
+    end
 
     def internal_error
       # raise and catch to set backtrace and cause on exception

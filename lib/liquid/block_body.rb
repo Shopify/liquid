@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
 module Liquid
   class BlockBody
-    FullToken = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    LiquidTagToken = /\A\s*(\w+)\s*(.*?)\z/o
+    FullToken = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
-    TAGSTART = "{%".freeze
-    VARSTART = "{{".freeze
+    TAGSTART = "{%"
+    VARSTART = "{{"
 
     attr_reader :nodelist
 
@@ -13,9 +16,43 @@ module Liquid
       @blank = true
     end
 
-    def parse(tokenizer, parse_context)
+    def parse(tokenizer, parse_context, &block)
       parse_context.line_number = tokenizer.line_number
-      while token = tokenizer.shift
+
+      if tokenizer.for_liquid_tag
+        parse_for_liquid_tag(tokenizer, parse_context, &block)
+      else
+        parse_for_document(tokenizer, parse_context, &block)
+      end
+    end
+
+    private def parse_for_liquid_tag(tokenizer, parse_context)
+      while (token = tokenizer.shift)
+        unless token.empty? || token =~ WhitespaceOrNothing
+          unless token =~ LiquidTagToken
+            # line isn't empty but didn't match tag syntax, yield and let the
+            # caller raise a syntax error
+            return yield token, token
+          end
+          tag_name = Regexp.last_match(1)
+          markup = Regexp.last_match(2)
+          unless (tag = registered_tags[tag_name])
+            # end parsing if we reach an unknown tag and let the caller decide
+            # determine how to proceed
+            return yield tag_name, markup
+          end
+          new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
+          @blank &&= new_tag.blank?
+          @nodelist << new_tag
+        end
+        parse_context.line_number = tokenizer.line_number
+      end
+
+      yield nil, nil
+    end
+
+    private def parse_for_document(tokenizer, parse_context, &block)
+      while (token = tokenizer.shift)
         next if token.empty?
         case
         when token.start_with?(TAGSTART)
@@ -23,10 +60,21 @@ module Liquid
           unless token =~ FullToken
             raise_missing_tag_terminator(token, parse_context)
           end
-          tag_name = $1
-          markup = $2
-          # fetch the tag from registered blocks
-          unless tag = registered_tags[tag_name]
+          tag_name = Regexp.last_match(2)
+          markup = Regexp.last_match(4)
+
+          if parse_context.line_number
+            # newlines inside the tag should increase the line number,
+            # particularly important for multiline {% liquid %} tags
+            parse_context.line_number += Regexp.last_match(1).count("\n") + Regexp.last_match(3).count("\n")
+          end
+
+          if tag_name == 'liquid'
+            liquid_tag_tokenizer = Tokenizer.new(markup, line_number: parse_context.line_number, for_liquid_tag: true)
+            next parse_for_liquid_tag(liquid_tag_tokenizer, parse_context, &block)
+          end
+
+          unless (tag = registered_tags[tag_name])
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
             return yield tag_name, markup
@@ -55,7 +103,7 @@ module Liquid
     def whitespace_handler(token, parse_context)
       if token[2] == WhitespaceControl
         previous_token = @nodelist.last
-        if previous_token.is_a? String
+        if previous_token.is_a?(String)
           previous_token.rstrip!
         end
       end
@@ -67,19 +115,23 @@ module Liquid
     end
 
     def render(context)
-      output = []
+      render_to_output_buffer(context, +'')
+    end
+
+    def render_to_output_buffer(context, output)
       context.resource_limits.render_score += @nodelist.length
 
       idx = 0
-      while node = @nodelist[idx]
+      while (node = @nodelist[idx])
+        previous_output_size = output.bytesize
+
         case node
         when String
-          check_resources(context, node)
           output << node
         when Variable
-          render_node_to_output(node, output, context)
+          render_node(context, output, node)
         when Block
-          render_node_to_output(node, output, context, node.blank?)
+          render_node(context, node.blank? ? +'' : output, node)
           break if context.interrupt? # might have happened in a for-block
         when Continue, Break
           # If we get an Interrupt that means the block must stop processing. An
@@ -88,35 +140,43 @@ module Liquid
           context.push_interrupt(node.interrupt)
           break
         else # Other non-Block tags
-          render_node_to_output(node, output, context)
+          render_node(context, output, node)
+          break if context.interrupt? # might have happened through an include
         end
         idx += 1
+
+        raise_if_resource_limits_reached(context, output.bytesize - previous_output_size)
       end
 
-      output.join
+      output
     end
 
     private
 
-    def render_node_to_output(node, output, context, skip_output = false)
-      node_output = node.render(context)
-      node_output = node_output.is_a?(Array) ? node_output.join : node_output.to_s
-      check_resources(context, node_output)
-      output << node_output unless skip_output
-    rescue MemoryError => e
-      raise e
+    def render_node(context, output, node)
+      if node.disabled?(context)
+        output << node.disabled_error_message
+        return
+      end
+      disable_tags(context, node.disabled_tags) do
+        node.render_to_output_buffer(context, output)
+      end
     rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
       context.handle_error(e, node.line_number)
-      output << nil
     rescue ::StandardError => e
       line_number = node.is_a?(String) ? nil : node.line_number
       output << context.handle_error(e, line_number)
     end
 
-    def check_resources(context, node_output)
-      context.resource_limits.render_length += node_output.length
+    def disable_tags(context, tags, &block)
+      return yield if tags.empty?
+      context.registers[:disabled_tags].disable(tags, &block)
+    end
+
+    def raise_if_resource_limits_reached(context, length)
+      context.resource_limits.render_length += length
       return unless context.resource_limits.reached?
-      raise MemoryError.new("Memory limits exceeded".freeze)
+      raise MemoryError, "Memory limits exceeded"
     end
 
     def create_variable(token, parse_context)
@@ -128,11 +188,11 @@ module Liquid
     end
 
     def raise_missing_tag_terminator(token, parse_context)
-      raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_termination".freeze, token: token, tag_end: TagEnd.inspect))
+      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_termination", token: token, tag_end: TagEnd.inspect)
     end
 
     def raise_missing_variable_terminator(token, parse_context)
-      raise SyntaxError.new(parse_context.locale.t("errors.syntax.variable_termination".freeze, token: token, tag_end: VariableEnd.inspect))
+      raise SyntaxError, parse_context.locale.t("errors.syntax.variable_termination", token: token, tag_end: VariableEnd.inspect)
     end
 
     def registered_tags

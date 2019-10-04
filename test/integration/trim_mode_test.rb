@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class TrimModeTest < Minitest::Test
@@ -76,14 +78,14 @@ class TrimModeTest < Minitest::Test
         </p>
       </div>
     END_TEMPLATE
-    expected = <<-END_EXPECTED
-      <div>
-        <p>
-#{whitespace}
-          yes
-#{whitespace}
-        </p>
-      </div>
+    expected = <<~END_EXPECTED
+            <div>
+              <p>
+      #{whitespace}
+                yes
+      #{whitespace}
+              </p>
+            </div>
     END_EXPECTED
     assert_template_result(expected, text)
 
@@ -96,12 +98,12 @@ class TrimModeTest < Minitest::Test
         </p>
       </div>
     END_TEMPLATE
-    expected = <<-END_EXPECTED
-      <div>
-        <p>
-#{whitespace}
-        </p>
-      </div>
+    expected = <<~END_EXPECTED
+            <div>
+              <p>
+      #{whitespace}
+              </p>
+            </div>
     END_EXPECTED
     assert_template_result(expected, text)
   end
@@ -337,12 +339,12 @@ class TrimModeTest < Minitest::Test
         </p>
       </div>
     END_TEMPLATE
-    expected = <<-END_EXPECTED
-      <div>
-        <p>
-#{whitespace}
-        </p>
-      </div>
+    expected = <<~END_EXPECTED
+            <div>
+              <p>
+      #{whitespace}
+              </p>
+            </div>
     END_EXPECTED
     assert_template_result(expected, text)
   end
@@ -513,16 +515,16 @@ class TrimModeTest < Minitest::Test
         {% endraw %}
       </div>
     END_TEMPLATE
-    expected = <<-END_EXPECTED
-      <div>
-#{whitespace}
-          {%- if true -%}
-            <p>
-              {{- 'John' -}}
-            </p>
-          {%- endif -%}
-#{whitespace}
-      </div>
+    expected = <<~END_EXPECTED
+            <div>
+      #{whitespace}
+                {%- if true -%}
+                  <p>
+                    {{- 'John' -}}
+                  </p>
+                {%- endif -%}
+      #{whitespace}
+            </div>
     END_EXPECTED
     assert_template_result(expected, text)
   end

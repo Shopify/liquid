@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   module Utils
     def self.slice_collection(collection, from, to)
@@ -50,7 +52,7 @@ module Liquid
       when Numeric
         obj
       when String
-        (obj.strip =~ /\A-?\d+\.\d+\z/) ? BigDecimal(obj) : obj.to_i
+        /\A-?\d+\.\d+\z/.match?(obj.strip) ? BigDecimal(obj) : obj.to_i
       else
         if obj.respond_to?(:to_number)
           obj.to_number
@@ -69,7 +71,7 @@ module Liquid
       end
 
       case obj
-      when 'now'.freeze, 'today'.freeze
+      when 'now', 'today'
         Time.now
       when /\A\d+\z/, Integer
         Time.at(obj.to_i)

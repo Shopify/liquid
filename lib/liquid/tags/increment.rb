@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # increment is used in a place where one needs to insert a counter
   #     into a template, and needs the counter to survive across
@@ -20,12 +22,14 @@ module Liquid
       @variable = markup.strip
     end
 
-    def render(context)
+    def render_to_output_buffer(context, output)
       value = context.environments.first[@variable] ||= 0
       context.environments.first[@variable] = value + 1
-      value.to_s
+
+      output << value.to_s
+      output
     end
   end
 
-  Template.register_tag('increment'.freeze, Increment)
+  Template.register_tag('increment', Increment)
 end

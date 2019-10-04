@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   class ForloopDrop < Drop
     def initialize(name, length, parentloop)

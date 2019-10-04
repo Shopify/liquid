@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) 2005 Tobias Luetke
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -21,10 +23,10 @@
 
 module Liquid
   FilterSeparator             = /\|/
-  ArgumentSeparator           = ','.freeze
-  FilterArgumentSeparator     = ':'.freeze
-  VariableAttributeSeparator  = '.'.freeze
-  WhitespaceControl           = '-'.freeze
+  ArgumentSeparator           = ','
+  FilterArgumentSeparator     = ':'
+  VariableAttributeSeparator  = '.'
+  WhitespaceControl           = '-'
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
@@ -45,6 +47,7 @@ module Liquid
 end
 
 require "liquid/version"
+require 'liquid/parse_tree_visitor'
 require 'liquid/lexer'
 require 'liquid/parser'
 require 'liquid/i18n'
@@ -73,7 +76,12 @@ require 'liquid/condition'
 require 'liquid/utils'
 require 'liquid/tokenizer'
 require 'liquid/parse_context'
+require 'liquid/partial_cache'
+require 'liquid/usage'
+require 'liquid/register'
+require 'liquid/static_registers'
 
 # Load all the tags of the standard library
 #
 Dir["#{__dir__}/liquid/tags/*.rb"].each { |f| require f }
+Dir["#{__dir__}/liquid/registers/*.rb"].each { |f| require f }

@@ -1,4 +1,5 @@
 # encoding: utf-8
+# frozen_string_literal: true
 
 require 'test_helper'
 
@@ -17,7 +18,7 @@ class TestThing
     "woot: #{@foo}"
   end
 
-  def [](whatever)
+  def [](_whatever)
     to_s
   end
 
@@ -37,7 +38,7 @@ class TestEnumerable < Liquid::Drop
   include Enumerable
 
   def each(&block)
-    [ { "foo" => 1, "bar" => 2 }, { "foo" => 2, "bar" => 1 }, { "foo" => 3, "bar" => 3 } ].each(&block)
+    [{ "foo" => 1, "bar" => 2 }, { "foo" => 2, "bar" => 1 }, { "foo" => 3, "bar" => 3 }].each(&block)
   end
 end
 
@@ -158,6 +159,10 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '1', @filters.url_decode(1)
     assert_equal '2001-02-03', @filters.url_decode(Date.new(2001, 2, 3))
     assert_nil @filters.url_decode(nil)
+    exception = assert_raises Liquid::ArgumentError do
+      @filters.url_decode('%ff')
+    end
+    assert_equal 'Liquid error: invalid byte sequence in UTF-8', exception.message
   end
 
   def test_truncatewords
@@ -177,6 +182,9 @@ class StandardFiltersTest < Minitest::Test
     assert_equal 'test', @filters.strip_html("<div\nclass='multiline'>test</div>")
     assert_equal 'test', @filters.strip_html("<!-- foo bar \n test -->test")
     assert_equal '', @filters.strip_html(nil)
+
+    # Quirk of the existing implementation
+    assert_equal 'foo;', @filters.strip_html("<<<script </script>script>foo;</script>")
   end
 
   def test_join
@@ -192,9 +200,13 @@ class StandardFiltersTest < Minitest::Test
 
   def test_sort_numeric
     assert_equal ['1', '2', '3', '10'], @filters.sort_numeric(['10', '3', '2', '1'])
-
     assert_equal [{ "a" => '1' }, { "a" => '2' }, { "a" => '3' }, { "a" => '10' }],
       @filters.sort_numeric([{ "a" => '10' }, { "a" => '3' }, { "a" => '1' }, { "a" => '2' }], "a")
+  end  
+    
+  def test_sort_with_nils
+    assert_equal [1, 2, 3, 4, nil], @filters.sort([nil, 4, 3, 2, 1])
+    assert_equal [{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }, {}], @filters.sort([{ "a" => 4 }, { "a" => 3 }, {}, { "a" => 1 }, { "a" => 2 }], "a")
   end
 
   def test_sort_when_property_is_sometimes_missing_puts_nils_last
@@ -203,20 +215,83 @@ class StandardFiltersTest < Minitest::Test
       { "handle" => "beta" },
       { "price" => 1, "handle" => "gamma" },
       { "handle" => "delta" },
-      { "price" => 2, "handle" => "epsilon" }
+      { "price" => 2, "handle" => "epsilon" },
     ]
     expectation = [
       { "price" => 1, "handle" => "gamma" },
       { "price" => 2, "handle" => "epsilon" },
       { "price" => 4, "handle" => "alpha" },
       { "handle" => "delta" },
-      { "handle" => "beta" }
+      { "handle" => "beta" },
     ]
     assert_equal expectation, @filters.sort(input, "price")
   end
 
+  def test_sort_natural
+    assert_equal ["a", "B", "c", "D"], @filters.sort_natural(["c", "D", "a", "B"])
+    assert_equal [{ "a" => "a" }, { "a" => "B" }, { "a" => "c" }, { "a" => "D" }], @filters.sort_natural([{ "a" => "D" }, { "a" => "c" }, { "a" => "a" }, { "a" => "B" }], "a")
+  end
+
+  def test_sort_natural_with_nils
+    assert_equal ["a", "B", "c", "D", nil], @filters.sort_natural([nil, "c", "D", "a", "B"])
+    assert_equal [{ "a" => "a" }, { "a" => "B" }, { "a" => "c" }, { "a" => "D" }, {}], @filters.sort_natural([{ "a" => "D" }, { "a" => "c" }, {}, { "a" => "a" }, { "a" => "B" }], "a")
+  end
+
+  def test_sort_natural_when_property_is_sometimes_missing_puts_nils_last
+    input = [
+      { "price" => "4", "handle" => "alpha" },
+      { "handle" => "beta" },
+      { "price" => "1", "handle" => "gamma" },
+      { "handle" => "delta" },
+      { "price" => 2, "handle" => "epsilon" },
+    ]
+    expectation = [
+      { "price" => "1", "handle" => "gamma" },
+      { "price" => 2, "handle" => "epsilon" },
+      { "price" => "4", "handle" => "alpha" },
+      { "handle" => "delta" },
+      { "handle" => "beta" },
+    ]
+    assert_equal expectation, @filters.sort_natural(input, "price")
+  end
+
+  def test_sort_natural_case_check
+    input = [
+      { "key" => "X" },
+      { "key" => "Y" },
+      { "key" => "Z" },
+      { "fake" => "t" },
+      { "key" => "a" },
+      { "key" => "b" },
+      { "key" => "c" },
+    ]
+    expectation = [
+      { "key" => "a" },
+      { "key" => "b" },
+      { "key" => "c" },
+      { "key" => "X" },
+      { "key" => "Y" },
+      { "key" => "Z" },
+      { "fake" => "t" },
+    ]
+    assert_equal expectation, @filters.sort_natural(input, "key")
+    assert_equal ["a", "b", "c", "X", "Y", "Z"], @filters.sort_natural(["X", "Y", "Z", "a", "b", "c"])
+  end
+
   def test_sort_empty_array
     assert_equal [], @filters.sort([], "a")
+  end
+
+  def test_sort_invalid_property
+    foo = [
+      [1],
+      [2],
+      [3],
+    ]
+
+    assert_raises Liquid::ArgumentError do
+      @filters.sort(foo, "bar")
+    end
   end
 
   def test_sort_natural_empty_array
@@ -226,9 +301,21 @@ class StandardFiltersTest < Minitest::Test
   def test_sort_numeric_empty_array
     assert_equal [], @filters.sort_numeric([], "a")
   end
+  
+  def test_sort_natural_invalid_property
+    foo = [
+      [1],
+      [2],
+      [3],
+    ]
+
+    assert_raises Liquid::ArgumentError do
+      @filters.sort_natural(foo, "bar")
+    end
+  end
 
   def test_legacy_sort_hash
-    assert_equal [{ a: 1, b: 2 }], @filters.sort({ a: 1, b: 2 })
+    assert_equal [{ a: 1, b: 2 }], @filters.sort(a: 1, b: 2)
   end
 
   def test_numerical_vs_lexicographical_sort
@@ -250,8 +337,32 @@ class StandardFiltersTest < Minitest::Test
     assert_equal [], @filters.uniq([], "a")
   end
 
+  def test_uniq_invalid_property
+    foo = [
+      [1],
+      [2],
+      [3],
+    ]
+
+    assert_raises Liquid::ArgumentError do
+      @filters.uniq(foo, "bar")
+    end
+  end
+
   def test_compact_empty_array
     assert_equal [], @filters.compact([], "a")
+  end
+
+  def test_compact_invalid_property
+    foo = [
+      [1],
+      [2],
+      [3],
+    ]
+
+    assert_raises Liquid::ArgumentError do
+      @filters.compact(foo, "bar")
+    end
   end
 
   def test_reverse
@@ -280,7 +391,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map_on_hashes
     assert_template_result "4217", '{{ thing | map: "foo" | map: "bar" }}',
-      "thing" => { "foo" => [ { "bar" => 42 }, { "bar" => 17 } ] }
+      "thing" => { "foo" => [{ "bar" => 42 }, { "bar" => 17 }] }
   end
 
   def test_legacy_map_on_hashes_with_dynamic_key
@@ -297,7 +408,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map_over_proc
     drop = TestDrop.new
-    p = proc{ drop }
+    p = proc { drop }
     templ = '{{ procs | map: "test" }}'
     assert_template_result "testfoo", templ, "procs" => [p]
   end
@@ -305,10 +416,10 @@ class StandardFiltersTest < Minitest::Test
   def test_map_over_drops_returning_procs
     drops = [
       {
-        "proc" => ->{ "foo" },
+        "proc" => -> { "foo" },
       },
       {
-        "proc" => ->{ "bar" },
+        "proc" => -> { "bar" },
       },
     ]
     templ = '{{ drops | map: "proc" }}'
@@ -317,6 +428,29 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map_works_on_enumerables
     assert_template_result "123", '{{ foo | map: "foo" }}', "foo" => TestEnumerable.new
+  end
+
+  def test_map_returns_empty_on_2d_input_array
+    foo = [
+      [1],
+      [2],
+      [3],
+    ]
+
+    assert_raises Liquid::ArgumentError do
+      @filters.map(foo, "bar")
+    end
+  end
+
+  def test_map_returns_empty_with_no_property
+    foo = [
+      [1],
+      [2],
+      [3],
+    ]
+    assert_raises Liquid::ArgumentError do
+      @filters.map(foo, nil)
+    end
   end
 
   def test_sort_works_on_enumerables
@@ -349,9 +483,9 @@ class StandardFiltersTest < Minitest::Test
     assert_equal '07/05/2006', @filters.date("2006-07-05 10:00:00", "%m/%d/%Y")
 
     assert_equal "07/16/2004", @filters.date("Fri Jul 16 01:00:00 2004", "%m/%d/%Y")
-    assert_equal "#{Date.today.year}", @filters.date('now', '%Y')
-    assert_equal "#{Date.today.year}", @filters.date('today', '%Y')
-    assert_equal "#{Date.today.year}", @filters.date('Today', '%Y')
+    assert_equal Date.today.year.to_s, @filters.date('now', '%Y')
+    assert_equal Date.today.year.to_s, @filters.date('today', '%Y')
+    assert_equal Date.today.year.to_s, @filters.date('Today', '%Y')
 
     assert_nil @filters.date(nil, "%B")
 
@@ -567,6 +701,78 @@ class StandardFiltersTest < Minitest::Test
   def test_date_raises_nothing
     assert_template_result('', "{{ '' | date: '%D' }}")
     assert_template_result('abc', "{{ 'abc' | date: '%D' }}")
+  end
+
+  def test_where
+    input = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    expectation = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    assert_equal expectation, @filters.where(input, "ok", true)
+    assert_equal expectation, @filters.where(input, "ok")
+  end
+
+  def test_where_no_key_set
+    input = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta" },
+      { "handle" => "gamma" },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    expectation = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    assert_equal expectation, @filters.where(input, "ok", true)
+    assert_equal expectation, @filters.where(input, "ok")
+  end
+
+  def test_where_non_array_map_input
+    assert_equal [{ "a" => "ok" }], @filters.where({ "a" => "ok" }, "a", "ok")
+    assert_equal [], @filters.where({ "a" => "not ok" }, "a", "ok")
+  end
+
+  def test_where_indexable_but_non_map_value
+    assert_raises(Liquid::ArgumentError) { @filters.where(1, "ok", true) }
+    assert_raises(Liquid::ArgumentError) { @filters.where(1, "ok") }
+  end
+
+  def test_where_non_boolean_value
+    input = [
+      { "message" => "Bonjour!", "language" => "French" },
+      { "message" => "Hello!", "language" => "English" },
+      { "message" => "Hallo!", "language" => "German" },
+    ]
+
+    assert_equal [{ "message" => "Bonjour!", "language" => "French" }], @filters.where(input, "language", "French")
+    assert_equal [{ "message" => "Hallo!", "language" => "German" }], @filters.where(input, "language", "German")
+    assert_equal [{ "message" => "Hello!", "language" => "English" }], @filters.where(input, "language", "English")
+  end
+
+  def test_where_array_of_only_unindexable_values
+    assert_nil @filters.where([nil], "ok", true)
+    assert_nil @filters.where([nil], "ok")
+  end
+
+  def test_where_no_target_value
+    input = [
+      { "foo" => false },
+      { "foo" => true },
+      { "foo" => "for sure" },
+      { "bar" => true },
+    ]
+
+    assert_equal [{ "foo" => true }, { "foo" => "for sure" }], @filters.where(input, "foo")
   end
 
   private

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CommentForm < Liquid::Block
   Syntax = /(#{Liquid::VariableSignature}+)/
 
@@ -5,14 +7,14 @@ class CommentForm < Liquid::Block
     super
 
     if markup =~ Syntax
-      @variable_name = $1
+      @variable_name = Regexp.last_match(1)
       @attributes = {}
     else
-      raise SyntaxError.new("Syntax Error in 'comment_form' - Valid syntax: comment_form [article]")
+      raise SyntaxError, "Syntax Error in 'comment_form' - Valid syntax: comment_form [article]"
     end
   end
 
-  def render(context)
+  def render_to_output_buffer(context, output)
     article = context[@variable_name]
 
     context.stack do
@@ -20,10 +22,12 @@ class CommentForm < Liquid::Block
         'posted_successfully?' => context.registers[:posted_successfully],
         'errors' => context['comment.errors'],
         'author' => context['comment.author'],
-        'email'  => context['comment.email'],
-        'body'   => context['comment.body']
+        'email' => context['comment.email'],
+        'body' => context['comment.body'],
       }
-      wrap_in_form(article, render_all(@nodelist, context))
+
+      output << wrap_in_form(article, render_all(@nodelist, context, output))
+      output
     end
   end
 

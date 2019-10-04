@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Container for liquid nodes which conveniently wraps decision making logic
   #
@@ -8,35 +10,35 @@ module Liquid
   #
   class Condition #:nodoc:
     @@operators = {
-      '=='.freeze => ->(cond, left, right) {  cond.send(:equal_variables, left, right) },
-      '!='.freeze => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
-      '<>'.freeze => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
-      '<'.freeze  => :<,
-      '>'.freeze  => :>,
-      '>='.freeze => :>=,
-      '<='.freeze => :<=,
-      'contains'.freeze => lambda do |cond, left, right|
+      '==' => ->(cond, left, right) {  cond.send(:equal_variables, left, right) },
+      '!=' => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
+      '<>' => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
+      '<' => :<,
+      '>' => :>,
+      '>=' => :>=,
+      '<=' => :<=,
+      'contains' => lambda do |_cond, left, right|
         if left && right && left.respond_to?(:include?)
           right = right.to_s if left.is_a?(String)
           left.include?(right)
         else
           false
         end
-      end
+      end,
     }
 
     def self.operators
       @@operators
     end
 
-    attr_reader :attachment
+    attr_reader :attachment, :child_condition
     attr_accessor :left, :operator, :right
 
     def initialize(left = nil, operator = nil, right = nil)
       @left = left
       @operator = operator
       @right = right
-      @child_relation  = nil
+      @child_relation = nil
       @child_condition = nil
     end
 
@@ -78,12 +80,12 @@ module Liquid
     end
 
     def inspect
-      "#<Condition #{[@left, @operator, @right].compact.join(' '.freeze)}>"
+      "#<Condition #{[@left, @operator, @right].compact.join(' ')}>"
     end
 
     protected
 
-    attr_reader :child_relation, :child_condition
+    attr_reader :child_relation
 
     private
 
@@ -116,7 +118,7 @@ module Liquid
       left = context.evaluate(left)
       right = context.evaluate(right)
 
-      operation = self.class.operators[op] || raise(Liquid::ArgumentError.new("Unknown operator #{op}"))
+      operation = self.class.operators[op] || raise(Liquid::ArgumentError, "Unknown operator #{op}")
 
       if operation.respond_to?(:call)
         operation.call(self, left, right)
@@ -124,8 +126,17 @@ module Liquid
         begin
           left.send(operation, right)
         rescue ::ArgumentError => e
-          raise Liquid::ArgumentError.new(e.message)
+          raise Liquid::ArgumentError, e.message
         end
+      end
+    end
+
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children
+        [
+          @node.left, @node.right,
+          @node.child_condition, @node.attachment
+        ].compact
       end
     end
   end

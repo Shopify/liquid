@@ -1,29 +1,33 @@
+# frozen_string_literal: true
+
 require 'rake'
 require 'rake/testtask'
-$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+$LOAD_PATH.unshift(File.expand_path("../lib", __FILE__))
 require "liquid/version"
 
-task default: [:rubocop, :test]
+task(default: [:test, :rubocop])
 
-desc 'run test suite with default parser'
+desc('run test suite with default parser')
 Rake::TestTask.new(:base_test) do |t|
   t.libs << '.' << 'lib' << 'test'
   t.test_files = FileList['test/{integration,unit}/**/*_test.rb']
   t.verbose = false
 end
 
-desc 'run test suite with warn error mode'
+desc('run test suite with warn error mode')
 task :warn_test do
   ENV['LIQUID_PARSER_MODE'] = 'warn'
   Rake::Task['base_test'].invoke
 end
 
 task :rubocop do
-  require 'rubocop/rake_task'
-  RuboCop::RakeTask.new
+  if RUBY_ENGINE == 'ruby'
+    require 'rubocop/rake_task'
+    RuboCop::RakeTask.new
+  end
 end
 
-desc 'runs test suite with both strict and lax parsers'
+desc('runs test suite with both strict and lax parsers')
 task :test do
   ENV['LIQUID_PARSER_MODE'] = 'lax'
   Rake::Task['base_test'].invoke
@@ -32,8 +36,8 @@ task :test do
   Rake::Task['base_test'].reenable
   Rake::Task['base_test'].invoke
 
-  if RUBY_ENGINE == 'ruby'
-    ENV['LIQUID-C'] = '1'
+  if RUBY_ENGINE == 'ruby' || RUBY_ENGINE == 'truffleruby'
+    ENV['LIQUID_C'] = '1'
 
     ENV['LIQUID_PARSER_MODE'] = 'lax'
     Rake::Task['base_test'].reenable
@@ -45,7 +49,7 @@ task :test do
   end
 end
 
-task gem: :build
+task(gem: :build)
 task :build do
   system "gem build liquid.gemspec"
 end
@@ -85,7 +89,14 @@ namespace :profile do
   end
 end
 
-desc "Run example"
+namespace :memory_profile do
+  desc "Run memory profiler"
+  task :run do
+    ruby "./performance/memory_profile.rb"
+  end
+end
+
+desc("Run example")
 task :example do
   ruby "-w -d -Ilib example/server/server.rb"
 end

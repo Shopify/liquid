@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Holds variables. Variables are only loaded "just in time"
   # and are not evaluated as part of the render stage
@@ -43,11 +45,11 @@ module Liquid
       @filters = []
       return unless markup =~ MarkupWithQuotedFragment
 
-      name_markup = $1
-      filter_markup = $2
+      name_markup = Regexp.last_match(1)
+      filter_markup = Regexp.last_match(2)
       @name = Expression.parse(name_markup)
       if filter_markup =~ FilterMarkupRegex
-        filters = $1.scan(FilterParser)
+        filters = Regexp.last_match(1).scan(FilterParser)
         filters.each do |f|
           next unless f =~ /\w+/
           filtername = Regexp.last_match(0)
@@ -85,31 +87,51 @@ module Liquid
       end
 
       obj = context.apply_global_filter(obj)
-
       taint_check(context, obj)
-
       obj
+    end
+
+    def render_to_output_buffer(context, output)
+      obj = render(context)
+
+      if obj.is_a?(Array)
+        output << obj.join
+      elsif obj.nil?
+      else
+        output << obj.to_s
+      end
+
+      output
+    end
+
+    def disabled?(_context)
+      false
+    end
+
+    def disabled_tags
+      []
     end
 
     private
 
     def parse_filter_expressions(filter_name, unparsed_args)
       filter_args = []
-      keyword_args = {}
+      keyword_args = nil
       unparsed_args.each do |a|
-        if matches = a.match(JustTagAttributes)
+        if (matches = a.match(JustTagAttributes))
+          keyword_args ||= {}
           keyword_args[matches[1]] = Expression.parse(matches[2])
         else
           filter_args << Expression.parse(a)
         end
       end
       result = [filter_name, filter_args]
-      result << keyword_args unless keyword_args.empty?
+      result << keyword_args if keyword_args
       result
     end
 
     def evaluate_filter_expressions(context, filter_args, filter_kwargs)
-      parsed_args = filter_args.map{ |expr| context.evaluate(expr) }
+      parsed_args = filter_args.map { |expr| context.evaluate(expr) }
       if filter_kwargs
         parsed_kwargs = {}
         filter_kwargs.each do |key, expr|
@@ -136,6 +158,12 @@ module Liquid
         context.warnings << error
       when :error
         raise error
+      end
+    end
+
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children
+        [@node.name] + @node.filters.flatten
       end
     end
   end

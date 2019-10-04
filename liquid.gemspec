@@ -1,7 +1,8 @@
 # encoding: utf-8
+# frozen_string_literal: true
 
 lib = File.expand_path('../lib/', __FILE__)
-$LOAD_PATH.unshift lib unless $LOAD_PATH.include?(lib)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require "liquid/version"
 
@@ -16,7 +17,7 @@ Gem::Specification.new do |s|
   s.license     = "MIT"
   # s.description = "A secure, non-evaling end user template engine with aesthetic markup."
 
-  s.required_ruby_version     = ">= 2.1.0"
+  s.required_ruby_version     = ">= 2.4.0"
   s.required_rubygems_version = ">= 1.3.7"
 
   s.test_files  = Dir.glob("{test}/**/*")
@@ -26,6 +27,6 @@ Gem::Specification.new do |s|
 
   s.require_path = "lib"
 
-  s.add_development_dependency 'rake', '~> 11.3'
-  s.add_development_dependency 'minitest'
+  s.add_development_dependency('rake', '~> 11.3')
+  s.add_development_dependency('minitest')
 end

@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 ENV["MT_NO_EXPECTATIONS"] = "1"
 require 'minitest/autorun'
@@ -8,13 +9,13 @@ require 'liquid.rb'
 require 'liquid/profiler'
 
 mode = :strict
-if env_mode = ENV['LIQUID_PARSER_MODE']
+if (env_mode = ENV['LIQUID_PARSER_MODE'])
   puts "-- #{env_mode.upcase} ERROR MODE"
   mode = env_mode.to_sym
 end
 Liquid::Template.error_mode = mode
 
-if ENV['LIQUID-C'] == '1'
+if ENV['LIQUID_C'] == '1'
   puts "-- LIQUID C"
   require 'liquid/c'
 end
@@ -37,18 +38,18 @@ module Minitest
     include Liquid
 
     def assert_template_result(expected, template, assigns = {}, message = nil)
-      assert_equal expected, Template.parse(template).render!(assigns), message
+      assert_equal expected, Template.parse(template, line_numbers: true).render!(assigns), message
     end
 
     def assert_template_result_matches(expected, template, assigns = {}, message = nil)
-      return assert_template_result(expected, template, assigns, message) unless expected.is_a? Regexp
+      return assert_template_result(expected, template, assigns, message) unless expected.is_a?(Regexp)
 
-      assert_match expected, Template.parse(template).render!(assigns), message
+      assert_match expected, Template.parse(template, line_numbers: true).render!(assigns), message
     end
 
     def assert_match_syntax_error(match, template, assigns = {})
       exception = assert_raises(Liquid::SyntaxError) do
-        Template.parse(template).render(assigns)
+        Template.parse(template, line_numbers: true).render(assigns)
       end
       assert_match match, exception.message
     end
@@ -84,6 +85,13 @@ module Minitest
     ensure
       Liquid::Template.error_mode = old_mode
     end
+
+    def with_custom_tag(tag_name, tag_class)
+      Liquid::Template.register_tag(tag_name, tag_class)
+      yield
+    ensure
+      Liquid::Template.tags.delete(tag_name)
+    end
   end
 end
 
@@ -112,5 +120,19 @@ class ErrorDrop < Liquid::Drop
 
   def exception
     raise Exception, 'exception'
+  end
+end
+
+class StubFileSystem
+  attr_reader :file_read_count
+
+  def initialize(values)
+    @file_read_count = 0
+    @values = values
+  end
+
+  def read_template_file(template_path)
+    @file_read_count += 1
+    @values.fetch(template_path)
   end
 end

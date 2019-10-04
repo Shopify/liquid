@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Liquid
   class VariableLookup
     SQUARE_BRACKETED = /\A\[(.*)\]\z/m
-    COMMAND_METHODS = ['size'.freeze, 'first'.freeze, 'last'.freeze]
+    COMMAND_METHODS = ['size', 'first', 'last'].freeze
 
     attr_reader :name, :lookups
 
@@ -14,7 +16,7 @@ module Liquid
 
       name = lookups.shift
       if name =~ SQUARE_BRACKETED
-        name = Expression.parse($1)
+        name = Expression.parse(Regexp.last_match(1))
       end
       @name = name
 
@@ -24,7 +26,7 @@ module Liquid
       @lookups.each_index do |i|
         lookup = lookups[i]
         if lookup =~ SQUARE_BRACKETED
-          lookups[i] = Expression.parse($1)
+          lookups[i] = Expression.parse(Regexp.last_match(1))
         elsif COMMAND_METHODS.include?(lookup)
           @command_flags |= 1 << i
         end
@@ -77,6 +79,12 @@ module Liquid
 
     def state
       [@name, @lookups, @command_flags]
+    end
+
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children
+        @node.lookups
+      end
     end
   end
 end

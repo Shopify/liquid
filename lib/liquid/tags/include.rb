@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Include allows templates to relate with other templates
   #
@@ -16,13 +18,15 @@ module Liquid
   class Include < Tag
     Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/o
 
+    attr_reader :template_name_expr, :variable_name_expr, :attributes
+
     def initialize(tag_name, markup, options)
       super
 
       if markup =~ Syntax
 
-        template_name = $1
-        variable_name = $3
+        template_name = Regexp.last_match(1)
+        variable_name = Regexp.last_match(3)
 
         @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
         @template_name_expr = Expression.parse(template_name)
@@ -33,19 +37,24 @@ module Liquid
         end
 
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.include".freeze))
+        raise SyntaxError, options[:locale].t("errors.syntax.include")
       end
     end
 
     def parse(_tokens)
     end
 
-    def render(context)
+    def render_to_output_buffer(context, output)
       template_name = context.evaluate(@template_name_expr)
-      raise ArgumentError.new(options[:locale].t("errors.argument.include")) unless template_name
+      raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
 
-      partial = load_cached_partial(template_name, context)
-      context_variable_name = template_name.split('/'.freeze).last
+      partial = PartialCache.load(
+        template_name,
+        context: context,
+        parse_context: parse_context
+      )
+
+      context_variable_name = template_name.split('/').last
 
       variable = if @variable_name_expr
         context.evaluate(@variable_name_expr)
@@ -64,50 +73,35 @@ module Liquid
           end
 
           if variable.is_a?(Array)
-            variable.collect do |var|
+            variable.each do |var|
               context[context_variable_name] = var
-              partial.render(context)
+              partial.render_to_output_buffer(context, output)
             end
           else
             context[context_variable_name] = variable
-            partial.render(context)
+            partial.render_to_output_buffer(context, output)
           end
         end
       ensure
         context.template_name = old_template_name
         context.partial = old_partial
       end
-    end
 
-    private
+      output
+    end
 
     alias_method :parse_context, :options
     private :parse_context
 
-    def load_cached_partial(template_name, context)
-      cached_partials = context.registers[:cached_partials] || {}
-
-      if cached = cached_partials[template_name]
-        return cached
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children
+        [
+          @node.template_name_expr,
+          @node.variable_name_expr,
+        ] + @node.attributes.values
       end
-      source = read_template_from_file_system(context)
-      begin
-        parse_context.partial = true
-        partial = Liquid::Template.parse(source, parse_context)
-      ensure
-        parse_context.partial = false
-      end
-      cached_partials[template_name] = partial
-      context.registers[:cached_partials] = cached_partials
-      partial
-    end
-
-    def read_template_from_file_system(context)
-      file_system = context.registers[:file_system] || Liquid::Template.file_system
-
-      file_system.read_template_file(context.evaluate(@template_name_expr))
     end
   end
 
-  Template.register_tag('include'.freeze, Include)
+  Template.register_tag('include', Include)
 end

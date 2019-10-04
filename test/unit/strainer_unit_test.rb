@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class StrainerUnitTest < Minitest::Test
@@ -36,7 +38,8 @@ class StrainerUnitTest < Minitest::Test
     rescue Liquid::ArgumentError => e
       assert_match(
         /\ALiquid error: wrong number of arguments \((1 for 0|given 1, expected 0)\)\z/,
-        e.message)
+        e.message
+      )
       assert_equal e.backtrace[0].split(':')[0], __FILE__
     end
   end
@@ -135,7 +138,7 @@ class StrainerUnitTest < Minitest::Test
   end
 
   module LateAddedFilter
-    def late_added_filter(input)
+    def late_added_filter(_input)
       "filtered"
     end
   end
@@ -150,7 +153,7 @@ class StrainerUnitTest < Minitest::Test
     mod = Module.new do
       class << self
         attr_accessor :include_count
-        def included(mod)
+        def included(_mod)
           self.include_count += 1
         end
       end
