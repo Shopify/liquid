@@ -10,15 +10,15 @@ class I18nUnitTest < Minitest::Test
   end
 
   def test_simple_translate_string
-    assert_equal "less is more", @i18n.translate("simple")
+    assert_equal("less is more", @i18n.translate("simple"))
   end
 
   def test_nested_translate_string
-    assert_equal "something wasn't right", @i18n.translate("errors.syntax.oops")
+    assert_equal("something wasn't right", @i18n.translate("errors.syntax.oops"))
   end
 
   def test_single_string_interpolation
-    assert_equal "something different", @i18n.translate("whatever", something: "different")
+    assert_equal("something different", @i18n.translate("whatever", something: "different"))
   end
 
   # def test_raises_translation_error_on_undefined_interpolation_key
@@ -34,6 +34,6 @@ class I18nUnitTest < Minitest::Test
   end
 
   def test_sets_default_path_to_en
-    assert_equal I18n::DEFAULT_LOCALE, I18n.new.path
+    assert_equal(I18n::DEFAULT_LOCALE, I18n.new.path)
   end
 end

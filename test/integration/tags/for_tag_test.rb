@@ -350,7 +350,7 @@ HERE
   end
 
   def test_inner_for_over_empty_input
-    assert_template_result 'oo', '{% for a in (1..2) %}o{% for b in empty %}{% endfor %}{% endfor %}'
+    assert_template_result('oo', '{% for a in (1..2) %}o{% for b in empty %}{% endfor %}{% endfor %}')
   end
 
   def test_blank_string_not_iterable
@@ -394,8 +394,8 @@ HERE
     expected = '12345'
     template = '{% for item in items %}{{item}}{% endfor %}'
     assert_template_result(expected, template, assigns)
-    assert loader.each_called
-    assert !loader.load_slice_called
+    assert(loader.each_called)
+    assert(!loader.load_slice_called)
   end
 
   def test_iterate_with_load_slice_when_limit_applied
@@ -404,8 +404,8 @@ HERE
     expected = '1'
     template = '{% for item in items limit:1 %}{{item}}{% endfor %}'
     assert_template_result(expected, template, assigns)
-    assert !loader.each_called
-    assert loader.load_slice_called
+    assert(!loader.each_called)
+    assert(loader.load_slice_called)
   end
 
   def test_iterate_with_load_slice_when_limit_and_offset_applied
@@ -414,8 +414,8 @@ HERE
     expected = '34'
     template = '{% for item in items offset:2 limit:2 %}{{item}}{% endfor %}'
     assert_template_result(expected, template, assigns)
-    assert !loader.each_called
-    assert loader.load_slice_called
+    assert(!loader.each_called)
+    assert(loader.load_slice_called)
   end
 
   def test_iterate_with_load_slice_returns_same_results_as_without
@@ -435,6 +435,6 @@ HERE
       Liquid::Template.parse('{% for i in (1..2) %}{{ standard_error }}{% endfor %}').render!(context)
     end
 
-    assert context.registers[:for_stack].empty?
+    assert(context.registers[:for_stack].empty?)
   end
 end
