@@ -12,7 +12,7 @@ class AssignTest < Minitest::Test
     END_TEMPLATE
     template = Template.parse(template_source)
     rendered = template.render!
-    assert_equal "Print this-thing", rendered.strip
+    assert_equal("Print this-thing", rendered.strip)
   end
 
   def test_assigned_variable

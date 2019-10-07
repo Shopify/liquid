@@ -38,20 +38,20 @@ module Minitest
     include Liquid
 
     def assert_template_result(expected, template, assigns = {}, message = nil)
-      assert_equal expected, Template.parse(template, line_numbers: true).render!(assigns), message
+      assert_equal(expected, Template.parse(template, line_numbers: true).render!(assigns), message)
     end
 
     def assert_template_result_matches(expected, template, assigns = {}, message = nil)
       return assert_template_result(expected, template, assigns, message) unless expected.is_a?(Regexp)
 
-      assert_match expected, Template.parse(template, line_numbers: true).render!(assigns), message
+      assert_match(expected, Template.parse(template, line_numbers: true).render!(assigns), message)
     end
 
     def assert_match_syntax_error(match, template, assigns = {})
       exception = assert_raises(Liquid::SyntaxError) do
         Template.parse(template, line_numbers: true).render(assigns)
       end
-      assert_match match, exception.message
+      assert_match(match, exception.message)
     end
 
     def with_global_filter(*globals)

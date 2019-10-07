@@ -176,11 +176,11 @@ class StandardTagTest < Minitest::Test
     # Example from the shopify forums
     code = "{% case collection.handle %}{% when 'menswear-jackets' %}{% assign ptitle = 'menswear' %}{% when 'menswear-t-shirts' %}{% assign ptitle = 'menswear' %}{% else %}{% assign ptitle = 'womenswear' %}{% endcase %}{{ ptitle }}"
     template = Liquid::Template.parse(code)
-    assert_equal "menswear",   template.render!("collection" => { 'handle' => 'menswear-jackets' })
-    assert_equal "menswear",   template.render!("collection" => { 'handle' => 'menswear-t-shirts' })
-    assert_equal "womenswear", template.render!("collection" => { 'handle' => 'x' })
-    assert_equal "womenswear", template.render!("collection" => { 'handle' => 'y' })
-    assert_equal "womenswear", template.render!("collection" => { 'handle' => 'z' })
+    assert_equal("menswear",   template.render!("collection" => { 'handle' => 'menswear-jackets' }))
+    assert_equal("menswear",   template.render!("collection" => { 'handle' => 'menswear-t-shirts' }))
+    assert_equal("womenswear", template.render!("collection" => { 'handle' => 'x' }))
+    assert_equal("womenswear", template.render!("collection" => { 'handle' => 'y' }))
+    assert_equal("womenswear", template.render!("collection" => { 'handle' => 'z' }))
   end
 
   def test_case_when_or
@@ -214,7 +214,7 @@ class StandardTagTest < Minitest::Test
   end
 
   def test_assign
-    assert_template_result 'variable', '{% assign a = "variable"%}{{a}}'
+    assert_template_result('variable', '{% assign a = "variable"%}{{a}}')
   end
 
   def test_assign_unassigned
@@ -223,11 +223,11 @@ class StandardTagTest < Minitest::Test
   end
 
   def test_assign_an_empty_string
-    assert_template_result '', '{% assign a = ""%}{{a}}'
+    assert_template_result('', '{% assign a = ""%}{{a}}')
   end
 
   def test_assign_is_global
-    assert_template_result 'variable', '{%for i in (1..2) %}{% assign a = "variable"%}{% endfor %}{{a}}'
+    assert_template_result('variable', '{%for i in (1..2) %}{% assign a = "variable"%}{% endfor %}{{a}}')
   end
 
   def test_case_detects_bad_syntax
@@ -293,6 +293,6 @@ class StandardTagTest < Minitest::Test
   end
 
   def test_multiline_tag
-    assert_template_result '0 1 2 3', "0{%\nfor i in (1..3)\n%} {{\ni\n}}{%\nendfor\n%}"
+    assert_template_result('0 1 2 3', "0{%\nfor i in (1..3)\n%} {{\ni\n}}{%\nendfor\n%}")
   end
 end # StandardTagTest
