@@ -2,7 +2,7 @@
 
 module Liquid
   class Render < Tag
-    SYNTAX = /(#{QuotedString}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSignature}+))?/o
+    SYNTAX = /(#{QuotedString}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
 
     disable_tags "include"
 
@@ -43,11 +43,7 @@ module Liquid
 
       context_variable_name = @alias_name || template_name.split('/').last
 
-      variable = if @variable_name_expr
-        context.evaluate(@variable_name_expr)
-      else
-        context.find_variable(template_name, raise_on_not_found: false)
-      end
+      variable = @variable_name_expr ? context.evaluate(@variable_name_expr) : nil
 
       variable = [variable] unless variable.is_a?(Array)
       variable.each do |var|
@@ -57,7 +53,7 @@ module Liquid
         @attributes.each do |key, value|
           inner_context[key] = context.evaluate(value)
         end
-        inner_context[context_variable_name] = var if @variable_name_expr
+        inner_context[context_variable_name] = var unless var.nil?
         partial.render_to_output_buffer(inner_context, output)
       end
 

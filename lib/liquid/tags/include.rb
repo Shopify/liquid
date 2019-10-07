@@ -16,7 +16,7 @@ module Liquid
   #   {% include 'product' for products %}
   #
   class Include < Tag
-    SYNTAX = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSignature}+))?/o
+    SYNTAX = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
     Syntax = SYNTAX
 
     attr_reader :template_name_expr, :variable_name_expr, :attributes
