@@ -7,7 +7,7 @@ class ParsingQuirksTest < Minitest::Test
 
   def test_parsing_css
     text = " div { font-weight: bold; } "
-    assert_equal text, Template.parse(text).render!
+    assert_equal(text, Template.parse(text).render!)
   end
 
   def test_raise_on_single_close_bracet
@@ -29,7 +29,7 @@ class ParsingQuirksTest < Minitest::Test
   end
 
   def test_error_on_empty_filter
-    assert Template.parse("{{test}}")
+    assert(Template.parse("{{test}}"))
 
     with_error_mode(:lax) do
       assert Template.parse("{{|test}}")
@@ -64,9 +64,9 @@ class ParsingQuirksTest < Minitest::Test
   end
 
   def test_no_error_on_lax_empty_filter
-    assert Template.parse("{{test |a|b|}}", error_mode: :lax)
-    assert Template.parse("{{test}}", error_mode: :lax)
-    assert Template.parse("{{|test|}}", error_mode: :lax)
+    assert(Template.parse("{{test |a|b|}}", error_mode: :lax))
+    assert(Template.parse("{{test}}", error_mode: :lax))
+    assert(Template.parse("{{|test|}}", error_mode: :lax))
   end
 
   def test_meaningless_parens_lax

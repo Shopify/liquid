@@ -96,9 +96,9 @@ class BlankTest < Minitest::Test
 
   def test_include_is_blank
     Liquid::Template.file_system = BlankTestFileSystem.new
-    assert_template_result "foobar" * (N + 1), wrap("{% include 'foobar' %}")
-    assert_template_result " foobar " * (N + 1), wrap("{% include ' foobar ' %}")
-    assert_template_result "   " * (N + 1), wrap(" {% include ' ' %} ")
+    assert_template_result("foobar" * (N + 1), wrap("{% include 'foobar' %}"))
+    assert_template_result(" foobar " * (N + 1), wrap("{% include ' foobar ' %}"))
+    assert_template_result("   " * (N + 1), wrap(" {% include ' ' %} "))
   end
 
   def test_case_is_blank

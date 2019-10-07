@@ -7,39 +7,39 @@ class RenderTagTest < Minitest::Test
 
   def test_render_with_no_arguments
     Liquid::Template.file_system = StubFileSystem.new('source' => 'rendered content')
-    assert_template_result 'rendered content', '{% render "source" %}'
+    assert_template_result('rendered content', '{% render "source" %}')
   end
 
   def test_render_tag_looks_for_file_system_in_registers_first
     file_system = StubFileSystem.new('pick_a_source' => 'from register file system')
-    assert_equal 'from register file system',
-      Template.parse('{% render "pick_a_source" %}').render!({}, registers: { file_system: file_system })
+    assert_equal('from register file system',
+      Template.parse('{% render "pick_a_source" %}').render!({}, registers: { file_system: file_system }))
   end
 
   def test_render_passes_named_arguments_into_inner_scope
     Liquid::Template.file_system = StubFileSystem.new('product' => '{{ inner_product.title }}')
-    assert_template_result 'My Product', '{% render "product", inner_product: outer_product %}',
-      'outer_product' => { 'title' => 'My Product' }
+    assert_template_result('My Product', '{% render "product", inner_product: outer_product %}',
+      'outer_product' => { 'title' => 'My Product' })
   end
 
   def test_render_accepts_literals_as_arguments
     Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ price }}')
-    assert_template_result '123', '{% render "snippet", price: 123 %}'
+    assert_template_result('123', '{% render "snippet", price: 123 %}')
   end
 
   def test_render_accepts_multiple_named_arguments
     Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ one }} {{ two }}')
-    assert_template_result '1 2', '{% render "snippet", one: 1, two: 2 %}'
+    assert_template_result('1 2', '{% render "snippet", one: 1, two: 2 %}')
   end
 
   def test_render_does_not_inherit_parent_scope_variables
     Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ outer_variable }}')
-    assert_template_result '', '{% assign outer_variable = "should not be visible" %}{% render "snippet" %}'
+    assert_template_result('', '{% assign outer_variable = "should not be visible" %}{% render "snippet" %}')
   end
 
   def test_render_does_not_inherit_variable_with_same_name_as_snippet
     Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ snippet }}')
-    assert_template_result '', "{% assign snippet = 'should not be visible' %}{% render 'snippet' %}"
+    assert_template_result('', "{% assign snippet = 'should not be visible' %}{% render 'snippet' %}")
   end
 
   def test_render_sets_the_correct_template_name_for_errors
@@ -70,7 +70,7 @@ class RenderTagTest < Minitest::Test
 
   def test_render_does_not_mutate_parent_scope
     Liquid::Template.file_system = StubFileSystem.new('snippet' => '{% assign inner = 1 %}')
-    assert_template_result '', "{% render 'snippet' %}{{ inner }}"
+    assert_template_result('', "{% render 'snippet' %}{{ inner }}")
   end
 
   def test_nested_render_tag
@@ -78,7 +78,7 @@ class RenderTagTest < Minitest::Test
       'one' => "one {% render 'two' %}",
       'two' => 'two'
     )
-    assert_template_result 'one two', "{% render 'one' %}"
+    assert_template_result('one two', "{% render 'one' %}")
   end
 
   def test_recursively_rendered_template_does_not_produce_endless_loop
@@ -108,43 +108,43 @@ class RenderTagTest < Minitest::Test
 
   def test_include_tag_caches_second_read_of_same_partial
     file_system = StubFileSystem.new('snippet' => 'echo')
-    assert_equal 'echoecho',
+    assert_equal('echoecho',
       Template.parse('{% render "snippet" %}{% render "snippet" %}')
-      .render!({}, registers: { file_system: file_system })
-    assert_equal 1, file_system.file_read_count
+      .render!({}, registers: { file_system: file_system }))
+    assert_equal(1, file_system.file_read_count)
   end
 
   def test_render_tag_doesnt_cache_partials_across_renders
     file_system = StubFileSystem.new('snippet' => 'my message')
 
-    assert_equal 'my message',
-      Template.parse('{% include "snippet" %}').render!({}, registers: { file_system: file_system })
-    assert_equal 1, file_system.file_read_count
+    assert_equal('my message',
+      Template.parse('{% include "snippet" %}').render!({}, registers: { file_system: file_system }))
+    assert_equal(1, file_system.file_read_count)
 
-    assert_equal 'my message',
-      Template.parse('{% include "snippet" %}').render!({}, registers: { file_system: file_system })
-    assert_equal 2, file_system.file_read_count
+    assert_equal('my message',
+      Template.parse('{% include "snippet" %}').render!({}, registers: { file_system: file_system }))
+    assert_equal(2, file_system.file_read_count)
   end
 
   def test_render_tag_within_if_statement
     Liquid::Template.file_system = StubFileSystem.new('snippet' => 'my message')
-    assert_template_result 'my message', '{% if true %}{% render "snippet" %}{% endif %}'
+    assert_template_result('my message', '{% if true %}{% render "snippet" %}{% endif %}')
   end
 
   def test_break_through_render
     Liquid::Template.file_system = StubFileSystem.new('break' => '{% break %}')
-    assert_template_result '1', '{% for i in (1..3) %}{{ i }}{% break %}{{ i }}{% endfor %}'
-    assert_template_result '112233', '{% for i in (1..3) %}{{ i }}{% render "break" %}{{ i }}{% endfor %}'
+    assert_template_result('1', '{% for i in (1..3) %}{{ i }}{% break %}{{ i }}{% endfor %}')
+    assert_template_result('112233', '{% for i in (1..3) %}{{ i }}{% render "break" %}{{ i }}{% endfor %}')
   end
 
   def test_increment_is_isolated_between_renders
     Liquid::Template.file_system = StubFileSystem.new('incr' => '{% increment %}')
-    assert_template_result '010', '{% increment %}{% increment %}{% render "incr" %}'
+    assert_template_result('010', '{% increment %}{% increment %}{% render "incr" %}')
   end
 
   def test_decrement_is_isolated_between_renders
     Liquid::Template.file_system = StubFileSystem.new('decr' => '{% decrement %}')
-    assert_template_result '-1-2-1', '{% decrement %}{% decrement %}{% render "decr" %}'
+    assert_template_result('-1-2-1', '{% decrement %}{% decrement %}{% render "decr" %}')
   end
 
   def test_includes_will_not_render_inside_render_tag
@@ -153,7 +153,7 @@ class RenderTagTest < Minitest::Test
       'test_include' => '{% include "foo" %}'
     )
 
-    assert_template_result 'include usage is not allowed in this context', '{% render "test_include" %}'
+    assert_template_result('include usage is not allowed in this context', '{% render "test_include" %}')
   end
 
   def test_includes_will_not_render_inside_nested_sibling_tags
@@ -163,6 +163,6 @@ class RenderTagTest < Minitest::Test
       'test_include' => '{% include "foo" %}'
     )
 
-    assert_template_result 'include usage is not allowed in this contextinclude usage is not allowed in this context', '{% render "nested_render_with_sibling_include" %}'
+    assert_template_result('include usage is not allowed in this contextinclude usage is not allowed in this context', '{% render "nested_render_with_sibling_include" %}')
   end
 end
