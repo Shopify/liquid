@@ -21,8 +21,8 @@ class Profiler
   end
 
   def profile(phase, &block)
-    print LOG_LABEL
-    print "#{phase}.. ".ljust(10)
+    print(LOG_LABEL)
+    print("#{phase}.. ".ljust(10))
     report = MemoryProfiler.report(&block)
     puts 'Done.'
     @headings  << phase.capitalize
