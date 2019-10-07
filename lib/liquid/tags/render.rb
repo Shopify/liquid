@@ -16,7 +16,7 @@ module Liquid
       template_name = Regexp.last_match(1)
       variable_name = Regexp.last_match(3)
 
-      @alias_name = Regexp.last_match(5) || nil
+      @alias_name = Regexp.last_match(5)
       @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
       @template_name_expr = Expression.parse(template_name)
 
@@ -41,7 +41,7 @@ module Liquid
         parse_context: parse_context
       )
 
-      context_variable_name = @alias_name ? @alias_name : "this"
+      context_variable_name = @alias_name || template_name.split('/').last
 
       variable = if @variable_name_expr
         context.evaluate(@variable_name_expr)
@@ -57,7 +57,7 @@ module Liquid
         @attributes.each do |key, value|
           inner_context[key] = context.evaluate(value)
         end
-        inner_context[context_variable_name] = var
+        inner_context[context_variable_name] = var if @variable_name_expr
         partial.render_to_output_buffer(inner_context, output)
       end
 
