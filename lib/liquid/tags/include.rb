@@ -21,6 +21,23 @@ module Liquid
 
     attr_reader :template_name_expr, :variable_name_expr, :attributes
 
+    class << self
+      def allow_path(matcher)
+        allowed_paths.push(matcher)
+      end
+
+      def allowed_paths
+        @allowed_paths ||= []
+      end
+
+      def allowed_path?(path)
+        return true if allowed_paths.empty?
+        allowed_paths.any? do |matcher|
+          matcher.match?(path)
+        end
+      end
+    end
+
     def initialize(tag_name, markup, options)
       super
 
@@ -49,6 +66,7 @@ module Liquid
     def render_to_output_buffer(context, output)
       template_name = context.evaluate(@template_name_expr)
       raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
+      raise ArgumentError unless allowed_path?(template_name)
 
       partial = PartialCache.load(
         template_name,
@@ -94,6 +112,12 @@ module Liquid
 
     alias_method :parse_context, :options
     private :parse_context
+
+    private
+
+    def allowed_path?(path)
+      self.class.allowed_path?(path)
+    end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children

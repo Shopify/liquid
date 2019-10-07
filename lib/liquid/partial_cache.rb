@@ -11,7 +11,10 @@ module Liquid
       source = file_system.read_template_file(template_name)
       parse_context.partial = true
 
-      partial = Liquid::Template.parse(source, parse_context)
+      liquid_template_factory = (context.registers[:liquid_template_factory] ||= Liquid::TemplateFactory)
+      liquid_template = liquid_template_factory.for(template_name)
+
+      partial = liquid_template.parse(source, parse_context)
       cached_partials[template_name] = partial
     ensure
       parse_context.partial = false

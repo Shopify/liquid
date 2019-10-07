@@ -221,7 +221,6 @@ module Liquid
 
       # Retrying a render resets resource usage
       context.resource_limits.reset
-
       begin
         # render the nodelist.
         # for performance reasons we get an array back here. join will make a string out of it.
@@ -242,6 +241,10 @@ module Liquid
 
     def render_to_output_buffer(context, output)
       render(context, output: output)
+    end
+
+    def with_context_restrictions(_context)
+      yield
     end
 
     private
