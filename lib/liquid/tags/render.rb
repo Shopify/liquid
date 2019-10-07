@@ -49,25 +49,15 @@ module Liquid
         context.find_variable(template_name, raise_on_not_found: false)
       end
 
-      if variable.is_a?(Array)
-        variable.each do |var|
-          inner_context = context.new_isolated_subcontext
-          inner_context.template_name = template_name
-          inner_context.partial = true
-          @attributes.each do |key, value|
-            inner_context[key] = context.evaluate(value)
-          end
-          inner_context[context_variable_name] = var
-          partial.render_to_output_buffer(inner_context, output)
-        end
-      else
+      variable = [variable] unless variable.is_a?(Array)
+      variable.each do |var|
         inner_context = context.new_isolated_subcontext
         inner_context.template_name = template_name
         inner_context.partial = true
         @attributes.each do |key, value|
           inner_context[key] = context.evaluate(value)
         end
-        inner_context[context_variable_name] = variable
+        inner_context[context_variable_name] = var
         partial.render_to_output_buffer(inner_context, output)
       end
 
