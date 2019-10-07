@@ -35,7 +35,7 @@ module Liquid
       template_name = context.evaluate(@template_name_expr)
       raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
 
-      @partial = PartialCache.load(
+      partial = PartialCache.load(
         template_name,
         context: context,
         parse_context: parse_context
@@ -43,23 +43,21 @@ module Liquid
 
       context_variable_name = @alias_name || template_name.split('/').last
 
-      render_partial_func = ->(var) { render_partial(context, output, template_name, context_variable_name, var) }
+      render_partial_func = ->(var) {
+        inner_context = context.new_isolated_subcontext
+        inner_context.template_name = template_name
+        inner_context.partial = true
+        @attributes.each do |key, value|
+          inner_context[key] = context.evaluate(value)
+        end
+        inner_context[context_variable_name] = var unless var.nil?
+        partial.render_to_output_buffer(inner_context, output)
+      }
 
       variable = @variable_name_expr ? context.evaluate(@variable_name_expr) : nil
       variable.is_a?(Array) ? variable.each(&render_partial_func) : render_partial_func.call(variable)
 
       output
-    end
-
-    def render_partial(context, output, template_name, variable_name, variable)
-      inner_context = context.new_isolated_subcontext
-      inner_context.template_name = template_name
-      inner_context.partial = true
-      @attributes.each do |key, value|
-        inner_context[key] = context.evaluate(value)
-      end
-      inner_context[variable_name] = variable unless variable.nil?
-      @partial.render_to_output_buffer(inner_context, output)
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
