@@ -421,13 +421,20 @@ module Liquid
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
-    def default(input, default_value = '')
-      if !input || input.respond_to?(:empty?) && input.empty?
-        Usage.increment("default_filter_received_false_value") if input == false # See https://github.com/Shopify/liquid/issues/1127
-        default_value
-      else
-        input
-      end
+    # Set a default value when the input is nil, false or empty
+    #
+    # Example:
+    #    {{ product.title | default: "No Title" }}
+    #
+    # Use `allow_false` when an input should only be tested against nil or empty and not false.
+    #
+    # Example:
+    #    {{ product.title | default: "No Title", allow_false: true }}
+    #
+    def default(input, default_value = '', options = {})
+      options = {} unless options.is_a?(Hash)
+      false_check = options['allow_false'] ? input.nil? : !input
+      false_check || (input.respond_to?(:empty?) && input.empty?) ? default_value : input
     end
 
     private
