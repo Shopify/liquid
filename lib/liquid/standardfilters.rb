@@ -432,9 +432,7 @@ module Liquid
 
     private
 
-    def context
-      @context ||= nil
-    end
+    attr_reader :context
 
     def raise_property_error(property)
       raise Liquid::ArgumentError, "cannot select the property '#{property}'"
