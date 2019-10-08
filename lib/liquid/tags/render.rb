@@ -2,7 +2,7 @@
 
 module Liquid
   class Render < Tag
-    SYNTAX = /(#{QuotedString})#{QuotedFragment}*/o
+    SYNTAX = /(#{QuotedString}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
 
     disable_tags "include"
 
@@ -14,7 +14,10 @@ module Liquid
       raise SyntaxError, options[:locale].t("errors.syntax.render") unless markup =~ SYNTAX
 
       template_name = Regexp.last_match(1)
+      variable_name = Regexp.last_match(3)
 
+      @alias_name = Regexp.last_match(5)
+      @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
       @template_name_expr = Expression.parse(template_name)
 
       @attributes = {}
@@ -38,13 +41,21 @@ module Liquid
         parse_context: parse_context
       )
 
-      inner_context = context.new_isolated_subcontext
-      inner_context.template_name = template_name
-      inner_context.partial = true
-      @attributes.each do |key, value|
-        inner_context[key] = context.evaluate(value)
-      end
-      partial.render_to_output_buffer(inner_context, output)
+      context_variable_name = @alias_name || template_name.split('/').last
+
+      render_partial_func = ->(var) {
+        inner_context = context.new_isolated_subcontext
+        inner_context.template_name = template_name
+        inner_context.partial = true
+        @attributes.each do |key, value|
+          inner_context[key] = context.evaluate(value)
+        end
+        inner_context[context_variable_name] = var unless var.nil?
+        partial.render_to_output_buffer(inner_context, output)
+      }
+
+      variable = @variable_name_expr ? context.evaluate(@variable_name_expr) : nil
+      variable.is_a?(Array) ? variable.each(&render_partial_func) : render_partial_func.call(variable)
 
       output
     end

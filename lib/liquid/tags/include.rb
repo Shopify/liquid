@@ -16,18 +16,20 @@ module Liquid
   #   {% include 'product' for products %}
   #
   class Include < Tag
-    Syntax = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?/o
+    SYNTAX = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
+    Syntax = SYNTAX
 
     attr_reader :template_name_expr, :variable_name_expr, :attributes
 
     def initialize(tag_name, markup, options)
       super
 
-      if markup =~ Syntax
+      if markup =~ SYNTAX
 
         template_name = Regexp.last_match(1)
         variable_name = Regexp.last_match(3)
 
+        @alias_name = Regexp.last_match(5)
         @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
         @template_name_expr = Expression.parse(template_name)
         @attributes = {}
@@ -54,7 +56,7 @@ module Liquid
         parse_context: parse_context
       )
 
-      context_variable_name = template_name.split('/').last
+      context_variable_name = @alias_name || template_name.split('/').last
 
       variable = if @variable_name_expr
         context.evaluate(@variable_name_expr)

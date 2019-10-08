@@ -8,6 +8,9 @@ class TestFileSystem
     when "product"
       "Product: {{ product.title }} "
 
+    when "product_alias"
+      "Product: {{ product.title }} "
+
     when "locale_variables"
       "Locale: {{echo1}} {{echo2}}"
 
@@ -89,6 +92,16 @@ class IncludeTagTest < Minitest::Test
   def test_include_tag_with
     assert_template_result("Product: Draft 151cm ",
       "{% include 'product' with products[0] %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+  end
+
+  def test_include_tag_with_alias
+    assert_template_result("Product: Draft 151cm ",
+                           "{% include 'product_alias' with products[0] as product %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+  end
+
+  def test_include_tag_for_alias
+    assert_template_result("Product: Draft 151cm Product: Element 155cm ",
+                           "{% include 'product_alias' for products as product %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
   end
 
   def test_include_tag_with_default_name
