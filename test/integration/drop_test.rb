@@ -179,6 +179,11 @@ class DropsTest < Minitest::Test
     assert_equal(' carrot ', output)
   end
 
+  def test_context_drop_array_with_map
+    output = Liquid::Template.parse(' {{ contexts | map: "bar" }} ').render!('contexts' => [ContextDrop.new, ContextDrop.new], 'bar' => "carrot")
+    assert_equal(' carrotcarrot ', output)
+  end
+
   def test_nested_context_drop
     output = Liquid::Template.parse(' {{ product.context.foo }} ').render!('product' => ProductDrop.new, 'foo' => "monkey")
     assert_equal(' monkey ', output)

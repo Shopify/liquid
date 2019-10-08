@@ -128,13 +128,13 @@ module Liquid
 
     # Join elements of the array with certain character between them
     def join(input, glue = ' ')
-      InputIterator.new(input).join(glue)
+      InputIterator.new(input, context).join(glue)
     end
 
     # Sort elements of the array
     # provide optional property with which to sort an array of hashes or drops
     def sort(input, property = nil)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
 
       return [] if ary.empty?
 
@@ -154,7 +154,7 @@ module Liquid
     # Sort elements of an array ignoring case if strings
     # provide optional property with which to sort an array of hashes or drops
     def sort_natural(input, property = nil)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
 
       return [] if ary.empty?
 
@@ -174,7 +174,7 @@ module Liquid
     # Filter the elements of an array to those with a certain property value.
     # By default the target is any truthy value.
     def where(input, property, target_value = nil)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
 
       if ary.empty?
         []
@@ -196,7 +196,7 @@ module Liquid
     # Remove duplicate elements from an array
     # provide optional property with which to determine uniqueness
     def uniq(input, property = nil)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
 
       if property.nil?
         ary.uniq
@@ -213,13 +213,13 @@ module Liquid
 
     # Reverse the elements of an array
     def reverse(input)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
       ary.reverse
     end
 
     # map/collect on a given property
     def map(input, property)
-      InputIterator.new(input).map do |e|
+      InputIterator.new(input, context).map do |e|
         e = e.call if e.is_a?(Proc)
 
         if property == "to_liquid"
@@ -236,7 +236,7 @@ module Liquid
     # Remove nils within an array
     # provide optional property with which to check for nil
     def compact(input, property = nil)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
 
       if property.nil?
         ary.compact
@@ -280,7 +280,7 @@ module Liquid
       unless array.respond_to?(:to_ary)
         raise ArgumentError, "concat filter requires an array argument"
       end
-      InputIterator.new(input).concat(array)
+      InputIterator.new(input, context).concat(array)
     end
 
     # prepend a string to another
@@ -439,6 +439,8 @@ module Liquid
 
     private
 
+    attr_reader :context
+
     def raise_property_error(property)
       raise Liquid::ArgumentError, "cannot select the property '#{property}'"
     end
@@ -467,7 +469,8 @@ module Liquid
     class InputIterator
       include Enumerable
 
-      def initialize(input)
+      def initialize(input, context)
+        @context = context
         @input = if input.is_a?(Array)
           input.flatten
         elsif input.is_a?(Hash)
@@ -506,6 +509,7 @@ module Liquid
 
       def each
         @input.each do |e|
+          e.context = @context if e.respond_to?(:context=)
           yield(e.respond_to?(:to_liquid) ? e.to_liquid : e)
         end
       end
