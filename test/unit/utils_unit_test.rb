@@ -59,4 +59,28 @@ class UtilsUnitTest < Minitest::Test
       assert_equal("2019-01-01 16:00:00 -0200", Utils.to_date("16:00"))
     end
   end
+
+  def test_slice_collection_using_each_with_string
+    assert_equal(["tag"], Utils.slice_collection_using_each("tag", 0, 2))
+  end
+
+  def test_slice_collection_using_each_with_empty_string
+    assert_equal([], Utils.slice_collection_using_each("", 0, 3))
+  end
+
+  def test_slice_collection_using_each_with_array
+    assert_equal([0, 1, 2, 3], Utils.slice_collection_using_each([0, 1, 2, 3, 4, 5], 0, 4))
+  end
+
+  def test_slice_collection_using_each_with_no_range
+    assert_equal([], Utils.slice_collection_using_each([0, 1, 2, 3, 4, 5], 0, 0))
+  end
+
+  def test_slice_collection_using_each_with_middle_range
+    assert_equal([2], Utils.slice_collection_using_each([0, 1, 2, 3, 4, 5], 2, 3))
+  end
+
+  def test_slice_collection_using_each_with_integer
+    assert_equal([], Utils.slice_collection_using_each(1, 0, 1))
+  end
 end
