@@ -34,4 +34,29 @@ class UtilsUnitTest < Minitest::Test
       Utils.to_integer("FOOBAR")
     end
   end
+
+  def test_to_date_with_time
+    t = Time.new(2019, 01, 01, 12, 00, 00, "+00:00")
+    assert_equal(t, Utils.to_date(t))
+  end
+
+  def test_to_date_with_now
+    t = Time.new(2019, 01, 01, 12, 00, 00, "+00:00")
+    Time.stub(:now, t) do
+      assert_equal(t, Utils.to_date("now"))
+    end
+  end
+
+  def test_to_date_with_timestamp
+    t = Time.new(2019, 01, 01, 12, 00, 00, "+00:00")
+    assert_equal(t, Utils.to_date(t.to_i))
+  end
+
+  def test_to_date_with_string
+    skip "minitest mock is failing to stub offset"
+    t = Time.new(2019, 01, 01, 12, 00, 00, "-02:00")
+    Time.stub(:now, t) do
+      assert_equal("2019-01-01 16:00:00 -0200", Utils.to_date("16:00"))
+    end
+  end
 end
