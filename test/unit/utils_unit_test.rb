@@ -20,4 +20,18 @@ class UtilsUnitTest < Minitest::Test
   def test_to_number_with_precision_string
     assert_equal(BigDecimal("0.1"), Utils.to_number("0.1"))
   end
+
+  def test_to_integer_with_integer
+    assert_equal(1, Utils.to_integer(1))
+  end
+
+  def test_to_integer_with_string
+    assert_equal(1, Utils.to_integer("1"))
+  end
+
+  def test_to_integer_with_invalid_argument
+    assert_raises(Liquid::ArgumentError) do
+      Utils.to_integer("FOOBAR")
+    end
+  end
 end
