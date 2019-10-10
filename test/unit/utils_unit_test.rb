@@ -21,6 +21,11 @@ class UtilsUnitTest < Minitest::Test
     assert_equal(BigDecimal("0.1"), Utils.to_number("0.1"))
   end
 
+  def test_to_number_with_exponential
+    # TODO: Fix wrong behaviour
+    assert_equal(2, Utils.to_number("2**4"))
+  end
+
   def test_to_integer_with_integer
     assert_equal(1, Utils.to_integer(1))
   end
