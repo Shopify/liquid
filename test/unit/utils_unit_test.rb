@@ -87,4 +87,12 @@ class UtilsUnitTest < Minitest::Test
   def test_slice_collection_using_each_with_integer
     assert_equal([], Utils.slice_collection_using_each(1, 0, 1))
   end
+
+  def test_slice_collection_using_each_with_negative_start
+    assert_equal([0, 1], Utils.slice_collection_using_each([0, 1, 2, 3], -1, 2))
+  end
+
+  def test_slice_collection_using_each_with_negative_end
+    assert_equal([], Utils.slice_collection_using_each([0, 1, 2, 3], 1, -2))
+  end
 end
