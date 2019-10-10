@@ -60,6 +60,10 @@ class UtilsUnitTest < Minitest::Test
     end
   end
 
+  def test_to_date_with_invalid_string
+    assert_equal(nil, Utils.to_date("FOOBAR"))
+  end
+
   def test_slice_collection_using_each_with_string
     assert_equal(["tag"], Utils.slice_collection_using_each("tag", 0, 2))
   end
