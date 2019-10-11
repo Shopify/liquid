@@ -17,6 +17,8 @@ module Liquid
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits, :static_registers, :static_environments
     attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
+    BLANK_SCOPE = {}
+
     # rubocop:disable Metrics/ParameterLists
     def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {})
       new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments)
@@ -180,15 +182,12 @@ module Liquid
     def find_variable(key, raise_on_not_found: true)
       # This was changed from find() to find_index() because this is a very hot
       # path and find_index() is optimized in MRI to reduce object allocation
-      index = @scopes.find_index { |s| s.key?(key) }
+      scope = (index = @scopes.find_index { |s| s.key?(key) }) && @scopes[index]
+      scope ||= (index = @environments.find_index { |s| s.key?(key) || s.default_proc }) && @environments[index]
+      scope ||= (index = @static_environments.find_index { |s| s.key?(key) }) && @static_environments[index]
+      scope ||= BLANK_SCOPE
 
-      variable = if index
-        lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
-      else
-        try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
-      end
-
-      variable = variable.to_liquid
+      variable = lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found).to_liquid
       variable.context = self if variable.respond_to?(:context=)
 
       variable
@@ -215,22 +214,6 @@ module Liquid
     private
 
     attr_reader :base_scope_depth
-
-    def try_variable_find_in_environments(key, raise_on_not_found:)
-      @environments.each do |environment|
-        found_variable = lookup_and_evaluate(environment, key, raise_on_not_found: raise_on_not_found)
-        if !found_variable.nil? || @strict_variables && raise_on_not_found
-          return found_variable
-        end
-      end
-      @static_environments.each do |environment|
-        found_variable = lookup_and_evaluate(environment, key, raise_on_not_found: raise_on_not_found)
-        if !found_variable.nil? || @strict_variables && raise_on_not_found
-          return found_variable
-        end
-      end
-      nil
-    end
 
     def check_overflow
       raise StackLevelError, "Nesting too deep" if overflow?

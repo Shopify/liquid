@@ -88,6 +88,14 @@ class VariableTest < Minitest::Test
     assert_equal("Unknown variable 'test'", e.message)
   end
 
+  def test_environment_falsy
+    template = Template.parse(%({{ test }}{% assign test = 'bar' %}{{ test }}))
+    template.assigns['test'] = 'foo'
+    assert_equal 'foobar', template.render!
+    assert_equal 'bar', template.render!('test' => nil)
+    assert_equal 'falsebar', template.render!('test' => false)
+  end
+
   def test_multiline_variable
     assert_equal('worked', Template.parse("{{\ntest\n}}").render!('test' => 'worked'))
   end
