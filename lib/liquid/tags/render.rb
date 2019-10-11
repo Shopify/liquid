@@ -8,10 +8,8 @@ module Liquid
 
     attr_reader :template_name_expr, :attributes
 
-    def initialize(tag_name, markup, options)
-      super
-
-      raise SyntaxError, options[:locale].t("errors.syntax.render") unless markup =~ SYNTAX
+    def parse(_tokens)
+      raise SyntaxError, @parse_context[:locale].t("errors.syntax.render") unless @markup =~ SYNTAX
 
       template_name = Regexp.last_match(1)
       variable_name = Regexp.last_match(3)
@@ -21,7 +19,7 @@ module Liquid
       @template_name_expr = Expression.parse(template_name)
 
       @attributes = {}
-      markup.scan(TagAttributes) do |key, value|
+      @markup.scan(TagAttributes) do |key, value|
         @attributes[key] = Expression.parse(value)
       end
     end

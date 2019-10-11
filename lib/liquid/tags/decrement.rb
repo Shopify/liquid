@@ -20,9 +20,8 @@ module Liquid
   #    Hello: -3
   #
   class Decrement < Tag
-    def initialize(tag_name, markup, options)
-      super
-      @variable = markup.strip
+    def parse(_tokens)
+      @variable = @markup.strip
     end
 
     def render_to_output_buffer(context, output)

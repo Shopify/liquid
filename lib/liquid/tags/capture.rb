@@ -15,13 +15,13 @@ module Liquid
   class Capture < Block
     Syntax = /(#{VariableSignature}+)/o
 
-    def initialize(tag_name, markup, options)
-      super
-      if markup =~ Syntax
+    def parse(_tokens)
+      if @markup =~ Syntax
         @to = Regexp.last_match(1)
       else
-        raise SyntaxError, options[:locale].t("errors.syntax.capture")
+        raise SyntaxError, @parse_context[:locale].t("errors.syntax.capture")
       end
+      super
     end
 
     def render_to_output_buffer(context, output)

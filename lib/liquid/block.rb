@@ -7,6 +7,7 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       @blank = true
+      @body = nil
     end
 
     def parse(tokens)
@@ -17,7 +18,7 @@ module Liquid
 
     # For backwards compatibility
     def render(context)
-      @body.render(context)
+      @body&.render(context)
     end
 
     def blank?

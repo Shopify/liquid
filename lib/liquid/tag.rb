@@ -17,8 +17,6 @@ module Liquid
         disabled_tags.push(*tags)
       end
 
-      private :new
-
       def disabled_tags
         @disabled_tags ||= []
       end
