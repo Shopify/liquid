@@ -58,9 +58,9 @@ class ThemeRunner
   # `render` is called to benchmark just the render portion of liquid
   def render
     @compiled_tests.each do |test|
-      tmpl = test[:tmpl]
+      tmpl    = test[:tmpl]
       assigns = test[:assigns]
-      layout = test[:layout]
+      layout  = test[:layout]
 
       if layout
         assigns['content_for_layout'] = tmpl.render!(assigns)
@@ -74,7 +74,7 @@ class ThemeRunner
   private
 
   def compile_and_render(template, layout, assigns, page_template, template_file)
-    compiled_test = compile_test(template, layout, assigns, page_template, template_file)
+    compiled_test                 = compile_test(template, layout, assigns, page_template, template_file)
     assigns['content_for_layout'] = compiled_test[:tmpl].render!(assigns)
     compiled_test[:layout].render!(assigns) if layout
   end
@@ -88,7 +88,7 @@ class ThemeRunner
   end
 
   def compile_test(template, layout, assigns, page_template, template_file)
-    tmpl = init_template(page_template, template_file)
+    tmpl            = init_template(page_template, template_file)
     parsed_template = tmpl.parse(template).dup
 
     if layout
@@ -113,9 +113,9 @@ class ThemeRunner
 
   # set up a new Liquid::Template object for use in `compile_and_render` and `compile_test`
   def init_template(page_template, template_file)
-    tmpl = Liquid::Template.new
-    tmpl.assigns['page_title'] = 'Page title'
-    tmpl.assigns['template'] = page_template
+    tmpl                         = Liquid::Template.new
+    tmpl.assigns['page_title']   = 'Page title'
+    tmpl.assigns['template']     = page_template
     tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(File.dirname(template_file))
     tmpl
   end

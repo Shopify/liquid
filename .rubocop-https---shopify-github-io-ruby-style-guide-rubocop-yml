@@ -892,7 +892,7 @@ Lint/FormatParameterMismatch:
   Enabled: true
 
 Lint/HandleExceptions:
-  Enabled: true
+  AllowComments: true
 
 Lint/ImplicitStringConcatenation:
   Description: Checks for adjacent string literals on the same line, which could

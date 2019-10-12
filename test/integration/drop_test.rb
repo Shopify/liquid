@@ -125,7 +125,7 @@ class DropsTest < Minitest::Test
 
   def test_rendering_warns_on_tainted_attr
     with_taint_mode(:warn) do
-      tpl = Liquid::Template.parse('{{ product.user_input }}')
+      tpl     = Liquid::Template.parse('{{ product.user_input }}')
       context = Context.new('product' => ProductDrop.new)
       tpl.render!(context)
       assert_equal [Liquid::TaintedError], context.warnings.map(&:class)

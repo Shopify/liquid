@@ -2,18 +2,18 @@
 
 module Liquid
   class BlockBody
-    LiquidTagToken = /\A\s*(\w+)\s*(.*?)\z/o
-    FullToken = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
-    ContentOfVariable = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
+    LiquidTagToken      = /\A\s*(\w+)\s*(.*?)\z/o
+    FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    ContentOfVariable   = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
-    TAGSTART = "{%"
-    VARSTART = "{{"
+    TAGSTART            = "{%"
+    VARSTART            = "{{"
 
     attr_reader :nodelist
 
     def initialize
       @nodelist = []
-      @blank = true
+      @blank    = true
     end
 
     def parse(tokenizer, parse_context, &block)
@@ -34,15 +34,15 @@ module Liquid
             # caller raise a syntax error
             return yield token, token
           end
-          tag_name = Regexp.last_match(1)
-          markup = Regexp.last_match(2)
+          tag_name    = Regexp.last_match(1)
+          markup      = Regexp.last_match(2)
           unless (tag = registered_tags[tag_name])
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
             return yield tag_name, markup
           end
-          new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
-          @blank &&= new_tag.blank?
+          new_tag     = tag.parse(tag_name, markup, tokenizer, parse_context)
+          @blank    &&= new_tag.blank?
           @nodelist << new_tag
         end
         parse_context.line_number = tokenizer.line_number
@@ -61,7 +61,7 @@ module Liquid
             raise_missing_tag_terminator(token, parse_context)
           end
           tag_name = Regexp.last_match(2)
-          markup = Regexp.last_match(4)
+          markup   = Regexp.last_match(4)
 
           if parse_context.line_number
             # newlines inside the tag should increase the line number,
@@ -79,8 +79,8 @@ module Liquid
             # determine how to proceed
             return yield tag_name, markup
           end
-          new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
-          @blank &&= new_tag.blank?
+          new_tag     = tag.parse(tag_name, markup, tokenizer, parse_context)
+          @blank    &&= new_tag.blank?
           @nodelist << new_tag
         when token.start_with?(VARSTART)
           whitespace_handler(token, parse_context)
@@ -92,7 +92,7 @@ module Liquid
           end
           parse_context.trim_whitespace = false
           @nodelist << token
-          @blank &&= !!(token =~ WhitespaceOrNothing)
+          @blank                      &&= !!(token =~ WhitespaceOrNothing)
         end
         parse_context.line_number = tokenizer.line_number
       end
@@ -121,7 +121,7 @@ module Liquid
     def render_to_output_buffer(context, output)
       context.resource_limits.render_score += @nodelist.length
 
-      idx = 0
+      idx         = 0
       while (node = @nodelist[idx])
         previous_output_size = output.bytesize
 

@@ -25,10 +25,10 @@ module Liquid
     end
 
     def initialize(tag_name, markup, parse_context)
-      @tag_name   = tag_name
-      @markup     = markup
+      @tag_name      = tag_name
+      @markup        = markup
       @parse_context = parse_context
-      @line_number = parse_context.line_number
+      @line_number   = parse_context.line_number
     end
 
     def parse(_tokens)

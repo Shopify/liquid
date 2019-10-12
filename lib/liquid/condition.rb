@@ -35,16 +35,16 @@ module Liquid
     attr_accessor :left, :operator, :right
 
     def initialize(left = nil, operator = nil, right = nil)
-      @left = left
-      @operator = operator
-      @right = right
-      @child_relation = nil
+      @left            = left
+      @operator        = operator
+      @right           = right
+      @child_relation  = nil
       @child_condition = nil
     end
 
     def evaluate(context = Context.new)
       condition = self
-      result = nil
+      result    = nil
       loop do
         result = interpret_condition(condition.left, condition.right, condition.operator, context)
 
@@ -62,12 +62,12 @@ module Liquid
     end
 
     def or(condition)
-      @child_relation = :or
+      @child_relation  = :or
       @child_condition = condition
     end
 
     def and(condition)
-      @child_relation = :and
+      @child_relation  = :and
       @child_condition = condition
     end
 
@@ -115,7 +115,7 @@ module Liquid
       # return this as the result.
       return context.evaluate(left) if op.nil?
 
-      left = context.evaluate(left)
+      left  = context.evaluate(left)
       right = context.evaluate(right)
 
       operation = self.class.operators[op] || raise(Liquid::ArgumentError, "Unknown operator #{op}")

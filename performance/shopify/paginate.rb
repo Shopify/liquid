@@ -8,7 +8,7 @@ class Paginate < Liquid::Block
 
     if markup =~ Syntax
       @collection_name = Regexp.last_match(1)
-      @page_size = if Regexp.last_match(2)
+      @page_size       = if Regexp.last_match(2)
         Regexp.last_match(3).to_i
       else
         20

@@ -3,9 +3,9 @@
 module Liquid
   class Parser
     def initialize(input)
-      l = Lexer.new(input)
+      l       = Lexer.new(input)
       @tokens = l.tokenize
-      @p = 0 # pointer to current location
+      @p      = 0 # pointer to current location
     end
 
     def jump(point)
@@ -17,7 +17,7 @@ module Liquid
       if type && token[0] != type
         raise SyntaxError, "Expected #{type} but found #{@tokens[@p].first}"
       end
-      @p += 1
+      @p   += 1
       token[1]
     end
 
@@ -27,7 +27,7 @@ module Liquid
     def consume?(type)
       token = @tokens[@p]
       return false unless token && token[0] == type
-      @p += 1
+      @p   += 1
       token[1]
     end
 
@@ -36,7 +36,7 @@ module Liquid
       token = @tokens[@p]
       return false unless token && token[0] == :id
       return false unless token[1] == str
-      @p += 1
+      @p   += 1
       token[1]
     end
 
@@ -59,7 +59,7 @@ module Liquid
         consume
         first = expression
         consume(:dotdot)
-        last = expression
+        last  = expression
         consume(:close_round)
         "(#{first}..#{last})"
       else

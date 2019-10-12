@@ -16,7 +16,7 @@ module Liquid
       template_name = Regexp.last_match(1)
       variable_name = Regexp.last_match(3)
 
-      @alias_name = Regexp.last_match(5)
+      @alias_name         = Regexp.last_match(5)
       @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
       @template_name_expr = Expression.parse(template_name)
 
@@ -44,9 +44,9 @@ module Liquid
       context_variable_name = @alias_name || template_name.split('/').last
 
       render_partial_func = ->(var) {
-        inner_context = context.new_isolated_subcontext
-        inner_context.template_name = template_name
-        inner_context.partial = true
+        inner_context                        = context.new_isolated_subcontext
+        inner_context.template_name          = template_name
+        inner_context.partial                = true
         @attributes.each do |key, value|
           inner_context[key] = context.evaluate(value)
         end

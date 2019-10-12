@@ -106,7 +106,7 @@ HERE
   end
 
   def test_limiting_with_invalid_limit
-    assigns = { 'array' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] }
+    assigns  = { 'array' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] }
     template = <<-MKUP
       {% for i in array limit: true offset: 1 %}
         {{ i }}
@@ -120,7 +120,7 @@ HERE
   end
 
   def test_limiting_with_invalid_offset
-    assigns = { 'array' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] }
+    assigns  = { 'array' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] }
     template = <<-MKUP
       {% for i in array limit: 1 offset: true %}
         {{ i }}
@@ -134,8 +134,8 @@ HERE
   end
 
   def test_dynamic_variable_limiting
-    assigns = { 'array' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] }
-    assigns['limit'] = 2
+    assigns           = { 'array' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] }
+    assigns['limit']  = 2
     assigns['offset'] = 2
 
     assert_template_result('34', '{%for i in array limit: limit offset: offset %}{{ i }}{%endfor%}', assigns)
@@ -152,8 +152,8 @@ HERE
   end
 
   def test_pause_resume
-    assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
-    markup = <<-MKUP
+    assigns  = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
+    markup   = <<-MKUP
       {%for i in array.items limit: 3 %}{{i}}{%endfor%}
       next
       {%for i in array.items offset:continue limit: 3 %}{{i}}{%endfor%}
@@ -171,8 +171,8 @@ HERE
   end
 
   def test_pause_resume_limit
-    assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
-    markup = <<-MKUP
+    assigns  = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
+    markup   = <<-MKUP
       {%for i in array.items limit:3 %}{{i}}{%endfor%}
       next
       {%for i in array.items offset:continue limit:3 %}{{i}}{%endfor%}
@@ -190,8 +190,8 @@ HERE
   end
 
   def test_pause_resume_big_limit
-    assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
-    markup = <<-MKUP
+    assigns  = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
+    markup   = <<-MKUP
       {%for i in array.items limit:3 %}{{i}}{%endfor%}
       next
       {%for i in array.items offset:continue limit:3 %}{{i}}{%endfor%}
@@ -209,8 +209,8 @@ HERE
   end
 
   def test_pause_resume_big_offset
-    assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
-    markup = '{%for i in array.items limit:3 %}{{i}}{%endfor%}
+    assigns  = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] } }
+    markup   = '{%for i in array.items limit:3 %}{{i}}{%endfor%}
       next
       {%for i in array.items offset:continue limit:3 %}{{i}}{%endfor%}
       next
@@ -226,26 +226,26 @@ HERE
   def test_for_with_break
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }
 
-    markup = '{% for i in array.items %}{% break %}{% endfor %}'
+    markup   = '{% for i in array.items %}{% break %}{% endfor %}'
     expected = ""
     assert_template_result(expected, markup, assigns)
 
-    markup = '{% for i in array.items %}{{ i }}{% break %}{% endfor %}'
+    markup   = '{% for i in array.items %}{{ i }}{% break %}{% endfor %}'
     expected = "1"
     assert_template_result(expected, markup, assigns)
 
-    markup = '{% for i in array.items %}{% break %}{{ i }}{% endfor %}'
+    markup   = '{% for i in array.items %}{% break %}{{ i }}{% endfor %}'
     expected = ""
     assert_template_result(expected, markup, assigns)
 
-    markup = '{% for i in array.items %}{{ i }}{% if i > 3 %}{% break %}{% endif %}{% endfor %}'
+    markup   = '{% for i in array.items %}{{ i }}{% if i > 3 %}{% break %}{% endif %}{% endfor %}'
     expected = "1234"
     assert_template_result(expected, markup, assigns)
 
     # tests to ensure it only breaks out of the local for loop
     # and not all of them.
-    assigns = { 'array' => [[1, 2], [3, 4], [5, 6]] }
-    markup = '{% for item in array %}' \
+    assigns  = { 'array' => [[1, 2], [3, 4], [5, 6]] }
+    markup   = '{% for item in array %}' \
                '{% for i in item %}' \
                  '{% if i == 1 %}' \
                    '{% break %}' \
@@ -257,8 +257,8 @@ HERE
     assert_template_result(expected, markup, assigns)
 
     # test break does nothing when unreached
-    assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5] } }
-    markup = '{% for i in array.items %}{% if i == 9999 %}{% break %}{% endif %}{{ i }}{% endfor %}'
+    assigns  = { 'array' => { 'items' => [1, 2, 3, 4, 5] } }
+    markup   = '{% for i in array.items %}{% if i == 9999 %}{% break %}{% endif %}{{ i }}{% endfor %}'
     expected = '12345'
     assert_template_result(expected, markup, assigns)
   end
@@ -266,29 +266,29 @@ HERE
   def test_for_with_continue
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5] } }
 
-    markup = '{% for i in array.items %}{% continue %}{% endfor %}'
+    markup   = '{% for i in array.items %}{% continue %}{% endfor %}'
     expected = ""
     assert_template_result(expected, markup, assigns)
 
-    markup = '{% for i in array.items %}{{ i }}{% continue %}{% endfor %}'
+    markup   = '{% for i in array.items %}{{ i }}{% continue %}{% endfor %}'
     expected = "12345"
     assert_template_result(expected, markup, assigns)
 
-    markup = '{% for i in array.items %}{% continue %}{{ i }}{% endfor %}'
+    markup   = '{% for i in array.items %}{% continue %}{{ i }}{% endfor %}'
     expected = ""
     assert_template_result(expected, markup, assigns)
 
-    markup = '{% for i in array.items %}{% if i > 3 %}{% continue %}{% endif %}{{ i }}{% endfor %}'
+    markup   = '{% for i in array.items %}{% if i > 3 %}{% continue %}{% endif %}{{ i }}{% endfor %}'
     expected = "123"
     assert_template_result(expected, markup, assigns)
 
-    markup = '{% for i in array.items %}{% if i == 3 %}{% continue %}{% else %}{{ i }}{% endif %}{% endfor %}'
+    markup   = '{% for i in array.items %}{% if i == 3 %}{% continue %}{% else %}{{ i }}{% endif %}{% endfor %}'
     expected = "1245"
     assert_template_result(expected, markup, assigns)
 
     # tests to ensure it only continues the local for loop and not all of them.
-    assigns = { 'array' => [[1, 2], [3, 4], [5, 6]] }
-    markup = '{% for item in array %}' \
+    assigns  = { 'array' => [[1, 2], [3, 4], [5, 6]] }
+    markup   = '{% for item in array %}' \
                '{% for i in item %}' \
                  '{% if i == 1 %}' \
                    '{% continue %}' \
@@ -300,8 +300,8 @@ HERE
     assert_template_result(expected, markup, assigns)
 
     # test continue does nothing when unreached
-    assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5] } }
-    markup = '{% for i in array.items %}{% if i == 9999 %}{% continue %}{% endif %}{{ i }}{% endfor %}'
+    assigns  = { 'array' => { 'items' => [1, 2, 3, 4, 5] } }
+    markup   = '{% for i in array.items %}{% if i == 9999 %}{% continue %}{% endif %}{{ i }}{% endfor %}'
     expected = '12345'
     assert_template_result(expected, markup, assigns)
   end
@@ -389,8 +389,8 @@ HERE
   end
 
   def test_iterate_with_each_when_no_limit_applied
-    loader = LoaderDrop.new([1, 2, 3, 4, 5])
-    assigns = { 'items' => loader }
+    loader   = LoaderDrop.new([1, 2, 3, 4, 5])
+    assigns  = { 'items' => loader }
     expected = '12345'
     template = '{% for item in items %}{{item}}{% endfor %}'
     assert_template_result(expected, template, assigns)
@@ -399,8 +399,8 @@ HERE
   end
 
   def test_iterate_with_load_slice_when_limit_applied
-    loader = LoaderDrop.new([1, 2, 3, 4, 5])
-    assigns = { 'items' => loader }
+    loader   = LoaderDrop.new([1, 2, 3, 4, 5])
+    assigns  = { 'items' => loader }
     expected = '1'
     template = '{% for item in items limit:1 %}{{item}}{% endfor %}'
     assert_template_result(expected, template, assigns)
@@ -409,8 +409,8 @@ HERE
   end
 
   def test_iterate_with_load_slice_when_limit_and_offset_applied
-    loader = LoaderDrop.new([1, 2, 3, 4, 5])
-    assigns = { 'items' => loader }
+    loader   = LoaderDrop.new([1, 2, 3, 4, 5])
+    assigns  = { 'items' => loader }
     expected = '34'
     template = '{% for item in items offset:2 limit:2 %}{{item}}{% endfor %}'
     assert_template_result(expected, template, assigns)
@@ -419,11 +419,11 @@ HERE
   end
 
   def test_iterate_with_load_slice_returns_same_results_as_without
-    loader = LoaderDrop.new([1, 2, 3, 4, 5])
+    loader         = LoaderDrop.new([1, 2, 3, 4, 5])
     loader_assigns = { 'items' => loader }
-    array_assigns = { 'items' => [1, 2, 3, 4, 5] }
-    expected = '34'
-    template = '{% for item in items offset:2 limit:2 %}{{item}}{% endfor %}'
+    array_assigns  = { 'items' => [1, 2, 3, 4, 5] }
+    expected       = '34'
+    template       = '{% for item in items offset:2 limit:2 %}{{item}}{% endfor %}'
     assert_template_result(expected, template, loader_assigns)
     assert_template_result(expected, template, array_assigns)
   end

@@ -52,9 +52,9 @@ module Liquid
 
     def initialize(tag_name, markup, options)
       super
-      @from = @limit = nil
+      @from       = @limit = nil
       parse_with_selected_parser(markup)
-      @for_block = BlockBody.new
+      @for_block  = BlockBody.new
       @else_block = nil
     end
 
@@ -88,10 +88,10 @@ module Liquid
 
     def lax_parse(markup)
       if markup =~ Syntax
-        @variable_name = Regexp.last_match(1)
-        collection_name = Regexp.last_match(2)
-        @reversed = !!Regexp.last_match(3)
-        @name = "#{@variable_name}-#{collection_name}"
+        @variable_name   = Regexp.last_match(1)
+        collection_name  = Regexp.last_match(2)
+        @reversed        = !!Regexp.last_match(3)
+        @name            = "#{@variable_name}-#{collection_name}"
         @collection_name = Expression.parse(collection_name)
         markup.scan(TagAttributes) do |key, value|
           set_attribute(key, value)
@@ -102,13 +102,13 @@ module Liquid
     end
 
     def strict_parse(markup)
-      p = Parser.new(markup)
-      @variable_name = p.consume(:id)
+      p                = Parser.new(markup)
+      @variable_name   = p.consume(:id)
       raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in") unless p.id?('in')
-      collection_name = p.expression
-      @name = "#{@variable_name}-#{collection_name}"
+      collection_name  = p.expression
+      @name            = "#{@variable_name}-#{collection_name}"
       @collection_name = Expression.parse(collection_name)
-      @reversed = p.id?('reversed')
+      @reversed        = p.id?('reversed')
 
       while p.look(:id) && p.look(:colon, 1)
         unless (attribute = p.id?('limit') || p.id?('offset'))
@@ -140,7 +140,7 @@ module Liquid
       collection = collection.to_a if collection.is_a?(Range)
 
       limit_value = context.evaluate(@limit)
-      to = if limit_value.nil?
+      to          = if limit_value.nil?
         nil
       else
         Utils.to_integer(limit_value) + from
@@ -156,7 +156,7 @@ module Liquid
 
     def render_segment(context, output, segment)
       for_stack = context.registers[:for_stack] ||= []
-      length = segment.length
+      length    = segment.length
 
       context.stack do
         loop_vars = Liquid::ForloopDrop.new(@name, length, for_stack[-1])

@@ -15,3 +15,9 @@ AllCops:
 Naming/MethodName:
   Exclude:
     - 'example/server/liquid_servlet.rb'
+
+Layout/ExtraSpacing:
+  ForceEqualSignAlignment: true
+
+Layout/SpaceAroundOperators:
+  Enabled: false
