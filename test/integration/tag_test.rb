@@ -14,7 +14,7 @@ class TagTest < Minitest::Test
 
   def test_all_tags_are_registered
     tags = Template.tags.map { |key, _tag| key }
-    expected_tags = %w(tablerow echo if break for assign ifchanged case include continue capture decrement unless increment comment raw render cycle)
-    assert_equal(expected_tags, tags)
+    expected_tags = %w(assign break capture case comment continue cycle decrement echo for if ifchanged include increment raw render tablerow unless)
+    assert_equal(expected_tags, tags.sort)
   end
 end
