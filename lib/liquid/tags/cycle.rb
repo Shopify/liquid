@@ -25,7 +25,7 @@ module Liquid
         @variables = variables_from_string(Regexp.last_match(2))
         @name = Expression.parse(Regexp.last_match(1))
       when SimpleSyntax
-        @variables = variables_from_string(@markup)
+        @variables = variables_from_string(markup)
         @name = @variables.to_s
       else
         raise SyntaxError, options[:locale].t("errors.syntax.cycle")

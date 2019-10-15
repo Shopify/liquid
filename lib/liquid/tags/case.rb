@@ -10,7 +10,7 @@ module Liquid
     def parse(tokens)
       @blocks = []
 
-      if options =~ Syntax
+      if markup =~ Syntax
         @left = Expression.parse(Regexp.last_match(1))
       else
         raise SyntaxError, options[:locale].t("errors.syntax.case")

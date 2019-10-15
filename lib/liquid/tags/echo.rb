@@ -15,11 +15,11 @@ module Liquid
     attr_reader :variable
 
     def parse(_tokens)
-      @variable = Variable.new(markup, options)
+      @variable = Variable.new(markup, parse_context)
     end
 
     def render(context)
-      variable&.render_to_output_buffer(context, +'')
+      @variable.render_to_output_buffer(context, +'')
     end
   end
 
