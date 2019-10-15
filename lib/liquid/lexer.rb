@@ -3,7 +3,7 @@
 require "strscan"
 module Liquid
   class Lexer
-    SPECIALS              = {
+    SPECIALS = {
       '|' => :pipe,
       '.' => :dot,
       ':' => :colon,

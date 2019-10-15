@@ -41,8 +41,8 @@ module Liquid
             # determine how to proceed
             return yield tag_name, markup
           end
-          new_tag     = tag.parse(tag_name, markup, tokenizer, parse_context)
-          @blank    &&= new_tag.blank?
+          new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
+          @blank &&= new_tag.blank?
           @nodelist << new_tag
         end
         parse_context.line_number = tokenizer.line_number
@@ -92,7 +92,7 @@ module Liquid
           end
           parse_context.trim_whitespace = false
           @nodelist << token
-          @blank                      &&= !!(token =~ WhitespaceOrNothing)
+          @blank &&= !!(token =~ WhitespaceOrNothing)
         end
         parse_context.line_number = tokenizer.line_number
       end

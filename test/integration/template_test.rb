@@ -73,7 +73,7 @@ class TemplateTest < Minitest::Test
   end
 
   def test_persistent_assigns_squash_instance_assigns
-    t                = Template.new
+    t = Template.new
     assert_equal('from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render!)
     t.assigns['foo'] = 'from persistent assigns'
     assert_equal('from persistent assigns', t.parse("{{ foo }}").render!)
@@ -88,7 +88,7 @@ class TemplateTest < Minitest::Test
     assert_equal('1', t.parse("{{number}}").render!)
     assert_equal('1', t.parse("{{number}}").render!)
     assert_equal('1', t.render!)
-    @global             = nil
+    @global = nil
   end
 
   def test_lambda_is_called_once_from_custom_assigns_over_multiple_parses_and_renders
@@ -336,7 +336,7 @@ class TemplateTest < Minitest::Test
         "-#{v}-"
       end
     end
-    result  = t.render({ 'a' => 123, 'x' => 'foo' }, filters: [filters], strict_filters: true)
+    result = t.render({ 'a' => 123, 'x' => 'foo' }, filters: [filters], strict_filters: true)
 
     assert_equal('123 ', result)
     assert_equal(1, t.errors.count)

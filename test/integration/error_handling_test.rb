@@ -215,7 +215,7 @@ class ErrorHandlingTest < Minitest::Test
       exceptions << e
       ''
     }
-    template                                    = Liquid::Template.parse('This is a runtime error: {{ errors.argument_error }}')
+    template = Liquid::Template.parse('This is a runtime error: {{ errors.argument_error }}')
 
     output = template.render('errors' => ErrorDrop.new)
 

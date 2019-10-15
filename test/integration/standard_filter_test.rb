@@ -253,7 +253,7 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_sort_natural_case_check
-    input       = [
+    input = [
       { "key" => "X" },
       { "key" => "Y" },
       { "key" => "Z" },

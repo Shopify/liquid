@@ -5,7 +5,7 @@ require 'bigdecimal'
 
 module Liquid
   module StandardFilters
-    HTML_ESCAPE             = {
+    HTML_ESCAPE = {
       '&' => '&amp;',
       '>' => '&gt;',
       '<' => '&lt;',
@@ -18,7 +18,7 @@ module Liquid
       /<!--.*?-->/m,
       %r{<style.*?</style>}m
     )
-    STRIP_HTML_TAGS         = /<.*?>/m
+    STRIP_HTML_TAGS = /<.*?>/m
 
     # Return the size of an array or of an string
     def size(input)

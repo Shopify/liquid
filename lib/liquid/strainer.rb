@@ -9,7 +9,7 @@ module Liquid
   # The Strainer only allows method calls defined in filters given to it via Strainer.global_filter,
   # Context#add_filters or Template.register_filter
   class Strainer #:nodoc:
-    @@global_strainer      = Class.new(Strainer) do
+    @@global_strainer = Class.new(Strainer) do
       @filter_methods = Set.new
     end
     @@strainer_class_cache = Hash.new do |hash, filters|

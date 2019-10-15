@@ -150,7 +150,7 @@ class StrainerUnitTest < Minitest::Test
   end
 
   def test_add_filter_does_not_include_already_included_module
-    mod      = Module.new do
+    mod = Module.new do
       class << self
         attr_accessor :include_count
         def included(_mod)

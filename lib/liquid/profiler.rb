@@ -74,7 +74,7 @@ module Liquid
           @children.each do |child|
             total_children_time += child.total_time
           end
-          @self_time          = @total_time - total_children_time
+          @self_time = @total_time - total_children_time
         end
       end
 

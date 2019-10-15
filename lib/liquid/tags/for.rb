@@ -52,9 +52,9 @@ module Liquid
 
     def initialize(tag_name, markup, options)
       super
-      @from       = @limit = nil
+      @from = @limit = nil
       parse_with_selected_parser(markup)
-      @for_block  = BlockBody.new
+      @for_block = BlockBody.new
       @else_block = nil
     end
 

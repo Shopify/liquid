@@ -155,7 +155,7 @@ class RenderProfilingTest < Minitest::Test
   end
 
   def test_profiling_supports_self_time
-    t    = Template.parse("{% for item in collection %} {{ item }} {% endfor %}", profile: true)
+    t = Template.parse("{% for item in collection %} {{ item }} {% endfor %}", profile: true)
     t.render!("collection" => ["one", "two"])
     leaf = t.profiler[0].children[0]
 

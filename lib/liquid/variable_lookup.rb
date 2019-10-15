@@ -14,7 +14,7 @@ module Liquid
     def initialize(markup)
       lookups = markup.scan(VariableParser)
 
-      name  = lookups.shift
+      name = lookups.shift
       if name =~ SQUARE_BRACKETED
         name = Expression.parse(Regexp.last_match(1))
       end

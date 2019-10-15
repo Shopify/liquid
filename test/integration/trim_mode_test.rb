@@ -7,7 +7,7 @@ class TrimModeTest < Minitest::Test
 
   # Make sure the trim isn't applied to standard output
   def test_standard_output
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {{ 'John' }}
@@ -25,7 +25,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_variable_output_with_multiple_blank_lines
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
 
@@ -45,7 +45,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_tag_output_with_multiple_blank_lines
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
 
@@ -78,7 +78,7 @@ class TrimModeTest < Minitest::Test
         </p>
       </div>
     END_TEMPLATE
-    expected   = <<~END_EXPECTED
+    expected = <<~END_EXPECTED
             <div>
               <p>
       #{whitespace}
@@ -89,7 +89,7 @@ class TrimModeTest < Minitest::Test
     END_EXPECTED
     assert_template_result(expected, text)
 
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {% if false %}
@@ -167,7 +167,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_pre_trim_output
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {{- 'John' }}
@@ -184,7 +184,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_pre_trim_tags
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if true %}
@@ -202,7 +202,7 @@ class TrimModeTest < Minitest::Test
     END_EXPECTED
     assert_template_result(expected, text)
 
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if false %}
@@ -221,7 +221,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_post_trim_output
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {{ 'John' -}}
@@ -238,7 +238,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_post_trim_tags
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {% if true -%}
@@ -256,7 +256,7 @@ class TrimModeTest < Minitest::Test
     END_EXPECTED
     assert_template_result(expected, text)
 
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {% if false -%}
@@ -275,7 +275,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_pre_and_post_trim_tags
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if true %}
@@ -293,7 +293,7 @@ class TrimModeTest < Minitest::Test
     END_EXPECTED
     assert_template_result(expected, text)
 
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if false %}
@@ -311,7 +311,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_post_and_pre_trim_tags
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {% if true -%}
@@ -339,7 +339,7 @@ class TrimModeTest < Minitest::Test
         </p>
       </div>
     END_TEMPLATE
-    expected   = <<~END_EXPECTED
+    expected = <<~END_EXPECTED
             <div>
               <p>
       #{whitespace}
@@ -350,7 +350,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_trim_output
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {{- 'John' -}}
@@ -366,7 +366,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_trim_tags
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if true -%}
@@ -382,7 +382,7 @@ class TrimModeTest < Minitest::Test
     END_EXPECTED
     assert_template_result(expected, text)
 
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if false -%}
@@ -400,7 +400,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_whitespace_trim_output
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {{- 'John' -}},
@@ -417,7 +417,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_whitespace_trim_tags
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if true -%}
@@ -433,7 +433,7 @@ class TrimModeTest < Minitest::Test
     END_EXPECTED
     assert_template_result(expected, text)
 
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {%- if false -%}
@@ -451,7 +451,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_complex_trim_output
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         <p>
           {{- 'John' -}}
@@ -481,7 +481,7 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_complex_trim
-    text     = <<-END_TEMPLATE
+    text = <<-END_TEMPLATE
       <div>
         {%- if true -%}
           {%- if true -%}
@@ -515,7 +515,7 @@ class TrimModeTest < Minitest::Test
         {% endraw %}
       </div>
     END_TEMPLATE
-    expected   = <<~END_EXPECTED
+    expected = <<~END_EXPECTED
             <div>
       #{whitespace}
                 {%- if true -%}

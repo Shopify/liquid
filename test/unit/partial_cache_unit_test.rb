@@ -41,12 +41,12 @@ class PartialCacheUnitTest < Minitest::Test
     shared_file_system = StubFileSystem.new(
       'my_partial' => 'my shared value'
     )
-    context_one        = Liquid::Context.build(
+    context_one = Liquid::Context.build(
       registers: {
         file_system: shared_file_system,
       }
     )
-    context_two        = Liquid::Context.build(
+    context_two = Liquid::Context.build(
       registers: {
         file_system: shared_file_system,
       }
