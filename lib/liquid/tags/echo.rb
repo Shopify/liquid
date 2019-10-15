@@ -19,7 +19,7 @@ module Liquid
     end
 
     def render(context)
-      @variable.render_to_output_buffer(context, +'')
+      variable&.render_to_output_buffer(context, +'')
     end
   end
 
