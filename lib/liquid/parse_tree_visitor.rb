@@ -16,9 +16,9 @@ module Liquid
     end
 
     def add_callback_for(*classes, &block)
-      callback                                 = block
-      callback                                 = ->(node, _) { yield node } if block.arity.abs == 1
-      callback                                 = ->(_, _) { yield } if block.arity.zero?
+      callback = block
+      callback = ->(node, _) { yield node } if block.arity.abs == 1
+      callback = ->(_, _) { yield } if block.arity.zero?
       classes.each { |klass| @callbacks[klass] = callback }
       self
     end
