@@ -20,7 +20,7 @@ module Liquid
     attr_reader :variables
 
     def parse(_tokens)
-      case @markup
+      case markup
       when NamedSyntax
         @variables = variables_from_string(Regexp.last_match(2))
         @name = Expression.parse(Regexp.last_match(1))
@@ -28,7 +28,7 @@ module Liquid
         @variables = variables_from_string(@markup)
         @name = @variables.to_s
       else
-        raise SyntaxError, @parse_context[:locale].t("errors.syntax.cycle")
+        raise SyntaxError, options[:locale].t("errors.syntax.cycle")
       end
     end
 

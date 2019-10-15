@@ -19,11 +19,11 @@ module Liquid
     attr_reader :to, :from
 
     def parse(_tokens)
-      if @markup =~ Syntax
+      if markup =~ Syntax
         @to = Regexp.last_match(1)
-        @from = Variable.new(Regexp.last_match(2), @parse_context)
+        @from = Variable.new(Regexp.last_match(2), options)
       else
-        raise SyntaxError, @parse_context[:locale].t(self.class.syntax_error_translation_key)
+        raise SyntaxError, options[:locale].t(self.class.syntax_error_translation_key)
       end
     end
 

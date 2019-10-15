@@ -22,7 +22,7 @@ module Liquid
     attr_reader :template_name_expr, :variable_name_expr, :attributes
 
     def parse(_tokens)
-      if @markup =~ SYNTAX
+      if markup =~ SYNTAX
 
         template_name = Regexp.last_match(1)
         variable_name = Regexp.last_match(3)
@@ -32,12 +32,12 @@ module Liquid
         @template_name_expr = Expression.parse(template_name)
         @attributes = {}
 
-        @markup.scan(TagAttributes) do |key, value|
+        markup.scan(TagAttributes) do |key, value|
           @attributes[key] = Expression.parse(value)
         end
 
       else
-        raise SyntaxError, @parse_context[:locale].t("errors.syntax.include")
+        raise SyntaxError, options[:locale].t("errors.syntax.include")
       end
     end
 

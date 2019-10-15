@@ -15,7 +15,7 @@ module Liquid
     attr_reader :variable
 
     def parse(_tokens)
-      @variable = Variable.new(@markup, @parse_context)
+      @variable = Variable.new(markup, options)
     end
 
     def render(context)

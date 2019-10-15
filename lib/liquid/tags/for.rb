@@ -54,7 +54,7 @@ module Liquid
       @from = @limit = nil
       @for_block = BlockBody.new
       @else_block = nil
-      parse_with_selected_parser(@markup)
+      parse_with_selected_parser(markup)
       return unless parse_body(@for_block, tokens)
       parse_body(@else_block, tokens)
     end

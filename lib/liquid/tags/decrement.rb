@@ -21,7 +21,7 @@ module Liquid
   #
   class Decrement < Tag
     def parse(_tokens)
-      @variable = @markup.strip
+      @variable = markup.strip
     end
 
     def render_to_output_buffer(context, output)

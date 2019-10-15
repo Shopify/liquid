@@ -10,10 +10,10 @@ module Liquid
     def parse(tokens)
       @blocks = []
 
-      if @markup =~ Syntax
+      if options =~ Syntax
         @left = Expression.parse(Regexp.last_match(1))
       else
-        raise SyntaxError, @parse_context[:locale].t("errors.syntax.case")
+        raise SyntaxError, options[:locale].t("errors.syntax.case")
       end
 
       body = BlockBody.new

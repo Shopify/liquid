@@ -24,7 +24,7 @@ module Liquid
 
     def parse(tokens)
       @blocks = []
-      push_block('if', @markup)
+      push_block('if', markup)
       while parse_body(@blocks.last.attachment, tokens)
       end
     end

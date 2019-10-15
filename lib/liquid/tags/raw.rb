@@ -6,7 +6,7 @@ module Liquid
     FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
 
     def parse(tokens)
-      ensure_valid_markup(@tag_name, @markup, @parse_context)
+      ensure_valid_markup(tag_name, markup, options)
       @body = +''
       while (token = tokens.shift)
         if token =~ FullTokenPossiblyInvalid
@@ -16,7 +16,7 @@ module Liquid
         @body << token unless token.empty?
       end
 
-      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_never_closed", block_name: block_name)
+      raise SyntaxError, options.locale.t("errors.syntax.tag_never_closed", block_name: block_name)
     end
 
     def render_to_output_buffer(_context, output)

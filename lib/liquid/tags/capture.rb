@@ -16,10 +16,10 @@ module Liquid
     Syntax = /(#{VariableSignature}+)/o
 
     def parse(_tokens)
-      if @markup =~ Syntax
+      if markup =~ Syntax
         @to = Regexp.last_match(1)
       else
-        raise SyntaxError, @parse_context[:locale].t("errors.syntax.capture")
+        raise SyntaxError, options[:locale].t("errors.syntax.capture")
       end
       super
     end
