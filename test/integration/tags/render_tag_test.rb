@@ -205,4 +205,13 @@ class RenderTagTest < Minitest::Test
     assert_template_result("Product: Draft 151cm Product: Element 155cm ",
                            "{% render 'product' for products %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
   end
+
+  def test_render_tag_forloop
+    Liquid::Template.file_system = StubFileSystem.new(
+      'product' => "Product: {{ product.title }} {% if forloop.first %}first{% endif %} {% if forloop.last %}last{% endif %} index:{{ forloop.index }} ",
+    )
+
+    assert_template_result("Product: Draft 151cm first  index:1 Product: Element 155cm  last index:2 ",
+                           "{% render 'product' for products %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+  end
 end
