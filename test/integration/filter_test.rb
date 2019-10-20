@@ -72,10 +72,10 @@ class FiltersTest < Minitest::Test
   end
 
   def test_sort
-    @context['value']          = 3
-    @context['numbers']        = [2, 1, 4, 3]
-    @context['words']          = ['expected', 'as', 'alphabetic']
-    @context['arrays']         = ['flower', 'are']
+    @context['value']   = 3
+    @context['numbers'] = [2, 1, 4, 3]
+    @context['words']   = ['expected', 'as', 'alphabetic']
+    @context['arrays']  = ['flower', 'are']
     @context['case_sensitive'] = ['sensitive', 'Expected', 'case']
 
     assert_equal('1 2 3 4', Template.parse("{{numbers | sort | join}}").render(@context))

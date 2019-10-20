@@ -121,12 +121,12 @@ module Liquid
 
     def start
       Thread.current[:liquid_profiler] = self
-      @render_start_at                 = Time.now
+      @render_start_at = Time.now
     end
 
     def stop
       Thread.current[:liquid_profiler] = nil
-      @render_end_at                   = Time.now
+      @render_end_at = Time.now
     end
 
     def total_render_time

@@ -142,7 +142,7 @@ class IfElseTagTest < Minitest::Test
   end
 
   def test_if_with_custom_condition
-    original_op                     = Condition.operators['contains']
+    original_op = Condition.operators['contains']
     Condition.operators['contains'] = :[]
 
     assert_template_result('yes', %({% if 'bob' contains 'o' %}yes{% endif %}))
@@ -152,7 +152,7 @@ class IfElseTagTest < Minitest::Test
   end
 
   def test_operators_are_ignored_unless_isolated
-    original_op                     = Condition.operators['contains']
+    original_op = Condition.operators['contains']
     Condition.operators['contains'] = :[]
 
     assert_template_result('yes',

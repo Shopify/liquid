@@ -209,8 +209,8 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_setting_default_exception_renderer
-    old_exception_renderer                      = Liquid::Template.default_exception_renderer
-    exceptions                                  = []
+    old_exception_renderer = Liquid::Template.default_exception_renderer
+    exceptions = []
     Liquid::Template.default_exception_renderer = ->(e) {
       exceptions << e
       ''
@@ -252,8 +252,9 @@ class ErrorHandlingTest < Minitest::Test
 
     begin
       Liquid::Template.file_system = TestFileSystem.new
-      template                     = Liquid::Template.parse("Argument error:\n{% include 'product' %}", line_numbers: true)
-      page                         = template.render('errors' => ErrorDrop.new)
+
+      template = Liquid::Template.parse("Argument error:\n{% include 'product' %}", line_numbers: true)
+      page     = template.render('errors' => ErrorDrop.new)
     ensure
       Liquid::Template.file_system = old_file_system
     end

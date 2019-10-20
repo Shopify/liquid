@@ -102,13 +102,15 @@ module Liquid
     end
 
     def strict_parse(markup)
-      p                = Parser.new(markup)
-      @variable_name   = p.consume(:id)
+      p = Parser.new(markup)
+      @variable_name = p.consume(:id)
       raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in") unless p.id?('in')
+
       collection_name  = p.expression
-      @name            = "#{@variable_name}-#{collection_name}"
       @collection_name = Expression.parse(collection_name)
-      @reversed        = p.id?('reversed')
+
+      @name     = "#{@variable_name}-#{collection_name}"
+      @reversed = p.id?('reversed')
 
       while p.look(:id) && p.look(:colon, 1)
         unless (attribute = p.id?('limit') || p.id?('offset'))
@@ -140,7 +142,7 @@ module Liquid
       collection = collection.to_a if collection.is_a?(Range)
 
       limit_value = context.evaluate(@limit)
-      to          = if limit_value.nil?
+      to = if limit_value.nil?
         nil
       else
         Utils.to_integer(limit_value) + from

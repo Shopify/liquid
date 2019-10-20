@@ -60,7 +60,7 @@ module Liquid
     # Note that this does not register the filters with the main Template object. see <tt>Template.register_filter</tt>
     # for that
     def add_filters(filters)
-      filters   = [filters].flatten.compact
+      filters = [filters].flatten.compact
       @filters += filters
       @strainer = nil
     end
@@ -85,7 +85,7 @@ module Liquid
     end
 
     def handle_error(e, line_number = nil)
-      e                 = internal_error unless e.is_a?(Liquid::Error)
+      e = internal_error unless e.is_a?(Liquid::Error)
       e.template_name ||= template_name
       e.line_number   ||= line_number
       errors.push(e)
@@ -140,10 +140,10 @@ module Liquid
       ).tap do |subcontext|
         subcontext.base_scope_depth   = base_scope_depth + 1
         subcontext.exception_renderer = exception_renderer
-        subcontext.filters            = @filters
-        subcontext.strainer           = nil
-        subcontext.errors             = errors
-        subcontext.warnings           = warnings
+        subcontext.filters  = @filters
+        subcontext.strainer = nil
+        subcontext.errors   = errors
+        subcontext.warnings = warnings
       end
     end
 

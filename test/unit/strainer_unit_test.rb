@@ -72,8 +72,8 @@ class StrainerUnitTest < Minitest::Test
   end
 
   def test_strainer_uses_a_class_cache_to_avoid_method_cache_invalidation
-    a        = Module.new
-    b        = Module.new
+    a = Module.new
+    b = Module.new
     strainer = Strainer.create(nil, [a, b])
     assert_kind_of(Strainer, strainer)
     assert_kind_of(a, strainer)
@@ -82,8 +82,8 @@ class StrainerUnitTest < Minitest::Test
   end
 
   def test_add_filter_when_wrong_filter_class
-    c            = Context.new
-    s            = c.strainer
+    c = Context.new
+    s = c.strainer
     wrong_filter = ->(v) { v.reverse }
 
     assert_raises ArgumentError do

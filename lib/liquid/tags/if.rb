@@ -85,16 +85,16 @@ module Liquid
     end
 
     def strict_parse(markup)
-      p         = Parser.new(markup)
+      p = Parser.new(markup)
       condition = parse_binary_comparisons(p)
       p.consume(:end_of_string)
       condition
     end
 
     def parse_binary_comparisons(p)
-      condition       = parse_comparison(p)
+      condition = parse_comparison(p)
       first_condition = condition
-      while (op       = (p.id?('and') || p.id?('or')))
+      while (op = (p.id?('and') || p.id?('or')))
         child_condition = parse_comparison(p)
         condition.send(op, child_condition)
         condition = child_condition
@@ -103,7 +103,7 @@ module Liquid
     end
 
     def parse_comparison(p)
-      a      = Expression.parse(p.expression)
+      a = Expression.parse(p.expression)
       if (op = p.consume?(:comparison))
         b = Expression.parse(p.expression)
         Condition.new(a, op, b)

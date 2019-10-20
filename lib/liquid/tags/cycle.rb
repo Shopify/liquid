@@ -49,10 +49,10 @@ module Liquid
 
       output << val
 
-      iteration                     += 1
-      iteration                      = 0 if iteration >= @variables.size
-      context.registers[:cycle][key] = iteration
+      iteration += 1
+      iteration = 0 if iteration >= @variables.size
 
+      context.registers[:cycle][key] = iteration
       output
     end
 

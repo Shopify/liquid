@@ -192,7 +192,7 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_custom_include_tag
-    original_tag                     = Liquid::Template.tags['include']
+    original_tag = Liquid::Template.tags['include']
     Liquid::Template.tags['include'] = CustomInclude
     begin
       assert_equal("custom_foo",
@@ -203,7 +203,7 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_custom_include_tag_within_if_statement
-    original_tag                     = Liquid::Template.tags['include']
+    original_tag = Liquid::Template.tags['include']
     Liquid::Template.tags['include'] = CustomInclude
     begin
       assert_equal("custom_foo_if_true",

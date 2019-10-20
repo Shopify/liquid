@@ -34,8 +34,8 @@ module Liquid
             # caller raise a syntax error
             return yield token, token
           end
-          tag_name    = Regexp.last_match(1)
-          markup      = Regexp.last_match(2)
+          tag_name = Regexp.last_match(1)
+          markup   = Regexp.last_match(2)
           unless (tag = registered_tags[tag_name])
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
@@ -79,8 +79,8 @@ module Liquid
             # determine how to proceed
             return yield tag_name, markup
           end
-          new_tag     = tag.parse(tag_name, markup, tokenizer, parse_context)
-          @blank    &&= new_tag.blank?
+          new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
+          @blank &&= new_tag.blank?
           @nodelist << new_tag
         when token.start_with?(VARSTART)
           whitespace_handler(token, parse_context)
@@ -121,7 +121,7 @@ module Liquid
     def render_to_output_buffer(context, output)
       context.resource_limits.render_score += @nodelist.length
 
-      idx         = 0
+      idx = 0
       while (node = @nodelist[idx])
         previous_output_size = output.bytesize
 

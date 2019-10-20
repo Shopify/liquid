@@ -85,7 +85,7 @@ class ContextUnitTest < Minitest::Test
     @context['date'] = Date.today
     assert_equal(Date.today, @context['date'])
 
-    now                  = Time.now
+    now = Time.now
     @context['datetime'] = now
     assert_equal(now, @context['datetime'])
 
@@ -476,7 +476,7 @@ class ContextUnitTest < Minitest::Test
   def test_apply_global_filter
     global_filter_proc = ->(output) { "#{output} filtered" }
 
-    context               = Context.new
+    context = Context.new
     context.global_filter = global_filter_proc
 
     assert_equal('hi filtered', context.apply_global_filter('hi'))
@@ -498,9 +498,9 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_new_isolated_subcontext_does_not_inherit_variables
-    super_context                = Context.new
+    super_context = Context.new
     super_context['my_variable'] = 'some value'
-    subcontext                   = super_context.new_isolated_subcontext
+    subcontext = super_context.new_isolated_subcontext
 
     assert_nil(subcontext['my_variable'])
   end
@@ -520,9 +520,9 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_new_isolated_subcontext_inherits_exception_renderer
-    super_context                    = Context.new
+    super_context = Context.new
     super_context.exception_renderer = ->(_e) { 'my exception message' }
-    subcontext                       = super_context.new_isolated_subcontext
+    subcontext = super_context.new_isolated_subcontext
     assert_equal('my exception message', subcontext.handle_error(Liquid::Error.new))
   end
 

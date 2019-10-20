@@ -24,17 +24,16 @@ module Liquid
       (collection = context.evaluate(@collection_name)) || (return '')
 
       from = @attributes.key?('offset') ? context.evaluate(@attributes['offset']).to_i : 0
-      to   = @attributes.key?('limit') ? from + context.evaluate(@attributes['limit']).to_i : nil
+      to   = @attributes.key?('limit')  ? from + context.evaluate(@attributes['limit']).to_i : nil
 
       collection = Utils.slice_collection(collection, from, to)
-
-      length = collection.length
+      length     = collection.length
 
       cols = context.evaluate(@attributes['cols']).to_i
 
       output << "<tr class=\"row1\">\n"
       context.stack do
-        tablerowloop            = Liquid::TablerowloopDrop.new(length, cols)
+        tablerowloop = Liquid::TablerowloopDrop.new(length, cols)
         context['tablerowloop'] = tablerowloop
 
         collection.each do |item|

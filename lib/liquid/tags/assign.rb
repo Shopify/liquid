@@ -29,8 +29,8 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      val                                   = @from.render(context)
-      context.scopes.last[@to]              = val
+      val = @from.render(context)
+      context.scopes.last[@to] = val
       context.resource_limits.assign_score += assign_score_of(val)
       output
     end
@@ -45,7 +45,7 @@ module Liquid
       if val.instance_of?(String)
         val.bytesize
       elsif val.instance_of?(Array) || val.instance_of?(Hash)
-        sum                     = 1
+        sum = 1
         # Uses #each to avoid extra allocations.
         val.each { |child| sum += assign_score_of(child) }
         sum

@@ -76,11 +76,14 @@ module Liquid
     # Truncate a string down to x characters
     def truncate(input, length = 50, truncate_string = "...")
       return if input.nil?
-      input_str           = input.to_s
-      length              = Utils.to_integer(length)
+      input_str = input.to_s
+      length    = Utils.to_integer(length)
+
       truncate_string_str = truncate_string.to_s
-      l                   = length - truncate_string_str.length
-      l                   = 0 if l < 0
+
+      l = length - truncate_string_str.length
+      l = 0 if l < 0
+
       input_str.length > length ? input_str[0...l].concat(truncate_string_str) : input_str
     end
 
@@ -88,8 +91,10 @@ module Liquid
       return if input.nil?
       wordlist = input.to_s.split
       words    = Utils.to_integer(words)
-      l        = words - 1
-      l        = 0 if l < 0
+
+      l = words - 1
+      l = 0 if l < 0
+
       wordlist.length > l ? wordlist[0..l].join(" ").concat(truncate_string.to_s) : input
     end
 
@@ -432,7 +437,7 @@ module Liquid
     #    {{ product.title | default: "No Title", allow_false: true }}
     #
     def default(input, default_value = '', options = {})
-      options     = {} unless options.is_a?(Hash)
+      options = {} unless options.is_a?(Hash)
       false_check = options['allow_false'] ? input.nil? : !input
       false_check || (input.respond_to?(:empty?) && input.empty?) ? default_value : input
     end

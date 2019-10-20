@@ -61,7 +61,7 @@ module Liquid
 
     def strict_parse(markup)
       @filters = []
-      p        = Parser.new(markup)
+      p = Parser.new(markup)
 
       @name = Expression.parse(p.expression)
       while p.consume?(:pipe)

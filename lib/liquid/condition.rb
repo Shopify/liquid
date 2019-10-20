@@ -35,16 +35,17 @@ module Liquid
     attr_accessor :left, :operator, :right
 
     def initialize(left = nil, operator = nil, right = nil)
-      @left            = left
-      @operator        = operator
-      @right           = right
+      @left     = left
+      @operator = operator
+      @right    = right
+
       @child_relation  = nil
       @child_condition = nil
     end
 
     def evaluate(context = Context.new)
       condition = self
-      result    = nil
+      result = nil
       loop do
         result = interpret_condition(condition.left, condition.right, condition.operator, context)
 
