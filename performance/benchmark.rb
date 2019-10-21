@@ -7,7 +7,7 @@ Liquid::Template.error_mode = ARGV.first.to_sym if ARGV.first
 profiler = ThemeRunner.new
 
 Benchmark.ips do |x|
-  x.time = 10
+  x.time   = 10
   x.warmup = 5
 
   puts

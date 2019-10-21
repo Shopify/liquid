@@ -13,7 +13,7 @@ module Liquid
       "'" => '&#39;',
     }.freeze
     HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
-    STRIP_HTML_BLOCKS = Regexp.union(
+    STRIP_HTML_BLOCKS       = Regexp.union(
       %r{<script.*?</script>}m,
       /<!--.*?-->/m,
       %r{<style.*?</style>}m
@@ -77,19 +77,24 @@ module Liquid
     def truncate(input, length = 50, truncate_string = "...")
       return if input.nil?
       input_str = input.to_s
-      length = Utils.to_integer(length)
+      length    = Utils.to_integer(length)
+
       truncate_string_str = truncate_string.to_s
+
       l = length - truncate_string_str.length
       l = 0 if l < 0
+
       input_str.length > length ? input_str[0...l].concat(truncate_string_str) : input_str
     end
 
     def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
       wordlist = input.to_s.split
-      words = Utils.to_integer(words)
+      words    = Utils.to_integer(words)
+
       l = words - 1
       l = 0 if l < 0
+
       wordlist.length > l ? wordlist[0..l].join(" ").concat(truncate_string.to_s) : input
     end
 
@@ -115,7 +120,7 @@ module Liquid
     end
 
     def strip_html(input)
-      empty = ''
+      empty  = ''
       result = input.to_s.gsub(STRIP_HTML_BLOCKS, empty)
       result.gsub!(STRIP_HTML_TAGS, empty)
       result
@@ -128,13 +133,13 @@ module Liquid
 
     # Join elements of the array with certain character between them
     def join(input, glue = ' ')
-      InputIterator.new(input).join(glue)
+      InputIterator.new(input, context).join(glue)
     end
 
     # Sort elements of the array
     # provide optional property with which to sort an array of hashes or drops
     def sort(input, property = nil)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
 
       return [] if ary.empty?
 
@@ -154,7 +159,7 @@ module Liquid
     # Sort elements of an array ignoring case if strings
     # provide optional property with which to sort an array of hashes or drops
     def sort_natural(input, property = nil)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
 
       return [] if ary.empty?
 
@@ -174,7 +179,7 @@ module Liquid
     # Filter the elements of an array to those with a certain property value.
     # By default the target is any truthy value.
     def where(input, property, target_value = nil)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
 
       if ary.empty?
         []
@@ -196,7 +201,7 @@ module Liquid
     # Remove duplicate elements from an array
     # provide optional property with which to determine uniqueness
     def uniq(input, property = nil)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
 
       if property.nil?
         ary.uniq
@@ -213,13 +218,13 @@ module Liquid
 
     # Reverse the elements of an array
     def reverse(input)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
       ary.reverse
     end
 
     # map/collect on a given property
     def map(input, property)
-      InputIterator.new(input).map do |e|
+      InputIterator.new(input, context).map do |e|
         e = e.call if e.is_a?(Proc)
 
         if property == "to_liquid"
@@ -236,7 +241,7 @@ module Liquid
     # Remove nils within an array
     # provide optional property with which to check for nil
     def compact(input, property = nil)
-      ary = InputIterator.new(input)
+      ary = InputIterator.new(input, context)
 
       if property.nil?
         ary.compact
@@ -280,7 +285,7 @@ module Liquid
       unless array.respond_to?(:to_ary)
         raise ArgumentError, "concat filter requires an array argument"
       end
-      InputIterator.new(input).concat(array)
+      InputIterator.new(input, context).concat(array)
     end
 
     # prepend a string to another
@@ -421,16 +426,25 @@ module Liquid
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
-    def default(input, default_value = '')
-      if !input || input.respond_to?(:empty?) && input.empty?
-        Usage.increment("default_filter_received_false_value") if input == false # See https://github.com/Shopify/liquid/issues/1127
-        default_value
-      else
-        input
-      end
+    # Set a default value when the input is nil, false or empty
+    #
+    # Example:
+    #    {{ product.title | default: "No Title" }}
+    #
+    # Use `allow_false` when an input should only be tested against nil or empty and not false.
+    #
+    # Example:
+    #    {{ product.title | default: "No Title", allow_false: true }}
+    #
+    def default(input, default_value = '', options = {})
+      options = {} unless options.is_a?(Hash)
+      false_check = options['allow_false'] ? input.nil? : !input
+      false_check || (input.respond_to?(:empty?) && input.empty?) ? default_value : input
     end
 
     private
+
+    attr_reader :context
 
     def raise_property_error(property)
       raise Liquid::ArgumentError, "cannot select the property '#{property}'"
@@ -460,8 +474,9 @@ module Liquid
     class InputIterator
       include Enumerable
 
-      def initialize(input)
-        @input = if input.is_a?(Array)
+      def initialize(input, context)
+        @context = context
+        @input   = if input.is_a?(Array)
           input.flatten
         elsif input.is_a?(Hash)
           [input]
@@ -499,6 +514,7 @@ module Liquid
 
       def each
         @input.each do |e|
+          e.context = @context if e.respond_to?(:context=)
           yield(e.respond_to?(:to_liquid) ? e.to_liquid : e)
         end
       end

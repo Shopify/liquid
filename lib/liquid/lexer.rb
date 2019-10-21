@@ -15,12 +15,12 @@ module Liquid
       '?' => :question,
       '-' => :dash,
     }.freeze
-    IDENTIFIER = /[a-zA-Z_][\w-]*\??/
+    IDENTIFIER            = /[a-zA-Z_][\w-]*\??/
     SINGLE_STRING_LITERAL = /'[^\']*'/
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
-    NUMBER_LITERAL = /-?\d+(\.\d+)?/
-    DOTDOT = /\.\./
-    COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains(?=\s)/
+    NUMBER_LITERAL        = /-?\d+(\.\d+)?/
+    DOTDOT                = /\.\./
+    COMPARISON_OPERATOR   = /==|!=|<>|<=?|>=?|contains(?=\s)/
     WHITESPACE_OR_NOTHING = /\s*/
 
     def initialize(input)
@@ -33,7 +33,7 @@ module Liquid
       until @ss.eos?
         @ss.skip(WHITESPACE_OR_NOTHING)
         break if @ss.eos?
-        tok = if (t = @ss.scan(COMPARISON_OPERATOR))
+        tok      = if (t = @ss.scan(COMPARISON_OPERATOR))
           [:comparison, t]
         elsif (t = @ss.scan(SINGLE_STRING_LITERAL))
           [:string, t]
@@ -46,7 +46,7 @@ module Liquid
         elsif (t = @ss.scan(DOTDOT))
           [:dotdot, t]
         else
-          c = @ss.getch
+          c     = @ss.getch
           if (s = SPECIALS[c])
             [s, c]
           else

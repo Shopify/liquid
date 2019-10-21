@@ -31,7 +31,7 @@ module ShopFilter
 
   def link_to_vendor(vendor)
     if vendor
-      link_to vendor, url_for_vendor(vendor), vendor
+      link_to(vendor, url_for_vendor(vendor), vendor)
     else
       'Unknown Vendor'
     end
@@ -39,7 +39,7 @@ module ShopFilter
 
   def link_to_type(type)
     if type
-      link_to type, url_for_type(type), type
+      link_to(type, url_for_type(type), type)
     else
       'Unknown Vendor'
     end

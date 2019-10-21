@@ -20,7 +20,7 @@ module Liquid
 
     def increment(tag)
       @disabled_tags[tag] ||= 0
-      @disabled_tags[tag] += 1
+      @disabled_tags[tag]  += 1
     end
 
     def decrement(tag)

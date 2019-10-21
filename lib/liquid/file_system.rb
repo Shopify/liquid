@@ -47,7 +47,7 @@ module Liquid
     attr_accessor :root
 
     def initialize(root, pattern = "_%s.liquid")
-      @root = root
+      @root    = root
       @pattern = pattern
     end
 

@@ -12,16 +12,16 @@ class LiquidServlet < WEBrick::HTTPServlet::AbstractServlet
   private
 
   def handle(_type, req, res)
-    @request = req
+    @request  = req
     @response = res
 
     @request.path_info =~ /(\w+)\z/
-    @action = Regexp.last_match(1) || 'index'
+    @action  = Regexp.last_match(1) || 'index'
     @assigns = send(@action) if respond_to?(@action)
 
     @response['Content-Type'] = "text/html"
     @response.status = 200
-    @response.body = Liquid::Template.parse(read_template).render(@assigns, filters: [ProductsFilter])
+    @response.body   = Liquid::Template.parse(read_template).render(@assigns, filters: [ProductsFilter])
   end
 
   def read_template(filename = @action)

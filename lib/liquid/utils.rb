@@ -12,7 +12,7 @@ module Liquid
 
     def self.slice_collection_using_each(collection, from, to)
       segments = []
-      index = 0
+      index    = 0
 
       # Maintains Ruby 1.8.7 String#each behaviour on 1.9
       if collection.is_a?(String)

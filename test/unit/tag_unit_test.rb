@@ -7,8 +7,8 @@ class TagUnitTest < Minitest::Test
 
   def test_tag
     tag = Tag.parse('tag', "", Tokenizer.new(""), ParseContext.new)
-    assert_equal 'liquid::tag', tag.name
-    assert_equal '', tag.render(Context.new)
+    assert_equal('liquid::tag', tag.name)
+    assert_equal('', tag.render(Context.new))
   end
 
   def test_return_raw_text_of_tag
@@ -18,7 +18,7 @@ class TagUnitTest < Minitest::Test
 
   def test_tag_name_should_return_name_of_the_tag
     tag = Tag.parse("some_tag", "", Tokenizer.new(""), ParseContext.new)
-    assert_equal 'some_tag', tag.tag_name
+    assert_equal('some_tag', tag.tag_name)
   end
 
   def test_custom_tags_have_a_default_render_to_output_buffer_method_for_backwards_compatibility
@@ -33,7 +33,7 @@ class TagUnitTest < Minitest::Test
 
       assert_equal 'hello', template.render
 
-      buf = +''
+      buf    = +''
       output = template.render({}, output: buf)
       assert_equal 'hello', output
       assert_equal 'hello', buf
@@ -51,7 +51,7 @@ class TagUnitTest < Minitest::Test
 
       assert_equal 'foohellobar', template.render
 
-      buf = +''
+      buf    = +''
       output = template.render({}, output: buf)
       assert_equal 'foohellobar', output
       assert_equal 'foohellobar', buf

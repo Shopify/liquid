@@ -7,9 +7,11 @@ module Liquid
 
     def initialize(options = {})
       @template_options = options ? options.dup : {}
-      @locale = @template_options[:locale] ||= I18n.new
+
+      @locale   = @template_options[:locale] ||= I18n.new
       @warnings = []
-      self.depth = 0
+
+      self.depth   = 0
       self.partial = false
     end
 
@@ -20,6 +22,7 @@ module Liquid
     def partial=(value)
       @partial = value
       @options = value ? partial_options : @template_options
+
       @error_mode = @options[:error_mode] || Template.error_mode
     end
 

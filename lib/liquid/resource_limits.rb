@@ -7,8 +7,8 @@ module Liquid
 
     def initialize(limits)
       @render_length_limit = limits[:render_length_limit]
-      @render_score_limit = limits[:render_score_limit]
-      @assign_score_limit = limits[:assign_score_limit]
+      @render_score_limit  = limits[:render_score_limit]
+      @assign_score_limit  = limits[:assign_score_limit]
       reset
     end
 

@@ -41,8 +41,8 @@ module Liquid
         self.exception_renderer = ->(_e) { raise }
       end
 
-      @interrupts = []
-      @filters = []
+      @interrupts    = []
+      @filters       = []
       @global_filter = nil
     end
     # rubocop:enable Metrics/ParameterLists
@@ -87,7 +87,7 @@ module Liquid
     def handle_error(e, line_number = nil)
       e = internal_error unless e.is_a?(Liquid::Error)
       e.template_name ||= template_name
-      e.line_number ||= line_number
+      e.line_number   ||= line_number
       errors.push(e)
       exception_renderer.call(e).to_s
     end
@@ -138,11 +138,11 @@ module Liquid
         static_environments: static_environments,
         registers: StaticRegisters.new(registers)
       ).tap do |subcontext|
-        subcontext.base_scope_depth = base_scope_depth + 1
+        subcontext.base_scope_depth   = base_scope_depth + 1
         subcontext.exception_renderer = exception_renderer
-        subcontext.filters = @filters
+        subcontext.filters  = @filters
         subcontext.strainer = nil
-        subcontext.errors = errors
+        subcontext.errors   = errors
         subcontext.warnings = warnings
       end
     end
@@ -188,7 +188,7 @@ module Liquid
         try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
       end
 
-      variable = variable.to_liquid
+      variable         = variable.to_liquid
       variable.context = self if variable.respond_to?(:context=)
 
       variable

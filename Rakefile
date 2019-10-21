@@ -11,7 +11,7 @@ desc('run test suite with default parser')
 Rake::TestTask.new(:base_test) do |t|
   t.libs << '.' << 'lib' << 'test'
   t.test_files = FileList['test/{integration,unit}/**/*_test.rb']
-  t.verbose = false
+  t.verbose    = false
 end
 
 desc('run test suite with warn error mode')
