@@ -69,7 +69,7 @@ class TrimModeTest < Minitest::Test
   # Make sure the trim isn't applied to standard tags
   def test_standard_tags
     whitespace = '          '
-    text = <<-END_TEMPLATE
+    text       = <<-END_TEMPLATE
       <div>
         <p>
           {% if true %}
@@ -110,58 +110,58 @@ class TrimModeTest < Minitest::Test
 
   # Make sure the trim isn't too agressive
   def test_no_trim_output
-    text = '<p>{{- \'John\' -}}</p>'
+    text     = '<p>{{- \'John\' -}}</p>'
     expected = '<p>John</p>'
     assert_template_result(expected, text)
   end
 
   # Make sure the trim isn't too agressive
   def test_no_trim_tags
-    text = '<p>{%- if true -%}yes{%- endif -%}</p>'
+    text     = '<p>{%- if true -%}yes{%- endif -%}</p>'
     expected = '<p>yes</p>'
     assert_template_result(expected, text)
 
-    text = '<p>{%- if false -%}no{%- endif -%}</p>'
+    text     = '<p>{%- if false -%}no{%- endif -%}</p>'
     expected = '<p></p>'
     assert_template_result(expected, text)
   end
 
   def test_single_line_outer_tag
-    text = '<p> {%- if true %} yes {% endif -%} </p>'
+    text     = '<p> {%- if true %} yes {% endif -%} </p>'
     expected = '<p> yes </p>'
     assert_template_result(expected, text)
 
-    text = '<p> {%- if false %} no {% endif -%} </p>'
+    text     = '<p> {%- if false %} no {% endif -%} </p>'
     expected = '<p></p>'
     assert_template_result(expected, text)
   end
 
   def test_single_line_inner_tag
-    text = '<p> {% if true -%} yes {%- endif %} </p>'
+    text     = '<p> {% if true -%} yes {%- endif %} </p>'
     expected = '<p> yes </p>'
     assert_template_result(expected, text)
 
-    text = '<p> {% if false -%} no {%- endif %} </p>'
+    text     = '<p> {% if false -%} no {%- endif %} </p>'
     expected = '<p>  </p>'
     assert_template_result(expected, text)
   end
 
   def test_single_line_post_tag
-    text = '<p> {% if true -%} yes {% endif -%} </p>'
+    text     = '<p> {% if true -%} yes {% endif -%} </p>'
     expected = '<p> yes </p>'
     assert_template_result(expected, text)
 
-    text = '<p> {% if false -%} no {% endif -%} </p>'
+    text     = '<p> {% if false -%} no {% endif -%} </p>'
     expected = '<p> </p>'
     assert_template_result(expected, text)
   end
 
   def test_single_line_pre_tag
-    text = '<p> {%- if true %} yes {%- endif %} </p>'
+    text     = '<p> {%- if true %} yes {%- endif %} </p>'
     expected = '<p> yes </p>'
     assert_template_result(expected, text)
 
-    text = '<p> {%- if false %} no {%- endif %} </p>'
+    text     = '<p> {%- if false %} no {%- endif %} </p>'
     expected = '<p> </p>'
     assert_template_result(expected, text)
   end
@@ -330,7 +330,7 @@ class TrimModeTest < Minitest::Test
     assert_template_result(expected, text)
 
     whitespace = '          '
-    text = <<-END_TEMPLATE
+    text       = <<-END_TEMPLATE
       <div>
         <p>
           {% if false -%}
@@ -504,7 +504,7 @@ class TrimModeTest < Minitest::Test
 
   def test_raw_output
     whitespace = '        '
-    text = <<-END_TEMPLATE
+    text       = <<-END_TEMPLATE
       <div>
         {% raw %}
           {%- if true -%}

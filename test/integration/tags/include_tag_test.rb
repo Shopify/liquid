@@ -54,7 +54,7 @@ class CountingFileSystem
   attr_reader :count
   def read_template_file(_template_path)
     @count ||= 0
-    @count += 1
+    @count  += 1
     'from CountingFileSystem'
   end
 end

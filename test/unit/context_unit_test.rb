@@ -46,7 +46,7 @@ end
 class CounterDrop < Liquid::Drop
   def count
     @count ||= 0
-    @count += 1
+    @count  += 1
   end
 end
 
@@ -55,9 +55,9 @@ class ArrayLike
   end
 
   def [](index)
-    @counts ||= []
+    @counts        ||= []
     @counts[index] ||= 0
-    @counts[index] += 1
+    @counts[index]  += 1
   end
 
   def to_liquid
@@ -265,7 +265,7 @@ class ContextUnitTest < Minitest::Test
 
   def test_access_hashes_with_hash_notation
     @context['products'] = { 'count' => 5, 'tags' => ['deepsnow', 'freestyle'] }
-    @context['product'] = { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] }
+    @context['product']  = { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] }
 
     assert_equal(5, @context['products["count"]'])
     assert_equal('deepsnow', @context['products["tags"][0]'])
@@ -285,8 +285,8 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_access_hashes_with_hash_access_variables
-    @context['var'] = 'tags'
-    @context['nested'] = { 'var' => 'tags' }
+    @context['var']      = 'tags'
+    @context['nested']   = { 'var' => 'tags' }
     @context['products'] = { 'count' => 5, 'tags' => ['deepsnow', 'freestyle'] }
 
     assert_equal('deepsnow', @context['products[var].first'])
@@ -295,7 +295,7 @@ class ContextUnitTest < Minitest::Test
 
   def test_hash_notation_only_for_hash_access
     @context['array'] = [1, 2, 3, 4, 5]
-    @context['hash'] = { 'first' => 'Hello' }
+    @context['hash']  = { 'first' => 'Hello' }
 
     assert_equal(1, @context['array.first'])
     assert_nil(@context['array["first"]'])
@@ -407,7 +407,7 @@ class ContextUnitTest < Minitest::Test
   def test_lambda_is_called_once
     @context['callcount'] = proc {
       @global ||= 0
-      @global += 1
+      @global  += 1
       @global.to_s
     }
 
@@ -421,7 +421,7 @@ class ContextUnitTest < Minitest::Test
   def test_nested_lambda_is_called_once
     @context['callcount'] = { "lambda" => proc {
                                             @global ||= 0
-                                            @global += 1
+                                            @global  += 1
                                             @global.to_s
                                           } }
 
@@ -435,7 +435,7 @@ class ContextUnitTest < Minitest::Test
   def test_lambda_in_array_is_called_once
     @context['callcount'] = [1, 2, proc {
                                      @global ||= 0
-                                     @global += 1
+                                     @global  += 1
                                      @global.to_s
                                    }, 4, 5]
 
@@ -507,15 +507,15 @@ class ContextUnitTest < Minitest::Test
 
   def test_new_isolated_subcontext_inherits_static_environment
     super_context = Context.build(static_environments: { 'my_environment_value' => 'my value' })
-    subcontext = super_context.new_isolated_subcontext
+    subcontext    = super_context.new_isolated_subcontext
 
     assert_equal('my value', subcontext['my_environment_value'])
   end
 
   def test_new_isolated_subcontext_inherits_resource_limits
     resource_limits = ResourceLimits.new({})
-    super_context = Context.new({}, {}, {}, false, resource_limits)
-    subcontext = super_context.new_isolated_subcontext
+    super_context   = Context.new({}, {}, {}, false, resource_limits)
+    subcontext      = super_context.new_isolated_subcontext
     assert_equal(resource_limits, subcontext.resource_limits)
   end
 
@@ -532,19 +532,19 @@ class ContextUnitTest < Minitest::Test
     }
     super_context = Context.new({}, {}, StaticRegisters.new(registers))
     super_context.registers[:my_register] = :my_alt_value
-    subcontext = super_context.new_isolated_subcontext
+    subcontext                            = super_context.new_isolated_subcontext
     assert_equal(:my_value, subcontext.registers[:my_register])
   end
 
   def test_new_isolated_subcontext_inherits_static_registers
     super_context = Context.build(registers: { my_register: :my_value })
-    subcontext = super_context.new_isolated_subcontext
+    subcontext    = super_context.new_isolated_subcontext
     assert_equal(:my_value, subcontext.registers[:my_register])
   end
 
   def test_new_isolated_subcontext_registers_do_not_pollute_context
-    super_context = Context.build(registers: { my_register: :my_value })
-    subcontext = super_context.new_isolated_subcontext
+    super_context                      = Context.build(registers: { my_register: :my_value })
+    subcontext                         = super_context.new_isolated_subcontext
     subcontext.registers[:my_register] = :my_alt_value
     assert_equal(:my_value, super_context.registers[:my_register])
   end
@@ -558,8 +558,8 @@ class ContextUnitTest < Minitest::Test
 
     super_context = Context.new
     super_context.add_filters([my_filter])
-    subcontext = super_context.new_isolated_subcontext
-    template = Template.parse('{{ 123 | my_filter }}')
+    subcontext    = super_context.new_isolated_subcontext
+    template      = Template.parse('{{ 123 | my_filter }}')
     assert_equal('my filter result', template.render(subcontext))
   end
 

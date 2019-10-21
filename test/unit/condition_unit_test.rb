@@ -75,9 +75,9 @@ class ConditionUnitTest < Minitest::Test
   end
 
   def test_contains_works_on_arrays
-    @context = Liquid::Context.new
+    @context          = Liquid::Context.new
     @context['array'] = [1, 2, 3, 4, 5]
-    array_expr = VariableLookup.new("array")
+    array_expr        = VariableLookup.new("array")
 
     assert_evaluates_false(array_expr, 'contains', 0)
     assert_evaluates_true(array_expr, 'contains', 1)
@@ -142,7 +142,7 @@ class ConditionUnitTest < Minitest::Test
   end
 
   def test_left_or_right_may_contain_operators
-    @context = Liquid::Context.new
+    @context        = Liquid::Context.new
     @context['one'] = @context['another'] = "gnomeslab-and-or-liquid"
 
     assert_evaluates_true(VariableLookup.new("one"), '==', VariableLookup.new("another"))

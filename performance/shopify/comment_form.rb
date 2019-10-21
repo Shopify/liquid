@@ -8,7 +8,7 @@ class CommentForm < Liquid::Block
 
     if markup =~ Syntax
       @variable_name = Regexp.last_match(1)
-      @attributes = {}
+      @attributes    = {}
     else
       raise SyntaxError, "Syntax Error in 'comment_form' - Valid syntax: comment_form [article]"
     end

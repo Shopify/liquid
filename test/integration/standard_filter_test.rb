@@ -207,7 +207,7 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_sort_when_property_is_sometimes_missing_puts_nils_last
-    input = [
+    input       = [
       { "price" => 4, "handle" => "alpha" },
       { "handle" => "beta" },
       { "price" => 1, "handle" => "gamma" },
@@ -235,7 +235,7 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_sort_natural_when_property_is_sometimes_missing_puts_nils_last
-    input = [
+    input       = [
       { "price" => "4", "handle" => "alpha" },
       { "handle" => "beta" },
       { "price" => "1", "handle" => "gamma" },
@@ -389,7 +389,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_legacy_map_on_hashes_with_dynamic_key
     template = "{% assign key = 'foo' %}{{ thing | map: key | map: 'bar' }}"
-    hash = { "foo" => { "bar" => 42 } }
+    hash     = { "foo" => { "bar" => 42 } }
     assert_template_result("42", template, "thing" => hash)
   end
 
@@ -400,8 +400,8 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_map_over_proc
-    drop = TestDrop.new
-    p = proc { drop }
+    drop  = TestDrop.new
+    p     = proc { drop }
     templ = '{{ procs | map: "test" }}'
     assert_template_result("testfoo", templ, "procs" => [p])
   end
@@ -782,7 +782,7 @@ class StandardFiltersTest < Minitest::Test
   private
 
   def with_timezone(tz)
-    old_tz = ENV['TZ']
+    old_tz    = ENV['TZ']
     ENV['TZ'] = tz
     yield
   ensure

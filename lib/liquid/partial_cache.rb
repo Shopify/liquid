@@ -8,7 +8,8 @@ module Liquid
       return cached if cached
 
       file_system = (context.registers[:file_system] ||= Liquid::Template.file_system)
-      source = file_system.read_template_file(template_name)
+      source      = file_system.read_template_file(template_name)
+
       parse_context.partial = true
 
       partial = Liquid::Template.parse(source, parse_context)

@@ -44,10 +44,11 @@ module Liquid
       context_variable_name = @alias_name || template_name.split('/').last
 
       render_partial_func = ->(var, forloop) {
-        inner_context = context.new_isolated_subcontext
+        inner_context               = context.new_isolated_subcontext
         inner_context.template_name = template_name
-        inner_context.partial = true
-        inner_context['forloop'] = forloop if forloop
+        inner_context.partial       = true
+        inner_context['forloop']    = forloop if forloop
+
         @attributes.each do |key, value|
           inner_context[key] = context.evaluate(value)
         end

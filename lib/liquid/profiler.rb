@@ -64,7 +64,7 @@ module Liquid
       end
 
       def finish
-        @end_time = Time.now
+        @end_time   = Time.now
         @total_time = @end_time - @start_time
 
         if @children.empty?
@@ -112,11 +112,11 @@ module Liquid
     def initialize(partial_name = "<root>")
       @partial_stack = [partial_name]
 
-      @root_timing = Timing.new("", current_partial)
+      @root_timing  = Timing.new("", current_partial)
       @timing_stack = [@root_timing]
 
       @render_start_at = Time.now
-      @render_end_at = @render_start_at
+      @render_end_at   = @render_start_at
     end
 
     def start

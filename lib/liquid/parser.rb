@@ -3,9 +3,9 @@
 module Liquid
   class Parser
     def initialize(input)
-      l = Lexer.new(input)
+      l       = Lexer.new(input)
       @tokens = l.tokenize
-      @p = 0 # pointer to current location
+      @p      = 0 # pointer to current location
     end
 
     def jump(point)

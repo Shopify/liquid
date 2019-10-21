@@ -2,18 +2,18 @@
 
 module Liquid
   class BlockBody
-    LiquidTagToken = /\A\s*(\w+)\s*(.*?)\z/o
-    FullToken = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
-    ContentOfVariable = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
+    LiquidTagToken      = /\A\s*(\w+)\s*(.*?)\z/o
+    FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    ContentOfVariable   = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
-    TAGSTART = "{%"
-    VARSTART = "{{"
+    TAGSTART            = "{%"
+    VARSTART            = "{{"
 
     attr_reader :nodelist
 
     def initialize
       @nodelist = []
-      @blank = true
+      @blank    = true
     end
 
     def parse(tokenizer, parse_context, &block)
@@ -35,7 +35,7 @@ module Liquid
             return yield token, token
           end
           tag_name = Regexp.last_match(1)
-          markup = Regexp.last_match(2)
+          markup   = Regexp.last_match(2)
           unless (tag = registered_tags[tag_name])
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
@@ -61,7 +61,7 @@ module Liquid
             raise_missing_tag_terminator(token, parse_context)
           end
           tag_name = Regexp.last_match(2)
-          markup = Regexp.last_match(4)
+          markup   = Regexp.last_match(4)
 
           if parse_context.line_number
             # newlines inside the tag should increase the line number,

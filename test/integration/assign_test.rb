@@ -10,8 +10,8 @@ class AssignTest < Minitest::Test
     {% assign this-thing = 'Print this-thing' %}
     {{ this-thing }}
     END_TEMPLATE
-    template = Template.parse(template_source)
-    rendered = template.render!
+    template        = Template.parse(template_source)
+    rendered        = template.render!
     assert_equal("Print this-thing", rendered.strip)
   end
 

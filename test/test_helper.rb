@@ -128,7 +128,7 @@ class StubFileSystem
 
   def initialize(values)
     @file_read_count = 0
-    @values = values
+    @values          = values
   end
 
   def read_template_file(template_path)

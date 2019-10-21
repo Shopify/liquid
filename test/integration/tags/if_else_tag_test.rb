@@ -45,7 +45,7 @@ class IfElseTagTest < Minitest::Test
 
   def test_comparison_of_strings_containing_and_or_or
     awful_markup = "a == 'and' and b == 'or' and c == 'foo and bar' and d == 'bar or baz' and e == 'foo' and foo and bar"
-    assigns = { 'a' => 'and', 'b' => 'or', 'c' => 'foo and bar', 'd' => 'bar or baz', 'e' => 'foo', 'foo' => true, 'bar' => true }
+    assigns      = { 'a' => 'and', 'b' => 'or', 'c' => 'foo and bar', 'd' => 'bar or baz', 'e' => 'foo', 'foo' => true, 'bar' => true }
     assert_template_result(' YES ', "{% if #{awful_markup} %} YES {% endif %}", assigns)
   end
 

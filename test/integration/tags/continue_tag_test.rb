@@ -8,8 +8,8 @@ class ContinueTagTest < Minitest::Test
   # tests that no weird errors are raised if continue is called outside of a
   # block
   def test_continue_with_no_block
-    assigns = {}
-    markup = '{% continue %}'
+    assigns  = {}
+    markup   = '{% continue %}'
     expected = ''
 
     assert_template_result(expected, markup, assigns)

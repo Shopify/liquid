@@ -16,28 +16,28 @@ class SecurityTest < Minitest::Test
   end
 
   def test_no_instance_eval
-    text = %( {{ '1+1' | instance_eval }} )
+    text     = %( {{ '1+1' | instance_eval }} )
     expected = %( 1+1 )
 
     assert_equal(expected, Template.parse(text).render!(@assigns))
   end
 
   def test_no_existing_instance_eval
-    text = %( {{ '1+1' | __instance_eval__ }} )
+    text     = %( {{ '1+1' | __instance_eval__ }} )
     expected = %( 1+1 )
 
     assert_equal(expected, Template.parse(text).render!(@assigns))
   end
 
   def test_no_instance_eval_after_mixing_in_new_filter
-    text = %( {{ '1+1' | instance_eval }} )
+    text     = %( {{ '1+1' | instance_eval }} )
     expected = %( 1+1 )
 
     assert_equal(expected, Template.parse(text).render!(@assigns))
   end
 
   def test_no_instance_eval_later_in_chain
-    text = %( {{ '1+1' | add_one | instance_eval }} )
+    text     = %( {{ '1+1' | add_one | instance_eval }} )
     expected = %( 1+1 + 1 )
 
     assert_equal(expected, Template.parse(text).render!(@assigns, filters: SecurityFilter))
@@ -68,13 +68,13 @@ class SecurityTest < Minitest::Test
 
   def test_max_depth_nested_blocks_does_not_raise_exception
     depth = Liquid::Block::MAX_DEPTH
-    code = "{% if true %}" * depth + "rendered" + "{% endif %}" * depth
+    code  = "{% if true %}" * depth + "rendered" + "{% endif %}" * depth
     assert_equal("rendered", Template.parse(code).render!)
   end
 
   def test_more_than_max_depth_nested_blocks_raises_exception
     depth = Liquid::Block::MAX_DEPTH + 1
-    code = "{% if true %}" * depth + "rendered" + "{% endif %}" * depth
+    code  = "{% if true %}" * depth + "rendered" + "{% endif %}" * depth
     assert_raises(Liquid::StackLevelError) do
       Template.parse(code).render!
     end

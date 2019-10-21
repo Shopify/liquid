@@ -226,9 +226,9 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_exception_renderer_exposing_non_liquid_error
-    template = Liquid::Template.parse('This is a runtime error: {{ errors.runtime_error }}', line_numbers: true)
+    template   = Liquid::Template.parse('This is a runtime error: {{ errors.runtime_error }}', line_numbers: true)
     exceptions = []
-    handler = ->(e) {
+    handler    = ->(e) {
       exceptions << e
       e.cause
     }
@@ -252,8 +252,9 @@ class ErrorHandlingTest < Minitest::Test
 
     begin
       Liquid::Template.file_system = TestFileSystem.new
+
       template = Liquid::Template.parse("Argument error:\n{% include 'product' %}", line_numbers: true)
-      page = template.render('errors' => ErrorDrop.new)
+      page     = template.render('errors' => ErrorDrop.new)
     ensure
       Liquid::Template.file_system = old_file_system
     end

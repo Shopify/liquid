@@ -12,10 +12,10 @@ module Liquid
   #   {{ user | link }}
   #
   class Variable
-    FilterMarkupRegex = /#{FilterSeparator}\s*(.*)/om
-    FilterParser = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
-    FilterArgsRegex = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o
-    JustTagAttributes = /\A#{TagAttributes}\z/o
+    FilterMarkupRegex        = /#{FilterSeparator}\s*(.*)/om
+    FilterParser             = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
+    FilterArgsRegex          = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o
+    JustTagAttributes        = /\A#{TagAttributes}\z/o
     MarkupWithQuotedFragment = /(#{QuotedFragment})(.*)/om
 
     attr_accessor :filters, :name, :line_number
@@ -25,10 +25,10 @@ module Liquid
     include ParserSwitching
 
     def initialize(markup, parse_context)
-      @markup  = markup
-      @name    = nil
+      @markup        = markup
+      @name          = nil
       @parse_context = parse_context
-      @line_number = parse_context.line_number
+      @line_number   = parse_context.line_number
 
       parse_with_selected_parser(markup)
     end
@@ -45,9 +45,9 @@ module Liquid
       @filters = []
       return unless markup =~ MarkupWithQuotedFragment
 
-      name_markup = Regexp.last_match(1)
+      name_markup   = Regexp.last_match(1)
       filter_markup = Regexp.last_match(2)
-      @name = Expression.parse(name_markup)
+      @name         = Expression.parse(name_markup)
       if filter_markup =~ FilterMarkupRegex
         filters = Regexp.last_match(1).scan(FilterParser)
         filters.each do |f|
@@ -115,11 +115,11 @@ module Liquid
     private
 
     def parse_filter_expressions(filter_name, unparsed_args)
-      filter_args = []
+      filter_args  = []
       keyword_args = nil
       unparsed_args.each do |a|
         if (matches = a.match(JustTagAttributes))
-          keyword_args ||= {}
+          keyword_args           ||= {}
           keyword_args[matches[1]] = Expression.parse(matches[2])
         else
           filter_args << Expression.parse(a)
@@ -149,8 +149,8 @@ module Liquid
       @markup =~ QuotedFragment
       name = Regexp.last_match(0)
 
-      error = TaintedError.new("variable '#{name}' is tainted and was not escaped")
-      error.line_number = line_number
+      error               = TaintedError.new("variable '#{name}' is tainted and was not escaped")
+      error.line_number   = line_number
       error.template_name = context.template_name
 
       case Template.taint_mode

@@ -13,7 +13,7 @@ module Liquid
       "'" => '&#39;',
     }.freeze
     HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
-    STRIP_HTML_BLOCKS = Regexp.union(
+    STRIP_HTML_BLOCKS       = Regexp.union(
       %r{<script.*?</script>}m,
       /<!--.*?-->/m,
       %r{<style.*?</style>}m
@@ -77,19 +77,24 @@ module Liquid
     def truncate(input, length = 50, truncate_string = "...")
       return if input.nil?
       input_str = input.to_s
-      length = Utils.to_integer(length)
+      length    = Utils.to_integer(length)
+
       truncate_string_str = truncate_string.to_s
+
       l = length - truncate_string_str.length
       l = 0 if l < 0
+
       input_str.length > length ? input_str[0...l].concat(truncate_string_str) : input_str
     end
 
     def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
       wordlist = input.to_s.split
-      words = Utils.to_integer(words)
+      words    = Utils.to_integer(words)
+
       l = words - 1
       l = 0 if l < 0
+
       wordlist.length > l ? wordlist[0..l].join(" ").concat(truncate_string.to_s) : input
     end
 
@@ -115,7 +120,7 @@ module Liquid
     end
 
     def strip_html(input)
-      empty = ''
+      empty  = ''
       result = input.to_s.gsub(STRIP_HTML_BLOCKS, empty)
       result.gsub!(STRIP_HTML_TAGS, empty)
       result
@@ -471,7 +476,7 @@ module Liquid
 
       def initialize(input, context)
         @context = context
-        @input = if input.is_a?(Array)
+        @input   = if input.is_a?(Array)
           input.flatten
         elsif input.is_a?(Hash)
           [input]

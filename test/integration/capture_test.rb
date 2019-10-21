@@ -14,8 +14,8 @@ class CaptureTest < Minitest::Test
     {% capture this-thing %}Print this-thing{% endcapture %}
     {{ this-thing }}
     END_TEMPLATE
-    template = Template.parse(template_source)
-    rendered = template.render!
+    template        = Template.parse(template_source)
+    rendered        = template.render!
     assert_equal("Print this-thing", rendered.strip)
   end
 
@@ -30,8 +30,8 @@ class CaptureTest < Minitest::Test
     {% endif %}
     {{var}}
     END_TEMPLATE
-    template = Template.parse(template_source)
-    rendered = template.render!
+    template        = Template.parse(template_source)
+    rendered        = template.render!
     assert_equal("test-string", rendered.gsub(/\s/, ''))
   end
 
@@ -45,8 +45,8 @@ class CaptureTest < Minitest::Test
     {% endfor %}
     {{ first }}-{{ second }}
     END_TEMPLATE
-    template = Template.parse(template_source)
-    rendered = template.render!
+    template        = Template.parse(template_source)
+    rendered        = template.render!
     assert_equal("3-3", rendered.gsub(/\s/, ''))
   end
 end # CaptureTest

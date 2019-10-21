@@ -21,7 +21,7 @@ class PartialCacheUnitTest < Minitest::Test
 
   def test_reads_from_the_file_system_only_once_per_file
     file_system = StubFileSystem.new('my_partial' => 'some partial body')
-    context = Liquid::Context.build(
+    context     = Liquid::Context.build(
       registers: { file_system: file_system }
     )
 
@@ -37,7 +37,7 @@ class PartialCacheUnitTest < Minitest::Test
   end
 
   def test_cache_state_is_stored_per_context
-    parse_context = Liquid::ParseContext.new
+    parse_context      = Liquid::ParseContext.new
     shared_file_system = StubFileSystem.new(
       'my_partial' => 'my shared value'
     )
@@ -71,7 +71,7 @@ class PartialCacheUnitTest < Minitest::Test
 
   def test_cache_is_not_broken_when_a_different_parse_context_is_used
     file_system = StubFileSystem.new('my_partial' => 'some partial body')
-    context = Liquid::Context.build(
+    context     = Liquid::Context.build(
       registers: { file_system: file_system }
     )
 

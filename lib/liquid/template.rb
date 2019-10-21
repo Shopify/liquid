@@ -24,7 +24,7 @@ module Liquid
       include Enumerable
 
       def initialize
-        @tags = {}
+        @tags  = {}
         @cache = {}
       end
 
@@ -128,19 +128,19 @@ module Liquid
     end
 
     def initialize
-      @rethrow_errors = false
+      @rethrow_errors  = false
       @resource_limits = ResourceLimits.new(self.class.default_resource_limits)
     end
 
     # Parse source code.
     # Returns self for easy chaining
     def parse(source, options = {})
-      @options = options
-      @profiling = options[:profile]
+      @options      = options
+      @profiling    = options[:profile]
       @line_numbers = options[:line_numbers] || @profiling
       parse_context = options.is_a?(ParseContext) ? options : ParseContext.new(options)
-      @root = Document.parse(tokenize(source), parse_context)
-      @warnings = parse_context.warnings
+      @root         = Document.parse(tokenize(source), parse_context)
+      @warnings     = parse_context.warnings
       self
     end
 
@@ -187,7 +187,7 @@ module Liquid
 
         c
       when Liquid::Drop
-        drop = args.shift
+        drop         = args.shift
         drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
       when Hash
         Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
@@ -204,7 +204,7 @@ module Liquid
       case args.last
       when Hash
         options = args.pop
-        output = options[:output] if options[:output]
+        output  = options[:output] if options[:output]
 
         options[:registers]&.each do |key, register|
           context_register[key] = register
@@ -269,10 +269,10 @@ module Liquid
 
     def apply_options_to_context(context, options)
       context.add_filters(options[:filters]) if options[:filters]
-      context.global_filter = options[:global_filter] if options[:global_filter]
+      context.global_filter      = options[:global_filter] if options[:global_filter]
       context.exception_renderer = options[:exception_renderer] if options[:exception_renderer]
-      context.strict_variables = options[:strict_variables] if options[:strict_variables]
-      context.strict_filters = options[:strict_filters] if options[:strict_filters]
+      context.strict_variables   = options[:strict_variables] if options[:strict_variables]
+      context.strict_filters     = options[:strict_filters] if options[:strict_filters]
     end
   end
 end

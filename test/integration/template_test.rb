@@ -83,7 +83,7 @@ class TemplateTest < Minitest::Test
     t = Template.new
     t.assigns['number'] = -> {
       @global ||= 0
-      @global += 1
+      @global  += 1
     }
     assert_equal('1', t.parse("{{number}}").render!)
     assert_equal('1', t.parse("{{number}}").render!)
@@ -95,7 +95,7 @@ class TemplateTest < Minitest::Test
     t = Template.new
     assigns = { 'number' => -> {
                               @global ||= 0
-                              @global += 1
+                              @global  += 1
                             } }
     assert_equal('1', t.parse("{{number}}").render!(assigns))
     assert_equal('1', t.parse("{{number}}").render!(assigns))
@@ -243,7 +243,7 @@ class TemplateTest < Minitest::Test
 
   def test_exception_renderer_that_returns_string
     exception = nil
-    handler = ->(e) {
+    handler   = ->(e) {
       exception = e
       '<!-- error -->'
     }
@@ -267,20 +267,20 @@ class TemplateTest < Minitest::Test
 
   def test_global_filter_option_on_render
     global_filter_proc = ->(output) { "#{output} filtered" }
-    rendered_template = Template.parse("{{name}}").render({ "name" => "bob" }, global_filter: global_filter_proc)
+    rendered_template  = Template.parse("{{name}}").render({ "name" => "bob" }, global_filter: global_filter_proc)
 
     assert_equal('bob filtered', rendered_template)
   end
 
   def test_global_filter_option_when_native_filters_exist
     global_filter_proc = ->(output) { "#{output} filtered" }
-    rendered_template = Template.parse("{{name | upcase}}").render({ "name" => "bob" }, global_filter: global_filter_proc)
+    rendered_template  = Template.parse("{{name | upcase}}").render({ "name" => "bob" }, global_filter: global_filter_proc)
 
     assert_equal('BOB filtered', rendered_template)
   end
 
   def test_undefined_variables
-    t = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
+    t      = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
     result = t.render({ 'x' => 33, 'z' => { 'a' => 32, 'c' => { 'e' => 31 } } }, strict_variables: true)
 
     assert_equal('33  32  ', result)
@@ -295,8 +295,8 @@ class TemplateTest < Minitest::Test
 
   def test_nil_value_does_not_raise
     Liquid::Template.error_mode = :strict
-    t = Template.parse("some{{x}}thing")
-    result = t.render!({ 'x' => nil }, strict_variables: true)
+    t                           = Template.parse("some{{x}}thing")
+    result                      = t.render!({ 'x' => nil }, strict_variables: true)
 
     assert_equal(0, t.errors.count)
     assert_equal('something', result)

@@ -12,9 +12,9 @@ module Liquid
   #    There are {% if count < 5 %} less {% else %} more {% endif %} items than you need.
   #
   class If < Block
-    Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
+    Syntax                  = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
     ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
-    BOOLEAN_OPERATORS = %w(and or).freeze
+    BOOLEAN_OPERATORS       = %w(and or).freeze
 
     attr_reader :blocks
 

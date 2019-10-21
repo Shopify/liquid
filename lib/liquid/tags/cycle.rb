@@ -24,10 +24,10 @@ module Liquid
       case markup
       when NamedSyntax
         @variables = variables_from_string(Regexp.last_match(2))
-        @name = Expression.parse(Regexp.last_match(1))
+        @name      = Expression.parse(Regexp.last_match(1))
       when SimpleSyntax
         @variables = variables_from_string(markup)
-        @name = @variables.to_s
+        @name      = @variables.to_s
       else
         raise SyntaxError, options[:locale].t("errors.syntax.cycle")
       end
@@ -36,7 +36,7 @@ module Liquid
     def render_to_output_buffer(context, output)
       context.registers[:cycle] ||= {}
 
-      key = context.evaluate(@name)
+      key       = context.evaluate(@name)
       iteration = context.registers[:cycle][key].to_i
 
       val = context.evaluate(@variables[iteration])
@@ -50,9 +50,9 @@ module Liquid
       output << val
 
       iteration += 1
-      iteration  = 0 if iteration >= @variables.size
-      context.registers[:cycle][key] = iteration
+      iteration = 0 if iteration >= @variables.size
 
+      context.registers[:cycle][key] = iteration
       output
     end
 
