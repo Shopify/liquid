@@ -214,4 +214,22 @@ class RenderTagTest < Minitest::Test
     assert_template_result("Product: Draft 151cm first  index:1 Product: Element 155cm  last index:2 ",
                            "{% render 'product' for products %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
   end
+
+  def test_render_tag_for_drop
+    Liquid::Template.file_system = StubFileSystem.new(
+      'loop' => "{{ value.foo }}",
+    )
+
+    assert_template_result("123",
+                           "{% render 'loop' for loop as value %}", "loop" => TestEnumerable.new)
+  end
+
+  def test_render_tag_with_drop
+    Liquid::Template.file_system = StubFileSystem.new(
+      'loop' => "{{ value }}",
+    )
+
+    assert_template_result("TestEnumerable",
+                           "{% render 'loop' with loop as value %}", "loop" => TestEnumerable.new)
+  end
 end
