@@ -2,7 +2,8 @@
 
 module Liquid
   class Render < Tag
-    SYNTAX = /(#{QuotedString}+)(\s+(with|for)\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
+    FOR = 'for'
+    SYNTAX = /(#{QuotedString}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
 
     disable_tags "include"
 
@@ -20,7 +21,7 @@ module Liquid
       @alias_name = Regexp.last_match(6)
       @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
       @template_name_expr = Expression.parse(template_name)
-      @loop_variable = (with_or_for == "for")
+      @for = (with_or_for == FOR)
 
       @attributes = {}
       markup.scan(TagAttributes) do |key, value|
@@ -60,7 +61,7 @@ module Liquid
       }
 
       variable = @variable_name_expr ? context.evaluate(@variable_name_expr) : nil
-      if variable.respond_to?(:each) && variable.respond_to?(:count) && @loop_variable
+      if @for && variable.respond_to?(:each) && variable.respond_to?(:count)
         forloop = Liquid::ForloopDrop.new(template_name, variable.count, nil)
         variable.each { |var| render_partial_func.call(var, forloop) }
       else
