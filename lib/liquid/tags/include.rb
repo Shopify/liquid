@@ -50,11 +50,7 @@ module Liquid
       template_name = context.evaluate(@template_name_expr)
       raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
 
-      partial = PartialCache.load(
-        template_name,
-        context: context,
-        parse_context: parse_context
-      )
+      partial = load_partial(template_name, context, parse_context)
 
       old_template_name = context.template_name
       old_partial       = context.partial
@@ -112,6 +108,14 @@ module Liquid
 
     def find_variable(context, *args)
       context.find_variable(*args)
+    end
+
+    def load_partial(template_name, context, parse_context)
+      PartialCache.load(
+        template_name,
+        context: context,
+        parse_context: parse_context
+      )
     end
   end
 
