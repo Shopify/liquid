@@ -56,14 +56,6 @@ module Liquid
         parse_context: parse_context
       )
 
-      context_variable_name = @alias_name || template_name.split('/').last
-
-      variable = if @variable_name_expr
-        context.evaluate(@variable_name_expr)
-      else
-        context.find_variable(template_name, raise_on_not_found: false)
-      end
-
       old_template_name = context.template_name
       old_partial       = context.partial
       begin
@@ -71,7 +63,15 @@ module Liquid
         context.partial       = true
         context.stack do
           @attributes.each do |key, value|
-            context[key] = context.evaluate(value)
+            context[key] = evaluate(context, value)
+          end
+
+          context_variable_name = @alias_name || template_name.split('/').last
+
+          variable = if @variable_name_expr
+            evaluate(context, @variable_name_expr)
+          else
+            find_variable(context, template_name, raise_on_not_found: false)
           end
 
           if variable.is_a?(Array)
@@ -102,6 +102,16 @@ module Liquid
           @node.variable_name_expr,
         ] + @node.attributes.values
       end
+    end
+
+    private
+
+    def evaluate(context, value)
+      context.evaluate(value)
+    end
+
+    def find_variable(context, *args)
+      context.find_variable(*args)
     end
   end
 

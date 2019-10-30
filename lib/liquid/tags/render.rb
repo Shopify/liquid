@@ -53,14 +53,14 @@ module Liquid
         inner_context['forloop']    = forloop if forloop
 
         @attributes.each do |key, value|
-          inner_context[key] = context.evaluate(value)
+          inner_context[key] = evaluate(context, value)
         end
         inner_context[context_variable_name] = var unless var.nil?
         partial.render_to_output_buffer(inner_context, output)
         forloop&.send(:increment!)
       }
 
-      variable = @variable_name_expr ? context.evaluate(@variable_name_expr) : nil
+      variable = @variable_name_expr ? evaluate(context, @variable_name_expr) : nil
       if @for && variable.respond_to?(:each) && variable.respond_to?(:count)
         forloop = Liquid::ForloopDrop.new(template_name, variable.count, nil)
         variable.each { |var| render_partial_func.call(var, forloop) }
@@ -77,6 +77,12 @@ module Liquid
           @node.template_name_expr,
         ] + @node.attributes.values
       end
+    end
+
+    private
+
+    def evaluate(context, value)
+      context.evaluate(value)
     end
   end
 
