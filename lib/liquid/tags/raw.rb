@@ -16,7 +16,10 @@ module Liquid
       while (token = tokens.shift)
         if token =~ FullTokenPossiblyInvalid
           @body << Regexp.last_match(1) if Regexp.last_match(1) != ""
-          return if block_delimiter == Regexp.last_match(2)
+          if block_delimiter == Regexp.last_match(2)
+            @parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
+            return
+          end
         end
         @body << token unless token.empty?
       end

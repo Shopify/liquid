@@ -14,6 +14,10 @@ class RawTagTest < Minitest::Test
     assert_template_result('{{ test }}', '{% raw %}{{ test }}{% endraw %}')
   end
 
+  def test_post_trim
+    assert_template_result('hi', "{% raw %}hi{% endraw -%}\n")
+  end
+
   def test_open_tag_in_raw
     assert_template_result(' Foobar {% invalid ', '{% raw %} Foobar {% invalid {% endraw %}')
     assert_template_result(' Foobar invalid %} ', '{% raw %} Foobar invalid %} {% endraw %}')
