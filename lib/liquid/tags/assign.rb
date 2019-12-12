@@ -12,10 +12,6 @@ module Liquid
   class Assign < Tag
     Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/om
 
-    def self.syntax_error_translation_key
-      "errors.syntax.assign"
-    end
-
     attr_reader :to, :from
 
     def initialize(tag_name, markup, options)
@@ -24,7 +20,7 @@ module Liquid
         @to   = Regexp.last_match(1)
         @from = Variable.new(Regexp.last_match(2), options)
       else
-        raise SyntaxError, options[:locale].t(self.class.syntax_error_translation_key)
+        raise SyntaxError, options[:locale].t('errors.syntax.assign')
       end
     end
 
