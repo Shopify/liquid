@@ -192,8 +192,18 @@ module Liquid
 
     def raise_if_resource_limits_reached(context, length)
       context.resource_limits.render_length += length
-      return unless context.resource_limits.reached?
-      raise MemoryError, "Memory limits exceeded"
+
+      error_message =
+        if context.resource_limits.render_length_reached?
+          MemoryError::RENDER_LENGTH_ERROR_MESSAGE
+        elsif context.resource_limits.render_score_reached?
+          MemoryError::RENDER_SCORE_ERROR_MESSAGE
+        elsif context.resource_limits.assign_score_reached?
+          MemoryError::ASSIGN_SCORE_ERROR_MESSAGE
+        end
+
+      return unless error_message
+      raise MemoryError, error_message
     end
 
     def create_variable(token, parse_context)

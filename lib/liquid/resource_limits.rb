@@ -12,10 +12,16 @@ module Liquid
       reset
     end
 
-    def reached?
-      (@render_length_limit && @render_length > @render_length_limit) ||
-        (@render_score_limit && @render_score > @render_score_limit) ||
-        (@assign_score_limit && @assign_score > @assign_score_limit)
+    def render_length_reached?
+      @render_length_limit && @render_length > @render_length_limit
+    end
+
+    def render_score_reached?
+      @render_score_limit && @render_score > @render_score_limit
+    end
+
+    def assign_score_reached?
+      @assign_score_limit && @assign_score > @assign_score_limit
     end
 
     def reset

@@ -4,6 +4,7 @@
 
 * Split Strainer class as a factory and a template (#1208) [Thierry Joyal]
 * Remove handling of a nil context in the Strainer class (#1218) [Thierry Joyal]
+* Change `Liquid::MemoryError` message to be more specific about which limit was reached. (#1206) [Alan Tan]
 
 ## 4.0.3 / 2019-03-12
 
