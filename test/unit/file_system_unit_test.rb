@@ -7,7 +7,7 @@ class FileSystemUnitTest < Minitest::Test
 
   def test_default
     assert_raises(FileSystemError) do
-      BlankFileSystem.new.read_template_file("dummy")
+      BlankFileSystem.new.read_template_file_with_options("dummy", {})
     end
   end
 

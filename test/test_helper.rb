@@ -131,6 +131,39 @@ class StubFileSystem
     @values          = values
   end
 
+  def read_template_file_with_options(template_path, _options)
+    @file_read_count += 1
+    @values.fetch(template_path)
+  end
+end
+
+class StubLegacyFileSystem
+  def initialize(values)
+    @values = values
+  end
+
+  def read_template_file(template_path)
+    @values.fetch(template_path)
+  end
+end
+
+class StubRestrictedFileSystem
+  attr_reader :restricted_callers, :last_caller, :file_read_count
+
+  def initialize(restricted_callers:, values:)
+    @restricted_callers = restricted_callers
+    @values             = values
+    @file_read_count    = 0
+  end
+
+  def read_template_file_with_options(template_path, options)
+    @last_caller = options[:caller]
+    return if restricted_callers.include?(@last_caller)
+
+    @file_read_count += 1
+    @values.fetch(template_path)
+  end
+
   def read_template_file(template_path)
     @file_read_count += 1
     @values.fetch(template_path)

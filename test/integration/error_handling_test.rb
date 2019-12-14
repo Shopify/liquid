@@ -242,7 +242,7 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   class TestFileSystem
-    def read_template_file(_template_path)
+    def read_template_file_with_options(_template_path, _options)
       "{{ errors.argument_error }}"
     end
   end

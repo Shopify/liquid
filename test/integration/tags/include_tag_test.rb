@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class TestFileSystem
-  def read_template_file(template_path)
+  def read_template_file_with_options(template_path, _options)
     case template_path
     when "product"
       "Product: {{ product.title }} "
@@ -45,14 +45,14 @@ class TestFileSystem
 end
 
 class OtherFileSystem
-  def read_template_file(_template_path)
+  def read_template_file_with_options(_template_path, _options)
     'from OtherFileSystem'
   end
 end
 
 class CountingFileSystem
   attr_reader :count
-  def read_template_file(_template_path)
+  def read_template_file_with_options(_template_path, _options)
     @count ||= 0
     @count  += 1
     'from CountingFileSystem'
@@ -149,7 +149,7 @@ class IncludeTagTest < Minitest::Test
 
   def test_recursively_included_template_does_not_produce_endless_loop
     infinite_file_system = Class.new do
-      def read_template_file(_template_path)
+      def read_template_file_with_options(_template_path, _options)
         "-{% include 'loop' %}"
       end
     end
@@ -185,6 +185,17 @@ class IncludeTagTest < Minitest::Test
     assert_equal('from CountingFileSystem',
       Template.parse("{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system }))
     assert_equal(2, file_system.count)
+  end
+
+  def test_include_tag_passes_correct_caller_to_file_system
+    context = Liquid::Context.build
+    file_system = StubRestrictedFileSystem.new(
+      restricted_callers: %i(include),
+      values: { 'inaccessible_file' => 'Inaccessible' }
+    )
+    assert_equal('',
+      Template.parse("{% include 'inaccessible_file' %}").render!(context, registers: { file_system: file_system }))
+    assert_equal(:include, file_system.last_caller)
   end
 
   def test_include_tag_within_if_statement

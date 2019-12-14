@@ -126,6 +126,17 @@ class RenderTagTest < Minitest::Test
     assert_equal(2, file_system.file_read_count)
   end
 
+  def test_render_tag_passes_correct_caller_to_file_system
+    context = Liquid::Context.build
+    file_system = StubRestrictedFileSystem.new(
+      restricted_callers: %i(render),
+      values: { 'inaccessible_file' => 'Inaccessible' }
+    )
+    assert_equal('',
+      Template.parse("{% render 'inaccessible_file' %}").render!(context, registers: { file_system: file_system }))
+    assert_equal(:render, file_system.last_caller)
+  end
+
   def test_render_tag_within_if_statement
     Liquid::Template.file_system = StubFileSystem.new('snippet' => 'my message')
     assert_template_result('my message', '{% if true %}{% render "snippet" %}{% endif %}')

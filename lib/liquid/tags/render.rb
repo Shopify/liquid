@@ -41,7 +41,8 @@ module Liquid
       partial = PartialCache.load(
         template_name,
         context: context,
-        parse_context: parse_context
+        parse_context: parse_context,
+        caller: :render
       )
 
       context_variable_name = @alias_name || template_name.split('/').last
