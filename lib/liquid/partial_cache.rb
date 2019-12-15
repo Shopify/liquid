@@ -12,7 +12,10 @@ module Liquid
 
       parse_context.partial = true
 
-      partial = Liquid::Template.parse(source, parse_context)
+      template_factory = (context.registers[:template_factory] ||= Liquid::TemplateFactory.new)
+      template = template_factory.for(template_name)
+
+      partial = template.parse(source, parse_context)
       cached_partials[template_name] = partial
     ensure
       parse_context.partial = false

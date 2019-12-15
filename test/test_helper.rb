@@ -136,3 +136,16 @@ class StubFileSystem
     @values.fetch(template_path)
   end
 end
+
+class StubTemplateFactory
+  attr_reader :count
+
+  def initialize
+    @count = 0
+  end
+
+  def for(_template_name)
+    @count += 1
+    Liquid::Template.new
+  end
+end
