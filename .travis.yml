@@ -15,6 +15,7 @@ matrix:
       name: Profiling Memory Usage
   allow_failures:
     - rvm: ruby-head
+    - rvm: 2.7
 
 branches:
   only:
