@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'English'
+
 module Liquid
   class BlockBody
     LiquidTagToken      = /\A\s*(\w+)\s*(.*?)\z/o
@@ -51,6 +53,13 @@ module Liquid
       yield nil, nil
     end
 
+    # @api private
+    def self.unknown_tag_in_liquid_tag(end_tag_name, end_tag_markup)
+      yield end_tag_name, end_tag_markup
+    ensure
+      Usage.increment("liquid_tag_contains_outer_tag") unless $ERROR_INFO.is_a?(SyntaxError)
+    end
+
     private def parse_for_document(tokenizer, parse_context, &block)
       while (token = tokenizer.shift)
         next if token.empty?
@@ -71,7 +80,11 @@ module Liquid
 
           if tag_name == 'liquid'
             liquid_tag_tokenizer = Tokenizer.new(markup, line_number: parse_context.line_number, for_liquid_tag: true)
-            next parse_for_liquid_tag(liquid_tag_tokenizer, parse_context, &block)
+            parse_for_liquid_tag(liquid_tag_tokenizer, parse_context) do |end_tag_name, end_tag_markup|
+              next unless end_tag_name
+              self.class.unknown_tag_in_liquid_tag(end_tag_name, end_tag_markup, &block)
+            end
+            next
           end
 
           unless (tag = registered_tags[tag_name])
