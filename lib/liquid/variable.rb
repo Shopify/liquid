@@ -143,8 +143,8 @@ module Liquid
     end
 
     def taint_check(context, obj)
-      return unless obj.tainted?
       return if Template.taint_mode == :lax
+      return unless obj.tainted?
 
       @markup =~ QuotedFragment
       name = Regexp.last_match(0)

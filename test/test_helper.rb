@@ -32,6 +32,10 @@ module Minitest
     def fixture(name)
       File.join(File.expand_path(__dir__), "fixtures", name)
     end
+
+    def self.taint_supported?
+      Object.new.taint.tainted?
+    end
   end
 
   module Assertions
