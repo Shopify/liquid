@@ -21,10 +21,6 @@ Lint/InheritException:
 Layout/LineLength:
   Max: 294
 
-# Offense count: 1
-Metrics/BlockNesting:
-  Max: 4
-
 # Offense count: 44
 Naming/ConstantName:
   Exclude:
