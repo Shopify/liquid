@@ -13,6 +13,8 @@ module Liquid
   class Capture < Block
     Syntax = /(#{VariableSignature}+)/o
 
+    attr_reader :to
+
     def initialize(tag_name, markup, options)
       super
       if markup =~ Syntax
@@ -33,6 +35,7 @@ module Liquid
     def blank?
       true
     end
+
   end
 
   Template.register_tag('capture'.freeze, Capture)

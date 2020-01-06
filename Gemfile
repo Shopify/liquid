@@ -5,6 +5,7 @@ end
 
 gemspec
 
+
 group :benchmark, :test do
   gem 'benchmark-ips'
   gem 'memory_profiler'
@@ -17,6 +18,8 @@ end
 group :test do
   gem 'rubocop', '~> 0.53.0'
   gem 'awesome_print'
+  gem 'pry'
+  gem 'byebug'
 
   platform :mri do
     gem 'liquid-c', github: 'Shopify/liquid-c', ref: '9168659de45d6d576fce30c735f857e597fa26f6'
