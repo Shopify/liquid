@@ -41,7 +41,7 @@ module Liquid
     def invoke(method, *args)
       if self.class.invokable?(method)
         send(method, *args)
-      elsif @context&.strict_filters
+      elsif @context.strict_filters
         raise Liquid::UndefinedFilter, "undefined filter #{method}"
       else
         args.first
