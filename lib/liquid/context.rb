@@ -52,7 +52,7 @@ module Liquid
     end
 
     def strainer
-      @strainer ||= Strainer.create(self, @filters)
+      @strainer ||= StrainerFactory.create(self, @filters)
     end
 
     # Adds filters to this context.

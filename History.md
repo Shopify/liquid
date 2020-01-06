@@ -1,5 +1,9 @@
 # Liquid Change Log
 
+### Unreleased
+
+* Split Strainer class as a factory and a template (#1208) [Thierry Joyal]
+
 ## 4.0.3 / 2019-03-12
 
 ### Fixed

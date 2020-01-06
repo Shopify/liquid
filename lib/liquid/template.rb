@@ -111,7 +111,7 @@ module Liquid
       # Pass a module with filter methods which should be available
       # to all liquid views. Good for registering the standard library
       def register_filter(mod)
-        Strainer.global_filter(mod)
+        StrainerFactory.add_global_filter(mod)
       end
 
       def default_resource_limits
