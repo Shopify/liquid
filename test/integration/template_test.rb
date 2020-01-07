@@ -361,4 +361,12 @@ class TemplateTest < Minitest::Test
     result = t.render('x' => 1, 'y' => 5)
     assert_equal('12345', result)
   end
+
+  unless taint_supported?
+    def test_taint_mode
+      assert_raises(NotImplementedError) do
+        Template.taint_mode = :warn
+      end
+    end
+  end
 end

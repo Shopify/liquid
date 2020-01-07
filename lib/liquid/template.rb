@@ -69,7 +69,14 @@ module Liquid
       # :lax is the default, and ignores the taint flag completely
       # :warn adds a warning, but does not interrupt the rendering
       # :error raises an error when tainted output is used
-      attr_writer :taint_mode
+      # @deprecated Since it is being deprecated in ruby itself.
+      def taint_mode=(mode)
+        taint_supported = Object.new.taint.tainted?
+        if mode != :lax && !taint_supported
+          raise NotImplementedError, "#{RUBY_ENGINE} #{RUBY_VERSION} doesn't support taint checking"
+        end
+        @taint_mode = mode
+      end
 
       attr_accessor :default_exception_renderer
       Template.default_exception_renderer = lambda do |exception|

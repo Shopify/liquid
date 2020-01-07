@@ -42,29 +42,31 @@ class RenderTagTest < Minitest::Test
     assert_template_result('', "{% assign snippet = 'should not be visible' %}{% render 'snippet' %}")
   end
 
-  def test_render_sets_the_correct_template_name_for_errors
-    Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ unsafe }}')
+  if taint_supported?
+    def test_render_sets_the_correct_template_name_for_errors
+      Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ unsafe }}')
 
-    with_taint_mode :error do
-      template = Liquid::Template.parse('{% render "snippet", unsafe: unsafe %}')
-      context  = Context.new('unsafe' => (+'unsafe').tap(&:taint))
-      template.render(context)
+      with_taint_mode :error do
+        template = Liquid::Template.parse('{% render "snippet", unsafe: unsafe %}')
+        context  = Context.new('unsafe' => (+'unsafe').tap(&:taint))
+        template.render(context)
 
-      assert_equal [Liquid::TaintedError], template.errors.map(&:class)
-      assert_equal 'snippet', template.errors.first.template_name
+        assert_equal [Liquid::TaintedError], template.errors.map(&:class)
+        assert_equal 'snippet', template.errors.first.template_name
+      end
     end
-  end
 
-  def test_render_sets_the_correct_template_name_for_warnings
-    Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ unsafe }}')
+    def test_render_sets_the_correct_template_name_for_warnings
+      Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ unsafe }}')
 
-    with_taint_mode :warn do
-      template = Liquid::Template.parse('{% render "snippet", unsafe: unsafe %}')
-      context  = Context.new('unsafe' => (+'unsafe').tap(&:taint))
-      template.render(context)
+      with_taint_mode :warn do
+        template = Liquid::Template.parse('{% render "snippet", unsafe: unsafe %}')
+        context  = Context.new('unsafe' => (+'unsafe').tap(&:taint))
+        template.render(context)
 
-      assert_equal [Liquid::TaintedError], context.warnings.map(&:class)
-      assert_equal 'snippet', context.warnings.first.template_name
+        assert_equal [Liquid::TaintedError], context.warnings.map(&:class)
+        assert_equal 'snippet', context.warnings.first.template_name
+      end
     end
   end
 
