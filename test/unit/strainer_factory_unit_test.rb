@@ -24,21 +24,25 @@ class StrainerFactoryUnitTest < Minitest::Test
     end
   end
 
+  def setup
+    @context = Context.build
+  end
+
   def test_strainer
-    strainer = StrainerFactory.create(nil)
+    strainer = StrainerFactory.create(@context)
     assert_equal(5, strainer.invoke('size', 'input'))
     assert_equal("public", strainer.invoke("public_filter"))
   end
 
   def test_stainer_raises_argument_error
-    strainer = StrainerFactory.create(nil)
+    strainer = StrainerFactory.create(@context)
     assert_raises(Liquid::ArgumentError) do
       strainer.invoke("public_filter", 1)
     end
   end
 
   def test_stainer_argument_error_contains_backtrace
-    strainer = StrainerFactory.create(nil)
+    strainer = StrainerFactory.create(@context)
 
     exception = assert_raises(Liquid::ArgumentError) do
       strainer.invoke("public_filter", 1)
@@ -52,7 +56,7 @@ class StrainerFactoryUnitTest < Minitest::Test
   end
 
   def test_strainer_only_invokes_public_filter_methods
-    strainer = StrainerFactory.create(nil)
+    strainer = StrainerFactory.create(@context)
     assert_equal(false, strainer.class.invokable?('__test__'))
     assert_equal(false, strainer.class.invokable?('test'))
     assert_equal(false, strainer.class.invokable?('instance_eval'))
@@ -61,18 +65,18 @@ class StrainerFactoryUnitTest < Minitest::Test
   end
 
   def test_strainer_returns_nil_if_no_filter_method_found
-    strainer = StrainerFactory.create(nil)
+    strainer = StrainerFactory.create(@context)
     assert_nil(strainer.invoke("private_filter"))
     assert_nil(strainer.invoke("undef_the_filter"))
   end
 
   def test_strainer_returns_first_argument_if_no_method_and_arguments_given
-    strainer = StrainerFactory.create(nil)
+    strainer = StrainerFactory.create(@context)
     assert_equal("password", strainer.invoke("undef_the_method", "password"))
   end
 
   def test_strainer_only_allows_methods_defined_in_filters
-    strainer = StrainerFactory.create(nil)
+    strainer = StrainerFactory.create(@context)
     assert_equal("1 + 1", strainer.invoke("instance_eval", "1 + 1"))
     assert_equal("puts",  strainer.invoke("__send__", "puts", "Hi Mom"))
     assert_equal("has_method?", strainer.invoke("invoke", "has_method?", "invoke"))
@@ -81,7 +85,7 @@ class StrainerFactoryUnitTest < Minitest::Test
   def test_strainer_uses_a_class_cache_to_avoid_method_cache_invalidation
     a = Module.new
     b = Module.new
-    strainer = StrainerFactory.create(nil, [a, b])
+    strainer = StrainerFactory.create(@context, [a, b])
     assert_kind_of(StrainerTemplate, strainer)
     assert_kind_of(a, strainer)
     assert_kind_of(b, strainer)
@@ -89,7 +93,7 @@ class StrainerFactoryUnitTest < Minitest::Test
   end
 
   def test_add_global_filter_clears_cache
-    assert_equal('input', StrainerFactory.create(nil).invoke('late_added_filter', 'input'))
+    assert_equal('input', StrainerFactory.create(@context).invoke('late_added_filter', 'input'))
     StrainerFactory.add_global_filter(LateAddedFilter)
     assert_equal('filtered', StrainerFactory.create(nil).invoke('late_added_filter', 'input'))
   end
