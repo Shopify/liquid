@@ -2,7 +2,7 @@
 
 module Liquid
   # Templates are central to liquid.
-  # Interpretating templates is a two step process. First you compile the
+  # Interpreting templates is a two step process. First you compile the
   # source code you got. During compile time some extensive error checking is performed.
   # your code should expect to get some SyntaxErrors.
   #
@@ -17,8 +17,6 @@ module Liquid
   class Template
     attr_accessor :root
     attr_reader :resource_limits, :warnings
-
-    @@file_system = BlankFileSystem.new
 
     class TagRegistry
       include Enumerable
@@ -78,17 +76,16 @@ module Liquid
         @taint_mode = mode
       end
 
+      # Sets the file system.
+      attr_writer :file_system
+
       attr_accessor :default_exception_renderer
       Template.default_exception_renderer = lambda do |exception|
         exception
       end
 
       def file_system
-        @@file_system
-      end
-
-      def file_system=(obj)
-        @@file_system = obj
+        @file_system ||= BlankFileSystem.new
       end
 
       def register_tag(name, klass)

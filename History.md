@@ -4,6 +4,7 @@
 
 * Split Strainer class as a factory and a template (#1208) [Thierry Joyal]
 * Remove handling of a nil context in the Strainer class (#1218) [Thierry Joyal]
+* Cleanup file_system class variable in Liquid::Template (#1219) [Thierry Joyal]
 
 ## 4.0.3 / 2019-03-12
 
