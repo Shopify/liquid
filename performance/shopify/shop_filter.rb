@@ -60,7 +60,7 @@ module ShopFilter
 
     case style
     when 'original'
-      return '/files/shops/random_number/' + url
+      '/files/shops/random_number/' + url
     when 'grande', 'large', 'medium', 'compact', 'small', 'thumb', 'icon'
       "/files/shops/random_number/products/#{Regexp.last_match(1)}_#{style}.#{Regexp.last_match(2)}"
     else
