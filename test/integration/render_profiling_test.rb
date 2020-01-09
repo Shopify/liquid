@@ -159,13 +159,13 @@ class RenderProfilingTest < Minitest::Test
     t.render!("collection" => ["one", "two"])
     leaf = t.profiler[0].children[0]
 
-    assert_operator leaf.self_time, :>, 0
+    assert_operator(leaf.self_time, :>, 0)
   end
 
   def test_profiling_supports_total_time
     t = Template.parse("{% if true %} {% increment test %} {{ test }} {% endif %}", profile: true)
     t.render!
 
-    assert_operator t.profiler[0].total_time, :>, 0
+    assert_operator(t.profiler[0].total_time, :>, 0)
   end
 end

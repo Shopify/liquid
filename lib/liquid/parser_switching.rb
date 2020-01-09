@@ -8,10 +8,10 @@ module Liquid
       when :lax    then lax_parse(markup)
       when :warn
         begin
-          return strict_parse_with_error_context(markup)
+          strict_parse_with_error_context(markup)
         rescue SyntaxError => e
           parse_context.warnings << e
-          return lax_parse(markup)
+          lax_parse(markup)
         end
       end
     end
