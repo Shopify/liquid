@@ -4,7 +4,9 @@ cache: bundler
 rvm:
   - 2.4
   - 2.5
-  - &latest_ruby 2.6
+  - 2.6
+  - &latest_ruby 2.7
+  - ruby-head
 
 matrix:
   include:
