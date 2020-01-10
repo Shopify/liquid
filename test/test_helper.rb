@@ -58,6 +58,23 @@ module Minitest
       assert_match(match, exception.message)
     end
 
+    def assert_usage_increment(name, times: 1)
+      old_method = Liquid::Usage.method(:increment)
+      calls = 0
+      begin
+        Liquid::Usage.singleton_class.send(:remove_method, :increment)
+        Liquid::Usage.define_singleton_method(:increment) do |got_name|
+          calls += 1 if got_name == name
+          old_method.call(got_name)
+        end
+        yield
+      ensure
+        Liquid::Usage.singleton_class.send(:remove_method, :increment)
+        Liquid::Usage.define_singleton_method(:increment, old_method)
+      end
+      assert_equal(times, calls, "Number of calls to Usage.increment with #{name.inspect}")
+    end
+
     def with_global_filter(*globals)
       original_global_filters = Liquid::StrainerFactory.instance_variable_get(:@global_filters)
       Liquid::StrainerFactory.instance_variable_set(:@global_filters, [])
