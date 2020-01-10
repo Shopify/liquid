@@ -18,8 +18,6 @@ module Liquid
     attr_accessor :root
     attr_reader :resource_limits, :warnings
 
-    @@file_system = BlankFileSystem.new
-
     class TagRegistry
       include Enumerable
 
@@ -63,7 +61,10 @@ module Liquid
       # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
       # :warn is the default and will give deprecation warnings when invalid syntax is used.
       # :strict will enforce correct syntax.
-      attr_writer :error_mode
+      attr_accessor :error_mode
+      Template.error_mode = :lax
+
+      attr_reader :taint_mode
 
       # Sets how strict the taint checker should be.
       # :lax is the default, and ignores the taint flag completely
@@ -78,41 +79,30 @@ module Liquid
         @taint_mode = mode
       end
 
+      Template.taint_mode = :lax
+
       attr_accessor :default_exception_renderer
       Template.default_exception_renderer = lambda do |exception|
         exception
       end
 
-      def file_system
-        @@file_system
-      end
+      attr_accessor :file_system
+      Template.file_system = BlankFileSystem.new
 
-      def file_system=(obj)
-        @@file_system = obj
-      end
+      attr_accessor :tags
+      Template.tags = TagRegistry.new
+      private :tags=
 
       def register_tag(name, klass)
         tags[name.to_s] = klass
       end
 
-      def tags
-        @tags ||= TagRegistry.new
-      end
+      attr_accessor :registers
+      Template.registers = {}
+      private :registers=
 
       def add_register(name, klass)
         registers[name.to_sym] = klass
-      end
-
-      def registers
-        @registers ||= {}
-      end
-
-      def error_mode
-        @error_mode ||= :lax
-      end
-
-      def taint_mode
-        @taint_mode ||= :lax
       end
 
       # Pass a module with filter methods which should be available
@@ -121,9 +111,9 @@ module Liquid
         StrainerFactory.add_global_filter(mod)
       end
 
-      def default_resource_limits
-        @default_resource_limits ||= {}
-      end
+      attr_accessor :default_resource_limits
+      Template.default_resource_limits = {}
+      private :default_resource_limits=
 
       # creates a new <tt>Template</tt> object from liquid source code
       # To enable profiling, pass in <tt>profile: true</tt> as an option.
