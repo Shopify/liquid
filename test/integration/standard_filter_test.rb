@@ -768,6 +768,49 @@ class StandardFiltersTest < Minitest::Test
     assert_nil(@filters.where([nil], "ok"))
   end
 
+  def test_all_filters_never_raise_non_liquid_exception
+    test_drop = TestDrop.new
+    test_drop.context = Context.new
+    test_enum = TestEnumerable.new
+    test_enum.context = Context.new
+    test_types = [
+      "foo",
+      123,
+      0,
+      0.0,
+      -1234.003030303,
+      -99999999,
+      1234.38383000383830003838300,
+      nil,
+      true,
+      false,
+      TestThing.new,
+      test_drop,
+      test_enum,
+      ["foo", "bar"],
+      { "foo" => "bar" },
+      { foo: "bar" },
+      [{ "foo" => "bar" }, { "foo" => 123 }, { "foo" => nil }, { "foo" => true }, { "foo" => ["foo", "bar"] }],
+      { 1 => "bar" },
+      ["foo", 123, nil, true, false, Drop, ["foo"], { foo: "bar" }],
+    ]
+    test_types.each do |first|
+      test_types.each do |other|
+        (@filters.methods - Object.methods).each do |method|
+          arg_count = @filters.method(method).arity
+          arg_count *= -1 if arg_count < 0
+          inputs = [first]
+          inputs << ([other] * (arg_count - 1)) if arg_count > 1
+          begin
+            @filters.send(method, *inputs)
+          rescue Liquid::ArgumentError, Liquid::ZeroDivisionError
+            nil
+          end
+        end
+      end
+    end
+  end
+
   def test_where_no_target_value
     input = [
       { "foo" => false },
