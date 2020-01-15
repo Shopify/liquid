@@ -45,6 +45,17 @@ task :test do
   end
 end
 
+desc 'runs the test suite using the superfluid compiler'
+Rake::TestTask.new(:test_superfluid) do |t|
+  t.libs << '.' << 'lib' << 'test'
+  t.test_files = FileList['test/integration/**/*_test.rb']
+  t.verbose = false
+
+  ENV['LIQUID_PARSER_MODE'] = 'strict'
+  ENV['LIQUID-C'] = '1'
+  ENV['SUPERFLUID'] = '1'
+end
+
 task gem: :build
 task :build do
   system "gem build liquid.gemspec"

@@ -19,6 +19,11 @@ if ENV['LIQUID-C'] == '1'
   require 'liquid/c'
 end
 
+if ENV['SUPERFLUID'] == '1'
+  puts "-- SUPERFLUID"
+  require 'liquid/superfluid'
+end
+
 if Minitest.const_defined?('Test')
   # We're on Minitest 5+. Nothing to do here.
 else
