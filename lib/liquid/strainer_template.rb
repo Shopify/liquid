@@ -14,40 +14,65 @@ module Liquid
     end
 
     class << self
-      def add_filter(filter)
-        return if include?(filter)
-
-        invokable_non_public_methods = (filter.private_instance_methods + filter.protected_instance_methods).select { |m| invokable?(m) }
-        if invokable_non_public_methods.any?
-          raise MethodOverrideError, "Filter overrides registered public methods as non public: #{invokable_non_public_methods.join(', ')}"
+      def add_filter(mod)
+        filter = if mod.is_a?(Class) && mod.ancestors.include?(Liquid::Filter)
+          mod
+        elsif mod.instance_of?(Module)
+          convert_mod_to_filter(mod)
+        else
+          raise(ArgumentError, "wrong argument type Proc (expected Liquid::Filter)")
         end
 
-        include(filter)
+        filter.invokable_methods.each do |method|
+          filter_map[method] = filter
+        end
+      end
 
-        filter_methods.merge(filter.public_instance_methods.map(&:to_s))
+      def fetch_filter(method)
+        filter_map.fetch(method)
       end
 
       def invokable?(method)
-        filter_methods.include?(method.to_s)
+        filter_map.key?(method)
       end
 
       private
 
-      def filter_methods
-        @filter_methods ||= Set.new
+      def filter_map
+        @filter_map ||= {}
+      end
+
+      def convert_mod_to_filter(mod)
+        @filter_classes ||= {}
+        @filter_classes[mod] ||= begin
+          klass = Class.new(FilterTemplate)
+          klass.include(mod)
+          klass
+        end
+      end
+
+      def filter_class_by_methods
+        @filter_class_by_methods ||= {}
       end
     end
 
     def invoke(method, *args)
       if self.class.invokable?(method)
-        send(method, *args)
+        klass = self.class.fetch_filter(method)
+
+        instance = klass.new(@context)
+        instance.public_send(method, *args)
       elsif @context.strict_filters
-        raise Liquid::UndefinedFilter, "undefined filter #{method}"
+        raise(Liquid::UndefinedFilter, "undefined filter #{method}")
       else
         args.first
       end
     rescue ::ArgumentError => e
       raise Liquid::ArgumentError, e.message, e.backtrace
     end
+
+    private
+
+    attr_reader :context
   end
 end
