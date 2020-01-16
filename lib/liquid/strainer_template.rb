@@ -23,25 +23,30 @@ module Liquid
           raise(ArgumentError, "wrong argument type Proc (expected Liquid::Filter)")
         end
 
+        instance = filter.new
+
         filter.invokable_methods.each do |method|
-          filter_map[method] = filter
+          filter_instances[method] = instance
         end
       end
 
-      def fetch_filter(method)
-        filter_map.fetch(method)
+      def invokable?(method)
+        filter_instances.key?(method)
       end
 
-      def invokable?(method)
-        filter_map.key?(method)
+      def invoke(method, context, *args)
+        instance = filter_instances.fetch(method)
+        instance.context = context
+        instance.public_send(method, *args)
       end
 
       private
 
-      def filter_map
-        @filter_map ||= {}
+      def filter_instances
+        @filter_instances ||= {}
       end
 
+      # Caching here is most likely not required anymore since we cache instances and there is only one instance per filter class.
       def convert_mod_to_filter(mod)
         @filter_classes ||= {}
         @filter_classes[mod] ||= begin
@@ -58,10 +63,7 @@ module Liquid
 
     def invoke(method, *args)
       if self.class.invokable?(method)
-        klass = self.class.fetch_filter(method)
-
-        instance = klass.new(@context)
-        instance.public_send(method, *args)
+        self.class.invoke(method, @context, *args)
       elsif @context.strict_filters
         raise(Liquid::UndefinedFilter, "undefined filter #{method}")
       else
