@@ -119,14 +119,13 @@ module Liquid
       # To enable profiling, pass in <tt>profile: true</tt> as an option.
       # See Liquid::Profiler for more information
       def parse(source, options = {})
-        template = Template.new
-        template.parse(source, options)
+        new.parse(source, options)
       end
     end
 
     def initialize
       @rethrow_errors  = false
-      @resource_limits = ResourceLimits.new(self.class.default_resource_limits)
+      @resource_limits = ResourceLimits.new(Template.default_resource_limits)
     end
 
     # Parse source code.
