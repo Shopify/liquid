@@ -77,4 +77,11 @@ class TemplateUnitTest < Minitest::Test
   ensure
     Template.tags.delete('fake')
   end
+
+  class TemplateSubclass < Liquid::Template
+  end
+
+  def test_template_inheritance
+    assert_equal("foo", TemplateSubclass.parse("foo").render)
+  end
 end
