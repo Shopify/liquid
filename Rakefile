@@ -82,6 +82,11 @@ namespace :benchmark do
   task :strict do
     ruby "./performance/benchmark.rb strict"
   end
+
+  desc "Run the liquid benchmark with strict parsing"
+  task :superfluid do
+    ruby "./performance/benchmark.rb superfluid"
+  end
 end
 
 namespace :profile do

@@ -29,7 +29,7 @@ module Liquid
       @@operators
     end
 
-    attr_reader :attachment, :child_condition
+    attr_reader :attachment, :child_condition, :child_relation
     attr_accessor :left, :operator, :right
 
     def initialize(left = nil, operator = nil, right = nil)
@@ -80,10 +80,6 @@ module Liquid
     def inspect
       "#<Condition #{[@left, @operator, @right].compact.join(' '.freeze)}>"
     end
-
-    protected
-
-    attr_reader :child_relation
 
     private
 

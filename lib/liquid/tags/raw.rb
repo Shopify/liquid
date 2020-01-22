@@ -3,6 +3,8 @@ module Liquid
     Syntax = /\A\s*\z/
     FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
 
+    attr_reader :body
+
     def initialize(tag_name, markup, parse_context)
       super
 

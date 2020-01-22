@@ -20,6 +20,8 @@ module Liquid
       @variable = markup.strip
     end
 
+    attr_reader :variable
+
     def render_to_output_buffer(context, output)
       value = context.environments.first[@variable] ||= 0
       context.environments.first[@variable] = value + 1

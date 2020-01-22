@@ -97,7 +97,7 @@ module Liquid
         end
         idx += 1
 
-        raise_if_resource_limits_reached(context, output.bytesize - previous_output_size)
+        context.raise_if_resource_limits_reached(output.bytesize - previous_output_size)
       end
 
       output
@@ -112,12 +112,6 @@ module Liquid
     rescue ::StandardError => e
       line_number = node.is_a?(String) ? nil : node.line_number
       output << context.handle_error(e, line_number)
-    end
-
-    def raise_if_resource_limits_reached(context, length)
-      context.resource_limits.render_length += length
-      return unless context.resource_limits.reached?
-      raise MemoryError.new("Memory limits exceeded".freeze)
     end
 
     def create_variable(token, parse_context)

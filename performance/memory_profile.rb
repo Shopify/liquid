@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'benchmark/ips'
+requirf 'benchmark/ips'
 require 'memory_profiler'
 require_relative 'theme_runner'
 

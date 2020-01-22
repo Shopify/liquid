@@ -37,6 +37,16 @@ module Liquid
       @global_filter = nil
     end
 
+    def raise_argument_error(message)
+      raise Liquid::ArgumentError, message
+    end
+
+    def raise_if_resource_limits_reached(length)
+      resource_limits.render_length += length
+      return unless resource_limits.reached?
+      raise MemoryError.new("Memory limits exceeded".freeze)
+    end
+
     def warnings
       @warnings ||= []
     end
