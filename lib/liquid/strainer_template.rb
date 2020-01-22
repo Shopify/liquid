@@ -53,7 +53,6 @@ module Liquid
     end
 
     def invoke(method, *args)
-
       if self.class.invokable?(method)
         begin
           instance = filter_instance_for(method)
