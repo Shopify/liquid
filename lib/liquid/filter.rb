@@ -32,6 +32,12 @@ module Liquid
       end
     end
 
-    attr_accessor :context
+    def initialize(context)
+      @context = context
+    end
+
+    private
+
+    attr_reader :context
   end
 end

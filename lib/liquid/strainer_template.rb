@@ -23,30 +23,25 @@ module Liquid
           raise(ArgumentError, "wrong argument type Proc (expected Liquid::Filter)")
         end
 
-        instance = filter.new
-
         filter.invokable_methods.each do |method|
-          filter_instances[method] = instance
+          filter_method_map[method] = filter
         end
       end
 
-      def invokable?(method)
-        filter_instances.key?(method)
+      def filter_for(method)
+        filter_method_map[method]
       end
 
-      def invoke(method, context, *args)
-        instance = filter_instances.fetch(method)
-        instance.context = context
-        instance.public_send(method, *args)
+      def invokable?(method)
+        filter_method_map.key?(method)
       end
 
       private
 
-      def filter_instances
-        @filter_instances ||= {}
+      def filter_method_map
+        @filter_method_map ||= {}
       end
 
-      # Caching here is most likely not required anymore since we cache instances and there is only one instance per filter class.
       def convert_mod_to_filter(mod)
         @filter_classes ||= {}
         @filter_classes[mod] ||= begin
@@ -55,25 +50,33 @@ module Liquid
           klass
         end
       end
-
-      def filter_class_by_methods
-        @filter_class_by_methods ||= {}
-      end
     end
 
     def invoke(method, *args)
+
       if self.class.invokable?(method)
-        self.class.invoke(method, @context, *args)
-      elsif @context.strict_filters
+        begin
+          instance = filter_instance_for(method)
+          instance.public_send(method, *args)
+        rescue ::ArgumentError => e
+          raise Liquid::ArgumentError, e.message, e.backtrace
+        end
+      elsif context.strict_filters
         raise(Liquid::UndefinedFilter, "undefined filter #{method}")
       else
         args.first
       end
-    rescue ::ArgumentError => e
-      raise Liquid::ArgumentError, e.message, e.backtrace
     end
 
     private
+
+    def filter_instance_for(method)
+      @filter_instances ||= {}
+      @filter_instances.fetch(method) do
+        klass = self.class.filter_for(method)
+        klass.new(context)
+      end
+    end
 
     attr_reader :context
   end
