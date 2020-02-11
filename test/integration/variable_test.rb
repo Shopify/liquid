@@ -34,6 +34,33 @@ class VariableTest < Minitest::Test
   def test_using_empty_as_variable_name
     template = Template.parse("{% assign foo = empty %}{{ foo }}")
     assert_equal('', template.render!)
+    template = Template.parse("{% assign foo = empty %}{% if foo == ary %}Y{% else %}N{% endif %}")
+    assert_equal('Y', template.render!('ary' => []))
+    template = Template.parse("{% assign foo = empty %}{% if foo == foo %}Y{% else %}N{% endif %}")
+    assert_equal('Y', template.render!)
+    template = Template.parse("{% if empty == empty %}Y{% else %}N{% endif %}")
+    assert_equal('Y', template.render!)
+  end
+
+  def test_using_empty_as_variable_name_with_filters
+    template = Template.parse("{% assign foo = empty %}{{ foo | sort | size }}")
+    assert_equal('0', template.render!)
+    template = Template.parse("{% assign foo = empty | sort %}{{ foo | size }}")
+    assert_equal('0', template.render!)
+  end
+
+  def test_using_empty_as_empty_array
+    template = Template.parse("{% for x in empty %}x{% endfor %}")
+    assert_equal('', template.render!)
+  end
+
+  def test_empty_can_be_filled
+    template = Template.parse("{% assign foo = empty %}{{ foo | concat: bar }}")
+    assert_equal('Y', template.render!('bar' => ['Y']))
+    template = Template.parse("{% assign foo = empty %}{{ foo | concat: bar | join: '--' }}")
+    assert_equal('A--B', template.render!('bar' => ['A', 'B']))
+    template = Template.parse("{% assign foo = empty %}{% assign tar = foo | concat: bar %}{{ tar | join: '--' }}{{ tar | size }}")
+    assert_equal('A--B2', template.render!('bar' => ['A', 'B']))
   end
 
   def test_hash_scoping

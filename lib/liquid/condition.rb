@@ -92,19 +92,11 @@ module Liquid
 
     def equal_variables(left, right)
       if left.is_a?(Liquid::Expression::MethodLiteral)
-        if right.respond_to?(left.method_name)
-          return right.send(left.method_name)
-        else
-          return nil
-        end
+        return left.test(right)
       end
 
       if right.is_a?(Liquid::Expression::MethodLiteral)
-        if left.respond_to?(right.method_name)
-          return left.send(right.method_name)
-        else
-          return nil
-        end
+        return right.test(left)
       end
 
       left == right

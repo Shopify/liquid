@@ -3,15 +3,29 @@
 module Liquid
   class Expression
     class MethodLiteral
-      attr_reader :method_name, :to_s
+      attr_reader :to_liquid
 
-      def initialize(method_name, to_s)
+      def initialize(method_name, to_liquid)
         @method_name = method_name
-        @to_s = to_s
+        @to_liquid = to_liquid
       end
 
-      def to_liquid
-        to_s
+      def to_s
+        to_liquid.to_s
+      end
+
+      def test(other)
+        other.respond_to?(@method_name) && other.send(@method_name) || self == other
+      end
+    end
+
+    class EmptyLiteral < MethodLiteral
+      include Enumerable
+
+      def each; end
+
+      def to_ary
+        to_liquid
       end
     end
 
@@ -20,7 +34,7 @@ module Liquid
       'true' => true,
       'false' => false,
       'blank' => MethodLiteral.new(:blank?, '').freeze,
-      'empty' => MethodLiteral.new(:empty?, '').freeze
+      'empty' => EmptyLiteral.new(:empty?, [].freeze).freeze
     }.freeze
 
     SINGLE_QUOTED_STRING = /\A'(.*)'\z/m
