@@ -13,6 +13,8 @@ matrix:
     - rvm: *latest_ruby
       script: bundle exec rake memory_profile:run
       name: Profiling Memory Usage
+  allow_failures:
+    - rvm: ruby-head
 
 branches:
   only:
