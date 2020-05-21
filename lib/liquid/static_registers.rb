@@ -1,8 +1,14 @@
 # frozen_string_literal: true
 
+require 'forwardable'
+
 module Liquid
   class StaticRegisters
+    extend Forwardable
+
     attr_reader :static, :registers
+
+    def_delegators :@cache, :[], :key?
 
     def initialize(registers = {})
       @static    = registers.is_a?(StaticRegisters) ? registers.static : registers
@@ -16,22 +22,14 @@ module Liquid
       @cache[key] = value
     end
 
-    def [](key)
-      @cache[key]
-    end
-
     def delete(key)
-      @registers.delete(key).tap do
-        @static.dup.merge(@registers)
-      end
+      deleted = @registers.delete(key)
+      @cache = @static.dup.merge(@registers)
+      deleted
     end
 
     def fetch(key, default = nil)
       key?(key) ? self[key] : default
-    end
-
-    def key?(key)
-      @cache.key?(key)
     end
   end
 end

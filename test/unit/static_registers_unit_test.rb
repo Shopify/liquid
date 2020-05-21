@@ -41,6 +41,10 @@ class StaticRegistersUnitTest < Minitest::Test
     assert_nil(static_register.delete("unknown"))
 
     assert_equal({}, static_register.registers)
+
+    static_register[:custom] = 42
+    assert_equal(42, static_register.delete(:custom))
+    assert_nil(static_register[:custom])
   end
 
   def test_fetch
