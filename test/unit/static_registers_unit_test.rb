@@ -51,7 +51,15 @@ class StaticRegistersUnitTest < Minitest::Test
     assert_equal("one", static_register.fetch(:one))
     assert_equal(3, static_register.fetch("two"))
     assert_nil(static_register.fetch(false))
-    assert_nil(static_register.fetch("unknown"))
+
+    assert_raises(KeyError) do
+      static_register.fetch(:unknown)
+    end
+    assert_equal("default", static_register.fetch(:unknown, "default"))
+
+    static_register[:unknown] = "known"
+    assert_equal("known", static_register.fetch(:unknown))
+    assert_equal("known", static_register.fetch(:unknown, "default"))
   end
 
   def test_fetch_default

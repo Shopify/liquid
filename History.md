@@ -4,6 +4,7 @@
 
 * Split Strainer class as a factory and a template (#1208) [Thierry Joyal]
 * Remove handling of a nil context in the Strainer class (#1218) [Thierry Joyal]
+* StaticRegisters#fetch to raise on missing key (#1250) [Thierry Joyal]
 
 ## 4.0.3 / 2019-03-12
 
