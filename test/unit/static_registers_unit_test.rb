@@ -5,252 +5,146 @@ require 'test_helper'
 class StaticRegistersUnitTest < Minitest::Test
   include Liquid
 
-  def set
-    static_register        = StaticRegisters.new
-    static_register[nil]   = true
-    static_register[1]     = :one
-    static_register[:one]  = "one"
-    static_register["two"] = "three"
-    static_register["two"] = 3
-    static_register[false] = nil
+  def test_set
+    static_register = StaticRegisters.new(a: 1, b: 2)
+    static_register[:b] = 22
+    static_register[:c] = 33
 
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, static_register.registers)
-
-    static_register
+    assert_equal(1, static_register[:a])
+    assert_equal(22, static_register[:b])
+    assert_equal(33, static_register[:c])
   end
 
-  def test_get
-    static_register = set
+  def test_get_missing_key
+    static_register = StaticRegisters.new
 
-    assert_equal(true, static_register[nil])
-    assert_equal(:one, static_register[1])
-    assert_equal("one", static_register[:one])
-    assert_equal(3, static_register["two"])
-    assert_nil(static_register[false])
-    assert_nil(static_register["unknown"])
+    assert_nil(static_register[:missing])
   end
 
   def test_delete
-    static_register = set
+    static_register = StaticRegisters.new(a: 1, b: 2)
+    static_register[:b] = 22
+    static_register[:c] = 33
 
-    assert_equal(true, static_register.delete(nil))
-    assert_equal(:one, static_register.delete(1))
-    assert_equal("one", static_register.delete(:one))
-    assert_equal(3, static_register.delete("two"))
-    assert_nil(static_register.delete(false))
-    assert_nil(static_register.delete("unknown"))
+    assert_nil(static_register.delete(:a))
 
-    assert_equal({}, static_register.registers)
+    assert_equal(22, static_register.delete(:b))
+
+    assert_equal(33, static_register.delete(:c))
+    assert_nil(static_register[:c])
+
+    assert_nil(static_register.delete(:d))
   end
 
   def test_fetch
-    static_register = set
+    static_register = StaticRegisters.new(a: 1, b: 2)
+    static_register[:b] = 22
+    static_register[:c] = 33
 
-    assert_equal(true, static_register.fetch(nil))
-    assert_equal(:one, static_register.fetch(1))
-    assert_equal("one", static_register.fetch(:one))
-    assert_equal(3, static_register.fetch("two"))
-    assert_nil(static_register.fetch(false))
+    assert_equal(1, static_register.fetch(:a))
+    assert_equal(1, static_register.fetch(:a, "default"))
+    assert_equal(22, static_register.fetch(:b))
+    assert_equal(22, static_register.fetch(:b, "default"))
+    assert_equal(33, static_register.fetch(:c))
+    assert_equal(33, static_register.fetch(:c, "default"))
 
     assert_raises(KeyError) do
-      static_register.fetch(:unknown)
+      static_register.fetch(:d)
     end
-    assert_equal("default", static_register.fetch(:unknown, "default"))
-
-    static_register[:unknown] = "known"
-    assert_equal("known", static_register.fetch(:unknown))
-    assert_equal("known", static_register.fetch(:unknown, "default"))
-  end
-
-  def test_fetch_default
-    static_register = StaticRegisters.new
-
-    assert_equal(true, static_register.fetch(nil, true))
-    assert_equal(:one, static_register.fetch(1, :one))
-    assert_equal("one", static_register.fetch(:one, "one"))
-    assert_equal(3, static_register.fetch("two", 3))
-    assert_nil(static_register.fetch(false, nil))
+    assert_equal("default", static_register.fetch(:d, "default"))
   end
 
   def test_key
-    static_register = set
+    static_register = StaticRegisters.new(a: 1, b: 2)
+    static_register[:b] = 22
+    static_register[:c] = 33
 
-    assert_equal(true, static_register.key?(nil))
-    assert_equal(true, static_register.key?(1))
-    assert_equal(true, static_register.key?(:one))
-    assert_equal(true, static_register.key?("two"))
-    assert_equal(true, static_register.key?(false))
-    assert_equal(false, static_register.key?("unknown"))
-    assert_equal(false, static_register.key?(true))
-  end
-
-  def set_with_static
-    static_register        = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
-    static_register[nil]   = false
-    static_register["two"] = 4
-    static_register[true]  = "foo"
-
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, static_register.static)
-    assert_equal({ nil => false, "two" => 4, true => "foo" }, static_register.registers)
-
-    static_register
-  end
-
-  def test_get_with_static
-    static_register = set_with_static
-
-    assert_equal(false, static_register[nil])
-    assert_equal(:one, static_register[1])
-    assert_equal("one", static_register[:one])
-    assert_equal(4, static_register["two"])
-    assert_equal("foo", static_register[true])
-    assert_nil(static_register[false])
-  end
-
-  def test_delete_with_static
-    static_register = set_with_static
-
-    assert_equal(false, static_register.delete(nil))
-    assert_equal(4, static_register.delete("two"))
-    assert_equal("foo", static_register.delete(true))
-    assert_nil(static_register.delete("unknown"))
-    assert_nil(static_register.delete(:one))
-
-    assert_equal({}, static_register.registers)
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, static_register.static)
-  end
-
-  def test_fetch_with_static
-    static_register = set_with_static
-
-    assert_equal(false, static_register.fetch(nil))
-    assert_equal(:one, static_register.fetch(1))
-    assert_equal("one", static_register.fetch(:one))
-    assert_equal(4, static_register.fetch("two"))
-    assert_equal("foo", static_register.fetch(true))
-    assert_nil(static_register.fetch(false))
-  end
-
-  def test_key_with_static
-    static_register = set_with_static
-
-    assert_equal(true, static_register.key?(nil))
-    assert_equal(true, static_register.key?(1))
-    assert_equal(true, static_register.key?(:one))
-    assert_equal(true, static_register.key?("two"))
-    assert_equal(true, static_register.key?(false))
-    assert_equal(false, static_register.key?("unknown"))
-    assert_equal(true, static_register.key?(true))
+    assert_equal(true, static_register.key?(:a))
+    assert_equal(true, static_register.key?(:b))
+    assert_equal(true, static_register.key?(:c))
+    assert_equal(false, static_register.key?(:d))
   end
 
   def test_static_register_can_be_frozen
-    static_register = set_with_static
+    static_register = StaticRegisters.new(a: 1)
 
-    static = static_register.static.freeze
+    static_register.static.freeze
 
     assert_raises(RuntimeError) do
-      static["two"] = "foo"
+      static_register.static[:a] = "foo"
     end
 
     assert_raises(RuntimeError) do
-      static["unknown"] = "foo"
+      static_register.static[:b] = "foo"
     end
 
     assert_raises(RuntimeError) do
-      static.delete("two")
+      static_register.static.delete(:a)
+    end
+
+    assert_raises(RuntimeError) do
+      static_register.static.delete(:c)
     end
   end
 
   def test_new_static_retains_static
-    static_register          = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
-    static_register["one"]   = 1
-    static_register["two"]   = 2
-    static_register["three"] = 3
+    static_register = StaticRegisters.new(a: 1, b: 2)
+    static_register[:b] = 22
+    static_register[:c] = 33
 
-    new_register = StaticRegisters.new(static_register)
-    assert_equal({}, new_register.registers)
+    new_static_register = StaticRegisters.new(static_register)
+    new_static_register[:b] = 222
 
-    new_register["one"]   = 4
-    new_register["two"]   = 5
-    new_register["three"] = 6
+    newest_static_register = StaticRegisters.new(new_static_register)
+    newest_static_register[:c] = 333
 
-    newest_register = StaticRegisters.new(new_register)
-    assert_equal({}, newest_register.registers)
+    assert_equal(1, static_register[:a])
+    assert_equal(22, static_register[:b])
+    assert_equal(33, static_register[:c])
 
-    newest_register["one"]   = 7
-    newest_register["two"]   = 8
-    newest_register["three"] = 9
+    assert_equal(1, new_static_register[:a])
+    assert_equal(222, new_static_register[:b])
+    assert_nil(new_static_register[:c])
 
-    assert_equal({ "one" => 1, "two" => 2, "three" => 3 }, static_register.registers)
-    assert_equal({ "one" => 4, "two" => 5, "three" => 6 }, new_register.registers)
-    assert_equal({ "one" => 7, "two" => 8, "three" => 9 }, newest_register.registers)
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, static_register.static)
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, new_register.static)
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, newest_register.static)
+    assert_equal(1, newest_static_register[:a])
+    assert_equal(2, newest_static_register[:b])
+    assert_equal(333, newest_static_register[:c])
   end
 
   def test_multiple_instances_are_unique
-    static_register          = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
-    static_register["one"]   = 1
-    static_register["two"]   = 2
-    static_register["three"] = 3
+    static_register_1 = StaticRegisters.new(a: 1, b: 2)
+    static_register_1[:b] = 22
+    static_register_1[:c] = 33
 
-    new_register = StaticRegisters.new(foo: :bar)
-    assert_equal({}, new_register.registers)
+    static_register_2 = StaticRegisters.new(a: 10, b: 20)
+    static_register_2[:b] = 220
+    static_register_2[:c] = 330
 
-    new_register["one"]   = 4
-    new_register["two"]   = 5
-    new_register["three"] = 6
+    assert_equal({ a: 1, b: 2 }, static_register_1.static)
+    assert_equal(1, static_register_1[:a])
+    assert_equal(22, static_register_1[:b])
+    assert_equal(33, static_register_1[:c])
 
-    newest_register = StaticRegisters.new(bar: :foo)
-    assert_equal({}, newest_register.registers)
-
-    newest_register["one"]   = 7
-    newest_register["two"]   = 8
-    newest_register["three"] = 9
-
-    assert_equal({ "one" => 1, "two" => 2, "three" => 3 }, static_register.registers)
-    assert_equal({ "one" => 4, "two" => 5, "three" => 6 }, new_register.registers)
-    assert_equal({ "one" => 7, "two" => 8, "three" => 9 }, newest_register.registers)
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, static_register.static)
-    assert_equal({ foo: :bar }, new_register.static)
-    assert_equal({ bar: :foo }, newest_register.static)
+    assert_equal({ a: 10, b: 20 }, static_register_2.static)
+    assert_equal(10, static_register_2[:a])
+    assert_equal(220, static_register_2[:b])
+    assert_equal(330, static_register_2[:c])
   end
 
-  def test_can_update_static_directly_and_updates_all_instances
-    static_register          = StaticRegisters.new(nil => true, 1 => :one, :one => "one", "two" => 3, false => nil)
-    static_register["one"]   = 1
-    static_register["two"]   = 2
-    static_register["three"] = 3
+  def test_initialization_reused_static_same_memory_object
+    static_register_1 = StaticRegisters.new(a: 1, b: 2)
+    static_register_1[:b] = 22
+    static_register_1[:c] = 33
 
-    new_register = StaticRegisters.new(static_register)
-    assert_equal({}, new_register.registers)
+    static_register_2 = StaticRegisters.new(static_register_1)
 
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil }, static_register.static)
+    assert_equal(1, static_register_2[:a])
+    assert_equal(2, static_register_2[:b])
+    assert_nil(static_register_2[:c])
 
-    new_register["one"]         = 4
-    new_register["two"]         = 5
-    new_register["three"]       = 6
-    new_register.static["four"] = 10
+    static_register_1.static[:b] = 222
+    static_register_1.static[:c] = 333
 
-    newest_register = StaticRegisters.new(new_register)
-    assert_equal({}, newest_register.registers)
-
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil, "four" => 10 }, new_register.static)
-
-    newest_register["one"]      = 7
-    newest_register["two"]      = 8
-    newest_register["three"]    = 9
-    new_register.static["four"] = 5
-    new_register.static["five"] = 15
-
-    assert_equal({ "one" => 1, "two" => 2, "three" => 3 }, static_register.registers)
-    assert_equal({ "one" => 4, "two" => 5, "three" => 6 }, new_register.registers)
-    assert_equal({ "one" => 7, "two" => 8, "three" => 9 }, newest_register.registers)
-
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil, "four" => 5, "five" => 15 }, newest_register.static)
-
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil, "four" => 5, "five" => 15 }, static_register.static)
-    assert_equal({ nil => true, 1 => :one, :one => "one", "two" => 3, false => nil, "four" => 5, "five" => 15 }, new_register.static)
+    assert_same(static_register_1.static, static_register_2.static)
   end
 end
