@@ -15,15 +15,10 @@ class StaticRegistersUnitTest < Minitest::Test
     assert_equal(33, static_register[:c])
   end
 
-  def test_get
-    static_register = StaticRegisters.new(a: 1, b: 2)
-    static_register[:b] = 22
-    static_register[:c] = 33
+  def test_get_missing_key
+    static_register = StaticRegisters.new
 
-    assert_equal(1, static_register[:a])
-    assert_equal(22, static_register[:b])
-    assert_equal(33, static_register[:c])
-    assert_nil(static_register[:d])
+    assert_nil(static_register[:missing])
   end
 
   def test_delete
@@ -152,7 +147,6 @@ class StaticRegistersUnitTest < Minitest::Test
     static_register_1.static[:b] = 222
     static_register_1.static[:c] = 333
 
-    assert_equal(222, static_register_2[:b])
-    assert_equal(333, static_register_2[:c])
+    assert_same(static_register_1.static, static_register_2.static)
   end
 end
