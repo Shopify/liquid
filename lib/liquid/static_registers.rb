@@ -2,7 +2,7 @@
 
 module Liquid
   class StaticRegisters
-    attr_reader :static, :registers
+    attr_reader :static
 
     def initialize(registers = {})
       @static    = registers.is_a?(StaticRegisters) ? registers.static : registers
