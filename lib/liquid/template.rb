@@ -212,7 +212,7 @@ module Liquid
       end
 
       Template.registers.each do |key, register|
-        context_register[key] = register
+        context_register[key] = register unless context_register.key?(key)
       end
 
       # Retrying a render resets resource usage
