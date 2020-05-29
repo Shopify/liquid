@@ -12,7 +12,7 @@ module Liquid
     end
 
     def initialize(markup)
-      lookups = markup.scan(VariableParser)
+      lookups = markup.scan(VARIABLE_PARSER)
 
       name = lookups.shift
       if name =~ SQUARE_BRACKETED

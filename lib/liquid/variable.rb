@@ -12,11 +12,11 @@ module Liquid
   #   {{ user | link }}
   #
   class Variable
-    FilterMarkupRegex        = /#{FilterSeparator}\s*(.*)/om
-    FilterParser             = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
-    FilterArgsRegex          = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o
-    JustTagAttributes        = /\A#{TagAttributes}\z/o
-    MarkupWithQuotedFragment = /(#{QuotedFragment})(.*)/om
+    FILTER_MARKUP_REGEX         = /#{FILTER_SEPARATOR}\s*(.*)/om
+    FILTER_PARSER               = /(?:\s+|#{QUOTED_FRAGMENT}|#{ARGUMENT_SEPARATOR})+/o
+    FILTER_ARGS_REGEX .         = /(?:#{FILTER_ARGUMENT_SEPARATOR}|#{ARGUMENT_SEPARATOR})\s*((?:\w+\s*\:\s*)?#{QUOTED_FRAGMENT})/o
+    JUST_TAG_ATTRIBUTES         = /\A#{TAG_ATTRIBUTES}\z/o
+    MARKUP_WITH_QUOTED_FRAGMENT = /(#{QUOTED_FRAGMENT})(.*)/om
 
     attr_accessor :filters, :name, :line_number
     attr_reader :parse_context
@@ -43,17 +43,17 @@ module Liquid
 
     def lax_parse(markup)
       @filters = []
-      return unless markup =~ MarkupWithQuotedFragment
+      return unless markup =~ MARKUP_WITH_QUOTED_FRAGMENT
 
       name_markup   = Regexp.last_match(1)
       filter_markup = Regexp.last_match(2)
       @name         = Expression.parse(name_markup)
-      if filter_markup =~ FilterMarkupRegex
-        filters = Regexp.last_match(1).scan(FilterParser)
+      if filter_markup =~ FILTER_MARKUP_REGEX
+        filters = Regexp.last_match(1).scan(FILTER_PARSER)
         filters.each do |f|
           next unless f =~ /\w+/
           filtername = Regexp.last_match(0)
-          filterargs = f.scan(FilterArgsRegex).flatten
+          filterargs = f.scan(FILTER_ARGS_REGEX).flatten
           @filters << parse_filter_expressions(filtername, filterargs)
         end
       end
@@ -118,7 +118,7 @@ module Liquid
       filter_args  = []
       keyword_args = nil
       unparsed_args.each do |a|
-        if (matches = a.match(JustTagAttributes))
+        if (matches = a.match(JUST_TAG_ATTRIBUTES))
           keyword_args           ||= {}
           keyword_args[matches[1]] = Expression.parse(matches[2])
         else
@@ -146,7 +146,7 @@ module Liquid
       return if Template.taint_mode == :lax
       return unless obj.tainted?
 
-      @markup =~ QuotedFragment
+      @markup =~ QUOTED_FRAGMENT
       name = Regexp.last_match(0)
 
       error               = TaintedError.new("variable '#{name}' is tainted and was not escaped")

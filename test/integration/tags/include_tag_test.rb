@@ -60,10 +60,10 @@ class CountingFileSystem
 end
 
 class CustomInclude < Liquid::Tag
-  Syntax = /(#{Liquid::QuotedFragment}+)(\s+(?:with|for)\s+(#{Liquid::QuotedFragment}+))?/o
+  SYNTAX = /(#{Liquid::QUOTED_FRAGMENT}+)(\s+(?:with|for)\s+(#{Liquid::QUOTED_FRAGMENT}+))?/o
 
   def initialize(tag_name, markup, tokens)
-    markup =~ Syntax
+    markup =~ SYNTAX
     @template_name = Regexp.last_match(1)
     super
   end

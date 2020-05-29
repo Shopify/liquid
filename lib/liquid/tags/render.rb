@@ -24,7 +24,7 @@ module Liquid
       @for = (with_or_for == FOR)
 
       @attributes = {}
-      markup.scan(TagAttributes) do |key, value|
+      markup.scan(TAG_ATTRIBUTES) do |key, value|
         @attributes[key] = Expression.parse(value)
       end
     end

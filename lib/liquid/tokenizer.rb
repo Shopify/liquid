@@ -28,7 +28,7 @@ module Liquid
 
       return @source.split("\n") if @for_liquid_tag
 
-      tokens = @source.split(TemplateParser)
+      tokens = @source.split(TEMPLATE_PARSER)
 
       # removes the rogue empty element at the beginning of the array
       tokens.shift if tokens[0]&.empty?

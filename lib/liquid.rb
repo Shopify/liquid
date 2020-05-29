@@ -22,25 +22,25 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module Liquid
-  FilterSeparator             = /\|/
-  ArgumentSeparator           = ','
-  FilterArgumentSeparator     = ':'
-  VariableAttributeSeparator  = '.'
-  WhitespaceControl           = '-'
-  TagStart                    = /\{\%/
-  TagEnd                      = /\%\}/
-  VariableSignature           = /\(?[\w\-\.\[\]]\)?/
-  VariableSegment             = /[\w\-]/
-  VariableStart               = /\{\{/
-  VariableEnd                 = /\}\}/
-  VariableIncompleteEnd       = /\}\}?/
-  QuotedString                = /"[^"]*"|'[^']*'/
-  QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
-  TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
-  AnyStartingTag              = /#{TagStart}|#{VariableStart}/o
-  PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
-  TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
-  VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
+  FILTER_SEPARATOR             = /\|/
+  ARGUMENT_SEPARATOR           = ','
+  FILTER_ARGUMENT_SEPARATOR    = ':'
+  VARIABLE_ATTRIBUTE_SEPARATOR = '.'
+  WHITESPACE_CONTROL           = '-'
+  TAG_START                    = /\{\%/
+  TAG_END                      = /\%\}/
+  VARIABLE_SIGNATURE           = /\(?[\w\-\.\[\]]\)?/
+  VARIABLE_SEGMENT             = /[\w\-]/
+  VARIABLE_START               = /\{\{/
+  VARIABLE_END                 = /\}\}/
+  VARIABLE_INCOMPLETE_END      = /\}\}?/
+  QUOTED_STRING                = /"[^"]*"|'[^']*'/
+  QUOTED_FRAGMENT              = /#{QUOTED_STRING}|(?:[^\s,\|'"]|#{QUOTED_STRING})+/o
+  TAG_ATTRIBUTES               = /(\w+)\s*\:\s*(#{QUOTED_FRAGMENT})/o
+  ANY_STARTING_TAG             = /#{TAG_START}|#{VARIABLE_START}/o
+  PARTIAL_TEMPLATE_PARSER      = /#{TAG_START}.*?#{TAG_END}|#{VARIABLE_START}.*?#{VARIABLE_INCOMPLETE_END}/om
+  TEMPLATE_PARSER              = /(#{PARTIAL_TEMPLATE_PARSER}|#{ANY_STARTING_TAG})/om
+  VARIABLE_PARSER              = /\[[^\]]+\]|#{VARIABLE_SEGMENT}+\??/o
 
   singleton_class.send(:attr_accessor, :cache_classes)
   self.cache_classes = true
@@ -87,3 +87,5 @@ require 'liquid/template_factory'
 #
 Dir["#{__dir__}/liquid/tags/*.rb"].each { |f| require f }
 Dir["#{__dir__}/liquid/registers/*.rb"].each { |f| require f }
+
+require 'liquid/legacy'

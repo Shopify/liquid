@@ -4,12 +4,12 @@ require 'English'
 
 module Liquid
   class BlockBody
-    LiquidTagToken      = /\A\s*(\w+)\s*(.*?)\z/o
-    FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
-    ContentOfVariable   = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
-    WhitespaceOrNothing = /\A\s*\z/
-    TAGSTART            = "{%"
-    VARSTART            = "{{"
+    LIQUID_TAG_TOKEN      = /\A\s*(\w+)\s*(.*?)\z/o
+    FULL_TOKEN            = /\A#{TAG_START}#{WHITESPACE_CONTROL}?(\s*)(\w+)(\s*)(.*?)#{WHITESPACE_CONTROL}?#{TAG_END}\z/om
+    CONTENT_OF_VARIABLE   = /\A#{VARIABLE_START}#{WHITESPACE_CONTROL}?(.*?)#{WHITESPACE_CONTROL}?#{VARIABLE_END}\z/om
+    WHITESPACE_OR_NOTHING = /\A\s*\z/
+    TAG_START_STRING      = "{%"
+    VAR_START_STRING      = "{{"
 
     attr_reader :nodelist
 
@@ -30,8 +30,8 @@ module Liquid
 
     private def parse_for_liquid_tag(tokenizer, parse_context)
       while (token = tokenizer.shift)
-        unless token.empty? || token =~ WhitespaceOrNothing
-          unless token =~ LiquidTagToken
+        unless token.empty? || token =~ WHITESPACE_OR_NOTHING
+          unless token =~ LIQUID_TAG_TOKEN
             # line isn't empty but didn't match tag syntax, yield and let the
             # caller raise a syntax error
             return yield token, token
@@ -72,9 +72,9 @@ module Liquid
       while (token = tokenizer.shift)
         next if token.empty?
         case
-        when token.start_with?(TAGSTART)
+        when token.start_with?(TAG_START_STRING)
           whitespace_handler(token, parse_context)
-          unless token =~ FullToken
+          unless token =~ FULL_TOKEN
             raise_missing_tag_terminator(token, parse_context)
           end
           tag_name = Regexp.last_match(2)
@@ -99,7 +99,7 @@ module Liquid
           new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
           @blank &&= new_tag.blank?
           @nodelist << new_tag
-        when token.start_with?(VARSTART)
+        when token.start_with?(VAR_START_STRING)
           whitespace_handler(token, parse_context)
           @nodelist << create_variable(token, parse_context)
           @blank = false
@@ -109,7 +109,7 @@ module Liquid
           end
           parse_context.trim_whitespace = false
           @nodelist << token
-          @blank &&= !!(token =~ WhitespaceOrNothing)
+          @blank &&= !!(token =~ WHITESPACE_OR_NOTHING)
         end
         parse_context.line_number = tokenizer.line_number
       end
@@ -118,13 +118,13 @@ module Liquid
     end
 
     def whitespace_handler(token, parse_context)
-      if token[2] == WhitespaceControl
+      if token[2] == WHITESPACE_CONTROL
         previous_token = @nodelist.last
         if previous_token.is_a?(String)
           previous_token.rstrip!
         end
       end
-      parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
+      parse_context.trim_whitespace = (token[-3] == WHITESPACE_CONTROL)
     end
 
     def blank?
@@ -197,7 +197,7 @@ module Liquid
     end
 
     def create_variable(token, parse_context)
-      token.scan(ContentOfVariable) do |content|
+      token.scan(CONTENT_OF_VARIABLE) do |content|
         markup = content.first
         return Variable.new(markup, parse_context)
       end
@@ -205,11 +205,11 @@ module Liquid
     end
 
     def raise_missing_tag_terminator(token, parse_context)
-      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_termination", token: token, tag_end: TagEnd.inspect)
+      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_termination", token: token, tag_end: TAG_END.inspect)
     end
 
     def raise_missing_variable_terminator(token, parse_context)
-      raise SyntaxError, parse_context.locale.t("errors.syntax.variable_termination", token: token, tag_end: VariableEnd.inspect)
+      raise SyntaxError, parse_context.locale.t("errors.syntax.variable_termination", token: token, tag_end: VARIABLE_END.inspect)
     end
 
     def registered_tags

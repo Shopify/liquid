@@ -13,11 +13,11 @@ module Liquid
   # in a sidebar or footer.
   #
   class Capture < Block
-    Syntax = /(#{VariableSignature}+)/o
+    SYNTAX = /(#{VARIABLE_SIGNATURE}+)/o
 
     def initialize(tag_name, markup, options)
       super
-      if markup =~ Syntax
+      if markup =~ SYNTAX
         @to = Regexp.last_match(1)
       else
         raise SyntaxError, options[:locale].t("errors.syntax.capture")

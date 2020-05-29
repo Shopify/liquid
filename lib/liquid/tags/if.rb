@@ -12,9 +12,9 @@ module Liquid
   #    There are {% if count < 5 %} less {% else %} more {% endif %} items than you need.
   #
   class If < Block
-    Syntax                  = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
-    ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
-    BOOLEAN_OPERATORS       = %w(and or).freeze
+    SYNTAX                    = /(#{QUOTED_FRAGMENT})\s*([=!<>a-z_]+)?\s*(#{QUOTED_FRAGMENT})?/o
+    EXPRESSIONS_AND_OPERATORS = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QUOTED_FRAGMENT}|\S+)\s*)+)/o
+    BOOLEAN_OPERATORS         = %w(and or).freeze
 
     attr_reader :blocks
 
@@ -65,15 +65,15 @@ module Liquid
     end
 
     def lax_parse(markup)
-      expressions = markup.scan(ExpressionsAndOperators)
-      raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop =~ Syntax
+      expressions = markup.scan(EXPRESSIONS_AND_OPERATORS)
+      raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop =~ SYNTAX
 
       condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2), Expression.parse(Regexp.last_match(3)))
 
       until expressions.empty?
         operator = expressions.pop.to_s.strip
 
-        raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop.to_s =~ Syntax
+        raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop.to_s =~ SYNTAX
 
         new_condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2), Expression.parse(Regexp.last_match(3)))
         raise SyntaxError, options[:locale].t("errors.syntax.if") unless BOOLEAN_OPERATORS.include?(operator)

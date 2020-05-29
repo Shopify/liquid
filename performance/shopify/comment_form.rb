@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class CommentForm < Liquid::Block
-  Syntax = /(#{Liquid::VariableSignature}+)/
+  SYNTAX = /(#{Liquid::VariableSignature}+)/
 
   def initialize(tag_name, markup, options)
     super
 
-    if markup =~ Syntax
+    if markup =~ SYNTAX
       @variable_name = Regexp.last_match(1)
       @attributes    = {}
     else

@@ -2,8 +2,8 @@
 
 module Liquid
   class Case < Block
-    Syntax     = /(#{QuotedFragment})/o
-    WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*\,\s*)(#{QuotedFragment}.*))?/om
+    SYNTAX = /(#{QUOTED_FRAGMENT})/o
+    WHEN_SYNTAX = /(#{QUOTED_FRAGMENT})(?:(?:\s+or\s+|\s*\,\s*)(#{QUOTED_FRAGMENT}.*))?/om
 
     attr_reader :blocks, :left
 
@@ -11,7 +11,7 @@ module Liquid
       super
       @blocks = []
 
-      if markup =~ Syntax
+      if markup =~ SYNTAX
         @left = Expression.parse(Regexp.last_match(1))
       else
         raise SyntaxError, options[:locale].t("errors.syntax.case")
@@ -59,7 +59,7 @@ module Liquid
       body = BlockBody.new
 
       while markup
-        unless markup =~ WhenSyntax
+        unless markup =~ WHEN_SYNTAX
           raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_when")
         end
 
