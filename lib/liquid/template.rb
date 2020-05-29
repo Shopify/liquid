@@ -56,21 +56,33 @@ module Liquid
 
     attr_reader :profiler
 
+    # Eagerly initialize default attributes of the <tt>Template</tt> singleton class.
+    @error_mode = :lax
+    @taint_mode = :lax
+    @registers  = {}
+
+    @tags        = TagRegistry.new
+    @file_system = BlankFileSystem.new
+
+    @default_resource_limits = {}
+    @default_exception_renderer = lambda { |exception| exception }
+
     class << self
-      # Sets how strict the parser should be.
-      # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
-      # :warn is the default and will give deprecation warnings when invalid syntax is used.
-      # :strict will enforce correct syntax.
+      attr_reader :tags, :registers, :default_resource_limits
+      attr_accessor :default_exception_renderer, :file_system
+      # Controls how strict the parser should be.
+      #      :lax : is the default, acts like liquid 2.5 and silently ignores malformed tags in most cases.
+      #     :warn : will give deprecation warnings when invalid syntax is used.
+      #   :strict : will enforce correct syntax.
       attr_accessor :error_mode
-      Template.error_mode = :lax
 
       attr_reader :taint_mode
-
       # Sets how strict the taint checker should be.
-      # :lax is the default, and ignores the taint flag completely
-      # :warn adds a warning, but does not interrupt the rendering
-      # :error raises an error when tainted output is used
-      # @deprecated Since it is being deprecated in ruby itself.
+      #     :lax : is the default, and ignores the taint flag completely
+      #    :warn : adds a warning, but does not interrupt the rendering
+      #   :error : raises an error when tainted output is used
+      #
+      # @deprecated Since it is being deprecated in Ruby itself.
       def taint_mode=(mode)
         taint_supported = Object.new.taint.tainted?
         if mode != :lax && !taint_supported
@@ -79,30 +91,12 @@ module Liquid
         @taint_mode = mode
       end
 
-      Template.taint_mode = :lax
-
-      attr_accessor :default_exception_renderer
-      Template.default_exception_renderer = lambda do |exception|
-        exception
+      def add_register(name, klass)
+        registers[name.to_sym] = klass
       end
-
-      attr_accessor :file_system
-      Template.file_system = BlankFileSystem.new
-
-      attr_accessor :tags
-      Template.tags = TagRegistry.new
-      private :tags=
 
       def register_tag(name, klass)
         tags[name.to_s] = klass
-      end
-
-      attr_accessor :registers
-      Template.registers = {}
-      private :registers=
-
-      def add_register(name, klass)
-        registers[name.to_sym] = klass
       end
 
       # Pass a module with filter methods which should be available
@@ -110,10 +104,6 @@ module Liquid
       def register_filter(mod)
         StrainerFactory.add_global_filter(mod)
       end
-
-      attr_accessor :default_resource_limits
-      Template.default_resource_limits = {}
-      private :default_resource_limits=
 
       # creates a new <tt>Template</tt> object from liquid source code
       # To enable profiling, pass in <tt>profile: true</tt> as an option.
