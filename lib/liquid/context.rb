@@ -34,7 +34,6 @@ module Liquid
       @strict_variables    = false
       @resource_limits     = resource_limits || ResourceLimits.new(Template.default_resource_limits)
       @base_scope_depth    = 0
-      squash_instance_assigns_with_environments
 
       self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors
@@ -246,16 +245,5 @@ module Liquid
     rescue Liquid::InternalError => exc
       exc
     end
-
-    def squash_instance_assigns_with_environments
-      @scopes.last.each_key do |k|
-        @environments.each do |env|
-          if env.key?(k)
-            scopes.last[k] = lookup_and_evaluate(env, k)
-            break
-          end
-        end
-      end
-    end # squash_instance_assigns_with_environments
   end # Context
 end # Liquid
