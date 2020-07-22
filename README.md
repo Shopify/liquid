@@ -80,22 +80,24 @@ It is also recommended that you use it in the template editors of existing apps 
 
 By default, the renderer doesn't raise or in any other way notify you if some variables or filters are missing, i.e. not passed to the `render` method.
 You can improve this situation by passing `strict_variables: true` and/or `strict_filters: true` options to the `render` method.
-When one of these options is set to true, all errors about undefined variables and undefined filters will be stored in `errors` array of a `Liquid::Template` instance.
+When one of these options is set to true, all errors about undefined variables and undefined filters will be stored in an `errors` array on the `Liquid::Context` instance used for rendering.
 Here are some examples:
 
 ```ruby
 template = Liquid::Template.parse("{{x}} {{y}} {{z.a}} {{z.b}}")
-template.render({ 'x' => 1, 'z' => { 'a' => 2 } }, { strict_variables: true })
+context = Liquid::Context.new({ 'x' => 1, 'z' => { 'a' => 2 } })
+template.render(context, { strict_variables: true })
 #=> '1  2 ' # when a variable is undefined, it's rendered as nil
-template.errors
+context.errors
 #=> [#<Liquid::UndefinedVariable: Liquid error: undefined variable y>, #<Liquid::UndefinedVariable: Liquid error: undefined variable b>]
 ```
 
 ```ruby
 template = Liquid::Template.parse("{{x | filter1 | upcase}}")
-template.render({ 'x' => 'foo' }, { strict_filters: true })
+context = Liquid::Context.new({ 'x' => 'foo' })
+template.render(context, { strict_filters: true })
 #=> '' # when at least one filter in the filter chain is undefined, a whole expression is rendered as nil
-template.errors
+context.errors
 #=> [#<Liquid::UndefinedFilter: Liquid error: undefined filter filter1>]
 ```
 

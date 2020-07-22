@@ -38,12 +38,6 @@ end
 class TemplateTest < Minitest::Test
   include Liquid
 
-  def test_instance_assigns_persist_on_same_template_object_between_parses
-    t = Template.new
-    assert_equal('from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render!)
-    assert_equal('from instance assigns', t.parse("{{ foo }}").render!)
-  end
-
   def test_warnings_is_not_exponential_time
     str = "false"
     100.times do
@@ -52,12 +46,6 @@ class TemplateTest < Minitest::Test
 
     t = Template.parse(str)
     assert_equal([], Timeout.timeout(1) { t.warnings })
-  end
-
-  def test_instance_assigns_persist_on_same_template_parsing_between_renders
-    t = Template.new.parse("{{ foo }}{% assign foo = 'foo' %}{{ foo }}")
-    assert_equal('foo', t.render!)
-    assert_equal('foofoo', t.render!)
   end
 
   def test_custom_assigns_do_not_persist_on_same_template
@@ -70,25 +58,6 @@ class TemplateTest < Minitest::Test
     t = Template.new
     assert_equal('from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render!)
     assert_equal('from custom assigns', t.parse("{{ foo }}").render!('foo' => 'from custom assigns'))
-  end
-
-  def test_persistent_assigns_squash_instance_assigns
-    t = Template.new
-    assert_equal('from instance assigns', t.parse("{% assign foo = 'from instance assigns' %}{{ foo }}").render!)
-    t.assigns['foo'] = 'from persistent assigns'
-    assert_equal('from persistent assigns', t.parse("{{ foo }}").render!)
-  end
-
-  def test_lambda_is_called_once_from_persistent_assigns_over_multiple_parses_and_renders
-    t = Template.new
-    t.assigns['number'] = -> {
-      @global ||= 0
-      @global  += 1
-    }
-    assert_equal('1', t.parse("{{number}}").render!)
-    assert_equal('1', t.parse("{{number}}").render!)
-    assert_equal('1', t.render!)
-    @global = nil
   end
 
   def test_lambda_is_called_once_from_custom_assigns_over_multiple_parses_and_renders
@@ -105,112 +74,124 @@ class TemplateTest < Minitest::Test
 
   def test_resource_limits_works_with_custom_length_method
     t = Template.parse("{% assign foo = bar %}")
-    t.resource_limits.render_length_limit = 42
-    assert_equal("", t.render!("bar" => SomethingWithLength.new))
+    context = Liquid::Context.new("bar" => SomethingWithLength.new)
+    context.resource_limits.render_length_limit = 42
+    assert_equal("", t.render!(context))
   end
 
   def test_resource_limits_render_length
     t = Template.parse("0123456789")
-    t.resource_limits.render_length_limit = 5
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    assert(t.resource_limits.reached?)
+    context = Liquid::Context.new
+    context.resource_limits.render_length_limit = 5
+    assert_equal("Liquid error: Memory limits exceeded", t.render(context))
+    assert(context.resource_limits.reached?)
 
-    t.resource_limits.render_length_limit = 10
+    context.resource_limits.render_length_limit = 10
     assert_equal("0123456789", t.render!)
-    refute_nil(t.resource_limits.render_length)
+    refute_nil(context.resource_limits.render_length)
   end
 
   def test_resource_limits_render_score
     t = Template.parse("{% for a in (1..10) %} {% for a in (1..10) %} foo {% endfor %} {% endfor %}")
-    t.resource_limits.render_score_limit = 50
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    assert(t.resource_limits.reached?)
+    context = Liquid::Context.new
+    context.resource_limits.render_score_limit = 50
+    assert_equal("Liquid error: Memory limits exceeded", t.render(context))
+    assert(context.resource_limits.reached?)
 
     t = Template.parse("{% for a in (1..100) %} foo {% endfor %}")
-    t.resource_limits.render_score_limit = 50
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    assert(t.resource_limits.reached?)
+    context.resource_limits.render_score_limit = 50
+    assert_equal("Liquid error: Memory limits exceeded", t.render(context))
+    assert(context.resource_limits.reached?)
 
-    t.resource_limits.render_score_limit = 200
-    assert_equal((" foo " * 100), t.render!)
-    refute_nil(t.resource_limits.render_score)
+    context.resource_limits.render_score_limit = 200
+    assert_equal((" foo " * 100), t.render!(context))
+    refute_nil(context.resource_limits.render_score)
   end
 
   def test_resource_limits_assign_score
     t = Template.parse("{% assign foo = 42 %}{% assign bar = 23 %}")
-    t.resource_limits.assign_score_limit = 1
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    assert(t.resource_limits.reached?)
+    context = Liquid::Context.new
+    context.resource_limits.assign_score_limit = 1
+    assert_equal("Liquid error: Memory limits exceeded", t.render(context))
+    assert(context.resource_limits.reached?)
 
-    t.resource_limits.assign_score_limit = 2
-    assert_equal("", t.render!)
-    refute_nil(t.resource_limits.assign_score)
+    context.resource_limits.assign_score_limit = 2
+    assert_equal("", t.render!(context))
+    refute_nil(context.resource_limits.assign_score)
   end
 
   def test_resource_limits_assign_score_counts_bytes_not_characters
     t = Template.parse("{% assign foo = 'すごい' %}")
-    t.render
-    assert_equal(9, t.resource_limits.assign_score)
+    context = Liquid::Context.new
+    t.render(context)
+    assert_equal(9, context.resource_limits.assign_score)
 
     t = Template.parse("{% capture foo %}すごい{% endcapture %}")
-    t.render
-    assert_equal(9, t.resource_limits.assign_score)
+    t.render(context)
+    assert_equal(9, context.resource_limits.assign_score)
   end
 
   def test_resource_limits_assign_score_nested
     t = Template.parse("{% assign foo = 'aaaa' | reverse %}")
 
-    t.resource_limits.assign_score_limit = 3
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    assert(t.resource_limits.reached?)
+    context = Liquid::Context.new
+    context.resource_limits.assign_score_limit = 3
+    assert_equal("Liquid error: Memory limits exceeded", t.render(context))
+    assert(context.resource_limits.reached?)
 
-    t.resource_limits.assign_score_limit = 5
-    assert_equal("", t.render!)
+    context.resource_limits.assign_score_limit = 5
+    assert_equal("", t.render!(context))
   end
 
   def test_resource_limits_aborts_rendering_after_first_error
     t = Template.parse("{% for a in (1..100) %} foo1 {% endfor %} bar {% for a in (1..100) %} foo2 {% endfor %}")
-    t.resource_limits.render_score_limit = 50
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    assert(t.resource_limits.reached?)
+    context = Liquid::Context.new
+    context.resource_limits.render_score_limit = 50
+    assert_equal("Liquid error: Memory limits exceeded", t.render(context))
+    assert(context.resource_limits.reached?)
   end
 
   def test_resource_limits_hash_in_template_gets_updated_even_if_no_limits_are_set
     t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
-    t.render!
-    assert(t.resource_limits.assign_score > 0)
-    assert(t.resource_limits.render_score > 0)
-    assert(t.resource_limits.render_length > 0)
+    context = Liquid::Context.new
+    t.render!(context)
+    assert(context.resource_limits.assign_score > 0)
+    assert(context.resource_limits.render_score > 0)
+    assert(context.resource_limits.render_length > 0)
   end
 
   def test_render_length_persists_between_blocks
     t = Template.parse("{% if true %}aaaa{% endif %}")
-    t.resource_limits.render_length_limit = 7
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    t.resource_limits.render_length_limit = 8
-    assert_equal("aaaa", t.render)
+    context = Liquid::Context.new
+    context.resource_limits.render_length_limit = 7
+    assert_equal("Liquid error: Memory limits exceeded", t.render(context))
+    context.resource_limits.render_length_limit = 8
+    assert_equal("aaaa", t.render(context))
 
     t = Template.parse("{% if true %}aaaa{% endif %}{% if true %}bbb{% endif %}")
-    t.resource_limits.render_length_limit = 13
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    t.resource_limits.render_length_limit = 14
-    assert_equal("aaaabbb", t.render)
+    context = Liquid::Context.new
+    context.resource_limits.render_length_limit = 13
+    assert_equal("Liquid error: Memory limits exceeded", t.render(context))
+    context.resource_limits.render_length_limit = 14
+    assert_equal("aaaabbb", t.render(context))
 
     t = Template.parse("{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}")
-    t.resource_limits.render_length_limit = 5
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    t.resource_limits.render_length_limit = 11
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    t.resource_limits.render_length_limit = 12
-    assert_equal("ababab", t.render)
+    context = Liquid::Context.new
+    context.resource_limits.render_length_limit = 5
+    assert_equal("Liquid error: Memory limits exceeded", t.render(context))
+    context.resource_limits.render_length_limit = 11
+    assert_equal("Liquid error: Memory limits exceeded", t.render(context))
+    context.resource_limits.render_length_limit = 12
+    assert_equal("ababab", t.render(context))
   end
 
   def test_render_length_uses_number_of_bytes_not_characters
     t = Template.parse("{% if true %}すごい{% endif %}")
-    t.resource_limits.render_length_limit = 10
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    t.resource_limits.render_length_limit = 18
-    assert_equal("すごい", t.render)
+    context = Liquid::Context.new
+    context.resource_limits.render_length_limit = 10
+    assert_equal("Liquid error: Memory limits exceeded", t.render(context))
+    context.resource_limits.render_length_limit = 18
+    assert_equal("すごい", t.render(context))
   end
 
   def test_default_resource_limits_unaffected_by_render_with_context
@@ -224,11 +205,12 @@ class TemplateTest < Minitest::Test
 
   def test_can_use_drop_as_context
     t = Template.new
-    t.registers['lulz'] = 'haha'
     drop = TemplateContextDrop.new
-    assert_equal('fizzbuzz', t.parse('{{foo}}').render!(drop))
-    assert_equal('bar', t.parse('{{bar}}').render!(drop))
-    assert_equal('haha', t.parse("{{baz}}").render!(drop))
+    context = Liquid::Context.build(environments: drop, registers: { 'lulz' => 'haha' })
+    drop.context = context
+    assert_equal('fizzbuzz', t.parse('{{foo}}').render!(context))
+    assert_equal('bar', t.parse('{{bar}}').render!(context))
+    assert_equal('haha', t.parse("{{baz}}").render!(context))
   end
 
   def test_render_bang_force_rethrow_errors_on_passed_context
@@ -280,25 +262,27 @@ class TemplateTest < Minitest::Test
   end
 
   def test_undefined_variables
-    t      = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
-    result = t.render({ 'x' => 33, 'z' => { 'a' => 32, 'c' => { 'e' => 31 } } }, strict_variables: true)
+    t = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
+    context = Liquid::Context.new('x' => 33, 'z' => { 'a' => 32, 'c' => { 'e' => 31 } })
+    result = t.render(context, strict_variables: true)
 
     assert_equal('33  32  ', result)
-    assert_equal(3, t.errors.count)
-    assert_instance_of(Liquid::UndefinedVariable, t.errors[0])
-    assert_equal('Liquid error: undefined variable y', t.errors[0].message)
-    assert_instance_of(Liquid::UndefinedVariable, t.errors[1])
-    assert_equal('Liquid error: undefined variable b', t.errors[1].message)
-    assert_instance_of(Liquid::UndefinedVariable, t.errors[2])
-    assert_equal('Liquid error: undefined variable d', t.errors[2].message)
+    assert_equal(3, context.errors.count)
+    assert_instance_of(Liquid::UndefinedVariable, context.errors[0])
+    assert_equal('Liquid error: undefined variable y', context.errors[0].message)
+    assert_instance_of(Liquid::UndefinedVariable, context.errors[1])
+    assert_equal('Liquid error: undefined variable b', context.errors[1].message)
+    assert_instance_of(Liquid::UndefinedVariable, context.errors[2])
+    assert_equal('Liquid error: undefined variable d', context.errors[2].message)
   end
 
   def test_nil_value_does_not_raise
     Liquid::Template.error_mode = :strict
-    t                           = Template.parse("some{{x}}thing")
-    result                      = t.render!({ 'x' => nil }, strict_variables: true)
+    t = Template.parse("some{{x}}thing")
+    context = Liquid::Context.new('x' => nil)
+    result = t.render!(context, strict_variables: true)
 
-    assert_equal(0, t.errors.count)
+    assert_equal(0, context.errors.count)
     assert_equal('something', result)
   end
 
@@ -313,11 +297,13 @@ class TemplateTest < Minitest::Test
   def test_undefined_drop_methods
     d = DropWithUndefinedMethod.new
     t = Template.new.parse('{{ foo }} {{ woot }}')
-    result = t.render(d, strict_variables: true)
+    context = Liquid::Context.new(d)
+    d.context = context
+    result = t.render(context, strict_variables: true)
 
     assert_equal('foo ', result)
-    assert_equal(1, t.errors.count)
-    assert_instance_of(Liquid::UndefinedDropMethod, t.errors[0])
+    assert_equal(1, context.errors.count)
+    assert_instance_of(Liquid::UndefinedDropMethod, context.errors[0])
   end
 
   def test_undefined_drop_methods_raise
@@ -336,12 +322,13 @@ class TemplateTest < Minitest::Test
         "-#{v}-"
       end
     end
-    result = t.render({ 'a' => 123, 'x' => 'foo' }, filters: [filters], strict_filters: true)
+    context = Liquid::Context.new('a' => 123, 'x' => 'foo')
+    result = t.render(context, filters: [filters], strict_filters: true)
 
     assert_equal('123 ', result)
-    assert_equal(1, t.errors.count)
-    assert_instance_of(Liquid::UndefinedFilter, t.errors[0])
-    assert_equal('Liquid error: undefined filter somefilter1', t.errors[0].message)
+    assert_equal(1, context.errors.count)
+    assert_instance_of(Liquid::UndefinedFilter, context.errors[0])
+    assert_equal('Liquid error: undefined filter somefilter1', context.errors[0].message)
   end
 
   def test_undefined_filters_raise
