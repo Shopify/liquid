@@ -32,10 +32,6 @@ module Minitest
     def fixture(name)
       File.join(File.expand_path(__dir__), "fixtures", name)
     end
-
-    def self.taint_supported?
-      Object.new.taint.tainted?
-    end
   end
 
   module Assertions
@@ -91,14 +87,6 @@ module Minitest
     ensure
       Liquid::StrainerFactory.send(:strainer_class_cache).clear
       Liquid::StrainerFactory.instance_variable_set(:@global_filters, original_global_filters)
-    end
-
-    def with_taint_mode(mode)
-      old_mode = Liquid::Template.taint_mode
-      Liquid::Template.taint_mode = mode
-      yield
-    ensure
-      Liquid::Template.taint_mode = old_mode
     end
 
     def with_error_mode(mode)

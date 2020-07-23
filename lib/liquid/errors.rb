@@ -46,7 +46,6 @@ module Liquid
   StandardError       = Class.new(Error)
   SyntaxError         = Class.new(Error)
   StackLevelError     = Class.new(Error)
-  TaintedError        = Class.new(Error)
   MemoryError         = Class.new(Error)
   ZeroDivisionError   = Class.new(Error)
   FloatDomainError    = Class.new(Error)
