@@ -405,12 +405,4 @@ class TemplateTest < Minitest::Test
     assert_nil(context.registers[:random_register])
     assert(context.registers.key?(:random_register))
   end
-
-  unless taint_supported?
-    def test_taint_mode
-      assert_raises(NotImplementedError) do
-        Template.taint_mode = :warn
-      end
-    end
-  end
 end
