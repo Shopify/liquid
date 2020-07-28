@@ -52,6 +52,12 @@ class StaticRegistersUnitTest < Minitest::Test
       static_register.fetch(:d)
     end
     assert_equal("default", static_register.fetch(:d, "default"))
+
+    result = static_register.fetch(:d) { "default" }
+    assert_equal("default", result)
+
+    result = static_register.fetch(:d, "default 1") { "default 2" }
+    assert_equal("default 2", result)
   end
 
   def test_key
