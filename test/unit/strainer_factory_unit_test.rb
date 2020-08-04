@@ -82,16 +82,6 @@ class StrainerFactoryUnitTest < Minitest::Test
     assert_equal("has_method?", strainer.invoke("invoke", "has_method?", "invoke"))
   end
 
-  def test_strainer_uses_a_class_cache_to_avoid_method_cache_invalidation
-    a = Module.new
-    b = Module.new
-    strainer = StrainerFactory.create(@context, [a, b])
-    assert_kind_of(StrainerTemplate, strainer)
-    assert_kind_of(a, strainer)
-    assert_kind_of(b, strainer)
-    assert_kind_of(Liquid::StandardFilters, strainer)
-  end
-
   def test_add_global_filter_clears_cache
     assert_equal('input', StrainerFactory.create(@context).invoke('late_added_filter', 'input'))
     StrainerFactory.add_global_filter(LateAddedFilter)

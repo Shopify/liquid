@@ -147,13 +147,13 @@ class ContextUnitTest < Minitest::Test
 
     context = Context.new
     context.add_filters(filter)
-    assert_equal('hi? hi!', context.invoke(:hi, 'hi?'))
+    assert_equal('hi? hi!', context.invoke('hi', 'hi?'))
 
     context = Context.new
-    assert_equal('hi?', context.invoke(:hi, 'hi?'))
+    assert_equal('hi?', context.invoke('hi', 'hi?'))
 
     context.add_filters(filter)
-    assert_equal('hi? hi!', context.invoke(:hi, 'hi?'))
+    assert_equal('hi? hi!', context.invoke('hi', 'hi?'))
   end
 
   def test_only_intended_filters_make_it_there
