@@ -19,8 +19,7 @@ module Liquid
 
     attr_reader :variables
 
-    def initialize(tag_name, markup, options)
-      super
+    def parse(_tokens)
       case markup
       when NamedSyntax
         @variables = variables_from_string(Regexp.last_match(2))

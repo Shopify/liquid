@@ -21,9 +21,7 @@ module Liquid
 
     attr_reader :template_name_expr, :variable_name_expr, :attributes
 
-    def initialize(tag_name, markup, options)
-      super
-
+    def parse(_tokens)
       if markup =~ SYNTAX
 
         template_name = Regexp.last_match(1)
@@ -41,9 +39,6 @@ module Liquid
       else
         raise SyntaxError, options[:locale].t("errors.syntax.include")
       end
-    end
-
-    def parse(_tokens)
     end
 
     def render_to_output_buffer(context, output)

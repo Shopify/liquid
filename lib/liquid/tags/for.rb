@@ -50,15 +50,11 @@ module Liquid
 
     attr_reader :collection_name, :variable_name, :limit, :from
 
-    def initialize(tag_name, markup, options)
-      super
+    def parse(tokens)
       @from = @limit = nil
       parse_with_selected_parser(markup)
       @for_block = BlockBody.new
       @else_block = nil
-    end
-
-    def parse(tokens)
       return unless parse_body(@for_block, tokens)
       parse_body(@else_block, tokens)
     end

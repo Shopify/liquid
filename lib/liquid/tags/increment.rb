@@ -17,8 +17,7 @@ module Liquid
   #    Hello: 2
   #
   class Increment < Tag
-    def initialize(tag_name, markup, options)
-      super
+    def parse(_tokens)
       @variable = markup.strip
     end
 

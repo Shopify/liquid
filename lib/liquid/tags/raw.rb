@@ -5,13 +5,8 @@ module Liquid
     Syntax = /\A\s*\z/
     FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
 
-    def initialize(tag_name, markup, parse_context)
-      super
-
-      ensure_valid_markup(tag_name, markup, parse_context)
-    end
-
     def parse(tokens)
+      ensure_valid_markup(tag_name, markup, parse_context)
       @body = +''
       while (token = tokens.shift)
         if token =~ FullTokenPossiblyInvalid

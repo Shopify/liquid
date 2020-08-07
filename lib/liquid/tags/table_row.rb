@@ -6,8 +6,7 @@ module Liquid
 
     attr_reader :variable_name, :collection_name, :attributes
 
-    def initialize(tag_name, markup, options)
-      super
+    def parse(_tokens)
       if markup =~ Syntax
         @variable_name   = Regexp.last_match(1)
         @collection_name = Expression.parse(Regexp.last_match(2))
@@ -18,6 +17,7 @@ module Liquid
       else
         raise SyntaxError, options[:locale].t("errors.syntax.table_row")
       end
+      super
     end
 
     def render_to_output_buffer(context, output)

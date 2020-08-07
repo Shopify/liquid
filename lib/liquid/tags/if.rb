@@ -18,17 +18,13 @@ module Liquid
 
     attr_reader :blocks
 
-    def initialize(tag_name, markup, options)
-      super
-      @blocks = []
-      push_block('if', markup)
-    end
-
     def nodelist
       @blocks.map(&:attachment)
     end
 
     def parse(tokens)
+      @blocks = []
+      push_block('if', markup)
       while parse_body(@blocks.last.attachment, tokens)
       end
     end

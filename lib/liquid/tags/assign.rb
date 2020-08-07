@@ -14,8 +14,7 @@ module Liquid
 
     attr_reader :to, :from
 
-    def initialize(tag_name, markup, options)
-      super
+    def parse(_tokens)
       if markup =~ Syntax
         @to   = Regexp.last_match(1)
         @from = Variable.new(Regexp.last_match(2), options)

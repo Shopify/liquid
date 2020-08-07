@@ -2,7 +2,7 @@
 
 module Liquid
   class Tag
-    attr_reader :nodelist, :tag_name, :line_number, :parse_context
+    attr_reader :nodelist, :tag_name, :line_number, :parse_context, :markup
     alias_method :options, :parse_context
     include ParserSwitching
 
@@ -16,8 +16,6 @@ module Liquid
       def disable_tags(*tags)
         disabled_tags.push(*tags)
       end
-
-      private :new
 
       def disabled_tags
         @disabled_tags ||= []

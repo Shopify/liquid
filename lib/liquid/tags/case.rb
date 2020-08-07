@@ -7,8 +7,7 @@ module Liquid
 
     attr_reader :blocks, :left
 
-    def initialize(tag_name, markup, options)
-      super
+    def parse(tokens)
       @blocks = []
 
       if markup =~ Syntax
@@ -16,9 +15,7 @@ module Liquid
       else
         raise SyntaxError, options[:locale].t("errors.syntax.case")
       end
-    end
 
-    def parse(tokens)
       body = BlockBody.new
       body = @blocks.last.attachment while parse_body(body, tokens)
     end
