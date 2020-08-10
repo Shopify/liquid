@@ -563,6 +563,35 @@ class ContextUnitTest < Minitest::Test
     assert_equal('my filter result', template.render(subcontext))
   end
 
+  def test_disables_tag_specified
+    context = Context.new
+    context.with_disabled_tags(%w(foo bar)) do
+      assert_equal true, context.tag_disabled?("foo")
+      assert_equal true, context.tag_disabled?("bar")
+      assert_equal false, context.tag_disabled?("unknown")
+    end
+  end
+
+  def test_disables_nested_tags
+    context = Context.new
+    context.with_disabled_tags(["foo"]) do
+      context.with_disabled_tags(["foo"]) do
+        assert_equal true, context.tag_disabled?("foo")
+        assert_equal false, context.tag_disabled?("bar")
+      end
+      context.with_disabled_tags(["bar"]) do
+        assert_equal true, context.tag_disabled?("foo")
+        assert_equal true, context.tag_disabled?("bar")
+        context.with_disabled_tags(["foo"]) do
+          assert_equal true, context.tag_disabled?("foo")
+          assert_equal true, context.tag_disabled?("bar")
+        end
+      end
+      assert_equal true, context.tag_disabled?("foo")
+      assert_equal false, context.tag_disabled?("bar")
+    end
+  end
+
   private
 
   def assert_no_object_allocations

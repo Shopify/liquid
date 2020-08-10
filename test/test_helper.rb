@@ -98,10 +98,17 @@ module Minitest
     end
 
     def with_custom_tag(tag_name, tag_class)
-      Liquid::Template.register_tag(tag_name, tag_class)
-      yield
-    ensure
-      Liquid::Template.tags.delete(tag_name)
+      old_tag = Liquid::Template.tags[tag_name]
+      begin
+        Liquid::Template.register_tag(tag_name, tag_class)
+        yield
+      ensure
+        if old_tag
+          Liquid::Template.tags[tag_name] = old_tag
+        else
+          Liquid::Template.tags.delete(tag_name)
+        end
+      end
     end
   end
 end

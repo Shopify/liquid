@@ -16,6 +16,8 @@ module Liquid
   #   {% include 'product' for products %}
   #
   class Include < Tag
+    prepend Tag::Disableable
+
     SYNTAX = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
     Syntax = SYNTAX
 

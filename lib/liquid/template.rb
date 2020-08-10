@@ -80,14 +80,6 @@ module Liquid
         tags[name.to_s] = klass
       end
 
-      attr_accessor :registers
-      Template.registers = {}
-      private :registers=
-
-      def add_register(name, klass)
-        registers[name.to_sym] = klass
-      end
-
       # Pass a module with filter methods which should be available
       # to all liquid views. Good for registering the standard library
       def register_filter(mod)
@@ -192,10 +184,6 @@ module Liquid
         apply_options_to_context(context, options)
       when Module, Array
         context.add_filters(args.pop)
-      end
-
-      Template.registers.each do |key, register|
-        context_register[key] = register unless context_register.key?(key)
       end
 
       # Retrying a render resets resource usage
