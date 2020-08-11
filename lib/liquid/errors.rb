@@ -53,5 +53,6 @@ module Liquid
   UndefinedDropMethod = Class.new(Error)
   UndefinedFilter     = Class.new(Error)
   MethodOverrideError = Class.new(Error)
+  DisabledError       = Class.new(Error)
   InternalError       = Class.new(Error)
 end
