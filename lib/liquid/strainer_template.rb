@@ -24,11 +24,11 @@ module Liquid
 
         include(filter)
 
-        filter_methods.merge(filter.public_instance_methods.map(&:to_s))
+        filter_methods.merge(filter.public_instance_methods)
       end
 
       def invokable?(method)
-        filter_methods.include?(method.to_s)
+        filter_methods.include?(method.to_sym)
       end
 
       private
@@ -38,13 +38,18 @@ module Liquid
       end
     end
 
-    def invoke(method, *args)
+    def invoke(method, input, *args)
+      invoke_filter(method.to_sym, input, args)
+    end
+
+    # @api private
+    def invoke_filter(method, input, args)
       if self.class.invokable?(method)
-        send(method, *args)
+        send(method, input, *args)
       elsif @context.strict_filters
         raise Liquid::UndefinedFilter, "undefined filter #{method}"
       else
-        args.first
+        input
       end
     rescue ::ArgumentError => e
       raise Liquid::ArgumentError, e.message, e.backtrace

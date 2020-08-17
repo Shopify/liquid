@@ -60,7 +60,7 @@ class StrainerTemplateUnitTest < Minitest::Test
     strainer = Context.new.strainer
     with_global_filter do
       strainer.class.add_filter(PublicMethodOverrideFilter)
-      assert(strainer.class.send(:filter_methods).include?('public_filter'))
+      assert(strainer.class.send(:filter_methods).include?(:public_filter))
     end
   end
 

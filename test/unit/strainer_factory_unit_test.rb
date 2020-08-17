@@ -6,11 +6,11 @@ class StrainerFactoryUnitTest < Minitest::Test
   include Liquid
 
   module AccessScopeFilters
-    def public_filter
+    def public_filter(_input)
       "public"
     end
 
-    def private_filter
+    def private_filter(_input)
       "private"
     end
     private :private_filter
@@ -31,13 +31,13 @@ class StrainerFactoryUnitTest < Minitest::Test
   def test_strainer
     strainer = StrainerFactory.create(@context)
     assert_equal(5, strainer.invoke('size', 'input'))
-    assert_equal("public", strainer.invoke("public_filter"))
+    assert_equal("public", strainer.invoke("public_filter", 'input'))
   end
 
   def test_stainer_raises_argument_error
     strainer = StrainerFactory.create(@context)
     assert_raises(Liquid::ArgumentError) do
-      strainer.invoke("public_filter", 1)
+      strainer.invoke("public_filter", 'input', 1)
     end
   end
 
@@ -45,11 +45,11 @@ class StrainerFactoryUnitTest < Minitest::Test
     strainer = StrainerFactory.create(@context)
 
     exception = assert_raises(Liquid::ArgumentError) do
-      strainer.invoke("public_filter", 1)
+      strainer.invoke("public_filter", 'input', 1)
     end
 
     assert_match(
-      /\ALiquid error: wrong number of arguments \((1 for 0|given 1, expected 0)\)\z/,
+      /\ALiquid error: wrong number of arguments \((2 for 1|given 2, expected 1)\)\z/,
       exception.message
     )
     assert_equal(exception.backtrace[0].split(':')[0], __FILE__)
@@ -66,8 +66,8 @@ class StrainerFactoryUnitTest < Minitest::Test
 
   def test_strainer_returns_nil_if_no_filter_method_found
     strainer = StrainerFactory.create(@context)
-    assert_nil(strainer.invoke("private_filter"))
-    assert_nil(strainer.invoke("undef_the_filter"))
+    assert_nil(strainer.invoke("private_filter", nil))
+    assert_nil(strainer.invoke("undef_the_filter", nil))
   end
 
   def test_strainer_returns_first_argument_if_no_method_and_arguments_given

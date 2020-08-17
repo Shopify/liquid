@@ -48,10 +48,11 @@ class SecurityTest < Minitest::Test
 
     test = %( {{ "some_string" | a_bad_filter }} )
 
-    template = Template.parse(test)
-    assert_equal([], (Symbol.all_symbols - current_symbols))
+    Template.parse(test).render!
 
-    template.render!
+    GC.start
+    GC.start
+
     assert_equal([], (Symbol.all_symbols - current_symbols))
   end
 

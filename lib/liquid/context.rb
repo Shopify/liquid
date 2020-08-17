@@ -93,8 +93,13 @@ module Liquid
       exception_renderer.call(e).to_s
     end
 
-    def invoke(method, *args)
-      strainer.invoke(method, *args).to_liquid
+    def invoke(method, input, *args)
+      strainer.invoke(method, input, *args).to_liquid
+    end
+
+    # @api private
+    def invoke_filter(method, input, args)
+      strainer.invoke_filter(method, input, args).to_liquid
     end
 
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
