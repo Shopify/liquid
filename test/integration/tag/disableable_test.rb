@@ -24,7 +24,8 @@ class TagDisableableTest < Minitest::Test
   def test_disables_raw
     with_disableable_tags do
       with_custom_tag('disable', DisableRaw) do
-        assert_template_result 'raw usage is not allowed in this contextfoo', '{% disable %}{% raw %}Foobar{% endraw %}{% echo "foo" %}{% enddisable %}'
+        output = Template.parse('{% disable %}{% raw %}Foobar{% endraw %}{% echo "foo" %}{% enddisable %}').render
+        assert_equal('Liquid error: raw usage is not allowed in this contextfoo', output)
       end
     end
   end
@@ -32,7 +33,8 @@ class TagDisableableTest < Minitest::Test
   def test_disables_echo_and_raw
     with_disableable_tags do
       with_custom_tag('disable', DisableRawEcho) do
-        assert_template_result 'raw usage is not allowed in this contextecho usage is not allowed in this context', '{% disable %}{% raw %}Foobar{% endraw %}{% echo "foo" %}{% enddisable %}'
+        output = Template.parse('{% disable %}{% raw %}Foobar{% endraw %}{% echo "foo" %}{% enddisable %}').render
+        assert_equal('Liquid error: raw usage is not allowed in this contextLiquid error: echo usage is not allowed in this context', output)
       end
     end
   end

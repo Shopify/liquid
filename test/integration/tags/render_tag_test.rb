@@ -127,7 +127,10 @@ class RenderTagTest < Minitest::Test
       'test_include' => '{% include "foo" %}'
     )
 
-    assert_template_result('include usage is not allowed in this context', '{% render "test_include" %}')
+    exc = assert_raises(Liquid::DisabledError) do
+      Liquid::Template.parse('{% render "test_include" %}').render!
+    end
+    assert_equal('Liquid error: include usage is not allowed in this context', exc.message)
   end
 
   def test_includes_will_not_render_inside_nested_sibling_tags
@@ -137,7 +140,8 @@ class RenderTagTest < Minitest::Test
       'test_include' => '{% include "foo" %}'
     )
 
-    assert_template_result('include usage is not allowed in this contextinclude usage is not allowed in this context', '{% render "nested_render_with_sibling_include" %}')
+    output = Liquid::Template.parse('{% render "nested_render_with_sibling_include" %}').render
+    assert_equal('Liquid error: include usage is not allowed in this contextLiquid error: include usage is not allowed in this context', output)
   end
 
   def test_render_tag_with
