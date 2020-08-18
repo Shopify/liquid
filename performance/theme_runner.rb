@@ -73,26 +73,29 @@ class ThemeRunner
 
   private
 
-  def compile_and_render(template, layout, assigns, page_template, template_file)
-    compiled_test                 = compile_test(template, layout, assigns, page_template, template_file)
+  def compile_and_render(template, layout, assigns, page_template)
+    assigns = assigns.merge(
+      'page_title' => 'Page title',
+      'template' => page_template,
+    )
+    compiled_test = compile_test(template, layout, assigns)
     assigns['content_for_layout'] = compiled_test[:tmpl].render!(assigns)
     compiled_test[:layout].render!(assigns) if layout
   end
 
   def compile_all_tests
     @compiled_tests = []
-    each_test do |liquid, layout, assigns, page_template, template_name|
-      @compiled_tests << compile_test(liquid, layout, assigns, page_template, template_name)
+    each_test do |liquid, layout, assigns, _page_template, _template_name|
+      @compiled_tests << compile_test(liquid, layout, assigns)
     end
     @compiled_tests
   end
 
-  def compile_test(template, layout, assigns, page_template, template_file)
-    tmpl            = init_template(page_template, template_file)
-    parsed_template = tmpl.parse(template).dup
+  def compile_test(template, layout, assigns)
+    parsed_template = Liquid::Template.parse(template).dup
 
     if layout
-      parsed_layout = tmpl.parse(layout)
+      parsed_layout = Liquid::Template.parse(layout)
       { tmpl: parsed_template, assigns: assigns, layout: parsed_layout }
     else
       { tmpl: parsed_template, assigns: assigns }
@@ -107,16 +110,7 @@ class ThemeRunner
     @tests.each do |test_hash|
       # Compute page_template outside of profiler run, uninteresting to profiler
       page_template = File.basename(test_hash[:template_name], File.extname(test_hash[:template_name]))
-      yield(test_hash[:liquid], test_hash[:layout], assigns, page_template, test_hash[:template_name])
+      yield(test_hash[:liquid], test_hash[:layout], assigns, page_template)
     end
-  end
-
-  # set up a new Liquid::Template object for use in `compile_and_render` and `compile_test`
-  def init_template(page_template, template_file)
-    tmpl                         = Liquid::Template.new
-    tmpl.assigns['page_title']   = 'Page title'
-    tmpl.assigns['template']     = page_template
-    tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(File.dirname(template_file))
-    tmpl
   end
 end

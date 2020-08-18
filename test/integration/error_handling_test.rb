@@ -40,26 +40,29 @@ class ErrorHandlingTest < Minitest::Test
 
   def test_standard_error
     template = Liquid::Template.parse(' {{ errors.standard_error }} ')
-    assert_equal(' Liquid error: standard error ', template.render('errors' => ErrorDrop.new))
+    context = Liquid::Context.new('errors' => ErrorDrop.new)
+    assert_equal(' Liquid error: standard error ', template.render(context))
 
-    assert_equal(1, template.errors.size)
-    assert_equal(StandardError, template.errors.first.class)
+    assert_equal(1, context.errors.size)
+    assert_equal(StandardError, context.errors.first.class)
   end
 
   def test_syntax
     template = Liquid::Template.parse(' {{ errors.syntax_error }} ')
-    assert_equal(' Liquid syntax error: syntax error ', template.render('errors' => ErrorDrop.new))
+    context = Liquid::Context.new('errors' => ErrorDrop.new)
+    assert_equal(' Liquid syntax error: syntax error ', template.render(context))
 
-    assert_equal(1, template.errors.size)
-    assert_equal(SyntaxError, template.errors.first.class)
+    assert_equal(1, context.errors.size)
+    assert_equal(SyntaxError, context.errors.first.class)
   end
 
   def test_argument
     template = Liquid::Template.parse(' {{ errors.argument_error }} ')
-    assert_equal(' Liquid error: argument error ', template.render('errors' => ErrorDrop.new))
+    context = Liquid::Context.new('errors' => ErrorDrop.new)
+    assert_equal(' Liquid error: argument error ', template.render(context))
 
-    assert_equal(1, template.errors.size)
-    assert_equal(ArgumentError, template.errors.first.class)
+    assert_equal(1, context.errors.size)
+    assert_equal(ArgumentError, context.errors.first.class)
   end
 
   def test_missing_endtag_parse_time_error
@@ -78,9 +81,10 @@ class ErrorHandlingTest < Minitest::Test
 
   def test_lax_unrecognized_operator
     template = Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ', error_mode: :lax)
-    assert_equal(' Liquid error: Unknown operator =! ', template.render)
-    assert_equal(1, template.errors.size)
-    assert_equal(Liquid::ArgumentError, template.errors.first.class)
+    context = Liquid::Context.new('errors' => ErrorDrop.new)
+    assert_equal(' Liquid error: Unknown operator =! ', template.render(context))
+    assert_equal(1, context.errors.size)
+    assert_equal(Liquid::ArgumentError, context.errors.first.class)
   end
 
   def test_with_line_numbers_adds_numbers_to_parser_errors
@@ -202,10 +206,11 @@ class ErrorHandlingTest < Minitest::Test
   def test_default_exception_renderer_with_internal_error
     template = Liquid::Template.parse('This is a runtime error: {{ errors.runtime_error }}', line_numbers: true)
 
-    output = template.render('errors' => ErrorDrop.new)
+    context = Liquid::Context.new('errors' => ErrorDrop.new)
+    output = template.render(context)
 
     assert_equal('This is a runtime error: Liquid error (line 1): internal', output)
-    assert_equal([Liquid::InternalError], template.errors.map(&:class))
+    assert_equal([Liquid::InternalError], context.errors.map(&:class))
   end
 
   def test_setting_default_exception_renderer
@@ -217,10 +222,11 @@ class ErrorHandlingTest < Minitest::Test
     }
     template = Liquid::Template.parse('This is a runtime error: {{ errors.argument_error }}')
 
-    output = template.render('errors' => ErrorDrop.new)
+    context = Liquid::Context.new('errors' => ErrorDrop.new)
+    output = template.render(context)
 
     assert_equal('This is a runtime error: ', output)
-    assert_equal([Liquid::ArgumentError], template.errors.map(&:class))
+    assert_equal([Liquid::ArgumentError], context.errors.map(&:class))
   ensure
     Liquid::Template.default_exception_renderer = old_exception_renderer if old_exception_renderer
   end
@@ -233,11 +239,12 @@ class ErrorHandlingTest < Minitest::Test
       e.cause
     }
 
-    output = template.render({ 'errors' => ErrorDrop.new }, exception_renderer: handler)
+    context = Liquid::Context.new('errors' => ErrorDrop.new)
+    output = template.render(context, exception_renderer: handler)
 
     assert_equal('This is a runtime error: runtime error', output)
     assert_equal([Liquid::InternalError], exceptions.map(&:class))
-    assert_equal(exceptions, template.errors)
+    assert_equal(exceptions, context.errors)
     assert_equal('#<RuntimeError: runtime error>', exceptions.first.cause.inspect)
   end
 
@@ -250,15 +257,16 @@ class ErrorHandlingTest < Minitest::Test
   def test_included_template_name_with_line_numbers
     old_file_system = Liquid::Template.file_system
 
+    context = Liquid::Context.new('errors' => ErrorDrop.new)
     begin
       Liquid::Template.file_system = TestFileSystem.new
 
       template = Liquid::Template.parse("Argument error:\n{% include 'product' %}", line_numbers: true)
-      page     = template.render('errors' => ErrorDrop.new)
+      page     = template.render(context)
     ensure
       Liquid::Template.file_system = old_file_system
     end
     assert_equal("Argument error:\nLiquid error (product line 1): argument error", page)
-    assert_equal("product", template.errors.first.template_name)
+    assert_equal("product", context.errors.first.template_name)
   end
 end

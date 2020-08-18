@@ -16,7 +16,7 @@ module Liquid
   #
   class Template
     attr_accessor :root
-    attr_reader :resource_limits, :warnings
+    attr_reader :warnings
 
     class TagRegistry
       include Enumerable
@@ -98,11 +98,6 @@ module Liquid
       end
     end
 
-    def initialize
-      @rethrow_errors  = false
-      @resource_limits = ResourceLimits.new(Template.default_resource_limits)
-    end
-
     # Parse source code.
     # Returns self for easy chaining
     def parse(source, options = {})
@@ -113,22 +108,6 @@ module Liquid
       @root         = Document.parse(tokenize(source), parse_context)
       @warnings     = parse_context.warnings
       self
-    end
-
-    def registers
-      @registers ||= {}
-    end
-
-    def assigns
-      @assigns ||= {}
-    end
-
-    def instance_assigns
-      @instance_assigns ||= {}
-    end
-
-    def errors
-      @errors ||= []
     end
 
     # Render takes a hash with local variables.
@@ -145,37 +124,18 @@ module Liquid
     #  * <tt>registers</tt> : hash with register variables. Those can be accessed from
     #    filters and tags and might be useful to integrate liquid more with its host application
     #
-    def render(*args)
+    def render(assigns_or_context = nil, options = nil)
       return '' if @root.nil?
 
-      context = case args.first
-      when Liquid::Context
-        c = args.shift
-
-        if @rethrow_errors
-          c.exception_renderer = ->(_e) { raise }
-        end
-
-        c
-      when Liquid::Drop
-        drop         = args.shift
-        drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
-      when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
-      when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
-      else
-        raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
-      end
+      context = coerce_context(assigns_or_context)
 
       output = nil
 
       context_register = context.registers.is_a?(StaticRegisters) ? context.registers.static : context.registers
 
-      case args.last
+      case options
       when Hash
-        options = args.pop
-        output  = options[:output] if options[:output]
+        output = options[:output] if options[:output]
 
         options[:registers]&.each do |key, register|
           context_register[key] = register
@@ -183,7 +143,7 @@ module Liquid
 
         apply_options_to_context(context, options)
       when Module, Array
-        context.add_filters(args.pop)
+        context.add_filters(options)
       end
 
       # Retrying a render resets resource usage
@@ -197,14 +157,15 @@ module Liquid
         end
       rescue Liquid::MemoryError => e
         context.handle_error(e)
-      ensure
-        @errors = context.errors
       end
     end
 
-    def render!(*args)
-      @rethrow_errors = true
-      render(*args)
+    def render!(assigns_or_context = nil, options = nil)
+      context = coerce_context(assigns_or_context)
+      # rethrow errors
+      context.exception_renderer = ->(_e) { raise }
+
+      render(context, options)
     end
 
     def render_to_output_buffer(context, output)
@@ -212,6 +173,22 @@ module Liquid
     end
 
     private
+
+    def coerce_context(assigns_or_context)
+      case assigns_or_context
+      when Liquid::Context
+        assigns_or_context
+      when Liquid::Drop
+        drop = assigns_or_context
+        drop.context = Context.build(environments: [drop])
+      when Hash
+        Context.build(environments: [assigns_or_context])
+      when nil
+        Context.build
+      else
+        raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
+      end
+    end
 
     def tokenize(source)
       Tokenizer.new(source, @line_numbers)

@@ -217,8 +217,9 @@ class IncludeTagTest < Minitest::Test
     Liquid::Template.file_system = TestFileSystem.new
 
     a = Liquid::Template.parse(' {% include "nested_template" %}')
-    a.render!
-    assert_empty(a.errors)
+    context = Liquid::Context.new
+    a.render!(context)
+    assert_empty(context.errors)
   end
 
   def test_passing_options_to_included_templates
@@ -257,9 +258,10 @@ class IncludeTagTest < Minitest::Test
 
   def test_including_with_strict_variables
     template = Liquid::Template.parse("{% include 'simple' %}", error_mode: :warn)
-    template.render(nil, strict_variables: true)
+    context = Liquid::Context.new
+    template.render(context, strict_variables: true)
 
-    assert_equal([], template.errors)
+    assert_equal([], context.errors)
   end
 
   def test_break_through_include
