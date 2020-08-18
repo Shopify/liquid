@@ -44,6 +44,7 @@ module Liquid
       @interrupts    = []
       @filters       = []
       @global_filter = nil
+      @disabled_tags = {}
     end
     # rubocop:enable Metrics/ParameterLists
 
@@ -144,6 +145,7 @@ module Liquid
         subcontext.strainer = nil
         subcontext.errors   = errors
         subcontext.warnings = warnings
+        subcontext.disabled_tags = @disabled_tags
       end
     end
 
@@ -208,9 +210,24 @@ module Liquid
       end
     end
 
+    def with_disabled_tags(tag_names)
+      tag_names.each do |name|
+        @disabled_tags[name] = @disabled_tags.fetch(name, 0) + 1
+      end
+      yield
+    ensure
+      tag_names.each do |name|
+        @disabled_tags[name] -= 1
+      end
+    end
+
+    def tag_disabled?(tag_name)
+      @disabled_tags.fetch(tag_name, 0) > 0
+    end
+
     protected
 
-    attr_writer :base_scope_depth, :warnings, :errors, :strainer, :filters
+    attr_writer :base_scope_depth, :warnings, :errors, :strainer, :filters, :disabled_tags
 
     private
 

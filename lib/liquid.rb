@@ -63,6 +63,8 @@ require 'liquid/expression'
 require 'liquid/context'
 require 'liquid/parser_switching'
 require 'liquid/tag'
+require 'liquid/tag/disabler'
+require 'liquid/tag/disableable'
 require 'liquid/block'
 require 'liquid/block_body'
 require 'liquid/document'
@@ -86,4 +88,3 @@ require 'liquid/template_factory'
 # Load all the tags of the standard library
 #
 Dir["#{__dir__}/liquid/tags/*.rb"].each { |f| require f }
-Dir["#{__dir__}/liquid/registers/*.rb"].each { |f| require f }
