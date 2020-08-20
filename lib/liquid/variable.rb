@@ -123,7 +123,7 @@ module Liquid
           filter_args << Expression.parse(a)
         end
       end
-      result = [filter_name, filter_args]
+      result = [filter_name.to_sym, filter_args]
       result << keyword_args if keyword_args
       result
     end

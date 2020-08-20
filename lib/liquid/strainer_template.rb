@@ -24,17 +24,17 @@ module Liquid
 
         include(filter)
 
-        filter_methods.merge(filter.public_instance_methods.map(&:to_s))
+        filter.public_instance_methods.each { |name| filter_methods[name] = true }
       end
 
       def invokable?(method)
-        filter_methods.include?(method.to_s)
+        filter_methods.key?(method.to_sym)
       end
 
       private
 
       def filter_methods
-        @filter_methods ||= Set.new
+        @filter_methods ||= {}
       end
     end
 
