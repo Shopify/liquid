@@ -11,8 +11,11 @@ module Liquid
   #    {% endfor %}
   #
   class Break < Tag
-    def interrupt
-      BreakInterrupt.new
+    INTERRUPT = BreakInterrupt.new.freeze
+
+    def render_to_output_buffer(context, output)
+      context.push_interrupt(INTERRUPT)
+      output
     end
   end
 

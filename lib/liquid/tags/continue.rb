@@ -11,8 +11,11 @@ module Liquid
   #    {% endfor %}
   #
   class Continue < Tag
-    def interrupt
-      ContinueInterrupt.new
+    INTERRUPT = ContinueInterrupt.new.freeze
+
+    def render_to_output_buffer(context, output)
+      context.push_interrupt(INTERRUPT)
+      output
     end
   end
 
