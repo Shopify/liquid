@@ -25,10 +25,9 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      previous_output_size = output.bytesize
-      super
-      context.scopes.last[@to] = output
-      context.resource_limits.assign_score += (output.bytesize - previous_output_size)
+      capture_output = render(context)
+      context.scopes.last[@to] = capture_output
+      context.resource_limits.assign_score += capture_output.bytesize
       output
     end
 

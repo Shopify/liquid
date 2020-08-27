@@ -176,7 +176,7 @@ class TemplateTest < Minitest::Test
   end
 
   def test_resource_limits_hash_in_template_gets_updated_even_if_no_limits_are_set
-    t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
+    t = Template.parse("{% for a in (1..100) %}x{% assign foo = 1 %} {% endfor %}")
     t.render!
     assert(t.resource_limits.assign_score > 0)
     assert(t.resource_limits.render_score > 0)
@@ -215,7 +215,7 @@ class TemplateTest < Minitest::Test
 
   def test_default_resource_limits_unaffected_by_render_with_context
     context = Context.new
-    t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
+    t = Template.parse("{% for a in (1..100) %}x{% assign foo = 1 %} {% endfor %}")
     t.render!(context)
     assert(context.resource_limits.assign_score > 0)
     assert(context.resource_limits.render_score > 0)

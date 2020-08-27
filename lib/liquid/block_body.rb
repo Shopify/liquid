@@ -130,6 +130,26 @@ module Liquid
       @blank
     end
 
+    # Remove blank strings in the block body for a control flow tag (e.g. `if`, `for`, `case`, `unless`)
+    # with a blank body.
+    #
+    # For example, in a conditional assignment like the following
+    #
+    # ```
+    # {% if size > max_size %}
+    #   {% assign size = max_size %}
+    # {% endif %}
+    # ```
+    #
+    # we assume the intention wasn't to output the blank spaces in the `if` tag's block body, so this method
+    # will remove them to reduce the render output size.
+    #
+    # Note that it is now preferred to use the `liquid` tag for this use case.
+    def remove_blank_strings
+      raise "remove_blank_strings only support being called on a blank block body" unless @blank
+      @nodelist.reject! { |node| node.instance_of?(String) }
+    end
+
     def render(context)
       render_to_output_buffer(context, +'')
     end
@@ -143,10 +163,8 @@ module Liquid
 
         if node.instance_of?(String)
           output << node
-        elsif node.instance_of?(Variable)
-          render_node(context, output, node)
         else
-          render_node(context, node.blank? ? +'' : output, node)
+          render_node(context, output, node)
           # If we get an Interrupt that means the block must stop processing. An
           # Interrupt is any command that stops block execution such as {% break %}
           # or {% continue %}. These tags may also occur through Block or Include tags.
