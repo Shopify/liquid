@@ -54,21 +54,20 @@ module Liquid
     end
 
     # @api private
-    def self.unknown_tag_in_liquid_tag(end_tag_name, end_tag_markup)
-      yield end_tag_name, end_tag_markup
-    ensure
-      Usage.increment("liquid_tag_contains_outer_tag") unless $ERROR_INFO.is_a?(SyntaxError)
+    def self.unknown_tag_in_liquid_tag(tag, parse_context)
+      Block.raise_unknown_tag(tag, 'liquid', '%}', parse_context)
     end
 
-    private def parse_liquid_tag(markup, parse_context, &block)
+    private def parse_liquid_tag(markup, parse_context)
       liquid_tag_tokenizer = Tokenizer.new(markup, line_number: parse_context.line_number, for_liquid_tag: true)
-      parse_for_liquid_tag(liquid_tag_tokenizer, parse_context) do |end_tag_name, end_tag_markup|
-        next unless end_tag_name
-        self.class.unknown_tag_in_liquid_tag(end_tag_name, end_tag_markup, &block)
+      parse_for_liquid_tag(liquid_tag_tokenizer, parse_context) do |end_tag_name, _end_tag_markup|
+        if end_tag_name
+          BlockBody.unknown_tag_in_liquid_tag(end_tag_name, parse_context)
+        end
       end
     end
 
-    private def parse_for_document(tokenizer, parse_context, &block)
+    private def parse_for_document(tokenizer, parse_context)
       while (token = tokenizer.shift)
         next if token.empty?
         case
@@ -87,7 +86,7 @@ module Liquid
           end
 
           if tag_name == 'liquid'
-            parse_liquid_tag(markup, parse_context, &block)
+            parse_liquid_tag(markup, parse_context)
             next
           end
 
