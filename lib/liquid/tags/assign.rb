@@ -27,7 +27,7 @@ module Liquid
     def render_to_output_buffer(context, output)
       val = @from.render(context)
       context.scopes.last[@to] = val
-      context.resource_limits.assign_score += assign_score_of(val)
+      context.resource_limits.increment_assign_score(assign_score_of(val))
       output
     end
 
