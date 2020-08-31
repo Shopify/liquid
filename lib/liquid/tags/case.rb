@@ -19,7 +19,7 @@ module Liquid
     end
 
     def parse(tokens)
-      body = BlockBody.new
+      body = new_body
       body = @blocks.last.attachment while parse_body(body, tokens)
       if blank?
         @blocks.each { |condition| condition.attachment.remove_blank_strings }
@@ -59,7 +59,7 @@ module Liquid
     private
 
     def record_when_condition(markup)
-      body = BlockBody.new
+      body = new_body
 
       while markup
         unless markup =~ WhenSyntax
@@ -80,7 +80,7 @@ module Liquid
       end
 
       block = ElseCondition.new
-      block.attach(BlockBody.new)
+      block.attach(new_body)
       @blocks << block
     end
 
