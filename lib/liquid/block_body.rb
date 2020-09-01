@@ -58,6 +58,28 @@ module Liquid
       Block.raise_unknown_tag(tag, 'liquid', '%}', parse_context)
     end
 
+    # @api private
+    def self.raise_missing_tag_terminator(token, parse_context)
+      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_termination", token: token, tag_end: TagEnd.inspect)
+    end
+
+    # @api private
+    def self.raise_missing_variable_terminator(token, parse_context)
+      raise SyntaxError, parse_context.locale.t("errors.syntax.variable_termination", token: token, tag_end: VariableEnd.inspect)
+    end
+
+    # @api private
+    def self.render_node(context, output, node)
+      node.render_to_output_buffer(context, output)
+    rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
+      context.handle_error(e, node.line_number)
+    rescue MemoryError
+      raise
+    rescue ::StandardError => e
+      line_number = node.is_a?(String) ? nil : node.line_number
+      output << context.handle_error(e, line_number)
+    end
+
     private def parse_liquid_tag(markup, parse_context)
       liquid_tag_tokenizer = Tokenizer.new(markup, line_number: parse_context.line_number, for_liquid_tag: true)
       parse_for_liquid_tag(liquid_tag_tokenizer, parse_context) do |end_tag_name, _end_tag_markup|
@@ -74,7 +96,7 @@ module Liquid
         when token.start_with?(TAGSTART)
           whitespace_handler(token, parse_context)
           unless token =~ FullToken
-            raise_missing_tag_terminator(token, parse_context)
+            BlockBody.raise_missing_tag_terminator(token, parse_context)
           end
           tag_name = Regexp.last_match(2)
           markup   = Regexp.last_match(4)
@@ -179,14 +201,7 @@ module Liquid
     private
 
     def render_node(context, output, node)
-      node.render_to_output_buffer(context, output)
-    rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
-      context.handle_error(e, node.line_number)
-    rescue MemoryError
-      raise
-    rescue ::StandardError => e
-      line_number = node.is_a?(String) ? nil : node.line_number
-      output << context.handle_error(e, line_number)
+      BlockBody.render_node(context, output, node)
     end
 
     def create_variable(token, parse_context)
@@ -194,15 +209,17 @@ module Liquid
         markup = content.first
         return Variable.new(markup, parse_context)
       end
-      raise_missing_variable_terminator(token, parse_context)
+      BlockBody.raise_missing_variable_terminator(token, parse_context)
     end
 
+    # @deprecated Use {.raise_missing_tag_terminator} instead
     def raise_missing_tag_terminator(token, parse_context)
-      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_termination", token: token, tag_end: TagEnd.inspect)
+      BlockBody.raise_missing_tag_terminator(token, parse_context)
     end
 
+    # @deprecated Use {.raise_missing_variable_terminator} instead
     def raise_missing_variable_terminator(token, parse_context)
-      raise SyntaxError, parse_context.locale.t("errors.syntax.variable_termination", token: token, tag_end: VariableEnd.inspect)
+      BlockBody.raise_missing_variable_terminator(token, parse_context)
     end
 
     def registered_tags
