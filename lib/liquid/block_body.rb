@@ -170,7 +170,7 @@ module Liquid
         end
         idx += 1
 
-        context.resource_limits.check_render_length(output.bytesize)
+        context.resource_limits.increment_write_score(output)
       end
 
       output

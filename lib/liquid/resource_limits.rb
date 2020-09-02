@@ -22,8 +22,16 @@ module Liquid
       raise_limits_reached if @assign_score_limit && @assign_score > @assign_score_limit
     end
 
-    def check_render_length(output_byte_size)
-      raise_limits_reached if @render_length_limit && output_byte_size > @render_length_limit
+    # update either render_length or assign_score based on whether or not the writes are captured
+    def increment_write_score(output)
+      if (last_captured = @last_capture_length)
+        captured = output.bytesize
+        increment = captured - last_captured
+        @last_capture_length = captured
+        increment_assign_score(increment)
+      elsif @render_length_limit && output.bytesize > @render_length_limit
+        raise_limits_reached
+      end
     end
 
     def raise_limits_reached
@@ -37,7 +45,18 @@ module Liquid
 
     def reset
       @reached_limit = false
+      @last_capture_length = nil
       @render_score = @assign_score = 0
+    end
+
+    def with_capture
+      old_capture_length = @last_capture_length
+      begin
+        @last_capture_length = 0
+        yield
+      ensure
+        @last_capture_length = old_capture_length
+      end
     end
   end
 end
