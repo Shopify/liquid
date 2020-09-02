@@ -28,8 +28,8 @@ module Liquid
       @body.nodelist
     end
 
-    def unknown_tag(tag, _params, _tokens)
-      Block.raise_unknown_tag(tag, block_name, block_delimiter, parse_context)
+    def unknown_tag(tag_name, _markup, _tokenizer)
+      Block.raise_unknown_tag(tag_name, block_name, block_delimiter, parse_context)
     end
 
     # @api private
