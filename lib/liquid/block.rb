@@ -29,6 +29,11 @@ module Liquid
     end
 
     def unknown_tag(tag, _params, _tokens)
+      Block.raise_unknown_tag(tag, block_name, block_delimiter, parse_context)
+    end
+
+    # @api private
+    def self.raise_unknown_tag(tag, block_name, block_delimiter, parse_context)
       if tag == 'else'
         raise SyntaxError, parse_context.locale.t("errors.syntax.unexpected_else",
           block_name: block_name)
