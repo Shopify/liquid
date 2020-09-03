@@ -31,9 +31,14 @@ module Liquid
     def parse(tokens)
       while parse_body(@blocks.last.attachment, tokens)
       end
-      if blank?
+      @blank = @blocks.all? { |condition| condition.attachment.blank? }
+      if @blank
         @blocks.each { |condition| condition.attachment.remove_blank_strings }
       end
+    end
+
+    def blank?
+      @blank
     end
 
     def unknown_tag(tag, markup, tokens)
