@@ -141,23 +141,16 @@ module Liquid
       while (node = @nodelist[idx])
         previous_output_size = output.bytesize
 
-        case node
-        when String
+        if node.instance_of?(String)
           output << node
-        when Variable
+        elsif node.instance_of?(Variable)
           render_node(context, output, node)
-        when Block
+        else
           render_node(context, node.blank? ? +'' : output, node)
-          break if context.interrupt? # might have happened in a for-block
-        when Continue, Break
           # If we get an Interrupt that means the block must stop processing. An
           # Interrupt is any command that stops block execution such as {% break %}
-          # or {% continue %}
-          context.push_interrupt(node.interrupt)
-          break
-        else # Other non-Block tags
-          render_node(context, output, node)
-          break if context.interrupt? # might have happened through an include
+          # or {% continue %}. These tags may also occur through Block or Include tags.
+          break if context.interrupt? # might have happened in a for-block
         end
         idx += 1
 
