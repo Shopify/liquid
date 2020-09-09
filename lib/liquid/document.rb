@@ -48,7 +48,7 @@ module Liquid
     private
 
     def new_body
-      Liquid::BlockBody.new
+      parse_context.new_block_body
     end
   end
 end

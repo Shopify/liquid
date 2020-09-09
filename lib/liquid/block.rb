@@ -59,7 +59,7 @@ module Liquid
 
     # @api public
     def new_body
-      BlockBody.new
+      parse_context.new_block_body
     end
 
     # @api public
