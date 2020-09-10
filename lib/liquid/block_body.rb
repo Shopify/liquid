@@ -77,7 +77,10 @@ module Liquid
       raise
     rescue ::StandardError => e
       line_number = node.is_a?(String) ? nil : node.line_number
-      output << context.handle_error(e, line_number)
+      error_message = context.handle_error(e, line_number)
+      if node.instance_of?(Variable) || !node.blank? # conditional for backwards compatibility
+        output << error_message
+      end
     end
 
     private def parse_liquid_tag(markup, parse_context)
