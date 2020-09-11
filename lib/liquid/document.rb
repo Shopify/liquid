@@ -1,15 +1,26 @@
 # frozen_string_literal: true
 
 module Liquid
-  class Document < BlockBody
+  class Document
     def self.parse(tokens, parse_context)
-      doc = new
+      doc = new(parse_context)
       doc.parse(tokens, parse_context)
       doc
     end
 
+    attr_reader :parse_context, :body
+
+    def initialize(parse_context)
+      @parse_context = parse_context
+      @body = new_body
+    end
+
+    def nodelist
+      @body.nodelist
+    end
+
     def parse(tokens, parse_context)
-      super do |end_tag_name, _end_tag_params|
+      @body.parse(tokens, parse_context) do |end_tag_name, _end_tag_params|
         unknown_tag(end_tag_name, parse_context) if end_tag_name
       end
     rescue SyntaxError => e
@@ -24,6 +35,20 @@ module Liquid
       else
         raise SyntaxError, parse_context.locale.t("errors.syntax.unknown_tag", tag: tag)
       end
+    end
+
+    def render_to_output_buffer(context, output)
+      @body.render_to_output_buffer(context, output)
+    end
+
+    def render(context)
+      @body.render(context)
+    end
+
+    private
+
+    def new_body
+      parse_context.new_block_body
     end
   end
 end

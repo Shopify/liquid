@@ -54,7 +54,7 @@ module Liquid
       super
       @from = @limit = nil
       parse_with_selected_parser(markup)
-      @for_block = BlockBody.new
+      @for_block = new_body
       @else_block = nil
     end
 
@@ -74,7 +74,7 @@ module Liquid
 
     def unknown_tag(tag, markup, tokens)
       return super unless tag == 'else'
-      @else_block = BlockBody.new
+      @else_block = new_body
     end
 
     def render_to_output_buffer(context, output)

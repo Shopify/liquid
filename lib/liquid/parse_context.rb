@@ -19,6 +19,10 @@ module Liquid
       @options[option_key]
     end
 
+    def new_block_body
+      Liquid::BlockBody.new
+    end
+
     def partial=(value)
       @partial = value
       @options = value ? partial_options : @template_options

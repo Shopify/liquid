@@ -10,7 +10,7 @@ module Liquid
     end
 
     def parse(tokens)
-      @body = BlockBody.new
+      @body = new_body
       while parse_body(@body, tokens)
       end
     end
@@ -55,8 +55,14 @@ module Liquid
       @block_delimiter ||= "end#{block_name}"
     end
 
-    protected
+    private
 
+    # @api public
+    def new_body
+      parse_context.new_block_body
+    end
+
+    # @api public
     def parse_body(body, tokens)
       if parse_context.depth >= MAX_DEPTH
         raise StackLevelError, "Nesting too deep"
