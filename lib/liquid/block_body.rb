@@ -71,15 +71,23 @@ module Liquid
     # @api private
     def self.render_node(context, output, node)
       node.render_to_output_buffer(context, output)
-    rescue UndefinedVariable, UndefinedDropMethod, UndefinedFilter => e
-      context.handle_error(e, node.line_number)
-    rescue MemoryError
-      raise
-    rescue ::StandardError => e
-      line_number = node.is_a?(String) ? nil : node.line_number
-      error_message = context.handle_error(e, line_number)
-      if node.instance_of?(Variable) || !node.blank? # conditional for backwards compatibility
-        output << error_message
+    rescue => exc
+      blank_tag = !node.instance_of?(Variable) && node.blank?
+      rescue_render_node(context, output, node.line_number, exc, blank_tag)
+    end
+
+    # @api private
+    def self.rescue_render_node(context, output, line_number, exc, blank_tag)
+      case exc
+      when MemoryError
+        raise
+      when UndefinedVariable, UndefinedDropMethod, UndefinedFilter
+        context.handle_error(exc, line_number)
+      else
+        error_message = context.handle_error(exc, line_number)
+        unless blank_tag # conditional for backwards compatibility
+          output << error_message
+        end
       end
     end
 
