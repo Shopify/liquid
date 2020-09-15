@@ -43,15 +43,22 @@ class SecurityTest < Minitest::Test
     assert_equal(expected, Template.parse(text).render!(@assigns, filters: SecurityFilter))
   end
 
-  def test_does_not_add_filters_to_symbol_table
+  def test_does_not_permanently_add_filters_to_symbol_table
     current_symbols = Symbol.all_symbols
 
-    test = %( {{ "some_string" | a_bad_filter }} )
+    # MRI imprecisely marks objects found on the C stack, which can result
+    # in uninitialized memory being marked. This can even result in the test failing
+    # deterministically for a given compilation of ruby. Using a separate thread will
+    # keep these writes of the symbol pointer on a separate stack that will be garbage
+    # collected after Thread#join.
+    Thread.new do
+      test = %( {{ "some_string" | a_bad_filter }} )
+      Template.parse(test).render!
+      nil
+    end.join
 
-    template = Template.parse(test)
-    assert_equal([], (Symbol.all_symbols - current_symbols))
+    GC.start
 
-    template.render!
     assert_equal([], (Symbol.all_symbols - current_symbols))
   end
 
