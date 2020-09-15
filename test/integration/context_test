@@ -65,7 +65,7 @@ class ArrayLike
   end
 end
 
-class ContextUnitTest < Minitest::Test
+class ContextTest < Minitest::Test
   include Liquid
 
   def setup
