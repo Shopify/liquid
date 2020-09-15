@@ -2,31 +2,18 @@
 
 require 'test_helper'
 
-class BlockTest < Minitest::Test
+class TagTest < Minitest::Test
   include Liquid
 
-  def test_unexpected_end_tag
-    exc = assert_raises(SyntaxError) do
-      Template.parse("{% if true %}{% endunless %}")
-    end
-    assert_equal(exc.message, "Liquid syntax error: 'endunless' is not a valid delimiter for if tags. use endif")
-  end
-
-  def test_with_custom_tag
-    with_custom_tag('testtag', Block) do
-      assert Liquid::Template.parse("{% testtag %} {% endtesttag %}")
-    end
-  end
-
-  def test_custom_block_tags_have_a_default_render_to_output_buffer_method_for_backwards_compatibility
-    klass1 = Class.new(Block) do
+  def test_custom_tags_have_a_default_render_to_output_buffer_method_for_backwards_compatibility
+    klass1 = Class.new(Tag) do
       def render(*)
         'hello'
       end
     end
 
     with_custom_tag('blabla', klass1) do
-      template = Liquid::Template.parse("{% blabla %} bla {% endblabla %}")
+      template = Liquid::Template.parse("{% blabla %}")
 
       assert_equal 'hello', template.render
 
@@ -44,7 +31,7 @@ class BlockTest < Minitest::Test
     end
 
     with_custom_tag('blabla', klass2) do
-      template = Liquid::Template.parse("{% blabla %} foo {% endblabla %}")
+      template = Liquid::Template.parse("{% blabla %}")
 
       assert_equal 'foohellobar', template.render
 
