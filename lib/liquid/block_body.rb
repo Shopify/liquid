@@ -145,7 +145,11 @@ module Liquid
       if token[2] == WhitespaceControl
         previous_token = @nodelist.last
         if previous_token.is_a?(String)
+          first_byte = previous_token.getbyte(0)
           previous_token.rstrip!
+          if previous_token.empty? && parse_context[:bug_compatible_whitespace_trimming] && first_byte
+            previous_token << first_byte
+          end
         end
       end
       parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
