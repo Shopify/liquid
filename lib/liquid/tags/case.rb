@@ -68,7 +68,7 @@ module Liquid
 
         markup = Regexp.last_match(2)
 
-        block = Condition.new(@left, '==', Expression.parse(Regexp.last_match(1)))
+        block = Condition.new(@left, '==', Condition.parse_expression(Regexp.last_match(1)))
         block.attach(body)
         @blocks << block
       end
