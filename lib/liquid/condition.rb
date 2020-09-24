@@ -34,10 +34,6 @@ module Liquid
         @method_name = method_name
         @to_s = to_s
       end
-
-      def to_liquid
-        to_s
-      end
     end
 
     @@method_literals = {
