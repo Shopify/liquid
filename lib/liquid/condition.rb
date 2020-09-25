@@ -27,8 +27,26 @@ module Liquid
       end,
     }
 
+    class MethodLiteral
+      attr_reader :method_name, :to_s
+
+      def initialize(method_name, to_s)
+        @method_name = method_name
+        @to_s = to_s
+      end
+    end
+
+    @@method_literals = {
+      'blank' => MethodLiteral.new(:blank?, '').freeze,
+      'empty' => MethodLiteral.new(:empty?, '').freeze,
+    }
+
     def self.operators
       @@operators
+    end
+
+    def self.parse_expression(markup)
+      @@method_literals[markup] || Expression.parse(markup)
     end
 
     attr_reader :attachment, :child_condition
@@ -91,7 +109,7 @@ module Liquid
     private
 
     def equal_variables(left, right)
-      if left.is_a?(Liquid::Expression::MethodLiteral)
+      if left.is_a?(MethodLiteral)
         if right.respond_to?(left.method_name)
           return right.send(left.method_name)
         else
@@ -99,7 +117,7 @@ module Liquid
         end
       end
 
-      if right.is_a?(Liquid::Expression::MethodLiteral)
+      if right.is_a?(MethodLiteral)
         if left.respond_to?(right.method_name)
           return left.send(right.method_name)
         else

@@ -2,25 +2,12 @@
 
 module Liquid
   class Expression
-    class MethodLiteral
-      attr_reader :method_name, :to_s
-
-      def initialize(method_name, to_s)
-        @method_name = method_name
-        @to_s = to_s
-      end
-
-      def to_liquid
-        to_s
-      end
-    end
-
     LITERALS = {
       nil => nil, 'nil' => nil, 'null' => nil, '' => nil,
       'true' => true,
       'false' => false,
-      'blank' => MethodLiteral.new(:blank?, '').freeze,
-      'empty' => MethodLiteral.new(:empty?, '').freeze
+      'blank' => '',
+      'empty' => ''
     }.freeze
 
     SINGLE_QUOTED_STRING = /\A'(.*)'\z/m
