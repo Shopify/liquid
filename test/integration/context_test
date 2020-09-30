@@ -492,6 +492,17 @@ class ContextTest < Minitest::Test
     assert_equal('static', context['unshadowed'])
   end
 
+  def test_static_environments_are_frozen
+    context = Context.build(
+      static_environments: [{
+        'lazy' => -> { 1 }
+      }],
+    )
+    assert_raises(FrozenError) do
+      context['lazy']
+    end
+  end
+
   def test_apply_global_filter_when_no_global_filter_exist
     context = Context.new
     assert_equal('hi', context.apply_global_filter('hi'))

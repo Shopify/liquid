@@ -18,15 +18,16 @@ module Liquid
     attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
     # rubocop:disable Metrics/ParameterLists
-    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {})
+    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: [])
       new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments)
     end
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {})
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = [])
       @environments = [environments]
       @environments.flatten!
 
-      @static_environments = [static_environments].flat_map(&:freeze).freeze
+      static_environments = [static_environments] if static_environments.is_a?(Hash)
+      @static_environments = static_environments.map(&:freeze).freeze
       @scopes              = [(outer_scope || {})]
       @registers           = registers
       @errors              = []
