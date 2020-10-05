@@ -23,6 +23,7 @@ class RawTagTest < Minitest::Test
     assert_template_result(' Foobar {% {% {% ', '{% raw %} Foobar {% {% {% {% endraw %}')
     assert_template_result(' test {% raw %} {% endraw %}', '{% raw %} test {% raw %} {% {% endraw %}endraw %}')
     assert_template_result(' Foobar {{ invalid 1', '{% raw %} Foobar {{ invalid {% endraw %}{{ 1 }}')
+    assert_template_result(' Foobar {% foo {% bar %}', '{% raw %} Foobar {% foo {% bar %}{% endraw %}')
   end
 
   def test_invalid_raw

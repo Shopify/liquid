@@ -14,9 +14,9 @@ module Liquid
     def parse(tokens)
       @body = +''
       while (token = tokens.shift)
-        if token =~ FullTokenPossiblyInvalid
+        if token =~ FullTokenPossiblyInvalid && block_delimiter == Regexp.last_match(2)
           @body << Regexp.last_match(1) if Regexp.last_match(1) != ""
-          return if block_delimiter == Regexp.last_match(2)
+          return
         end
         @body << token unless token.empty?
       end
