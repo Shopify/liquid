@@ -34,17 +34,18 @@ module Liquid
       @strict_variables    = false
       @resource_limits     = resource_limits || ResourceLimits.new(Template.default_resource_limits)
       @base_scope_depth    = 0
-      squash_instance_assigns_with_environments
+      @interrupts          = []
+      @filters             = []
+      @global_filter       = nil
+      @disabled_tags       = {}
 
       self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors
         self.exception_renderer = ->(_e) { raise }
       end
 
-      @interrupts    = []
-      @filters       = []
-      @global_filter = nil
-      @disabled_tags = {}
+      # Do this last, since it could result in this object being passed to a Proc in the environment
+      squash_instance_assigns_with_environments
     end
     # rubocop:enable Metrics/ParameterLists
 
