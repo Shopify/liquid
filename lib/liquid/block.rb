@@ -47,6 +47,10 @@ module Liquid
       end
     end
 
+    def raise_tag_never_closed(block_name)
+      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_never_closed", block_name: block_name)
+    end
+
     def block_name
       @tag_name
     end
@@ -73,9 +77,7 @@ module Liquid
           @blank &&= body.blank?
 
           return false if end_tag_name == block_delimiter
-          unless end_tag_name
-            raise SyntaxError, parse_context.locale.t("errors.syntax.tag_never_closed", block_name: block_name)
-          end
+          raise_tag_never_closed(block_name) unless end_tag_name
 
           # this tag is not registered with the system
           # pass it to the current block for special handling or error reporting
