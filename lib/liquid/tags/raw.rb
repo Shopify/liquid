@@ -21,7 +21,7 @@ module Liquid
         @body << token unless token.empty?
       end
 
-      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_never_closed", block_name: block_name)
+      raise_tag_never_closed(block_name)
     end
 
     def render_to_output_buffer(_context, output)
