@@ -5,7 +5,7 @@ module Liquid
     def self.parse(tokens, parse_context)
       doc = new(parse_context)
       doc.parse(tokens, parse_context)
-      doc
+      Optimizer.new.optimize(doc)
     end
 
     attr_reader :parse_context, :body
