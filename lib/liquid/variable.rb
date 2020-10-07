@@ -31,6 +31,8 @@ module Liquid
       @line_number   = parse_context.line_number
 
       parse_with_selected_parser(markup)
+
+      Optimizer.optimize_variable(self)
     end
 
     def raw
