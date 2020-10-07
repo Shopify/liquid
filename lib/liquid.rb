@@ -84,6 +84,7 @@ require 'liquid/usage'
 require 'liquid/register'
 require 'liquid/static_registers'
 require 'liquid/template_factory'
+require 'liquid/optimizer'
 
 # Load all the tags of the standard library
 #

@@ -281,6 +281,10 @@ module Liquid
       input.to_s + string.to_s
     end
 
+    def append_all(input, *items)
+      input.to_s + items.join
+    end
+
     def concat(input, array)
       unless array.respond_to?(:to_ary)
         raise ArgumentError, "concat filter requires an array argument"
