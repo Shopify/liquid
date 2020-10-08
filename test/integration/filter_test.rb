@@ -153,6 +153,15 @@ class FiltersTest < Minitest::Test
     # tap still treated as a non-existent filter
     assert_equal("1000", Template.parse("{{var | tap}}").render!('var' => 1000))
   end
+
+  def test_liquid_argument_error
+    source = "{{ '' | size: 'too many args' }}"
+    exc = assert_raises(Liquid::ArgumentError) do
+      Template.parse(source).render!
+    end
+    assert_match(/\ALiquid error: wrong number of arguments /, exc.message)
+    assert_equal(exc.message, Template.parse(source).render)
+  end
 end
 
 class FiltersInTemplate < Minitest::Test
