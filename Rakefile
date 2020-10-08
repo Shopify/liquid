@@ -14,6 +14,12 @@ Rake::TestTask.new(:base_test) do |t|
   t.verbose    = false
 end
 
+Rake::TestTask.new(:integration_test) do |t|
+  t.libs << 'lib' << 'test'
+  t.test_files = FileList['test/integration/**/*_test.rb']
+  t.verbose    = false
+end
+
 desc('run test suite with warn error mode')
 task :warn_test do
   ENV['LIQUID_PARSER_MODE'] = 'warn'
@@ -40,12 +46,12 @@ task :test do
     ENV['LIQUID_C'] = '1'
 
     ENV['LIQUID_PARSER_MODE'] = 'lax'
-    Rake::Task['base_test'].reenable
-    Rake::Task['base_test'].invoke
+    Rake::Task['integration_test'].reenable
+    Rake::Task['integration_test'].invoke
 
     ENV['LIQUID_PARSER_MODE'] = 'strict'
-    Rake::Task['base_test'].reenable
-    Rake::Task['base_test'].invoke
+    Rake::Task['integration_test'].reenable
+    Rake::Task['integration_test'].invoke
   end
 end
 
