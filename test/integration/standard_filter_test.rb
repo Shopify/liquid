@@ -168,6 +168,8 @@ class StandardFiltersTest < Minitest::Test
   def test_truncatewords
     assert_equal('one two three', @filters.truncatewords('one two three', 4))
     assert_equal('one two...', @filters.truncatewords('one two three', 2))
+    assert_equal('one two...', @filters.truncatewords('one     two three', 2))
+    assert_equal('one two...', @filters.truncatewords('   one     two three', 2))
     assert_equal('one two three', @filters.truncatewords('one two three'))
     assert_equal(
       'Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221;...',
@@ -175,6 +177,8 @@ class StandardFiltersTest < Minitest::Test
     )
     assert_equal("测试测试测试测试", @filters.truncatewords('测试测试测试测试', 5))
     assert_equal('one two1', @filters.truncatewords("one two three", 2, 1))
+    assert_equal('one1', @filters.truncatewords("one two three", 0, 1))
+    assert_equal('one1', @filters.truncatewords("one two three", -1, 1))
   end
 
   def test_strip_html

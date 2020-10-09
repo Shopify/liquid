@@ -89,13 +89,22 @@ module Liquid
 
     def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
-      wordlist = input.to_s.split
-      words    = Utils.to_integer(words)
+      words = Utils.to_integer(words)
 
-      l = words - 1
-      l = 0 if l < 0
+      l = words
+      l = 1 if l <= 0
 
-      wordlist.length > l ? wordlist[0..l].join(" ").concat(truncate_string.to_s) : input
+      # Scan for non-space characters followed by one or more space characters
+      # `l` times.  Also ignore leading whitespace
+      str = input[/\A[ ]*(?:[^ ]*[ ]+){#{l}}/]
+
+      if str
+        str.strip!                # Remove trailing space
+        str.gsub!(/[ ]{2,}/, " ") # Shrink multiple spaces to one space
+        str.concat(truncate_string.to_s)
+      else
+        input
+      end
     end
 
     # Split input string into an array of substrings separated by given pattern.
