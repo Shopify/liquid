@@ -15,6 +15,8 @@ module Liquid
   #   template.render('user_name' => 'bob')
   #
   class Template
+    MAX_SOURCE_CODE_BYTES = (2**24) - 1
+
     attr_accessor :root
     attr_reader :resource_limits, :warnings
 
@@ -106,6 +108,10 @@ module Liquid
     # Parse source code.
     # Returns self for easy chaining
     def parse(source, options = {})
+      if source.bytesize > MAX_SOURCE_CODE_BYTES
+        raise ArgumentError, "Source too large, max #{MAX_SOURCE_CODE_BYTES} bytes"
+      end
+
       @options      = options
       @profiling    = options[:profile]
       @line_numbers = options[:line_numbers] || @profiling

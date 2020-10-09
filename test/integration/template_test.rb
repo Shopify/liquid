@@ -356,4 +356,12 @@ class TemplateTest < Minitest::Test
     result = t.render('x' => 1, 'y' => 5)
     assert_equal('12345', result)
   end
+
+  def test_source_too_large
+    err = assert_raises(ArgumentError) do
+      Liquid::Template.parse("a" * (Liquid::Template::MAX_SOURCE_CODE_BYTES + 1))
+    end
+
+    assert_match(/Source too large, max \d+ bytes/, err.message)
+  end
 end
