@@ -5,36 +5,44 @@ require 'test_helper'
 class TagDisableableTest < Minitest::Test
   include Liquid
 
-  class DisableRaw < Block
-    disable_tags "raw"
+  module RenderTagName
+    def render(_context)
+      tag_name
+    end
   end
 
-  class DisableRawEcho < Block
-    disable_tags "raw", "echo"
-  end
-
-  class DisableableRaw < Liquid::Raw
+  class Custom < Tag
     prepend Liquid::Tag::Disableable
+    include RenderTagName
   end
 
-  class DisableableEcho < Liquid::Echo
+  class Custom2 < Tag
     prepend Liquid::Tag::Disableable
+    include RenderTagName
   end
 
-  def test_disables_raw
+  class DisableCustom < Block
+    disable_tags "custom"
+  end
+
+  class DisableBoth < Block
+    disable_tags "custom", "custom2"
+  end
+
+  def test_block_tag_disabling_nested_tag
     with_disableable_tags do
-      with_custom_tag('disable', DisableRaw) do
-        output = Template.parse('{% disable %}{% raw %}Foobar{% endraw %}{% echo "foo" %}{% enddisable %}').render
-        assert_equal('Liquid error: raw usage is not allowed in this contextfoo', output)
+      with_custom_tag('disable', DisableCustom) do
+        output = Template.parse('{% disable %}{% custom %};{% custom2 %}{% enddisable %}').render
+        assert_equal('Liquid error: custom usage is not allowed in this context;custom2', output)
       end
     end
   end
 
-  def test_disables_echo_and_raw
+  def test_block_tag_disabling_multiple_nested_tags
     with_disableable_tags do
-      with_custom_tag('disable', DisableRawEcho) do
-        output = Template.parse('{% disable %}{% raw %}Foobar{% endraw %}{% echo "foo" %}{% enddisable %}').render
-        assert_equal('Liquid error: raw usage is not allowed in this contextLiquid error: echo usage is not allowed in this context', output)
+      with_custom_tag('disable', DisableBoth) do
+        output = Template.parse('{% disable %}{% custom %};{% custom2 %}{% enddisable %}').render
+        assert_equal('Liquid error: custom usage is not allowed in this context;Liquid error: custom2 usage is not allowed in this context', output)
       end
     end
   end
@@ -42,8 +50,8 @@ class TagDisableableTest < Minitest::Test
   private
 
   def with_disableable_tags
-    with_custom_tag('raw', DisableableRaw) do
-      with_custom_tag('echo', DisableableEcho) do
+    with_custom_tag('custom', Custom) do
+      with_custom_tag('custom2', Custom2) do
         yield
       end
     end
