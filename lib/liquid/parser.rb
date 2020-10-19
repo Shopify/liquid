@@ -46,16 +46,20 @@ module Liquid
       tok[0] == type
     end
 
-    SINGLE_TOKEN_EXPRESSION_TYPES = [:string, :number].freeze
-    private_constant :SINGLE_TOKEN_EXPRESSION_TYPES
-
     def expression
       token = @tokens[@p]
-      if token[0] == :id
-        variable_signature
-      elsif SINGLE_TOKEN_EXPRESSION_TYPES.include?(token[0])
+      case token[0]
+      when :id
+        str = consume
+        str << variable_lookups
+      when :open_square
+        str = consume
+        str << expression
+        str << consume(:close_square)
+        str << variable_lookups
+      when :string, :number
         consume
-      elsif token.first == :open_round
+      when :open_round
         consume
         first = expression
         consume(:dotdot)
@@ -78,16 +82,19 @@ module Liquid
       str
     end
 
-    def variable_signature
-      str = consume(:id)
-      while look(:open_square)
-        str << consume
-        str << expression
-        str << consume(:close_square)
-      end
-      if look(:dot)
-        str << consume
-        str << variable_signature
+    def variable_lookups
+      str = +""
+      loop do
+        if look(:open_square)
+          str << consume
+          str << expression
+          str << consume(:close_square)
+        elsif look(:dot)
+          str << consume
+          str << consume(:id)
+        else
+          break
+        end
       end
       str
     end

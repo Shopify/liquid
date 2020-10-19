@@ -95,4 +95,8 @@ class VariableTest < Minitest::Test
   def test_render_symbol
     assert_template_result('bar', '{{ foo }}', 'foo' => :bar)
   end
+
+  def test_dynamic_find_var
+    assert_template_result('bar', '{{ [key] }}', 'key' => 'foo', 'foo' => 'bar')
+  end
 end
