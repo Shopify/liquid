@@ -52,6 +52,11 @@ module Liquid
       when :id
         str = consume
         str << variable_lookups
+      when :open_square
+        str = consume
+        str << expression
+        str << consume(:close_square)
+        str << variable_lookups
       when :string, :number
         consume
       when :open_round
