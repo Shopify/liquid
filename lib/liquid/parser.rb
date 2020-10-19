@@ -50,7 +50,8 @@ module Liquid
       token = @tokens[@p]
       case token[0]
       when :id
-        variable_signature
+        str = consume
+        str << variable_lookups
       when :string, :number
         consume
       when :open_round
@@ -76,16 +77,19 @@ module Liquid
       str
     end
 
-    def variable_signature
-      str = consume(:id)
-      while look(:open_square)
-        str << consume
-        str << expression
-        str << consume(:close_square)
-      end
-      if look(:dot)
-        str << consume
-        str << variable_signature
+    def variable_lookups
+      str = +""
+      loop do
+        if look(:open_square)
+          str << consume
+          str << expression
+          str << consume(:close_square)
+        elsif look(:dot)
+          str << consume
+          str << consume(:id)
+        else
+          break
+        end
       end
       str
     end
