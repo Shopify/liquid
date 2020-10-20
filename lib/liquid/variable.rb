@@ -63,6 +63,8 @@ module Liquid
       @filters = []
       p = Parser.new(markup)
 
+      return if p.look(:end_of_string)
+
       @name = Expression.parse(p.expression)
       while p.consume?(:pipe)
         filtername = p.consume(:id)

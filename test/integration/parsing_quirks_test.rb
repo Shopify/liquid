@@ -118,6 +118,10 @@ class ParsingQuirksTest < Minitest::Test
     end
   end
 
+  def test_blank_variable_markup
+    assert_template_result('', "{{}}")
+  end
+
   def test_contains_in_id
     assert_template_result(' YES ', '{% if containsallshipments == true %} YES {% endif %}', 'containsallshipments' => true)
   end
