@@ -49,4 +49,10 @@ class CaptureTest < Minitest::Test
     rendered        = template.render!
     assert_equal("3-3", rendered.gsub(/\s/, ''))
   end
-end # CaptureTest
+
+  def test_increment_assign_score_by_bytes_not_characters
+    t = Template.parse("{% capture foo %}すごい{% endcapture %}")
+    t.render!
+    assert_equal(9, t.resource_limits.assign_score)
+  end
+end
