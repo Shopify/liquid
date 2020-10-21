@@ -88,8 +88,8 @@ class AssignTest < Minitest::Test
 
   def test_assign_score_of_hash
     assert_equal(1, assign_score_of({}))
-    assert_equal(6, assign_score_of('int' => 123))
-    assert_equal(14, assign_score_of('int' => 123, 'str' => 'abcd'))
+    assert_equal(5, assign_score_of('int' => 123))
+    assert_equal(12, assign_score_of('int' => 123, 'str' => 'abcd'))
   end
 
   private
