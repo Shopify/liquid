@@ -47,4 +47,32 @@ class AssignTest < Minitest::Test
       assert Template.parse("{% assign foo = ('X' | downcase) %}")
     end
   end
-end # AssignTest
+
+  def test_assign_score_exceeding_resource_limit
+    t = Template.parse("{% assign foo = 42 %}{% assign bar = 23 %}")
+    t.resource_limits.assign_score_limit = 1
+    assert_equal("Liquid error: Memory limits exceeded", t.render)
+    assert(t.resource_limits.reached?)
+
+    t.resource_limits.assign_score_limit = 2
+    assert_equal("", t.render!)
+    refute_nil(t.resource_limits.assign_score)
+  end
+
+  def test_assign_score_exceeding_limit_from_composite_object
+    t = Template.parse("{% assign foo = 'aaaa' | reverse %}")
+
+    t.resource_limits.assign_score_limit = 3
+    assert_equal("Liquid error: Memory limits exceeded", t.render)
+    assert(t.resource_limits.reached?)
+
+    t.resource_limits.assign_score_limit = 5
+    assert_equal("", t.render!)
+  end
+
+  def test_assign_score_counts_bytes_not_characters
+    t = Template.parse("{% assign foo = 'すごい' %}")
+    t.render
+    assert_equal(9, t.resource_limits.assign_score)
+  end
+end
