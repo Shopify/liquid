@@ -122,6 +122,12 @@ class ParsingQuirksTest < Minitest::Test
     assert_template_result('', "{{}}")
   end
 
+  def test_lookup_on_var_with_literal_name
+    assigns = { "blank" => { "x" => "result" } }
+    assert_template_result('result', "{{ blank.x }}", assigns)
+    assert_template_result('result', "{{ blank['x'] }}", assigns)
+  end
+
   def test_contains_in_id
     assert_template_result(' YES ', '{% if containsallshipments == true %} YES {% endif %}', 'containsallshipments' => true)
   end
