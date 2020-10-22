@@ -276,8 +276,19 @@ module Liquid
       input.to_s.sub(string.to_s, '')
     end
 
+    # prepend a string to another
+    def prepend(input, string)
+      # assign empty frozen string to avoid generating a new String via
+      # `nil.to_s` only to be duplicated via `String#+`
+      string = "" if string.nil?
+      string.to_s + input.to_s
+    end
+
     # add one string to another
     def append(input, string)
+      # assign empty frozen string to avoid generating a new String via
+      # `nil.to_s` only to be duplicated via `String#+`
+      input = "" if input.nil?
       input.to_s + string.to_s
     end
 
@@ -286,11 +297,6 @@ module Liquid
         raise ArgumentError, "concat filter requires an array argument"
       end
       InputIterator.new(input, context).concat(array)
-    end
-
-    # prepend a string to another
-    def prepend(input, string)
-      string.to_s + input.to_s
     end
 
     # Add <br /> tags in front of all newlines in input string
