@@ -20,7 +20,11 @@ module Liquid
 
     def parse(tokens)
       body = new_body
-      body = @blocks.last.attachment while parse_body(body, tokens)
+      while parse_body(body, tokens)
+        body.freeze(parse_context)
+        body = @blocks.last.attachment
+      end
+      body.freeze(parse_context)
       if blank?
         @blocks.each { |condition| condition.attachment.remove_blank_strings }
       end

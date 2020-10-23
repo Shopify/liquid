@@ -16,9 +16,12 @@ module Liquid
     def initialize
       @nodelist = []
       @blank    = true
+      @frozen   = false
     end
 
     def parse(tokenizer, parse_context, &block)
+      raise FrozenError, "can't modify frozen Liquid::BlockBody" if @frozen
+
       parse_context.line_number = tokenizer.line_number
 
       if tokenizer.for_liquid_tag
@@ -26,6 +29,10 @@ module Liquid
       else
         parse_for_document(tokenizer, parse_context, &block)
       end
+    end
+
+    def freeze(_context)
+      @frozen = true
     end
 
     private def parse_for_liquid_tag(tokenizer, parse_context)
@@ -192,6 +199,8 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
+      raise "Can only render when frozen" unless @frozen
+
       context.resource_limits.increment_render_score(@nodelist.length)
 
       idx = 0

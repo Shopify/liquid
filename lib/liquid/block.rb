@@ -13,6 +13,7 @@ module Liquid
       @body = new_body
       while parse_body(@body, tokens)
       end
+      @body.freeze(parse_context)
     end
 
     # For backwards compatibility

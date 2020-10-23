@@ -22,6 +22,7 @@ module Liquid
     def parse(tokenizer, parse_context)
       while parse_body(tokenizer)
       end
+      @body.freeze(parse_context)
     rescue SyntaxError => e
       e.line_number ||= parse_context.line_number
       raise
