@@ -11,9 +11,9 @@ module Liquid
 
     def parse(tokens)
       @body = new_body
-      while parse_body(@body, tokens)
+      while parse_body(@body, tokens, partial: true)
       end
-      @body.freeze(parse_context)
+      @body.freeze
     end
 
     # For backwards compatibility
@@ -68,7 +68,9 @@ module Liquid
     end
 
     # @api public
-    def parse_body(body, tokens)
+    def parse_body(body, tokens, partial: false)
+      block_terminated = true
+
       if parse_context.depth >= MAX_DEPTH
         raise StackLevelError, "Nesting too deep"
       end
@@ -77,7 +79,10 @@ module Liquid
         body.parse(tokens, parse_context) do |end_tag_name, end_tag_params|
           @blank &&= body.blank?
 
-          return false if end_tag_name == block_delimiter
+          if end_tag_name == block_delimiter
+            block_terminated = false
+            next
+          end
           raise_tag_never_closed(block_name) unless end_tag_name
 
           # this tag is not registered with the system
@@ -88,7 +93,12 @@ module Liquid
         parse_context.depth -= 1
       end
 
-      true
+      unless partial
+        body.remove_blank_strings if body.blank?
+        body.freeze
+      end
+
+      block_terminated
     end
   end
 end

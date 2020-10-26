@@ -22,6 +22,6 @@ group :test do
   gem 'rubocop-performance', require: false
 
   platform :mri, :truffleruby do
-    gem 'liquid-c', github: 'Shopify/liquid-c', ref: 'pz-block-body-buffer'
+    gem 'liquid-c', github: 'Shopify/liquid-c', ref: 'master'
   end
 end

@@ -61,12 +61,6 @@ module Liquid
     def parse(tokens)
       if parse_body(@for_block, tokens)
         parse_body(@else_block, tokens)
-        @else_block.freeze(parse_context)
-      end
-      @for_block.freeze(parse_context)
-      if blank?
-        @for_block.remove_blank_strings
-        @else_block&.remove_blank_strings
       end
     end
 
