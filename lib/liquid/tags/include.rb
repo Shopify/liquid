@@ -32,12 +32,12 @@ module Liquid
         variable_name = Regexp.last_match(3)
 
         @alias_name         = Regexp.last_match(5)
-        @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
-        @template_name_expr = Expression.parse(template_name)
+        @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
+        @template_name_expr = parse_expression(template_name)
         @attributes         = {}
 
         markup.scan(TagAttributes) do |key, value|
-          @attributes[key] = Expression.parse(value)
+          @attributes[key] = parse_expression(value)
         end
 
       else

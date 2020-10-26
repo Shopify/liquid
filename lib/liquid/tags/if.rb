@@ -71,7 +71,7 @@ module Liquid
     end
 
     def parse_expression(markup)
-      Condition.parse_expression(markup)
+      Condition.parse_expression(parse_context, markup)
     end
 
     def lax_parse(markup)
