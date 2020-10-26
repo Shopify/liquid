@@ -62,6 +62,12 @@ module Liquid
       if parse_body(@for_block, tokens)
         parse_body(@else_block, tokens)
       end
+      if blank?
+        @for_block.remove_blank_strings
+        @else_block&.remove_blank_strings
+      end
+      @for_block.freeze
+      @else_block&.freeze
     end
 
     def nodelist
