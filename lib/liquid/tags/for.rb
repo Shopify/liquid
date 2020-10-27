@@ -97,7 +97,7 @@ module Liquid
         collection_name  = Regexp.last_match(2)
         @reversed        = !!Regexp.last_match(3)
         @name            = "#{@variable_name}-#{collection_name}"
-        @collection_name = Expression.parse(collection_name)
+        @collection_name = parse_expression(collection_name)
         markup.scan(TagAttributes) do |key, value|
           set_attribute(key, value)
         end
@@ -112,7 +112,7 @@ module Liquid
       raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in") unless p.id?('in')
 
       collection_name  = p.expression
-      @collection_name = Expression.parse(collection_name)
+      @collection_name = parse_expression(collection_name)
 
       @name     = "#{@variable_name}-#{collection_name}"
       @reversed = p.id?('reversed')
@@ -198,10 +198,10 @@ module Liquid
         @from = if expr == 'continue'
           :continue
         else
-          Expression.parse(expr)
+          parse_expression(expr)
         end
       when 'limit'
-        @limit = Expression.parse(expr)
+        @limit = parse_expression(expr)
       end
     end
 

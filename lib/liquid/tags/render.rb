@@ -19,13 +19,13 @@ module Liquid
       variable_name = Regexp.last_match(4)
 
       @alias_name = Regexp.last_match(6)
-      @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
-      @template_name_expr = Expression.parse(template_name)
+      @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
+      @template_name_expr = parse_expression(template_name)
       @for = (with_or_for == FOR)
 
       @attributes = {}
       markup.scan(TagAttributes) do |key, value|
-        @attributes[key] = Expression.parse(value)
+        @attributes[key] = parse_expression(value)
       end
     end
 

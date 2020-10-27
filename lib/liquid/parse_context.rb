@@ -23,6 +23,10 @@ module Liquid
       Liquid::BlockBody.new
     end
 
+    def parse_expression(markup)
+      Expression.parse(markup)
+    end
+
     def partial=(value)
       @partial = value
       @options = value ? partial_options : @template_options
