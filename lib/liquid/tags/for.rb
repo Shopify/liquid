@@ -66,6 +66,8 @@ module Liquid
         @for_block.remove_blank_strings
         @else_block&.remove_blank_strings
       end
+      @for_block.freeze
+      @else_block&.freeze
     end
 
     def nodelist
