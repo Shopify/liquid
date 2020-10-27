@@ -21,10 +21,10 @@ module Liquid
     def parse(tokens)
       body = new_body
       body = @blocks.last.attachment while parse_body(body, tokens)
-      if blank?
-        @blocks.each { |condition| condition.attachment.remove_blank_strings }
+      @blocks.each do |condition|
+        condition.attachment.remove_blank_strings if blank?
+        condition.attachment.freeze
       end
-      @blocks.each { |condition| condition.attachment.freeze }
     end
 
     def nodelist
