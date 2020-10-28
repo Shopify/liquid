@@ -12,7 +12,7 @@ module Liquid
       @blocks = []
 
       if markup =~ Syntax
-        @left = Expression.parse(Regexp.last_match(1))
+        @left = parse_expression(Regexp.last_match(1))
       else
         raise SyntaxError, options[:locale].t("errors.syntax.case")
       end
@@ -21,8 +21,9 @@ module Liquid
     def parse(tokens)
       body = new_body
       body = @blocks.last.attachment while parse_body(body, tokens)
-      if blank?
-        @blocks.each { |condition| condition.attachment.remove_blank_strings }
+      @blocks.each do |condition|
+        condition.attachment.remove_blank_strings if blank?
+        condition.attachment.freeze
       end
     end
 
@@ -68,7 +69,7 @@ module Liquid
 
         markup = Regexp.last_match(2)
 
-        block = Condition.new(@left, '==', Condition.parse_expression(Regexp.last_match(1)))
+        block = Condition.new(@left, '==', Condition.parse_expression(parse_context, Regexp.last_match(1)))
         block.attach(body)
         @blocks << block
       end

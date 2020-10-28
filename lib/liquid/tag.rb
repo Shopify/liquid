@@ -55,5 +55,11 @@ module Liquid
     def blank?
       false
     end
+
+    private
+
+    def parse_expression(markup)
+      parse_context.parse_expression(markup)
+    end
   end
 end

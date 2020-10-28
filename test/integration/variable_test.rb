@@ -21,6 +21,11 @@ class VariableTest < Minitest::Test
     assert_equal('  worked wonderfully  ', template.render!('test' => 'worked wonderfully'))
   end
 
+  def test_expression_with_whitespace_in_square_brackets
+    assert_template_result('result', "{{ a[ 'b' ] }}", 'a' => { 'b' => 'result' })
+    assert_template_result('result', "{{ a[ [ 'b' ] ] }}", 'b' => 'c', 'a' => { 'c' => 'result' })
+  end
+
   def test_ignore_unknown
     template = Template.parse(%({{ test }}))
     assert_equal('', template.render!)

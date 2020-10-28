@@ -31,8 +31,9 @@ module Liquid
     def parse(tokens)
       while parse_body(@blocks.last.attachment, tokens)
       end
-      if blank?
-        @blocks.each { |condition| condition.attachment.remove_blank_strings }
+      @blocks.each do |block|
+        block.attachment.remove_blank_strings if blank?
+        block.attachment.freeze
       end
     end
 
@@ -71,7 +72,7 @@ module Liquid
     end
 
     def parse_expression(markup)
-      Condition.parse_expression(markup)
+      Condition.parse_expression(parse_context, markup)
     end
 
     def lax_parse(markup)

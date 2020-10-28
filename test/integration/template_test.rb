@@ -257,9 +257,8 @@ class TemplateTest < Minitest::Test
   end
 
   def test_nil_value_does_not_raise
-    Liquid::Template.error_mode = :strict
-    t                           = Template.parse("some{{x}}thing")
-    result                      = t.render!({ 'x' => nil }, strict_variables: true)
+    t      = Template.parse("some{{x}}thing", error_mode: :strict)
+    result = t.render!({ 'x' => nil }, strict_variables: true)
 
     assert_equal(0, t.errors.count)
     assert_equal('something', result)

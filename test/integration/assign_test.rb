@@ -48,6 +48,11 @@ class AssignTest < Minitest::Test
     end
   end
 
+  def test_expression_with_whitespace_in_square_brackets
+    source = "{% assign r = a[ 'b' ] %}{{ r }}"
+    assert_template_result('result', source, 'a' => { 'b' => 'result' })
+  end
+
   def test_assign_score_exceeding_resource_limit
     t = Template.parse("{% assign foo = 42 %}{% assign bar = 23 %}")
     t.resource_limits.assign_score_limit = 1
