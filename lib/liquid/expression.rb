@@ -17,9 +17,9 @@ module Liquid
     RANGES_REGEX         = /\A\s*\(\s*(\S+)\s*\.\.\s*(\S+)\s*\)\s*\z/
 
     def self.parse(markup)
+      return markup unless markup.is_a?(String)
+
       case markup
-      when nil
-        nil
       when SINGLE_QUOTED_STRING, DOUBLE_QUOTED_STRING
         Regexp.last_match(1)
       when INTEGERS_REGEX
@@ -30,11 +30,7 @@ module Liquid
         Regexp.last_match(1).to_f
       else
         markup = markup.strip
-        if LITERALS.key?(markup)
-          LITERALS[markup]
-        else
-          VariableLookup.parse(markup)
-        end
+        LITERALS.key?(markup) ? LITERALS[markup] : VariableLookup.parse(markup)
       end
     end
   end
