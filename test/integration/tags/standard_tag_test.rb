@@ -213,6 +213,11 @@ class StandardTagTest < Minitest::Test
     assert_template_result('', code, 'condition' => 'something else')
   end
 
+  def test_case_when_comma_and_blank_body
+    code = '{% case condition %}{% when 1, 2 %} {% assign r = "result" %} {% endcase %}{{ r }}'
+    assert_template_result('result', code, 'condition' => 2)
+  end
+
   def test_assign
     assert_template_result('variable', '{% assign a = "variable"%}{{a}}')
   end

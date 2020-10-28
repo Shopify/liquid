@@ -22,8 +22,11 @@ module Liquid
       body = new_body
       body = @blocks.last.attachment while parse_body(body, tokens)
       @blocks.each do |condition|
-        condition.attachment.remove_blank_strings if blank?
-        condition.attachment.freeze
+        body = condition.attachment
+        unless body.frozen?
+          body.remove_blank_strings if blank?
+          body.freeze
+        end
       end
     end
 
