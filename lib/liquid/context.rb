@@ -41,7 +41,7 @@ module Liquid
 
       self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors
-        self.exception_renderer = Liquid::EXCEPTION_RENDERER_LAMBDA
+        self.exception_renderer = Liquid::RAISE_EXCEPTION_LAMBDA
       end
 
       # Do this last, since it could result in this object being passed to a Proc in the environment

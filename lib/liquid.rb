@@ -42,7 +42,7 @@ module Liquid
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
 
-  EXCEPTION_RENDERER_LAMBDA = ->(_e) { raise }
+  RAISE_EXCEPTION_LAMBDA = ->(_e) { raise }
 
   singleton_class.send(:attr_accessor, :cache_classes)
   self.cache_classes = true
