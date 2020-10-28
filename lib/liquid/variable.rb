@@ -30,7 +30,7 @@ module Liquid
       @parse_context = parse_context
       @line_number   = parse_context.line_number
 
-      parse_with_selected_parser(markup)
+      strict_parse_with_error_mode_fallback(markup)
     end
 
     def raw

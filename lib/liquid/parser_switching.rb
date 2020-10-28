@@ -2,6 +2,18 @@
 
 module Liquid
   module ParserSwitching
+    def strict_parse_with_error_mode_fallback(markup)
+      strict_parse_with_error_context(markup)
+    rescue SyntaxError => e
+      case parse_context.error_mode
+      when :strict
+        raise
+      when :warn
+        parse_context.warnings << e
+      end
+      lax_parse(markup)
+    end
+
     def parse_with_selected_parser(markup)
       case parse_context.error_mode
       when :strict then strict_parse_with_error_context(markup)
