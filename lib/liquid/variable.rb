@@ -83,9 +83,11 @@ module Liquid
     end
 
     def render(context)
-      obj = @filters.inject(context.evaluate(@name)) do |output, (filter_name, filter_args, filter_kwargs)|
+      obj = context.evaluate(@name)
+
+      @filters.each do |filter_name, filter_args, filter_kwargs|
         filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
-        context.invoke(filter_name, output, *filter_args)
+        obj = context.invoke(filter_name, obj, *filter_args)
       end
 
       context.apply_global_filter(obj)
