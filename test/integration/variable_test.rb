@@ -42,8 +42,8 @@ class VariableTest < Minitest::Test
   end
 
   def test_hash_scoping
-    template = Template.parse(%({{ test.test }}))
-    assert_equal('worked', template.render!('test' => { 'test' => 'worked' }))
+    assert_template_result('worked', "{{ test.test }}", 'test' => { 'test' => 'worked' })
+    assert_template_result('worked', "{{ test . test }}", 'test' => { 'test' => 'worked' })
   end
 
   def test_false_renders_as_false
