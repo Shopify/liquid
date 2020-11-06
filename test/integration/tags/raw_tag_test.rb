@@ -12,6 +12,8 @@ class RawTagTest < Minitest::Test
 
   def test_output_in_raw
     assert_template_result('{{ test }}', '{% raw %}{{ test }}{% endraw %}')
+    assert_template_result('test', '{% raw %}test{% endraw{% f %}')
+    assert_template_result('test', '{% raw %}test{% endraw{% |f %}')
   end
 
   def test_open_tag_in_raw
