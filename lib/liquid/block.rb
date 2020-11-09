@@ -77,6 +77,9 @@ module Liquid
         body.parse(tokens, parse_context) do |end_tag_name, end_tag_params|
           @blank &&= body.blank?
 
+          # Instrument for bug 1346
+          Usage.increment("end_tag_params") if end_tag_params && !end_tag_params.empty?
+
           return false if end_tag_name == block_delimiter
           raise_tag_never_closed(block_name) unless end_tag_name
 
