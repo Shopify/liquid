@@ -55,4 +55,24 @@ class BlockTest < Minitest::Test
       assert_equal buf.object_id, output.object_id
     end
   end
+
+  def test_instrument_for_bug_1346
+    calls = []
+    Liquid::Usage.stub(:increment, ->(name) { calls << name }) do
+      Liquid::Template.parse("{% for i in (1..2) %}{{ i }}{% endfor {% foo %}")
+    end
+    assert_equal(["end_tag_params"], calls)
+
+    calls = []
+    Liquid::Usage.stub(:increment, ->(name) { calls << name }) do
+      Liquid::Template.parse("{% for i in (1..2) %}{{ i }}{% endfor test %}")
+    end
+    assert_equal(["end_tag_params"], calls)
+
+    calls = []
+    Liquid::Usage.stub(:increment, ->(name) { calls << name }) do
+      Liquid::Template.parse("{% for i in (1..2) %}{{ i }}{% endfor %}")
+    end
+    assert_equal([], calls)
+  end
 end
