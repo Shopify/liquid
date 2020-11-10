@@ -556,4 +556,8 @@ class TrimModeTest < Minitest::Test
     template = Liquid::Template.parse("B\n {%- if true %}{% endif %}", bug_compatible_whitespace_trimming: true)
     assert_equal("B", template.render)
   end
+
+  def test_trim_blank
+    assert_template_result('foobar', 'foo {{-}} bar')
+  end
 end # TrimModeTest
