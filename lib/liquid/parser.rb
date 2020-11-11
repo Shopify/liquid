@@ -50,53 +50,55 @@ module Liquid
       token = @tokens[@p]
       case token[0]
       when :id
-        str = consume
-        str << variable_lookups
+        if Expression::LITERALS.key?(token[1]) && !look(:dot, 1) && !look(:open_square, 1)
+          Expression::LITERALS[consume]
+        else
+          VariableLookup.strict_parse(self)
+        end
       when :open_square
-        str = consume
-        str << expression
-        str << consume(:close_square)
-        str << variable_lookups
-      when :string, :number
-        consume
+        VariableLookup.strict_parse(self)
+      when :string
+        consume[1..-2]
+      when :number
+        Expression.parse(consume)
       when :open_round
         consume
         first = expression
         consume(:dotdot)
         last = expression
         consume(:close_round)
-        "(#{first}..#{last})"
+        if first.respond_to?(:evaluate) || last.respond_to?(:evaluate)
+          RangeLookup.new(first, last)
+        else
+          first.to_i..last.to_i
+        end
       else
         raise SyntaxError, "#{token} is not a valid expression"
       end
     end
 
-    def argument
-      str = +""
-      # might be a keyword argument (identifier: expression)
-      if look(:id) && look(:colon, 1)
-        str << consume << consume << ' '
-      end
+    def arguments
+      filter_args = []
+      keyword_args = nil
 
-      str << expression
-      str
-    end
-
-    def variable_lookups
-      str = +""
       loop do
-        if look(:open_square)
-          str << consume
-          str << expression
-          str << consume(:close_square)
-        elsif look(:dot)
-          str << consume
-          str << consume(:id)
+        # keyword argument (identifier: expression)
+        if look(:colon, 1)
+          keyword_args ||= {}
+          k = consume(:id)
+          consume
+          v = expression
+          keyword_args[k] = v
         else
-          break
+          filter_args << expression
         end
+
+        break unless consume?(:comma)
       end
-      str
+
+      result = [filter_args]
+      result << keyword_args if keyword_args
+      result
     end
   end
 end

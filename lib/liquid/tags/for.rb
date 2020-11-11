@@ -113,10 +113,9 @@ module Liquid
       @variable_name = p.consume(:id)
       raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in") unless p.id?('in')
 
-      collection_name  = p.expression
-      @collection_name = parse_expression(collection_name)
+      @collection_name = p.expression
 
-      @name     = "#{@variable_name}-#{collection_name}"
+      @name     = "#{@variable_name}-#{@collection_name}"
       @reversed = p.id?('reversed')
 
       while p.look(:id) && p.look(:colon, 1)
@@ -124,7 +123,17 @@ module Liquid
           raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_attribute")
         end
         p.consume
-        set_attribute(attribute, p.expression)
+        case attribute
+        when 'offset'
+          @from =
+            if p.id?('continue')
+              :continue
+            else
+              p.expression
+            end
+        when 'limit'
+          @limit = p.expression
+        end
       end
       p.consume(:end_of_string)
     end

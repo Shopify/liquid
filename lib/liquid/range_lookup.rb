@@ -12,6 +12,8 @@ module Liquid
       end
     end
 
+    attr_reader :start_obj, :end_obj
+
     def initialize(start_obj, end_obj)
       @start_obj = start_obj
       @end_obj   = end_obj
@@ -21,6 +23,10 @@ module Liquid
       start_int = to_integer(context.evaluate(@start_obj))
       end_int   = to_integer(context.evaluate(@end_obj))
       start_int..end_int
+    end
+
+    def ==(other)
+      self.class == other.class && start_obj == other.start_obj && end_obj == other.end_obj
     end
 
     private

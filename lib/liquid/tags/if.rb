@@ -114,12 +114,20 @@ module Liquid
     end
 
     def parse_comparison(p)
-      a = parse_expression(p.expression)
+      a = parse_operand_expression(p)
       if (op = p.consume?(:comparison))
-        b = parse_expression(p.expression)
+        b = parse_operand_expression(p)
         Condition.new(a, op, b)
       else
         Condition.new(a)
+      end
+    end
+
+    def parse_operand_expression(p)
+      if p.look(:id) && !p.look(:dot, 1) && !p.look(:open_square, 1)
+        parse_expression(p.consume)
+      else
+        p.expression
       end
     end
 

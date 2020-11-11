@@ -33,7 +33,7 @@ module Liquid
         if LITERALS.key?(markup)
           LITERALS[markup]
         else
-          VariableLookup.parse(markup)
+          VariableLookup.lax_parse(markup)
         end
       end
     end

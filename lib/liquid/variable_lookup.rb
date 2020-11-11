@@ -7,30 +7,62 @@ module Liquid
 
     attr_reader :name, :lookups
 
-    def self.parse(markup)
-      new(markup)
-    end
-
-    def initialize(markup)
+    def self.lax_parse(markup)
       lookups = markup.scan(VariableParser)
 
       name = lookups.shift
       if name =~ SQUARE_BRACKETED
         name = Expression.parse(Regexp.last_match(1))
       end
-      @name = name
 
-      @lookups       = lookups
-      @command_flags = 0
+      command_flags = 0
 
-      @lookups.each_index do |i|
+      lookups.each_index do |i|
         lookup = lookups[i]
         if lookup =~ SQUARE_BRACKETED
           lookups[i] = Expression.parse(Regexp.last_match(1))
         elsif COMMAND_METHODS.include?(lookup)
-          @command_flags |= 1 << i
+          command_flags |= 1 << i
         end
       end
+
+      new(name, lookups, command_flags)
+    end
+
+    def self.strict_parse(p)
+      if p.look(:id)
+        name = p.consume
+      else
+        p.consume(:open_square)
+        name = p.expression
+        p.consume(:close_square)
+      end
+
+      lookups = []
+      command_flags = 0
+
+      loop do
+        if p.consume?(:open_square)
+          lookups << p.expression
+          p.consume(:close_square)
+        elsif p.consume?(:dot)
+          lookup = p.consume(:id)
+          lookups << lookup
+          if COMMAND_METHODS.include?(lookup)
+            command_flags |= 1 << (lookups.length - 1)
+          end
+        else
+          break
+        end
+      end
+
+      new(name, lookups, command_flags)
+    end
+
+    def initialize(name, lookups, command_flags)
+      @name = name
+      @lookups = lookups
+      @command_flags = command_flags
     end
 
     def evaluate(context)
@@ -73,6 +105,18 @@ module Liquid
 
     def ==(other)
       self.class == other.class && state == other.state
+    end
+
+    def to_s
+      str = name.dup
+      lookups.each do |lookup|
+        if lookup.instance_of?(String)
+          str += '.' + lookup
+        else
+          str += '[' + lookup.to_s + ']'
+        end
+      end
+      str
     end
 
     protected

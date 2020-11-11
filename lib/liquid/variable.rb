@@ -65,21 +65,13 @@ module Liquid
 
       return if p.look(:end_of_string)
 
-      @name = Expression.parse(p.expression)
+      @name = p.expression
       while p.consume?(:pipe)
         filtername = p.consume(:id)
-        filterargs = p.consume?(:colon) ? parse_filterargs(p) : []
-        @filters << parse_filter_expressions(filtername, filterargs)
+        filterargs = p.consume?(:colon) ? p.arguments : [[]]
+        @filters << [filtername] + filterargs
       end
       p.consume(:end_of_string)
-    end
-
-    def parse_filterargs(p)
-      # first argument
-      filterargs = [p.argument]
-      # followed by comma separated others
-      filterargs << p.argument while p.consume?(:comma)
-      filterargs
     end
 
     def render(context)
