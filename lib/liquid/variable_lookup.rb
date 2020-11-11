@@ -110,11 +110,12 @@ module Liquid
     def to_s
       str = name.dup
       lookups.each do |lookup|
-        if lookup.instance_of?(String)
-          str += '.' + lookup
-        else
-          str += '[' + lookup.to_s + ']'
-        end
+        str +=
+          if lookup.instance_of?(String)
+            '.' + lookup
+          else
+            '[' + lookup.to_s + ']'
+          end
       end
       str
     end

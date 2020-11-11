@@ -152,12 +152,6 @@ class VariableUnitTest < Minitest::Test
     assert_equal(" name_of_variable | upcase ", var.raw)
   end
 
-  def test_variable_lookup_interface
-    lookup = parse_variable_lookup('a.b.c')
-    assert_equal('a', lookup.name)
-    assert_equal(['b', 'c'], lookup.lookups)
-  end
-
   private
 
   def parse_variable_lookup(markup)
