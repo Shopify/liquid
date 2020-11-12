@@ -32,8 +32,7 @@ class ExpressionTest < Minitest::Test
     assert_equal(0..0, parse_and_eval("('a'..'b')"))
 
     with_error_mode(:strict) do
-      e = assert_raises(NoMethodError) { parse_and_eval("(1..(1..5))") }
-      assert_match(/undefined method `to_i' for 1..5:Range/, e.message)
+      assert_raises(Liquid::ArgumentError) { parse_and_eval("(1..(1..5))") }
     end
   end
 
