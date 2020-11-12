@@ -437,4 +437,14 @@ HERE
 
     assert(context.registers[:for_stack].empty?)
   end
+
+  def test_instrument_for_offset_continue
+    assert_usage_increment('for_offset_continue') do
+      Template.parse('{% for item in items offset:continue %}{{item}}{% endfor %}')
+    end
+
+    assert_usage_increment('for_offset_continue', times: 0) do
+      Template.parse('{% for item in items offset:2 %}{{item}}{% endfor %}')
+    end
+  end
 end

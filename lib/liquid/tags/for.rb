@@ -198,6 +198,7 @@ module Liquid
       case key
       when 'offset'
         @from = if expr == 'continue'
+          Usage.increment('for_offset_continue')
           :continue
         else
           parse_expression(expr)
