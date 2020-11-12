@@ -127,6 +127,7 @@ module Liquid
         when 'offset'
           @from =
             if p.id?('continue')
+              Usage.increment('for_offset_continue')
               :continue
             else
               p.expression
