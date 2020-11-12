@@ -447,4 +447,20 @@ HERE
       Template.parse('{% for item in items offset:2 %}{{item}}{% endfor %}')
     end
   end
+
+  def test_instrument_forloop_drop_name
+    assigns = { 'items' => [1, 2, 3, 4, 5] }
+
+    assert_usage_increment('forloop_drop_name', times: 5) do
+      Template.parse('{% for item in items %}{{forloop.name}}{% endfor %}').render!(assigns)
+    end
+
+    assert_usage_increment('forloop_drop_name', times: 0) do
+      Template.parse('{% for item in items %}{{forloop.index}}{% endfor %}').render!(assigns)
+    end
+
+    assert_usage_increment('forloop_drop_name', times: 0) do
+      Template.parse('{% for item in items %}{{item}}{% endfor %}').render!(assigns)
+    end
+  end
 end
