@@ -60,18 +60,15 @@ module Liquid
       when :string
         consume[1..-2]
       when :number
-        Expression.parse(consume)
+        num_str = consume
+        num_str.include?('.') ? num_str.to_f : num_str.to_i
       when :open_round
         consume
         first = expression
         consume(:dotdot)
         last = expression
         consume(:close_round)
-        if first.respond_to?(:evaluate) || last.respond_to?(:evaluate)
-          RangeLookup.new(first, last)
-        else
-          first.to_i..last.to_i
-        end
+        RangeLookup.build(first, last)
       else
         raise SyntaxError, "#{token} is not a valid expression"
       end

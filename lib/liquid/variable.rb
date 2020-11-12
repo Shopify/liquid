@@ -69,7 +69,7 @@ module Liquid
       while p.consume?(:pipe)
         filtername = p.consume(:id)
         filterargs = p.consume?(:colon) ? p.arguments : [[]]
-        @filters << [filtername] + filterargs
+        @filters << [filtername, *filterargs]
       end
       p.consume(:end_of_string)
     end

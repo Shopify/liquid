@@ -17,10 +17,13 @@ class VariableLookupUnitTest < Minitest::Test
 
   def test_to_s
     lookup = parse_variable_lookup('a.b.c')
-    assert_equal('a.b.c', lookup.to_s)
+    assert_equal("a['b']['c']", lookup.to_s)
 
     lookup = parse_variable_lookup('a[b.c].d')
-    assert_equal('a[b.c].d', lookup.to_s)
+    assert_equal("a[b['c']]['d']", lookup.to_s)
+
+    lookup = parse_variable_lookup('a["foo.bar"].d')
+    assert_equal("a['foo.bar']['d']", lookup.to_s)
   end
 
   private

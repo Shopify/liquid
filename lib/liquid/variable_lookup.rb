@@ -7,56 +7,60 @@ module Liquid
 
     attr_reader :name, :lookups
 
-    def self.lax_parse(markup)
-      lookups = markup.scan(VariableParser)
+    class << self
+      def lax_parse(markup)
+        lookups = markup.scan(VariableParser)
 
-      name = lookups.shift
-      if name =~ SQUARE_BRACKETED
-        name = Expression.parse(Regexp.last_match(1))
-      end
-
-      command_flags = 0
-
-      lookups.each_index do |i|
-        lookup = lookups[i]
-        if lookup =~ SQUARE_BRACKETED
-          lookups[i] = Expression.parse(Regexp.last_match(1))
-        elsif COMMAND_METHODS.include?(lookup)
-          command_flags |= 1 << i
+        name = lookups.shift
+        if name =~ SQUARE_BRACKETED
+          name = Expression.parse(Regexp.last_match(1))
         end
-      end
 
-      new(name, lookups, command_flags)
-    end
+        command_flags = 0
 
-    def self.strict_parse(p)
-      if p.look(:id)
-        name = p.consume
-      else
-        p.consume(:open_square)
-        name = p.expression
-        p.consume(:close_square)
-      end
-
-      lookups = []
-      command_flags = 0
-
-      loop do
-        if p.consume?(:open_square)
-          lookups << p.expression
-          p.consume(:close_square)
-        elsif p.consume?(:dot)
-          lookup = p.consume(:id)
-          lookups << lookup
-          if COMMAND_METHODS.include?(lookup)
-            command_flags |= 1 << (lookups.length - 1)
+        lookups.each_index do |i|
+          lookup = lookups[i]
+          if lookup =~ SQUARE_BRACKETED
+            lookups[i] = Expression.parse(Regexp.last_match(1))
+          elsif COMMAND_METHODS.include?(lookup)
+            command_flags |= 1 << i
           end
-        else
-          break
         end
+
+        new(name, lookups, command_flags)
       end
 
-      new(name, lookups, command_flags)
+      def strict_parse(p)
+        if p.look(:id)
+          name = p.consume
+        else
+          p.consume(:open_square)
+          name = p.expression
+          p.consume(:close_square)
+        end
+
+        lookups = []
+        command_flags = 0
+
+        loop do
+          if p.consume?(:open_square)
+            lookups << p.expression
+            p.consume(:close_square)
+          elsif p.consume?(:dot)
+            lookup = p.consume(:id)
+            lookups << lookup
+            if COMMAND_METHODS.include?(lookup)
+              command_flags |= 1 << (lookups.length - 1)
+            end
+          else
+            break
+          end
+        end
+
+        new(name, lookups, command_flags)
+      end
+
+      private :new
     end
 
     def initialize(name, lookups, command_flags)
@@ -112,9 +116,9 @@ module Liquid
       lookups.each do |lookup|
         str +=
           if lookup.instance_of?(String)
-            '.' + lookup
+            "['#{lookup}']"
           else
-            '[' + lookup.to_s + ']'
+            "[#{lookup}]"
           end
       end
       str

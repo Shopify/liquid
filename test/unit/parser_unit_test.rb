@@ -47,9 +47,9 @@ class ParserUnitTest < Minitest::Test
 
   def test_expressions
     p = Parser.new("hi.there hi?[5].there? hi.there.bob")
-    assert_equal(VariableLookup.new('hi', ['there'], 0), p.expression)
-    assert_equal(VariableLookup.new('hi?', [5, 'there?'], 0), p.expression)
-    assert_equal(VariableLookup.new('hi', ['there', 'bob'], 0), p.expression)
+    assert_equal(VariableLookup.send(:new, 'hi', ['there'], 0), p.expression)
+    assert_equal(VariableLookup.send(:new, 'hi?', [5, 'there?'], 0), p.expression)
+    assert_equal(VariableLookup.send(:new, 'hi', ['there', 'bob'], 0), p.expression)
 
     p = Parser.new("nil true false")
     assert_nil(p.expression)
@@ -67,15 +67,21 @@ class ParserUnitTest < Minitest::Test
     p = Parser.new("(5..7) (1.5..9.6) (young..old) (hi[5].wat..old)")
     assert_equal(5..7, p.expression)
     assert_equal(1..9, p.expression)
-    assert_equal(RangeLookup.new(VariableLookup.new('young', [], 0), VariableLookup.new('old', [], 0)), p.expression)
-    assert_equal(RangeLookup.new(VariableLookup.new('hi', [5, "wat"], 0), VariableLookup.new('old', [], 0)), p.expression)
+    assert_equal(
+      RangeLookup.new(VariableLookup.send(:new, 'young', [], 0), VariableLookup.send(:new, 'old', [], 0)),
+      p.expression
+    )
+    assert_equal(
+      RangeLookup.new(VariableLookup.send(:new, 'hi', [5, "wat"], 0), VariableLookup.send(:new, 'old', [], 0)),
+      p.expression
+    )
   end
 
   def test_arguments
     p = Parser.new("filter: hi.there[5], keyarg: 7")
     assert_equal('filter', p.consume(:id))
     assert_equal(':', p.consume(:colon))
-    assert_equal([[VariableLookup.new("hi", ["there", 5], 0)], { "keyarg" => 7 }], p.arguments)
+    assert_equal([[VariableLookup.send(:new, "hi", ["there", 5], 0)], { "keyarg" => 7 }], p.arguments)
   end
 
   def test_invalid_expression

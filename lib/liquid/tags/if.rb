@@ -75,6 +75,10 @@ module Liquid
       Condition.parse_expression(parse_context, markup)
     end
 
+    def strict_parse_expression(p)
+      Condition.strict_parse_expression(parse_context, p)
+    end
+
     def lax_parse(markup)
       expressions = markup.scan(ExpressionsAndOperators)
       raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop =~ Syntax
@@ -114,20 +118,12 @@ module Liquid
     end
 
     def parse_comparison(p)
-      a = parse_operand_expression(p)
+      a = strict_parse_expression(p)
       if (op = p.consume?(:comparison))
-        b = parse_operand_expression(p)
+        b = strict_parse_expression(p)
         Condition.new(a, op, b)
       else
         Condition.new(a)
-      end
-    end
-
-    def parse_operand_expression(p)
-      if p.look(:id) && !p.look(:dot, 1) && !p.look(:open_square, 1)
-        parse_expression(p.consume)
-      else
-        p.expression
       end
     end
 
