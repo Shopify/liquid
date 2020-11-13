@@ -31,15 +31,33 @@ class ExpressionTest < Minitest::Test
     assert_equal(3..4, parse_and_eval(" ( 3 .. 4 ) "))
   end
 
+  def test_instrument_range_float
+    assert_usage_increment('range_float') do
+      parse("(1.0..2.0)")
+    end
+
+    assert_usage_increment('range_float') do
+      parse("(1.0..2)")
+    end
+
+    assert_usage_increment('range_float', times: 0) do
+      parse("(1..2)")
+    end
+  end
+
   private
 
-  def parse_and_eval(markup, **assigns)
+  def parse(markup)
     if Liquid::Template.error_mode == :strict
       p = Liquid::Parser.new(markup)
       markup = p.expression
       p.consume(:end_of_string)
     end
-    expression = Liquid::Expression.parse(markup)
+    Liquid::Expression.parse(markup)
+  end
+
+  def parse_and_eval(markup, **assigns)
+    expression = parse(markup)
     context = Liquid::Context.new(assigns)
     context.evaluate(expression)
   end
