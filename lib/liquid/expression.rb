@@ -14,7 +14,7 @@ module Liquid
     DOUBLE_QUOTED_STRING = /\A\s*"(.*)"\s*\z/m
     INTEGERS_REGEX       = /\A\s*(-?\d+)\s*\z/
     FLOATS_REGEX         = /\A\s*(-?\d[\d\.]+)\s*\z/
-    RANGES_REGEX         = /\A\s*\(\s*(\S+)\s*\.\.\s*(\S+)\s*\)\s*\z/
+    RANGES_REGEX         = /\A\s*\(.*\)\s*\z/
 
     def self.parse(markup)
       case markup
@@ -25,7 +25,8 @@ module Liquid
       when INTEGERS_REGEX
         Regexp.last_match(1).to_i
       when RANGES_REGEX
-        RangeLookup.parse(Regexp.last_match(1), Regexp.last_match(2))
+        parts = markup.strip.gsub(/\A\(|\)\Z/, '').split(/\.{2,}/)
+        return RangeLookup.parse(parts[0].strip, parts[1].strip) if parts.count == 2
       when FLOATS_REGEX
         Regexp.last_match(1).to_f
       else
