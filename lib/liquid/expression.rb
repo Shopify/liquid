@@ -14,7 +14,10 @@ module Liquid
     DOUBLE_QUOTED_STRING = /\A\s*"(.*)"\s*\z/m
     INTEGERS_REGEX       = /\A\s*(-?\d+)\s*\z/
     FLOATS_REGEX         = /\A\s*(-?\d[\d\.]+)\s*\z/
-    RANGES_REGEX         = /\A\s*\(\s*(\S+)\s*\.\.\s*(\S+)\s*\)\s*\z/
+
+    # Use an atomic group (?>...) to avoid pathological backtracing from
+    # malicious input as described in https://github.com/Shopify/liquid/issues/1357
+    RANGES_REGEX         = /\A\s*\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\s*\z/
 
     def self.parse(markup)
       case markup
