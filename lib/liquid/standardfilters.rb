@@ -91,12 +91,11 @@ module Liquid
       return if input.nil?
       words = Utils.to_integer(words)
 
-      l = words
-      l = 1 if l <= 0
+      words = 1 if words <= 0
 
       # Scan for non-space characters followed by one or more space characters
-      # `l` times.  Also ignore leading whitespace
-      str = input[/\A[ ]*(?:[^ ]*[ ]+){#{l}}/]
+      # `words` times.  Also ignore leading whitespace
+      str = input[/\A[ ]*(?:[^ ]*[ ]+){#{words}}/]
 
       if str
         str.strip!                # Remove trailing space
