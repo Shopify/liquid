@@ -47,6 +47,7 @@ module Liquid
 
     class Timing
       attr_reader :code, :partial, :line_number, :children, :total_time, :self_time
+      alias_method :render_time, :total_time
 
       def initialize(node, partial)
         @code        = node.respond_to?(:raw) ? node.raw : node
@@ -60,12 +61,11 @@ module Liquid
       end
 
       def start
-        @start_time = Time.now
+        @start_time = monotonic_time
       end
 
       def finish
-        @end_time   = Time.now
-        @total_time = @end_time - @start_time
+        @total_time = monotonic_time - @start_time
 
         if @children.empty?
           @self_time = @total_time
@@ -78,8 +78,10 @@ module Liquid
         end
       end
 
-      def render_time
-        @end_time - @start_time
+      private
+
+      def monotonic_time
+        Process.clock_gettime(Process::CLOCK_MONOTONIC)
       end
     end
 
@@ -109,28 +111,23 @@ module Liquid
       Thread.current[:liquid_profiler]
     end
 
+    attr_reader :total_render_time
+
     def initialize(partial_name = "<root>")
       @partial_stack = [partial_name]
 
       @root_timing  = Timing.new("", current_partial)
       @timing_stack = [@root_timing]
-
-      @render_start_at = Time.now
-      @render_end_at   = @render_start_at
     end
 
     def start
       Thread.current[:liquid_profiler] = self
-      @render_start_at = Time.now
+      @render_start_at = monotonic_time
     end
 
     def stop
       Thread.current[:liquid_profiler] = nil
-      @render_end_at = Time.now
-    end
-
-    def total_render_time
-      @render_end_at - @render_start_at
+      @total_render_time = monotonic_time - @render_start_at
     end
 
     def each(&block)
@@ -166,6 +163,12 @@ module Liquid
 
     def pop_partial
       @partial_stack.pop
+    end
+
+    private
+
+    def monotonic_time
+      Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
   end
 end
