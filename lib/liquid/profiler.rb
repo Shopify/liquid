@@ -85,21 +85,6 @@ module Liquid
       end
     end
 
-    def self.profile_node_render(node, template_name)
-      if Profiler.current_profile && node.respond_to?(:render)
-        Profiler.current_profile.start_node(node, template_name)
-        output = yield
-        Profiler.current_profile.end_node
-        output
-      else
-        yield
-      end
-    end
-
-    def self.current_profile
-      Thread.current[:liquid_profiler]
-    end
-
     attr_reader :total_render_time
 
     def initialize
@@ -108,12 +93,10 @@ module Liquid
     end
 
     def start
-      Thread.current[:liquid_profiler] = self
       @render_start_at = monotonic_time
     end
 
     def stop
-      Thread.current[:liquid_profiler] = nil
       @total_render_time = monotonic_time - @render_start_at
     end
 
@@ -129,6 +112,15 @@ module Liquid
       @root_timing.children.length
     end
 
+    def profile_node(node, template_name)
+      start_node(node, template_name)
+      yield
+    ensure
+      end_node
+    end
+
+    private
+
     def start_node(node, template_name)
       @timing_stack.push(Timing.start(node, template_name))
     end
@@ -139,8 +131,6 @@ module Liquid
 
       @timing_stack.last.children << timing
     end
-
-    private
 
     def monotonic_time
       Process.clock_gettime(Process::CLOCK_MONOTONIC)
