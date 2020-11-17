@@ -102,8 +102,8 @@ module Liquid
 
     attr_reader :total_render_time
 
-    def initialize(template_name)
-      @root_timing  = Timing.new("", template_name)
+    def initialize
+      @root_timing  = Timing.new("", nil)
       @timing_stack = [@root_timing]
     end
 

@@ -220,7 +220,7 @@ module Liquid
       if @profiling && !context.partial
         raise "Profiler not loaded, require 'liquid/profiler' first" unless defined?(Liquid::Profiler)
 
-        @profiler = Profiler.new(context.template_name)
+        @profiler = Profiler.new
         @profiler.start
 
         begin
