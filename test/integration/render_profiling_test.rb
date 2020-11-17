@@ -88,6 +88,30 @@ class RenderProfilingTest < Minitest::Test
     assert(t.profiler.total_render_time >= 0, "Total render time was not calculated")
   end
 
+  class SleepTag < Liquid::Tag
+    def initialize(tag_name, markup, parse_context)
+      super
+      @duration = Float(markup)
+    end
+
+    def render_to_output_buffer(_context, _output)
+      sleep(@duration)
+    end
+  end
+
+  def test_profiling_multiple_renders
+    with_custom_tag('sleep', SleepTag) do
+      context = Liquid::Context.new
+      t = Liquid::Template.parse("{% sleep 0.001 %}", profile: true)
+      t.render!(context)
+      first_render_time = context.profiler.total_render_time
+      t.render!(context)
+
+      assert_operator(first_render_time, :>=, 0.001)
+      assert_operator(context.profiler.total_render_time, :>=, 0.001 + first_render_time)
+    end
+  end
+
   def test_profiling_uses_include_to_mark_children
     t = Template.parse("{{ 'a string' | upcase }}\n{% include 'a_template' %}", profile: true)
     t.render!
