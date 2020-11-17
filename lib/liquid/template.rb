@@ -199,9 +199,7 @@ module Liquid
 
       begin
         # render the nodelist.
-        with_profiling(context) do
-          @root.render_to_output_buffer(context, output || +'')
-        end
+        @root.render_to_output_buffer(context, output || +'')
       rescue Liquid::MemoryError => e
         context.handle_error(e)
       ensure
@@ -222,11 +220,6 @@ module Liquid
 
     def tokenize(source)
       Tokenizer.new(source, @line_numbers)
-    end
-
-    def with_profiling(context)
-      return yield unless context.profiler
-      context.profiler.profile { yield }
     end
 
     def apply_options_to_context(context, options)
