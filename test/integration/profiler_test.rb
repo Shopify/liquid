@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class RenderProfilingTest < Minitest::Test
+class ProfilerTest < Minitest::Test
   include Liquid
 
   class ProfilingFileSystem
