@@ -9,7 +9,12 @@ module Liquid
       @index      = 0
     end
 
-    attr_reader :name, :length, :parentloop
+    attr_reader :length, :parentloop
+
+    def name
+      Usage.increment('forloop_drop_name')
+      @name
+    end
 
     def index
       @index + 1

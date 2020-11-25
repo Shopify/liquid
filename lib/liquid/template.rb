@@ -64,23 +64,6 @@ module Liquid
       attr_accessor :error_mode
       Template.error_mode = :lax
 
-      attr_reader :taint_mode
-
-      # Sets how strict the taint checker should be.
-      # :lax is the default, and ignores the taint flag completely
-      # :warn adds a warning, but does not interrupt the rendering
-      # :error raises an error when tainted output is used
-      # @deprecated Since it is being deprecated in ruby itself.
-      def taint_mode=(mode)
-        taint_supported = Object.new.taint.tainted?
-        if mode != :lax && !taint_supported
-          raise NotImplementedError, "#{RUBY_ENGINE} #{RUBY_VERSION} doesn't support taint checking"
-        end
-        @taint_mode = mode
-      end
-
-      Template.taint_mode = :lax
-
       attr_accessor :default_exception_renderer
       Template.default_exception_renderer = lambda do |exception|
         exception
@@ -95,14 +78,6 @@ module Liquid
 
       def register_tag(name, klass)
         tags[name.to_s] = klass
-      end
-
-      attr_accessor :registers
-      Template.registers = {}
-      private :registers=
-
-      def add_register(name, klass)
-        registers[name.to_sym] = klass
       end
 
       # Pass a module with filter methods which should be available
@@ -178,7 +153,7 @@ module Liquid
         c = args.shift
 
         if @rethrow_errors
-          c.exception_renderer = ->(_e) { raise }
+          c.exception_renderer = Liquid::RAISE_EXCEPTION_LAMBDA
         end
 
         c
@@ -211,16 +186,11 @@ module Liquid
         context.add_filters(args.pop)
       end
 
-      Template.registers.each do |key, register|
-        context_register[key] = register
-      end
-
       # Retrying a render resets resource usage
       context.resource_limits.reset
 
       begin
         # render the nodelist.
-        # for performance reasons we get an array back here. join will make a string out of it.
         with_profiling(context) do
           @root.render_to_output_buffer(context, output || +'')
         end

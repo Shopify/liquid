@@ -31,10 +31,17 @@ module Liquid
     def parse(tokens)
       while parse_body(@blocks.last.attachment, tokens)
       end
+      @blocks.each do |block|
+        block.attachment.remove_blank_strings if blank?
+        block.attachment.freeze
+      end
     end
 
+    ELSE_TAG_NAMES = ['elsif', 'else'].freeze
+    private_constant :ELSE_TAG_NAMES
+
     def unknown_tag(tag, markup, tokens)
-      if ['elsif', 'else'].include?(tag)
+      if ELSE_TAG_NAMES.include?(tag)
         push_block(tag, markup)
       else
         super
@@ -61,21 +68,25 @@ module Liquid
       end
 
       @blocks.push(block)
-      block.attach(BlockBody.new)
+      block.attach(new_body)
+    end
+
+    def parse_expression(markup)
+      Condition.parse_expression(parse_context, markup)
     end
 
     def lax_parse(markup)
       expressions = markup.scan(ExpressionsAndOperators)
       raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop =~ Syntax
 
-      condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2), Expression.parse(Regexp.last_match(3)))
+      condition = Condition.new(parse_expression(Regexp.last_match(1)), Regexp.last_match(2), parse_expression(Regexp.last_match(3)))
 
       until expressions.empty?
         operator = expressions.pop.to_s.strip
 
         raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop.to_s =~ Syntax
 
-        new_condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2), Expression.parse(Regexp.last_match(3)))
+        new_condition = Condition.new(parse_expression(Regexp.last_match(1)), Regexp.last_match(2), parse_expression(Regexp.last_match(3)))
         raise SyntaxError, options[:locale].t("errors.syntax.if") unless BOOLEAN_OPERATORS.include?(operator)
         new_condition.send(operator, condition)
         condition = new_condition
@@ -103,9 +114,9 @@ module Liquid
     end
 
     def parse_comparison(p)
-      a = Expression.parse(p.expression)
+      a = parse_expression(p.expression)
       if (op = p.consume?(:comparison))
-        b = Expression.parse(p.expression)
+        b = parse_expression(p.expression)
         Condition.new(a, op, b)
       else
         Condition.new(a)

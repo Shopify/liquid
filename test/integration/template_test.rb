@@ -111,13 +111,12 @@ class TemplateTest < Minitest::Test
 
   def test_resource_limits_render_length
     t = Template.parse("0123456789")
-    t.resource_limits.render_length_limit = 5
+    t.resource_limits.render_length_limit = 9
     assert_equal("Liquid error: Memory limits exceeded", t.render)
     assert(t.resource_limits.reached?)
 
     t.resource_limits.render_length_limit = 10
     assert_equal("0123456789", t.render!)
-    refute_nil(t.resource_limits.render_length)
   end
 
   def test_resource_limits_render_score
@@ -136,38 +135,6 @@ class TemplateTest < Minitest::Test
     refute_nil(t.resource_limits.render_score)
   end
 
-  def test_resource_limits_assign_score
-    t = Template.parse("{% assign foo = 42 %}{% assign bar = 23 %}")
-    t.resource_limits.assign_score_limit = 1
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    assert(t.resource_limits.reached?)
-
-    t.resource_limits.assign_score_limit = 2
-    assert_equal("", t.render!)
-    refute_nil(t.resource_limits.assign_score)
-  end
-
-  def test_resource_limits_assign_score_counts_bytes_not_characters
-    t = Template.parse("{% assign foo = 'すごい' %}")
-    t.render
-    assert_equal(9, t.resource_limits.assign_score)
-
-    t = Template.parse("{% capture foo %}すごい{% endcapture %}")
-    t.render
-    assert_equal(9, t.resource_limits.assign_score)
-  end
-
-  def test_resource_limits_assign_score_nested
-    t = Template.parse("{% assign foo = 'aaaa' | reverse %}")
-
-    t.resource_limits.assign_score_limit = 3
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    assert(t.resource_limits.reached?)
-
-    t.resource_limits.assign_score_limit = 5
-    assert_equal("", t.render!)
-  end
-
   def test_resource_limits_aborts_rendering_after_first_error
     t = Template.parse("{% for a in (1..100) %} foo1 {% endfor %} bar {% for a in (1..100) %} foo2 {% endfor %}")
     t.resource_limits.render_score_limit = 50
@@ -176,50 +143,46 @@ class TemplateTest < Minitest::Test
   end
 
   def test_resource_limits_hash_in_template_gets_updated_even_if_no_limits_are_set
-    t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
+    t = Template.parse("{% for a in (1..100) %}x{% assign foo = 1 %} {% endfor %}")
     t.render!
     assert(t.resource_limits.assign_score > 0)
     assert(t.resource_limits.render_score > 0)
-    assert(t.resource_limits.render_length > 0)
   end
 
   def test_render_length_persists_between_blocks
     t = Template.parse("{% if true %}aaaa{% endif %}")
-    t.resource_limits.render_length_limit = 7
+    t.resource_limits.render_length_limit = 3
     assert_equal("Liquid error: Memory limits exceeded", t.render)
-    t.resource_limits.render_length_limit = 8
+    t.resource_limits.render_length_limit = 4
     assert_equal("aaaa", t.render)
 
     t = Template.parse("{% if true %}aaaa{% endif %}{% if true %}bbb{% endif %}")
-    t.resource_limits.render_length_limit = 13
+    t.resource_limits.render_length_limit = 6
     assert_equal("Liquid error: Memory limits exceeded", t.render)
-    t.resource_limits.render_length_limit = 14
+    t.resource_limits.render_length_limit = 7
     assert_equal("aaaabbb", t.render)
 
     t = Template.parse("{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}{% if true %}a{% endif %}{% if true %}b{% endif %}")
     t.resource_limits.render_length_limit = 5
     assert_equal("Liquid error: Memory limits exceeded", t.render)
-    t.resource_limits.render_length_limit = 11
-    assert_equal("Liquid error: Memory limits exceeded", t.render)
-    t.resource_limits.render_length_limit = 12
+    t.resource_limits.render_length_limit = 6
     assert_equal("ababab", t.render)
   end
 
   def test_render_length_uses_number_of_bytes_not_characters
     t = Template.parse("{% if true %}すごい{% endif %}")
-    t.resource_limits.render_length_limit = 10
+    t.resource_limits.render_length_limit = 8
     assert_equal("Liquid error: Memory limits exceeded", t.render)
-    t.resource_limits.render_length_limit = 18
+    t.resource_limits.render_length_limit = 9
     assert_equal("すごい", t.render)
   end
 
   def test_default_resource_limits_unaffected_by_render_with_context
     context = Context.new
-    t = Template.parse("{% for a in (1..100) %} {% assign foo = 1 %} {% endfor %}")
+    t = Template.parse("{% for a in (1..100) %}x{% assign foo = 1 %} {% endfor %}")
     t.render!(context)
     assert(context.resource_limits.assign_score > 0)
     assert(context.resource_limits.render_score > 0)
-    assert(context.resource_limits.render_length > 0)
   end
 
   def test_can_use_drop_as_context
@@ -294,9 +257,8 @@ class TemplateTest < Minitest::Test
   end
 
   def test_nil_value_does_not_raise
-    Liquid::Template.error_mode = :strict
-    t                           = Template.parse("some{{x}}thing")
-    result                      = t.render!({ 'x' => nil }, strict_variables: true)
+    t      = Template.parse("some{{x}}thing", error_mode: :strict)
+    result = t.render!({ 'x' => nil }, strict_variables: true)
 
     assert_equal(0, t.errors.count)
     assert_equal('something', result)
@@ -360,13 +322,5 @@ class TemplateTest < Minitest::Test
     t = Template.parse("{% assign nums = (x..y) %}{% for num in nums %}{{ num }}{% endfor %}")
     result = t.render('x' => 1, 'y' => 5)
     assert_equal('12345', result)
-  end
-
-  unless taint_supported?
-    def test_taint_mode
-      assert_raises(NotImplementedError) do
-        Template.taint_mode = :warn
-      end
-    end
   end
 end

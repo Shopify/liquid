@@ -32,10 +32,6 @@ module Minitest
     def fixture(name)
       File.join(File.expand_path(__dir__), "fixtures", name)
     end
-
-    def self.taint_supported?
-      Object.new.taint.tainted?
-    end
   end
 
   module Assertions
@@ -93,14 +89,6 @@ module Minitest
       Liquid::StrainerFactory.instance_variable_set(:@global_filters, original_global_filters)
     end
 
-    def with_taint_mode(mode)
-      old_mode = Liquid::Template.taint_mode
-      Liquid::Template.taint_mode = mode
-      yield
-    ensure
-      Liquid::Template.taint_mode = old_mode
-    end
-
     def with_error_mode(mode)
       old_mode = Liquid::Template.error_mode
       Liquid::Template.error_mode = mode
@@ -110,10 +98,17 @@ module Minitest
     end
 
     def with_custom_tag(tag_name, tag_class)
-      Liquid::Template.register_tag(tag_name, tag_class)
-      yield
-    ensure
-      Liquid::Template.tags.delete(tag_name)
+      old_tag = Liquid::Template.tags[tag_name]
+      begin
+        Liquid::Template.register_tag(tag_name, tag_class)
+        yield
+      ensure
+        if old_tag
+          Liquid::Template.tags[tag_name] = old_tag
+        else
+          Liquid::Template.tags.delete(tag_name)
+        end
+      end
     end
   end
 end

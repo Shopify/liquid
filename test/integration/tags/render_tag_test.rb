@@ -42,34 +42,6 @@ class RenderTagTest < Minitest::Test
     assert_template_result('', "{% assign snippet = 'should not be visible' %}{% render 'snippet' %}")
   end
 
-  if taint_supported?
-    def test_render_sets_the_correct_template_name_for_errors
-      Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ unsafe }}')
-
-      with_taint_mode :error do
-        template = Liquid::Template.parse('{% render "snippet", unsafe: unsafe %}')
-        context  = Context.new('unsafe' => (+'unsafe').tap(&:taint))
-        template.render(context)
-
-        assert_equal [Liquid::TaintedError], template.errors.map(&:class)
-        assert_equal 'snippet', template.errors.first.template_name
-      end
-    end
-
-    def test_render_sets_the_correct_template_name_for_warnings
-      Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ unsafe }}')
-
-      with_taint_mode :warn do
-        template = Liquid::Template.parse('{% render "snippet", unsafe: unsafe %}')
-        context  = Context.new('unsafe' => (+'unsafe').tap(&:taint))
-        template.render(context)
-
-        assert_equal [Liquid::TaintedError], context.warnings.map(&:class)
-        assert_equal 'snippet', context.warnings.first.template_name
-      end
-    end
-  end
-
   def test_render_does_not_mutate_parent_scope
     Liquid::Template.file_system = StubFileSystem.new('snippet' => '{% assign inner = 1 %}')
     assert_template_result('', "{% render 'snippet' %}{{ inner }}")
@@ -155,7 +127,10 @@ class RenderTagTest < Minitest::Test
       'test_include' => '{% include "foo" %}'
     )
 
-    assert_template_result('include usage is not allowed in this context', '{% render "test_include" %}')
+    exc = assert_raises(Liquid::DisabledError) do
+      Liquid::Template.parse('{% render "test_include" %}').render!
+    end
+    assert_equal('Liquid error: include usage is not allowed in this context', exc.message)
   end
 
   def test_includes_will_not_render_inside_nested_sibling_tags
@@ -165,7 +140,8 @@ class RenderTagTest < Minitest::Test
       'test_include' => '{% include "foo" %}'
     )
 
-    assert_template_result('include usage is not allowed in this contextinclude usage is not allowed in this context', '{% render "nested_render_with_sibling_include" %}')
+    output = Liquid::Template.parse('{% render "nested_render_with_sibling_include" %}').render
+    assert_equal('Liquid error: include usage is not allowed in this contextLiquid error: include usage is not allowed in this context', output)
   end
 
   def test_render_tag_with

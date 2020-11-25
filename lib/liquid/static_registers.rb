@@ -2,7 +2,7 @@
 
 module Liquid
   class StaticRegisters
-    attr_reader :static, :registers
+    attr_reader :static
 
     def initialize(registers = {})
       @static    = registers.is_a?(StaticRegisters) ? registers.static : registers
@@ -25,8 +25,16 @@ module Liquid
       @registers.delete(key)
     end
 
-    def fetch(key, default = nil)
-      key?(key) ? self[key] : default
+    UNDEFINED = Object.new
+
+    def fetch(key, default = UNDEFINED, &block)
+      if @registers.key?(key)
+        @registers.fetch(key)
+      elsif default != UNDEFINED
+        @static.fetch(key, default, &block)
+      else
+        @static.fetch(key, &block)
+      end
     end
 
     def key?(key)

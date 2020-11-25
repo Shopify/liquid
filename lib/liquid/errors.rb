@@ -46,7 +46,6 @@ module Liquid
   StandardError       = Class.new(Error)
   SyntaxError         = Class.new(Error)
   StackLevelError     = Class.new(Error)
-  TaintedError        = Class.new(Error)
   MemoryError         = Class.new(Error)
   ZeroDivisionError   = Class.new(Error)
   FloatDomainError    = Class.new(Error)
@@ -54,5 +53,6 @@ module Liquid
   UndefinedDropMethod = Class.new(Error)
   UndefinedFilter     = Class.new(Error)
   MethodOverrideError = Class.new(Error)
+  DisabledError       = Class.new(Error)
   InternalError       = Class.new(Error)
 end

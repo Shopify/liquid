@@ -10,10 +10,10 @@ module Liquid
       super
       if markup =~ Syntax
         @variable_name   = Regexp.last_match(1)
-        @collection_name = Expression.parse(Regexp.last_match(2))
+        @collection_name = parse_expression(Regexp.last_match(2))
         @attributes      = {}
         markup.scan(TagAttributes) do |key, value|
-          @attributes[key] = Expression.parse(value)
+          @attributes[key] = parse_expression(value)
         end
       else
         raise SyntaxError, options[:locale].t("errors.syntax.table_row")

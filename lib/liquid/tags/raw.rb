@@ -14,14 +14,14 @@ module Liquid
     def parse(tokens)
       @body = +''
       while (token = tokens.shift)
-        if token =~ FullTokenPossiblyInvalid
+        if token =~ FullTokenPossiblyInvalid && block_delimiter == Regexp.last_match(2)
           @body << Regexp.last_match(1) if Regexp.last_match(1) != ""
-          return if block_delimiter == Regexp.last_match(2)
+          return
         end
         @body << token unless token.empty?
       end
 
-      raise SyntaxError, parse_context.locale.t("errors.syntax.tag_never_closed", block_name: block_name)
+      raise_tag_never_closed(block_name)
     end
 
     def render_to_output_buffer(_context, output)

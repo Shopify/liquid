@@ -1,0 +1,40 @@
+name: Liquid
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        entry:
+          - { ruby: 2.5, allowed-failure: false }
+          - { ruby: 2.6, allowed-failure: false }
+          - { ruby: 2.7, allowed-failure: false }
+          - { ruby: ruby-head, allowed-failure: true }
+    name: test (${{ matrix.entry.ruby }})
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.entry.ruby }}
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('Gemfile') }}
+          restore-keys: ${{ runner.os }}-gems-
+      - run: bundle install --jobs=3 --retry=3 --path=vendor/bundle
+      - run: bundle exec rake
+        continue-on-error: ${{ matrix.entry.allowed-failure }}
+  memory_profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('Gemfile') }}
+          restore-keys: ${{ runner.os }}-gems-
+      - run: bundle install --jobs=3 --retry=3 --path=vendor/bundle
+      - run: bundle exec rake memory_profile:run

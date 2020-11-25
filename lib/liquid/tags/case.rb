@@ -12,15 +12,22 @@ module Liquid
       @blocks = []
 
       if markup =~ Syntax
-        @left = Expression.parse(Regexp.last_match(1))
+        @left = parse_expression(Regexp.last_match(1))
       else
         raise SyntaxError, options[:locale].t("errors.syntax.case")
       end
     end
 
     def parse(tokens)
-      body = BlockBody.new
+      body = new_body
       body = @blocks.last.attachment while parse_body(body, tokens)
+      @blocks.each do |condition|
+        body = condition.attachment
+        unless body.frozen?
+          body.remove_blank_strings if blank?
+          body.freeze
+        end
+      end
     end
 
     def nodelist
@@ -56,7 +63,7 @@ module Liquid
     private
 
     def record_when_condition(markup)
-      body = BlockBody.new
+      body = new_body
 
       while markup
         unless markup =~ WhenSyntax
@@ -65,7 +72,7 @@ module Liquid
 
         markup = Regexp.last_match(2)
 
-        block = Condition.new(@left, '==', Expression.parse(Regexp.last_match(1)))
+        block = Condition.new(@left, '==', Condition.parse_expression(parse_context, Regexp.last_match(1)))
         block.attach(body)
         @blocks << block
       end
@@ -77,7 +84,7 @@ module Liquid
       end
 
       block = ElseCondition.new
-      block.attach(BlockBody.new)
+      block.attach(new_body)
       @blocks << block
     end
 

@@ -30,7 +30,7 @@ module Liquid
       @parse_context = parse_context
       @line_number   = parse_context.line_number
 
-      parse_with_selected_parser(markup)
+      strict_parse_with_error_mode_fallback(markup)
     end
 
     def raw
@@ -63,6 +63,8 @@ module Liquid
       @filters = []
       p = Parser.new(markup)
 
+      return if p.look(:end_of_string)
+
       @name = Expression.parse(p.expression)
       while p.consume?(:pipe)
         filtername = p.consume(:id)
@@ -81,14 +83,14 @@ module Liquid
     end
 
     def render(context)
-      obj = @filters.inject(context.evaluate(@name)) do |output, (filter_name, filter_args, filter_kwargs)|
+      obj = context.evaluate(@name)
+
+      @filters.each do |filter_name, filter_args, filter_kwargs|
         filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
-        context.invoke(filter_name, output, *filter_args)
+        obj = context.invoke(filter_name, obj, *filter_args)
       end
 
-      obj = context.apply_global_filter(obj)
-      taint_check(context, obj)
-      obj
+      context.apply_global_filter(obj)
     end
 
     def render_to_output_buffer(context, output)
@@ -140,25 +142,6 @@ module Liquid
         parsed_args << parsed_kwargs
       end
       parsed_args
-    end
-
-    def taint_check(context, obj)
-      return if Template.taint_mode == :lax
-      return unless obj.tainted?
-
-      @markup =~ QuotedFragment
-      name = Regexp.last_match(0)
-
-      error               = TaintedError.new("variable '#{name}' is tainted and was not escaped")
-      error.line_number   = line_number
-      error.template_name = context.template_name
-
-      case Template.taint_mode
-      when :warn
-        context.warnings << error
-      when :error
-        raise error
-      end
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
