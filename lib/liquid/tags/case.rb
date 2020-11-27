@@ -19,7 +19,7 @@ module Liquid
     end
 
     def parse(tokens)
-      body = new_body
+      body = case_body = new_body
       body = @blocks.last.attachment while parse_body(body, tokens)
       @blocks.each do |condition|
         body = condition.attachment
@@ -28,6 +28,7 @@ module Liquid
           body.freeze
         end
       end
+      case_body.freeze
     end
 
     def nodelist
