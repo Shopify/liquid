@@ -8,8 +8,6 @@ module Liquid
       if start_obj.respond_to?(:evaluate) || end_obj.respond_to?(:evaluate)
         new(start_obj, end_obj)
       else
-        Usage.increment('range_float') if start_obj.is_a?(Float) || end_obj.is_a?(Float)
-
         start_obj.to_i..end_obj.to_i
       end
     end
