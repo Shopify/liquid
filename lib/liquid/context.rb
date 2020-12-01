@@ -135,7 +135,7 @@ module Liquid
     def new_isolated_subcontext
       check_overflow
 
-      Context.build(
+      self.class.build(
         resource_limits: resource_limits,
         static_environments: static_environments,
         registers: StaticRegisters.new(registers)
