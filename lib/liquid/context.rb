@@ -18,8 +18,8 @@ module Liquid
     attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
 
     # rubocop:disable Metrics/ParameterLists
-    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {})
-      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments)
+    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {}, &block)
+      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments, &block)
     end
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {})
@@ -43,6 +43,8 @@ module Liquid
       if rethrow_errors
         self.exception_renderer = Liquid::RAISE_EXCEPTION_LAMBDA
       end
+
+      yield self if block_given?
 
       # Do this last, since it could result in this object being passed to a Proc in the environment
       squash_instance_assigns_with_environments
