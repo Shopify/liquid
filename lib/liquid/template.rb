@@ -193,11 +193,13 @@ module Liquid
       # Retrying a render resets resource usage
       context.resource_limits.reset
 
+      if @profiling && context.profiler.nil?
+        @profiler = context.profiler = Liquid::Profiler.new
+      end
+
       begin
         # render the nodelist.
-        with_profiling(context) do
-          @root.render_to_output_buffer(context, output || +'')
-        end
+        @root.render_to_output_buffer(context, output || +'')
       rescue Liquid::MemoryError => e
         context.handle_error(e)
       ensure
@@ -218,21 +220,6 @@ module Liquid
 
     def tokenize(source)
       Tokenizer.new(source, @line_numbers)
-    end
-
-    def with_profiling(context)
-      if @profiling && context.profiler.nil?
-        @profiler = context.profiler = Profiler.new
-        @profiler.start
-
-        begin
-          yield
-        ensure
-          @profiler.stop
-        end
-      else
-        yield
-      end
     end
 
     def apply_options_to_context(context, options)

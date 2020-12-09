@@ -14,6 +14,14 @@ module Liquid
   end
   BlockBody.prepend(BlockBodyProfilingHook)
 
+  module DocumentProfilingHook
+    def render_to_output_buffer(context, output)
+      return super unless context.profiler
+      context.profiler.profile { super }
+    end
+  end
+  Document.prepend(DocumentProfilingHook)
+
   module ContextProfilingHook
     attr_accessor :profiler
 

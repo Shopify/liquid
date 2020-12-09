@@ -42,7 +42,7 @@ module Liquid
     end
 
     def render(context)
-      @body.render(context)
+      render_to_output_buffer(context, +'')
     end
 
     private

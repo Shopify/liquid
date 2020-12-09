@@ -90,14 +90,20 @@ module Liquid
     def initialize
       @root_timing  = Timing.new("", nil)
       @timing_stack = [@root_timing]
+      @render_start_at = nil
+      @total_render_time = 0.0
     end
 
-    def start
-      @render_start_at = monotonic_time
-    end
-
-    def stop
-      @total_render_time = monotonic_time - @render_start_at
+    def profile
+      return yield if @render_start_at
+      started_at = monotonic_time
+      begin
+        @started_at = started_at
+        yield
+      ensure
+        @started_at = nil
+        @total_render_time += monotonic_time - started_at
+      end
     end
 
     def each(&block)
