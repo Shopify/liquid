@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class RenderProfilingTest < Minitest::Test
+class ProfilerTest < Minitest::Test
   include Liquid
 
   class ProfilingFileSystem
@@ -103,12 +103,19 @@ class RenderProfilingTest < Minitest::Test
     with_custom_tag('sleep', SleepTag) do
       context = Liquid::Context.new
       t = Liquid::Template.parse("{% sleep 0.001 %}", profile: true)
+      context.template_name = 'index'
       t.render!(context)
-      first_render_time = context.profiler.total_render_time
+      context.template_name = 'layout'
+      first_render_time = context.profiler.total_time
       t.render!(context)
 
+      profiler = context.profiler
+      children = profiler.children
       assert_operator(first_render_time, :>=, 0.001)
-      assert_operator(context.profiler.total_render_time, :>=, 0.001 + first_render_time)
+      assert_operator(profiler.total_time, :>=, 0.001 + first_render_time)
+      assert_equal(["index", "layout"], children.map(&:template_name))
+      assert_equal([nil, nil], children.map(&:code))
+      assert_equal(profiler.total_time, children.map(&:total_time).reduce(&:+))
     end
   end
 

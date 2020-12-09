@@ -4,7 +4,7 @@ module Liquid
   module BlockBodyProfilingHook
     def render_node(context, output, node)
       if (profiler = context.profiler)
-        profiler.profile_node(node, context.template_name) do
+        profiler.profile_node(context.template_name, code: node.raw, line_number: node.line_number) do
           super
         end
       else
@@ -17,7 +17,7 @@ module Liquid
   module DocumentProfilingHook
     def render_to_output_buffer(context, output)
       return super unless context.profiler
-      context.profiler.profile { super }
+      context.profiler.profile(context.template_name) { super }
     end
   end
   Document.prepend(DocumentProfilingHook)

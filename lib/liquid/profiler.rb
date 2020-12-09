@@ -46,97 +46,91 @@ module Liquid
     include Enumerable
 
     class Timing
-      attr_reader :code, :partial, :line_number, :children, :total_time, :self_time
+      attr_reader :code, :template_name, :line_number, :children
+      attr_accessor :total_time
       alias_method :render_time, :total_time
+      alias_method :partial, :template_name
 
-      def initialize(node, template_name)
-        @code        = node.respond_to?(:raw) ? node.raw : node
-        @partial     = template_name
-        @line_number = node.respond_to?(:line_number) ? node.line_number : nil
-        @children    = []
+      def initialize(code: nil, template_name: nil, line_number: nil)
+        @code = code
+        @template_name = template_name
+        @line_number = line_number
+        @children = []
       end
 
-      def self.start(node, template_name)
-        new(node, template_name).tap(&:start)
-      end
-
-      def start
-        @start_time = monotonic_time
-      end
-
-      def finish
-        @total_time = monotonic_time - @start_time
-
-        if @children.empty?
-          @self_time = @total_time
-        else
-          total_children_time = 0
+      def self_time
+        @self_time ||= begin
+          total_children_time = 0.0
           @children.each do |child|
             total_children_time += child.total_time
           end
-          @self_time = @total_time - total_children_time
+          @total_time - total_children_time
         end
       end
+    end
 
-      private
+    attr_reader :total_time
+    alias_method :total_render_time, :total_time
 
-      def monotonic_time
-        Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    def initialize
+      @root_children = []
+      @current_children = nil
+      @total_time = 0.0
+    end
+
+    def profile(template_name, &block)
+      # nested renders are done from a tag that already has a timing node
+      return yield if @current_children
+
+      root_children = @root_children
+      render_idx = root_children.length
+      begin
+        @current_children = root_children
+        profile_node(template_name, &block)
+      ensure
+        @current_children = nil
+        if (timing = root_children[render_idx])
+          @total_time += timing.total_time
+        end
       end
     end
 
-    attr_reader :total_render_time
-
-    def initialize
-      @root_timing  = Timing.new("", nil)
-      @timing_stack = [@root_timing]
-      @render_start_at = nil
-      @total_render_time = 0.0
-    end
-
-    def profile
-      return yield if @render_start_at
-      started_at = monotonic_time
-      begin
-        @started_at = started_at
-        yield
-      ensure
-        @started_at = nil
-        @total_render_time += monotonic_time - started_at
+    def children
+      children = @root_children
+      if children.length == 1
+        children.first.children
+      else
+        children
       end
     end
 
     def each(&block)
-      @root_timing.children.each(&block)
+      children.each(&block)
     end
 
     def [](idx)
-      @root_timing.children[idx]
+      children[idx]
     end
 
     def length
-      @root_timing.children.length
+      children.length
     end
 
-    def profile_node(node, template_name)
-      start_node(node, template_name)
-      yield
-    ensure
-      end_node
+    def profile_node(template_name, code: nil, line_number: nil)
+      timing = Timing.new(code: code, template_name: template_name, line_number: line_number)
+      parent_children = @current_children
+      start_time = monotonic_time
+      begin
+        @current_children = timing.children
+        yield
+      ensure
+        @current_children = parent_children
+        timing.total_time = monotonic_time - start_time
+        parent_children << timing
+      end
     end
 
     private
-
-    def start_node(node, template_name)
-      @timing_stack.push(Timing.start(node, template_name))
-    end
-
-    def end_node
-      timing = @timing_stack.pop
-      timing.finish
-
-      @timing_stack.last.children << timing
-    end
 
     def monotonic_time
       Process.clock_gettime(Process::CLOCK_MONOTONIC)
