@@ -106,9 +106,13 @@ module Liquid
     # Parse source code.
     # Returns self for easy chaining
     def parse(source, options = {})
+      if (profiling = options[:profile])
+        raise "Profiler not loaded, require 'liquid/profiler' first" unless defined?(Liquid::Profiler)
+      end
+
       @options      = options
-      @profiling    = options[:profile]
-      @line_numbers = options[:line_numbers] || @profiling
+      @profiling    = profiling
+      @line_numbers = options[:line_numbers] || profiling
       parse_context = options.is_a?(ParseContext) ? options : ParseContext.new(options)
       @root         = Document.parse(tokenize(source), parse_context)
       @warnings     = parse_context.warnings
@@ -217,10 +221,8 @@ module Liquid
     end
 
     def with_profiling(context)
-      if @profiling && !context.partial
-        raise "Profiler not loaded, require 'liquid/profiler' first" unless defined?(Liquid::Profiler)
-
-        @profiler = Profiler.new
+      if @profiling && context.profiler.nil?
+        @profiler = context.profiler = Profiler.new
         @profiler.start
 
         begin
