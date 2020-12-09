@@ -62,6 +62,17 @@ class RenderProfilingTest < Minitest::Test
     assert_equal(2, included_children[1].line_number)
   end
 
+  def test_profiling_render_tag
+    t = Template.parse("{% render 'a_template' %}", profile: true)
+    t.render!
+
+    render_children = t.profiler[0].children
+    render_children.each do |timing|
+      assert_equal('a_template', timing.partial)
+    end
+    assert_equal([1, 2], render_children.map(&:line_number))
+  end
+
   def test_profiling_times_the_rendering_of_tokens
     t = Template.parse("{% include 'a_template' %}", profile: true)
     t.render!

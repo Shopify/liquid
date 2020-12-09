@@ -25,7 +25,7 @@ module Liquid
   #     node.code
   #
   #     # Which template and line number of this node.
-  #     # If top level, this will be "<root>".
+  #     # The top-level template name is `nil` by default, but can be set in the Liquid::Context before rendering.
   #     node.partial
   #     node.line_number
   #
@@ -49,15 +49,15 @@ module Liquid
       attr_reader :code, :partial, :line_number, :children, :total_time, :self_time
       alias_method :render_time, :total_time
 
-      def initialize(node, partial)
+      def initialize(node, template_name)
         @code        = node.respond_to?(:raw) ? node.raw : node
-        @partial     = partial
+        @partial     = template_name
         @line_number = node.respond_to?(:line_number) ? node.line_number : nil
         @children    = []
       end
 
-      def self.start(node, partial)
-        new(node, partial).tap(&:start)
+      def self.start(node, template_name)
+        new(node, template_name).tap(&:start)
       end
 
       def start
@@ -85,22 +85,11 @@ module Liquid
       end
     end
 
-    def self.profile_node_render(node)
+    def self.profile_node_render(node, template_name)
       if Profiler.current_profile && node.respond_to?(:render)
-        Profiler.current_profile.start_node(node)
+        Profiler.current_profile.start_node(node, template_name)
         output = yield
-        Profiler.current_profile.end_node(node)
-        output
-      else
-        yield
-      end
-    end
-
-    def self.profile_children(template_name)
-      if Profiler.current_profile
-        Profiler.current_profile.push_partial(template_name)
-        output = yield
-        Profiler.current_profile.pop_partial
+        Profiler.current_profile.end_node
         output
       else
         yield
@@ -113,10 +102,8 @@ module Liquid
 
     attr_reader :total_render_time
 
-    def initialize(partial_name = "<root>")
-      @partial_stack = [partial_name]
-
-      @root_timing  = Timing.new("", current_partial)
+    def initialize
+      @root_timing  = Timing.new("", nil)
       @timing_stack = [@root_timing]
     end
 
@@ -142,27 +129,15 @@ module Liquid
       @root_timing.children.length
     end
 
-    def start_node(node)
-      @timing_stack.push(Timing.start(node, current_partial))
+    def start_node(node, template_name)
+      @timing_stack.push(Timing.start(node, template_name))
     end
 
-    def end_node(_node)
+    def end_node
       timing = @timing_stack.pop
       timing.finish
 
       @timing_stack.last.children << timing
-    end
-
-    def current_partial
-      @partial_stack.last
-    end
-
-    def push_partial(partial_name)
-      @partial_stack.push(partial_name)
-    end
-
-    def pop_partial
-      @partial_stack.pop
     end
 
     private
