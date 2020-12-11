@@ -15,13 +15,13 @@ class TagTest < Minitest::Test
     with_custom_tag('blabla', klass1) do
       template = Liquid::Template.parse("{% blabla %}")
 
-      assert_equal 'hello', template.render
+      assert_equal('hello', template.render)
 
       buf    = +''
       output = template.render({}, output: buf)
-      assert_equal 'hello', output
-      assert_equal 'hello', buf
-      assert_equal buf.object_id, output.object_id
+      assert_equal('hello', output)
+      assert_equal('hello', buf)
+      assert_equal(buf.object_id, output.object_id)
     end
 
     klass2 = Class.new(klass1) do
@@ -33,13 +33,13 @@ class TagTest < Minitest::Test
     with_custom_tag('blabla', klass2) do
       template = Liquid::Template.parse("{% blabla %}")
 
-      assert_equal 'foohellobar', template.render
+      assert_equal('foohellobar', template.render)
 
       buf    = +''
       output = template.render({}, output: buf)
-      assert_equal 'foohellobar', output
-      assert_equal 'foohellobar', buf
-      assert_equal buf.object_id, output.object_id
+      assert_equal('foohellobar', output)
+      assert_equal('foohellobar', buf)
+      assert_equal(buf.object_id, output.object_id)
     end
   end
 end

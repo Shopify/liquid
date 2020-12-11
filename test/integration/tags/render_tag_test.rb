@@ -58,7 +58,7 @@ class RenderTagTest < Minitest::Test
   def test_recursively_rendered_template_does_not_produce_endless_loop
     Liquid::Template.file_system = StubFileSystem.new('loop' => '{% render "loop" %}')
 
-    assert_raises Liquid::StackLevelError do
+    assert_raises(Liquid::StackLevelError) do
       Template.parse('{% render "loop" %}').render!
     end
   end
@@ -67,7 +67,7 @@ class RenderTagTest < Minitest::Test
     Liquid::Template.file_system = StubFileSystem.new(
       'loop_render' => '{% render "loop_render" %}',
     )
-    assert_raises Liquid::StackLevelError do
+    assert_raises(Liquid::StackLevelError) do
       Template.parse('{% render "loop_render" %}').render!
     end
   end
@@ -75,7 +75,7 @@ class RenderTagTest < Minitest::Test
   def test_dynamically_choosen_templates_are_not_allowed
     Liquid::Template.file_system = StubFileSystem.new('snippet' => 'should not be rendered')
 
-    assert_raises Liquid::SyntaxError do
+    assert_raises(Liquid::SyntaxError) do
       Liquid::Template.parse("{% assign name = 'snippet' %}{% render name %}")
     end
   end
