@@ -1,5 +1,3 @@
-# Recommended rubocop version: ~> 0.78.0
-
 AllCops:
   Exclude:
   - 'db/schema.rb'
@@ -77,13 +75,6 @@ Style/BlockDelimiters:
   - lambda
   - proc
   - it
-
-Style/BracesAroundHashParameters:
-  EnforcedStyle: no_braces
-  SupportedStyles:
-  - braces
-  - no_braces
-  - context_dependent
 
 Layout/CaseIndentation:
   EnforcedStyle: end
@@ -204,6 +195,7 @@ Style/FrozenStringLiteralComment:
   SupportedStyles:
     - always
     - never
+  SafeAutoCorrect: true
 
 Style/GlobalVars:
   AllowedVariables: []
@@ -273,7 +265,7 @@ Style/MethodCallWithArgsParentheses:
   - raise
   - puts
   Exclude:
-  - Gemfile
+  - '**/Gemfile'
 
 Style/MethodDefParentheses:
   EnforcedStyle: require_parentheses
@@ -586,6 +578,7 @@ Layout/BlockEndNewline:
 
 Style/CaseEquality:
   Enabled: true
+  AllowOnConstant: true
 
 Style/CharacterLiteral:
   Enabled: true
@@ -668,6 +661,9 @@ Style/IfWithSemicolon:
 Style/IdenticalConditionalBranches:
   Enabled: true
 
+Layout/IndentationStyle:
+  Enabled: true
+
 Style/InfiniteLoop:
   Enabled: true
 
@@ -680,7 +676,7 @@ Style/LineEndConcatenation:
 Style/MethodCallWithoutArgsParentheses:
   Enabled: true
 
-Style/MethodMissingSuper:
+Lint/MissingSuper:
   Enabled: true
 
 Style/MissingRespondToMissing:
@@ -812,9 +808,6 @@ Layout/SpaceInsideRangeLiteral:
 Style/SymbolLiteral:
   Enabled: true
 
-Layout/Tab:
-  Enabled: true
-
 Layout/TrailingWhitespace:
   Enabled: true
 
@@ -843,7 +836,7 @@ Style/ZeroLengthPredicate:
   Enabled: true
 
 Layout/HeredocIndentation:
-  EnforcedStyle: squiggly
+  Enabled: true
 
 Lint/AmbiguousOperator:
   Enabled: true
@@ -879,9 +872,6 @@ Lint/EmptyEnsure:
   Enabled: true
 
 Lint/EmptyInterpolation:
-  Enabled: true
-
-Lint/EndInMethod:
   Enabled: true
 
 Lint/EnsureReturn:
@@ -976,7 +966,7 @@ Lint/UselessAccessModifier:
 Lint/UselessAssignment:
   Enabled: true
 
-Lint/UselessComparison:
+Lint/BinaryOperatorWithIdenticalOperands:
   Enabled: true
 
 Lint/UselessElseWithoutRescue:
@@ -1026,4 +1016,7 @@ Style/ModuleFunction:
   EnforcedStyle: extend_self
 
 Lint/OrderedMagicComments:
+  Enabled: true
+
+Lint/DeprecatedOpenSSLConstant:
   Enabled: true
