@@ -18,7 +18,7 @@ group :benchmark, :test do
 end
 
 group :test do
-  gem 'rubocop', '~> 0.78.0', require: false
+  gem 'rubocop', '~> 1.4', require: false
   gem 'rubocop-performance', require: false
 
   platform :mri, :truffleruby do
