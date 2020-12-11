@@ -32,7 +32,7 @@ class ParsingQuirksTest < Minitest::Test
     assert(Template.parse("{{test}}"))
 
     with_error_mode(:lax) do
-      assert Template.parse("{{|test}}")
+      assert(Template.parse("{{|test}}"))
     end
 
     with_error_mode(:strict) do

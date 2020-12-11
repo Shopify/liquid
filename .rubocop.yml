@@ -9,6 +9,7 @@ Performance:
 
 AllCops:
   TargetRubyVersion: 2.4
+  NewCops: disable
   Exclude:
     - 'vendor/bundle/**/*'
 

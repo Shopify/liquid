@@ -159,7 +159,7 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('1', @filters.url_decode(1))
     assert_equal('2001-02-03', @filters.url_decode(Date.new(2001, 2, 3)))
     assert_nil(@filters.url_decode(nil))
-    exception = assert_raises Liquid::ArgumentError do
+    exception = assert_raises(Liquid::ArgumentError) do
       @filters.url_decode('%ff')
     end
     assert_equal('Liquid error: invalid byte sequence in UTF-8', exception.message)
@@ -286,7 +286,7 @@ class StandardFiltersTest < Minitest::Test
       [3],
     ]
 
-    assert_raises Liquid::ArgumentError do
+    assert_raises(Liquid::ArgumentError) do
       @filters.sort(foo, "bar")
     end
   end
@@ -302,7 +302,7 @@ class StandardFiltersTest < Minitest::Test
       [3],
     ]
 
-    assert_raises Liquid::ArgumentError do
+    assert_raises(Liquid::ArgumentError) do
       @filters.sort_natural(foo, "bar")
     end
   end
@@ -337,7 +337,7 @@ class StandardFiltersTest < Minitest::Test
       [3],
     ]
 
-    assert_raises Liquid::ArgumentError do
+    assert_raises(Liquid::ArgumentError) do
       @filters.uniq(foo, "bar")
     end
   end
@@ -353,7 +353,7 @@ class StandardFiltersTest < Minitest::Test
       [3],
     ]
 
-    assert_raises Liquid::ArgumentError do
+    assert_raises(Liquid::ArgumentError) do
       @filters.compact(foo, "bar")
     end
   end
@@ -430,7 +430,7 @@ class StandardFiltersTest < Minitest::Test
       [3],
     ]
 
-    assert_raises Liquid::ArgumentError do
+    assert_raises(Liquid::ArgumentError) do
       @filters.map(foo, "bar")
     end
   end
@@ -441,7 +441,7 @@ class StandardFiltersTest < Minitest::Test
       [2],
       [3],
     ]
-    assert_raises Liquid::ArgumentError do
+    assert_raises(Liquid::ArgumentError) do
       @filters.map(foo, nil)
     end
   end
@@ -485,8 +485,8 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('', @filters.date('', "%B"))
 
     with_timezone("UTC") do
-      assert_equal "07/05/2006", @filters.date(1152098955, "%m/%d/%Y")
-      assert_equal "07/05/2006", @filters.date("1152098955", "%m/%d/%Y")
+      assert_equal("07/05/2006", @filters.date(1152098955, "%m/%d/%Y"))
+      assert_equal("07/05/2006", @filters.date("1152098955", "%m/%d/%Y"))
     end
   end
 
@@ -587,7 +587,7 @@ class StandardFiltersTest < Minitest::Test
 
     assert_template_result("0.5", "{{ 2.0 | divided_by:4 }}")
     assert_raises(Liquid::ZeroDivisionError) do
-      assert_template_result "4", "{{ 1 | modulo: 0 }}"
+      assert_template_result("4", "{{ 1 | modulo: 0 }}")
     end
 
     assert_template_result("5", "{{ price | divided_by:2 }}", 'price' => NumberLikeThing.new(10))
@@ -596,7 +596,7 @@ class StandardFiltersTest < Minitest::Test
   def test_modulo
     assert_template_result("1", "{{ 3 | modulo:2 }}")
     assert_raises(Liquid::ZeroDivisionError) do
-      assert_template_result "4", "{{ 1 | modulo: 0 }}"
+      assert_template_result("4", "{{ 1 | modulo: 0 }}")
     end
 
     assert_template_result("1", "{{ price | modulo:2 }}", 'price' => NumberLikeThing.new(3))
@@ -607,7 +607,7 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("4", "{{ '4.3' | round }}")
     assert_template_result("4.56", "{{ input | round: 2 }}", 'input' => 4.5612)
     assert_raises(Liquid::FloatDomainError) do
-      assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | round }}"
+      assert_template_result("4", "{{ 1.0 | divided_by: 0.0 | round }}")
     end
 
     assert_template_result("5", "{{ price | round }}", 'price' => NumberLikeThing.new(4.6))
@@ -618,7 +618,7 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("5", "{{ input | ceil }}", 'input' => 4.6)
     assert_template_result("5", "{{ '4.3' | ceil }}")
     assert_raises(Liquid::FloatDomainError) do
-      assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | ceil }}"
+      assert_template_result("4", "{{ 1.0 | divided_by: 0.0 | ceil }}")
     end
 
     assert_template_result("5", "{{ price | ceil }}", 'price' => NumberLikeThing.new(4.6))
@@ -628,7 +628,7 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("4", "{{ input | floor }}", 'input' => 4.6)
     assert_template_result("4", "{{ '4.3' | floor }}")
     assert_raises(Liquid::FloatDomainError) do
-      assert_template_result "4", "{{ 1.0 | divided_by: 0.0 | floor }}"
+      assert_template_result("4", "{{ 1.0 | divided_by: 0.0 | floor }}")
     end
 
     assert_template_result("5", "{{ price | floor }}", 'price' => NumberLikeThing.new(5.4))

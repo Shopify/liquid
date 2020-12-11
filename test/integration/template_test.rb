@@ -198,7 +198,7 @@ class TemplateTest < Minitest::Test
     context = Context.new('drop' => ErroneousDrop.new)
     t = Template.new.parse('{{ drop.bad_method }}')
 
-    e = assert_raises RuntimeError do
+    e = assert_raises(RuntimeError) do
       t.render!(context)
     end
     assert_equal('ruby error in drop', e.message)
@@ -267,7 +267,7 @@ class TemplateTest < Minitest::Test
   def test_undefined_variables_raise
     t = Template.parse("{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}")
 
-    assert_raises UndefinedVariable do
+    assert_raises(UndefinedVariable) do
       t.render!({ 'x' => 33, 'z' => { 'a' => 32, 'c' => { 'e' => 31 } } }, strict_variables: true)
     end
   end
@@ -286,7 +286,7 @@ class TemplateTest < Minitest::Test
     d = DropWithUndefinedMethod.new
     t = Template.new.parse('{{ foo }} {{ woot }}')
 
-    assert_raises UndefinedDropMethod do
+    assert_raises(UndefinedDropMethod) do
       t.render!(d, strict_variables: true)
     end
   end
@@ -309,7 +309,7 @@ class TemplateTest < Minitest::Test
   def test_undefined_filters_raise
     t = Template.parse("{{x | somefilter1 | upcase | somefilter2}}")
 
-    assert_raises UndefinedFilter do
+    assert_raises(UndefinedFilter) do
       t.render!({ 'x' => 'foo' }, strict_filters: true)
     end
   end

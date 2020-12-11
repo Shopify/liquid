@@ -184,7 +184,7 @@ class IfElseTagTest < Minitest::Test
     tests.each do |vals, expected|
       a, b, c = vals
       assigns = { 'a' => a, 'b' => b, 'c' => c }
-      assert_template_result expected.to_s, tpl, assigns, assigns.to_s
+      assert_template_result(expected.to_s, tpl, assigns, assigns.to_s)
     end
   end
 end
