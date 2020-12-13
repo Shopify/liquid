@@ -21,12 +21,13 @@
 * Use monotonic time to measure durations in Liquid::Profiler (#1362) [Dylan Thacker-Smith]
 
 ### Breaking Changes
-* Require Ruby >= 2.4 (#1131) [Mike Angell]
+* Require Ruby >= 2.5 (#1131, #1310) [Mike Angell, Dylan Thacker-Smith]
 * Remove support for taint checking (#1268) [Dylan Thacker-Smith]
 * Split Strainer class into StrainerFactory and StrainerTemplate (#1208) [Thierry Joyal]
 * Remove handling of a nil context in the Strainer class (#1218) [Thierry Joyal]
 * Handle `BlockBody#blank?` at parse time (#1287) [Dylan Thacker-Smith]
 * Pass the tag markup and tokenizer to `Document#unknown_tag` (#1290) [Dylan Thacker-Smith]
+* And several internal changes
 
 ### Performance Improvements
 * Reduce allocations (#1073, #1091, #1115, #1099, #1117, #1141, #1322, #1341) [Richard Monette, Florian Weingarten, Ashwin Maroli]
