@@ -12,29 +12,22 @@ module Liquid
     end
 
     def parse(tokens)
-      @body = +''
-      while (token = tokens.shift)
-        if token =~ FullTokenPossiblyInvalid && block_delimiter == Regexp.last_match(2)
-          @body << Regexp.last_match(1) if Regexp.last_match(1) != ""
-          return
-        end
-        @body << token unless token.empty?
-      end
-
-      raise_tag_never_closed(block_name)
+      tokens.for_raw_tag = true
+      super
+    ensure
+      tokens.for_raw_tag = false
     end
 
-    def render_to_output_buffer(_context, output)
-      output << @body
-      output
+    def render_to_output_buffer(context, output)
+      @body.render_to_output_buffer(context, output)
     end
 
     def nodelist
       [@body]
     end
 
-    def blank?
-      @body.empty?
+    def unknown_tag(tag, markup, tokens)
+      # no-op
     end
 
     protected

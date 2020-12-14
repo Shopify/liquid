@@ -2,12 +2,14 @@
 
 module Liquid
   class Tokenizer
+    attr_accessor :for_raw_tag
     attr_reader :line_number, :for_liquid_tag
 
     def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
       @source         = source
       @line_number    = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
+      @for_raw_tag    = false
       @tokens         = tokenize
     end
 

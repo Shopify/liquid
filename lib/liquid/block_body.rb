@@ -6,6 +6,7 @@ module Liquid
   class BlockBody
     LiquidTagToken      = /\A\s*(\w+)\s*(.*?)\z/o
     FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
     ContentOfVariable   = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
     TAGSTART            = "{%"
@@ -25,6 +26,8 @@ module Liquid
 
       if tokenizer.for_liquid_tag
         parse_for_liquid_tag(tokenizer, parse_context, &block)
+      elsif tokenizer.for_raw_tag
+        parse_for_raw_tag(tokenizer, parse_context, &block)
       else
         parse_for_document(tokenizer, parse_context, &block)
       end
@@ -55,6 +58,25 @@ module Liquid
           @nodelist << new_tag
         end
         parse_context.line_number = tokenizer.line_number
+      end
+
+      yield nil, nil
+    end
+
+    private def parse_for_raw_tag(tokenizer, _parse_context)
+      while (token = tokenizer.shift)
+        if token =~ FullTokenPossiblyInvalid
+          tag_name = Regexp.last_match(2)
+          before_tag = Regexp.last_match(1)
+          unless before_tag.empty?
+            @nodelist << before_tag
+            @blank = false
+          end
+          yield tag_name, nil
+          @nodelist.pop unless before_tag.empty?
+        end
+        @blank &&= token.empty?
+        @nodelist << token
       end
 
       yield nil, nil
