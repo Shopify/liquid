@@ -21,7 +21,7 @@ module Liquid
     def parse(tokens)
       body = case_body = new_body
       body = @blocks.last.attachment while parse_body(body, tokens)
-      @blocks.each do |condition|
+      @blocks.reverse_each do |condition|
         body = condition.attachment
         unless body.frozen?
           body.remove_blank_strings if blank?
