@@ -31,7 +31,7 @@ module Liquid
     def parse(tokens)
       while parse_body(@blocks.last.attachment, tokens)
       end
-      @blocks.each do |block|
+      @blocks.reverse_each do |block|
         block.attachment.remove_blank_strings if blank?
         block.attachment.freeze
       end
