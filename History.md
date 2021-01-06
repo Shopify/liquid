@@ -1,6 +1,6 @@
 # Liquid Change Log
 
-### Unreleased
+## 5.0.0 / 2021-01-06
 
 ### Features
 * Add new `{% render %}` tag (#1122) [Samuel Doiron]
