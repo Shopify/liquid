@@ -17,4 +17,9 @@ Benchmark.ips do |x|
   x.report("parse:") { profiler.compile }
   x.report("render:") { profiler.render }
   x.report("parse & render:") { profiler.run }
+
+  if profiler.serialization_enabled?
+    x.report("deserialize:") { profiler.deserialize }
+    x.report("deserialize & render:") { profiler.deserialize_and_render }
+  end
 end

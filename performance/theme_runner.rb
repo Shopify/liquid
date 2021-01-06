@@ -38,6 +38,7 @@ class ThemeRunner
     end.compact
 
     compile_all_tests
+    serialize_all_tests if serialization_enabled?
   end
 
   # `compile` will test just the compilation portion of liquid without any templates
@@ -71,12 +72,37 @@ class ThemeRunner
     end
   end
 
+  def serialization_enabled?
+    defined?(Liquid::C) && Liquid::C.enabled
+  end
+
+  def deserialize
+    @serialized_tests.each do |test|
+      Liquid::Template.load(test[:tmpl])
+      Liquid::Template.load(test[:layout])
+    end
+  end
+
+  def deserialize_and_render
+    @serialized_tests.each do |test|
+      tmpl    = test[:tmpl]
+      assigns = test[:assigns]
+      layout  = test[:layout]
+
+      render_layout(Liquid::Template.load(tmpl), Liquid::Template.load(layout), assigns)
+    end
+  end
+
   private
 
+  def render_layout(template, layout, assigns)
+    assigns['content_for_layout'] = template.render!(assigns)
+    layout&.render!(assigns)
+  end
+
   def compile_and_render(template, layout, assigns, page_template, template_file)
-    compiled_test                 = compile_test(template, layout, assigns, page_template, template_file)
-    assigns['content_for_layout'] = compiled_test[:tmpl].render!(assigns)
-    compiled_test[:layout].render!(assigns) if layout
+    compiled_test = compile_test(template, layout, assigns, page_template, template_file)
+    render_layout(compiled_test[:layout], compiled_test[:tmpl], compiled_test[:assigns])
   end
 
   def compile_all_tests
@@ -97,6 +123,19 @@ class ThemeRunner
     else
       { tmpl: parsed_template, assigns: assigns }
     end
+  end
+
+  def serialize_all_tests
+    @serialized_tests = []
+    @compiled_tests.each do |test_hash|
+      @serialized_tests <<
+        if test_hash[:layout]
+          { tmpl: test_hash[:tmpl].dump, assigns: test_hash[:assigns], layout: test_hash[:layout].dump }
+        else
+          { tmpl: test_hash[:tmpl].dump, assigns: test_hash[:assigns] }
+        end
+    end
+    @serialized_tests
   end
 
   # utility method with similar functionality needed in `compile_all_tests` and `run`
