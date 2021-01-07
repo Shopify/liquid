@@ -99,7 +99,9 @@ module Liquid
     end
 
     private def parse_liquid_tag(markup, parse_context)
-      liquid_tag_tokenizer = Tokenizer.new(markup, line_number: parse_context.line_number, for_liquid_tag: true)
+      liquid_tag_tokenizer = parse_context.new_tokenizer(
+        markup, start_line_number: parse_context.line_number, for_liquid_tag: true
+      )
       parse_for_liquid_tag(liquid_tag_tokenizer, parse_context) do |end_tag_name, _end_tag_markup|
         if end_tag_name
           BlockBody.unknown_tag_in_liquid_tag(end_tag_name, parse_context)
