@@ -107,7 +107,8 @@ module Liquid
     # Returns self for easy chaining
     def parse(source, options = {})
       parse_context = configure_options(options)
-      @root         = Document.parse(tokenize(source), parse_context)
+      tokenizer     = parse_context.new_tokenizer(source, start_line_number: @line_numbers && 1)
+      @root         = Document.parse(tokenizer, parse_context)
       self
     end
 
@@ -221,10 +222,6 @@ module Liquid
       parse_context = options.is_a?(ParseContext) ? options : ParseContext.new(options)
       @warnings     = parse_context.warnings
       parse_context
-    end
-
-    def tokenize(source)
-      Tokenizer.new(source, @line_numbers)
     end
 
     def apply_options_to_context(context, options)
