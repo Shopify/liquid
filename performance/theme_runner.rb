@@ -73,10 +73,14 @@ class ThemeRunner
 
   private
 
+  def render_layout(template, layout, assigns)
+    assigns['content_for_layout'] = template.render!(assigns)
+    layout&.render!(assigns)
+  end
+
   def compile_and_render(template, layout, assigns, page_template, template_file)
-    compiled_test                 = compile_test(template, layout, assigns, page_template, template_file)
-    assigns['content_for_layout'] = compiled_test[:tmpl].render!(assigns)
-    compiled_test[:layout].render!(assigns) if layout
+    compiled_test = compile_test(template, layout, assigns, page_template, template_file)
+    render_layout(compiled_test[:tmpl], compiled_test[:layout], compiled_test[:assigns])
   end
 
   def compile_all_tests
