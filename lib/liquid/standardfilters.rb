@@ -295,7 +295,7 @@ module Liquid
 
     # Add <br /> tags in front of all newlines in input string
     def newline_to_br(input)
-      input.to_s.gsub(/\n/, "<br />\n")
+      input.to_s.gsub(/\r?\n/, "<br />\n")
     end
 
     # Reformat a date using Ruby's core Time#strftime( string ) -> string
