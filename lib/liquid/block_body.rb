@@ -4,7 +4,7 @@ require 'English'
 
 module Liquid
   class BlockBody
-    LiquidTagToken      = /\A\s*(\w+)\s*(.*?)\z/o
+    LiquidTagToken      = /\A\s*([\w#]+)\s*(.*?)\z/o
     FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable   = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
