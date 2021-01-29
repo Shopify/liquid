@@ -7,7 +7,7 @@ class InlineCommentTest < Minitest::Test
 
   def test_basic_usage
     template_source = <<-END_TEMPLATE
-    foo{% # this is a comment %}bar
+    foo{% -- this is a comment %}bar
     END_TEMPLATE
     template        = Template.parse(template_source)
     rendered        = template.render!

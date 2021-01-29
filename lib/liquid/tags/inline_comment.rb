@@ -10,6 +10,6 @@ module Liquid
     end
   end
 
-  Template.register_tag('#', InlineComment)
+  Template.register_tag('--', InlineComment)
 end
 
