@@ -6,9 +6,8 @@ jobs:
     strategy:
       matrix:
         entry:
-          - { ruby: 2.5, allowed-failure: false }
-          - { ruby: 2.6, allowed-failure: false }
-          - { ruby: 2.7, allowed-failure: false }
+          - { ruby: 2.5, allowed-failure: false } # minimum supported
+          - { ruby: 3.0, allowed-failure: false } # latest
           - { ruby: ruby-head, allowed-failure: true }
     name: test (${{ matrix.entry.ruby }})
     steps:
