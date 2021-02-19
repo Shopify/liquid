@@ -207,7 +207,7 @@ module Liquid
 
       idx = 0
       while (node = @nodelist[idx])
-        if node.instance_of?(String)
+        if node.is_a?(String)
           output << node
         else
           render_node(context, output, node)

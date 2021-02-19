@@ -35,6 +35,9 @@ class DropWithUndefinedMethod < Liquid::Drop
   end
 end
 
+class SpecialString < String
+end
+
 class TemplateTest < Minitest::Test
   include Liquid
 
@@ -322,5 +325,11 @@ class TemplateTest < Minitest::Test
     t = Template.parse("{% assign nums = (x..y) %}{% for num in nums %}{{ num }}{% endfor %}")
     result = t.render('x' => 1, 'y' => 5)
     assert_equal('12345', result)
+  end
+
+  def test_render_with_subclasses_of_string
+    t = Template.parse(SpecialString.new('string'))
+    result = t.render
+    assert_equal('string', result)
   end
 end
