@@ -539,6 +539,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_newlines_to_br
     assert_template_result("a<br />\nb<br />\nc", "{{ source | newline_to_br }}", 'source' => "a\nb\nc")
+    assert_template_result("a<br />\nb<br />\nc", "{{ source | newline_to_br }}", 'source' => "a\r\nb\nc")
   end
 
   def test_plus
