@@ -19,4 +19,9 @@ class InlineCommentTest < Minitest::Test
     LIQUID
     assert_template_result('before()after', source)
   end
+
+  def test_no_space_after_hash_symbol
+    assert_template_result('', '{% #immediate text %}')
+    assert_template_result('', '{% liquid #immediate text %}')
+  end
 end
