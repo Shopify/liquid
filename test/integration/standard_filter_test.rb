@@ -175,6 +175,9 @@ class StandardFiltersTest < Minitest::Test
     )
     assert_equal("测试测试测试测试", @filters.truncatewords('测试测试测试测试', 5))
     assert_equal('one two1', @filters.truncatewords("one two three", 2, 1))
+    assert_equal('one two three...', @filters.truncatewords("one  two\tthree\nfour", 3))
+    assert_equal('one two...', @filters.truncatewords("one two three four", 2))
+    assert_equal('one...', @filters.truncatewords("one two three four", 0))
   end
 
   def test_strip_html
