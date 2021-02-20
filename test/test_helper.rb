@@ -167,3 +167,6 @@ class StubTemplateFactory
     Liquid::Template.new
   end
 end
+
+class SpecialString < String
+end

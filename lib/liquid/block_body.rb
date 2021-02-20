@@ -193,7 +193,7 @@ module Liquid
     # Note that it is now preferred to use the `liquid` tag for this use case.
     def remove_blank_strings
       raise "remove_blank_strings only support being called on a blank block body" unless @blank
-      @nodelist.reject! { |node| node.instance_of?(String) }
+      @nodelist.reject! { |node| node.is_a?(String) }
     end
 
     def render(context)

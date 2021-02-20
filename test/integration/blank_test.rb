@@ -41,6 +41,10 @@ class BlankTest < Minitest::Test
     assert_template_result("", wrap_in_for(" "))
   end
 
+  def test_loops_are_blank_with_string_subclass
+    assert_template_result("", wrap_in_for(SpecialString.new(" ")))
+  end
+
   def test_if_else_are_blank
     assert_template_result("", "{% if true %} {% elsif false %} {% else %} {% endif %}")
   end
@@ -57,8 +61,16 @@ class BlankTest < Minitest::Test
     assert_template_result("", wrap(" {% comment %} whatever {% endcomment %} "))
   end
 
+  def test_comments_are_blank_string_subclass
+    assert_template_result("", wrap(SpecialString.new(" {% comment %} whatever {% endcomment %} ")))
+  end
+
   def test_captures_are_blank
     assert_template_result("", wrap(" {% capture foo %} whatever {% endcapture %} "))
+  end
+
+  def test_captures_are_blank_string_subclass
+    assert_template_result("", wrap(SpecialString.new(" {% capture foo %} whatever {% endcapture %} ")))
   end
 
   def test_nested_blocks_are_blank_but_only_if_all_children_are
@@ -105,5 +117,11 @@ class BlankTest < Minitest::Test
     assert_template_result("", wrap(" {% assign foo = 'bar' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "))
     assert_template_result("", wrap(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "))
     assert_template_result("   x  " * (N + 1), wrap(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} x {% endcase %} "))
+  end
+
+  def test_case_is_blank_string_subclass
+    assert_template_result("", wrap(SpecialString.new(" {% assign foo = 'bar' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} ")))
+    assert_template_result("", wrap(SpecialString.new(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} ")))
+    assert_template_result("   x  " * (N + 1), wrap(SpecialString.new(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} x {% endcase %} ")))
   end
 end
