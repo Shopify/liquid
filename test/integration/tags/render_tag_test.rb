@@ -151,7 +151,7 @@ class RenderTagTest < Minitest::Test
     )
 
     assert_template_result("Product: Draft 151cm ",
-                           "{% render 'product' with products[0] %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+      "{% render 'product' with products[0] %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
   end
 
   def test_render_tag_with_alias
@@ -161,7 +161,7 @@ class RenderTagTest < Minitest::Test
     )
 
     assert_template_result("Product: Draft 151cm ",
-                           "{% render 'product_alias' with products[0] as product %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+      "{% render 'product_alias' with products[0] as product %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
   end
 
   def test_render_tag_for_alias
@@ -171,7 +171,7 @@ class RenderTagTest < Minitest::Test
     )
 
     assert_template_result("Product: Draft 151cm Product: Element 155cm ",
-                           "{% render 'product_alias' for products as product %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+      "{% render 'product_alias' for products as product %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
   end
 
   def test_render_tag_for
@@ -181,7 +181,7 @@ class RenderTagTest < Minitest::Test
     )
 
     assert_template_result("Product: Draft 151cm Product: Element 155cm ",
-                           "{% render 'product' for products %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+      "{% render 'product' for products %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
   end
 
   def test_render_tag_forloop
@@ -190,7 +190,7 @@ class RenderTagTest < Minitest::Test
     )
 
     assert_template_result("Product: Draft 151cm first  index:1 Product: Element 155cm  last index:2 ",
-                           "{% render 'product' for products %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+      "{% render 'product' for products %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
   end
 
   def test_render_tag_for_drop
@@ -199,7 +199,7 @@ class RenderTagTest < Minitest::Test
     )
 
     assert_template_result("123",
-                           "{% render 'loop' for loop as value %}", "loop" => TestEnumerable.new)
+      "{% render 'loop' for loop as value %}", "loop" => TestEnumerable.new)
   end
 
   def test_render_tag_with_drop
@@ -208,6 +208,6 @@ class RenderTagTest < Minitest::Test
     )
 
     assert_template_result("TestEnumerable",
-                           "{% render 'loop' with loop as value %}", "loop" => TestEnumerable.new)
+      "{% render 'loop' with loop as value %}", "loop" => TestEnumerable.new)
   end
 end
