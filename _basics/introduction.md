@@ -54,7 +54,7 @@ You can read more about each type of tag in their respective sections.
 
 ## Filters
 
-**Filters** change the output of a Liquid object. They are used within an output and are separated by a `|`.
+**Filters** change the output of a Liquid object or variable. They are used within double curly braces `{% raw %}{{ }}{% endraw %}` and [variable assignment]({{ "/tags/variable/" | prepend: site.baseurl }}), and are separated by a pipe character `|`.
 
 <p class="code-label">Input</p>
 ```liquid
