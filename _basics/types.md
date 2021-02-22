@@ -12,11 +12,11 @@ Liquid objects can be one of six types:
 - [Array](#array)
 - [EmptyDrop](#emptydrop)
 
-You can initialize Liquid variables with the [assign]({{ "/tags/variable/#assign" | prepend: site.baseurl }}) or [capture]({{ "/tags/variable/#capture" | prepend: site.baseurl }}) tags.
+You can initialize Liquid variables using [`assign`]({{ "/tags/variable/#assign" | prepend: site.baseurl }}) or [`capture`]({{ "/tags/variable/#capture" | prepend: site.baseurl }}) tags.
 
 ## String
 
-Declare a string by wrapping a variable's value in single or double quotes:
+Strings are declared by wrapping a variable's value in single or double quotes:
 
 ```liquid
 {% raw %}
@@ -124,7 +124,7 @@ Adam
 
 You cannot initialize arrays using only Liquid.
 
-You can, however, use the [split]({{ "/filters/split/" | prepend: site.baseurl }}) filter to break a string into an array of substrings.
+You can, however, use the [`split`]({{ "/filters/split/" | prepend: site.baseurl }}) filter to break a string into an array of substrings.
 
 ## EmptyDrop
 

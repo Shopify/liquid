@@ -3,7 +3,7 @@ title: Iteration
 description: An overview of iteration or "loop" tags in the Liquid template language.
 ---
 
-Iteration tags run blocks of code repeatedly.
+Iteration tags repeatedly run blocks of code.
 
 ## for
 
@@ -352,7 +352,7 @@ Defines how many columns the tables should have.
 
 #### limit
 
-Exits the tablerow after a specific index.
+Exits the `tablerow` loop after a specific index.
 
 ```liquid
 {% raw %}
@@ -364,7 +364,7 @@ Exits the tablerow after a specific index.
 
 ### offset
 
-Starts the tablerow after a specific index.
+Starts the `tablerow` loop after a specific index.
 
 ```liquid
 {% raw %}

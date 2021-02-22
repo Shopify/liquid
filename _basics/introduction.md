@@ -4,11 +4,11 @@ description: An overview of objects, tags, and filters in the Liquid template la
 redirect_from: /basics/
 ---
 
-Liquid code can be categorized into [**objects**](#objects), [**tags**](#tags), and [**filters**](#filters).
+Liquid uses a combination of [**objects**](#objects), [**tags**](#tags), and [**filters**](#filters) inside **template files** to display dynamic content.
 
 ## Objects
 
-**Objects** tell Liquid where to show content on a page. Objects and variable names are denoted by double curly braces: `{% raw %}{{{% endraw %}` and `{% raw %}}}{% endraw %}`.
+**Objects** contain the content that Liquid displays on a page. Objects and variables are displayed when enclosed in double curly braces: `{% raw %}{{{% endraw %}` and `{% raw %}}}{% endraw %}`.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -26,9 +26,7 @@ In this case, Liquid is rendering the content of the `title` property of the `pa
 
 ## Tags
 
-**Tags** create the logic and control flow for templates. They are denoted by curly braces and percent signs: `{% raw %}{%{% endraw %}` and `{% raw %}%}{% endraw %}`.
-
-The markup used in tags does not produce any visible text. This means that you can assign variables and create conditions and loops without showing any of the Liquid logic on the page.
+**Tags** create the logic and control flow for templates. The curly brace percentage delimiters `{% raw %}{%{% endraw %}` and `{% raw %}%}{% endraw %}` and the text that they surround do not produce any visible output when the template is rendered. This lets you assign variables and create conditions or loops without showing any of the Liquid logic on the page.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -44,11 +42,11 @@ The markup used in tags does not produce any visible text. This means that you c
 Hello Adam!
 ```
 
-Tags can be categorized into three types:
+Tags can be categorized into various types:
 
 - [Control flow]({{ "/tags/control-flow/" | prepend: site.baseurl }})
 - [Iteration]({{ "/tags/iteration/" | prepend: site.baseurl }})
-- [Variable assignments]({{ "/tags/variable/" | prepend: site.baseurl }})
+- [Variable assignment]({{ "/tags/variable/" | prepend: site.baseurl }})
 
 You can read more about each type of tag in their respective sections.
 
@@ -68,7 +66,7 @@ You can read more about each type of tag in their respective sections.
 {{ "/my/fancy/url" | append: ".html" }}
 ```
 
-Multiple filters can be used on one output. They are applied from left to right.
+Multiple filters can be used on one output, and are applied from left to right.
 
 <p class="code-label">Input</p>
 ```liquid

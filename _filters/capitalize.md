@@ -17,7 +17,7 @@ Makes the first character of a string capitalized and downcases the rest.
 {{ "title" | capitalize }}
 ```
 
-`capitalize` only capitalizes the first character of a string, so later words are not affected:
+Only the first character of a string is capitalized, so later words are not capitalized:
 
  <p class="code-label">Input</p>
 ```liquid

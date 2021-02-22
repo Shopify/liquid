@@ -3,7 +3,7 @@ title: Operators
 description: Using operators to perform calculations in the Liquid template language.
 ---
 
-Liquid includes many logical and comparison operators.
+Liquid includes many logical and comparison operators. You can use operators to create logic with [control flow]({{ "/tags/control-flow/" | prepend: site.baseurl }}) tags.
 
 ## Basic operators
 
@@ -54,7 +54,7 @@ For example:
 {% endraw %}
 ```
 
-You can use multiple operators in a tag:
+You can do multiple comparisons in a tag using the `and` and `or` operators:
 
 ```liquid
 {% raw %}

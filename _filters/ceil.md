@@ -3,7 +3,7 @@ title: ceil
 description: Liquid filter that returns the ceiling of a number by rounding up to the nearest integer.
 ---
 
-Rounds the input up to the nearest whole number. Liquid tries to convert the input to a number before the filter is applied.
+Rounds an input up to the nearest whole number. Liquid tries to convert the input to a number before the filter is applied.
 
 <p class="code-label">Input</p>
 ```liquid

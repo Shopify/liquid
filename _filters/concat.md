@@ -30,7 +30,7 @@ Concatenates (joins together) multiple arrays. The resulting array contains all 
 - potatoes
 ```
 
-You can string together `concat` filters to join more than two arrays:
+You can string together multiple `concat` filters to join more than two arrays.
 
 <p class="code-label">Input</p>
 ```liquid
