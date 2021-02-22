@@ -30,7 +30,7 @@ Numbers include floats and integers:
 ```liquid
 {% raw %}
 {% assign my_int = 25 %}
-{% assign my_float = 39.756 %}
+{% assign my_float = -39.756 %}
 {% endraw %}
 ```
 
@@ -100,7 +100,7 @@ Tobi Laura Tetsuro Adam
 
 ### Accessing specific items in arrays
 
-You can use square bracket `[` `]` notation to access a specific item in an array. Array indexing starts at zero.
+You can use square bracket `[` `]` notation to access a specific item in an array. Array indexing starts at zero. A negative index will count from the end of the array.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -108,7 +108,7 @@ You can use square bracket `[` `]` notation to access a specific item in an arra
 <!-- if site.users = "Tobi", "Laura", "Tetsuro", "Adam" -->
 {{ site.users[0] }}
 {{ site.users[1] }}
-{{ site.users[3] }}
+{{ site.users[-1] }}
 {% endraw %}
 ```
 
