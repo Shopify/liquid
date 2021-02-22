@@ -148,6 +148,27 @@ Begins the loop at the specified index.
 3 4 5 6
 ```
 
+To start a loop from where the last loop using the same iterator left off, pass the special word `continue`.
+
+<p class="code-label">Input</p>
+```liquid
+{% raw %}
+<!-- if array = [1,2,3,4,5,6] -->
+{% for item in array limit: 3 %}
+  {{ item }}
+{% endfor %}
+{% for item in array limit: 3 offset: continue %}
+  {{ item }}
+{% endfor %}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+1 2 3
+4 5 6
+```
+
 ### range
 
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers, and can be pulled from a variable.
