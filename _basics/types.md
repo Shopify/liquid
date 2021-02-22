@@ -95,7 +95,7 @@ To access all the items in an array, you can loop through each item in the array
 
 <p class="code-label">Output</p>
 ```text
-Tobi Laura Tetsuro Adam
+  Tobi Laura Tetsuro Adam
 ```
 
 ### Accessing specific items in arrays

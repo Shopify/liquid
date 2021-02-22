@@ -8,11 +8,11 @@ Removes all whitespace (tabs, spaces, and newlines) from the left side of a stri
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{{ "          So much room for activities!          " | lstrip }}
+{{ "          So much room for activities          " | lstrip }}!
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{ "          So much room for activities!          " | lstrip }}
+{{ "          So much room for activities          " | lstrip }}!
 ```

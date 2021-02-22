@@ -36,7 +36,8 @@ Wrap a variable value in quotations `"` to save it as a string.
 
 <p class="code-label">Output</p>
 ```text
-bar
+{% assign foo = "bar" %}
+{{ foo }}
 ```
 
 ## capture
@@ -92,9 +93,9 @@ Creates and outputs a new number variable with initial value `0`. On subsequent 
 
 <p class="code-label">Output</p>
 ```text
-0
-1
-2
+{% increment my_counter %}
+{% increment my_counter %}
+{% increment my_counter %}
 ```
 
 Variables created through the `increment` tag are independent from variables created through `assign` or `capture`.
@@ -114,10 +115,11 @@ In the example below, a variable named "var" is created through `assign`. The `i
 
 <p class="code-label">Output</p>
 ```text
-0
-1
-2
-10
+{% assign var = 10 %}
+{% increment var %}
+{% increment var %}
+{% increment var %}
+{{ var }}
 ```
 
 ## decrement
@@ -135,9 +137,9 @@ Creates and outputs a new number variable with initial value `-1`. On subsequent
 
 <p class="code-label">Output</p>
 ```text
--1
--2
--3
+{% decrement variable %}
+{% decrement variable %}
+{% decrement variable %}
 ```
 
 Like [increment](#increment), variables declared inside `decrement` are independent from variables created through `assign` or `capture`.

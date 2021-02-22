@@ -16,7 +16,7 @@ In this example, `product_price` is not defined, so the default value is used.
 
 <p class="code-label">Output</p>
 ```text
-2.99
+{{ product_price | default: 2.99 }}
 ```
 
 In this example, `product_price` is defined, so the default value is not used.
@@ -31,7 +31,8 @@ In this example, `product_price` is defined, so the default value is not used.
 
 <p class="code-label">Output</p>
 ```text
-4.99
+{% assign product_price = 4.99 %}
+{{ product_price | default: 2.99 }}
 ```
 
 In this example, `product_price` is empty, so the default value is used.
@@ -46,5 +47,6 @@ In this example, `product_price` is empty, so the default value is used.
 
 <p class="code-label">Output</p>
 ```text
-2.99
+{% assign product_price = "" %}
+{{ product_price | default: 2.99 }}
 ```

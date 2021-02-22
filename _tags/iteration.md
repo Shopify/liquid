@@ -188,10 +188,10 @@ Loops through a group of strings and prints them in the order that they were pas
 
 <p class="code-label">Output</p>
 ```text
-one
-two
-three
-one
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
 ```
 
 Uses for `cycle` include:
@@ -215,10 +215,10 @@ Uses for `cycle` include:
 
 <p class="code-label">Output</p>
 ```text
-one
-one
-two
-two
+{% cycle "first": "one", "two", "three" %}
+{% cycle "second": "one", "two", "three" %}
+{% cycle "second": "one", "two", "three" %}
+{% cycle "first": "one", "two", "three" %}
 ```
 
 ## tablerow
