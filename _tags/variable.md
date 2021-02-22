@@ -7,7 +7,7 @@ Variable tags create new Liquid variables.
 
 ## assign
 
-Creates a new variable.
+Creates a new named variable.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -24,7 +24,7 @@ Creates a new variable.
 This statement is valid.
 ```
 
-Wrap a variable value in quotations `"` to save it as a string.
+Wrap a value in quotations `"` to save it as a string variable.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -42,7 +42,7 @@ Wrap a variable value in quotations `"` to save it as a string.
 
 ## capture
 
-Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created through `capture` are strings.
+Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created using `capture` are stored as strings.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -57,7 +57,7 @@ Captures the string inside of the opening and closing tags and assigns it to a v
 I am being captured.
 ```
 
-Using `capture`, you can create complex strings using other variables created with `assign`:
+Using `capture`, you can create complex strings using other variables created with `assign`.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -98,9 +98,9 @@ Creates and outputs a new number variable with initial value `0`. On subsequent 
 {% increment my_counter %}
 ```
 
-Variables created through the `increment` tag are independent from variables created through `assign` or `capture`.
+Variables created using `increment` are independent from variables created using `assign` or `capture`.
 
-In the example below, a variable named "var" is created through `assign`. The `increment` tag is then used several times on a variable with the same name. Note that the `increment` tag does not affect the value of "var" that was created through `assign`.
+In the example below, a variable named "var" is created using `assign`. The `increment` tag is then used several times on a variable with the same name. Note that the `increment` tag does not affect the value of "var" that was created using `assign`.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -142,4 +142,4 @@ Creates and outputs a new number variable with initial value `-1`. On subsequent
 {% decrement variable %}
 ```
 
-Like [increment](#increment), variables declared inside `decrement` are independent from variables created through `assign` or `capture`.
+Like [increment](#increment), variables declared using `decrement` are independent from variables created using `assign` or `capture`.

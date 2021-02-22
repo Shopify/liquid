@@ -4,7 +4,7 @@ description: An overview of control flow and conditional tags in the Liquid temp
 redirect_from: /tags/
 ---
 
-Control flow tags can change the information Liquid shows using programming logic.
+Control flow tags create conditions that decide whether blocks of Liquid code get executed.
 
 ## if
 
@@ -77,7 +77,9 @@ Hey Anonymous!
 
 ## case/when
 
-Creates a switch statement to compare a variable with different values. `case` initializes the switch statement, and `when` compares its values.
+Creates a switch statement to execute a particular block of code when a variable has a specified value. `case` initializes the switch statement, and `when` statements define the various conditions.
+
+An optional `else` statement at the end of the case provides code to execute if none of the conditions are met.
 
 <p class="code-label">Input</p>
 ```liquid

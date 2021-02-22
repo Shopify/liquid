@@ -35,7 +35,7 @@ Shortens a string down to the number of words passed as an argument. If the spec
 
 ### No ellipsis
 
-You can avoid showing trailing characters by passing a blank string as the second argument:
+You can avoid showing trailing characters by passing a blank string as the second argument.
 
 <p class="code-label">Input</p>
 ```liquid

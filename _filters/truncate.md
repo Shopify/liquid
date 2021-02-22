@@ -37,7 +37,7 @@ The length of the second argument counts against the number of characters specif
 
 ### No ellipsis
 
-You can truncate to the exact number of characters specified by the first argument and avoid showing trailing characters by passing a blank string as the second argument:
+You can truncate to the exact number of characters specified by the first argument and avoid showing trailing characters by passing a blank string as the second argument.
 
 <p class="code-label">Input</p>
 ```liquid

@@ -17,6 +17,8 @@ Converts any URL-unsafe characters in a string into percent-encoded characters.
 {{ "john@liquid.com" | url_encode }}
 ```
 
+Note that `url_encode` will turn a space into a `+` sign instead of a percent-encoded character.
+
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}

@@ -3,11 +3,7 @@ title: Truthy and falsy
 description: An overview of boolean logic in the Liquid template language.
 ---
 
-In programming, anything that returns `true` in a conditional is called **truthy**. Anything that returns `false` in a conditional is called **falsy**. All object types can be described as either truthy or falsy.
-
-- [Truthy](#truthy)
-- [Falsy](#falsy)
-- [Summary](#summary)
+When a non-boolean [data type]({{ "/basics/types/" | prepend: site.baseurl }}) is used in a boolean context (such as a conditional tag), Liquid decides whether to evaluate it as `true` or `false`. Data types that return `true` by default are called **truthy**. Data types that return false by default are called **falsy**.
 
 ## Truthy
 
@@ -43,7 +39,7 @@ In the example below, the text "Tobi" is not a boolean, but it is truthy in a co
 
 ## Falsy
 
-The falsy values in Liquid are [`nil`]({{ "/basics/types/#nil" | prepend: site.baseurl }}) and [`false`]({{ "/basics/types/#boolean" | prepend: site.baseurl }}).
+The only values that are falsy in Liquid are [`nil`]({{ "/basics/types/#nil" | prepend: site.baseurl }}) and [`false`]({{ "/basics/types/#boolean" | prepend: site.baseurl }}).
 
 ## Summary
 

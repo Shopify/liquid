@@ -3,7 +3,7 @@ title: default
 description: Liquid filter that specifies a fallback in case a value doesn't exist.
 ---
 
-Allows you to specify a fallback in case a value doesn't exist. `default` will show its value if the left side is `nil`, `false`, or empty.
+Sets a default value for any variable with no assigned value. `default` will show its value if the input is `nil`, `false`, or empty.
 
 In this example, `product_price` is not defined, so the default value is used.
 

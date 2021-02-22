@@ -3,7 +3,7 @@ title: uniq
 description: Liquid filter that removes duplicate items from an array.
 ---
 
-Removes any duplicate elements in an array.
+Removes any duplicate items in an array.
 
 <p class="code-label">Input</p>
 ```liquid

@@ -20,7 +20,7 @@ Returns the absolute value of a number.
 {{ 4 | abs }}
 ```
 
-`abs` will also work on a string that only contains a number:
+`abs` will also work on a string that only contains a number.
 
 <p class="code-label">Input</p>
 ```liquid

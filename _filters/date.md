@@ -29,7 +29,7 @@ Fri, Jul 17, 15
 2015
 ```
 
-`date` works on strings if they contain well-formatted dates:
+`date` works on strings if they contain well-formatted dates.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -43,7 +43,7 @@ Fri, Jul 17, 15
 {{ "March 14, 2016" | date: "%b %d, %y" }}
 ```
 
-To get the current time, pass the special word `"now"` (or `"today"`) to `date`:
+To get the current time, pass the special word `"now"` (or `"today"`) to `date`.
 
 <p class="code-label">Input</p>
 ```liquid

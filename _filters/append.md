@@ -3,7 +3,7 @@ title: append
 description: Liquid filter that appends a string to another string.
 ---
 
-Concatenates two strings and returns the concatenated value.
+Adds the specified string to the end of another string.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -17,7 +17,7 @@ Concatenates two strings and returns the concatenated value.
 {{ "/my/fancy/url" | append: ".html" }}
 ```
 
-`append` can also be used with variables:
+`append` can also accept a variable as its argument.
 
 <p class="code-label">Input</p>
 ```liquid

@@ -3,7 +3,7 @@ title: floor
 description: Liquid filter that returns the floor of a number by rounding down to the nearest integer.
 ---
 
-Rounds the input down to the nearest whole number. Liquid tries to convert the input to a number before the filter is applied.
+Rounds an input down to the nearest whole number. Liquid tries to convert the input to a number before the filter is applied.
 
 <p class="code-label">Input</p>
 ```liquid
