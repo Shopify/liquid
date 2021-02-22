@@ -10,23 +10,13 @@ Returns the absolute value of a number.
 ```liquid
 {% raw %}
 {{ -17 | abs }}
-{% endraw %}
-```
-
-<p class="code-label">Output</p>
-```text
-{{ -17 | abs }}
-```
-
-<p class="code-label">Input</p>
-```liquid
-{% raw %}
 {{ 4 | abs }}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
+{{ -17 | abs }}
 {{ 4 | abs }}
 ```
 

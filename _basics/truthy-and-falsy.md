@@ -13,32 +13,32 @@ In programming, anything that returns `true` in a conditional is called **truthy
 
 All values in Liquid are truthy except `nil` and `false`.
 
-In the example below, the string "Tobi" is not a boolean, but it is truthy in a conditional:
+In the example below, the text "Tobi" is not a boolean, but it is truthy in a conditional:
 
 ```liquid
 {% raw %}
-{% assign tobi = "Tobi" %}
+{% assign name = "Tobi" %}
 
-{% if tobi %}
-  This condition will always be true.
+{% if name %}
+  This text will always appear if "name" is defined.
 {% endif %}
 {% endraw %}
 ```
 
-[Strings]({{ "/basics/types/#string" | prepend: site.baseurl }}), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
+[Strings]({{ "/basics/types/#string" | prepend: site.baseurl }}), even when empty, are truthy. The example below will create empty HTML tags if `page.category` exists but is empty:
 
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{% if settings.fp_heading %}
-  <h1>{{ settings.fp_heading }}</h1>
+{% if page.category %}
+  <h1>{{ page.category }}</h1>
 {% endif %}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```html
-<h1></h1>
+  <h1></h1>
 ```
 
 ## Falsy

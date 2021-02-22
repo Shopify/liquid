@@ -45,7 +45,7 @@ If you don't want any of your tags to print whitespace, as a general rule you ca
 {% raw %}
 {% assign username = "John G. Chalmers-Smith" %}
 {% if username and username.size > 10 %}
-  Wow, {{ username }}, you have a long name!
+  Wow, {{ username }} , you have a long name!
 {% else %}
   Hello there!
 {% endif %}
@@ -56,7 +56,7 @@ If you don't want any of your tags to print whitespace, as a general rule you ca
 ```text
 {% assign username = "John G. Chalmers-Smith" %}
 {% if username and username.size > 10 %}
-  Wow, {{ username }}, you have a long name!
+  Wow, {{ username }} , you have a long name!
 {% else %}
   Hello there!
 {% endif %}
@@ -65,16 +65,21 @@ If you don't want any of your tags to print whitespace, as a general rule you ca
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{%- assign username = "John G. Chalmers-Smith" -%}
+{% assign username = "John G. Chalmers-Smith" -%}
 {%- if username and username.size > 10 -%}
-  Wow, {{ username }}, you have a long name!
+  Wow, {{ username -}} , you have a long name!
 {%- else -%}
   Hello there!
-{%- endif -%}
+{%- endif %}
 {% endraw %}
 ```
 
 <p class="code-label">Output with whitespace control</p>
 ```text
-Wow, John G. Chalmers-Smith, you have a long name!
+{% assign username = "John G. Chalmers-Smith" -%}
+{%- if username and username.size > 10 -%}
+  Wow, {{ username -}} , you have a long name!
+{%- else -%}
+  Hello there!
+{%- endif %}
 ```

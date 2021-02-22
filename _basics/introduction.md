@@ -22,7 +22,7 @@ Liquid code can be categorized into [**objects**](#objects), [**tags**](#tags), 
 {{ page.title }}
 ```
 
-In this case, Liquid is rendering the content of an object called `page.title`, and that object contains the text `Introduction`.
+In this case, Liquid is rendering the content of the `title` property of the `page` object, which contains the text `{{ page.title }}`.
 
 ## Tags
 

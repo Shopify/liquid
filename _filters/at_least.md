@@ -9,22 +9,12 @@ Limits a number to a minimum value.
 ```liquid
 {% raw %}
 {{ 4 | at_least: 5 }}
-{% endraw %}
-```
-
-<p class="code-label">Output</p>
-```text
-5
-```
-
-<p class="code-label">Input</p>
-```liquid
-{% raw %}
 {{ 4 | at_least: 3 }}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
+5
 4
 ```

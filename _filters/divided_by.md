@@ -11,23 +11,13 @@ The result is rounded down to the nearest integer (that is, the [floor]({{ "/fil
 ```liquid
 {% raw %}
 {{ 16 | divided_by: 4 }}
-{% endraw %}
-```
-
-<p class="code-label">Output</p>
-```text
-{{ 16 | divided_by: 4 }}
-```
-
-<p class="code-label">Input</p>
-```liquid
-{% raw %}
 {{ 5 | divided_by: 3 }}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
+{{ 16 | divided_by: 4 }}
 {{ 5 | divided_by: 3 }}
 ```
 
