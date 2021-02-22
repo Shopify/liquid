@@ -3,8 +3,7 @@ title: Raw
 description: An overview of raw tags in the Liquid template language.
 ---
 
-Raw temporarily disables tag processing. This is useful for generating content
-(eg, Mustache, Handlebars) which uses conflicting syntax.
+Temporarily disables tag processing. This is useful for generating certain content (eg, Mustache, Handlebars) that uses conflicting syntax.
 
 <p class="code-label">Input</p>
 <pre class="highlight">

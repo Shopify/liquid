@@ -120,7 +120,7 @@ Limits the loop to the specified number of iterations.
 <!-- if array = [1,2,3,4,5,6] -->
 {% for item in array limit:2 %}
   {{ item }}
-{% endfor %}
+{% endfor %}
 {% endraw %}
 ```
 
@@ -139,7 +139,7 @@ Begins the loop at the specified index.
 <!-- if array = [1,2,3,4,5,6] -->
 {% for item in array offset:2 %}
   {{ item }}
-{% endfor %}
+{% endfor %}
 {% endraw %}
 ```
 
@@ -176,15 +176,15 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 <p class="code-label">Input</p>
 ```liquid
 {% raw %}
-{% for i in (3..5) %}
+{% for i in (3..5) %}
   {{ i }}
-{% endfor %}
+{% endfor %}
 
 {% assign num = 4 %}
 {% assign range = (1..num) %}
 {% for i in range %}
   {{ i }}
-{% endfor %}
+{% endfor %}
 {% endraw %}
 ```
 
@@ -204,7 +204,7 @@ Reverses the order of the loop. Note that this flag's spelling is different from
 <!-- if array = [1,2,3,4,5,6] -->
 {% for item in array reversed %}
   {{ item }}
-{% endfor %}
+{% endfor %}
 {% endraw %}
 ```
 
@@ -384,17 +384,17 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 
 {% assign num = 4 %}
 <table>
-{% tablerow i in (1..num) %}
+{% tablerow i in (1..num) %}
   {{ i }}
-{% endtablerow %}
+{% endtablerow %}
 </table>
 
 <!--literal number example-->
 
 <table>
-{% tablerow i in (3..5) %}
+{% tablerow i in (3..5) %}
   {{ i }}
-{% endtablerow %}
+{% endtablerow %}
 </table>
 {% endraw %}
 ```
