@@ -1,6 +1,7 @@
 ---
 title: where
 description: Liquid filter that selects from arrays.
+version-badge: 4.0.2
 ---
 
 Creates an array including only the objects with a given property value, or any [truthy]({{ "/basics/truthy-and-falsy/#truthy" | prepend: site.baseurl }}) value by default.

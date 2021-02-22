@@ -1,6 +1,7 @@
 ---
 title: compact
 description: Liquid filter that removes nil values from an array.
+version-badge: 4.0.0
 ---
 
 Removes any `nil` values from an array.
