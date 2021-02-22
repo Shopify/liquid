@@ -87,6 +87,27 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 1 2 3   5
 ```
 
+### ifchanged
+
+Only executes a block of code if the loop variable differs from the previous iteration.
+
+<p class="code-label">Input</p>
+```liquid
+{% raw %}
+<!-- if array = [1,1,1,2,2,3] -->
+{% for item in array %}
+  {% ifchanged %}
+    {{ item }}
+  {% endifchanged %}
+{% endfor %}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+1 2 3
+```
+
 ## for (parameters)
 
 ### limit
