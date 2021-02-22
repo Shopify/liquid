@@ -48,3 +48,20 @@ In this example, `product_price` is empty, so the default value is used.
 ```text
 2.99
 ```
+
+### Allowing `false` {%- include version-badge.html version="5.0.0" %}
+
+To allow variables to return `false` instead of the default value, you can use the `allow_false` parameter.
+
+<p class="code-label">Input</p>
+```liquid
+{% raw %}
+{% assign display_price = false %}
+{{ display_price | default: true, allow_false: true}}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+false
+```
