@@ -7,7 +7,7 @@ Iteration tags run blocks of code repeatedly.
 
 ## for
 
-Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://help.shopify.com/themes/liquid/objects/for-loops).
+Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://shopify.dev/docs/themes/liquid/reference/objects/for-loops).
 
 <p class="code-label">Input</p>
 ```liquid
@@ -223,7 +223,7 @@ two
 
 ## tablerow
 
-Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags.
+Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags. For a full list of attributes available within a `tablerow` loop, see [tablerow (object)](https://shopify.dev/docs/themes/liquid/reference/objects/tablerow).
 
 <p class="code-label">Input</p>
 ```liquid

@@ -11,7 +11,7 @@ This site documents the latest version of **Liquid** including betas and release
 
 Shopify always uses the latest version of Liquid as a base, but Shopify adds a significant number of objects, tags, and filters to Liquid for use in merchants' stores. These include objects representing store, product, and customer information, and filters for displaying store data and manipulating storefront assets like product images.
 
-Shopify's version of Liquid is documented in the [Shopify Help Center](https://help.shopify.com/themes/liquid). If you want to try out Shopify's version of Liquid, you can create a development store through the [Shopify Partner Dashboard](https://help.shopify.com/en/partners/dashboard/development-stores).
+Shopify's version of Liquid is documented in the [Shopify Developer Center](https://shopify.dev/docs/themes/liquid/reference). If you want to try out Shopify's version of Liquid, you can create a development store through the [Shopify Partner Dashboard](https://help.shopify.com/en/partners/dashboard/managing-stores/development-stores).
 
 ## Jekyll
 
@@ -19,6 +19,6 @@ Shopify's version of Liquid is documented in the [Shopify Help Center](https://h
 
 Jekyll also powers [GitHub Pages](https://pages.github.com/), a web hosting service that lets you push a Jekyll installation to a GitHub repository and have the resulting website published. This website is built using GitHub Pages.
 
-Jekyll might not be using the latest version of Liquid. This means that the tags and filters listed on this site may not work in Jekyll. Often the Jekyll project will wait for a stable release of Liquid rather than using a beta or release candidate version. To see what version of Liquid Jekyll is using, check the **runtime dependencies** section of [Jekyll's gem page](https://rubygems.org/gems/jekyll).
+Jekyll might not be using the latest version of Liquid. This means that the tags and filters listed on this site may not work in Jekyll. Often the Jekyll project will wait for a stable release of Liquid rather than using a beta or release candidate version. To see which version of Liquid is being used by Jekyll or GitHub Pages, check the **runtime dependencies** section of [Jekyll's gem page](https://rubygems.org/gems/jekyll) and [GitHub Pages' gem page](https://rubygems.org/gems/github-pages).
 
 Jekyll's version of Liquid is documented in the [Liquid section of Jekyll's documentation](https://jekyllrb.com/docs/liquid/). If you want to try out Jekyll's version of Liquid, you can clone the Jekyll project or install Jekyll as a gem and test Liquid on a static site.
