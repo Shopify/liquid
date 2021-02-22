@@ -20,3 +20,13 @@
   border-top: none;
   border-radius: 0 0 3px 3px;
 }
+
+.version-badge {
+  padding: 4px;
+  margin-left: 10px;
+  font-size: 12px;
+  background: lighten($color-blue-1, 1);
+  border: 1px solid $color-blue-2;
+  border-radius: 3px;
+  vertical-align: middle;
+}

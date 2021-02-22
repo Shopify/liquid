@@ -1,6 +1,7 @@
 ---
 title: concat
 description: Liquid filter that concatenates arrays.
+version-badge: 4.0.0
 ---
 
 Concatenates (joins together) multiple arrays. The resulting array contains all the items from the input arrays.
