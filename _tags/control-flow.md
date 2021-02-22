@@ -86,7 +86,7 @@ Creates a switch statement to compare a variable with different values. `case` i
 {% case handle %}
   {% when "cake" %}
      This is a cake
-  {% when "cookie" %}
+  {% when "cookie", "biscuit" %}
      This is a cookie
   {% else %}
      This is not a cake nor a cookie
