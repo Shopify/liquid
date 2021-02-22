@@ -46,6 +46,7 @@ Tags can be categorized into various types:
 
 - [Control flow]({{ "/tags/control-flow/" | prepend: site.baseurl }})
 - [Iteration]({{ "/tags/iteration/" | prepend: site.baseurl }})
+- [Template]({{ "/tags/template/" | prepend: site.baseurl }})
 - [Variable assignment]({{ "/tags/variable/" | prepend: site.baseurl }})
 
 You can read more about each type of tag in their respective sections.
