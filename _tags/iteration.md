@@ -150,7 +150,7 @@ Begins the loop at the specified index.
 
 ### range
 
-Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
+Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers, and can be pulled from a variable.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -160,7 +160,8 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 {% endfor %}
 
 {% assign num = 4 %}
-{% for i in (1..num) %}
+{% assign range = (1..num) %}
+{% for i in range %}
   {{ i }}
 {% endfor %}
 {% endraw %}
