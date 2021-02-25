@@ -17,6 +17,7 @@
 
 ## Workflow
 
+* [Sign the CLA](https://cla.shopify.com/)
 * Fork the Liquid repository
 * Create a new branch in your fork
 * If it makes sense, add tests for your code and/or run a performance benchmark
