@@ -19,10 +19,10 @@
 
 ## Workflow
 
+* [Sign the CLA](https://cla.shopify.com/) if you haven't already
 * Fork the Liquid repository
 * Create a new branch in your fork
   * For updating [Liquid documentation](https://shopify.github.io/liquid/), create it from `gh-pages` branch. (You can skip tests.)
 * If it makes sense, add tests for your code and/or run a performance benchmark
 * Make sure all tests pass (`bundle exec rake`)
 * Create a pull request
-
