@@ -17,10 +17,9 @@
 
 ## Workflow
 
-* [Sign the CLA](https://cla.shopify.com/)
+* [Sign the CLA](https://cla.shopify.com/) if you haven't already
 * Fork the Liquid repository
 * Create a new branch in your fork
 * If it makes sense, add tests for your code and/or run a performance benchmark
 * Make sure all tests pass (`bundle exec rake`)
 * Create a pull request
-
