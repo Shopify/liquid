@@ -26,7 +26,9 @@ class InlineCommentTest < Minitest::Test
 
   def test_comment_inline_tag
     assert_template_result('ok', '{% echo "ok" # output something from a tag %}')
+  end
 
+  def test_comment_line_before_tag
     assert_template_result('ok', '{% # this sort of comment also
       echo "ok" %}')
   end

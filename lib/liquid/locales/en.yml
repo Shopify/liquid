@@ -22,6 +22,7 @@
       tag_never_closed: "'%{block_name}' tag was never closed"
       table_row: "Syntax Error in 'table_row loop' - Valid syntax: table_row [item] in [collection] cols=3"
       render: "Syntax error in tag 'render' - Template name must be a quoted string"
+      inline_comment_invalid: "Syntax error in tag '#' - Each line of comments must be prefixed by the '#' character"
     argument:
       include: "Argument error in tag 'include' - Illegal template name"
     disabled:
