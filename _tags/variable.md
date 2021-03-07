@@ -79,7 +79,7 @@ I am 35 and my favourite food is pizza.
 
 ## increment
 
-Creates a new number variable, and increases its value by one every time it is called. The initial value is 0.
+Creates and outputs a new number variable with initial value `0`. On subsequent calls, it increases its value by one and outputs the new value.
 
 <p class="code-label">Input</p>
 ```liquid
@@ -122,7 +122,7 @@ In the example below, a variable named "var" is created through `assign`. The `i
 
 ## decrement
 
-Creates a new number variable, and decreases its value by one every time it is called. The initial value is -1.
+Creates and outputs a new number variable with initial value `-1`. On subsequent calls, it decreases its value by one and outputs the new value.
 
 <p class="code-label">Input</p>
 ```liquid
