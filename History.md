@@ -1,5 +1,10 @@
 # Liquid Change Log
 
+## Unreleased
+
+### Features
+* Allow `#` to be used as an inline comment tag (#1401) [Dylan Thacker-Smith]
+
 ## 5.0.0 / 2021-01-06
 
 ### Features
