@@ -15,6 +15,7 @@ exclude:
   - package-lock.json
   - node_modules
   - vendor
+  - tags
 keep_files:             ["css"]
 
 # Collections
