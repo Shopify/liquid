@@ -26,6 +26,13 @@ class ParseTreeVisitorTest < Minitest::Test
     )
   end
 
+  def test_echo
+    assert_equal(
+      ["test"],
+      visit(%({% echo test %}))
+    )
+  end
+
   def test_if_condition
     assert_equal(
       ["test"],
