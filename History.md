@@ -1,5 +1,15 @@
 # Liquid Change Log
 
+## 5.0.1 / 2021-03-24
+
+### Fixes
+* Add ParseTreeVisitor to Echo tag (#1414) [CP Clermont]
+* Test with ruby 3.0 as the latest ruby version (#1398) [Dylan Thacker-Smith]
+* Handle carriage return in newlines_to_br (#1391) [Unending]
+
+### Performance Improvements
+* Use split limit in truncatewords (#1361) [Dylan Thacker-Smith]
+
 ## 5.0.0 / 2021-01-06
 
 ### Features
