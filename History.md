@@ -1,5 +1,18 @@
 # Liquid Change Log
 
+## 5.0.1 / 2021-03-24
+
+### Fixes
+* Add ParseTreeVisitor to Echo tag (#1414) [CP Clermont]
+* Fix Rubocop (#1402) [Dylan Thacker-Smith]
+* Add a hint to sign CLA only if it's the first time (#1406, #1405) [ADTC]
+* Test with ruby 3.0 as the latest ruby version (#1398) [Dylan Thacker-Smith]
+* Handle carriage return in newlines_to_br (#1391) [Unending]
+* Build the tokenizer through the parse context for liquid-c (#1386) [Dylan Thacker-Smith]
+
+### Performance Improvements
+* Use split limit in truncatewords (#1361) [Dylan Thacker-Smith]
+
 ## 5.0.0 / 2021-01-06
 
 ### Features
