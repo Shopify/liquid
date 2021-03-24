@@ -6,7 +6,6 @@
 * Add ParseTreeVisitor to Echo tag (#1414) [CP Clermont]
 * Test with ruby 3.0 as the latest ruby version (#1398) [Dylan Thacker-Smith]
 * Handle carriage return in newlines_to_br (#1391) [Unending]
-* Build the tokenizer through the parse context for liquid-c (#1386) [Dylan Thacker-Smith]
 
 ### Performance Improvements
 * Use split limit in truncatewords (#1361) [Dylan Thacker-Smith]
