@@ -22,7 +22,7 @@ there
 {% capture string_with_newlines %}
 Hello
 there
-{% endcapture %}
+{% endcapture -%}
 
 {{ string_with_newlines | newline_to_br }}
 ```

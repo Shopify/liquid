@@ -5,50 +5,25 @@ description: Liquid filter that specifies a fallback in case a value doesn't exi
 
 Sets a default value for any variable with no assigned value. `default` will show its value if the input is `nil`, `false`, or empty.
 
-In this example, `product_price` is not defined, so the default value is used.
+In the following examples with a variable `product_price`:
+* When it's not defined, the default value is used.
+* When it's defined, the default value is not used.
+* When it's empty, so the default value is used.
 
 <p class="code-label">Input</p>
 ```liquid
 {%- raw -%}
 {{ product_price | default: 2.99 }}
+{% assign product_price = 4.99 %} {{ product_price | default: 2.99 }}
+{% assign product_price = "" %} {{ product_price | default: 2.99 }}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
 {{ product_price | default: 2.99 }}
-```
-
-In this example, `product_price` is defined, so the default value is not used.
-
-<p class="code-label">Input</p>
-```liquid
-{%- raw -%}
-{% assign product_price = 4.99 %}
-{{ product_price | default: 2.99 }}
-{% endraw %}
-```
-
-<p class="code-label">Output</p>
-```text
-{% assign product_price = 4.99 %}
-{{ product_price | default: 2.99 }}
-```
-
-In this example, `product_price` is empty, so the default value is used.
-
-<p class="code-label">Input</p>
-```liquid
-{%- raw -%}
-{% assign product_price = "" %}
-{{ product_price | default: 2.99 }}
-{% endraw %}
-```
-
-<p class="code-label">Output</p>
-```text
-{% assign product_price = "" %}
-{{ product_price | default: 2.99 }}
+{% assign product_price = 4.99 -%} {{ product_price | default: 2.99 }}
+{% assign product_price = "" -%} {{ product_price | default: 2.99 }}
 ```
 
 ### Allowing `false` {%- include version-badge.html version="5.0.0" %}

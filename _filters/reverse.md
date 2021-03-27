@@ -16,7 +16,7 @@ Reverses the order of the items in an array. `reverse` cannot reverse a string.
 
 <p class="code-label">Output</p>
 ```text
-{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " -%}
 
 {{ my_array | reverse | join: ", " }}
 ```

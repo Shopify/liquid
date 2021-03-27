@@ -9,27 +9,17 @@ Returns the number of characters in a string or the number of items in an array.
 ```liquid
 {%- raw -%}
 {{ "Ground control to Major Tom." | size }}
-{% endraw %}
-```
 
-<p class="code-label">Output</p>
-```text
-{{ "Ground control to Major Tom." | size }}
-```
-
-<p class="code-label">Input</p>
-```liquid
-{%- raw -%}
 {% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
-
 {{ my_array.size }}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
+{{ "Ground control to Major Tom." | size }}
 
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " -%}
 {{ my_array.size }}
 ```
 

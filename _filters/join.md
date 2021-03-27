@@ -16,7 +16,7 @@ Combines the items in an array into a single string using the argument as a sepa
 
 <p class="code-label">Output</p>
 ```text
-{% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
+{% assign beatles = "John, Paul, George, Ringo" | split: ", " -%}
 
 {{ beatles | join: " and " }}
 ```

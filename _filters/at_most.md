@@ -16,6 +16,6 @@ Limits a number to a maximum value.
 
 <p class="code-label">Output</p>
 ```text
-4
-3
+{{ 4 | at_most: 5 }}
+{{ 4 | at_most: 3 }}
 ```
