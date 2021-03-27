@@ -107,40 +107,34 @@ Note that you don't need to write the file's `.liquid` extension.
 
 The code within the rendered template does **not** automatically have access to the variables assigned using [variable tags]({{ "/tags/variable/" | prepend: site.baseurl }}) within the parent template. Similarly, variables assigned within the rendered template cannot be accessed by code in any other template.
 
-## render (parameters)
+### Passing variables and objects to a template
 
-Variables assigned using [variable tags]({{ "/tags/variable/" | prepend: site.baseurl }}) can be passed to a template by listing them as parameters on the `render` tag.
+Variables assigned using [variable tags]({{ "/tags/variable/" | prepend: site.baseurl }}) can be passed to a template by listing them as parameters on the `render` tag. Objects can also be passed the same way.
 
 ```liquid
 {%- raw -%}
 {% assign my_variable = "apples" %}
 {% render "name", my_variable: my_variable, my_other_variable: "oranges" %}
-{% endraw %}
-```
 
-One or more objects can be passed to a template.
-
-```liquid
-{%- raw -%}
 {% assign featured_product = all_products["product_handle"] %}
 {% render "product", product: featured_product %}
 {% endraw %}
 ```
 
-### with
+### Passing an object using `with`
 
-A single object can be passed to a template by using the `with` and optional `as` parameters.
+A single object can be passed to a template by using the `with` and `as` parameters. The `as` parameter is optional, and if missing, it assumes the template name as the variable name.
 
 ```liquid
 {%- raw -%}
 {% assign featured_product = all_products["product_handle"] %}
-{% render "product" with featured_product as product %}
+{% render "product" with featured_product as ft_product %}
 {% endraw %}
 ```
 
-In the example above, the `product` variable in the rendered template will hold the value of `featured_product` from the parent template.
+In the example above, the `ft_product` variable in the rendered template will hold the value of `featured_product` from the parent template. Without `as ft_product`, the `product` variable (since the template name is "product") will hold this value.
 
-### for
+### Rendering iteratively using `for`
 
 A template can be rendered once for each value of an enumerable object by using the `for` and optional `as` parameters.
 
