@@ -19,7 +19,7 @@ You can initialize Liquid variables using [`assign`]({{ "/tags/variable/#assign"
 Strings are declared by wrapping a variable's value in single or double quotes:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_string = "Hello World!" %}
 {% endraw %}
 ```
@@ -29,7 +29,7 @@ Strings are declared by wrapping a variable's value in single or double quotes:
 Numbers include floats and integers:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_int = 25 %}
 {% assign my_float = -39.756 %}
 {% endraw %}
@@ -40,7 +40,7 @@ Numbers include floats and integers:
 Booleans are either `true` or `false`. No quotations are necessary when declaring a boolean:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign foo = true %}
 {% assign bar = false %}
 {% endraw %}
@@ -55,7 +55,7 @@ Nil is [treated as false]({{ "/basics/truthy-and-falsy/#falsy" | prepend: site.b
 In the following example, if the user does not exist (that is, `user` returns `nil`), Liquid will not print the greeting:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if user %}
   Hello {{ user.name }}!
 {% endif %}
@@ -66,7 +66,7 @@ Tags or outputs that return `nil` will not print anything to the page.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 The current user is {{ user.name }}
 {% endraw %}
 ```
@@ -86,7 +86,7 @@ To access all the items in an array, you can loop through each item in the array
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- if site.users = "Tobi", "Laura", "Tetsuro", "Adam" -->
 {% for user in site.users %}
   {{ user }}
@@ -105,7 +105,7 @@ You can use square bracket `[` `]` notation to access a specific item in an arra
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- if site.users = "Tobi", "Laura", "Tetsuro", "Adam" -->
 {{ site.users[0] }}
 {{ site.users[1] }}
@@ -131,7 +131,7 @@ You can, however, use the [`split`]({{ "/filters/split/" | prepend: site.baseurl
 An EmptyDrop object is returned if you try to access a deleted object. In the example below, `page_1`, `page_2` and `page_3` are all EmptyDrop objects:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign variable = "hello" %}
 {% assign page_1 = pages[variable] %}
 {% assign page_2 = pages["does-not-exist"] %}
@@ -144,7 +144,7 @@ An EmptyDrop object is returned if you try to access a deleted object. In the ex
 You can check to see if an object exists or not before you access any of its attributes.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% unless pages == empty %}
   <h1>{{ pages.frontpage.title }}</h1>
   <div>{{ pages.frontpage.content }}</div>
