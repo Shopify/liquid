@@ -8,7 +8,7 @@ Concatenates (joins together) multiple arrays. The resulting array contains all 
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign fruits = "apples, oranges, peaches" | split: ", " %}
 {% assign vegetables = "carrots, turnips, potatoes" | split: ", " %}
 
@@ -34,7 +34,7 @@ You can string together multiple `concat` filters to join more than two arrays.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign furniture = "chairs, tables, shelves" | split: ", " %}
 
 {% assign everything = fruits | concat: vegetables | concat: furniture %}

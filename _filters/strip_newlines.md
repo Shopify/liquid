@@ -7,7 +7,7 @@ Removes any newline characters (line breaks) from a string.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% capture string_with_newlines %}
 Hello
 there
@@ -22,7 +22,7 @@ there
 {% capture string_with_newlines %}
 Hello
 there
-{% endcapture %}
+{% endcapture -%}
 
 {{ string_with_newlines | strip_newlines }}
 ```

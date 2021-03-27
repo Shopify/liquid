@@ -7,7 +7,7 @@ Removes every occurrence of the specified substring from a string.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "I strained to see the train through the rain" | remove: "rain" }}
 {% endraw %}
 ```

@@ -7,7 +7,7 @@ Adds a number to another number.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ 4 | plus: 2 }}
 {{ 16 | plus: 4 }}
 {{ 183.357 | plus: 12 }}

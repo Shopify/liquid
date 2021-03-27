@@ -7,7 +7,7 @@ Removes any duplicate items in an array.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_array = "ants, bugs, bees, bugs, ants" | split: ", " %}
 
 {{ my_array | uniq | join: ", " }}
@@ -16,7 +16,7 @@ Removes any duplicate items in an array.
 
 <p class="code-label">Output</p>
 ```text
-{% assign my_array = "ants, bugs, bees, bugs, ants" | split: ", " %}
+{% assign my_array = "ants, bugs, bees, bugs, ants" | split: ", " -%}
 
 {{ my_array | uniq | join: ", " }}
 ```
