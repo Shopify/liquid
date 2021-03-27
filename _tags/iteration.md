@@ -11,7 +11,7 @@ Repeatedly executes a block of code. For a full list of attributes available wit
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% for product in collection.products %}
   {{ product.title }}
 {% endfor %}
@@ -29,7 +29,7 @@ Specifies a fallback case for a `for` loop which will run if the loop has zero l
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% for product in collection.products %}
   {{ product.title }}
 {% else %}
@@ -49,7 +49,7 @@ Causes the loop to stop iterating when it encounters the `break` tag.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% for i in (1..5) %}
   {% if i == 4 %}
     {% break %}
@@ -71,7 +71,7 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% for i in (1..5) %}
   {% if i == 4 %}
     {% continue %}
@@ -93,7 +93,7 @@ Only executes a block of code if the loop variable differs from the previous ite
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- if array = [1,1,1,2,2,3] -->
 {% for item in array %}
   {% ifchanged %}
@@ -116,7 +116,7 @@ Limits the loop to the specified number of iterations.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- if array = [1,2,3,4,5,6] -->
 {% for item in array limit:2 %}
   {{ item }}
@@ -135,7 +135,7 @@ Begins the loop at the specified index.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- if array = [1,2,3,4,5,6] -->
 {% for item in array offset:2 %}
   {{ item }}
@@ -152,7 +152,7 @@ To start a loop from where the last loop using the same iterator left off, pass 
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- if array = [1,2,3,4,5,6] -->
 {% for item in array limit: 3 %}
   {{ item }}
@@ -175,7 +175,7 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% for i in (3..5) %}
   {{ i }}
 {% endfor %}
@@ -200,7 +200,7 @@ Reverses the order of the loop. Note that this flag's spelling is different from
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- if array = [1,2,3,4,5,6] -->
 {% for item in array reversed %}
   {{ item }}
@@ -221,7 +221,7 @@ Loops through a group of strings and prints them in the order that they were pas
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% cycle "one", "two", "three" %}
 {% cycle "one", "two", "three" %}
 {% cycle "one", "two", "three" %}
@@ -231,10 +231,10 @@ Loops through a group of strings and prints them in the order that they were pas
 
 <p class="code-label">Output</p>
 ```text
-one
-two
-three
-one
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
 ```
 
 Uses for `cycle` include:
@@ -248,7 +248,7 @@ Uses for `cycle` include:
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% cycle "first": "one", "two", "three" %}
 {% cycle "second": "one", "two", "three" %}
 {% cycle "second": "one", "two", "three" %}
@@ -258,10 +258,10 @@ Uses for `cycle` include:
 
 <p class="code-label">Output</p>
 ```text
-one
-one
-two
-two
+{% cycle "first": "one", "two", "three" %}
+{% cycle "second": "one", "two", "three" %}
+{% cycle "second": "one", "two", "three" %}
+{% cycle "first": "one", "two", "three" %}
 ```
 
 ## tablerow
@@ -270,7 +270,7 @@ Generates an HTML table. Must be wrapped in opening `<table>` and closing `</tab
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <table>
 {% tablerow product in collection.products %}
   {{ product.title }}
@@ -313,7 +313,7 @@ Defines how many columns the tables should have.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% tablerow product in collection.products cols:2 %}
   {{ product.title }}
 {% endtablerow %}
@@ -355,7 +355,7 @@ Defines how many columns the tables should have.
 Exits the `tablerow` loop after a specific index.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% tablerow product in collection.products cols:2 limit:3 %}
   {{ product.title }}
 {% endtablerow %}
@@ -367,7 +367,7 @@ Exits the `tablerow` loop after a specific index.
 Starts the `tablerow` loop after a specific index.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% tablerow product in collection.products cols:2 offset:3 %}
   {{ product.title }}
 {% endtablerow %}
@@ -379,7 +379,7 @@ Starts the `tablerow` loop after a specific index.
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 <!--variable number example-->
 
 {% assign num = 4 %}

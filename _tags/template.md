@@ -14,7 +14,7 @@ Allows you to leave un-rendered code inside a Liquid template. Any text within t
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 Anything you put between {% comment %} and {% endcomment %} tags
 is turned into a comment.
 {% endraw %}
@@ -31,18 +31,21 @@ is turned into a comment.
 Temporarily disables tag processing. This is useful for generating certain content (e.g. Mustache, Handlebars) that uses conflicting syntax.
 
 <p class="code-label">Input</p>
-<pre class="highlight">
-<code>{% raw %}
-&#123;&#37; raw &#37;&#125;
+```liquid
+{% raw %}{%{% endraw %} raw {% raw %}%}{% endraw %}
+{%- raw -%}
   In Handlebars, {{ this }} will be HTML-escaped, but
   {{{ that }}} will not.
-&#123;&#37; endraw &#37;&#125;
-{% endraw %}</code>
-</pre>
+{% endraw %}
+{% raw %}{%{% endraw %} endraw {% raw %}%}{% endraw %}
+```
 
 <p class="code-label">Output</p>
 ```text
-{% raw %}In Handlebars, {{ this }} will be HTML-escaped, but {{{ that }}} will not.{% endraw %}
+{%- raw -%}
+  In Handlebars, {{ this }} will be HTML-escaped, but
+  {{{ that }}} will not.
+{% endraw %}
 ```
 
 ## liquid {%- include version-badge.html version="5.0.0" %}
@@ -50,7 +53,7 @@ Temporarily disables tag processing. This is useful for generating certain conte
 Encloses multiple tags within one set of delimiters, to allow writing Liquid logic more concisely.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% liquid
 case section.blocks.size
 when 1
@@ -65,13 +68,36 @@ endcase %}
 {% endraw %}
 ```
 
+Note that all tags opened inside a `liquid` tag must be closed inside the same `liquid` tag.
+
+<p class="code-label">Input (Invalid syntax)</p>
+```liquid
+{%- raw -%}
+{% liquid
+if iterate_products
+  for product in collection.products
+  %}
+  {{ product.title | capitalize }}
+{% liquid
+  endfor
+endif %}
+{% endraw %}
+```
+
+<p class="code-label">Error (Console output)</p>
+```text
+Liquid syntax error (line 4): 'for' tag was never closed 
+```
+
+If you need to output data, use `echo` _(described below)_ instead of closing and reopening `liquid` with unclosed tags.
+
 ## echo {%- include version-badge.html version="5.0.0" %}
 
 Outputs an expression in the rendered HTML. This is identical to wrapping an expression in `{% raw %}{{{% endraw %}` and `{% raw %}}}{% endraw %}`, but works inside [`liquid`](#liquid) tags and supports [filters]({{ "/basics/introduction/#filters" | prepend: site.baseurl }}).
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% liquid
 for product in collection.products
   echo product.title | capitalize
@@ -89,7 +115,7 @@ Hat Shirt Pants
 Insert the rendered content of another template within the current template.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% render "template-name" %}
 {% endraw %}
 ```
@@ -98,47 +124,39 @@ Note that you don't need to write the file's `.liquid` extension.
 
 The code within the rendered template does **not** automatically have access to the variables assigned using [variable tags]({{ "/tags/variable/" | prepend: site.baseurl }}) within the parent template. Similarly, variables assigned within the rendered template can't be accessed by code in any other template.
 
-### Passing variables to a template
+### Passing variables and objects to a template
 
-Variables assigned using [variable tags]({{ "/tags/variable/" | prepend: site.baseurl }}) can be passed to a template by listing them as parameters on the `render` tag.
+Variables assigned using [variable tags]({{ "/tags/variable/" | prepend: site.baseurl }}) can be passed to a template by listing them as parameters on the `render` tag. Objects can also be passed the same way.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_variable = "apples" %}
 {% render "name", my_variable: my_variable, my_other_variable: "oranges" %}
-{% endraw %}
-```
 
-## render (parameters)
-
-One or more objects can be passed to a template.
-
-```liquid
-{% raw %}
 {% assign featured_product = all_products["product_handle"] %}
 {% render "product", product: featured_product %}
 {% endraw %}
 ```
 
-### with
+### Passing an object using `with`
 
-A single object can be passed to a template by using the `with` and `as` parameters.
+A single object can be passed to a template by using the `with` and `as` parameters. The `as` parameter is optional, and if missing, it assumes the template name as the variable name.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign featured_product = all_products["product_handle"] %}
-{% render "product" with featured_product as product %}
+{% render "product" with featured_product as ft_product %}
 {% endraw %}
 ```
 
-In the example above, the `product` variable in the rendered template will hold the value of `featured_product` from the parent template.
+In the example above, the `ft_product` variable in the rendered template will hold the value of `featured_product` from the parent template. Without `as ft_product`, the `product` variable (since the template name is "product") will hold this value.
 
-### for
+### Rendering iteratively using `for`
 
 A template can be rendered once for each value of an enumerable object by using the `for` and `as` parameters.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign variants = product.variants %}
 {% render "product_variant" for variants as variant %}
 {% endraw %}
@@ -153,11 +171,11 @@ When using the `for` parameter, the [`forloop`](https://shopify.dev/docs/themes/
 Insert the rendered content of another template within the current template.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% include "template-name" %}
 {% endraw %}
 ```
 
 The `include` tag works similarly to the [`render`](#render) tag, but it allows the code inside of the rendered template to access and overwrite the variables within its parent template. The `include` tag has been deprecated because the way that it handles variables reduces performance and makes Liquid code harder to both read and maintain.
 
-Note that when a template is rendered using the [`render`](#render) tag, the `include` tag may not be used within the template.
+Note that when a template is rendered using the [`render`](#render) tag, the `include` tag cannot be used within the template.
