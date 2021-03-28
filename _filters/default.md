@@ -1,5 +1,6 @@
 ---
 title: default
+category: aaa
 description: Liquid filter that specifies a fallback in case a value doesn't exist.
 ---
 

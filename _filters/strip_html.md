@@ -1,5 +1,6 @@
 ---
 title: strip_html
+category: string
 description: Liquid filter that removes HTML tags from a string.
 ---
 

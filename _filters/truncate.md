@@ -1,5 +1,6 @@
 ---
 title: truncate
+category: string
 description: Liquid filter that truncates a string to a given number of characters.
 ---
 

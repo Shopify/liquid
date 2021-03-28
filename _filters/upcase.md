@@ -1,5 +1,6 @@
 ---
 title: upcase
+category: string
 description: Liquid filter that converts a string to uppercase.
 ---
 

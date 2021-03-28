@@ -1,5 +1,6 @@
 ---
 title: plus
+category: math
 description: Liquid filter that adds one number to another number.
 ---
 

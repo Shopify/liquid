@@ -1,5 +1,6 @@
 ---
 title: concat
+category: array
 description: Liquid filter that concatenates arrays.
 version-badge: 4.0.0
 ---

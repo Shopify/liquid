@@ -1,5 +1,6 @@
 ---
 title: rstrip
+category: string
 description: Liquid filter that removes all whitespace from the right side of a string.
 ---
 

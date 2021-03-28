@@ -1,5 +1,6 @@
 ---
 title: divided_by
+category: math
 description: Liquid filter that divides a number by another number.
 ---
 

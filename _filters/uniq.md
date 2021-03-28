@@ -1,5 +1,6 @@
 ---
 title: uniq
+category: array
 description: Liquid filter that removes duplicate items from an array.
 ---
 

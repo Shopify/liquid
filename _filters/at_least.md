@@ -1,5 +1,6 @@
 ---
 title: at_least
+category: math
 description: Liquid filter that limits a number to a minimum value.
 version-badge: 4.0.1
 ---

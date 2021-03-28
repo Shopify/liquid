@@ -1,5 +1,6 @@
 ---
 title: capitalize
+category: string
 description: Liquid filter that capitalizes the first character of a string and downcases the remaining characters.
 ---
 

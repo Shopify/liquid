@@ -1,5 +1,6 @@
 ---
 title: map
+category: array
 description: Liquid filter that creates an array of values by extracting a named property from an object.
 ---
 
