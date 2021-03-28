@@ -1,5 +1,6 @@
 ---
 title: append
+category: string
 description: Liquid filter that appends a string to another string.
 ---
 

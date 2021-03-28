@@ -1,5 +1,6 @@
 ---
 title: ceil
+category: math
 description: Liquid filter that returns the ceiling of a number by rounding up to the nearest integer.
 ---
 

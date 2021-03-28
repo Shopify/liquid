@@ -1,5 +1,6 @@
 ---
 title: strip_newlines
+category: string
 description: Liquid filter that removes newline characters from a string.
 ---
 

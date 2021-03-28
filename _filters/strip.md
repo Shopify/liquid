@@ -1,5 +1,6 @@
 ---
 title: strip
+category: string
 description: Liquid filter that removes all whitespace from the left and right sides of a string.
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: replace
+category: string
 description: Liquid filter that replaces all occurences of a given substring in a string.
 ---
 

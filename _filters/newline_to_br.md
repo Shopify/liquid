@@ -1,5 +1,6 @@
 ---
 title: newline_to_br
+category: string
 description: Liquid filter that converts newlines in a string to HTML <br /> tags.
 ---
 

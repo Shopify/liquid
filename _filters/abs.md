@@ -1,7 +1,7 @@
 ---
 title: abs
+category: math
 description: Liquid filter that returns the absolute value of a number.
-redirect_from: /filters/
 ---
 
 Returns the absolute value of a number. `abs` will also work on a string that only contains a number.

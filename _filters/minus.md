@@ -1,5 +1,6 @@
 ---
 title: minus
+category: math
 description: Liquid filter that subtracts one number from another number.
 ---
 

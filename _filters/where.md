@@ -1,5 +1,6 @@
 ---
 title: where
+category: array
 description: Liquid filter that selects from arrays.
 version-badge: 4.0.2
 ---

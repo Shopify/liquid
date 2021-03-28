@@ -1,5 +1,6 @@
 ---
 title: url_decode
+category: aaa
 description: Liquid filter that decodes percent-encoded characters in a string.
 version-badge: 4.0.0
 ---

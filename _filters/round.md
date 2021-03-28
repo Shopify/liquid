@@ -1,5 +1,6 @@
 ---
 title: round
+category: math
 description: Liquid filter that rounds a number to the nearest integer.
 ---
 

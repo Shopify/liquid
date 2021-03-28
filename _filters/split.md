@@ -1,5 +1,6 @@
 ---
 title: split
+category: string
 description: Liquid filter that splits a string into an array using separators.
 ---
 

@@ -12,21 +12,39 @@
   <nav class="sidebar__nav">
     <div class="sidebar__nav-interior">
       {%- for section in sections -%}
-        <h3 class="section__header" id="{{ section }}">{{ section | capitalize }}</h3>
+      {%- if section == "filters" -%}
 
-        <ul class="section__links">
-        {%- for item in site[section] -%}
-            <li class="section__item">
-                <a href="{{ item.url | relative_url }}" class="section__link{% if item.url == page.url %} section__link--is-active{% endif %}">{{ item.title }}</a>
-            </li>
+        {%- assign categories = site[section] | map: "category" | uniq | sort -%}
+        {%- for category in categories -%}
+          {%- if category and category != "aaa" -%}
+            {%- assign header = category | append: " " | append: section -%}
+            {%- assign header_id = category | append: "-" | append: section -%}
+          {%- else -%}
+            {%- assign header = section -%}
+            {%- assign header_id = section -%}
+          {%- endif -%}
+          {%- assign items = site[section] | where: "category", category | sort: "title" -%}
+          {%- include sidebar-link.html -%}
         {%- endfor -%}
-        </ul>
+
+      {%- else -%}
+
+        {%- assign header = section -%}
+        {%- assign header_id = section -%}
+        {%- assign items = site[section] -%}
+        {%- include sidebar-link.html -%}
+
+      {%- endif -%}
       {%- endfor -%}
     </div>
 
     {%- if sections contains page.collection -%}
+      {%- assign element_id = page.collection -%}
+      {%- if page.collection == "filters" and page.category and page.category != "aaa" -%}
+        {%- assign element_id = page.category | append: "-" | append: page.collection -%}
+      {%- endif -%}
     <script type="text/javascript">
-        document.getElementById("{{ page.collection }}").scrollIntoView();
+        document.getElementById("{{ element_id }}").scrollIntoView();
     </script>
     {%- endif -%}
   </nav>

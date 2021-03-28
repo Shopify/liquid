@@ -1,5 +1,6 @@
 ---
 title: floor
+category: math
 description: Liquid filter that returns the floor of a number by rounding down to the nearest integer.
 ---
 

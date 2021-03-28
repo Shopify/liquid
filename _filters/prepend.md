@@ -1,5 +1,6 @@
 ---
 title: prepend
+category: string
 description: Liquid filter that prepends a string to the beginning of another string.
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: slice
+category: string
 description: Liquid filter that returns a substring or item from a given position in a string or array.
 ---
 

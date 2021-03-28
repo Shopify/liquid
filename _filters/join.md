@@ -1,5 +1,6 @@
 ---
 title: join
+category: array
 description: Liquid filter that joins an array of strings into a single string.
 ---
 

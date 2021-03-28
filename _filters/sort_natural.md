@@ -1,5 +1,6 @@
 ---
 title: sort_natural
+category: array
 description: Liquid filter that sorts an array in case-insensitive order.
 version-badge: 4.0.0
 ---

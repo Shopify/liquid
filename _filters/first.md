@@ -1,5 +1,6 @@
 ---
 title: first
+category: array
 description: Liquid filter that returns the first item of an array.
 ---
 

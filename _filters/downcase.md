@@ -1,5 +1,6 @@
 ---
 title: downcase
+category: string
 description: Liquid filter that converts a string to lowercase.
 ---
 

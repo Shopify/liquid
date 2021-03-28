@@ -1,5 +1,6 @@
 ---
 title: at_most
+category: math
 description: Liquid filter that limits a number to a maximum value.
 version-badge: 4.0.1
 ---

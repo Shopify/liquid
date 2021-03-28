@@ -1,5 +1,6 @@
 ---
 title: size
+category: array
 description: Liquid filter that returns the number of characters in a string or the number of items in an array.
 ---
 

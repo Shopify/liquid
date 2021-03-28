@@ -1,5 +1,6 @@
 ---
 title: escape
+category: string
 description: Liquid filter that escapes URL-unsafe characters in a string.
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: sort
+category: array
 description: Liquid filter that sorts an array in case-sensitive order.
 ---
 

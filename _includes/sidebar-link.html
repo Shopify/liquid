@@ -1,0 +1,8 @@
+<h3 class="section__header" id="{{ header_id }}">{{ header | capitalize }}</h3>
+<ul class="section__links">
+{%- for item in items -%}
+  <li class="section__item">
+    <a href="{{ item.url | relative_url }}" class="section__link{% if item.url == page.url %} section__link--is-active{% endif %}">{{ item.title }}</a>
+  </li>
+{%- endfor -%}
+</ul>
