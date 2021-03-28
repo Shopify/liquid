@@ -50,11 +50,11 @@
 
     <div class="content__overlay"></div>
     <main class="content__area" role="main">
+      <button class="menu-button">
+        <span aria-hidden="true">{% include icons/three-bars.svg %}</span>
+        <span>Menu</span>
+      </button>
       <div class="content">
-        <button class="menu-button">
-          <span aria-hidden="true">{% include icons/three-bars.svg %}</span>
-          <span>Menu</span>
-        </button>
         {% if page.title -%}
           <h1>{{ page.title }}
           {%- if page.version-badge -%}
