@@ -1,15 +1,15 @@
 <div class="sidebar">
-  <header class="sidebar__logo" role="banner">
-    {% if page.home %}
-      Liquid
-    {% else %}
-      <a href="{{ "/" | relative_url }}">Liquid</a>
-    {% endif %}
-  </header>
-
-  {%- assign sections = "basics, tags, filters" | split: ", " -%}
-
   <nav class="sidebar__nav">
+    <header class="sidebar__logo" role="banner">
+      {% if page.home %}
+        Liquid
+      {% else %}
+        <a href="{{ "/" | relative_url }}">Liquid</a>
+      {% endif %}
+    </header>
+
+    {%- assign sections = "basics, tags, filters" | split: ", " -%}
+
     <div class="sidebar__nav-interior">
       {%- for section in sections -%}
       {%- if section == "filters" -%}
@@ -18,10 +18,8 @@
         {%- for category in categories -%}
           {%- if category and category != "aaa" -%}
             {%- assign header = category | append: " " | append: section -%}
-            {%- assign header_id = category | append: "-" | append: section -%}
           {%- else -%}
             {%- assign header = section -%}
-            {%- assign header_id = section -%}
           {%- endif -%}
           {%- assign items = site[section] | where: "category", category | sort: "title" -%}
           {%- include sidebar-link.html -%}
@@ -30,7 +28,6 @@
       {%- else -%}
 
         {%- assign header = section -%}
-        {%- assign header_id = section -%}
         {%- assign items = site[section] -%}
         {%- include sidebar-link.html -%}
 
@@ -38,13 +35,9 @@
       {%- endfor -%}
     </div>
 
-    {%- if sections contains page.collection -%}
-      {%- assign element_id = page.collection -%}
-      {%- if page.collection == "filters" and page.category and page.category != "aaa" -%}
-        {%- assign element_id = page.category | append: "-" | append: page.collection -%}
-      {%- endif -%}
+    {%- if page.url -%}
     <script type="text/javascript">
-        document.getElementById("{{ element_id }}").scrollIntoView();
+        document.getElementById("{{ page.url }}").scrollIntoView({block: "center"});
     </script>
     {%- endif -%}
   </nav>
