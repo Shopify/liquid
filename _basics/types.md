@@ -148,7 +148,8 @@ You can check to see if an object exists or not before you access any of its att
 {% unless pages == empty %}
   <h1>{{ pages.frontpage.title }}</h1>
   <div>{{ pages.frontpage.content }}</div>
-{% endunless %}{% endraw %}
+{% endunless %}
+{% endraw %}
 ```
 
 Both empty strings and empty arrays will return `true` if checked for equivalence with `empty`.
