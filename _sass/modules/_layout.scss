@@ -119,6 +119,14 @@ body {
   .section__links + & {
     margin-top: $spacing-unit;
   }
+
+  &.subheader {
+    font-weight: normal;
+    &::before {
+      content: '▾';
+      margin-right: ($spacing-unit / 2) - 15.5;
+    }
+  }
 }
 
 .section__links {
