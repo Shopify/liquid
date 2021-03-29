@@ -323,4 +323,18 @@ class TemplateTest < Minitest::Test
     result = t.render('x' => 1, 'y' => 5)
     assert_equal('12345', result)
   end
+
+  def test_source_string_subclass
+    string_subclass = Class.new(String) do
+      # E.g. ActiveSupport::SafeBuffer does this, so don't just rely on to_s to return a String
+      def to_s
+        self
+      end
+    end
+    source = string_subclass.new("{% assign x = 2 -%} x= {{- x }}")
+    assert_instance_of(string_subclass, source)
+    output = Template.parse(source).render!
+    assert_equal("x=2", output)
+    assert_instance_of(String, output)
+  end
 end
