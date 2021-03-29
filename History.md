@@ -1,5 +1,10 @@
 # Liquid Change Log
 
+## 5.0.2 (unreleased)
+
+### Fixes
+* Fix support for using a String subclass for the liquid source (#1421) [Dylan Thacker-Smith]
+
 ## 5.0.1 / 2021-03-24
 
 ### Fixes
