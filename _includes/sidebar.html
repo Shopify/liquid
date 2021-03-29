@@ -18,8 +18,10 @@
         {%- for category in categories -%}
           {%- if category and category != "aaa" -%}
             {%- assign header = category | append: " " | append: section -%}
+            {%- assign header_class = "subheader" -%}
           {%- else -%}
             {%- assign header = section -%}
+            {%- assign header_class = "" -%}
           {%- endif -%}
           {%- assign items = site[section] | where: "category", category | sort: "title" -%}
           {%- include sidebar-link.html -%}
@@ -28,6 +30,7 @@
       {%- else -%}
 
         {%- assign header = section -%}
+        {%- assign header_class = "" -%}
         {%- assign items = site[section] -%}
         {%- include sidebar-link.html -%}
 
