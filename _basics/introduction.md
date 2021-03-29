@@ -46,6 +46,7 @@ Tags can be categorized into various types:
 
 - [Control flow]({{ "/tags/control-flow/" | prepend: site.baseurl }})
 - [Iteration]({{ "/tags/iteration/" | prepend: site.baseurl }})
+- [Template]({{ "/tags/template/" | prepend: site.baseurl }})
 - [Variable assignment]({{ "/tags/variable/" | prepend: site.baseurl }})
 
 You can read more about each type of tag in their respective sections.
@@ -79,3 +80,12 @@ Multiple filters can be used on one output, and are applied from left to right.
 ```text
 {{ "adam!" | capitalize | prepend: "Hello " }}
 ```
+
+Filters can be categorized into various types:
+
+- <a href="#" onclick="scrollToFilter(event, 'array-filters')">Array filters</a>
+- <a href="#" onclick="scrollToFilter(event, 'math-filters')">Math filters</a>
+- <a href="#" onclick="scrollToFilter(event, 'string-filters')">String filters</a>
+- <a href="#" onclick="scrollToFilter(event, 'filters')">Other filters</a>
+
+You can see the list of filters for each type in their respective sections on the side menu.
