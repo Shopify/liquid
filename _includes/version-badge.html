@@ -1,1 +1,8 @@
-<span class="version-badge" title="This feature is available since version {{ include.version }}">{{ include.version }}</span>
+{%- if include.deprecated -%}
+  {%- assign adjective = 'deprecated' -%}
+  {%- assign text = adjective -%}
+{%- else -%}
+  {%- assign adjective = 'available' -%}
+  {%- assign text = include.version -%}
+{%- endif -%}
+<span class="version-badge" title="This feature is {{ adjective }} since version {{ include.version }}">{{ text }}</span>
