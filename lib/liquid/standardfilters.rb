@@ -270,7 +270,7 @@ module Liquid
 
     # Replace the last occurrences of a string with another
     def replace_last(input, string, replacement = '')
-      input.to_s.reserve.sub(string.to_s.reserve, replacement.to_s.reserve).reserve
+      input.to_s.reverse.sub(string.to_s.reverse, replacement.to_s.reverse).reverse
     end
 
     # remove a substring
