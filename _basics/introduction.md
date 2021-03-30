@@ -83,9 +83,9 @@ Multiple filters can be used on one output, and are applied from left to right.
 
 Filters can be categorized into various types:
 
-- <a href="#" onclick="scrollToFilter(event, 'array-filters')">Array filters</a>
-- <a href="#" onclick="scrollToFilter(event, 'math-filters')">Math filters</a>
-- <a href="#" onclick="scrollToFilter(event, 'string-filters')">String filters</a>
-- <a href="#" onclick="scrollToFilter(event, 'filters')">Other filters</a>
+- <a href="#" onclick="scrollToFilter(event, 'array-filters-section')">Array filters</a>
+- <a href="#" onclick="scrollToFilter(event, 'math-filters-section')">Math filters</a>
+- <a href="#" onclick="scrollToFilter(event, 'string-filters-section')">String filters</a>
+- <a href="#" onclick="scrollToFilter(event, 'filters-section')">Other filters</a>
 
 You can see the list of filters for each type in their respective sections on the side menu.

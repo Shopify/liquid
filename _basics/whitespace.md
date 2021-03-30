@@ -89,7 +89,7 @@ If you don't want any of your tags to print whitespace, as a general rule you ca
 
 ## Avoiding whitespace without hyphens {%- include version-badge.html version="5.0.0" %}
 
-If you use the [`liquid`]({{ '/tags/template#liquid500' | prepend: site.baseurl }}) tag with the `echo` keyword, you can avoid whitespace without adding hyphens throughout the Liquid code:
+If you use the [`liquid`]({{ '/tags/template#liquid' | prepend: site.baseurl }}) tag with the `echo` keyword, you can avoid whitespace without adding hyphens throughout the Liquid code:
 
 ```liquid
 {%- raw -%}
