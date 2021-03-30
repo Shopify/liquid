@@ -106,7 +106,8 @@ body {
 
 .sidebar__nav-interior {
   height: 100%;
-  padding: $spacing-unit;
+  // Add double padding at the bottom for a better experience
+  padding: $spacing-unit $spacing-unit ($spacing-unit * 2);
 }
 
 .section__header {
