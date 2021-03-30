@@ -153,7 +153,7 @@ In the example above, the `ft_product` variable in the rendered template will ho
 
 ### Rendering iteratively using `for`
 
-A template can be rendered once for each value of an enumerable object by using the `for` and `as` parameters.
+A template can be rendered once for each value of an enumerable object by using the `for` and `as` parameters. The `as` parameter is optional, and if missing, it assumes the template name as the variable name.
 
 ```liquid
 {%- raw -%}
