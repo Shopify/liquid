@@ -149,9 +149,7 @@ In the example above, the template will be rendered once for each variant of the
 
 When using the `for` parameter, the [`forloop`](https://shopify.dev/docs/themes/liquid/reference/objects/for-loops) object is accessible within the rendered template.
 
-## include
-
-_The `include` tag is deprecated; please use [`render`](#render) instead._
+## include {%- include version-badge.html version="5.0.0" deprecated=true %}
 
 Insert the rendered content of another template within the current template.
 
