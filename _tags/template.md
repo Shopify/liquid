@@ -93,7 +93,7 @@ If you need to output data, use `echo` _(described below)_ instead of closing an
 
 ## echo {%- include version-badge.html version="5.0.0" %}
 
-Outputs an expression in the rendered HTML. This is identical to wrapping an expression in `{% raw %}{{{% endraw %}` and `{% raw %}}}{% endraw %}`, but works inside [`liquid`](#liquid) tags and supports [filters]({{ "/basics/introduction/#filters" | prepend: site.baseurl }}).
+Outputs an expression in the rendered HTML. This is identical to wrapping an expression in `{% raw %}{{{% endraw %}` and `{% raw %}}}{% endraw %}`, but works inside [`liquid`](#liquid500) tags and supports [filters]({{ "/basics/introduction/#intro-filters" | prepend: site.baseurl }}).
 
 <p class="code-label">Input</p>
 ```liquid
@@ -176,6 +176,6 @@ Insert the rendered content of another template within the current template.
 {% endraw %}
 ```
 
-The `include` tag works similarly to the [`render`](#render) tag, but it allows the code inside of the rendered template to access and overwrite the variables within its parent template. The `include` tag has been deprecated because the way that it handles variables reduces performance and makes Liquid code harder to both read and maintain.
+The `include` tag works similarly to the [`render`](#render500) tag, but it allows the code inside of the rendered template to access and overwrite the variables within its parent template. The `include` tag has been deprecated because the way that it handles variables reduces performance and makes Liquid code harder to both read and maintain.
 
-Note that when a template is rendered using the [`render`](#render) tag, the `include` tag cannot be used within the template.
+Note that when a template is rendered using the [`render`](#render500) tag, the `include` tag cannot be used within the template.

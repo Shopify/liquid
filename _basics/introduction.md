@@ -4,9 +4,9 @@ description: An overview of objects, tags, and filters in the Liquid template la
 redirect_from: /basics/
 ---
 
-Liquid uses a combination of [**objects**](#objects), [**tags**](#tags), and [**filters**](#filters) inside **template files** to display dynamic content.
+Liquid uses a combination of [**objects**](#intro-objects), [**tags**](#intro-tags), and [**filters**](#intro-filters) inside **template files** to display dynamic content.
 
-## Objects
+<h2 id="intro-objects">Objects</h2>
 
 **Objects** contain the content that Liquid displays on a page. Objects and variables are displayed when enclosed in double curly braces: `{% raw %}{{{% endraw %}` and `{% raw %}}}{% endraw %}`.
 
@@ -24,7 +24,7 @@ Liquid uses a combination of [**objects**](#objects), [**tags**](#tags), and [**
 
 In this case, Liquid is rendering the content of the `title` property of the `page` object, which contains the text `{{ page.title }}`.
 
-## Tags
+<h2 id="intro-tags">Tags</h2>
 
 **Tags** create the logic and control flow for templates. The curly brace percentage delimiters `{% raw %}{%{% endraw %}` and `{% raw %}%}{% endraw %}` and the text that they surround do not produce any visible output when the template is rendered. This lets you assign variables and create conditions or loops without showing any of the Liquid logic on the page.
 
@@ -51,7 +51,7 @@ Tags can be categorized into various types:
 
 You can read more about each type of tag in their respective sections.
 
-## Filters
+<h2 id="intro-filters">Filters</h2>
 
 **Filters** change the output of a Liquid object or variable. They are used within double curly braces `{% raw %}{{ }}{% endraw %}` and [variable assignment]({{ "/tags/variable/" | prepend: site.baseurl }}), and are separated by a pipe character `|`.
 
