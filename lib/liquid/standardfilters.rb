@@ -268,6 +268,11 @@ module Liquid
       input.to_s.sub(string.to_s, replacement.to_s)
     end
 
+    # Replace the last occurrences of a string with another
+    def replace_last(input, string, replacement = '')
+      input.to_s.reserve.sub(string.to_s.reserve, replacement.to_s.reserve).reserve
+    end
+
     # remove a substring
     def remove(input, string)
       input.to_s.gsub(string.to_s, '')
@@ -276,6 +281,11 @@ module Liquid
     # remove the first occurrences of a substring
     def remove_first(input, string)
       input.to_s.sub(string.to_s, '')
+    end
+
+    # remove the last occurences of a substring
+    def remove_last(input, string)
+      input.to_s.reverse.sub(string.to_s.reverse, '').reverse
     end
 
     # add one string to another
