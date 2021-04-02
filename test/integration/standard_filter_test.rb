@@ -503,10 +503,8 @@ class StandardFiltersTest < Minitest::Test
   def test_replace
     assert_equal('2 2 2 2', @filters.replace('1 1 1 1', '1', 2))
     assert_equal('2 2 2 2', @filters.replace('1 1 1 1', 1, 2))
-    assert_equal('2 1 1 1', @filters.replace_first('1 1 1 1', '1', 2))
     assert_equal('2 1 1 1', @filters.replace_first('1 1 1 1', 1, 2))
     assert_template_result('2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}")
-    assert_equal('1 1 1 2', @filters.replace_last('1 1 1 1', '1', 2))
     assert_equal('1 1 1 2', @filters.replace_last('1 1 1 1', 1, 2))
     assert_template_result('1 1 1 2', "{{ '1 1 1 1' | replace_last: '1', 2 }}")
   end
@@ -516,8 +514,8 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('   ', @filters.remove("1 1 1 1", 1))
     assert_equal('a a a', @filters.remove_first("a a a a", 'a '))
     assert_equal(' 1 1 1', @filters.remove_first("1 1 1 1", 1))
-    assert_template_result('a a a', "{{ 'a a a a' | remove_first: 'a ' }}")
-    assert_equal('a a a', @filters.remove_last("a a a a", ' a'))
+    assert_template_result('b a a', "{{ 'a b a a' | remove_first: 'a ' }}")
+    assert_equal('a a b', @filters.remove_last("a a b a", ' a'))
     assert_equal('1 1 1 ', @filters.remove_last("1 1 1 1", 1))
     assert_template_result('a a a', "{{ 'a a a a' | remove_last: ' a' }}")
   end
