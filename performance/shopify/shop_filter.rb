@@ -14,7 +14,7 @@ module ShopFilter
   end
 
   def script_tag(url)
-    %(<script src="#{url}" type="text/javascript"></script>)
+    %(<script src="#{url}"></script>)
   end
 
   def stylesheet_tag(url, media = "all")
