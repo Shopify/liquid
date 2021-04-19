@@ -18,3 +18,6 @@ AllCops:
 Naming/MethodName:
   Exclude:
     - 'example/server/liquid_servlet.rb'
+
+Layout/BeginEndAlignment:
+  EnforcedStyleAlignWith: start_of_line

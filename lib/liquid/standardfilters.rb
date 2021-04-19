@@ -5,6 +5,7 @@ require 'bigdecimal'
 
 module Liquid
   module StandardFilters
+    MAX_INT = (1 << 31) - 1
     HTML_ESCAPE = {
       '&' => '&amp;',
       '>' => '&gt;',
@@ -93,7 +94,13 @@ module Liquid
       words = Utils.to_integer(words)
       words = 1 if words <= 0
 
-      wordlist = input.split(" ", words + 1)
+      wordlist = begin
+        input.split(" ", words + 1)
+      rescue RangeError
+        raise if words + 1 < MAX_INT
+        # e.g. integer #{words} too big to convert to `int'
+        raise Liquid::ArgumentError, "integer #{words} too big for truncatewords"
+      end
       return input if wordlist.length <= words
 
       wordlist.pop
