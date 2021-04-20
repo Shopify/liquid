@@ -178,6 +178,10 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('one two three...', @filters.truncatewords("one  two\tthree\nfour", 3))
     assert_equal('one two...', @filters.truncatewords("one two three four", 2))
     assert_equal('one...', @filters.truncatewords("one two three four", 0))
+    exception = assert_raises(Liquid::ArgumentError) do
+      @filters.truncatewords("one two three four", 1 << 31)
+    end
+    assert_equal("Liquid error: integer #{1 << 31} too big for truncatewords", exception.message)
   end
 
   def test_strip_html
