@@ -19,5 +19,6 @@ Naming/MethodName:
   Exclude:
     - 'example/server/liquid_servlet.rb'
 
+# Backport https://github.com/Shopify/ruby-style-guide/pull/258
 Layout/BeginEndAlignment:
-  EnforcedStyleAlignWith: start_of_line
+  Enabled: true
