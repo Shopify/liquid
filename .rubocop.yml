@@ -10,7 +10,7 @@ Performance:
   Enabled: true
 
 AllCops:
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.5
   NewCops: disable
   Exclude:
     - 'vendor/bundle/**/*'
