@@ -7,7 +7,7 @@ Shortens a string down to the number of characters passed as an argument. If the
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Ground control to Major Tom." | truncate: 20 }}
 {% endraw %}
 ```
@@ -25,7 +25,7 @@ The length of the second argument counts against the number of characters specif
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Ground control to Major Tom." | truncate: 25, ", and so on" }}
 {% endraw %}
 ```
@@ -41,7 +41,7 @@ You can truncate to the exact number of characters specified by the first argume
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Ground control to Major Tom." | truncate: 20, "" }}
 {% endraw %}
 ```

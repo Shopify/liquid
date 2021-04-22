@@ -12,7 +12,7 @@ Liquid uses a combination of [**objects**](#objects), [**tags**](#tags), and [**
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ page.title }}
 {% endraw %}
 ```
@@ -30,7 +30,7 @@ In this case, Liquid is rendering the content of the `title` property of the `pa
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if user %}
   Hello {{ user.name }}!
 {% endif %}
@@ -57,7 +57,7 @@ You can read more about each type of tag in their respective sections.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "/my/fancy/url" | append: ".html" }}
 {% endraw %}
 ```
@@ -71,7 +71,7 @@ Multiple filters can be used on one output, and are applied from left to right.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "adam!" | capitalize | prepend: "Hello " }}
 {% endraw %}
 ```

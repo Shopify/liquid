@@ -9,7 +9,7 @@ Normally, even if it doesn't print text, any line of Liquid in your template wil
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_variable = "tomato" %}
 {{ my_variable }}
 {% endraw %}
@@ -27,7 +27,7 @@ By including a hyphen in your `assign` closing delimiter, you can strip the whit
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_variable = "tomato" -%}
 {{ my_variable }}
 {% endraw %}
@@ -43,7 +43,7 @@ If you don't want any of your tags to print whitespace, as a general rule you ca
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign username = "John G. Chalmers-Smith" %}
 {% if username and username.size > 10 %}
   Wow, {{ username }} , you have a long name!
@@ -65,7 +65,7 @@ If you don't want any of your tags to print whitespace, as a general rule you ca
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign username = "John G. Chalmers-Smith" -%}
 {%- if username and username.size > 10 -%}
   Wow, {{ username -}} , you have a long name!

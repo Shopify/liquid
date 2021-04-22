@@ -7,7 +7,7 @@ Rounds an input up to the nearest whole number. Liquid tries to convert the inpu
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ 1.2 | ceil }}
 {{ 2.0 | ceil }}
 {{ 183.357 | ceil }}
@@ -25,7 +25,7 @@ Here the input value is a string:
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "3.5" | ceil }}
 {% endraw %}
 ```

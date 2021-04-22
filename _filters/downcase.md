@@ -7,7 +7,7 @@ Makes each character in a string lowercase. It has no effect on strings which ar
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Parker Moore" | downcase }}
 {% endraw %}
 ```
@@ -19,7 +19,7 @@ Makes each character in a string lowercase. It has no effect on strings which ar
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "apple" | downcase }}
 {% endraw %}
 ```

@@ -7,7 +7,7 @@ Rounds a number to the nearest integer or, if a number is passed as an argument,
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ 1.2 | round }}
 {{ 2.7 | round }}
 {{ 183.357 | round: 2 }}

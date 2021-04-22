@@ -7,7 +7,7 @@ Divides a string into an array using the argument as a separator. `split` is com
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
 
 {% for member in beatles %}

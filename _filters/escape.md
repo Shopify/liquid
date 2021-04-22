@@ -7,7 +7,7 @@ Escapes a string by replacing characters with escape sequences (so that the stri
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Have you read 'James & the Giant Peach'?" | escape }}
 {% endraw %}
 ```
@@ -19,7 +19,7 @@ Escapes a string by replacing characters with escape sequences (so that the stri
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Tetsuro Takara" | escape }}
 {% endraw %}
 ```

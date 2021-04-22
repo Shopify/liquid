@@ -12,7 +12,7 @@ All values in Liquid are truthy except `nil` and `false`.
 In the example below, the text "Tobi" is not a boolean, but it is truthy in a conditional:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign name = "Tobi" %}
 
 {% if name %}
@@ -25,7 +25,7 @@ In the example below, the text "Tobi" is not a boolean, but it is truthy in a co
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if page.category %}
   <h1>{{ page.category }}</h1>
 {% endif %}

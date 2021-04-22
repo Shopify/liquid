@@ -7,7 +7,7 @@ Shortens a string down to the number of words passed as an argument. If the spec
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Ground control to Major Tom." | truncatewords: 3 }}
 {% endraw %}
 ```
@@ -23,7 +23,7 @@ Shortens a string down to the number of words passed as an argument. If the spec
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Ground control to Major Tom." | truncatewords: 3, "--" }}
 {% endraw %}
 ```
@@ -39,7 +39,7 @@ You can avoid showing trailing characters by passing a blank string as the secon
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Ground control to Major Tom." | truncatewords: 3, "" }}
 {% endraw %}
 ```

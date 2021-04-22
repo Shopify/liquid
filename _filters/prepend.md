@@ -7,7 +7,7 @@ Adds the specified string to the beginning of another string.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "apples, oranges, and bananas" | prepend: "Some fruit: " }}
 {% endraw %}
 ```
@@ -21,7 +21,7 @@ Adds the specified string to the beginning of another string.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign url = "example.com" %}
 {{ "/index.html" | prepend: url }}
 {% endraw %}

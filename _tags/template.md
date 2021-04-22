@@ -14,7 +14,7 @@ Allows you to leave un-rendered code inside a Liquid template. Any text within t
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign verb = "turned" %}
 {% comment %}
 {% assign verb = "converted" %}
@@ -57,7 +57,7 @@ In Handlebars, {{ this }} will be HTML-escaped, but {{{ that }}} will not.
 Encloses multiple tags within one set of delimiters, to allow writing Liquid logic more concisely.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% liquid
 case section.blocks.size
 when 1
@@ -80,7 +80,7 @@ Outputs an expression in the rendered HTML. This is identical to wrapping an exp
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% liquid
 for product in collection.products
   echo product.title | capitalize
@@ -98,7 +98,7 @@ Hat Shirt Pants
 Insert the rendered content of another template within the current template.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% render "template-name" %}
 {% endraw %}
 ```
@@ -112,7 +112,7 @@ The code within the rendered template does **not** automatically have access to 
 Variables assigned using [variable tags]({{ "/tags/variable/" | prepend: site.baseurl }}) can be passed to a template by listing them as parameters on the `render` tag.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_variable = "apples" %}
 {% render "name", my_variable: my_variable, my_other_variable: "oranges" %}
 {% endraw %}
@@ -121,7 +121,7 @@ Variables assigned using [variable tags]({{ "/tags/variable/" | prepend: site.ba
 One or more objects can be passed to a template.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign featured_product = all_products["product_handle"] %}
 {% render "product", product: featured_product %}
 {% endraw %}
@@ -132,7 +132,7 @@ One or more objects can be passed to a template.
 A single object can be passed to a template by using the `with` and optional `as` parameters.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign featured_product = all_products["product_handle"] %}
 {% render "product" with featured_product as product %}
 {% endraw %}
@@ -145,7 +145,7 @@ In the example above, the `product` variable in the rendered template will hold 
 A template can be rendered once for each value of an enumerable object by using the `for` and optional `as` parameters.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign variants = product.variants %}
 {% render "product_variant" for variants as variant %}
 {% endraw %}
@@ -162,7 +162,7 @@ _The `include` tag is deprecated; please use [`render`](#render) instead._
 Insert the rendered content of another template within the current template.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% include "template-name" %}
 {% endraw %}
 ```

@@ -7,7 +7,7 @@ Returns the last item of an array.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Ground control to Major Tom." | split: " " | last }}
 {% endraw %}
 ```
@@ -19,7 +19,7 @@ Returns the last item of an array.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_array = "zebra, octopus, giraffe, tiger" | split: ", " %}
 
 {{ my_array.last }}
@@ -36,7 +36,7 @@ Returns the last item of an array.
 You can use `last` with dot notation when you need to use the filter inside a tag:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if my_array.last == "tiger" %}
   There goes a tiger!
 {% endif %}

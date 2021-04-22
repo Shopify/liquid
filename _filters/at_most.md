@@ -8,7 +8,7 @@ Limits a number to a maximum value.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ 4 | at_most: 5 }}
 {{ 4 | at_most: 3 }}
 {% endraw %}

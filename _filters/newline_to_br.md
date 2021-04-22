@@ -7,7 +7,7 @@ Inserts an HTML line break (`<br />`) in front of each newline (`\n`) in a strin
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% capture string_with_newlines %}
 Hello
 there

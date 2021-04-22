@@ -7,7 +7,7 @@ Adds the specified string to the end of another string.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "/my/fancy/url" | append: ".html" }}
 {% endraw %}
 ```
@@ -21,7 +21,7 @@ Adds the specified string to the end of another string.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign filename = "/index.html" %}
 {{ "website.com" | append: filename }}
 {% endraw %}

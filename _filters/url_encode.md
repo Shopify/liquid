@@ -7,7 +7,7 @@ Converts any URL-unsafe characters in a string into percent-encoded characters.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "john@liquid.com" | url_encode }}
 {% endraw %}
 ```
@@ -21,7 +21,7 @@ Note that `url_encode` will turn a space into a `+` sign instead of a percent-en
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Tetsuro Takara" | url_encode }}
 {% endraw %}
 ```

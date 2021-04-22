@@ -7,7 +7,7 @@ Multiplies a number by another number.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ 3 | times: 2 }}
 {{ 24 | times: 7 }}
 {{ 183.357 | times: 12 }}

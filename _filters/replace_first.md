@@ -7,7 +7,7 @@ Replaces only the first occurrence of the first argument in a string with the se
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Take my protein pills and put my helmet on" | replace_first: "my", "your" }}
 {% endraw %}
 ```

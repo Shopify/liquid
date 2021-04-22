@@ -9,7 +9,7 @@ String or array indices are numbered starting from 0.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Liquid" | slice: 0 }}
 {% endraw %}
 ```
@@ -21,7 +21,7 @@ String or array indices are numbered starting from 0.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Liquid" | slice: 2 }}
 {% endraw %}
 ```
@@ -33,7 +33,7 @@ String or array indices are numbered starting from 0.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Liquid" | slice: 2, 5 }}
 {% endraw %}
 ```
@@ -47,7 +47,7 @@ Here the input value is an array:
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
 {{ beatles | slice: 1, 2 }}
 {% endraw %}
@@ -63,7 +63,7 @@ If the first argument is a negative number, the indices are counted from the end
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Liquid" | slice: -3, 2 }}
 {% endraw %}
 ```

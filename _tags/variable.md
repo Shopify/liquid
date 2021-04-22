@@ -11,7 +11,7 @@ Creates a new named variable.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_variable = false %}
 {% if my_variable != true %}
   This statement is valid.
@@ -28,7 +28,7 @@ Wrap a value in quotations `"` to save it as a string variable.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign foo = "bar" %}
 {{ foo }}
 {% endraw %}
@@ -46,7 +46,7 @@ Captures the string inside of the opening and closing tags and assigns it to a v
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% capture my_variable %}I am being captured.{% endcapture %}
 {{ my_variable }}
 {% endraw %}
@@ -61,7 +61,7 @@ Using `capture`, you can create complex strings using other variables created wi
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign favorite_food = "pizza" %}
 {% assign age = 35 %}
 
@@ -84,7 +84,7 @@ Creates and outputs a new number variable with initial value `0`. On subsequent 
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% increment my_counter %}
 {% increment my_counter %}
 {% increment my_counter %}
@@ -104,7 +104,7 @@ In the example below, a variable named "var" is created using `assign`. The `inc
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign var = 10 %}
 {% increment var %}
 {% increment var %}
@@ -128,7 +128,7 @@ Creates and outputs a new number variable with initial value `-1`. On subsequent
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% decrement variable %}
 {% decrement variable %}
 {% decrement variable %}

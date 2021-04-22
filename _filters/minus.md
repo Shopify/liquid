@@ -7,7 +7,7 @@ Subtracts a number from another number.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ 4 | minus: 2 }}
 {{ 16 | minus: 4 }}
 {{ 183.357 | minus: 12 }}

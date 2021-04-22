@@ -12,7 +12,7 @@ Executes a block of code only if a certain condition is `true`.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if product.title == "Awesome Shoes" %}
   These shoes are awesome!
 {% endif %}
@@ -30,7 +30,7 @@ The opposite of `if` – executes a block of code only if a certain condition is
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% unless product.title == "Awesome Shoes" %}
   These shoes are not awesome.
 {% endunless %}
@@ -45,7 +45,7 @@ These shoes are not awesome.
 This would be the equivalent of doing the following:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if product.title != "Awesome Shoes" %}
   These shoes are not awesome.
 {% endif %}
@@ -58,7 +58,7 @@ Adds more conditions within an `if` or `unless` block.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- If customer.name = "anonymous" -->
 {% if customer.name == "kevin" %}
   Hey Kevin!
@@ -83,7 +83,7 @@ An optional `else` statement at the end of the case provides code to execute if 
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign handle = "cake" %}
 {% case handle %}
   {% when "cake" %}

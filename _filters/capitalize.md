@@ -7,7 +7,7 @@ Makes the first character of a string capitalized and converts the remaining cha
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "title" | capitalize }}
 {% endraw %}
 ```
@@ -21,7 +21,7 @@ Only the first character of a string is capitalized, so later words are not capi
 
  <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "my GREAT title" | capitalize }}
 {% endraw %}
 ```

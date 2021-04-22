@@ -7,7 +7,7 @@ Combines the items in an array into a single string using the argument as a sepa
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
 
 {{ beatles | join: " and " }}

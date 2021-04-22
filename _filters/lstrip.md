@@ -7,7 +7,7 @@ Removes all whitespace (tabs, spaces, and newlines) from the **left** side of a 
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "          So much room for activities          " | lstrip }}!
 {% endraw %}
 ```

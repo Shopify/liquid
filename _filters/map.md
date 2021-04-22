@@ -9,7 +9,7 @@ In this example, assume the object `site.pages` contains all the metadata for a 
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign all_categories = site.pages | map: "category" %}
 
 {% for item in all_categories %}

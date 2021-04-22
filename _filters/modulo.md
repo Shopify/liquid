@@ -7,7 +7,7 @@ Returns the remainder of a division operation.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ 3 | modulo: 2 }}
 {{ 24 | modulo: 7 }}
 {{ 183.357 | modulo: 12 }}

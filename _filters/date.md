@@ -7,7 +7,7 @@ Converts a timestamp into another date format. The format for this syntax is the
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ article.published_at | date: "%a, %b %d, %y" }}
 {% endraw %}
 ```
@@ -19,7 +19,7 @@ Fri, Jul 17, 15
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ article.published_at | date: "%Y" }}
 {% endraw %}
 ```
@@ -33,7 +33,7 @@ Fri, Jul 17, 15
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "March 14, 2016" | date: "%b %d, %y" }}
 {% endraw %}
 ```
@@ -47,7 +47,7 @@ To get the current time, pass the special word `"now"` (or `"today"`) to `date`.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 This page was last updated at {{ "now" | date: "%Y-%m-%d %H:%M" }}.
 {% endraw %}
 ```
