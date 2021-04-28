@@ -3,7 +3,7 @@ title: Operators
 description: Using operators to perform calculations in the Liquid template language.
 ---
 
-Liquid includes many logical and comparison operators.
+Liquid includes many logical and comparison operators. You can use operators to create logic with [control flow]({{ "/tags/control-flow/" | prepend: site.baseurl }}) tags.
 
 ## Basic operators
 
@@ -47,17 +47,17 @@ Liquid includes many logical and comparison operators.
 For example:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if product.title == "Awesome Shoes" %}
   These shoes are awesome!
 {% endif %}
 {% endraw %}
 ```
 
-You can use multiple operators in a tag:
+You can do multiple comparisons in a tag using the `and` and `or` operators:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if product.type == "Shirt" or product.type == "Shoes" %}
   This is a shirt or a pair of shoes.
 {% endif %}
@@ -69,7 +69,7 @@ You can use multiple operators in a tag:
 `contains` checks for the presence of a substring inside a string.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if product.title contains "Pack" %}
   This product's title contains the word Pack.
 {% endif %}
@@ -79,7 +79,7 @@ You can use multiple operators in a tag:
 `contains` can also check for the presence of a string in an array of strings.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if product.tags contains "Hello" %}
   This product has been tagged with "Hello".
 {% endif %}
@@ -93,7 +93,7 @@ You can use multiple operators in a tag:
 In tags with more than one `and` or `or` operator, operators are checked in order *from right to left*. You cannot change the order of operations using parentheses — parentheses are invalid characters in Liquid and will prevent your tags from working.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if true or false and false %}
   This evaluates to true, since the `and` condition is checked first.
 {% endif %}
@@ -101,7 +101,7 @@ In tags with more than one `and` or `or` operator, operators are checked in orde
 ```
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if true and false and false or true %}
   This evaluates to false, since the tags are checked like this:
 

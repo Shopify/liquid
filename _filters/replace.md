@@ -7,7 +7,7 @@ Replaces every occurrence of the first argument in a string with the second argu
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Take my protein pills and put my helmet on" | replace: "my", "your" }}
 {% endraw %}
 ```

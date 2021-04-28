@@ -4,7 +4,7 @@ description: An overview of control flow and conditional tags in the Liquid temp
 redirect_from: /tags/
 ---
 
-Control flow tags can change the information Liquid shows using programming logic.
+Control flow tags create conditions that decide whether blocks of Liquid code get executed.
 
 ## if
 
@@ -12,7 +12,7 @@ Executes a block of code only if a certain condition is `true`.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if product.title == "Awesome Shoes" %}
   These shoes are awesome!
 {% endif %}
@@ -30,7 +30,7 @@ The opposite of `if` – executes a block of code only if a certain condition is
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% unless product.title == "Awesome Shoes" %}
   These shoes are not awesome.
 {% endunless %}
@@ -45,7 +45,7 @@ These shoes are not awesome.
 This would be the equivalent of doing the following:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if product.title != "Awesome Shoes" %}
   These shoes are not awesome.
 {% endif %}
@@ -58,7 +58,7 @@ Adds more conditions within an `if` or `unless` block.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- If customer.name = "anonymous" -->
 {% if customer.name == "kevin" %}
   Hey Kevin!
@@ -77,16 +77,18 @@ Hey Anonymous!
 
 ## case/when
 
-Creates a switch statement to compare a variable with different values. `case` initializes the switch statement, and `when` compares its values.
+Creates a switch statement to execute a particular block of code when a variable has a specified value. `case` initializes the switch statement, and `when` statements define the various conditions.
+
+An optional `else` statement at the end of the case provides code to execute if none of the conditions are met.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign handle = "cake" %}
 {% case handle %}
   {% when "cake" %}
      This is a cake
-  {% when "cookie" %}
+  {% when "cookie", "biscuit" %}
      This is a cookie
   {% else %}
      This is not a cake nor a cookie

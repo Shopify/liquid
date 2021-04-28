@@ -7,7 +7,7 @@ Removes any HTML tags from a string.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Have <em>you</em> read <strong>Ulysses</strong>?" | strip_html }}
 {% endraw %}
 ```

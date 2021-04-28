@@ -7,7 +7,7 @@ Reverses the order of the items in an array. `reverse` cannot reverse a string.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
 {{ my_array | reverse | join: ", " }}
@@ -21,11 +21,11 @@ Reverses the order of the items in an array. `reverse` cannot reverse a string.
 {{ my_array | reverse | join: ", " }}
 ```
 
-Although `reverse` cannot be used directly on a string, you can split a string into an array, reverse the array, and rejoin it by chaining together filters:
+Although `reverse` cannot be used directly on a string, you can split a string into an array, reverse the array, and rejoin it by chaining together filters.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Ground control to Major Tom." | split: "" | reverse | join: "" }}
 {% endraw %}
 ```

@@ -9,25 +9,15 @@ The result is rounded down to the nearest integer (that is, the [floor]({{ "/fil
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ 16 | divided_by: 4 }}
-{% endraw %}
-```
-
-<p class="code-label">Output</p>
-```text
-{{ 16 | divided_by: 4 }}
-```
-
-<p class="code-label">Input</p>
-```liquid
-{% raw %}
 {{ 5 | divided_by: 3 }}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
+{{ 16 | divided_by: 4 }}
 {{ 5 | divided_by: 3 }}
 ```
 
@@ -39,7 +29,7 @@ For example, here the divisor is an integer:
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ 20 | divided_by: 7 }}
 {% endraw %}
 ```
@@ -53,7 +43,7 @@ Here it is a float:
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ 20 | divided_by: 7.0 }}
 {% endraw %}
 ```
@@ -71,7 +61,7 @@ In this example, we're dividing by a variable that contains an integer, so we ge
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_integer = 7 %}
 {{ 20 | divided_by: my_integer }}
 {% endraw %}
@@ -87,7 +77,7 @@ Here, we [multiply]({{ "/filters/times/" | prepend: site.baseurl }}) the variabl
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_integer = 7 %}
 {% assign my_float = my_integer | times: 1.0 %}
 {{ 20 | divided_by: my_float }}

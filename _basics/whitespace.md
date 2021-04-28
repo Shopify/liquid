@@ -9,7 +9,7 @@ Normally, even if it doesn't print text, any line of Liquid in your template wil
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_variable = "tomato" %}
 {{ my_variable }}
 {% endraw %}
@@ -23,29 +23,30 @@ Notice the blank line before "tomato" in the rendered template:
 {{ my_variable }}
 ```
 
-By including hyphens in your `assign` tag, you can strip the generated whitespace from the rendered template:
+By including a hyphen in your `assign` closing delimiter, you can strip the whitespace following it from the rendered template:
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
-{%- assign my_variable = "tomato" -%}
+{%- raw -%}
+{% assign my_variable = "tomato" -%}
 {{ my_variable }}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-tomato
+{% assign my_variable = "tomato" -%}
+{{ my_variable }}
 ```
 
 If you don't want any of your tags to print whitespace, as a general rule you can add hyphens to both sides of all your tags (`{% raw %}{%-{% endraw %}` and `{% raw %}-%}{% endraw %}`):
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign username = "John G. Chalmers-Smith" %}
 {% if username and username.size > 10 %}
-  Wow, {{ username }}, you have a long name!
+  Wow, {{ username }} , you have a long name!
 {% else %}
   Hello there!
 {% endif %}
@@ -56,7 +57,7 @@ If you don't want any of your tags to print whitespace, as a general rule you ca
 ```text
 {% assign username = "John G. Chalmers-Smith" %}
 {% if username and username.size > 10 %}
-  Wow, {{ username }}, you have a long name!
+  Wow, {{ username }} , you have a long name!
 {% else %}
   Hello there!
 {% endif %}
@@ -64,17 +65,22 @@ If you don't want any of your tags to print whitespace, as a general rule you ca
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
-{%- assign username = "John G. Chalmers-Smith" -%}
+{%- raw -%}
+{% assign username = "John G. Chalmers-Smith" -%}
 {%- if username and username.size > 10 -%}
-  Wow, {{ username }}, you have a long name!
+  Wow, {{ username -}} , you have a long name!
 {%- else -%}
   Hello there!
-{%- endif -%}
+{%- endif %}
 {% endraw %}
 ```
 
 <p class="code-label">Output with whitespace control</p>
 ```text
-Wow, John G. Chalmers-Smith, you have a long name!
+{% assign username = "John G. Chalmers-Smith" -%}
+{%- if username and username.size > 10 -%}
+  Wow, {{ username -}} , you have a long name!
+{%- else -%}
+  Hello there!
+{%- endif %}
 ```

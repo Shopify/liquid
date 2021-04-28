@@ -3,15 +3,15 @@ title: Iteration
 description: An overview of iteration or "loop" tags in the Liquid template language.
 ---
 
-Iteration tags run blocks of code repeatedly.
+Iteration tags repeatedly run blocks of code.
 
 ## for
 
-Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://help.shopify.com/themes/liquid/objects/for-loops).
+Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://shopify.dev/docs/themes/liquid/reference/objects/for-loops).
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% for product in collection.products %}
   {{ product.title }}
 {% endfor %}
@@ -29,7 +29,7 @@ Specifies a fallback case for a `for` loop which will run if the loop has zero l
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% for product in collection.products %}
   {{ product.title }}
 {% else %}
@@ -49,7 +49,7 @@ Causes the loop to stop iterating when it encounters the `break` tag.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% for i in (1..5) %}
   {% if i == 4 %}
     {% break %}
@@ -71,7 +71,7 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% for i in (1..5) %}
   {% if i == 4 %}
     {% continue %}
@@ -95,11 +95,11 @@ Limits the loop to the specified number of iterations.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- if array = [1,2,3,4,5,6] -->
 {% for item in array limit:2 %}
   {{ item }}
-{% endfor %}
+{% endfor %}
 {% endraw %}
 ```
 
@@ -114,11 +114,11 @@ Begins the loop at the specified index.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- if array = [1,2,3,4,5,6] -->
 {% for item in array offset:2 %}
   {{ item }}
-{% endfor %}
+{% endfor %}
 {% endraw %}
 ```
 
@@ -127,21 +127,43 @@ Begins the loop at the specified index.
 3 4 5 6
 ```
 
-### range
-
-Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
+To start a loop from where the last loop using the same iterator left off, pass the special word `continue`.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
-{% for i in (3..5) %}
+{%- raw -%}
+<!-- if array = [1,2,3,4,5,6] -->
+{% for item in array limit: 3 %}
+  {{ item }}
+{% endfor %}
+{% for item in array limit: 3 offset: continue %}
+  {{ item }}
+{% endfor %}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+1 2 3
+4 5 6
+```
+
+### range
+
+Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers, and can be pulled from a variable.
+
+<p class="code-label">Input</p>
+```liquid
+{%- raw -%}
+{% for i in (3..5) %}
   {{ i }}
-{% endfor %}
+{% endfor %}
 
 {% assign num = 4 %}
-{% for i in (1..num) %}
+{% assign range = (1..num) %}
+{% for i in range %}
   {{ i }}
-{% endfor %}
+{% endfor %}
 {% endraw %}
 ```
 
@@ -157,11 +179,11 @@ Reverses the order of the loop. Note that this flag's spelling is different from
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <!-- if array = [1,2,3,4,5,6] -->
 {% for item in array reversed %}
   {{ item }}
-{% endfor %}
+{% endfor %}
 {% endraw %}
 ```
 
@@ -178,7 +200,7 @@ Loops through a group of strings and prints them in the order that they were pas
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% cycle "one", "two", "three" %}
 {% cycle "one", "two", "three" %}
 {% cycle "one", "two", "three" %}
@@ -188,10 +210,10 @@ Loops through a group of strings and prints them in the order that they were pas
 
 <p class="code-label">Output</p>
 ```text
-one
-two
-three
-one
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
+{% cycle "one", "two", "three" %}
 ```
 
 Uses for `cycle` include:
@@ -205,7 +227,7 @@ Uses for `cycle` include:
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% cycle "first": "one", "two", "three" %}
 {% cycle "second": "one", "two", "three" %}
 {% cycle "second": "one", "two", "three" %}
@@ -215,19 +237,19 @@ Uses for `cycle` include:
 
 <p class="code-label">Output</p>
 ```text
-one
-one
-two
-two
+{% cycle "first": "one", "two", "three" %}
+{% cycle "second": "one", "two", "three" %}
+{% cycle "second": "one", "two", "three" %}
+{% cycle "first": "one", "two", "three" %}
 ```
 
 ## tablerow
 
-Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags.
+Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags. For a full list of attributes available within a `tablerow` loop, see [tablerow (object)](https://shopify.dev/docs/themes/liquid/reference/objects/tablerow).
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 <table>
 {% tablerow product in collection.products %}
   {{ product.title }}
@@ -270,7 +292,7 @@ Defines how many columns the tables should have.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% tablerow product in collection.products cols:2 %}
   {{ product.title }}
 {% endtablerow %}
@@ -309,10 +331,10 @@ Defines how many columns the tables should have.
 
 #### limit
 
-Exits the tablerow after a specific index.
+Exits the `tablerow` loop after a specific index.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% tablerow product in collection.products cols:2 limit:3 %}
   {{ product.title }}
 {% endtablerow %}
@@ -321,10 +343,10 @@ Exits the tablerow after a specific index.
 
 ### offset
 
-Starts the tablerow after a specific index.
+Starts the `tablerow` loop after a specific index.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% tablerow product in collection.products cols:2 offset:3 %}
   {{ product.title }}
 {% endtablerow %}
@@ -336,22 +358,22 @@ Starts the tablerow after a specific index.
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
 
 ```liquid
-{% raw %}
+{%- raw -%}
 <!--variable number example-->
 
 {% assign num = 4 %}
 <table>
-{% tablerow i in (1..num) %}
+{% tablerow i in (1..num) %}
   {{ i }}
-{% endtablerow %}
+{% endtablerow %}
 </table>
 
 <!--literal number example-->
 
 <table>
-{% tablerow i in (3..5) %}
+{% tablerow i in (3..5) %}
   {{ i }}
-{% endtablerow %}
+{% endtablerow %}
 </table>
 {% endraw %}
 ```

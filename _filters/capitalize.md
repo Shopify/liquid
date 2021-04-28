@@ -1,13 +1,13 @@
 ---
 title: capitalize
-description: Liquid filter that capitalizes the first character of a string.
+description: Liquid filter that capitalizes the first character of a string and downcases the remaining characters.
 ---
 
-Makes the first character of a string capitalized.
+Makes the first character of a string capitalized and converts the remaining characters to lowercase.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "title" | capitalize }}
 {% endraw %}
 ```
@@ -17,16 +17,16 @@ Makes the first character of a string capitalized.
 {{ "title" | capitalize }}
 ```
 
-`capitalize` only capitalizes the first character of a string, so later words are not affected:
+Only the first character of a string is capitalized, so later words are not capitalized:
 
  <p class="code-label">Input</p>
 ```liquid
-{% raw %}
-{{ "my great title" | capitalize }}
+{%- raw -%}
+{{ "my GREAT title" | capitalize }}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{ "my great title" | capitalize }}
+{{ "my GREAT title" | capitalize }}
 ```

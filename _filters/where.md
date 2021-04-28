@@ -1,6 +1,7 @@
 ---
 title: where
 description: Liquid filter that selects from arrays.
+version-badge: 4.0.2
 ---
 
 Creates an array including only the objects with a given property value, or any [truthy]({{ "/basics/truthy-and-falsy/#truthy" | prepend: site.baseurl }}) value by default.
@@ -9,7 +10,7 @@ In this example, assume you have a list of products and you want to show your ki
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 All products:
 {% for product in products %}
 - {{ product.title }}
@@ -41,7 +42,7 @@ Say instead you have a list of products and you only want to show those that are
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 All products:
 {% for product in products %}
 - {{ product.title }}
@@ -72,7 +73,7 @@ The `where` filter can also be used to find a single object in an array when com
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign new_shirt = products | where: "type", "shirt" | first %}
 
 Featured product: {{ new_shirt.title }}

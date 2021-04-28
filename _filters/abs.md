@@ -8,33 +8,23 @@ Returns the absolute value of a number.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ -17 | abs }}
-{% endraw %}
-```
-
-<p class="code-label">Output</p>
-```text
-{{ -17 | abs }}
-```
-
-<p class="code-label">Input</p>
-```liquid
-{% raw %}
 {{ 4 | abs }}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
+{{ -17 | abs }}
 {{ 4 | abs }}
 ```
 
-`abs` will also work on a string that only contains a number:
+`abs` will also work on a string that only contains a number.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "-19.86" | abs }}
 {% endraw %}
 ```

@@ -1,6 +1,7 @@
 ---
 title: compact
 description: Liquid filter that removes nil values from an array.
+version-badge: 4.0.0
 ---
 
 Removes any `nil` values from an array.
@@ -9,7 +10,7 @@ For this example, assume `site.pages` is an array of content pages for a website
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign site_categories = site.pages | map: "category" %}
 
 {% for category in site_categories %}
@@ -33,7 +34,7 @@ By using `compact` when we create our `site_categories` array, we can remove all
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign site_categories = site.pages | map: "category" | compact %}
 
 {% for category in site_categories %}

@@ -7,7 +7,7 @@ Returns the number of characters in a string or the number of items in an array.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {{ "Ground control to Major Tom." | size }}
 {% endraw %}
 ```
@@ -19,7 +19,7 @@ Returns the number of characters in a string or the number of items in an array.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
+{%- raw -%}
 {% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
 {{ my_array.size }}
@@ -36,7 +36,7 @@ Returns the number of characters in a string or the number of items in an array.
 You can use `size` with dot notation when you need to use the filter inside a tag:
 
 ```liquid
-{% raw %}
+{%- raw -%}
 {% if site.pages.size > 10 %}
   This is a big website!
 {% endif %}

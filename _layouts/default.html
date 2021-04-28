@@ -55,7 +55,12 @@
           <span aria-hidden="true">{% include icons/three-bars.svg %}</span>
           <span>Menu</span>
         </button>
-        {% if page.title %}<h1>{{ page.title }}</h1>{% endif %}
+        {% if page.title -%}
+          <h1>{{ page.title }}
+          {%- if page.version-badge -%}
+            {%- include version-badge.html version=page.version-badge -%}
+          {%- endif -%}</h1>
+        {%- endif %}
         {{ content }}
       </div>
     </main>
