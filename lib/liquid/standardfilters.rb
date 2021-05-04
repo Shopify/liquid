@@ -190,20 +190,17 @@ module Liquid
     def where(input, property, target_value = nil)
       ary = InputIterator.new(input, context)
 
-      if ary.empty?
-        []
-      elsif ary.first.respond_to?(:[]) && target_value.nil?
-        begin
+      return [] if ary.empty?
+      return [] unless ary.first.respond_to?(:[])
+
+      begin
+        if target_value.nil?
           ary.select { |item| item[property] }
-        rescue TypeError
-          raise_property_error(property)
-        end
-      elsif ary.first.respond_to?(:[])
-        begin
+        else
           ary.select { |item| item[property] == target_value }
-        rescue TypeError
-          raise_property_error(property)
         end
+      rescue TypeError
+        raise_property_error(property)
       end
     end
 
