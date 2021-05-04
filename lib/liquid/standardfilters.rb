@@ -191,11 +191,27 @@ module Liquid
       ary = InputIterator.new(input, context)
 
       return [] if ary.empty?
-      return [] unless ary.first.respond_to?(:[])
+      return nil unless ary.first.respond_to?(:[])
+
+      is_deep = property.include?('.')
+
+      if is_deep
+        deep_properties = property.split('.', -1)
+      end
 
       begin
         if target_value.nil?
-          ary.select { |item| item[property] }
+          if is_deep
+            ary.select do |item|
+              item.dig(*deep_properties)
+            end
+          else
+            ary.select { |item| item[property] }
+          end
+        elsif is_deep
+          ary.select do |item|
+            item.dig(*deep_properties) == target_value
+          end
         else
           ary.select { |item| item[property] == target_value }
         end

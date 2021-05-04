@@ -732,6 +732,23 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(expectation, @filters.where(input, "ok"))
   end
 
+  def test_where_deep
+    input = [
+      { "item" => { "handle" => "alpha", "ok" => true } },
+      { "item" => { "handle" => "beta", "ok" => false } },
+      { "item" => { "handle" => "gamma", "ok" => false } },
+      { "item" => { "handle" => "delta", "ok" => true } },
+    ]
+
+    expectation = [
+      { "item" => { "handle" => "alpha", "ok" => true } },
+      { "item" => { "handle" => "delta", "ok" => true } },
+    ]
+
+    assert_equal(expectation, @filters.where(input, "item.ok", true))
+    assert_equal(expectation, @filters.where(input, "item.ok"))
+  end
+
   def test_where_no_key_set
     input = [
       { "handle" => "alpha", "ok" => true },
