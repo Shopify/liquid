@@ -192,31 +192,17 @@ module Liquid
 
       return [] if ary.empty?
       return nil unless ary.first.respond_to?(:[])
+      return raise_property_error(property) unless ary.first.is_a?(Hash)
+      return raise_property_error(property) unless property.respond_to?(:to_str)
 
-      is_deep = property.include?('.')
-
-      if is_deep
-        deep_properties = property.split('.', -1)
-      end
-
-      begin
-        if target_value.nil?
-          if is_deep
-            ary.select do |item|
-              item.dig(*deep_properties)
-            end
-          else
-            ary.select { |item| item[property] }
-          end
-        elsif is_deep
-          ary.select do |item|
-            item.dig(*deep_properties) == target_value
-          end
-        else
-          ary.select { |item| item[property] == target_value }
+      if target_value.nil?
+        ary.select do |item|
+          item.dig(*property.split('.', -1))
         end
-      rescue TypeError
-        raise_property_error(property)
+      else
+        ary.select do |item|
+          item.dig(*property.split('.', -1)) == target_value
+        end
       end
     end
 
