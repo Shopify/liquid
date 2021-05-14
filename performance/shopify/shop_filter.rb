@@ -18,11 +18,7 @@ module ShopFilter
   end
 
   def stylesheet_tag(url, media = "all")
-    html = []
-    html << %(<link href="#{url}" rel="stylesheet")
-    html << %(media="#{media}") if media != "all"
-    html << "/>"
-    html.join(" ")
+    %(<link href="#{url}" rel="stylesheet" #{%(media="#{media}" ) unless media == 'all'}/>)
   end
 
   def link_to(link, url, title = "")
