@@ -261,7 +261,7 @@ module Liquid
     end
 
     def internal_error(e)
-      # raise and catch to set backtrace and cause on exception
+      # do not raise because raise/rescue is expensive
       exc = Liquid::InternalError.new('internal')
       exc.set_backtrace(caller)
       exc.original_exception = e
