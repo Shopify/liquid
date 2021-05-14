@@ -40,6 +40,10 @@ module Liquid
     end
   end
 
+  class InternalError < Error
+    attr_accessor :original_exception
+  end
+
   ArgumentError       = Class.new(Error)
   ContextError        = Class.new(Error)
   FileSystemError     = Class.new(Error)
@@ -54,5 +58,4 @@ module Liquid
   UndefinedFilter     = Class.new(Error)
   MethodOverrideError = Class.new(Error)
   DisabledError       = Class.new(Error)
-  InternalError       = Class.new(Error)
 end

@@ -230,7 +230,7 @@ class ErrorHandlingTest < Minitest::Test
     exceptions = []
     handler    = ->(e) {
       exceptions << e
-      e.cause
+      e.original_exception
     }
 
     output = template.render({ 'errors' => ErrorDrop.new }, exception_renderer: handler)
@@ -238,7 +238,7 @@ class ErrorHandlingTest < Minitest::Test
     assert_equal('This is a runtime error: runtime error', output)
     assert_equal([Liquid::InternalError], exceptions.map(&:class))
     assert_equal(exceptions, template.errors)
-    assert_equal('#<RuntimeError: runtime error>', exceptions.first.cause.inspect)
+    assert_equal('#<RuntimeError: runtime error>', exceptions.first.original_exception.inspect)
   end
 
   class TestFileSystem
