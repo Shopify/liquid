@@ -107,6 +107,9 @@ template.render!({ 'x' => 1}, { strict_variables: true })
 #=> Liquid::UndefinedVariable: Liquid error: undefined variable y
 ```
 
+### Internal Errors
+Internal errors are errors are raised from your drops, filters or tags. These errors are intentionally opaque so as to avoid exposing internal workings to end users. However, when you define an `exception_renderer`, it will be passed an exception, which will be an instance of `Liquid::InternalError`, and it will have a property `original_exception` which you can use for reporting and debugging.
+
 ### Usage tracking
 
 To help track usages of a feature or code path in production, we have released opt-in usage tracking. To enable this, we provide an empty `Liquid:: Usage.increment` method which you can customize to your needs. The feature is well suited to https://github.com/Shopify/statsd-instrument. However, the choice of implementation is up to you.
