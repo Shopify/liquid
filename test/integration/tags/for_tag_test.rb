@@ -50,6 +50,10 @@ HERE
 
   def test_for_with_variable_range
     assert_template_result(' 1  2  3 ', '{%for item in (1..foobar) %} {{item}} {%endfor%}', "foobar" => 3)
+    assert_template_result(' 1.0  2.0  3.0 ', '{%for item in foobar %} {{item}} {%endfor%}', "foobar" => (1..3.0))
+    assert_template_result(' 1.0  2.0  3.0 ', '{%for item in foobar %} {{item}} {%endfor%}', "foobar" => (1.0..3))
+    assert_template_result(' 1.0  2.0  3.0 ', '{%for item in foobar %} {{item}} {%endfor%}', "foobar" => (1.0..3.0))
+    assert_template_result(' 1.5  2.5 ', '{%for item in foobar %} {{item}} {%endfor%}', "foobar" => (1.5..3))
   end
 
   def test_for_with_hash_value_range
