@@ -4,7 +4,7 @@ description: An overview of objects, tags, and filters in the Liquid template la
 redirect_from: /basics/
 ---
 
-Liquid uses a combination of [**objects**](#objects), [**tags**](#tags), and [**filters**](#filters) inside **template files** to display dynamic content.
+Liquid is a superset of HTML. Liquid uses a combination of [**objects**](#objects), [**tags**](#tags), and [**filters**](#filters) inside **template files** to display dynamic content.
 
 ## Objects
 
