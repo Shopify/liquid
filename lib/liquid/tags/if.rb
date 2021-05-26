@@ -50,7 +50,11 @@ module Liquid
 
     def render_to_output_buffer(context, output)
       @blocks.each do |block|
-        if block.evaluate(context)
+        result = Liquid::Utils.to_liquid_value(
+          block.evaluate(context)
+        )
+
+        if result
           return block.attachment.render_to_output_buffer(context, output)
         end
       end

@@ -11,13 +11,20 @@ module Liquid
     def render_to_output_buffer(context, output)
       # First condition is interpreted backwards ( if not )
       first_block = @blocks.first
-      unless first_block.evaluate(context)
+      result = Liquid::Utils.to_liquid_value(
+        first_block.evaluate(context)
+      )
+
+      unless result
         return first_block.attachment.render_to_output_buffer(context, output)
       end
 
       # After the first condition unless works just like if
       @blocks[1..-1].each do |block|
-        if block.evaluate(context)
+        result = block.evaluate(context)
+        result = result.to_liquid_value if result.is_a?(Liquid::Drop)
+
+        if result
           return block.attachment.render_to_output_buffer(context, output)
         end
       end
