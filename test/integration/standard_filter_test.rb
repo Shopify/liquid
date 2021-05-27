@@ -145,6 +145,16 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('&lt;strong&gt;Hulk&lt;/strong&gt;', @filters.escape_once('&lt;strong&gt;Hulk</strong>'))
   end
 
+  def test_base64_encode
+    assert_equal('b25lIHR3byB0aHJlZQ==', @filters.base64_encode('one two three'))
+    assert_nil(@filters.base64_encode(nil))
+  end
+
+  def test_base64_decode
+    assert_equal('one two three', @filters.base64_decode('b25lIHR3byB0aHJlZQ=='))
+    assert_nil(@filters.base64_decode(nil))
+  end
+
   def test_url_encode
     assert_equal('foo%2B1%40example.com', @filters.url_encode('foo+1@example.com'))
     assert_equal('1', @filters.url_encode(1))
