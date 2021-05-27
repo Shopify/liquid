@@ -40,6 +40,9 @@ module Liquid
       @lookups.each_index do |i|
         key = context.evaluate(@lookups[i])
 
+        # Cast "key" to its liquid value to enable it to act as a primitive value
+        key = Liquid::Utils.to_liquid_value(key)
+
         # If object is a hash- or array-like object we look for the
         # presence of the key and if its available we return it
         if object.respond_to?(:[]) &&
