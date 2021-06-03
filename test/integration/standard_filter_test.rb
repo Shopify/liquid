@@ -145,6 +145,40 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('&lt;strong&gt;Hulk&lt;/strong&gt;', @filters.escape_once('&lt;strong&gt;Hulk</strong>'))
   end
 
+  def test_base64_encode
+    assert_equal('b25lIHR3byB0aHJlZQ==', @filters.base64_encode('one two three'))
+    assert_equal('', @filters.base64_encode(nil))
+  end
+
+  def test_base64_decode
+    assert_equal('one two three', @filters.base64_decode('b25lIHR3byB0aHJlZQ=='))
+
+    exception = assert_raises(Liquid::ArgumentError) do
+      @filters.base64_decode("invalidbase64")
+    end
+
+    assert_equal('Liquid error: invalid base64 provided to base64_decode', exception.message)
+  end
+
+  def test_base64_url_safe_encode
+    assert_equal(
+      'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8',
+      @filters.base64_url_safe_encode('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\|')
+    )
+    assert_equal('', @filters.base64_url_safe_encode(nil))
+  end
+
+  def test_base64_url_safe_decode
+    assert_equal(
+      'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\|',
+      @filters.base64_url_safe_decode('YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8')
+    )
+    exception = assert_raises(Liquid::ArgumentError) do
+      @filters.base64_url_safe_decode("invalidbase64")
+    end
+    assert_equal('Liquid error: invalid base64 provided to base64_url_safe_decode', exception.message)
+  end
+
   def test_url_encode
     assert_equal('foo%2B1%40example.com', @filters.url_encode('foo+1@example.com'))
     assert_equal('1', @filters.url_encode(1))

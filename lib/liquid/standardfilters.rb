@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cgi'
+require 'base64'
 require 'bigdecimal'
 
 module Liquid
@@ -61,6 +62,26 @@ module Liquid
       raise Liquid::ArgumentError, "invalid byte sequence in #{result.encoding}" unless result.valid_encoding?
 
       result
+    end
+
+    def base64_encode(input)
+      Base64.strict_encode64(input.to_s)
+    end
+
+    def base64_decode(input)
+      Base64.strict_decode64(input.to_s)
+    rescue ::ArgumentError
+      raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
+    end
+
+    def base64_url_safe_encode(input)
+      Base64.urlsafe_encode64(input.to_s)
+    end
+
+    def base64_url_safe_decode(input)
+      Base64.urlsafe_decode64(input.to_s)
+    rescue ::ArgumentError
+      raise Liquid::ArgumentError, "invalid base64 provided to base64_url_safe_decode"
     end
 
     def slice(input, offset, length = nil)
