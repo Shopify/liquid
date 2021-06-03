@@ -157,7 +157,7 @@ class StandardFiltersTest < Minitest::Test
       @filters.base64_decode("invalidbase64")
     end
 
-    assert_equal 'Liquid error: invalid base64 provided to base64_decode', exception.message
+    assert_equal('Liquid error: invalid base64 provided to base64_decode', exception.message)
   end
 
   def test_base64_url_safe_encode
@@ -176,7 +176,7 @@ class StandardFiltersTest < Minitest::Test
     exception = assert_raises(Liquid::ArgumentError) do
       @filters.base64_url_safe_decode("invalidbase64")
     end
-    assert_equal 'Liquid error: invalid base64 provided to base64_url_safe_decode', exception.message
+    assert_equal('Liquid error: invalid base64 provided to base64_url_safe_decode', exception.message)
   end
 
   def test_url_encode

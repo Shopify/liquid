@@ -69,11 +69,9 @@ module Liquid
     end
 
     def base64_decode(input)
-      begin
-        Base64.strict_decode64(input.to_s)
-      rescue ::ArgumentError
-        raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
-      end
+      Base64.strict_decode64(input.to_s)
+    rescue ::ArgumentError
+      raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
     end
 
     def base64_url_safe_encode(input)
@@ -81,11 +79,9 @@ module Liquid
     end
 
     def base64_url_safe_decode(input)
-      begin
-        Base64.urlsafe_decode64(input.to_s)
-      rescue ::ArgumentError
-        raise Liquid::ArgumentError, "invalid base64 provided to base64_url_safe_decode"
-      end
+      Base64.urlsafe_decode64(input.to_s)
+    rescue ::ArgumentError
+      raise Liquid::ArgumentError, "invalid base64 provided to base64_url_safe_decode"
     end
 
     def slice(input, offset, length = nil)
