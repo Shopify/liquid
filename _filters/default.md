@@ -41,6 +41,5 @@ To allow variables to return `false` instead of the default value, you can use t
 
 <p class="code-label">Output</p>
 ```text
-
 false
 ```

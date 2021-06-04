@@ -25,5 +25,5 @@ Hello
 there
 {% endcapture -%}
 
-{{ string_with_newlines | newline_to_br }}
+{{ string_with_newlines | newline_to_br -}}
 ```

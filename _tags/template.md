@@ -26,10 +26,10 @@ is {{ verb }} into a comment.
 
 <p class="code-label">Output</p>
 ```liquid
-{% assign verb = "turned" %}
-{% comment %}
-{% assign verb = "converted" %}
-{% endcomment %}
+{% assign verb = "turned" -%}
+{% comment -%}
+{% assign verb = "converted" -%}
+{% endcomment -%}
 Anything you put between {% comment %} and {% endcomment %} tags
 is {{ verb }} into a comment.
 ```
@@ -47,7 +47,7 @@ In Handlebars, {{ this }} will be HTML-escaped, but {{{ that }}} will not.
 
 <p class="code-label">Output</p>
 ```text
-{% raw %}
+{%- raw -%}
 In Handlebars, {{ this }} will be HTML-escaped, but {{{ that }}} will not.
 {% endraw %}
 ```
