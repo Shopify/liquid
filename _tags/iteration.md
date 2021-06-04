@@ -87,6 +87,27 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 1 2 3   5
 ```
 
+### ifchanged
+
+Checks the output of a block of code against the previous iteration and only prints the output if it has changed.
+
+<p class="code-label">Input</p>
+```liquid
+{%- raw -%}
+<!-- if array = [1,1,1,2,2,1,1,3,3,3] -->
+{% for item in array %}
+  {% ifchanged %}
+    {{ item }}
+  {% endifchanged %}
+{% endfor %}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+1 2 1 3
+```
+
 ## for (parameters)
 
 ### limit
