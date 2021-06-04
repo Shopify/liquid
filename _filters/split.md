@@ -1,5 +1,6 @@
 ---
 title: split
+category: array
 description: Liquid filter that splits a string into an array using separators.
 ---
 
@@ -11,16 +12,16 @@ Divides a string into an array using the argument as a separator. `split` is com
 {% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
 
 {% for member in beatles %}
-  {{ member }}
+- {{ member }}
 {% endfor %}
 {% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
+{% assign beatles = "John, Paul, George, Ringo" | split: ", " -%}
 
-{% for member in beatles %}
-  {{ member }}
-{% endfor %}
+{% for member in beatles -%}
+- {{ member }}
+{% endfor -%}
 ```

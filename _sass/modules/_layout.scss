@@ -70,12 +70,16 @@ body {
 .sidebar__logo {
   border-bottom: 1px solid $color-blue-4;
   color: $color-white;
+  background-color: $color-blue-5;
   font-size: $base-font-size * 2;
   font-weight: 300;
   height: $logo-height;
   line-height: $logo-height;
   margin-bottom: 0;
   text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 
 
   // &:after {
@@ -102,8 +106,8 @@ body {
 
 .sidebar__nav-interior {
   height: 100%;
-  // Add a bit more padding at the bottom for consistency.
-  padding: $spacing-unit $spacing-unit ($spacing-unit + $logo-height);
+  // Add double padding at the bottom for a better experience
+  padding: $spacing-unit $spacing-unit ($spacing-unit * 2);
 }
 
 .section__header {
@@ -115,6 +119,14 @@ body {
 
   .section__links + & {
     margin-top: $spacing-unit;
+  }
+
+  &.subheader {
+    font-weight: normal;
+    &::before {
+      content: '▾';
+      margin-right: ($spacing-unit / 2) - 15.5;
+    }
   }
 }
 

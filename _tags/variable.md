@@ -21,7 +21,10 @@ Creates a new named variable.
 
 <p class="code-label">Output</p>
 ```text
-This statement is valid.
+{% assign my_variable = false -%}
+{% if my_variable != true -%}
+  This statement is valid.
+{%- endif %}
 ```
 
 Wrap a value in quotations `"` to save it as a string variable.
@@ -36,7 +39,7 @@ Wrap a value in quotations `"` to save it as a string variable.
 
 <p class="code-label">Output</p>
 ```text
-{% assign foo = "bar" %}
+{% assign foo = "bar" -%}
 {{ foo }}
 ```
 
@@ -54,7 +57,8 @@ Captures the string inside of the opening and closing tags and assigns it to a v
 
 <p class="code-label">Output</p>
 ```text
-I am being captured.
+{% capture my_variable %}I am being captured.{% endcapture -%}
+{{ my_variable }}
 ```
 
 Using `capture`, you can create complex strings using other variables created with `assign`.
@@ -75,7 +79,14 @@ I am {{ age }} and my favorite food is {{ favorite_food }}.
 
 <p class="code-label">Output</p>
 ```text
-I am 35 and my favourite food is pizza.
+{% assign favorite_food = "pizza" -%}
+{% assign age = 35 -%}
+
+{% capture about_me -%}
+I am {{ age }} and my favorite food is {{ favorite_food }}.
+{%- endcapture -%}
+
+{{ about_me }}
 ```
 
 ## increment
@@ -115,7 +126,7 @@ In the example below, a variable named "var" is created using `assign`. The `inc
 
 <p class="code-label">Output</p>
 ```text
-{% assign var = 10 %}
+{% assign var = 10 -%}
 {% increment var %}
 {% increment var %}
 {% increment var %}

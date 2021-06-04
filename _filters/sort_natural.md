@@ -1,5 +1,6 @@
 ---
 title: sort_natural
+category: array
 description: Liquid filter that sorts an array in case-insensitive order.
 version-badge: 4.0.0
 ---
@@ -17,7 +18,7 @@ Sorts items in an array in case-insensitive order.
 
 <p class="code-label">Output</p>
 ```text
-{% assign my_array = "zebra, octopus, giraffe, Sally Snake" | split: ", " %}
+{% assign my_array = "zebra, octopus, giraffe, Sally Snake" | split: ", " -%}
 
 {{ my_array | sort_natural | join: ", " }}
 ```

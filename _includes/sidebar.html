@@ -1,32 +1,46 @@
 <div class="sidebar">
-  <header class="sidebar__logo" role="banner">
-    {% if page.home %}
-      Liquid
-    {% else %}
-      <a href="{{ "/" | relative_url }}">Liquid</a>
-    {% endif %}
-  </header>
-
-  {%- assign sections = "basics, tags, filters" | split: ", " -%}
-
   <nav class="sidebar__nav">
+    <header class="sidebar__logo" role="banner">
+      {% if page.home %}
+        Liquid
+      {% else %}
+        <a href="{{ "/" | relative_url }}">Liquid</a>
+      {% endif %}
+    </header>
+
+    {%- assign sections = "basics, tags, filters" | split: ", " -%}
+
     <div class="sidebar__nav-interior">
       {%- for section in sections -%}
-        <h3 class="section__header" id="{{ section }}-section">{{ section | capitalize }}</h3>
+      {%- if section == "filters" -%}
 
-        <ul class="section__links">
-        {%- for item in site[section] -%}
-            <li class="section__item">
-                <a href="{{ item.url | relative_url }}" class="section__link{% if item.url == page.url %} section__link--is-active{% endif %}">{{ item.title }}</a>
-            </li>
+        {%- assign categories = site[section] | map: "category" | uniq | sort -%}
+        {%- for category in categories -%}
+          {%- if category and category != "aaa" -%}
+            {%- assign header = category | append: " " | append: section -%}
+            {%- assign header_class = "subheader" -%}
+          {%- else -%}
+            {%- assign header = section -%}
+            {%- assign header_class = "" -%}
+          {%- endif -%}
+          {%- assign items = site[section] | where: "category", category | sort: "title" -%}
+          {%- include sidebar-link.html -%}
         {%- endfor -%}
-        </ul>
+
+      {%- else -%}
+
+        {%- assign header = section -%}
+        {%- assign header_class = "" -%}
+        {%- assign items = site[section] -%}
+        {%- include sidebar-link.html -%}
+
+      {%- endif -%}
       {%- endfor -%}
     </div>
 
-    {%- if sections contains page.collection -%}
+    {%- if page.url -%}
     <script type="text/javascript">
-        document.getElementById("{{ page.collection }}").scrollIntoView();
+        document.getElementById("{{ page.url }}").scrollIntoView({block: "center"});
     </script>
     {%- endif -%}
   </nav>

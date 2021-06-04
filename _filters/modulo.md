@@ -1,5 +1,6 @@
 ---
 title: modulo
+category: math
 description: Liquid filter that returns the remainder of a division operation.
 ---
 

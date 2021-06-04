@@ -1,5 +1,6 @@
 ---
 title: strip_newlines
+category: string
 description: Liquid filter that removes newline characters from a string.
 ---
 
@@ -22,7 +23,7 @@ there
 {% capture string_with_newlines %}
 Hello
 there
-{% endcapture %}
+{% endcapture -%}
 
 {{ string_with_newlines | strip_newlines }}
 ```

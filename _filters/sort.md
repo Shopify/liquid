@@ -1,5 +1,6 @@
 ---
 title: sort
+category: array
 description: Liquid filter that sorts an array in case-sensitive order.
 ---
 
@@ -16,7 +17,7 @@ Sorts items in an array in case-sensitive order.
 
 <p class="code-label">Output</p>
 ```text
-{% assign my_array = "zebra, octopus, giraffe, Sally Snake" | split: ", " %}
+{% assign my_array = "zebra, octopus, giraffe, Sally Snake" | split: ", " -%}
 
 {{ my_array | sort | join: ", " }}
 ```

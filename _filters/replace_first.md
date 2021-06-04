@@ -1,5 +1,6 @@
 ---
 title: replace_first
+category: string
 description: Liquid filter that replaces the first occurrence of a given substring in a string.
 ---
 

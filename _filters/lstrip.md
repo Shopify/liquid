@@ -1,5 +1,6 @@
 ---
 title: lstrip
+category: string
 description: Liquid filter that removes all whitespace from the left side of a string.
 ---
 

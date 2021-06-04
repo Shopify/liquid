@@ -1,5 +1,6 @@
 ---
 title: remove_first
+category: string
 description: Liquid filter that removes the first occurence of a given substring from a string.
 ---
 

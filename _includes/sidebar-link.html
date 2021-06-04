@@ -1,0 +1,11 @@
+<h3 id="{{ header | replace: ' ', '-' }}-section" class="section__header {{ header_class }}">{{ header | capitalize }}</h3>
+<ul class="section__links">
+{%- for item in items -%}
+  <li class="section__item">
+    <a href="{{ item.url | relative_url }}"
+       id="{{ item.url }}"
+       class="section__link{% if item.url == page.url %} section__link--is-active{% endif %}"
+       >{{ item.title }}</a>
+  </li>
+{%- endfor -%}
+</ul>

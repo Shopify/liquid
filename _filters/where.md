@@ -1,5 +1,6 @@
 ---
 title: where
+category: array
 description: Liquid filter that selects from arrays.
 version-badge: 4.0.2
 ---
@@ -69,7 +70,7 @@ Available products:
 - Boring sneakers
 ```
 
-The `where` filter can also be used to find a single object in an array when combined with the `first` filter. For example, say you want to show off the shirt in your new fall collection.
+The `where` filter can also be used to find a single object in an array when combined with the `first` or `last` filter. For example, say you want to show off the shirt in your new fall collection.
 
 <p class="code-label">Input</p>
 ```liquid

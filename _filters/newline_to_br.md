@@ -1,5 +1,6 @@
 ---
 title: newline_to_br
+category: string
 description: Liquid filter that converts newlines in a string to HTML <br /> tags.
 ---
 
@@ -22,7 +23,7 @@ there
 {% capture string_with_newlines %}
 Hello
 there
-{% endcapture %}
+{% endcapture -%}
 
-{{ string_with_newlines | newline_to_br }}
+{{ string_with_newlines | newline_to_br -}}
 ```

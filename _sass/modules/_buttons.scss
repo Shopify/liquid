@@ -66,9 +66,15 @@
   font-size: $small-font-size;
   background: none;
   border: none;
-  margin: $spacing-unit / 2 0 $spacing-unit / 2 ($spacing-unit / 4 * -1);
+  margin: $spacing-unit / 2 0;
   padding: $spacing-unit / 4;
   color: $color-slate;
+  position: sticky;
+  top: 0;
+  background-color: $color-white;
+  width: 100%;
+  text-align: left;
+  padding-left: $spacing-unit;
 
   @include tablet-and-up {
     display: none;
