@@ -21,8 +21,9 @@ module Liquid
 
       # After the first condition unless works just like if
       @blocks[1..-1].each do |block|
-        result = block.evaluate(context)
-        result = result.to_liquid_value if result.is_a?(Liquid::Drop)
+        result = Liquid::Utils.to_liquid_value(
+          block.evaluate(context)
+        )
 
         if result
           return block.attachment.render_to_output_buffer(context, output)
