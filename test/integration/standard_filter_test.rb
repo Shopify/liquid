@@ -728,6 +728,8 @@ class StandardFiltersTest < Minitest::Test
     assert_equal("bar", @filters.default([], "bar"))
     assert_equal("bar", @filters.default({}, "bar"))
     assert_template_result('bar', "{{ false | default: 'bar' }}")
+    assert_template_result('bar', "{{ drop | default: 'bar' }}", 'drop' => BooleanDrop.new(false))
+    assert_template_result('Yay', "{{ drop | default: 'bar' }}", 'drop' => BooleanDrop.new(true))
   end
 
   def test_default_handle_false
@@ -738,6 +740,8 @@ class StandardFiltersTest < Minitest::Test
     assert_equal("bar", @filters.default([], "bar", "allow_false" => true))
     assert_equal("bar", @filters.default({}, "bar", "allow_false" => true))
     assert_template_result('false', "{{ false | default: 'bar', allow_false: true }}")
+    assert_template_result('Nay', "{{ drop | default: 'bar', allow_false: true }}", 'drop' => BooleanDrop.new(false))
+    assert_template_result('Yay', "{{ drop | default: 'bar', allow_false: true }}", 'drop' => BooleanDrop.new(true))
   end
 
   def test_cannot_access_private_methods

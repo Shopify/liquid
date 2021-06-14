@@ -468,7 +468,7 @@ module Liquid
     #
     def default(input, default_value = '', options = {})
       options = {} unless options.is_a?(Hash)
-      false_check = options['allow_false'] ? input.nil? : !input
+      false_check = options['allow_false'] ? input.nil? : !Liquid::Utils.to_liquid_value(input)
       false_check || (input.respond_to?(:empty?) && input.empty?) ? default_value : input
     end
 
