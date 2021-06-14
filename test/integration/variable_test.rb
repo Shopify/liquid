@@ -25,6 +25,8 @@ class VariableTest < Minitest::Test
 
   def test_if_tag_calls_to_liquid_value
     assert_template_result('one', '{% if foo == 1 %}one{% endif %}', 'foo' => IntegerDrop.new('1'))
+    assert_template_result('one', '{% if 0 < foo %}one{% endif %}', 'foo' => IntegerDrop.new('1'))
+    assert_template_result('one', '{% if foo > 0 %}one{% endif %}', 'foo' => IntegerDrop.new('1'))
     assert_template_result('true', '{% if foo == true %}true{% endif %}', 'foo' => BooleanDrop.new(true))
     assert_template_result('true', '{% if foo %}true{% endif %}', 'foo' => BooleanDrop.new(true))
 
