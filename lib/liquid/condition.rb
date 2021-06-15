@@ -134,8 +134,8 @@ module Liquid
       # return this as the result.
       return context.evaluate(left) if op.nil?
 
-      left  = context.evaluate(left)
-      right = context.evaluate(right)
+      left  = Liquid::Utils.to_liquid_value(context.evaluate(left))
+      right = Liquid::Utils.to_liquid_value(context.evaluate(right))
 
       operation = self.class.operators[op] || raise(Liquid::ArgumentError, "Unknown operator #{op}")
 
