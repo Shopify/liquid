@@ -14,11 +14,11 @@ module ShopFilter
   end
 
   def script_tag(url)
-    %(<script src="#{url}" type="text/javascript"></script>)
+    %(<script src="#{url}"></script>)
   end
 
   def stylesheet_tag(url, media = "all")
-    %(<link href="#{url}" rel="stylesheet" type="text/css"  media="#{media}"  />)
+    %(<link href="#{url}" rel="stylesheet" #{%(media="#{media}" ) unless media == 'all'}/>)
   end
 
   def link_to(link, url, title = "")
