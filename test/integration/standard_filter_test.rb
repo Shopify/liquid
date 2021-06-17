@@ -656,6 +656,25 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("4", "{{ price | round }}", 'price' => NumberLikeThing.new(4.3))
   end
 
+  def test_format_number
+    assert_template_result "4.60", "{{ input | format_number }}", 'input' => 4.6
+    assert_template_result "4.30", "{{ '4.3' | format_number }}"
+    assert_template_result "4.56", "{{ input | format_number: precision: 2 }}", 'input' => 4.5612
+    assert_template_result "5", "{{ price | format_number: precision: 0 }}", 'price' => NumberLikeThing.new(4.6)
+    assert_template_result "4", "{{ price | format_number: precision: 0 }}", 'price' => NumberLikeThing.new(4.3)
+    assert_template_result "4.30", "{{ price | format_number: precision: 2 }}", 'price' => NumberLikeThing.new(4.3)
+    assert_template_result "5.0000000", "{{ price | format_number: precision: 7 }}", 'price' => 5
+    assert_template_result "50", "{{ price | format_number: precision: -1 }}", 'price' => 50
+    assert_template_result "50.00", "{{ price | format_number: precision: A }}", 'price' => 50
+    assert_template_result "50.00", "{{ price | format_number: precision: '2e' }}", 'price' => 50
+    assert_template_result "50 000 000", "{{ price | format_number: precision: 0 }}", 'price' => 50000000
+    assert_template_result "50 000 000.00", "{{ price | format_number }}", 'price' => 50000000
+    assert_template_result "50000000.00", "{{ price | format_number: precision: 2, delimiter: '', separator: '.'}}", 'price' => 50000000
+    assert_template_result "50$000$000#00", "{{ price | format_number: precision: 2, delimiter: '$', separator:'#'}}", 'price' => 50000000
+    assert_template_result "-50$000$000#00", "{{ price | format_number: precision: 2, delimiter: '$', separator: '#'}}", 'price' => -50000000
+    assert_template_result "-50 000 000.00", "{{ price | format_number: precision: A, delimiter: A, separator: A}}", 'price' => -50000000
+  end
+
   def test_ceil
     assert_template_result("5", "{{ input | ceil }}", 'input' => 4.6)
     assert_template_result("5", "{{ '4.3' | ceil }}")
