@@ -211,19 +211,18 @@ module Liquid
     def where(input, property, target_value = nil)
       ary = InputIterator.new(input, context)
 
-      if ary.empty?
-        []
-      elsif ary.first.respond_to?(:[]) && target_value.nil?
-        begin
-          ary.select { |item| item[property] }
-        rescue TypeError
-          raise_property_error(property)
+      return [] if ary.empty?
+      return nil unless ary.first.respond_to?(:[])
+      return raise_property_error(property) unless ary.first.is_a?(Hash)
+      return raise_property_error(property) unless property.respond_to?(:to_str)
+
+      if target_value.nil?
+        ary.select do |item|
+          item.dig(*property.split('.', -1))
         end
-      elsif ary.first.respond_to?(:[])
-        begin
-          ary.select { |item| item[property] == target_value }
-        rescue TypeError
-          raise_property_error(property)
+      else
+        ary.select do |item|
+          item.dig(*property.split('.', -1)) == target_value
         end
       end
     end
