@@ -7,7 +7,7 @@ module Liquid
       'true' => true,
       'false' => false,
       'blank' => '',
-      'empty' => ''
+      'empty' => [].freeze
     }.freeze
 
     SINGLE_QUOTED_STRING = /\A\s*'(.*)'\s*\z/m
