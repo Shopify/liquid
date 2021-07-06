@@ -50,6 +50,7 @@ HERE
 
   def test_for_with_variable_range
     assert_template_result(' 1  2  3 ', '{%for item in (1..foobar) %} {{item}} {%endfor%}', "foobar" => 3)
+    assert_template_result(' 1  2  3 ', '{%for item in (x..y) %} {{item}} {%endfor%}', "x" => 1.1, "y" => 3.3)
   end
 
   def test_for_with_hash_value_range
