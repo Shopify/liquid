@@ -49,6 +49,14 @@ module Liquid
       @@method_literals[markup] || parse_context.parse_expression(markup)
     end
 
+    def self.strict_parse_expression(parse_context, p)
+      if p.look(:id) && !p.look(:dot, 1) && !p.look(:open_square, 1)
+        parse_expression(parse_context, p.consume)
+      else
+        p.expression
+      end
+    end
+
     attr_reader :attachment, :child_condition
     attr_accessor :left, :operator, :right
 

@@ -29,17 +29,24 @@ class ExpressionTest < Minitest::Test
   def test_range
     assert_equal(1..2, parse_and_eval("(1..2)"))
     assert_equal(3..4, parse_and_eval(" ( 3 .. 4 ) "))
+    assert_equal(0..0, parse_and_eval("('a'..'b')"))
+
+    with_error_mode(:strict) do
+      assert_raises(Liquid::ArgumentError) { parse_and_eval("(1..(1..5))") }
+    end
   end
 
   private
 
   def parse_and_eval(markup, **assigns)
-    if Liquid::Template.error_mode == :strict
-      p = Liquid::Parser.new(markup)
-      markup = p.expression
-      p.consume(:end_of_string)
-    end
-    expression = Liquid::Expression.parse(markup)
+    expression =
+      if Liquid::Template.error_mode == :strict
+        p = Liquid::Parser.new(markup)
+        p.expression
+      else
+        Liquid::Expression.parse(markup)
+      end
+
     context = Liquid::Context.new(assigns)
     context.evaluate(expression)
   end
