@@ -124,7 +124,7 @@ module Liquid
     #      context['var'] = 'hi'
     #   end
     #
-    #   context['var]  #=> nil
+    #   context['var']  #=> nil
     def stack(new_scope = {})
       push(new_scope)
       yield
