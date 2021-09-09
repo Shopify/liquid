@@ -10,7 +10,7 @@ Performance:
   Enabled: true
 
 AllCops:
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.5
   NewCops: disable
   Exclude:
     - 'vendor/bundle/**/*'
@@ -18,3 +18,7 @@ AllCops:
 Naming/MethodName:
   Exclude:
     - 'example/server/liquid_servlet.rb'
+
+# Backport https://github.com/Shopify/ruby-style-guide/pull/258
+Layout/BeginEndAlignment:
+  Enabled: true

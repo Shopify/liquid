@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require 'cgi'
+require 'base64'
 require 'bigdecimal'
 
 module Liquid
   module StandardFilters
+    MAX_INT = (1 << 31) - 1
     HTML_ESCAPE = {
       '&' => '&amp;',
       '>' => '&gt;',
@@ -62,6 +64,26 @@ module Liquid
       result
     end
 
+    def base64_encode(input)
+      Base64.strict_encode64(input.to_s)
+    end
+
+    def base64_decode(input)
+      Base64.strict_decode64(input.to_s)
+    rescue ::ArgumentError
+      raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
+    end
+
+    def base64_url_safe_encode(input)
+      Base64.urlsafe_encode64(input.to_s)
+    end
+
+    def base64_url_safe_decode(input)
+      Base64.urlsafe_decode64(input.to_s)
+    rescue ::ArgumentError
+      raise Liquid::ArgumentError, "invalid base64 provided to base64_url_safe_decode"
+    end
+
     def slice(input, offset, length = nil)
       offset = Utils.to_integer(offset)
       length = length ? Utils.to_integer(length) : 1
@@ -93,7 +115,13 @@ module Liquid
       words = Utils.to_integer(words)
       words = 1 if words <= 0
 
-      wordlist = input.split(" ", words + 1)
+      wordlist = begin
+        input.split(" ", words + 1)
+      rescue RangeError
+        raise if words + 1 < MAX_INT
+        # e.g. integer #{words} too big to convert to `int'
+        raise Liquid::ArgumentError, "integer #{words} too big for truncatewords"
+      end
       return input if wordlist.length <= words
 
       wordlist.pop
@@ -450,7 +478,7 @@ module Liquid
     #
     def default(input, default_value = '', options = {})
       options = {} unless options.is_a?(Hash)
-      false_check = options['allow_false'] ? input.nil? : !input
+      false_check = options['allow_false'] ? input.nil? : !Liquid::Utils.to_liquid_value(input)
       false_check || (input.respond_to?(:empty?) && input.empty?) ? default_value : input
     end
 
