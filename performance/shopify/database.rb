@@ -3,11 +3,19 @@
 require 'yaml'
 
 module Database
+  DATABASE_FILE_PATH = "#{__dir__}/vision.database.yml"
+
   # Load the standard vision toolkit database and re-arrage it to be simply exportable
   # to liquid as assigns. All this is based on Shopify
   def self.tables
     @tables ||= begin
-      db = YAML.load_file("#{__dir__}/vision.database.yml")
+      db =
+        if YAML.respond_to?(:unsafe_load_file) # Only Psych 4+ can use unsafe_load_file
+          # unsafe_load_file is needed for YAML references
+          YAML.unsafe_load_file(DATABASE_FILE_PATH)
+        else
+          YAML.load_file(DATABASE_FILE_PATH)
+        end
 
       # From vision source
       db['products'].each do |product|

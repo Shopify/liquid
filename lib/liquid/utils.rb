@@ -81,5 +81,13 @@ module Liquid
     rescue ::ArgumentError
       nil
     end
+
+    def self.to_liquid_value(obj)
+      # Enable "obj" to represent itself as a primitive value like integer, string, or boolean
+      return obj.to_liquid_value if obj.respond_to?(:to_liquid_value)
+
+      # Otherwise return the object itself
+      obj
+    end
   end
 end

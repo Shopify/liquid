@@ -52,7 +52,14 @@ module Liquid
       @blocks.each do |block|
         if block.else?
           block.attachment.render_to_output_buffer(context, output) if execute_else_block
-        elsif block.evaluate(context)
+          next
+        end
+
+        result = Liquid::Utils.to_liquid_value(
+          block.evaluate(context)
+        )
+
+        if result
           execute_else_block = false
           block.attachment.render_to_output_buffer(context, output)
         end
