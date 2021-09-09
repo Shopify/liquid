@@ -3,6 +3,7 @@
 ## 5.0.2 (unreleased)
 
 ### Features
+* Add `remove_last`, and `replace_last` filters (#1422) [Anders Hagbard]
 * Add `base64_encode`, `base64_decode`, `base64_url_safe_encode`, and `base64_url_safe_decode` filters (#1450) [Daniel Insley]
 
 ### Fixes
