@@ -12,6 +12,8 @@ module Liquid
       end
     end
 
+    attr_reader :start_obj, :end_obj
+
     def initialize(start_obj, end_obj)
       @start_obj = start_obj
       @end_obj   = end_obj
@@ -33,6 +35,12 @@ module Liquid
         input.to_i
       else
         Utils.to_integer(input)
+      end
+    end
+
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children
+        [@node.start_obj, @node.end_obj]
       end
     end
   end
