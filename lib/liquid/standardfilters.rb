@@ -297,7 +297,7 @@ module Liquid
     end
 
     # Replace the last occurrences of a string with another
-    def replace_last(input, string, replacement = '')
+    def replace_last(input, string, replacement)
       start_index = input.to_s.rindex(string.to_s)
 
       if !start_index.nil? && start_index > -1
