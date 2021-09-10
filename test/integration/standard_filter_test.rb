@@ -855,16 +855,20 @@ class StandardFiltersTest < Minitest::Test
       ["foo", 123, nil, true, false, Drop, ["foo"], { foo: "bar" }],
     ]
     test_types.each do |first|
-      test_types.each do |other|
-        (@filters.methods - Object.methods).each do |method|
-          arg_count = @filters.method(method).arity
-          arg_count *= -1 if arg_count < 0
-          inputs = [first]
-          inputs << ([other] * (arg_count - 1)) if arg_count > 1
-          begin
-            @filters.send(method, *inputs)
-          rescue Liquid::ArgumentError, Liquid::ZeroDivisionError
-            nil
+      test_types.each do |second|
+        test_types.each do |third|
+          (@filters.methods - Object.methods).each do |method|
+            arg_count = @filters.method(method).arity
+            arg_count *= -1 if arg_count < 0
+            inputs = [first]
+            inputs << ([second] * (arg_count - 1)) if arg_count > 1
+            inputs << ([third] * (arg_count - 1)) if arg_count > 2
+
+            begin
+              @filters.send(method, *inputs)
+            rescue Liquid::ArgumentError, Liquid::ZeroDivisionError
+              nil
+            end
           end
         end
       end
