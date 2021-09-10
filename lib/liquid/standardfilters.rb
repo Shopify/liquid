@@ -298,7 +298,16 @@ module Liquid
 
     # Replace the last occurrences of a string with another
     def replace_last(input, string, replacement = '')
-      input.to_s.reverse.sub(string.to_s.reverse, replacement.to_s.reverse).reverse
+      start_index = input.to_s.rindex(string.to_s)
+
+      if !start_index.nil? && start_index > -1
+        end_index = start_index + replacement.to_s.length
+
+        duplicate = input.to_s.dup
+        duplicate[start_index, end_index] = replacement.to_s
+
+        duplicate
+      end
     end
 
     # remove a substring
