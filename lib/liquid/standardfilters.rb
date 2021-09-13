@@ -300,7 +300,7 @@ module Liquid
     def replace_last(input, string, replacement)
       start_index = input.to_s.rindex(string.to_s)
 
-      if !start_index.nil?
+      unless start_index.nil?
         end_index = start_index + replacement.to_s.length
 
         duplicate = input.to_s.dup
