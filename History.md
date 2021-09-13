@@ -9,8 +9,6 @@
 ### Fixes
 * Fix support for using a String subclass for the liquid source (#1421) [Dylan Thacker-Smith]
 * Add `ParseTreeVisitor` to `RangeLookup` (#1470) [CP Clermont]
-* Use `Utils.to_liquid_value` in conditionals (#1458, #1457) [Michael Go]
-* Use `to_liquid_value` in `default` filter (#1454) [Michael Go]
 * Translate `RangeError` to `Liquid::Error` for `truncatewords` with large int (#1431) [Dylan Thacker-Smith]
 
 ## 5.0.1 / 2021-03-24
