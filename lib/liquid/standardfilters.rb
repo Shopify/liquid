@@ -216,13 +216,15 @@ module Liquid
       return raise_property_error(property) unless ary.first.is_a?(Hash)
       return raise_property_error(property) unless property.respond_to?(:to_str)
 
+      properties = property.split('.', -1)
+
       if target_value.nil?
         ary.select do |item|
-          item.dig(*property.split('.', -1))
+          item.dig(*properties)
         end
       else
         ary.select do |item|
-          item.dig(*property.split('.', -1)) == target_value
+          item.dig(*properties) == target_value
         end
       end
     end
