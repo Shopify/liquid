@@ -770,6 +770,18 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(expectation, @filters.where(input, "ok"))
   end
 
+  def test_where_string_keys
+    input = [
+      "alpha", "beta", "gamma", "delta"
+    ]
+
+    expectation = [
+      "beta",
+    ]
+
+    assert_equal(expectation, @filters.where(input, "be"))
+  end
+
   def test_where_no_key_set
     input = [
       { "handle" => "alpha", "ok" => true },
