@@ -8,7 +8,7 @@ module Liquid
   #   c = Condition.new(1, '==', 1)
   #   c.evaluate #=> true
   #
-  class Condition #:nodoc:
+  class Condition # :nodoc:
     @@operators = {
       '==' => ->(cond, left, right) {  cond.send(:equal_variables, left, right) },
       '!=' => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
