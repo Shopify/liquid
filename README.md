@@ -69,7 +69,7 @@ Liquid::Template.error_mode = :lax # The default mode, accepts almost anything.
 
 If you want to set the error mode only on specific templates you can pass `:error_mode` as an option to `parse`:
 ```ruby
-Liquid::Template.parse(source, :error_mode => :strict)
+Liquid::Template.parse(source, error_mode: :strict)
 ```
 This is useful for doing things like enabling strict mode only in the theme editor.
 
