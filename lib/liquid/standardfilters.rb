@@ -213,17 +213,23 @@ module Liquid
 
       if ary.empty?
         []
-      elsif ary.first.respond_to?(:[]) && target_value.nil?
-        begin
-          ary.select { |item| item[property] }
+      elsif target_value.nil?
+        ary.select do |item|
+          item[property]
         rescue TypeError
           raise_property_error(property)
+        rescue NoMethodError
+          return nil unless item.respond_to?(:[])
+          raise
         end
-      elsif ary.first.respond_to?(:[])
-        begin
-          ary.select { |item| item[property] == target_value }
+      else
+        ary.select do |item|
+          item[property] == target_value
         rescue TypeError
           raise_property_error(property)
+        rescue NoMethodError
+          return nil unless item.respond_to?(:[])
+          raise
         end
       end
     end
@@ -237,11 +243,14 @@ module Liquid
         ary.uniq
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
-      elsif ary.first.respond_to?(:[])
-        begin
-          ary.uniq { |a| a[property] }
+      else
+        ary.uniq do |item|
+          item[property]
         rescue TypeError
           raise_property_error(property)
+        rescue NoMethodError
+          return nil unless item.respond_to?(:[])
+          raise
         end
       end
     end
@@ -277,11 +286,14 @@ module Liquid
         ary.compact
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
-      elsif ary.first.respond_to?(:[])
-        begin
-          ary.reject { |a| a[property].nil? }
+      else
+        ary.reject do |item|
+          item[property].nil?
         rescue TypeError
           raise_property_error(property)
+        rescue NoMethodError
+          return nil unless item.respond_to?(:[])
+          raise
         end
       end
     end
@@ -486,10 +498,16 @@ module Liquid
     end
 
     def nil_safe_compare(a, b)
-      if !a.nil? && !b.nil?
-        a <=> b
+      result = a <=> b
+
+      if result
+        result
+      elsif a.nil?
+        1
+      elsif b.nil?
+        -1
       else
-        a.nil? ? 1 : -1
+        raise Liquid::ArgumentError, "cannot sort values of incompatible types"
       end
     end
 
