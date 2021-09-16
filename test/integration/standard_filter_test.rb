@@ -772,7 +772,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_where_string_keys
     input = [
-      "alpha", "beta", "gamma", "delta",
+      "alpha", "beta", "gamma", "delta"
     ]
 
     expectation = [
