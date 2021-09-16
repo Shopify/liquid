@@ -785,7 +785,8 @@ class StandardFiltersTest < Minitest::Test
 
     assert_equal(expectation, @filters.where(input, "item.ok", true))
     assert_equal(expectation, @filters.where(input, "item.ok"))
-
+  end
+  
   def test_where_string_keys
     input = [
       "alpha", "beta", "gamma", "delta"
