@@ -298,7 +298,17 @@ module Liquid
 
     # Replace the last occurrences of a string with another
     def replace_last(input, string, replacement)
-      input.to_s.sub(/.*\K#{Regexp.escape(string.to_s)}/, replacement.to_s)
+      input = input.to_s
+      string = string.to_s
+      replacement = replacement.to_s
+
+      start_index = input.rindex(string)
+
+      return input unless start_index
+
+      output = input.dup
+      output[start_index, string.length] = replacement
+      output
     end
 
     # remove a substring
