@@ -308,12 +308,12 @@ module Liquid
 
     # remove the first occurrences of a substring
     def remove_first(input, string)
-      replace_first(input.to_s, string, '')
+      replace_first(input, string, '')
     end
 
     # remove the last occurences of a substring
     def remove_last(input, string)
-      replace_last(input.to_s, string, '')
+      replace_last(input, string, '')
     end
 
     # add one string to another
