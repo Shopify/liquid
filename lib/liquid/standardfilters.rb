@@ -303,7 +303,7 @@ module Liquid
 
     # remove a substring
     def remove(input, string)
-      replace(input.to_s, string, '')
+      replace(input, string, '')
     end
 
     # remove the first occurrences of a substring
