@@ -212,20 +212,28 @@ module Liquid
       ary = InputIterator.new(input, context)
 
       return [] if ary.empty?
-      return nil unless ary.first.respond_to?(:[])
-      return raise_property_error(property) unless ary.first.is_a?(Hash)
-      return raise_property_error(property) unless property.respond_to?(:to_str)
+      return nil if ary.first.nil?
+      return input unless ary.first.respond_to?(:[])
 
-      properties = property.split('.', -1)
+      properties = property.to_s.split('.')
+      is_deep = ary.first.is_a?(Hash) && ary.first.include?(property) == false
 
-      if target_value.nil?
+      begin
         ary.select do |item|
-          item.dig(*properties)
+          value = if item.is_a?(Hash) && is_deep
+            item.dig(*properties)
+          else
+            item[property]
+          end
+
+          if target_value.nil?
+            value
+          else
+            value == target_value
+          end
         end
-      else
-        ary.select do |item|
-          item.dig(*properties) == target_value
-        end
+      rescue TypeError
+        raise_property_error(property)
       end
     end
 
