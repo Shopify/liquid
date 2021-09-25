@@ -231,8 +231,8 @@ module Liquid
     end
 
     def create_variable(token, parse_context)
-      token.scan(ContentOfVariable) do |content|
-        markup = content.first
+      if token =~ ContentOfVariable
+        markup = Regexp.last_match(1)
         return Variable.new(markup, parse_context)
       end
       BlockBody.raise_missing_variable_terminator(token, parse_context)
