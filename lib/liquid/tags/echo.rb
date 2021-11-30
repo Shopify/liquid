@@ -15,15 +15,19 @@ module Liquid
     attr_reader :variable
 
     def initialize(tag_name, markup, parse_context)
+      puts "Initializing Echo tag"
       super
       @variable = Variable.new(markup, parse_context)
     end
 
     def render(context)
+      puts "Render Echo tag"
       @variable.render_to_output_buffer(context, +'')
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      puts "ParseTreeVisitor Echo tag"
+
       def children
         [@node.variable]
       end
