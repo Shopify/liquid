@@ -24,5 +24,6 @@
       render: "Syntax error in tag 'render' - Template name must be a quoted string"
     argument:
       include: "Argument error in tag 'include' - Illegal template name"
+      render: "Argument error in tag 'render' - Illegal template name"
     disabled:
       tag: "usage is not allowed in this context"

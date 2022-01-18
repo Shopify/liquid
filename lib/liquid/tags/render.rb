@@ -3,7 +3,20 @@
 module Liquid
   class Render < Tag
     FOR = 'for'
-    SYNTAX = /(#{QuotedString}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
+    SYNTAX = %r{
+      (
+        ## for {% render "snippet" %}
+        #{Liquid::QuotedString}+ |
+        ## for {% render block %}
+        \A#{Liquid::VariableSegment}+
+      )
+      ## for {% render "snippet" with product as p %}
+      ## or  {% render "snippet" for products p %}
+      (\s+(with|#{Liquid::Render::FOR})\s+(#{Liquid::QuotedFragment}+))?
+      (\s+(?:as)\s+(#{Liquid::VariableSegment}+))?
+      ## variables passed into the tag (e.g. {% render "snippet", var1: value1, var2: value2 %}
+      ## are not matched by this regex and are handled by .initialize
+    }xo
 
     disable_tags "include"
 
@@ -14,13 +27,13 @@ module Liquid
 
       raise SyntaxError, options[:locale].t("errors.syntax.render") unless markup =~ SYNTAX
 
-      template_name = Regexp.last_match(1)
+      @template_name = Regexp.last_match(1)
       with_or_for = Regexp.last_match(3)
       variable_name = Regexp.last_match(4)
 
       @alias_name = Regexp.last_match(6)
       @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
-      @template_name_expr = parse_expression(template_name)
+      @template_name_expr = parse_expression(@template_name)
       @for = (with_or_for == FOR)
 
       @attributes = {}
@@ -34,9 +47,21 @@ module Liquid
     end
 
     def render_tag(context, output)
-      # Though we evaluate this here we will only ever parse it as a string literal.
-      template_name = context.evaluate(@template_name_expr)
-      raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
+      render_target = context.evaluate(@template_name_expr)
+      raise ArgumentError, options[:locale].t("errors.argument.render") unless render_target
+
+      # Check to see if this is a renderable drop
+      if render_target.is_a?(Liquid::RenderableDrop)
+        return render_target.render(context, output)
+      end
+
+      # Otherwise it must be a quoted string
+      unless /#{Liquid::QuotedString}+/.match?(@template_name)
+        output << "<!-- #{options[:locale].t('errors.syntax.render')} -->"
+        return
+      end
+
+      template_name = render_target
 
       partial = PartialCache.load(
         template_name,

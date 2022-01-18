@@ -75,9 +75,8 @@ class RenderTagTest < Minitest::Test
   def test_dynamically_choosen_templates_are_not_allowed
     Liquid::Template.file_system = StubFileSystem.new('snippet' => 'should not be rendered')
 
-    assert_raises(Liquid::SyntaxError) do
-      Liquid::Template.parse("{% assign name = 'snippet' %}{% render name %}")
-    end
+    assert_equal("<!-- Syntax error in tag 'render' - Template name must be a quoted string -->",
+      Liquid::Template.parse("{% assign name = 'snippet' %}{% render name %}").render!)
   end
 
   def test_include_tag_caches_second_read_of_same_partial
