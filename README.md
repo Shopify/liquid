@@ -5,7 +5,7 @@
 
 * [Contributing guidelines](CONTRIBUTING.md)
 * [Version history](History.md)
-* [Liquid documentation from Shopify](http://docs.shopify.com/themes/liquid-basics)
+* [Liquid documentation from Shopify](https://shopify.dev/api/liquid)
 * [Liquid Wiki at GitHub](https://github.com/Shopify/liquid/wiki)
 * [Website](http://liquidmarkup.org/)
 
@@ -56,7 +56,7 @@ For standard use you can just pass it the content of a file and call render with
 
 Setting the error mode of Liquid lets you specify how strictly you want your templates to be interpreted.
 Normally the parser is very lax and will accept almost anything without error. Unfortunately this can make
-it very hard to debug and can lead to unexpected behaviour. 
+it very hard to debug and can lead to unexpected behaviour.
 
 Liquid also comes with a stricter parser that can be used when editing templates to give better error messages
 when templates are invalid. You can enable this new parser like this:
