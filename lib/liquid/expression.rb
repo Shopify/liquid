@@ -10,21 +10,23 @@ module Liquid
       'empty' => ''
     }.freeze
 
-    SINGLE_QUOTED_STRING = /\A\s*'(.*)'\s*\z/m
-    DOUBLE_QUOTED_STRING = /\A\s*"(.*)"\s*\z/m
-    INTEGERS_REGEX       = /\A\s*(-?\d+)\s*\z/
-    FLOATS_REGEX         = /\A\s*(-?\d[\d\.]+)\s*\z/
+    INTEGERS_REGEX       = /\A(-?\d+)\z/
+    FLOATS_REGEX         = /\A(-?\d[\d\.]+)\z/
 
     # Use an atomic group (?>...) to avoid pathological backtracing from
     # malicious input as described in https://github.com/Shopify/liquid/issues/1357
-    RANGES_REGEX         = /\A\s*\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\s*\z/
+    RANGES_REGEX         = /\A\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\z/
 
     def self.parse(markup)
+      return nil unless markup
+
+      markup = markup.strip
+      if (markup.start_with?('"') && markup.end_with?('"')) ||
+         (markup.start_with?("'") && markup.end_with?("'"))
+        return markup[1..-2]
+      end
+
       case markup
-      when nil
-        nil
-      when SINGLE_QUOTED_STRING, DOUBLE_QUOTED_STRING
-        Regexp.last_match(1)
       when INTEGERS_REGEX
         Regexp.last_match(1).to_i
       when RANGES_REGEX
@@ -32,7 +34,6 @@ module Liquid
       when FLOATS_REGEX
         Regexp.last_match(1).to_f
       else
-        markup = markup.strip
         if LITERALS.key?(markup)
           LITERALS[markup]
         else
