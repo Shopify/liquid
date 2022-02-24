@@ -1,5 +1,11 @@
 # Liquid Change Log
 
+## 5.1.1 (unreleased)
+
+### Fixes
+
+* Fix some internal errors in filters from invalid input [Dylan Thacker-Smith]
+
 ## 5.1.0 / 2021-09-09
 
 ### Features

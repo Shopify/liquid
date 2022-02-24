@@ -259,8 +259,8 @@ class StandardFiltersTest < Minitest::Test
       { "price" => 1, "handle" => "gamma" },
       { "price" => 2, "handle" => "epsilon" },
       { "price" => 4, "handle" => "alpha" },
-      { "handle" => "delta" },
       { "handle" => "beta" },
+      { "handle" => "delta" },
     ]
     assert_equal(expectation, @filters.sort(input, "price"))
   end
@@ -852,19 +852,14 @@ class StandardFiltersTest < Minitest::Test
       { 1 => "bar" },
       ["foo", 123, nil, true, false, Drop, ["foo"], { foo: "bar" }],
     ]
-    test_types.each do |first|
-      test_types.each do |other|
-        (@filters.methods - Object.methods).each do |method|
-          arg_count = @filters.method(method).arity
-          arg_count *= -1 if arg_count < 0
-          inputs = [first]
-          inputs << ([other] * (arg_count - 1)) if arg_count > 1
-          begin
-            @filters.send(method, *inputs)
-          rescue Liquid::ArgumentError, Liquid::ZeroDivisionError
-            nil
-          end
-        end
+    StandardFilters.public_instance_methods(false).each do |method|
+      arg_count = @filters.method(method).arity
+      arg_count *= -1 if arg_count < 0
+
+      test_types.repeated_permutation(arg_count) do |args|
+        @filters.send(method, *args)
+      rescue Liquid::Error
+        nil
       end
     end
   end
