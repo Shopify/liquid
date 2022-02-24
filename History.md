@@ -1,6 +1,9 @@
 # Liquid Change Log
 
-## 5.1.1 (unreleased)
+## 5.2.0 (unreleased)
+
+### Features
+* Add `remove_last`, and `replace_last` filters (#1422) [Anders Hagbard]
 
 ### Fixes
 * Fix some internal errors in filters from invalid input (#1476) [Dylan Thacker-Smith]
@@ -8,7 +11,6 @@
 ## 5.1.0 / 2021-09-09
 
 ### Features
-* Add `remove_last`, and `replace_last` filters (#1422) [Anders Hagbard]
 * Add `base64_encode`, `base64_decode`, `base64_url_safe_encode`, and `base64_url_safe_decode` filters (#1450) [Daniel Insley]
 * Introduce `to_liquid_value` in `Liquid::Drop` (#1441) [Michael Go]
 
