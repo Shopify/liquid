@@ -542,35 +542,27 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('b b b b', @filters.replace('a a a a', 'a', 'b'))
     assert_equal('2 2 2 2', @filters.replace('1 1 1 1', 1, 2))
     assert_equal('1 1 1 1', @filters.replace('1 1 1 1', 2, 3))
+    assert_template_result('2 2 2 2', "{{ '1 1 1 1' | replace: '1', 2 }}")
+
     assert_equal('b a a a', @filters.replace_first('a a a a', 'a', 'b'))
     assert_equal('2 1 1 1', @filters.replace_first('1 1 1 1', 1, 2))
     assert_equal('1 1 1 1', @filters.replace_first('1 1 1 1', 2, 3))
+    assert_template_result('2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}")
+
     assert_equal('a a a b', @filters.replace_last('a a a a', 'a', 'b'))
     assert_equal('1 1 1 2', @filters.replace_last('1 1 1 1', 1, 2))
     assert_equal('1 1 1 1', @filters.replace_last('1 1 1 1', 2, 3))
-    assert_template_result('b b b b', "{{ 'a a a a' | replace: 'a', 'b' }}")
-    assert_template_result('2 2 2 2', "{{ '1 1 1 1' | replace: 1, 2 }}")
-    assert_template_result('1 1 1 1', "{{ '1 1 1 1' | replace: 2, 3 }}")
-    assert_template_result('b a a a', "{{ 'a a a a' | replace_first: 'a', 'b' }}")
-    assert_template_result('2 1 1 1', "{{ '1 1 1 1' | replace_first: 1, 2 }}")
-    assert_template_result('a a a a', "{{ 'a a a a' | replace_first: 'b', 'c' }}")
-    assert_template_result('a a a b', "{{ 'a a a a' | replace_last: 'a', 'b' }}")
-    assert_template_result('1 1 1 2', "{{ '1 1 1 1' | replace_last: 1, 2 }}")
-    assert_template_result('a a a a', "{{ 'a a a a' | replace_last: 'b', 'c' }}")
+    assert_template_result('1 1 1 2', "{{ '1 1 1 1' | replace_last: '1', 2 }}")
   end
 
   def test_remove
     assert_equal('   ', @filters.remove("a a a a", 'a'))
-    assert_equal('   ', @filters.remove("1 1 1 1", 1))
-    assert_equal('b a a', @filters.remove_first("a b a a", 'a '))
-    assert_equal(' 1 1 1', @filters.remove_first("1 1 1 1", 1))
-    assert_equal('a a b', @filters.remove_last("a a b a", ' a'))
-    assert_equal('1 1 1 ', @filters.remove_last("1 1 1 1", 1))
-    assert_template_result('   ', "{{ 'a a a a' | remove: 'a' }}")
     assert_template_result('   ', "{{ '1 1 1 1' | remove: 1 }}")
-    assert_template_result('b a a', "{{ 'a b a a' | remove_first: 'a ' }}")
+
+    assert_equal('b a a', @filters.remove_first("a b a a", 'a '))
     assert_template_result(' 1 1 1', "{{ '1 1 1 1' | remove_first: 1 }}")
-    assert_template_result('a a b', "{{ 'a a b a' | remove_last: ' a' }}")
+
+    assert_equal('a a b', @filters.remove_last("a a b a", ' a'))
     assert_template_result('1 1 1 ', "{{ '1 1 1 1' | remove_last: 1 }}")
   end
 
