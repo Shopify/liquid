@@ -1,5 +1,13 @@
 # Liquid Change Log
 
+## 5.2.0 (unreleased)
+
+### Features
+* Add `remove_last`, and `replace_last` filters (#1422) [Anders Hagbard]
+
+### Fixes
+* Fix some internal errors in filters from invalid input (#1476) [Dylan Thacker-Smith]
+
 ## 5.1.0 / 2021-09-09
 
 ### Features

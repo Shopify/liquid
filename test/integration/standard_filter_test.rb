@@ -259,8 +259,8 @@ class StandardFiltersTest < Minitest::Test
       { "price" => 1, "handle" => "gamma" },
       { "price" => 2, "handle" => "epsilon" },
       { "price" => 4, "handle" => "alpha" },
-      { "handle" => "delta" },
       { "handle" => "beta" },
+      { "handle" => "delta" },
     ]
     assert_equal(expectation, @filters.sort(input, "price"))
   end
@@ -539,19 +539,31 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_replace
-    assert_equal('2 2 2 2', @filters.replace('1 1 1 1', '1', 2))
+    assert_equal('b b b b', @filters.replace('a a a a', 'a', 'b'))
     assert_equal('2 2 2 2', @filters.replace('1 1 1 1', 1, 2))
-    assert_equal('2 1 1 1', @filters.replace_first('1 1 1 1', '1', 2))
+    assert_equal('1 1 1 1', @filters.replace('1 1 1 1', 2, 3))
+    assert_template_result('2 2 2 2', "{{ '1 1 1 1' | replace: '1', 2 }}")
+
+    assert_equal('b a a a', @filters.replace_first('a a a a', 'a', 'b'))
     assert_equal('2 1 1 1', @filters.replace_first('1 1 1 1', 1, 2))
+    assert_equal('1 1 1 1', @filters.replace_first('1 1 1 1', 2, 3))
     assert_template_result('2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}")
+
+    assert_equal('a a a b', @filters.replace_last('a a a a', 'a', 'b'))
+    assert_equal('1 1 1 2', @filters.replace_last('1 1 1 1', 1, 2))
+    assert_equal('1 1 1 1', @filters.replace_last('1 1 1 1', 2, 3))
+    assert_template_result('1 1 1 2', "{{ '1 1 1 1' | replace_last: '1', 2 }}")
   end
 
   def test_remove
     assert_equal('   ', @filters.remove("a a a a", 'a'))
-    assert_equal('   ', @filters.remove("1 1 1 1", 1))
-    assert_equal('a a a', @filters.remove_first("a a a a", 'a '))
-    assert_equal(' 1 1 1', @filters.remove_first("1 1 1 1", 1))
-    assert_template_result('a a a', "{{ 'a a a a' | remove_first: 'a ' }}")
+    assert_template_result('   ', "{{ '1 1 1 1' | remove: 1 }}")
+
+    assert_equal('b a a', @filters.remove_first("a b a a", 'a '))
+    assert_template_result(' 1 1 1', "{{ '1 1 1 1' | remove_first: 1 }}")
+
+    assert_equal('a a b', @filters.remove_last("a a b a", ' a'))
+    assert_template_result('1 1 1 ', "{{ '1 1 1 1' | remove_last: 1 }}")
   end
 
   def test_pipes_in_string_arguments
@@ -885,19 +897,14 @@ class StandardFiltersTest < Minitest::Test
       { 1 => "bar" },
       ["foo", 123, nil, true, false, Drop, ["foo"], { foo: "bar" }],
     ]
-    test_types.each do |first|
-      test_types.each do |other|
-        (@filters.methods - Object.methods).each do |method|
-          arg_count = @filters.method(method).arity
-          arg_count *= -1 if arg_count < 0
-          inputs = [first]
-          inputs << ([other] * (arg_count - 1)) if arg_count > 1
-          begin
-            @filters.send(method, *inputs)
-          rescue Liquid::ArgumentError, Liquid::ZeroDivisionError
-            nil
-          end
-        end
+    StandardFilters.public_instance_methods(false).each do |method|
+      arg_count = @filters.method(method).arity
+      arg_count *= -1 if arg_count < 0
+
+      test_types.repeated_permutation(arg_count) do |args|
+        @filters.send(method, *args)
+      rescue Liquid::Error
+        nil
       end
     end
   end
