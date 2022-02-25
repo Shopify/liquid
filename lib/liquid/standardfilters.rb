@@ -211,29 +211,29 @@ module Liquid
     def where(input, property, target_value = nil)
       ary = InputIterator.new(input, context)
 
-      return [] if ary.empty?
-      return nil if ary.first.nil?
-      return input unless ary.first.respond_to?(:[])
-
       properties = property.to_s.split('.')
       is_deep = ary.first.is_a?(Hash) && ary.first.include?(property) == false
 
-      begin
-        ary.select do |item|
-          value = if item.is_a?(Hash) && is_deep
-            item.dig(*properties)
-          else
-            item[property]
-          end
+      return [] if ary.empty?
+      raise_property_error(property) unless property.is_a?(String)
 
-          if target_value.nil?
-            value
-          else
-            value == target_value
-          end
+      ary.select do |item|
+        value = if is_deep
+          item.dig(*properties)
+        else
+          item[property]
+        end
+
+        if target_value.nil?
+          value
+        else
+          value == target_value
         end
       rescue TypeError
         raise_property_error(property)
+      rescue NoMethodError
+        return nil unless item.respond_to?(:[])
+        raise
       end
     end
 
@@ -246,11 +246,14 @@ module Liquid
         ary.uniq
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
-      elsif ary.first.respond_to?(:[])
-        begin
-          ary.uniq { |a| a[property] }
+      else
+        ary.uniq do |item|
+          item[property]
         rescue TypeError
           raise_property_error(property)
+        rescue NoMethodError
+          return nil unless item.respond_to?(:[])
+          raise
         end
       end
     end
@@ -286,11 +289,14 @@ module Liquid
         ary.compact
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
-      elsif ary.first.respond_to?(:[])
-        begin
-          ary.reject { |a| a[property].nil? }
+      else
+        ary.reject do |item|
+          item[property].nil?
         rescue TypeError
           raise_property_error(property)
+        rescue NoMethodError
+          return nil unless item.respond_to?(:[])
+          raise
         end
       end
     end
@@ -305,14 +311,34 @@ module Liquid
       input.to_s.sub(string.to_s, replacement.to_s)
     end
 
+    # Replace the last occurrences of a string with another
+    def replace_last(input, string, replacement)
+      input = input.to_s
+      string = string.to_s
+      replacement = replacement.to_s
+
+      start_index = input.rindex(string)
+
+      return input unless start_index
+
+      output = input.dup
+      output[start_index, string.length] = replacement
+      output
+    end
+
     # remove a substring
     def remove(input, string)
-      input.to_s.gsub(string.to_s, '')
+      replace(input, string, '')
     end
 
     # remove the first occurrences of a substring
     def remove_first(input, string)
-      input.to_s.sub(string.to_s, '')
+      replace_first(input, string, '')
+    end
+
+    # remove the last occurences of a substring
+    def remove_last(input, string)
+      replace_last(input, string, '')
     end
 
     # add one string to another
@@ -495,10 +521,16 @@ module Liquid
     end
 
     def nil_safe_compare(a, b)
-      if !a.nil? && !b.nil?
-        a <=> b
+      result = a <=> b
+
+      if result
+        result
+      elsif a.nil?
+        1
+      elsif b.nil?
+        -1
       else
-        a.nil? ? 1 : -1
+        raise Liquid::ArgumentError, "cannot sort values of incompatible types"
       end
     end
 
