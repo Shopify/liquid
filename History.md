@@ -3,6 +3,7 @@
 ## 5.2.0 (unreleased)
 
 ### Features
+* Add deep search in `where` filter (#1436) [Anders Hagbard]
 * Add `remove_last`, and `replace_last` filters (#1422) [Anders Hagbard]
 
 ### Fixes
@@ -12,7 +13,6 @@
 ## 5.1.0 / 2021-09-09
 
 ### Features
-* Add deep search in `where` filter (#1436) [Anders Hagbard]
 * Add `base64_encode`, `base64_decode`, `base64_url_safe_encode`, and `base64_url_safe_decode` filters (#1450) [Daniel Insley]
 * Introduce `to_liquid_value` in `Liquid::Drop` (#1441) [Michael Go]
 
