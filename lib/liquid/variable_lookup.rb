@@ -12,7 +12,7 @@ module Liquid
     end
 
     def initialize(markup)
-      lookups = markup.scan(VariableParser)
+      lookups = tokenize(markup)
 
       name = lookups.shift
       if name =~ SQUARE_BRACKETED
@@ -82,6 +82,16 @@ module Liquid
 
     def state
       [@name, @lookups, @command_flags]
+    end
+
+    private
+
+    def tokenize(markup)
+      if markup.match?(SQUARE_BRACKETED)
+        markup.scan(VariableParser)
+      else
+        markup.split('.')
+      end
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
