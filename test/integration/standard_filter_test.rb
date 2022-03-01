@@ -3,10 +3,6 @@
 
 require 'test_helper'
 
-class Filters
-  include Liquid::StandardFilters
-end
-
 class TestThing
   attr_reader :foo
 
@@ -53,10 +49,13 @@ class NumberLikeThing < Liquid::Drop
 end
 
 class StandardFiltersTest < Minitest::Test
+  Filters = Class.new(Liquid::StrainerTemplate)
+  Filters.add_filter(Liquid::StandardFilters)
+
   include Liquid
 
   def setup
-    @filters = Filters.new
+    @filters = Filters.new(Context.new)
   end
 
   def test_size
