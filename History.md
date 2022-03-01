@@ -1,13 +1,15 @@
 # Liquid Change Log
 
-## 5.2.0 (unreleased)
+## 5.2.0 2021-03-01
 
 ### Features
 * Add `remove_last`, and `replace_last` filters (#1422) [Anders Hagbard]
+* Eagerly cache global filters (#1524) [Jean Boussier]
 
 ### Fixes
 * Fix some internal errors in filters from invalid input (#1476) [Dylan Thacker-Smith]
 * Allow dash in filter kwarg name for consistency with Liquid::C (#1518) [CP Clermont]
+
 
 ## 5.1.0 / 2021-09-09
 
