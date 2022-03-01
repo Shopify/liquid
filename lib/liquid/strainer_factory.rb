@@ -7,25 +7,26 @@ module Liquid
 
     def add_global_filter(filter)
       strainer_class_cache.clear
-      global_filters << filter
+      GlobalCache.add_filter(filter)
     end
 
     def create(context, filters = [])
       strainer_from_cache(filters).new(context)
     end
 
+    GlobalCache = Class.new(StrainerTemplate)
+
     private
 
-    def global_filters
-      @global_filters ||= []
-    end
-
     def strainer_from_cache(filters)
-      strainer_class_cache[filters] ||= begin
-        klass = Class.new(StrainerTemplate)
-        global_filters.each { |f| klass.add_filter(f) }
-        filters.each { |f| klass.add_filter(f) }
-        klass
+      if filters.empty?
+        GlobalCache
+      else
+        strainer_class_cache[filters] ||= begin
+          klass = Class.new(GlobalCache)
+          filters.each { |f| klass.add_filter(f) }
+          klass
+        end
       end
     end
 
