@@ -582,8 +582,9 @@ module Liquid
 
       def each
         @input.each do |e|
+          e = e.respond_to?(:to_liquid) ? e.to_liquid : e
           e.context = @context if e.respond_to?(:context=)
-          yield(e.respond_to?(:to_liquid) ? e.to_liquid : e)
+          yield(e)
         end
       end
     end

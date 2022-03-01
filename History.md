@@ -2,6 +2,9 @@
 
 ## 5.3.0 (unreleased)
 
+### Fixes
+* StandardFilter: Fix missing @context on iterations (#1525) [Thierry Joyal]
+
 ### Deprecation
 * Condition#evaluate to require mandatory context argument in Liquid 6.0.0 (#1527) [Thierry Joyal]
 
