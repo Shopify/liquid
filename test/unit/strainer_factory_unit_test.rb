@@ -52,7 +52,8 @@ class StrainerFactoryUnitTest < Minitest::Test
       /\ALiquid error: wrong number of arguments \((1 for 0|given 1, expected 0)\)\z/,
       exception.message
     )
-    assert_equal(exception.backtrace[0].split(':')[0], __FILE__)
+    source = AccessScopeFilters.instance_method(:public_filter).source_location
+    assert_equal(source.map(&:to_s), exception.backtrace[0].split(':')[0..1])
   end
 
   def test_strainer_only_invokes_public_filter_methods
