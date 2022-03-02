@@ -1,6 +1,6 @@
 # Liquid Change Log
 
-## 5.2.0 2021-03-01
+## 5.2.0 2022-03-01
 
 ### Features
 * Add `remove_last`, and `replace_last` filters (#1422) [Anders Hagbard]
