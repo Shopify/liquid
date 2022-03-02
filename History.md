@@ -1,5 +1,12 @@
 # Liquid Change Log
 
+## 5.2.1 (unreleased)
+
+### Features
+
+### Fixes
+* Liquid::Drop: Expect @context to always be set (#1528) [Thierry Joyal]
+
 ## 5.2.0 2021-03-01
 
 ### Features
