@@ -61,7 +61,7 @@ module Liquid
       @child_condition = nil
     end
 
-    def evaluate(context = Context.new)
+    def evaluate(context = deprecated_default_context)
       condition = self
       result = nil
       loop do
@@ -148,6 +148,12 @@ module Liquid
           raise Liquid::ArgumentError, e.message
         end
       end
+    end
+
+    def deprecated_default_context
+      warn("DEPRECATION WARNING: Condition#evaluate without a context argument is deprecated" \
+        " and will be removed from Liquid 6.0.0.")
+      Context.new
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
