@@ -1,5 +1,10 @@
 # Liquid Change Log
 
+## 5.3.0 (unreleased)
+
+### Deprecation
+* Condition#evaluate to require mandatory context argument in Liquid 6.0.0 (#1527) [Thierry Joyal]
+
 ## 5.2.0 2022-03-01
 
 ### Features
@@ -9,7 +14,6 @@
 ### Fixes
 * Fix some internal errors in filters from invalid input (#1476) [Dylan Thacker-Smith]
 * Allow dash in filter kwarg name for consistency with Liquid::C (#1518) [CP Clermont]
-
 
 ## 5.1.0 / 2021-09-09
 
