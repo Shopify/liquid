@@ -582,8 +582,11 @@ module Liquid
 
       def each
         @input.each do |e|
-          e.context = @context if e.respond_to?(:context=)
-          yield(e.respond_to?(:to_liquid) ? e.to_liquid : e)
+          # TODO: this conversion should occur outside the filter.
+          # This is a change I desire to make but might not make the cut for the current change at hand.
+          e = @context.contextualize(e)
+
+          yield(e)
         end
       end
     end

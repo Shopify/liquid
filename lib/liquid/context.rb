@@ -187,16 +187,11 @@ module Liquid
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.key?(key) }
 
-      variable = if index
+      if index
         lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
       else
         try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
       end
-
-      variable         = variable.to_liquid
-      variable.context = self if variable.respond_to?(:context=)
-
-      variable
     end
 
     def lookup_and_evaluate(obj, key, raise_on_not_found: true)
@@ -204,13 +199,17 @@ module Liquid
         raise Liquid::UndefinedVariable, "undefined variable #{key}"
       end
 
-      value = obj[key]
+      original = obj[key]
 
-      if value.is_a?(Proc) && obj.respond_to?(:[]=)
-        obj[key] = value.arity == 0 ? value.call : value.call(self)
-      else
-        value
+      value = contextualize(original)
+
+      # TODO: I'd like to fold this under the liquid sanitization
+      # Original text from VariableLookup: if its a proc we will replace the entry with the proc
+      if original.is_a?(Proc) && obj.respond_to?(:[]=)
+        obj[key] = value
       end
+
+      value
     end
 
     def with_disabled_tags(tag_names)
@@ -226,6 +225,25 @@ module Liquid
 
     def tag_disabled?(tag_name)
       @disabled_tags.fetch(tag_name, 0) > 0
+    end
+
+    # TODO: Let's think as to how name this.
+    # The strait forward name is to use "to_liquid(object)" but I do not think this fully captures what it do.
+    # Also, "to_liquid" is already used anywhere and is more of a generic name at this point.
+    # When we call "to_liquid" we are "sanitizing" the input?
+    # We also want to "bind" the object to the current rendering "@context".
+    def contextualize(object)
+      if object.is_a?(Proc)
+        object = object.arity == 0 ? object.call : object.call(self)
+      end
+
+      object = object.to_liquid
+
+      # TODO: ideally all contextualized object would define "context=" even if they end up noop-ing it.
+      # For now this is not really a pressing issue to deal with.
+      object.context = self if object.respond_to?(:context=)
+
+      object
     end
 
     protected

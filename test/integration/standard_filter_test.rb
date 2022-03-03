@@ -861,7 +861,7 @@ class StandardFiltersTest < Minitest::Test
       { foo: "bar" },
       [{ "foo" => "bar" }, { "foo" => 123 }, { "foo" => nil }, { "foo" => true }, { "foo" => ["foo", "bar"] }],
       { 1 => "bar" },
-      ["foo", 123, nil, true, false, Drop, ["foo"], { foo: "bar" }],
+      ["foo", 123, nil, true, false, test_drop, test_enum, ["foo"], { foo: "bar" }],
     ]
     StandardFilters.public_instance_methods(false).each do |method|
       arg_count = @filters.method(method).arity
