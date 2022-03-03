@@ -203,8 +203,14 @@ module Liquid
 
       value = contextualize(original)
 
-      # TODO: I'd like to fold this under the liquid sanitization
+      # TODO: This memoization layer knows about the Proc behaviour and it does not put me at ease
+      # Also to note: VariableLookup command flags do not know about it which might be ok
+      #
       # Original text from VariableLookup: if its a proc we will replace the entry with the proc
+      #
+      # Removing original.is_a?(Proc) from condition leads to: FrozenError: can't modify frozen Hash: {}
+      # Removing obj.respond_to?(:[]=) from condition leads to: Test suite passes
+      # obj[key] = value (no conditions): FrozenError + NoMethodError: undefined method `[]=' for <ObjectInContext>
       if original.is_a?(Proc) && obj.respond_to?(:[]=)
         obj[key] = value
       end
