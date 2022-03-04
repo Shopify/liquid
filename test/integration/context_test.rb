@@ -24,7 +24,7 @@ class ContextSensitiveDrop < Liquid::Drop
   end
 end
 
-class Category < Liquid::Drop
+class Category
   attr_accessor :name
 
   def initialize(name)
@@ -36,8 +36,9 @@ class Category < Liquid::Drop
   end
 end
 
-class CategoryDrop
+class CategoryDrop < Liquid::Drop
   attr_accessor :category, :context
+
   def initialize(category)
     @category = category
   end
@@ -405,45 +406,42 @@ class ContextTest < Minitest::Test
   end
 
   def test_lambda_is_called_once
+    @global = 0
+
     @context['callcount'] = proc {
-      @global ||= 0
-      @global  += 1
+      @global += 1
       @global.to_s
     }
 
     assert_equal('1', @context['callcount'])
     assert_equal('1', @context['callcount'])
     assert_equal('1', @context['callcount'])
-
-    @global = nil
   end
 
   def test_nested_lambda_is_called_once
+    @global = 0
+
     @context['callcount'] = { "lambda" => proc {
-                                            @global ||= 0
-                                            @global  += 1
+                                            @global += 1
                                             @global.to_s
                                           } }
 
     assert_equal('1', @context['callcount.lambda'])
     assert_equal('1', @context['callcount.lambda'])
     assert_equal('1', @context['callcount.lambda'])
-
-    @global = nil
   end
 
   def test_lambda_in_array_is_called_once
+    @global = 0
+
     @context['callcount'] = [1, 2, proc {
-                                     @global ||= 0
-                                     @global  += 1
+                                     @global += 1
                                      @global.to_s
                                    }, 4, 5]
 
     assert_equal('1', @context['callcount[2]'])
     assert_equal('1', @context['callcount[2]'])
     assert_equal('1', @context['callcount[2]'])
-
-    @global = nil
   end
 
   def test_access_to_context_from_proc
