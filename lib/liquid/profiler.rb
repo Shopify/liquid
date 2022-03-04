@@ -119,21 +119,33 @@ module Liquid
     def profile_node(template_name, code: nil, line_number: nil)
       timing = Timing.new(code: code, template_name: template_name, line_number: line_number)
       parent_children = @current_children
-      start_time = monotonic_time
+      start_time = process_clock_time
       begin
         @current_children = timing.children
         yield
       ensure
         @current_children = parent_children
-        timing.total_time = monotonic_time - start_time
+        timing.total_time = process_clock_time - start_time
         parent_children << timing
       end
     end
 
     private
 
-    def monotonic_time
-      Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    # Switching clock to achieve desired precision
+    # CLOCK_MONOTONIC
+    #   x86_64-linux => precision of nanoseconds
+    #   arm64-darwin21 => precision of microseconds
+    # CLOCK_UPTIME_RAW
+    #   Only available on MacOS
+    # https://www.rubydoc.info/stdlib/core/Process:clock_gettime
+    def process_clock_time
+      clock = if defined?(Process::CLOCK_UPTIME_RAW)
+        Process::CLOCK_UPTIME_RAW
+      else
+        Process::CLOCK_MONOTONIC
+      end
+      Process.clock_gettime(clock)
     end
   end
 end
