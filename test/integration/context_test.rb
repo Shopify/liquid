@@ -24,7 +24,7 @@ class ContextSensitiveDrop < Liquid::Drop
   end
 end
 
-class Category < Liquid::Drop
+class Category
   attr_accessor :name
 
   def initialize(name)
@@ -36,8 +36,9 @@ class Category < Liquid::Drop
   end
 end
 
-class CategoryDrop
+class CategoryDrop < Liquid::Drop
   attr_accessor :category, :context
+
   def initialize(category)
     @category = category
   end
