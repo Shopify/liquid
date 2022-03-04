@@ -149,6 +149,8 @@ class DropsTest < Minitest::Test
     assert_equal(' carrot ', output)
   end
 
+  # This test succeed in the ruby implementation, but not in liquid-c
+  # See Context#contextualize
   def test_context_drop_array_with_map
     output = Liquid::Template.parse(' {{ contexts | map: "bar" }} ').render!('contexts' => [ContextDrop.new, ContextDrop.new], 'bar' => "carrot")
     assert_equal(' carrotcarrot ', output)

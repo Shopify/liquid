@@ -187,16 +187,11 @@ module Liquid
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.key?(key) }
 
-      variable = if index
+      if index
         lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
       else
         try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
       end
-
-      variable         = variable.to_liquid
-      variable.context = self if variable.respond_to?(:context=)
-
-      variable
     end
 
     def lookup_and_evaluate(obj, key, raise_on_not_found: true)
@@ -206,11 +201,17 @@ module Liquid
 
       value = obj[key]
 
-      if value.is_a?(Proc) && obj.respond_to?(:[]=)
-        obj[key] = value.arity == 0 ? value.call : value.call(self)
-      else
-        value
+      # Skip contextualization and memoization when not found
+      return if value.nil?
+
+      value = contextualize(value)
+
+      # Memoization layer: Proc resolution and other to_liquid computations are persisted
+      if obj.respond_to?(:[]=) && !obj.frozen?
+        obj[key] = value
       end
+
+      value
     end
 
     def with_disabled_tags(tag_names)
@@ -226,6 +227,58 @@ module Liquid
 
     def tag_disabled?(tag_name)
       @disabled_tags.fetch(tag_name, 0) > 0
+    end
+
+    # Convert input objects into liquid aware representations
+    # Also assigns the context (self) through context=
+    def contextualize(object)
+      if object.is_a?(Proc)
+        object = object.arity == 0 ? object.call : object.call(self)
+      end
+
+      # TODO: This is a block of code that needs some extra polish
+      # My goal is to centralize as much as possible the contextualization/sanitization of objects being exchanged
+      #   between the inputs given by the caller and templates being executed.
+      # I desire for Filters to not have to worry about object conversion (eg.: StandardFilters#each)
+      #   Filters implemented outside Shopify/Liquid shouldn't have to worry about this layer of internals
+      #   Using a filter shouldn't create a worry for data leak and missing context
+      # Running `ruby -I test` with the following implementation is successful
+      # Running `rake test` which will also run tests with the liquid-c gem will lead to errors
+      #   This is due to liquid-c optimizing some code paths
+      #   Eg.: https://github.com/Shopify/liquid-c/blame/master/ext/liquid_c/context.h#L44-L45
+      #   We would need to also add the following code in liquid-c
+      # If we were to only consider Array and Hash as special use cases, this might be worth the effort
+      #   Alternatively I think considering Array and Hash as the only two cases of nested objects is not quite right
+      #   It might be better for extension.rb to be responsible for this. Array#to_liquid to return self is somewhat be wrong
+      #   One does not prevent the other, need to make sure the generic implementation works and we can optimize over it
+      # Note: Moving this logic to the different patches in extensions.rb
+      #   Some changes in liquid-c is most likely required
+      #   Liquid-c has early return optimization I have yet to track all code paths it relates to
+      #   if (klass == rb_cString || klass == rb_cArray || klass == rb_cHash)
+      #         return value;
+      if object.is_a?(Array)
+        object = object.map do |obj|
+          contextualize(obj)
+        end
+      elsif object.is_a?(Hash)
+        new_obj = {}
+        object.map do |k, obj|
+          new_obj[k] = contextualize(obj)
+        end
+        object = new_obj
+      else
+        object = object.to_liquid
+
+        # TODO: Ideally all contextualized object would define "context=" even if they perform a noop
+        # We want to ensure non-liquid objects aren't leaked in the context visible to the templates
+        # Having a standard interface is a direction we can take.
+        #   Alternatively, we could impose only a pre-determine array of available type is allowed
+        #   Eg.: String, Integer, Symbol, Liquid::Drop not SomeCustomModelFromTheHostApplication
+        # For now this might not be as pressing issue to deal with
+        object.context = self if object.respond_to?(:context=)
+      end
+
+      object
     end
 
     protected

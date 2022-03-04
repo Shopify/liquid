@@ -417,6 +417,8 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("", '{{ "foo" | map: "inspect" }}')
   end
 
+  # This test succeed in the ruby implementation, but not in liquid-c
+  # See Context#contextualize
   def test_map_calls_to_liquid
     t = TestThing.new
     assert_template_result("woot: 1", '{{ foo | map: "whatever" }}', "foo" => [t])
@@ -433,6 +435,8 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("42", template, "thing" => hash)
   end
 
+  # This test succeed in the ruby implementation, but not in liquid-c
+  # See Context#contextualize
   def test_sort_calls_to_liquid
     t = TestThing.new
     Liquid::Template.parse('{{ foo | sort: "whatever" }}').render("foo" => [t])
@@ -861,7 +865,7 @@ class StandardFiltersTest < Minitest::Test
       { foo: "bar" },
       [{ "foo" => "bar" }, { "foo" => 123 }, { "foo" => nil }, { "foo" => true }, { "foo" => ["foo", "bar"] }],
       { 1 => "bar" },
-      ["foo", 123, nil, true, false, Drop, ["foo"], { foo: "bar" }],
+      ["foo", 123, nil, true, false, test_drop, test_enum, ["foo"], { foo: "bar" }],
     ]
     StandardFilters.public_instance_methods(false).each do |method|
       arg_count = @filters.method(method).arity
