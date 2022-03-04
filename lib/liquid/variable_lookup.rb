@@ -68,9 +68,6 @@ module Liquid
           return nil unless context.strict_variables
           raise Liquid::UndefinedVariable, "undefined variable #{key}"
         end
-
-        # If we are dealing with a drop here we have to
-        object.context = context if object.respond_to?(:context=)
       end
 
       object
