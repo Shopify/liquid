@@ -272,14 +272,36 @@ class StandardTagTest < Minitest::Test
       '{%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %}', assigns)
   end
 
-  def test_size_of_array
-    assigns = { "array" => [1, 2, 3, 4] }
-    assert_template_result('array has 4 elements', "array has {{ array.size }} elements", assigns)
+  def test_command_methods_of_array
+    assigns = { "array" => [11, 22, 33] }
+
+    assert_template_result("3", "{{ array.size }}", assigns)
+
+    assert_template_result("11", "{{ array.first }}", assigns)
+
+    assert_template_result("33", "{{ array.last }}", assigns)
   end
 
-  def test_size_of_hash
-    assigns = { "hash" => { a: 1, b: 2, c: 3, d: 4 } }
-    assert_template_result('hash has 4 elements', "hash has {{ hash.size }} elements", assigns)
+  def test_command_methods_of_hash
+    assigns = { "hash" => { a: 11, b: 22, c: 33 } }
+
+    assert_template_result("3", "{{ hash.size }}", assigns)
+
+    assert_template_result("a11", "{{ hash.first }}", assigns)
+    assert_template_result("a", "{{ hash.first.first }}", assigns)
+    assert_template_result("11", "{{ hash.first.last }}", assigns)
+
+    assert_template_result("", "{{ hash.last }}", assigns)
+  end
+
+  def test_command_methods_with_proc
+    skip("Liquid-C does not properly resolve Procs in with command methods") if ENV['LIQUID_C'] == '1'
+
+    assigns = { "array" => [proc { "test" }] }
+    assert_template_result("test", "{{ array.first }}", assigns)
+
+    assigns = { "hash" => { a: proc { "test" } } }
+    assert_template_result("test", "{{ hash.first.last }}", assigns)
   end
 
   def test_illegal_symbols

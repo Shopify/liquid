@@ -34,6 +34,10 @@ class TestDrop < Liquid::Drop
   def registers
     @context.registers
   end
+
+  def to_s
+    "TestDrop(value:#{@value})"
+  end
 end
 
 class TestModel
@@ -467,10 +471,38 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_map_over_proc
-    drop  = TestDrop.new(value: "testfoo")
+    drop  = TestDrop.new(value: "123")
     p     = proc { drop }
     templ = '{{ procs | map: "value" }}'
-    assert_template_result("testfoo", templ, "procs" => [p])
+    assert_template_result("123", templ, "procs" => [p])
+  end
+
+  def test_join_over_proc
+    drop  = TestDrop.new(value: "123")
+    p     = proc { drop }
+    templ = '{{ procs | join }}'
+    assert_template_result('TestDrop(value:123)', templ, "procs" => [p])
+  end
+
+  def test_sort_over_proc
+    drop  = TestDrop.new(value: "123")
+    p     = proc { drop }
+    templ = '{{ procs | sort: "value" }}'
+    assert_template_result("TestDrop(value:123)", templ, "procs" => [p])
+  end
+
+  def test_where_over_proc
+    drop  = TestDrop.new(value: "123")
+    p     = proc { drop }
+    templ = '{{ procs | where: "value", "123" }}'
+    assert_template_result("TestDrop(value:123)", templ, "procs" => [p])
+  end
+
+  def test_uniq_over_proc
+    drop  = TestDrop.new(value: "123")
+    p     = proc { drop }
+    templ = '{{ procs | uniq }}'
+    assert_template_result("TestDrop(value:123)", templ, "procs" => [p])
   end
 
   def test_map_over_drops_returning_procs
@@ -888,7 +920,7 @@ class StandardFiltersTest < Minitest::Test
       { foo: "bar" },
       [{ "foo" => "bar" }, { "foo" => 123 }, { "foo" => nil }, { "foo" => true }, { "foo" => ["foo", "bar"] }],
       { 1 => "bar" },
-      ["foo", 123, nil, true, false, Drop, ["foo"], { foo: "bar" }],
+      ["foo", 123, nil, true, false, ["foo"], { foo: "bar" }],
     ]
     StandardFilters.public_instance_methods(false).each do |method|
       arg_count = @filters.method(method).arity
