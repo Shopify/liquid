@@ -25,8 +25,24 @@ class TestThing
 end
 
 class TestDrop < Liquid::Drop
-  def test
-    "testfoo"
+  def initialize(value:)
+    @value = value
+  end
+
+  attr_reader :value
+
+  def registers
+    @context.registers
+  end
+end
+
+class TestModel
+  def initialize(value:)
+    @value = value
+  end
+
+  def to_liquid
+    TestDrop.new(value: @value)
   end
 end
 
@@ -362,8 +378,9 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(["foo"], @filters.uniq("foo"))
     assert_equal([1, 3, 2, 4], @filters.uniq([1, 1, 3, 2, 3, 1, 4, 3, 2, 1]))
     assert_equal([{ "a" => 1 }, { "a" => 3 }, { "a" => 2 }], @filters.uniq([{ "a" => 1 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a"))
-    testdrop = TestDrop.new
-    assert_equal([testdrop], @filters.uniq([testdrop, TestDrop.new], 'test'))
+    test_drop = TestDrop.new(value: "test")
+    test_drop_alternate = TestDrop.new(value: "test")
+    assert_equal([test_drop], @filters.uniq([test_drop, test_drop_alternate], 'value'))
   end
 
   def test_uniq_empty_array
@@ -422,6 +439,16 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("woot: 1", '{{ foo | map: "whatever" }}', "foo" => [t])
   end
 
+  def test_map_calls_context=
+    model = TestModel.new(value: "test")
+
+    template = Template.parse('{{ foo | map: "registers" }}')
+    template.registers[:test] = 1234
+    template.assigns['foo'] = [model]
+
+    assert_template_result("{:test=>1234}", template.render!)
+  end
+
   def test_map_on_hashes
     assert_template_result("4217", '{{ thing | map: "foo" | map: "bar" }}',
       "thing" => { "foo" => [{ "bar" => 42 }, { "bar" => 17 }] })
@@ -440,9 +467,9 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_map_over_proc
-    drop  = TestDrop.new
+    drop  = TestDrop.new(value: "testfoo")
     p     = proc { drop }
-    templ = '{{ procs | map: "test" }}'
+    templ = '{{ procs | map: "value" }}'
     assert_template_result("testfoo", templ, "procs" => [p])
   end
 
@@ -838,7 +865,7 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_all_filters_never_raise_non_liquid_exception
-    test_drop = TestDrop.new
+    test_drop = TestDrop.new(value: "test")
     test_drop.context = Context.new
     test_enum = TestEnumerable.new
     test_enum.context = Context.new
