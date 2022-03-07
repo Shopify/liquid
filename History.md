@@ -4,6 +4,7 @@
 
 ### Fixes
 * StandardFilter: Fix missing @context on iterations (#1525) [Thierry Joyal]
+* Consolidate contextualization of inputs via the context (#XXX) [Thierry Joyal]
 
 ### Deprecation
 * Condition#evaluate to require mandatory context argument in Liquid 6.0.0 (#1527) [Thierry Joyal]

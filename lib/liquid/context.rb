@@ -187,16 +187,11 @@ module Liquid
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.key?(key) }
 
-      variable = if index
+      if index
         lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
       else
         try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
       end
-
-      variable         = variable.to_liquid
-      variable.context = self if variable.respond_to?(:context=)
-
-      variable
     end
 
     def lookup_and_evaluate(obj, key, raise_on_not_found: true)
@@ -207,9 +202,9 @@ module Liquid
       value = obj[key]
 
       if value.is_a?(Proc) && obj.respond_to?(:[]=)
-        obj[key] = value.arity == 0 ? value.call : value.call(self)
+        obj[key] = contextualize(value)
       else
-        value
+        contextualize(value)
       end
     end
 
@@ -226,6 +221,20 @@ module Liquid
 
     def tag_disabled?(tag_name)
       @disabled_tags.fetch(tag_name, 0) > 0
+    end
+
+    # Convert input objects into liquid aware representations
+    # Procs will be resolved
+    # Assigns the context (self) through context=
+    def contextualize(object)
+      if object.is_a?(Proc)
+        object = object.arity == 0 ? object.call : object.call(self)
+      end
+
+      object = object.to_liquid
+      object.context = self if object.respond_to?(:context=)
+
+      object
     end
 
     protected
