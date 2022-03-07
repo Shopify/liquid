@@ -3,6 +3,27 @@
 require 'test_helper'
 
 class ProfilerTest < Minitest::Test
+  class TestDrop < Liquid::Drop
+    def initialize(value)
+      super()
+      @value = value
+    end
+
+    def to_s
+      artificial_execution_time
+
+      @value
+    end
+
+    private
+
+    # Monotonic clock precision fluctuate based on the operating system
+    # By introducing a small sleep we ensure ourselves to register a non zero unit of time
+    def artificial_execution_time
+      sleep(Process.clock_getres(Process::CLOCK_MONOTONIC))
+    end
+  end
+
   include Liquid
 
   class ProfilingFileSystem
@@ -198,16 +219,22 @@ class ProfilerTest < Minitest::Test
 
   def test_profiling_supports_self_time
     t = Template.parse("{% for item in collection %} {{ item }} {% endfor %}", profile: true)
-    t.render!("collection" => ["one", "two"])
-    leaf = t.profiler[0].children[0]
+    collection = [
+      TestDrop.new("one"),
+      TestDrop.new("two"),
+    ]
+    output = t.render!("collection" => collection)
+    assert_equal(" one  two ", output)
 
-    assert_operator(leaf.self_time, :>, 0)
+    leaf = t.profiler[0].children[0]
+    assert_operator(leaf.self_time, :>, 0.0)
   end
 
   def test_profiling_supports_total_time
-    t = Template.parse("{% if true %} {% increment test %} {{ test }} {% endif %}", profile: true)
-    t.render!
+    t = Template.parse("{% if true %} {{ test }} {% endif %}", profile: true)
+    output = t.render!("test" => TestDrop.new("one"))
+    assert_equal(" one ", output)
 
-    assert_operator(t.profiler[0].total_time, :>, 0)
+    assert_operator(t.profiler[0].total_time, :>, 0.0)
   end
 end
