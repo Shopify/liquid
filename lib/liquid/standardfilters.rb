@@ -22,7 +22,14 @@ module Liquid
     )
     STRIP_HTML_TAGS = /<.*?>/m
 
-    # Return the size of an array or of an string
+    # @public_docs
+    # @title Size
+    # @syntax The syntax
+    # @summary The summary
+    # @type filter
+    # @category My category
+    # @description
+    #   Return the size of an array or of an string
     def size(input)
       input.respond_to?(:size) ? input.size : 0
     end

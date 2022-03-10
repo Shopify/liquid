@@ -1,14 +1,20 @@
 # frozen_string_literal: true
 
+# @public_docs
 module Liquid
-  # Assign sets a variable in your template.
+  # @public_docs
+  # @title Assign
+  # @syntax The syntax
+  # @summary The summary
+  # @type tag
+  # @description
+  #   Assign sets a variable in your template.
   #
-  #   {% assign foo = 'monkey' %}
+  #     {% assign foo = 'monkey' %}
   #
-  # You can then use the variable later in the page.
+  #   You can then use the variable later in the page.
   #
-  #  {{ foo }}
-  #
+  #     {{ foo }}
   class Assign < Tag
     Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/om
 
