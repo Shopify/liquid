@@ -2,8 +2,7 @@
 
 module Liquid
   class VariableLookup
-    SQUARE_BRACKETED = /\A\[(.*)\]\z/m
-    COMMAND_METHODS  = ['size', 'first', 'last'].freeze
+    COMMAND_METHODS = ['size', 'first', 'last'].freeze
 
     attr_reader :name, :lookups
 
@@ -15,8 +14,8 @@ module Liquid
       lookups = markup.scan(VariableParser)
 
       name = lookups.shift
-      if name =~ SQUARE_BRACKETED
-        name = Expression.parse(Regexp.last_match(1))
+      if name&.start_with?('[') && name&.end_with?(']')
+        name = Expression.parse(name[1..-2])
       end
       @name = name
 
@@ -25,8 +24,8 @@ module Liquid
 
       @lookups.each_index do |i|
         lookup = lookups[i]
-        if lookup =~ SQUARE_BRACKETED
-          lookups[i] = Expression.parse(Regexp.last_match(1))
+        if lookup&.start_with?('[') && lookup&.end_with?(']')
+          lookups[i] = Expression.parse(lookup[1..-2])
         elsif COMMAND_METHODS.include?(lookup)
           @command_flags |= 1 << i
         end
