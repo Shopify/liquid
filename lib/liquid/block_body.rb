@@ -7,7 +7,6 @@ module Liquid
     LiquidTagToken      = /\A\s*(\w+)\s*(.*?)\z/o
     FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable   = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
-    WhitespaceOrNothing = /\A\s*\z/
     TAGSTART            = "{%"
     VARSTART            = "{{"
 
@@ -37,7 +36,7 @@ module Liquid
 
     private def parse_for_liquid_tag(tokenizer, parse_context)
       while (token = tokenizer.shift)
-        unless token.empty? || token =~ WhitespaceOrNothing
+        unless token.strip.empty?
           unless token =~ LiquidTagToken
             # line isn't empty but didn't match tag syntax, yield and let the
             # caller raise a syntax error
@@ -150,7 +149,7 @@ module Liquid
           end
           parse_context.trim_whitespace = false
           @nodelist << token
-          @blank &&= !!(token =~ WhitespaceOrNothing)
+          @blank &&= token.strip.empty?
         end
         parse_context.line_number = tokenizer.line_number
       end
