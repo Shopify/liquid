@@ -350,7 +350,12 @@ module Liquid
       InputIterator.new(input, context).concat(array)
     end
 
-    # prepend a string to another
+    # @public_docs
+    # @syntax {{ string | prepend: string }}
+    # @summary Prepend a string to another string.
+    # @type filter
+    # @category String
+    # @return string
     def prepend(input, string)
       string.to_s + input.to_s
     end
