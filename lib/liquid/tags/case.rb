@@ -9,9 +9,9 @@ module Liquid
   # @type tag
   # @description
   #   Creates a switch statement to execute a particular block of code when a variable has a specified value.
-  #   `case`` initializes the switch statement, and `when`` statements define the various conditions.
+  #   `case` initializes the switch statement, and `when` statements define the various conditions.
   #   
-  #   An optional `else`` statement at the end of the case provides code to execute if none of the conditions are met.
+  #   An optional `else` statement at the end of the case provides code to execute if none of the conditions are met.
 
 An optional else statement at the end of the case provides code to execute if none of the conditions are met.
   class Case < Block
