@@ -1,6 +1,15 @@
 # frozen_string_literal: true
 
+# @public_docs
 module Liquid
+  # @public_docs
+  # @title Tablerow
+  # @syntax The syntax
+  # @summary Generates an HTML table.
+  # @type tag
+  # @description
+  #   Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags.
+  #   For a full list of attributes available within a `tablerow` loop, see `tablerow` (object).
   class TableRow < Block
     Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
 
