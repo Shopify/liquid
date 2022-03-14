@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# @public_docs
 module Liquid
   # "For" iterates over an array or collection.
   # Several useful variables are available to you within the loop.
@@ -45,6 +46,12 @@ module Liquid
   # forloop.last:: Returns true if the item is the last item.
   # forloop.parentloop:: Provides access to the parent loop, if present.
   #
+  # @public_docs
+  # @title For
+  # @syntax The syntax
+  # @summary Repeatedly executes a block of code.
+  # @type tag
+  # @description The description
   class For < Block
     Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
 

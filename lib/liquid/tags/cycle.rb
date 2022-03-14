@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# @public_docs
 module Liquid
   # Cycle is usually used within a loop to alternate between values, like colors or DOM classes.
   #
@@ -13,6 +14,16 @@ module Liquid
   #    <div class="red"> Item four </div>
   #    <div class="green"> Item five</div>
   #
+  # @public_docs
+  # @title Cycle
+  # @syntax The syntax
+  # @summary Loops through a group of strings and prints them in the order that they were passed as arguments.
+  # @type tag
+  # @description
+  #   Loops through a group of strings and prints them in the order that they were passed as arguments.
+  #   Each time `cycle`` is called, the next string argument is printed.
+  #
+  #   `cycle` must be used within a `for`` loop block.
   class Cycle < Tag
     SimpleSyntax = /\A#{QuotedFragment}+/o
     NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om
