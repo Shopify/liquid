@@ -333,7 +333,12 @@ module Liquid
       replace(input, string, '')
     end
 
-    # remove the first occurrences of a substring
+    # @public_docs
+    # @syntax {{ string | remove_first: string }}
+    # @summary Remove the first occurrences of a substring.
+    # @type filter
+    # @category string
+    # @return string
     def remove_first(input, string)
       replace_first(input, string, '')
     end
