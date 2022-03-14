@@ -2,6 +2,8 @@
 
 # @public_docs
 module Liquid
+  # If is the conditional block
+  #
   # @public_docs
   # @title If
   # @syntax The syntax
