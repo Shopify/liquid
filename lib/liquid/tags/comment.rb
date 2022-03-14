@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 module Liquid
-
   # @public_docs
   # @type tag
   # @category theme
