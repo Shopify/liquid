@@ -64,10 +64,24 @@ module Liquid
       result
     end
 
+    # @public_docs
+    # @type filter
+    # @title base64_encode
+    # @summary Encodes a string into Base64.
+    # @category String
+    # @syntax {{ input | base64_encode }}
+    # @return string
     def base64_encode(input)
       Base64.strict_encode64(input.to_s)
     end
 
+    # @public_docs
+    # @type filter
+    # @title base64_decode
+    # @summary Decodes a string from Base64.
+    # @category String
+    # @syntax {{ input | base64_decode }}
+    # @return string
     def base64_decode(input)
       Base64.strict_decode64(input.to_s)
     rescue ::ArgumentError
@@ -345,7 +359,8 @@ module Liquid
     # @title append
     # @summary Appends characters to a string.
     # @category String
-    # @syntax {{ 'sales' | append: '.jpg' }}
+    # @syntax {{ string | append: to_append }}
+    # @required_param to_append [string] characters to append to the original string
     # @return string
     def append(input, string)
       input.to_s + string.to_s
