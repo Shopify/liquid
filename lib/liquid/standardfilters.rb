@@ -354,7 +354,7 @@ module Liquid
     # @syntax {{ string | prepend: string }}
     # @summary Prepend a string to another string.
     # @type filter
-    # @category String
+    # @category string
     # @return string
     def prepend(input, string)
       string.to_s + input.to_s
