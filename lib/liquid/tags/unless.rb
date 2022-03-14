@@ -2,11 +2,17 @@
 
 require_relative 'if'
 
+# @public_docs
 module Liquid
-  # Unless is a conditional just like 'if' but works on the inverse logic.
+  # @public_docs
+  # @title Unless
+  # @syntax The syntax
+  # @summary The opposite of `if`` – executes a block of code only if a certain condition is not met.
+  # @type tag
+  # @description
+  #   Unless is a conditional just like 'if' but works on the inverse logic.
   #
-  #   {% unless x < 0 %} x is greater than zero {% endunless %}
-  #
+  #     {% unless x < 0 %} x is greater than zero {% endunless %}
   class Unless < If
     def render_to_output_buffer(context, output)
       # First condition is interpreted backwards ( if not )
