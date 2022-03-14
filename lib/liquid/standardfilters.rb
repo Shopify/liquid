@@ -95,7 +95,32 @@ module Liquid
       end
     end
 
-    # Truncate a string down to x characters
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Truncates a string down to a specified number of characters.
+    # @description
+    #   Truncates a string down to a specified number of characters. By default, an ellipsis (`...`) 
+    #   is appended to the truncated string.
+    #
+    #   > Tip:
+    #   > The number of characters in both default and custom ellipses is included in the 
+    #   > character count for the truncated string. For example, if you want to truncate a string 
+    #   > down to ten characters and use the default ellipsis (`...`), then you should set the 
+    #   > character count parameter to `13`. 
+    #
+    #   ### Custom ellipsis
+    #
+    #   The `truncate` filter accepts an optional parameter to specify a custom ellipsis to be 
+    #   appended to the truncated string.
+    #
+    #   ### No ellipsis
+    #
+    #   If you don't want an ellipsis appended to your truncated string, then you can set the 
+    #   ellipsis parameter to a blank string (`''`).
+    # @syntax {{ string | truncate: character_count, ellipsis }}
+    # @return string
     def truncate(input, length = 50, truncate_string = "...")
       return if input.nil?
       input_str = input.to_s
@@ -109,6 +134,26 @@ module Liquid
       input_str.length > length ? input_str[0...l].concat(truncate_string_str) : input_str
     end
 
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Truncates a string down to a specified number of words.
+    # @description
+    #   Truncates a string down to a specified number of words. By default, an ellipsis (`...`) 
+    #   is appended to the truncated string.
+    #
+    #   ### Custom ellipsis
+    #
+    #   The `truncate` filter accepts an optional parameter to specify a custom ellipsis to be 
+    #   appended to the truncated string.
+    #
+    #   ### No ellipsis
+    #
+    #   If you don't want an ellipsis appended to your truncated string, then you can set the 
+    #   ellipsis parameter to a blank string (`''`).
+    # @syntax {{ string | truncatewords: word_count, ellipsis }}
+    # @return string
     def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
       input = input.to_s
@@ -137,18 +182,54 @@ module Liquid
       input.to_s.split(pattern.to_s)
     end
 
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Strips all whitespace, such as tabs, spaces, and newlines, from the left and right sides of a string.
+    # @description
+    #   Strips all whitespace, such as tabs, spaces, and newlines, from the left and right sides of a string.
+    # @syntax {{ string | strip }}
+    # @return string
     def strip(input)
       input.to_s.strip
     end
 
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Strips all whitespace, such as tabs, spaces, and newlines, from the left side of a string.
+    # @description
+    #   Strips all whitespace, such as tabs, spaces, and newlines, from the left side of a string.
+    # @syntax {{ string | lstrip }}
+    # @return string
     def lstrip(input)
       input.to_s.lstrip
     end
 
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Strips all whitespace, such as tabs, spaces, and newlines, from the right side of a string.
+    # @description
+    #   Strips all whitespace, such as tabs, spaces, and newlines, from the right side of a string.
+    # @syntax {{ string | rstrip }}
+    # @return string
     def rstrip(input)
       input.to_s.rstrip
     end
 
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Strips all HTML tags from a string.
+    # @description
+    #   Strips all HTML tags from a string.
+    # @syntax {{ string | strip_html }}
+    # @return string
     def strip_html(input)
       empty  = ''
       result = input.to_s.gsub(STRIP_HTML_BLOCKS, empty)
@@ -156,7 +237,15 @@ module Liquid
       result
     end
 
-    # Remove all newlines from the string
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Strips all line breaks and newlines from a string.
+    # @description
+    #   Strips all line breaks and newlines from a string.
+    # @syntax {{ string | strip_newlines }}
+    # @return string
     def strip_newlines(input)
       input.to_s.gsub(/\r?\n/, '')
     end
