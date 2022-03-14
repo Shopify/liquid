@@ -330,7 +330,7 @@ module Liquid
 
     # @public_docs
     # @syntax {{ string | remove: string }}
-    # @summary Remove a substring.
+    # @summary Removes a substring.
     # @type filter
     # @category string
     # @return string
@@ -340,7 +340,7 @@ module Liquid
 
     # @public_docs
     # @syntax {{ string | remove_first: string }}
-    # @summary Remove the first occurrences of a substring.
+    # @summary Removes the first occurrences of a substring.
     # @type filter
     # @category string
     # @return string
