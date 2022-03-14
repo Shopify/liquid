@@ -28,20 +28,51 @@ module Liquid
     end
 
     # convert an input string to DOWNCASE
+    #
+    # @public_docs
+    # @type filter
+    # @title downcase
+    # @summary Converts a string into lowercase.
+    # @category String
+    # @syntax {{ input | downcase }}
+    # @return string
     def downcase(input)
       input.to_s.downcase
     end
 
     # convert an input string to UPCASE
+    #
+    # @public_docs
+    # @type filter
+    # @title upcase
+    # @summary Converts a string into uppercase.
+    # @category String
+    # @syntax {{ input | upcase }}
+    # @return string
     def upcase(input)
       input.to_s.upcase
     end
 
-    # capitalize words in the input centence
+    # capitalize words in the input sentence
+    #
+    # @public_docs
+    # @type filter
+    # @title capitalize
+    # @summary Capitalizes the first word in a string.
+    # @category String
+    # @syntax {{ input | capitalize }}
+    # @return string
     def capitalize(input)
       input.to_s.capitalize
     end
 
+    # @public_docs
+    # @type filter
+    # @title escape
+    # @summary Escapes a string.
+    # @category String
+    # @syntax {{ input | escape }}
+    # @return string
     def escape(input)
       CGI.escapeHTML(input.to_s) unless input.nil?
     end
@@ -88,10 +119,25 @@ module Liquid
       raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
     end
 
+    # @public_docs
+    # @type filter
+    # @title base64_url_safe_encode
+    # @summary Encodes a string into URL-safe Base64
+    # @category String
+    # @syntax {{ input | base64_url_safe_encode }}
+    # @return string
+    # @description To produce URL-safe Base64, this filter uses `-`` and `_`` in place of `+`` and `/``.
     def base64_url_safe_encode(input)
       Base64.urlsafe_encode64(input.to_s)
     end
 
+    # @public_docs
+    # @type filter
+    # @title base64_url_safe_decode
+    # @summary Decodes a string from URL-safe Base64.
+    # @category String
+    # @syntax {{ input | base64_url_safe_decode }}
+    # @return string
     def base64_url_safe_decode(input)
       Base64.urlsafe_decode64(input.to_s)
     rescue ::ArgumentError
