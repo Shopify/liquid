@@ -417,40 +417,79 @@ module Liquid
       array.last if array.respond_to?(:last)
     end
 
-    # absolute value
+    # @public_docs
+    # @syntax {{ number | abs }}
+    # @summary Returns the absolute value of a number.
+    # @type filter
+    # @category Math
+    # @return number
+    # @description
+    #   `abs` will also work on a string if the string only contains a number.
     def abs(input)
       result = Utils.to_number(input).abs
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
-    # addition
+    # @public_docs
+    # @syntax {{ number | plus: number }}
+    # @summary Adds a number to an output.
+    # @type filter
+    # @category Math
+    # @return number
     def plus(input, operand)
       apply_operation(input, operand, :+)
     end
 
-    # subtraction
+    # @public_docs
+    # @syntax {{ number | minus: number }}
+    # @summary Subtracts a number from an output.
+    # @type filter
+    # @category Math
+    # @return number
     def minus(input, operand)
       apply_operation(input, operand, :-)
     end
 
-    # multiplication
+    # @public_docs
+    # @syntax {{ number | times: number }}
+    # @summary Multiplies an output by a number.
+    # @type filter
+    # @category Math
+    # @return number
     def times(input, operand)
       apply_operation(input, operand, :*)
     end
 
-    # division
+    # @public_docs
+    # @syntax {{ number | divided_by: number }}
+    # @summary Divides an output by a number. The output is rounded down to the nearest integer.
+    # @type filter
+    # @category Math
+    # @return number
     def divided_by(input, operand)
       apply_operation(input, operand, :/)
     rescue ::ZeroDivisionError => e
       raise Liquid::ZeroDivisionError, e.message
     end
 
+    # @public_docs
+    # @syntax {{ number | modulo: number }}
+    # @summary Divides an output by a number and returns the remainder.
+    # @type filter
+    # @category Math
+    # @return number
     def modulo(input, operand)
       apply_operation(input, operand, :%)
     rescue ::ZeroDivisionError => e
       raise Liquid::ZeroDivisionError, e.message
     end
 
+    # @public_docs
+    # @syntax {{ number | round }}
+    # @summary Rounds the output to the nearest integer or specified number of decimals.
+    # @type filter
+    # @category Math
+    # @return number
     def round(input, n = 0)
       result = Utils.to_number(input).round(Utils.to_number(n))
       result = result.to_f if result.is_a?(BigDecimal)
@@ -460,12 +499,24 @@ module Liquid
       raise Liquid::FloatDomainError, e.message
     end
 
+    # @public_docs
+    # @syntax {{ number | ceil }}
+    # @summary Rounds an output up to the nearest integer.
+    # @type filter
+    # @category Math
+    # @return number
     def ceil(input)
       Utils.to_number(input).ceil.to_i
     rescue ::FloatDomainError => e
       raise Liquid::FloatDomainError, e.message
     end
 
+    # @public_docs
+    # @syntax {{ number | floor }}
+    # @summary Rounds an output down to the nearest integer.
+    # @type filter
+    # @category Math
+    # @return number
     def floor(input)
       Utils.to_number(input).floor.to_i
     rescue ::FloatDomainError => e
