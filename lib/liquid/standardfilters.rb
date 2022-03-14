@@ -339,6 +339,14 @@ module Liquid
     end
 
     # add one string to another
+    #
+    # @public_docs
+    # @type filter
+    # @title append
+    # @summary Appends characters to a string.
+    # @category String
+    # @syntax {{ 'sales' | append: '.jpg' }}
+    # @return string
     def append(input, string)
       input.to_s + string.to_s
     end
