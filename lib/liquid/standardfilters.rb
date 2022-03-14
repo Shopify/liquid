@@ -323,7 +323,12 @@ module Liquid
       output
     end
 
-    # remove a substring
+    # @public_docs
+    # @syntax {{ string | remove: string }}
+    # @summary Remove a substring.
+    # @type filter
+    # @category string
+    # @return string
     def remove(input, string)
       replace(input, string, '')
     end
