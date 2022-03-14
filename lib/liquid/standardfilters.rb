@@ -298,7 +298,12 @@ module Liquid
       end
     end
 
-    # Replace occurrences of a string with another
+    # @public_docs
+    # @syntax {{ string | replace: string, substring }}
+    # @summary Replaces all occurrences of a string with a substring.
+    # @type filter
+    # @category string
+    # @return string
     def replace(input, string, replacement = '')
       input.to_s.gsub(string.to_s, replacement.to_s)
     end
