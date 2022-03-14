@@ -161,13 +161,29 @@ module Liquid
       input.to_s.gsub(/\r?\n/, '')
     end
 
-    # Join elements of the array with certain character between them
+    # @public_docs
+    # @type filter
+    # @title join
+    # @category array
+    # @summary Joins the elements of an array with the character passed as the parameter. The result is a single string.
+    # @syntax {{ product.tags | join: ', ' }}
+    # @required_param input [array] The array to join.
+    # @required_param delimiter [string] The string to join the array elements with.
+    # @return string
     def join(input, glue = ' ')
       InputIterator.new(input, context).join(glue)
     end
 
-    # Sort elements of the array
-    # provide optional property with which to sort an array of hashes or drops
+    # @public_docs
+    # @type sort
+    # @title concat
+    # @category array
+    # @summary Sorts the elements of an array by a given attribute of an element in the array.
+    # @description The order of the sorted array is case-sensitive.
+    # @syntax {{ collection.products | sort: 'price' }}
+    # @required_param input [array] The array to sort.
+    # @optional_param property [array] The property to sort by.
+    # @return output [array]
     def sort(input, property = nil)
       ary = InputIterator.new(input, context)
 
@@ -255,13 +271,27 @@ module Liquid
       end
     end
 
-    # Reverse the elements of an array
+    # @public_docs
+    # @type reverse
+    # @title concat
+    # @category array
+    # @summary Reverses the order of the items in an array.
+    # @syntax {{ collections | reverse }}
+    # @required_param input [array] The array to reverse.
+    # @return output [array]
     def reverse(input)
       ary = InputIterator.new(input, context)
       ary.reverse
     end
 
-    # map/collect on a given property
+    # @public_docs
+    # @type map
+    # @title concat
+    # @category array
+    # @summary Accepts an array element's attribute as a parameter and creates an array out of each array element's value.
+    # @syntax {{ collections | map: 'title' }}
+    # @required_param input [array] The array to map over.
+    # @return output [array]
     def map(input, property)
       InputIterator.new(input, context).map do |e|
         e = e.call if e.is_a?(Proc)
@@ -343,6 +373,14 @@ module Liquid
       input.to_s + string.to_s
     end
 
+    # @public_docs
+    # @type filter
+    # @title concat
+    # @category array
+    # @summary Concatenates (combines) an array with another array.
+    # @description The resulting array contains all the elements of the original arrays. `concat` will not remove duplicate entries from the concatenated array unless you also use the uniq filter.
+    # @syntax {{ product.images | last | to_img }}
+    # @required_param input [array] The array to concatenate.
     def concat(input, array)
       unless array.respond_to?(:to_ary)
         raise ArgumentError, "concat filter requires an array argument"
@@ -399,20 +437,26 @@ module Liquid
       date.strftime(format.to_s)
     end
 
-    # Get the first element of the passed in array
-    #
-    # Example:
-    #    {{ product.images | first | to_img }}
-    #
+    # @public_docs
+    # @type filter
+    # @title first
+    # @category array
+    # @summary Returns the first element of an array.
+    # @description You can use `first` with dot notation when you need to use the filter inside a tag.
+    # @syntax {{ product.images | first | to_img }}
+    # @required_param input [array]
     def first(array)
       array.first if array.respond_to?(:first)
     end
 
-    # Get the last element of the passed in array
-    #
-    # Example:
-    #    {{ product.images | last | to_img }}
-    #
+    # @public_docs
+    # @type filter
+    # @title last
+    # @category array
+    # @summary Returns the last element of an array.
+    # @description You can use `last` with dot notation when you need to use the filter inside a tag. Using `last` on a string returns the last character in the string.
+    # @syntax {{ product.images | last | to_img }}
+    # @required_param input [array]
     def last(array)
       array.last if array.respond_to?(:last)
     end
