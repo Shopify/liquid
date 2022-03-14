@@ -472,6 +472,12 @@ module Liquid
       raise Liquid::FloatDomainError, e.message
     end
 
+    # @public_docs
+    # @syntax {{ number | at_least: number }}
+    # @summary Limits a number to a minimum value.
+    # @type filter
+    # @category Math
+    # @return number
     def at_least(input, n)
       min_value = Utils.to_number(n)
 
@@ -480,6 +486,12 @@ module Liquid
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
+    # @public_docs
+    # @syntax {{ number | at_most: number }}
+    # @summary Limits a number to a maximum value.
+    # @type filter
+    # @category Math
+    # @return number
     def at_most(input, n)
       max_value = Utils.to_number(n)
 
