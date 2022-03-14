@@ -126,7 +126,8 @@ module Liquid
     # @category String
     # @syntax {{ input | base64_url_safe_encode }}
     # @return string
-    # @description To produce URL-safe Base64, this filter uses `-`` and `_`` in place of `+`` and `/``.
+    # @description
+    #   To produce URL-safe Base64, this filter uses `-`` and `_`` in place of `+`` and `/``.
     def base64_url_safe_encode(input)
       Base64.urlsafe_encode64(input.to_s)
     end
