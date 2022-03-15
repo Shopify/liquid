@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class LiquidTagTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_liquid_tag
     assert_template_result('1 2 3', <<~LIQUID, 'array' => [1, 2, 3])

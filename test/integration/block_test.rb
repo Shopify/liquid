@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class BlockTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_unexpected_end_tag
     exc = assert_raises(SyntaxError) do
@@ -14,7 +14,7 @@ class BlockTest < Minitest::Test
 
   def test_with_custom_tag
     with_custom_tag('testtag', Block) do
-      assert(Liquid::Template.parse("{% testtag %} {% endtesttag %}"))
+      assert(Liquid5::Template.parse("{% testtag %} {% endtesttag %}"))
     end
   end
 
@@ -26,7 +26,7 @@ class BlockTest < Minitest::Test
     end
 
     with_custom_tag('blabla', klass1) do
-      template = Liquid::Template.parse("{% blabla %} bla {% endblabla %}")
+      template = Liquid5::Template.parse("{% blabla %} bla {% endblabla %}")
 
       assert_equal('hello', template.render)
 
@@ -44,7 +44,7 @@ class BlockTest < Minitest::Test
     end
 
     with_custom_tag('blabla', klass2) do
-      template = Liquid::Template.parse("{% blabla %} foo {% endblabla %}")
+      template = Liquid5::Template.parse("{% blabla %} foo {% endblabla %}")
 
       assert_equal('foohellobar', template.render)
 

@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class TrimModeTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   # Make sure the trim isn't applied to standard output
   def test_standard_output
@@ -530,30 +530,30 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_pre_trim_blank_preceding_text
-    template = Liquid::Template.parse("\n{%- raw %}{% endraw %}")
+    template = Liquid5::Template.parse("\n{%- raw %}{% endraw %}")
     assert_equal("", template.render)
 
-    template = Liquid::Template.parse("\n{%- if true %}{% endif %}")
+    template = Liquid5::Template.parse("\n{%- if true %}{% endif %}")
     assert_equal("", template.render)
 
-    template = Liquid::Template.parse("{{ 'B' }} \n{%- if true %}C{% endif %}")
+    template = Liquid5::Template.parse("{{ 'B' }} \n{%- if true %}C{% endif %}")
     assert_equal("BC", template.render)
   end
 
   def test_bug_compatible_pre_trim
-    template = Liquid::Template.parse("\n {%- raw %}{% endraw %}", bug_compatible_whitespace_trimming: true)
+    template = Liquid5::Template.parse("\n {%- raw %}{% endraw %}", bug_compatible_whitespace_trimming: true)
     assert_equal("\n", template.render)
 
-    template = Liquid::Template.parse("\n {%- if true %}{% endif %}", bug_compatible_whitespace_trimming: true)
+    template = Liquid5::Template.parse("\n {%- if true %}{% endif %}", bug_compatible_whitespace_trimming: true)
     assert_equal("\n", template.render)
 
-    template = Liquid::Template.parse("{{ 'B' }} \n{%- if true %}C{% endif %}", bug_compatible_whitespace_trimming: true)
+    template = Liquid5::Template.parse("{{ 'B' }} \n{%- if true %}C{% endif %}", bug_compatible_whitespace_trimming: true)
     assert_equal("B C", template.render)
 
-    template = Liquid::Template.parse("B\n {%- raw %}{% endraw %}", bug_compatible_whitespace_trimming: true)
+    template = Liquid5::Template.parse("B\n {%- raw %}{% endraw %}", bug_compatible_whitespace_trimming: true)
     assert_equal("B", template.render)
 
-    template = Liquid::Template.parse("B\n {%- if true %}{% endif %}", bug_compatible_whitespace_trimming: true)
+    template = Liquid5::Template.parse("B\n {%- if true %}{% endif %}", bug_compatible_whitespace_trimming: true)
     assert_equal("B", template.render)
   end
 

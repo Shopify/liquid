@@ -59,8 +59,8 @@ class CountingFileSystem
   end
 end
 
-class CustomInclude < Liquid::Tag
-  Syntax = /(#{Liquid::QuotedFragment}+)(\s+(?:with|for)\s+(#{Liquid::QuotedFragment}+))?/o
+class CustomInclude < Liquid5::Tag
+  Syntax = /(#{Liquid5::QuotedFragment}+)(\s+(?:with|for)\s+(#{Liquid5::QuotedFragment}+))?/o
 
   def initialize(tag_name, markup, tokens)
     markup =~ Syntax
@@ -78,10 +78,10 @@ class CustomInclude < Liquid::Tag
 end
 
 class IncludeTagTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def setup
-    Liquid::Template.file_system = TestFileSystem.new
+    Liquid5::Template.file_system = TestFileSystem.new
   end
 
   def test_include_tag_looks_for_file_system_in_registers_first
@@ -154,9 +154,9 @@ class IncludeTagTest < Minitest::Test
       end
     end
 
-    Liquid::Template.file_system = infinite_file_system.new
+    Liquid5::Template.file_system = infinite_file_system.new
 
-    assert_raises(Liquid::StackLevelError) do
+    assert_raises(Liquid5::StackLevelError) do
       Template.parse("{% include 'loop' %}").render!
     end
   end
@@ -192,43 +192,43 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_custom_include_tag
-    original_tag = Liquid::Template.tags['include']
-    Liquid::Template.tags['include'] = CustomInclude
+    original_tag = Liquid5::Template.tags['include']
+    Liquid5::Template.tags['include'] = CustomInclude
     begin
       assert_equal("custom_foo",
         Template.parse("{% include 'custom_foo' %}").render!)
     ensure
-      Liquid::Template.tags['include'] = original_tag
+      Liquid5::Template.tags['include'] = original_tag
     end
   end
 
   def test_custom_include_tag_within_if_statement
-    original_tag = Liquid::Template.tags['include']
-    Liquid::Template.tags['include'] = CustomInclude
+    original_tag = Liquid5::Template.tags['include']
+    Liquid5::Template.tags['include'] = CustomInclude
     begin
       assert_equal("custom_foo_if_true",
         Template.parse("{% if true %}{% include 'custom_foo_if_true' %}{% endif %}").render!)
     ensure
-      Liquid::Template.tags['include'] = original_tag
+      Liquid5::Template.tags['include'] = original_tag
     end
   end
 
   def test_does_not_add_error_in_strict_mode_for_missing_variable
-    Liquid::Template.file_system = TestFileSystem.new
+    Liquid5::Template.file_system = TestFileSystem.new
 
-    a = Liquid::Template.parse(' {% include "nested_template" %}')
+    a = Liquid5::Template.parse(' {% include "nested_template" %}')
     a.render!
     assert_empty(a.errors)
   end
 
   def test_passing_options_to_included_templates
-    assert_raises(Liquid::SyntaxError) do
+    assert_raises(Liquid5::SyntaxError) do
       Template.parse("{% include template %}", error_mode: :strict).render!("template" => '{{ "X" || downcase }}')
     end
     with_error_mode(:lax) do
       assert_equal('x', Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: true).render!("template" => '{{ "X" || downcase }}'))
     end
-    assert_raises(Liquid::SyntaxError) do
+    assert_raises(Liquid5::SyntaxError) do
       Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: [:locale]).render!("template" => '{{ "X" || downcase }}')
     end
     with_error_mode(:lax) do
@@ -237,12 +237,12 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_render_raise_argument_error_when_template_is_undefined
-    assert_raises(Liquid::ArgumentError) do
-      template = Liquid::Template.parse('{% include undefined_variable %}')
+    assert_raises(Liquid5::ArgumentError) do
+      template = Liquid5::Template.parse('{% include undefined_variable %}')
       template.render!
     end
-    assert_raises(Liquid::ArgumentError) do
-      template = Liquid::Template.parse('{% include nil %}')
+    assert_raises(Liquid5::ArgumentError) do
+      template = Liquid5::Template.parse('{% include nil %}')
       template.render!
     end
   end
@@ -256,7 +256,7 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_including_with_strict_variables
-    template = Liquid::Template.parse("{% include 'simple' %}", error_mode: :warn)
+    template = Liquid5::Template.parse("{% include 'simple' %}", error_mode: :warn)
     template.render(nil, strict_variables: true)
 
     assert_equal([], template.errors)

@@ -3,9 +3,9 @@
 require 'test_helper'
 
 class TableRowTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
-  class ArrayDrop < Liquid::Drop
+  class ArrayDrop < Liquid5::Drop
     include Enumerable
 
     def initialize(array)

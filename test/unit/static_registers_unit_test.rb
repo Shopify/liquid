@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class StaticRegistersUnitTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_set
     static_register = StaticRegisters.new(a: 1, b: 2)

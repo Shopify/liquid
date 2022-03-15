@@ -11,11 +11,11 @@ require_relative 'shop_filter'
 require_relative 'tag_filter'
 require_relative 'weight_filter'
 
-Liquid::Template.register_tag('paginate', Paginate)
-Liquid::Template.register_tag('form', CommentForm)
+Liquid5::Template.register_tag('paginate', Paginate)
+Liquid5::Template.register_tag('form', CommentForm)
 
-Liquid::Template.register_filter(JsonFilter)
-Liquid::Template.register_filter(MoneyFilter)
-Liquid::Template.register_filter(WeightFilter)
-Liquid::Template.register_filter(ShopFilter)
-Liquid::Template.register_filter(TagFilter)
+Liquid5::Template.register_filter(JsonFilter)
+Liquid5::Template.register_filter(MoneyFilter)
+Liquid5::Template.register_filter(WeightFilter)
+Liquid5::Template.register_filter(ShopFilter)
+Liquid5::Template.register_filter(TagFilter)

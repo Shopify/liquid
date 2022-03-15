@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class TagTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_custom_tags_have_a_default_render_to_output_buffer_method_for_backwards_compatibility
     klass1 = Class.new(Tag) do
@@ -13,7 +13,7 @@ class TagTest < Minitest::Test
     end
 
     with_custom_tag('blabla', klass1) do
-      template = Liquid::Template.parse("{% blabla %}")
+      template = Liquid5::Template.parse("{% blabla %}")
 
       assert_equal('hello', template.render)
 
@@ -31,7 +31,7 @@ class TagTest < Minitest::Test
     end
 
     with_custom_tag('blabla', klass2) do
-      template = Liquid::Template.parse("{% blabla %}")
+      template = Liquid5::Template.parse("{% blabla %}")
 
       assert_equal('foohellobar', template.render)
 

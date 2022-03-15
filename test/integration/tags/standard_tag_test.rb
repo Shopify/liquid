@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class StandardTagTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_no_transform
     assert_template_result('this text should come out of the template without change...',
@@ -175,7 +175,7 @@ class StandardTagTest < Minitest::Test
   def test_assign_from_case
     # Example from the shopify forums
     code     = "{% case collection.handle %}{% when 'menswear-jackets' %}{% assign ptitle = 'menswear' %}{% when 'menswear-t-shirts' %}{% assign ptitle = 'menswear' %}{% else %}{% assign ptitle = 'womenswear' %}{% endcase %}{{ ptitle }}"
-    template = Liquid::Template.parse(code)
+    template = Liquid5::Template.parse(code)
     assert_equal("menswear",   template.render!("collection" => { 'handle' => 'menswear-jackets' }))
     assert_equal("menswear",   template.render!("collection" => { 'handle' => 'menswear-t-shirts' }))
     assert_equal("womenswear", template.render!("collection" => { 'handle' => 'x' }))

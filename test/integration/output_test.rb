@@ -29,7 +29,7 @@ module FunnyFilter
 end
 
 class OutputTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def setup
     @assigns = {

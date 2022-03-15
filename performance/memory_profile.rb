@@ -53,7 +53,7 @@ class Profiler
   end
 end
 
-Liquid::Template.error_mode = ARGV.first.to_sym if ARGV.first
+Liquid5::Template.error_mode = ARGV.first.to_sym if ARGV.first
 
 runner = ThemeRunner.new
 Profiler.run do |x|

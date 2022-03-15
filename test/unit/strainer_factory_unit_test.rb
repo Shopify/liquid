@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class StrainerFactoryUnitTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   module AccessScopeFilters
     def public_filter
@@ -36,7 +36,7 @@ class StrainerFactoryUnitTest < Minitest::Test
 
   def test_stainer_raises_argument_error
     strainer = StrainerFactory.create(@context)
-    assert_raises(Liquid::ArgumentError) do
+    assert_raises(Liquid5::ArgumentError) do
       strainer.invoke("public_filter", 1)
     end
   end
@@ -44,7 +44,7 @@ class StrainerFactoryUnitTest < Minitest::Test
   def test_stainer_argument_error_contains_backtrace
     strainer = StrainerFactory.create(@context)
 
-    exception = assert_raises(Liquid::ArgumentError) do
+    exception = assert_raises(Liquid5::ArgumentError) do
       strainer.invoke("public_filter", 1)
     end
 
@@ -90,7 +90,7 @@ class StrainerFactoryUnitTest < Minitest::Test
     assert_kind_of(StrainerTemplate, strainer)
     assert_kind_of(a, strainer)
     assert_kind_of(b, strainer)
-    assert_kind_of(Liquid::StandardFilters, strainer)
+    assert_kind_of(Liquid5::StandardFilters, strainer)
   end
 
   def test_add_global_filter_clears_cache

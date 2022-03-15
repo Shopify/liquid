@@ -3,11 +3,11 @@
 require 'test_helper'
 
 class TagUnitTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_tag
     tag = Tag.parse('tag', "", Tokenizer.new(""), ParseContext.new)
-    assert_equal('liquid::tag', tag.name)
+    assert_equal('liquid5::tag', tag.name)
     assert_equal('', tag.render(Context.new))
   end
 

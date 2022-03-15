@@ -43,8 +43,8 @@ class ThemeRunner
   # `compile` will test just the compilation portion of liquid without any templates
   def compile
     @tests.each do |test_hash|
-      Liquid::Template.new.parse(test_hash[:liquid])
-      Liquid::Template.new.parse(test_hash[:layout])
+      Liquid5::Template.new.parse(test_hash[:liquid])
+      Liquid5::Template.new.parse(test_hash[:layout])
     end
   end
 
@@ -117,7 +117,7 @@ class ThemeRunner
 
   # set up a new Liquid::Template object for use in `compile_and_render` and `compile_test`
   def init_template(page_template, template_file)
-    tmpl                         = Liquid::Template.new
+    tmpl                         = Liquid5::Template.new
     tmpl.assigns['page_title']   = 'Page title'
     tmpl.assigns['template']     = page_template
     tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(File.dirname(template_file))

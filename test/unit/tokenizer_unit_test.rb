@@ -32,7 +32,7 @@ class TokenizerTest < Minitest::Test
 
   private
 
-  def new_tokenizer(source, parse_context: Liquid::ParseContext.new, start_line_number: nil)
+  def new_tokenizer(source, parse_context: Liquid5::ParseContext.new, start_line_number: nil)
     parse_context.new_tokenizer(source, start_line_number: start_line_number)
   end
 

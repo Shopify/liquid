@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class EchoTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_echo_outputs_its_input
     assert_template_result('BAR', <<~LIQUID, 'variable-name' => 'bar')
