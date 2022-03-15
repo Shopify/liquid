@@ -8,7 +8,7 @@ class HundredCentes
   end
 end
 
-class CentsDrop < Liquid::Drop
+class CentsDrop < Liquid5::Drop
   def amount
     HundredCentes.new
   end
@@ -18,13 +18,13 @@ class CentsDrop < Liquid::Drop
   end
 end
 
-class ContextSensitiveDrop < Liquid::Drop
+class ContextSensitiveDrop < Liquid5::Drop
   def test
     @context['test']
   end
 end
 
-class Category < Liquid::Drop
+class Category < Liquid5::Drop
   attr_accessor :name
 
   def initialize(name)
@@ -43,7 +43,7 @@ class CategoryDrop
   end
 end
 
-class CounterDrop < Liquid::Drop
+class CounterDrop < Liquid5::Drop
   def count
     @count ||= 0
     @count  += 1
@@ -66,10 +66,10 @@ class ArrayLike
 end
 
 class ContextTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def setup
-    @context = Liquid::Context.new
+    @context = Liquid5::Context.new
   end
 
   def test_variables
@@ -108,11 +108,11 @@ class ContextTest < Minitest::Test
     @context.push
     @context.pop
 
-    assert_raises(Liquid::ContextError) do
+    assert_raises(Liquid5::ContextError) do
       @context.pop
     end
 
-    assert_raises(Liquid::ContextError) do
+    assert_raises(Liquid5::ContextError) do
       @context.push
       @context.pop
       @context.pop
@@ -524,7 +524,7 @@ class ContextTest < Minitest::Test
     super_context = Context.new
     super_context.exception_renderer = ->(_e) { 'my exception message' }
     subcontext = super_context.new_isolated_subcontext
-    assert_equal('my exception message', subcontext.handle_error(Liquid::Error.new))
+    assert_equal('my exception message', subcontext.handle_error(Liquid5::Error.new))
   end
 
   def test_new_isolated_subcontext_does_not_inherit_non_static_registers

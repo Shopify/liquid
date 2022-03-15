@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class RawTagTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_tag_in_raw
     assert_template_result('{% comment %} test {% endcomment %}',

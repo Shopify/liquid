@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class RegexpUnitTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_empty
     assert_equal([], ''.scan(QuotedFragment))

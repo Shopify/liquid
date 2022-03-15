@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class AssignTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_assign_with_hyphen_in_variable_name
     template_source = <<-END_TEMPLATE
@@ -99,7 +99,7 @@ class AssignTest < Minitest::Test
 
   private
 
-  class ObjectWrapperDrop < Liquid::Drop
+  class ObjectWrapperDrop < Liquid5::Drop
     def initialize(obj)
       @obj = obj
     end
@@ -110,8 +110,8 @@ class AssignTest < Minitest::Test
   end
 
   def assign_score_of(obj)
-    context = Liquid::Context.new('drop' => ObjectWrapperDrop.new(obj))
-    Liquid::Template.parse('{% assign obj = drop.value %}').render!(context)
+    context = Liquid5::Context.new('drop' => ObjectWrapperDrop.new(obj))
+    Liquid5::Template.parse('{% assign obj = drop.value %}').render!(context)
     context.resource_limits.assign_score
   end
 end

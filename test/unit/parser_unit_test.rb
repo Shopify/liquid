@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class ParserUnitTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_consume
     p = Parser.new("wat: 7")

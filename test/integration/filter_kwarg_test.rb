@@ -11,7 +11,7 @@ class FilterKwargTest < Minitest::Test
     end
   end
 
-  include Liquid
+  include Liquid5
 
   def test_can_parse_data_kwargs
     with_global_filter(KwargFilter) do

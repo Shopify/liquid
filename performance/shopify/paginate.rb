@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-class Paginate < Liquid::Block
-  Syntax = /(#{Liquid::QuotedFragment})\s*(by\s*(\d+))?/
+class Paginate < Liquid5::Block
+  Syntax = /(#{Liquid5::QuotedFragment})\s*(by\s*(\d+))?/
 
   def initialize(tag_name, markup, options)
     super
@@ -15,7 +15,7 @@ class Paginate < Liquid::Block
       end
 
       @attributes = { 'window_size' => 3 }
-      markup.scan(Liquid::TagAttributes) do |key, value|
+      markup.scan(Liquid5::TagAttributes) do |key, value|
         @attributes[key] = value
       end
     else

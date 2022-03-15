@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class I18nUnitTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def setup
     @i18n = I18n.new(fixture("en_locale.yml"))

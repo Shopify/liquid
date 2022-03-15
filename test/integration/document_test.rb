@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class DocumentTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_unexpected_outer_tag
     exc = assert_raises(SyntaxError) do

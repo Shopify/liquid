@@ -5,20 +5,20 @@ ENV["MT_NO_EXPECTATIONS"] = "1"
 require 'minitest/autorun'
 
 $LOAD_PATH.unshift(File.join(File.expand_path(__dir__), '..', 'lib'))
-require 'liquid.rb'
-require 'liquid/profiler'
+require 'liquid5.rb'
+require 'liquid5/profiler'
 
 mode = :strict
 if (env_mode = ENV['LIQUID_PARSER_MODE'])
   puts "-- #{env_mode.upcase} ERROR MODE"
   mode = env_mode.to_sym
 end
-Liquid::Template.error_mode = mode
+Liquid5::Template.error_mode = mode
 
-if ENV['LIQUID_C'] == '1'
-  puts "-- LIQUID C"
-  require 'liquid/c'
-end
+# if ENV['LIQUID_C'] == '1'
+#   puts "-- LIQUID C"
+#   require 'liquid/c'
+# end
 
 if Minitest.const_defined?('Test')
   # We're on Minitest 5+. Nothing to do here.
@@ -35,7 +35,7 @@ module Minitest
   end
 
   module Assertions
-    include Liquid
+    include Liquid5
 
     def assert_template_result(expected, template, assigns = {}, message = nil)
       assert_equal(expected, Template.parse(template, line_numbers: true).render!(assigns), message)
@@ -48,65 +48,65 @@ module Minitest
     end
 
     def assert_match_syntax_error(match, template, assigns = {})
-      exception = assert_raises(Liquid::SyntaxError) do
+      exception = assert_raises(Liquid5::SyntaxError) do
         Template.parse(template, line_numbers: true).render(assigns)
       end
       assert_match(match, exception.message)
     end
 
     def assert_usage_increment(name, times: 1)
-      old_method = Liquid::Usage.method(:increment)
+      old_method = Liquid5::Usage.method(:increment)
       calls = 0
       begin
-        Liquid::Usage.singleton_class.send(:remove_method, :increment)
-        Liquid::Usage.define_singleton_method(:increment) do |got_name|
+        Liquid5::Usage.singleton_class.send(:remove_method, :increment)
+        Liquid5::Usage.define_singleton_method(:increment) do |got_name|
           calls += 1 if got_name == name
           old_method.call(got_name)
         end
         yield
       ensure
-        Liquid::Usage.singleton_class.send(:remove_method, :increment)
-        Liquid::Usage.define_singleton_method(:increment, old_method)
+        Liquid5::Usage.singleton_class.send(:remove_method, :increment)
+        Liquid5::Usage.define_singleton_method(:increment, old_method)
       end
       assert_equal(times, calls, "Number of calls to Usage.increment with #{name.inspect}")
     end
 
     def with_global_filter(*globals)
-      original_global_cache = Liquid::StrainerFactory::GlobalCache
-      Liquid::StrainerFactory.send(:remove_const, :GlobalCache)
-      Liquid::StrainerFactory.const_set(:GlobalCache, Class.new(Liquid::StrainerTemplate))
+      original_global_cache = Liquid5::StrainerFactory::GlobalCache
+      Liquid5::StrainerFactory.send(:remove_const, :GlobalCache)
+      Liquid5::StrainerFactory.const_set(:GlobalCache, Class.new(Liquid5::StrainerTemplate))
 
       globals.each do |global|
-        Liquid::Template.register_filter(global)
+        Liquid5::Template.register_filter(global)
       end
-      Liquid::StrainerFactory.send(:strainer_class_cache).clear
+      Liquid5::StrainerFactory.send(:strainer_class_cache).clear
       begin
         yield
       ensure
-        Liquid::StrainerFactory.send(:remove_const, :GlobalCache)
-        Liquid::StrainerFactory.const_set(:GlobalCache, original_global_cache)
-        Liquid::StrainerFactory.send(:strainer_class_cache).clear
+        Liquid5::StrainerFactory.send(:remove_const, :GlobalCache)
+        Liquid5::StrainerFactory.const_set(:GlobalCache, original_global_cache)
+        Liquid5::StrainerFactory.send(:strainer_class_cache).clear
       end
     end
 
     def with_error_mode(mode)
-      old_mode = Liquid::Template.error_mode
-      Liquid::Template.error_mode = mode
+      old_mode = Liquid5::Template.error_mode
+      Liquid5::Template.error_mode = mode
       yield
     ensure
-      Liquid::Template.error_mode = old_mode
+      Liquid5::Template.error_mode = old_mode
     end
 
     def with_custom_tag(tag_name, tag_class)
-      old_tag = Liquid::Template.tags[tag_name]
+      old_tag = Liquid5::Template.tags[tag_name]
       begin
-        Liquid::Template.register_tag(tag_name, tag_class)
+        Liquid5::Template.register_tag(tag_name, tag_class)
         yield
       ensure
         if old_tag
-          Liquid::Template.tags[tag_name] = old_tag
+          Liquid5::Template.tags[tag_name] = old_tag
         else
-          Liquid::Template.tags.delete(tag_name)
+          Liquid5::Template.tags.delete(tag_name)
         end
       end
     end
@@ -119,7 +119,7 @@ class ThingWithToLiquid
   end
 end
 
-class IntegerDrop < Liquid::Drop
+class IntegerDrop < Liquid5::Drop
   def initialize(value)
     super()
     @value = value.to_i
@@ -138,7 +138,7 @@ class IntegerDrop < Liquid::Drop
   end
 end
 
-class BooleanDrop < Liquid::Drop
+class BooleanDrop < Liquid5::Drop
   def initialize(value)
     super()
     @value = value
@@ -157,17 +157,17 @@ class BooleanDrop < Liquid::Drop
   end
 end
 
-class ErrorDrop < Liquid::Drop
+class ErrorDrop < Liquid5::Drop
   def standard_error
-    raise Liquid::StandardError, 'standard error'
+    raise Liquid5::StandardError, 'standard error'
   end
 
   def argument_error
-    raise Liquid::ArgumentError, 'argument error'
+    raise Liquid5::ArgumentError, 'argument error'
   end
 
   def syntax_error
-    raise Liquid::SyntaxError, 'syntax error'
+    raise Liquid5::SyntaxError, 'syntax error'
   end
 
   def runtime_error
@@ -202,6 +202,6 @@ class StubTemplateFactory
 
   def for(_template_name)
     @count += 1
-    Liquid::Template.new
+    Liquid5::Template.new
   end
 end

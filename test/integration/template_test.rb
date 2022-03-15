@@ -3,7 +3,7 @@
 require 'test_helper'
 require 'timeout'
 
-class TemplateContextDrop < Liquid::Drop
+class TemplateContextDrop < Liquid5::Drop
   def liquid_method_missing(method)
     method
   end
@@ -17,26 +17,26 @@ class TemplateContextDrop < Liquid::Drop
   end
 end
 
-class SomethingWithLength < Liquid::Drop
+class SomethingWithLength < Liquid5::Drop
   def length
     nil
   end
 end
 
-class ErroneousDrop < Liquid::Drop
+class ErroneousDrop < Liquid5::Drop
   def bad_method
     raise 'ruby error in drop'
   end
 end
 
-class DropWithUndefinedMethod < Liquid::Drop
+class DropWithUndefinedMethod < Liquid5::Drop
   def foo
     'foo'
   end
 end
 
 class TemplateTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_instance_assigns_persist_on_same_template_object_between_parses
     t = Template.new
@@ -213,19 +213,19 @@ class TemplateTest < Minitest::Test
 
     output = Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_renderer: handler)
 
-    assert(exception.is_a?(Liquid::ZeroDivisionError))
+    assert(exception.is_a?(Liquid5::ZeroDivisionError))
     assert_equal('<!-- error -->', output)
   end
 
   def test_exception_renderer_that_raises
     exception = nil
-    assert_raises(Liquid::ZeroDivisionError) do
+    assert_raises(Liquid5::ZeroDivisionError) do
       Template.parse("{{ 1 | divided_by: 0 }}").render({}, exception_renderer: ->(e) {
                                                                                  exception = e
                                                                                  raise
                                                                                })
     end
-    assert(exception.is_a?(Liquid::ZeroDivisionError))
+    assert(exception.is_a?(Liquid5::ZeroDivisionError))
   end
 
   def test_global_filter_option_on_render
@@ -248,11 +248,11 @@ class TemplateTest < Minitest::Test
 
     assert_equal('33  32  ', result)
     assert_equal(3, t.errors.count)
-    assert_instance_of(Liquid::UndefinedVariable, t.errors[0])
+    assert_instance_of(Liquid5::UndefinedVariable, t.errors[0])
     assert_equal('Liquid error: undefined variable y', t.errors[0].message)
-    assert_instance_of(Liquid::UndefinedVariable, t.errors[1])
+    assert_instance_of(Liquid5::UndefinedVariable, t.errors[1])
     assert_equal('Liquid error: undefined variable b', t.errors[1].message)
-    assert_instance_of(Liquid::UndefinedVariable, t.errors[2])
+    assert_instance_of(Liquid5::UndefinedVariable, t.errors[2])
     assert_equal('Liquid error: undefined variable d', t.errors[2].message)
   end
 
@@ -279,7 +279,7 @@ class TemplateTest < Minitest::Test
 
     assert_equal('foo ', result)
     assert_equal(1, t.errors.count)
-    assert_instance_of(Liquid::UndefinedDropMethod, t.errors[0])
+    assert_instance_of(Liquid5::UndefinedDropMethod, t.errors[0])
   end
 
   def test_undefined_drop_methods_raise
@@ -302,7 +302,7 @@ class TemplateTest < Minitest::Test
 
     assert_equal('123 ', result)
     assert_equal(1, t.errors.count)
-    assert_instance_of(Liquid::UndefinedFilter, t.errors[0])
+    assert_instance_of(Liquid5::UndefinedFilter, t.errors[0])
     assert_equal('Liquid error: undefined filter somefilter1', t.errors[0].message)
   end
 

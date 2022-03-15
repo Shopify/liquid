@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class IfElseTagTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_if
     assert_template_result('  ', ' {% if false %} this text should not go into the output {% endif %} ')

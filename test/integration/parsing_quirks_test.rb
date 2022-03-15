@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class ParsingQuirksTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_parsing_css
     text = " div { font-weight: bold; } "
@@ -87,7 +87,7 @@ class ParsingQuirksTest < Minitest::Test
   end
 
   def test_raise_on_invalid_tag_delimiter
-    assert_raises(Liquid::SyntaxError) do
+    assert_raises(Liquid5::SyntaxError) do
       Template.new.parse('{% end %}')
     end
   end

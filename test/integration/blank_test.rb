@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class FoobarTag < Liquid::Tag
+class FoobarTag < Liquid5::Tag
   def render_to_output_buffer(_context, output)
     output << ' '
     output
@@ -16,7 +16,7 @@ class BlankTestFileSystem
 end
 
 class BlankTest < Minitest::Test
-  include Liquid
+  include Liquid5
   N = 10
 
   def wrap_in_for(body)
@@ -95,7 +95,7 @@ class BlankTest < Minitest::Test
   end
 
   def test_include_is_blank
-    Liquid::Template.file_system = BlankTestFileSystem.new
+    Liquid5::Template.file_system = BlankTestFileSystem.new
     assert_template_result("foobar" * (N + 1), wrap("{% include 'foobar' %}"))
     assert_template_result(" foobar " * (N + 1), wrap("{% include ' foobar ' %}"))
     assert_template_result("   " * (N + 1), wrap(" {% include ' ' %} "))

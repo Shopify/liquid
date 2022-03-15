@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class CaptureTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_captures_block_content_in_variable
     assert_template_result("test string", "{% capture 'var' %}test string{% endcapture %}{{var}}", {})

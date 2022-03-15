@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class TemplateUnitTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_sets_default_localization_in_document
     t = Template.new
@@ -21,8 +21,8 @@ class TemplateUnitTest < Minitest::Test
   end
 
   def test_with_cache_classes_tags_returns_the_same_class
-    original_cache_setting = Liquid.cache_classes
-    Liquid.cache_classes   = true
+    original_cache_setting = Liquid5.cache_classes
+    Liquid5.cache_classes   = true
 
     original_klass = Class.new
     Object.send(:const_set, :CustomTag, original_klass)
@@ -37,12 +37,12 @@ class TemplateUnitTest < Minitest::Test
   ensure
     Object.send(:remove_const, :CustomTag)
     Template.tags.delete('custom')
-    Liquid.cache_classes = original_cache_setting
+    Liquid5.cache_classes = original_cache_setting
   end
 
   def test_without_cache_classes_tags_reloads_the_class
-    original_cache_setting = Liquid.cache_classes
-    Liquid.cache_classes   = false
+    original_cache_setting = Liquid5.cache_classes
+    Liquid5.cache_classes   = false
 
     original_klass = Class.new
     Object.send(:const_set, :CustomTag, original_klass)
@@ -57,7 +57,7 @@ class TemplateUnitTest < Minitest::Test
   ensure
     Object.send(:remove_const, :CustomTag)
     Template.tags.delete('custom')
-    Liquid.cache_classes = original_cache_setting
+    Liquid5.cache_classes = original_cache_setting
   end
 
   class FakeTag; end
@@ -78,7 +78,7 @@ class TemplateUnitTest < Minitest::Test
     Template.tags.delete('fake')
   end
 
-  class TemplateSubclass < Liquid::Template
+  class TemplateSubclass < Liquid5::Template
   end
 
   def test_template_inheritance

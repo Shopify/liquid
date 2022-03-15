@@ -48,8 +48,8 @@ Liquid supports a very simple API based around the Liquid::Template class.
 For standard use you can just pass it the content of a file and call render with a parameters hash.
 
 ```ruby
-@template = Liquid::Template.parse("hi {{name}}") # Parses and compiles the template
-@template.render('name' => 'tobi')                # => "hi tobi"
+@template = Liquid5::Template.parse("hi {{name}}") # Parses and compiles the template
+@template.render('name' => 'tobi') # => "hi tobi"
 ```
 
 ### Error Modes
@@ -62,14 +62,15 @@ Liquid also comes with a stricter parser that can be used when editing templates
 when templates are invalid. You can enable this new parser like this:
 
 ```ruby
-Liquid::Template.error_mode = :strict # Raises a SyntaxError when invalid syntax is used
-Liquid::Template.error_mode = :warn # Adds errors to template.errors but continues as normal
-Liquid::Template.error_mode = :lax # The default mode, accepts almost anything.
+Liquid5::Template.error_mode = :strict # Raises a SyntaxError when invalid syntax is used
+Liquid5::Template.error_mode = :warn # Adds errors to template.errors but continues as normal
+Liquid5::Template.error_mode = :lax # The default mode, accepts almost anything.
 ```
 
 If you want to set the error mode only on specific templates you can pass `:error_mode` as an option to `parse`:
+
 ```ruby
-Liquid::Template.parse(source, :error_mode => :strict)
+Liquid5::Template.parse(source, :error_mode => :strict)
 ```
 This is useful for doing things like enabling strict mode only in the theme editor.
 
@@ -84,7 +85,7 @@ When one of these options is set to true, all errors about undefined variables a
 Here are some examples:
 
 ```ruby
-template = Liquid::Template.parse("{{x}} {{y}} {{z.a}} {{z.b}}")
+template = Liquid5::Template.parse("{{x}} {{y}} {{z.a}} {{z.b}}")
 template.render({ 'x' => 1, 'z' => { 'a' => 2 } }, { strict_variables: true })
 #=> '1  2 ' # when a variable is undefined, it's rendered as nil
 template.errors
@@ -92,7 +93,7 @@ template.errors
 ```
 
 ```ruby
-template = Liquid::Template.parse("{{x | filter1 | upcase}}")
+template = Liquid5::Template.parse("{{x | filter1 | upcase}}")
 template.render({ 'x' => 'foo' }, { strict_filters: true })
 #=> '' # when at least one filter in the filter chain is undefined, a whole expression is rendered as nil
 template.errors
@@ -102,8 +103,8 @@ template.errors
 If you want to raise on a first exception instead of pushing all of them in `errors`, you can use `render!` method:
 
 ```ruby
-template = Liquid::Template.parse("{{x}} {{y}}")
-template.render!({ 'x' => 1}, { strict_variables: true })
+template = Liquid5::Template.parse("{{x}} {{y}}")
+template.render!({ 'x' => 1 }, { strict_variables: true })
 #=> Liquid::UndefinedVariable: Liquid error: undefined variable y
 ```
 

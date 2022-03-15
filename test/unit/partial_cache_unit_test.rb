@@ -4,16 +4,16 @@ require 'test_helper'
 
 class PartialCacheUnitTest < Minitest::Test
   def test_uses_the_file_system_register_if_present
-    context = Liquid::Context.build(
+    context = Liquid5::Context.build(
       registers: {
         file_system: StubFileSystem.new('my_partial' => 'my partial body'),
       }
     )
 
-    partial = Liquid::PartialCache.load(
+    partial = Liquid5::PartialCache.load(
       'my_partial',
       context: context,
-      parse_context: Liquid::ParseContext.new
+      parse_context: Liquid5::ParseContext.new
     )
 
     assert_equal('my partial body', partial.render)
@@ -21,15 +21,15 @@ class PartialCacheUnitTest < Minitest::Test
 
   def test_reads_from_the_file_system_only_once_per_file
     file_system = StubFileSystem.new('my_partial' => 'some partial body')
-    context     = Liquid::Context.build(
+    context     = Liquid5::Context.build(
       registers: { file_system: file_system }
     )
 
     2.times do
-      Liquid::PartialCache.load(
+      Liquid5::PartialCache.load(
         'my_partial',
         context: context,
-        parse_context: Liquid::ParseContext.new
+        parse_context: Liquid5::ParseContext.new
       )
     end
 
@@ -37,30 +37,30 @@ class PartialCacheUnitTest < Minitest::Test
   end
 
   def test_cache_state_is_stored_per_context
-    parse_context      = Liquid::ParseContext.new
+    parse_context      = Liquid5::ParseContext.new
     shared_file_system = StubFileSystem.new(
       'my_partial' => 'my shared value'
     )
-    context_one = Liquid::Context.build(
+    context_one = Liquid5::Context.build(
       registers: {
         file_system: shared_file_system,
       }
     )
-    context_two = Liquid::Context.build(
+    context_two = Liquid5::Context.build(
       registers: {
         file_system: shared_file_system,
       }
     )
 
     2.times do
-      Liquid::PartialCache.load(
+      Liquid5::PartialCache.load(
         'my_partial',
         context: context_one,
         parse_context: parse_context
       )
     end
 
-    Liquid::PartialCache.load(
+    Liquid5::PartialCache.load(
       'my_partial',
       context: context_two,
       parse_context: parse_context
@@ -71,19 +71,19 @@ class PartialCacheUnitTest < Minitest::Test
 
   def test_cache_is_not_broken_when_a_different_parse_context_is_used
     file_system = StubFileSystem.new('my_partial' => 'some partial body')
-    context     = Liquid::Context.build(
+    context     = Liquid5::Context.build(
       registers: { file_system: file_system }
     )
 
-    Liquid::PartialCache.load(
+    Liquid5::PartialCache.load(
       'my_partial',
       context: context,
-      parse_context: Liquid::ParseContext.new(my_key: 'value one')
+      parse_context: Liquid5::ParseContext.new(my_key: 'value one')
     )
-    Liquid::PartialCache.load(
+    Liquid5::PartialCache.load(
       'my_partial',
       context: context,
-      parse_context: Liquid::ParseContext.new(my_key: 'value two')
+      parse_context: Liquid5::ParseContext.new(my_key: 'value two')
     )
 
     # Technically what we care about is that the file was parsed twice,
@@ -92,16 +92,16 @@ class PartialCacheUnitTest < Minitest::Test
   end
 
   def test_uses_default_template_factory_when_no_template_factory_found_in_register
-    context = Liquid::Context.build(
+    context = Liquid5::Context.build(
       registers: {
         file_system: StubFileSystem.new('my_partial' => 'my partial body'),
       }
     )
 
-    partial = Liquid::PartialCache.load(
+    partial = Liquid5::PartialCache.load(
       'my_partial',
       context: context,
-      parse_context: Liquid::ParseContext.new
+      parse_context: Liquid5::ParseContext.new
     )
 
     assert_equal('my partial body', partial.render)
@@ -109,17 +109,17 @@ class PartialCacheUnitTest < Minitest::Test
 
   def test_uses_template_factory_register_if_present
     template_factory = StubTemplateFactory.new
-    context = Liquid::Context.build(
+    context = Liquid5::Context.build(
       registers: {
         file_system: StubFileSystem.new('my_partial' => 'my partial body'),
         template_factory: template_factory,
       }
     )
 
-    partial = Liquid::PartialCache.load(
+    partial = Liquid5::PartialCache.load(
       'my_partial',
       context: context,
-      parse_context: Liquid::ParseContext.new
+      parse_context: Liquid5::ParseContext.new
     )
 
     assert_equal('my partial body', partial.render)

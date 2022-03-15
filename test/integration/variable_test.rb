@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class VariableTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_simple_variable
     template = Template.parse(%({{test}}))

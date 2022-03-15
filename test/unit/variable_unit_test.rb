@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class VariableUnitTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_variable
     var = create_variable('hello')
@@ -109,9 +109,9 @@ class VariableUnitTest < Minitest::Test
     assert_equal(VariableLookup.new('foo-bar-2'), create_variable('foo-bar-2').name)
 
     with_error_mode(:strict) do
-      assert_raises(Liquid::SyntaxError) { create_variable('foo - bar') }
-      assert_raises(Liquid::SyntaxError) { create_variable('-foo') }
-      assert_raises(Liquid::SyntaxError) { create_variable('2foo') }
+      assert_raises(Liquid5::SyntaxError) { create_variable('foo - bar') }
+      assert_raises(Liquid5::SyntaxError) { create_variable('-foo') }
+      assert_raises(Liquid5::SyntaxError) { create_variable('2foo') }
     end
   end
 

@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class TagDisableableTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   module RenderTagName
     def render(_context)
@@ -12,12 +12,12 @@ class TagDisableableTest < Minitest::Test
   end
 
   class Custom < Tag
-    prepend Liquid::Tag::Disableable
+    prepend Liquid5::Tag::Disableable
     include RenderTagName
   end
 
   class Custom2 < Tag
-    prepend Liquid::Tag::Disableable
+    prepend Liquid5::Tag::Disableable
     include RenderTagName
   end
 

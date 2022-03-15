@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class ContinueTagTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   # tests that no weird errors are raised if continue is called outside of a
   # block

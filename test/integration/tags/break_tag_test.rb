@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class BreakTagTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   # tests that no weird errors are raised if break is called outside of a
   # block

@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class ProfilerTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   class ProfilingFileSystem
     def read_template_file(template_path)
@@ -12,7 +12,7 @@ class ProfilerTest < Minitest::Test
   end
 
   def setup
-    Liquid::Template.file_system = ProfilingFileSystem.new
+    Liquid5::Template.file_system = ProfilingFileSystem.new
   end
 
   def test_template_allows_flagging_profiling
@@ -88,7 +88,7 @@ class ProfilerTest < Minitest::Test
     assert(t.profiler.total_render_time >= 0, "Total render time was not calculated")
   end
 
-  class SleepTag < Liquid::Tag
+  class SleepTag < Liquid5::Tag
     def initialize(tag_name, markup, parse_context)
       super
       @duration = Float(markup)
@@ -101,8 +101,8 @@ class ProfilerTest < Minitest::Test
 
   def test_profiling_multiple_renders
     with_custom_tag('sleep', SleepTag) do
-      context = Liquid::Context.new
-      t = Liquid::Template.parse("{% sleep 0.001 %}", profile: true)
+      context = Liquid5::Context.new
+      t = Liquid5::Template.parse("{% sleep 0.001 %}", profile: true)
       context.template_name = 'index'
       t.render!(context)
       context.template_name = 'layout'

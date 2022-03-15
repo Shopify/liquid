@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class FileSystemUnitTest < Minitest::Test
-  include Liquid
+  include Liquid5
 
   def test_default
     assert_raises(FileSystemError) do
@@ -12,7 +12,7 @@ class FileSystemUnitTest < Minitest::Test
   end
 
   def test_local
-    file_system = Liquid::LocalFileSystem.new("/some/path")
+    file_system = Liquid5::LocalFileSystem.new("/some/path")
     assert_equal("/some/path/_mypartial.liquid", file_system.full_path("mypartial"))
     assert_equal("/some/path/dir/_mypartial.liquid", file_system.full_path("dir/mypartial"))
 
@@ -30,7 +30,7 @@ class FileSystemUnitTest < Minitest::Test
   end
 
   def test_custom_template_filename_patterns
-    file_system = Liquid::LocalFileSystem.new("/some/path", "%s.html")
+    file_system = Liquid5::LocalFileSystem.new("/some/path", "%s.html")
     assert_equal("/some/path/mypartial.html", file_system.full_path("mypartial"))
     assert_equal("/some/path/dir/mypartial.html", file_system.full_path("dir/mypartial"))
   end
