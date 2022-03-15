@@ -13,6 +13,19 @@ module Liquid
   #    <div class="red"> Item four </div>
   #    <div class="green"> Item five</div>
   #
+  # @public_docs
+  # @title cycle
+  # @type tag
+  # @category iteration
+  # @summary Loops through a group of strings and prints them in the order that they were passed as parameters.
+  # @description
+  #   Each time `cycle` is called, the next string that was passed as a parameter is printed.
+  #
+  #   `cycle` must be used within a `for` loop block.
+  # @syntax
+  #   {% for condition %}
+  #      {% cycle value1, value2 ... %}
+  #   {% endfor %}
   class Cycle < Tag
     SimpleSyntax = /\A#{QuotedFragment}+/o
     NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om

@@ -1,16 +1,18 @@
 # frozen_string_literal: true
 
+# @public_docs
 module Liquid
   # If is the conditional block
   #
-  #   {% if user.admin %}
-  #     Admin user!
-  #   {% else %}
-  #     Not admin user
+  # @public_docs
+  # @title if
+  # @type tag
+  # @category controlflow
+  # @summary Executes a block of code only if a certain condition is met (if the result is `truthy`).
+  # @syntax
+  #   {% if variable operator value %}
+  #     statement
   #   {% endif %}
-  #
-  #    There are {% if count < 5 %} less {% else %} more {% endif %} items than you need.
-  #
   class If < Block
     Syntax                  = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
     ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o

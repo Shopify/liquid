@@ -1,6 +1,28 @@
 # frozen_string_literal: true
 
 module Liquid
+  # @public_docs
+  # @type tag
+  # @category theme
+  # @title render
+  # @summary
+  #   Renders a snippet from the **snippets** folder of a theme, or [code for an app block](/themes/architecture/sections/section-schema#render-app-blocks).
+  #  You don't need to write the file's `.liquid` extension.
+  # @description
+  #    When a snippet is rendered, the code inside it doesn't automatically have access to the variables assigned
+  #    using [variable tags](/api/liquid/tags/variable-tags) within the snippet's parent template.
+  #    Similarly, variables assigned within the snippet can't be accessed by the code outside of the snippet.
+  #    This encapsulation increases performance and helps make theme code easier to understand and maintain.
+  #
+  #    You can't use an [`include`](/api/liquid/tags/theme-tags#include) tag inside of a snippet rendered using the `render` tag.
+  #
+  #    > Tip:
+  #    > This tag replaces the deprecated [`include`](/api/liquid/tags/theme-tags#include) tag.
+  # @syntax
+  #   {% render reference %}
+  # @optional_param with [string] Pass an object to use in the snippet. Use with the `as` parameter.
+  # @optional_param for [string] Render the snippet once for each value of an enumerable object. Use with the `as` parameter. When using the `for` parameter, the [`forloop`](/api/liquid/objects/for-loops) object is accessible within the snippet.
+  # @optional_param as [string] The variable that the object referenced by a `with` or `for` parameter represents within the snippet.
   class Render < Tag
     FOR = 'for'
     SYNTAX = /(#{QuotedString}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o

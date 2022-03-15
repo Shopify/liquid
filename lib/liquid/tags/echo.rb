@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 module Liquid
-  # Echo outputs an expression
-  #
-  #   {% echo monkey %}
-  #   {% echo user.name %}
-  #
-  # This is identical to variable output syntax, like {{ foo }}, but works
-  # inside {% liquid %} tags. The full syntax is supported, including filters:
-  #
-  #   {% echo user | link %}
-  #
+  # @public_docs
+  # @type tag
+  # @category theme
+  # @title echo
+  # @summary
+  #   Outputs an expression, or Liquid object, in the rendered HTML.
+  #   Works the same as wrapping an expression in double curly brace delimiters `{{ }}`.
+  #   Works inside the [`liquid`](/api/liquid/tags/theme-tags#liquid) tag and supports [filters](/api/liquid/filters).
+  # @syntax
+  #   {% echo 'string' %}
   class Echo < Tag
     attr_reader :variable
 

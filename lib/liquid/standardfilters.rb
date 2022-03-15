@@ -28,20 +28,47 @@ module Liquid
     end
 
     # convert an input string to DOWNCASE
+    #
+    # @public_docs
+    # @type filter
+    # @summary Converts a string into lowercase.
+    # @category string
+    # @syntax {{ string | downcase }}
+    # @return string
     def downcase(input)
       input.to_s.downcase
     end
 
     # convert an input string to UPCASE
+    #
+    # @public_docs
+    # @type filter
+    # @summary Converts a string into uppercase.
+    # @category string
+    # @syntax {{ string | upcase }}
+    # @return string
     def upcase(input)
       input.to_s.upcase
     end
 
-    # capitalize words in the input centence
+    # capitalize words in the input sentence
+    #
+    # @public_docs
+    # @type filter
+    # @summary Capitalizes the first word in a string.
+    # @category string
+    # @syntax {{ string | capitalize }}
+    # @return string
     def capitalize(input)
       input.to_s.capitalize
     end
 
+    # @public_docs
+    # @type filter
+    # @summary Escapes a string.
+    # @category string
+    # @syntax {{ string | escape }}
+    # @return string
     def escape(input)
       CGI.escapeHTML(input.to_s) unless input.nil?
     end
@@ -64,20 +91,47 @@ module Liquid
       result
     end
 
+    # @public_docs
+    # @type filter
+    # @title base64_encode
+    # @summary Encodes a string into Base64.
+    # @category string
+    # @syntax {{ string | base64_encode }}
+    # @return string
     def base64_encode(input)
       Base64.strict_encode64(input.to_s)
     end
 
+    # @public_docs
+    # @type filter
+    # @summary Decodes a string from Base64.
+    # @category string
+    # @syntax {{ string | base64_decode }}
+    # @return string
     def base64_decode(input)
       Base64.strict_decode64(input.to_s)
     rescue ::ArgumentError
       raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
     end
 
+    # @public_docs
+    # @type filter
+    # @summary Encodes a string into URL-safe Base64
+    # @category string
+    # @syntax {{ string | base64_url_safe_encode }}
+    # @return string
+    # @description
+    #   To produce URL-safe Base64, this filter uses `-`` and `_`` in place of `+`` and `/``.
     def base64_url_safe_encode(input)
       Base64.urlsafe_encode64(input.to_s)
     end
 
+    # @public_docs
+    # @type filter
+    # @summary Decodes a string from URL-safe Base64.
+    # @category string
+    # @syntax {{ string | base64_url_safe_decode }}
+    # @return string
     def base64_url_safe_decode(input)
       Base64.urlsafe_decode64(input.to_s)
     rescue ::ArgumentError
@@ -95,7 +149,34 @@ module Liquid
       end
     end
 
-    # Truncate a string down to x characters
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Truncates a string down to a specified number of characters.
+    # @description
+    #   By default, an ellipsis (`...`)
+    #   is appended to the truncated string.
+    #
+    #   > Tip:
+    #   > The number of characters in both default and custom ellipses is included in the
+    #   > character count for the truncated string. For example, if you want to truncate a string
+    #   > down to ten characters and use the default ellipsis (`...`), then you should set the
+    #   > character count parameter to `13`.
+    #
+    #   ### Custom ellipsis
+    #
+    #   The `truncate` filter accepts an optional parameter to specify a custom ellipsis to be
+    #   appended to the truncated string.
+    #
+    #   ### No ellipsis
+    #
+    #   If you don't want an ellipsis appended to your truncated string, then you can set the
+    #   ellipsis parameter to a blank string (`''`).
+    # @syntax {{ string | truncate: character_count, ellipsis }}
+    # @required_param character_count [number] The number of characters to include in the truncated string. Includes the characters in the ellipsis.
+    # @optional_param ellipsis [string] The format of the ellipsis appended to the truncated string. Default is `...`. Pass a blank string (`''`) to remove the ellipsis completely.
+    # @return string
     def truncate(input, length = 50, truncate_string = "...")
       return if input.nil?
       input_str = input.to_s
@@ -109,6 +190,27 @@ module Liquid
       input_str.length > length ? input_str[0...l].concat(truncate_string_str) : input_str
     end
 
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Truncates a string down to a specified number of words.
+    # @description
+    # By default, an ellipsis (`...`) is appended to the truncated string.
+    #
+    #   ### Custom ellipsis
+    #
+    #   The `truncate` filter accepts an optional parameter to specify a custom ellipsis to be
+    #   appended to the truncated string.
+    #
+    #   ### No ellipsis
+    #
+    #   If you don't want an ellipsis appended to your truncated string, then you can set the
+    #   ellipsis parameter to a blank string (`''`).
+    # @syntax {{ string | truncatewords: word_count, ellipsis }}
+    # @required_param word_count [number] The number of words to include in the truncated string. Includes the characters in the ellipsis.
+    # @optional_param ellipsis [string] The format of the ellipsis appended to the truncated string. Default is `...`. Pass a blank string (`''`) to remove the ellipsis completely.
+    # @return string
     def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
       input = input.to_s
@@ -137,18 +239,46 @@ module Liquid
       input.to_s.split(pattern.to_s)
     end
 
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Strips all whitespace, such as tabs, spaces, and newlines, from the left and right sides of a string.
+    # @syntax {{ string | strip }}
+    # @return string
     def strip(input)
       input.to_s.strip
     end
 
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Strips all whitespace, such as tabs, spaces, and newlines, from the left side of a string.
+    # @syntax {{ string | lstrip }}
+    # @return string
     def lstrip(input)
       input.to_s.lstrip
     end
 
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Strips all whitespace, such as tabs, spaces, and newlines, from the right side of a string.
+    # @syntax {{ string | rstrip }}
+    # @return string
     def rstrip(input)
       input.to_s.rstrip
     end
 
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Strips all HTML tags from a string.
+    # @syntax {{ string | strip_html }}
+    # @return string
     def strip_html(input)
       empty  = ''
       result = input.to_s.gsub(STRIP_HTML_BLOCKS, empty)
@@ -156,18 +286,36 @@ module Liquid
       result
     end
 
-    # Remove all newlines from the string
+    # @public_docs
+    # @type filter
+    # @category string
+    # @summary
+    #   Strips all line breaks and newlines from a string.
+    # @syntax {{ string | strip_newlines }}
+    # @return string
     def strip_newlines(input)
       input.to_s.gsub(/\r?\n/, '')
     end
 
-    # Join elements of the array with certain character between them
+    # @public_docs
+    # @type filter
+    # @category array
+    # @summary Joins the elements in an array. The result is a single string.
+    # @syntax {{ array | join: ', ' }}
+    # @required_param delimiter [string] The separator to join the array elements with.
+    # @return string
     def join(input, glue = ' ')
       InputIterator.new(input, context).join(glue)
     end
 
-    # Sort elements of the array
-    # provide optional property with which to sort an array of hashes or drops
+    # @public_docs
+    # @type filter
+    # @category array
+    # @summary Sorts the elements of an array.
+    # @description The order of the sorted array is case-sensitive.
+    # @syntax {{ array | sort: property }}
+    # @optional_param property [string] The property of the element to sort by.
+    # @return array
     def sort(input, property = nil)
       ary = InputIterator.new(input, context)
 
@@ -255,13 +403,24 @@ module Liquid
       end
     end
 
-    # Reverse the elements of an array
+    # @public_docs
+    # @type tag
+    # @category array
+    # @summary Reverses the order of the items in an array.
+    # @syntax {{ array | reverse }}
+    # @return array
     def reverse(input)
       ary = InputIterator.new(input, context)
       ary.reverse
     end
 
-    # map/collect on a given property
+    # @public_docs
+    # @type tag
+    # @category array
+    # @summary Accepts an array element's property as a parameter and creates an array out of the property value for each array element.
+    # @required_param property [string] The property to extract from the element.
+    # @syntax {{ array | map: 'property' }}
+    # @return array
     def map(input, property)
       InputIterator.new(input, context).map do |e|
         e = e.call if e.is_a?(Proc)
@@ -298,7 +457,14 @@ module Liquid
       end
     end
 
-    # Replace occurrences of a string with another
+    # @public_docs
+    # @summary Replaces all occurrences of a string with a substring.
+    # @type filter
+    # @category string
+    # @syntax {{ string | replace: original_string, replacement_string }}
+    # @required_param original_string [string] The string to replace.
+    # @required_param replacement_string [string] The replacement string.
+    # @return string
     def replace(input, string, replacement = '')
       input.to_s.gsub(string.to_s, replacement.to_s)
     end
@@ -323,12 +489,24 @@ module Liquid
       output
     end
 
-    # remove a substring
+    # @public_docs
+    # @summary Removes a substring from a string.
+    # @type filter
+    # @category string
+    # @syntax {{ string | remove: substring }}
+    # @required_param substring [string] The substring to remove from the string.
+    # @return string
     def remove(input, string)
       replace(input, string, '')
     end
 
-    # remove the first occurrences of a substring
+    # @public_docs
+    # @summary Removes the first occurrences of a substring.
+    # @type filter
+    # @category string
+    # @syntax {{ string | remove_first: substring }}
+    # @required_param substring [string] The substring to remove from the string.
+    # @return string
     def remove_first(input, string)
       replace_first(input, string, '')
     end
@@ -339,10 +517,28 @@ module Liquid
     end
 
     # add one string to another
+    #
+    # @public_docs
+    # @type filter
+    # @summary Appends characters to a string.
+    # @category string
+    # @syntax {{ string | append: to_append }}
+    # @required_param to_append [string] characters to append to the original string
+    # @return string
     def append(input, string)
       input.to_s + string.to_s
     end
 
+    # @public_docs
+    # @type filter
+    # @category array
+    # @summary Concatenates (combines) an array with another array.
+    # @description
+    #   The resulting array contains all the elements of the original arrays.
+    #   `concat` won't remove duplicate entries from the concatenated array unless you also use the [`uniq`](/api/liquid/filters/array-filters#uniq) filter.
+    # @syntax {{ first_array | concat: second_array }}
+    # @required_param second_array [array] The array to concatenate with the primary array.
+    # @return array
     def concat(input, array)
       unless array.respond_to?(:to_ary)
         raise ArgumentError, "concat filter requires an array argument"
@@ -350,7 +546,13 @@ module Liquid
       InputIterator.new(input, context).concat(array)
     end
 
-    # prepend a string to another
+    # @public_docs
+    # @summary Prepends a string to another string.
+    # @type filter
+    # @category string
+    # @syntax {{ string | prepend: additional_string }}
+    # @required_param  additional_string [string] The string to prepend to the original string.
+    # @return string
     def prepend(input, string)
       string.to_s + input.to_s
     end
@@ -399,58 +601,101 @@ module Liquid
       date.strftime(format.to_s)
     end
 
-    # Get the first element of the passed in array
-    #
-    # Example:
-    #    {{ product.images | first | to_img }}
-    #
+    # @public_docs
+    # @type filter
+    # @category array
+    # @summary Returns the first element of an array.
+    # @syntax {{ array | first }}
     def first(array)
       array.first if array.respond_to?(:first)
     end
 
-    # Get the last element of the passed in array
-    #
-    # Example:
-    #    {{ product.images | last | to_img }}
-    #
+    # @public_docs
+    # @type filter
+    # @category array
+    # @summary Returns the last element of an array, or the last character inside of a string.
+    # @syntax {{ array | last }}
     def last(array)
       array.last if array.respond_to?(:last)
     end
 
-    # absolute value
+    # @public_docs
+    # @syntax {{ number | abs }}
+    # @summary Returns the absolute value of a number.
+    # @type filter
+    # @category math
+    # @return number
+    # @description
+    #   `abs` will also work on a string if the string only contains a number.
     def abs(input)
       result = Utils.to_number(input).abs
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
-    # addition
+    # @public_docs
+    # @summary Adds a number to an output.
+    # @type filter
+    # @category math
+    # @syntax {{ number | plus: number }}
+    # @required_param number [number] The number to add to the original number.
+    # @return number
     def plus(input, operand)
       apply_operation(input, operand, :+)
     end
 
-    # subtraction
+    # @public_docs
+    # @summary Subtracts a number from an output.
+    # @type filter
+    # @category math
+    # @syntax {{ number | minus: number }}
+    # @return number
     def minus(input, operand)
       apply_operation(input, operand, :-)
     end
 
-    # multiplication
+    # @public_docs
+    # @summary Multiplies an output by a number.
+    # @type filter
+    # @category math
+    # @syntax {{ number | times: number }}
+    # @required_param number [number] The number to multiply the original number by.
+    # @return number
     def times(input, operand)
       apply_operation(input, operand, :*)
     end
 
-    # division
+    # @public_docs
+    # @summary Divides an output by a number. The output is rounded down to the nearest integer.
+    # @type filter
+    # @category math
+    # @syntax {{ number | divided_by: number }}
+    # @return number
     def divided_by(input, operand)
       apply_operation(input, operand, :/)
     rescue ::ZeroDivisionError => e
       raise Liquid::ZeroDivisionError, e.message
     end
 
+    # @public_docs
+    # @summary Divides an output by a number and returns the remainder.
+    # @type filter
+    # @category math
+    # @syntax {{ number | modulo: number }}
+    # @required_param number [number] The number to divide the original number by.
+    # @return number
     def modulo(input, operand)
       apply_operation(input, operand, :%)
     rescue ::ZeroDivisionError => e
       raise Liquid::ZeroDivisionError, e.message
     end
 
+    # @public_docs
+    # @summary Rounds the output to the nearest integer or specified number of decimals.
+    # @type filter
+    # @category math
+    # @syntax {{ number | round }}
+    # @optional_param decimals [number] The number of decimal places to round to.
+    # @return number
     def round(input, n = 0)
       result = Utils.to_number(input).round(Utils.to_number(n))
       result = result.to_f if result.is_a?(BigDecimal)
@@ -460,18 +705,37 @@ module Liquid
       raise Liquid::FloatDomainError, e.message
     end
 
+    # @public_docs
+    # @summary Rounds an output up to the nearest integer.
+    # @type filter
+    # @category math
+    # @syntax {{ number | ceil }}
+    # @return number
     def ceil(input)
       Utils.to_number(input).ceil.to_i
     rescue ::FloatDomainError => e
       raise Liquid::FloatDomainError, e.message
     end
 
+    # @public_docs
+    # @summary Rounds an output down to the nearest integer.
+    # @type filter
+    # @category math
+    # @syntax {{ number | floor }}
+    # @return number
     def floor(input)
       Utils.to_number(input).floor.to_i
     rescue ::FloatDomainError => e
       raise Liquid::FloatDomainError, e.message
     end
 
+    # @public_docs
+    # @summary Limits a number to a minimum value.
+    # @type filter
+    # @category math
+    # @syntax {{ number | at_least: number }}
+    # @required_param number [number] The minimum valid value.
+    # @return number
     def at_least(input, n)
       min_value = Utils.to_number(n)
 
@@ -480,6 +744,13 @@ module Liquid
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
+    # @public_docs
+    # @summary Limits a number to a maximum value.
+    # @type filter
+    # @category math
+    # @syntax {{ number | at_most: number }}
+    # @required_param number [number] The maximum valid value.
+    # @return number
     def at_most(input, n)
       max_value = Utils.to_number(n)
 

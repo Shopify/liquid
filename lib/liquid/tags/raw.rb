@@ -1,6 +1,16 @@
 # frozen_string_literal: true
 
 module Liquid
+  # @public_docs
+  # @type tag
+  # @category theme
+  # @title raw
+  # @summary
+  #   Allows you to output Liquid code on a page without it being parsed.
+  # @syntax
+  #   {% raw %}
+  #     liquid
+  #   {% endraw %}
   class Raw < Block
     Syntax = /\A\s*\z/
     FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# @public_docs
 module Liquid
   # "For" iterates over an array or collection.
   # Several useful variables are available to you within the loop.
@@ -45,6 +46,20 @@ module Liquid
   # forloop.last:: Returns true if the item is the last item.
   # forloop.parentloop:: Provides access to the parent loop, if present.
   #
+  # @public_docs
+  # @title for
+  # @type tag
+  # @category iteration
+  # @summary Repeatedly executes a block of code.
+  # @description
+  #    You can output a maximum of 50 results per page with `for` loops. In cases where there are more than 50 results,
+  #    use the [`paginate`](/api/liquid/tags/theme-tags#paginate) tag to split them across multiple pages.
+  #
+  #    For a full list of attributes available within a `for` loop, refer to the [`forloop`](/api/liquid/objects/for-loops) object.
+  # @syntax
+  #   {% for variable in iterable parameters %}
+  # @optional_param limit [number] Exit the `for` loop at the specified index.
+  # @optional_param offset [number] Start the `for` loop at the specified index.
   class For < Block
     Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
 

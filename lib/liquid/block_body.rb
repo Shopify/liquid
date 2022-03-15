@@ -35,6 +35,18 @@ module Liquid
       super
     end
 
+    # @public_docs
+    # @type tag
+    # @category theme
+    # @title liquid
+    # @summary
+    #   Allows you to write multiple tags within one set of delimiters.
+    # @description
+    #   Use the [`echo`](/api/liquid/tags/theme-tags#echo) tag to output an expression within a `liquid` tag.
+    # @syntax
+    #   {% liquid
+    #     statement
+    #   %}
     private def parse_for_liquid_tag(tokenizer, parse_context)
       while (token = tokenizer.shift)
         unless token.empty? || token =~ WhitespaceOrNothing

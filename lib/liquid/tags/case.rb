@@ -1,6 +1,27 @@
 # frozen_string_literal: true
 
 module Liquid
+  # @public_docs
+  # @title case
+  # @type tag
+  # @category controlflow
+  # @summary Creates a switch statement to execute a particular block of code when a variable has a specified value.
+  # @description
+  #   `case` initializes the switch statement, and `when` statements define the various conditions.
+  #
+  #   An optional `else` statement at the end of the case provides code to execute if none of the conditions are met.
+  # @syntax
+  #   {% case variable %}
+  #     {% when value1 %}
+  #       statement1
+  #     {% when value2 %}
+  #       statement2
+  #     {% when value3 %}
+  #       statement3
+  #     ...
+  #     {% else %}
+  #       else_statement
+  #   {% endcase %}
   class Case < Block
     Syntax     = /(#{QuotedFragment})/o
     WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*\,\s*)(#{QuotedFragment}.*))?/om

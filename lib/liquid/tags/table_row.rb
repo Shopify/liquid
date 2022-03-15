@@ -1,6 +1,24 @@
 # frozen_string_literal: true
 
+# @public_docs
 module Liquid
+  # @public_docs
+  # @title tablerow
+  # @type tag
+  # @category iteration
+  # @summary Generates rows for an HTML table.
+  # @description
+  #   Must be wrapped in opening `<table>` and closing `</table>` HTML tags.
+  #   For a full list of attributes available within a `tablerow` loop, refer to the [`tablerow`](/api/liquid/objects/tablerow) object.
+  # @syntax
+  #   <table>
+  #     {% tablerow variable in interable parameters %}
+  #       content
+  #     {% endtablerow %}
+  #   </table>
+  # @optional_param cols [number] The number of columns the table should have.
+  # @optional_param limit [number] Exit the `tablerow` loop at the specified index.
+  # @optional_param offset [number] Start the `tablerow` loop at the specified index.
   class TableRow < Block
     Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
 
