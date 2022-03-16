@@ -37,7 +37,7 @@ module Liquid
 
     private def parse_for_liquid_tag(tokenizer, parse_context)
       while (token = tokenizer.shift)
-        unless token.empty? || token =~ WhitespaceOrNothing
+        unless token.empty? || token.match?(WhitespaceOrNothing)
           unless token =~ LiquidTagToken
             # line isn't empty but didn't match tag syntax, yield and let the
             # caller raise a syntax error
@@ -150,7 +150,7 @@ module Liquid
           end
           parse_context.trim_whitespace = false
           @nodelist << token
-          @blank &&= !!(token =~ WhitespaceOrNothing)
+          @blank &&= token.match?(WhitespaceOrNothing)
         end
         parse_context.line_number = tokenizer.line_number
       end
