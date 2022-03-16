@@ -167,15 +167,14 @@ module Liquid
 
       output = nil
 
-      context_register = context.registers.is_a?(StaticRegisters) ? context.registers.static : context.registers
-
       case args.last
       when Hash
         options = args.pop
         output  = options[:output] if options[:output]
+        static_registers = context.registers.static
 
         options[:registers]&.each do |key, register|
-          context_register[key] = register
+          static_registers[key] = register
         end
 
         apply_options_to_context(context, options)

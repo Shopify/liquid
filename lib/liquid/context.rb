@@ -28,7 +28,7 @@ module Liquid
 
       @static_environments = [static_environments].flat_map(&:freeze).freeze
       @scopes              = [(outer_scope || {})]
-      @registers           = registers
+      @registers           = registers.is_a?(StaticRegisters) ? registers : StaticRegisters.new(registers)
       @errors              = []
       @partial             = false
       @strict_variables    = false
@@ -38,6 +38,10 @@ module Liquid
       @filters             = []
       @global_filter       = nil
       @disabled_tags       = {}
+
+      @registers.static[:cached_partials] ||= {}
+      @registers.static[:file_system] ||= Liquid::Template.file_system
+      @registers.static[:template_factory] ||= Liquid::TemplateFactory.new
 
       self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors

@@ -32,7 +32,7 @@ class TestDrop < Liquid::Drop
   attr_reader :value
 
   def registers
-    @context.registers
+    { @value => @context.registers[@value] }
   end
 end
 
@@ -440,7 +440,7 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_map_calls_context=
-    model = TestModel.new(value: "test")
+    model = TestModel.new(value: :test)
 
     template = Template.parse('{{ foo | map: "registers" }}')
     template.registers[:test] = 1234
