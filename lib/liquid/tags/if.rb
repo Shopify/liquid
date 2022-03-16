@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# @public_docs
 module Liquid
   # If is the conditional block
   #

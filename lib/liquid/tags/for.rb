@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# @public_docs
 module Liquid
   # "For" iterates over an array or collection.
   # Several useful variables are available to you within the loop.

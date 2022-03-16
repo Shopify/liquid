@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# @public_docs
 module Liquid
   # @public_docs
   # @title tablerow

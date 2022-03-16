@@ -2,7 +2,6 @@
 
 require_relative 'if'
 
-# @public_docs
 module Liquid
   # @public_docs
   # @title unless
