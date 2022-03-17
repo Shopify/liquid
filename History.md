@@ -1,9 +1,11 @@
 # Liquid Change Log
 
-## 5.3.0 (unreleased)
+## 5.3.0 2022-03-18
 
 ### Fixes
 * StandardFilter: Fix missing @context on iterations (#1525) [Thierry Joyal]
+* Test under Ruby 3.1 (#1533) [petergoldstein]
+* Fix warning about block and default value in `static_registers.rb` (#1531) [Peter Zhu]
 
 ### Deprecation
 * Condition#evaluate to require mandatory context argument in Liquid 6.0.0 (#1527) [Thierry Joyal]
