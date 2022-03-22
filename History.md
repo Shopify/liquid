@@ -1,6 +1,6 @@
 # Liquid Change Log
 
-## 5.3.0 2022-03-18
+## 5.3.0 2022-03-22
 
 ### Fixes
 * StandardFilter: Fix missing @context on iterations (#1525) [Thierry Joyal]
