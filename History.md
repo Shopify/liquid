@@ -4,7 +4,6 @@
 
 ### Fixes
 * StandardFilter: Fix missing @context on iterations (#1525) [Thierry Joyal]
-* Test under Ruby 3.1 (#1533) [petergoldstein]
 * Fix warning about block and default value in `static_registers.rb` (#1531) [Peter Zhu]
 
 ### Deprecation
