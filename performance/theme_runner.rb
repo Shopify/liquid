@@ -3,7 +3,7 @@
 # This profiler run simulates Shopify.
 # We are looking in the tests directory for liquid files and render them within the designated layout file.
 # We will also export a substantial database to liquid which the templates can render values of.
-# All this is to make the benchmark as non syntetic as possible. All templates and tests are lifted from
+# All this is to make the benchmark as non synthetic as possible. All templates and tests are lifted from
 # direct real-world usage and the profiler measures code that looks very similar to the way it looks in
 # Shopify which is likely the biggest user of liquid in the world which something to the tune of several
 # million Template#render calls a day.
