@@ -53,6 +53,21 @@ task :test do
     Rake::Task['integration_test'].reenable
     Rake::Task['integration_test'].invoke
   end
+
+  if RUBY_ENGINE == 'ruby'
+    Rake::Task['test_compile'].invoke
+  end
+end
+
+task :test_compile do
+  ENV['LIQUID_COMPILE'] = '1'
+  ENV['LIQUID_PARSER_MODE'] = 'lax'
+  Rake::Task['integration_test'].reenable
+  Rake::Task['integration_test'].invoke
+
+  ENV['LIQUID_PARSER_MODE'] = 'strict'
+  Rake::Task['integration_test'].reenable
+  Rake::Task['integration_test'].invoke
 end
 
 task(gem: :build)

@@ -3,6 +3,16 @@
 require 'stackprof'
 require_relative 'theme_runner'
 
+if ENV['LIQUID_C'] == '1'
+  puts "-- LIQUID C"
+  require 'liquid/c'
+end
+
+if ENV['LIQUID_COMPILE'] == '1'
+  puts "-- COMPILED"
+  require 'liquid/compile'
+end
+
 Liquid::Template.error_mode = ARGV.first.to_sym if ARGV.first
 profiler = ThemeRunner.new
 profiler.run
