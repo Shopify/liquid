@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
-require 'pry'
+require 'pry-byebug'
 
 module Liquid
-  class BlockBody
-    def render_to_output_buffer(context, output)
+  module CompileBlockBody
+    def parse(*)
+      super
+
       ruby = +"->(__context, __output, __nodes) {\n"
       compile(ruby)
       ruby << "\n}"
@@ -13,11 +15,13 @@ module Liquid
         hash[node.object_id] = node
       end
 
-      RubyVM::InstructionSequence
+      @instructions = RubyVM::InstructionSequence
           .compile(ruby)
           .eval
-          .call(context, output, nodes)
+    end
 
+    def render_to_output_buffer(context, output)
+      @instructions.call(context, output, nodes)
       output
     end
 
@@ -63,5 +67,9 @@ module Liquid
       end
       ruby << "end\n"
     end
+  end
+
+  class BlockBody
+    include CompileBlockBody
   end
 end

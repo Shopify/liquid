@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 $LOAD_PATH.unshift(__dir__ + '/../../lib')
-require_relative '../../lib/liquid'
-
 require_relative 'comment_form'
 require_relative 'paginate'
 require_relative 'json_filter'

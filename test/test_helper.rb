@@ -15,14 +15,12 @@ if (env_mode = ENV['LIQUID_PARSER_MODE'])
 end
 Liquid::Template.error_mode = mode
 
-if ENV['LIQUID_C'] == '1'
-  puts "-- LIQUID C"
-  require 'liquid/c'
-end
-
 if ENV['LIQUID_COMPILE'] == '1'
   puts "-- COMPILED"
   require 'liquid/compile'
+elsif ENV['LIQUID_C'] == '1'
+  puts "-- LIQUID C"
+  require 'liquid/c'
 end
 
 if Minitest.const_defined?('Test')

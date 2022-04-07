@@ -1,0 +1,159 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "pry"
+require "unicode_plot"
+require "optparse"
+require "open3"
+require "csv"
+require "io/console"
+
+TERM_ROWS, TERM_COLS = IO.console.winsize
+
+def record
+  if ARGV.count != 2
+    STDERR.puts "Usage: benchmark.rb record [output_path]"
+    exit(1)
+  end
+  output_path = ARGV[1]
+  out, status = Open3.capture2("ruby", "#{__dir__}/benchmark_child.rb")
+  File.write(output_path, out)
+end
+
+def calc_stats(nums)
+  mean = nums.reduce(:+) / nums.length
+  variance = nums.map { |n| (n - mean).pow(2) }.reduce(:+) / nums.length
+  stddev = Math.sqrt(variance)
+  {
+    mean: mean,
+    variance: variance,
+    stddev: stddev,
+    normalized: normalize_outliers(mean, stddev, nums),
+    raw: nums
+  }
+end
+
+def normalize_outliers(mean, stddev, nums)
+  cutoff = stddev * 3
+  nums.map do |n|
+    if (n - mean).abs < cutoff
+      n
+    else
+      mean
+    end
+  end
+end
+
+
+def show
+  if ARGV.count < 2
+    STDERR.puts "Usage: benchmark.rb show [path1] [path2]? ..."
+    exit(1)
+  end
+
+  recordings = ARGV.drop(1).to_h do |path|
+    [File.basename(path), CSV.parse(
+      File.open(path),
+      col_sep: "\t",
+      headers: true,
+      converters: :integer
+    )]
+  end
+
+  runs = (1..1000).to_a
+  recordings.values.first.headers.each do |benchmark|
+    colors = [:green, :blue, :red]
+
+    10.times { puts }
+    title = "Benchmark: #{benchmark} (times in µs)"
+    print " " * (TERM_COLS / 2 - title.length)
+    puts title
+    puts
+
+    all_stats = recordings.transform_values do |csv|
+      stats = calc_stats(csv.map { |row| row[benchmark] })
+      stats[:color] = colors.shift
+      stats
+    end
+
+    line_plots = []
+    distributions = []
+    shared_line_plot = nil
+
+    max_mean_stats = all_stats.values.max_by { |stats| stats[:mean] }
+    max_y = (max_mean_stats[:mean] + max_mean_stats[:stddev] * 3).to_i
+
+    all_stats.each do |name, stats|
+      if shared_line_plot == nil
+        shared_line_plot = UnicodePlot.lineplot(
+          runs,
+          stats[:normalized],
+          name: name,
+          width: TERM_COLS - 25,
+          ylim: [0, max_y],
+          color: stats[:color]
+        )
+      else
+        UnicodePlot.lineplot!(shared_line_plot, stats[:normalized], name: name, color: stats[:color])
+      end
+
+      line_plots << render_to_s(UnicodePlot.lineplot(
+        runs,
+        stats[:normalized],
+        name: name,
+        color: stats[:color],
+        width: 40
+      ))
+
+      distributions << render_to_s(UnicodePlot.histogram(
+        stats[:normalized],
+        title: name,
+        color: stats[:color]
+      ))
+    end
+
+    shared_line_plot.render
+    print_columns(line_plots)
+    print_columns(distributions)
+
+    all_times = all_stats.transform_values { |stats| stats[:normalized] }
+    UnicodePlot.boxplot(data: all_times, title: "Comparison", width: TERM_COLS - 25).render
+  end
+end
+
+def render_to_s(plot)
+  io = StringIO.new
+  plot.render(io, color: true)
+  io.string
+end
+
+def visual_length(line)
+  line.gsub(/\e\[(\d+)m/, '').length
+end
+
+def print_columns(cols)
+  col_lines = cols.map { |col| col.split("\n") }
+  col_width = col_lines.map do |lines|
+    lines.map { |line| visual_length(line) }.max
+  end.max
+  col_height = col_lines.map { |lines| lines.length }.max
+
+  (0...col_height).each do |i|
+    col_lines.each do |lines|
+      line = lines[i] || ""
+      vis_length = visual_length(line)
+      print line
+      print(" " * (col_width - vis_length))
+    end
+    puts
+  end
+end
+
+case ARGV.first
+when "record", "r"
+  record
+when "show", "s"
+  show
+else
+  puts "Unknown option: #{ARGV.first}"
+end

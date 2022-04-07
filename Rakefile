@@ -92,6 +92,22 @@ namespace :benchmark do
     ruby "./performance/benchmark.rb lax"
   end
 
+  desc "Compare the render performance of compiled Liquid to standard Liquid and Liquid-C"
+  task :compare_render do
+    ENV.delete("LIQUID_C")
+    ENV.delete("RENDER_ONLY")
+
+    ENV["LIQUID_COMPILE"] = "1"
+    ruby "./performance/benchmark.rb strict"
+
+    ENV.delete("LIQUID_COMPILE")
+    ruby "./performance/benchmark.rb strict"
+
+    ENV["LIQUID_C"] = "1"
+    ruby "./performance/benchmark.rb strict"
+
+  end
+
   desc "Run the liquid benchmark with strict parsing"
   task :strict do
     ruby "./performance/benchmark.rb strict"
