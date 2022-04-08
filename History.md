@@ -1,5 +1,14 @@
 # Liquid Change Log
 
+## 5.3.1 (unreleased)
+
+### Fixes
+* `PartialCache` now shares snippet cache with subcontexts by default (#1553) [Chris AtLee]
+* Hash registers no longer leak into subcontexts as static registers (#1564) [Chris AtLee]
+
+### Changed
+* Liquid::Context#registers now always returns a Liquid::StaticRegisters object, though supports the most used Hash functions for compatibility (#1553)
+
 ## 5.3.0 2022-03-22
 
 ### Fixes

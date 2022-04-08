@@ -125,4 +125,35 @@ class PartialCacheUnitTest < Minitest::Test
     assert_equal('my partial body', partial.render)
     assert_equal(1, template_factory.count)
   end
+
+  def test_cache_state_is_shared_for_subcontexts
+    parse_context      = Liquid::ParseContext.new
+    shared_file_system = StubFileSystem.new(
+      'my_partial' => 'my shared value'
+    )
+    context = Liquid::Context.build(
+      registers: Liquid::StaticRegisters.new(
+        file_system: shared_file_system,
+      )
+    )
+    subcontext = context.new_isolated_subcontext
+
+    assert_equal(subcontext.registers[:cached_partials].object_id, context.registers[:cached_partials].object_id)
+
+    2.times do
+      Liquid::PartialCache.load(
+        'my_partial',
+        context: context,
+        parse_context: parse_context
+      )
+
+      Liquid::PartialCache.load(
+        'my_partial',
+        context: subcontext,
+        parse_context: parse_context
+      )
+    end
+
+    assert_equal(1, shared_file_system.file_read_count)
+  end
 end

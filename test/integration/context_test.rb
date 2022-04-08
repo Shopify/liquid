@@ -618,6 +618,20 @@ class ContextTest < Minitest::Test
     end
   end
 
+  def test_context_always_uses_static_registers
+    registers = {
+      my_register: :my_value,
+    }
+    c = Context.new({}, {}, registers)
+    assert_instance_of(StaticRegisters, c.registers)
+    assert_equal(:my_value, c.registers[:my_register])
+
+    r = StaticRegisters.new(registers)
+    c = Context.new({}, {}, r)
+    assert_instance_of(StaticRegisters, c.registers)
+    assert_equal(:my_value, c.registers[:my_register])
+  end
+
   private
 
   def assert_no_object_allocations
