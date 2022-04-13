@@ -22,14 +22,6 @@ def get_time_us
   Process.clock_gettime(Process::CLOCK_MONOTONIC, :microsecond)
 end
 
-def render_row(charts)
-  charts.map do |chart|
-    io = StringIO.new
-    chart.render(io)
-    puts io
-  end
-end
-
 Benchmarks = Class.new do
   def initialize
     @by_name = {}

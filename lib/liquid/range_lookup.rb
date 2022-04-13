@@ -25,6 +25,10 @@ module Liquid
       start_int..end_int
     end
 
+    def compile_expr(compiler)
+      compiler.fallback_evaluate_expr(self)
+    end
+
     private
 
     def to_integer(input)

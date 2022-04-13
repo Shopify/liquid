@@ -18,6 +18,10 @@ group :benchmark, :test do
   end
 end
 
+group :development do
+  gem 'pry-byebug'
+end
+
 group :test do
   gem 'rubocop', '~> 1.4', require: false
   gem 'rubocop-shopify', '~> 1.0.7', require: false

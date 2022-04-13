@@ -1,7 +1,14 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+
+
+unless ENV.key?("BUNDLE_BIN_PATH")
+  exec("bundle", "exec", "ruby",  __FILE__, *ARGV)
+end
+
 require "pry"
+require "liquid"
 require "unicode_plot"
 require "optparse"
 require "open3"
@@ -149,11 +156,65 @@ def print_columns(cols)
   end
 end
 
+Benchmarks = Class.new do
+  def define(_name, benchmark)
+    @benchmark = benchmark
+  end
+
+  def run
+    start = Process.clock_gettime(Process::CLOCK_MONOTONIC, :microsecond)
+    @benchmark.compile
+    parsed = Process.clock_gettime(Process::CLOCK_MONOTONIC, :microsecond)
+
+    # warmup
+    1000.times { @benchmark.render}
+    warm = Process.clock_gettime(Process::CLOCK_MONOTONIC, :microsecond)
+
+    res = nil
+    1000.times { res = @benchmark.render }
+    ran = Process.clock_gettime(Process::CLOCK_MONOTONIC, :microsecond)
+
+    puts res if res.is_a?(String)
+
+    if ENV['SHOW_RUBY'] == '1'
+      STDERR.puts "note: SHOW_RUBY prevents gathering parse metrics"
+      STDERR.puts "render: #{(ran - warm) / 1000}µs"
+    else
+      STDERR.puts "parse: #{parsed - start}µs"
+      STDERR.puts "render: #{(ran - warm) / 1000}µs"
+      STDERR.puts "total: #{(ran - warm) / 1000 + (parsed - start)}µs"
+    end
+  end
+end.new
+
+def execute
+  if ARGV.count != 2
+    STDERR.puts "Usage: benchmark.rb record [output_path]"
+    exit(1)
+  end
+
+  case ENV['ENGINE']
+  when 'LIQUID_COMPILE'
+    require_relative '../lib/liquid/compile'
+  when 'LIQUID_C'
+    require 'liquid/c'
+  when 'LIQUID_RUBY'
+  else
+    raise "Invalid ENGINE: #{ENV['ENGINE'].inspect}, expected ENGINE=(LIQUID_RUBY|LIQUID_COMPILE)"
+  end
+
+  require_relative "./benchmarks/#{ARGV[1]}.rb"
+  Benchmarks.run
+end
+
 case ARGV.first
 when "record", "r"
   record
 when "show", "s"
   show
+when "execute", "x"
+  execute
 else
-  puts "Unknown option: #{ARGV.first}"
+  puts "Invalid command. Expected benchmark [record|show|execute] ..."
+  exit 1
 end

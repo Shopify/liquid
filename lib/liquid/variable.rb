@@ -93,6 +93,10 @@ module Liquid
       context.apply_global_filter(obj)
     end
 
+    def compile
+      "__output << #{@name}\n"
+    end
+
     def render_to_output_buffer(context, output)
       obj = render(context)
 
