@@ -1,8 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-
-
 unless ENV.key?("BUNDLE_BIN_PATH")
   exec("bundle", "exec", "ruby",  __FILE__, *ARGV)
 end
@@ -156,6 +154,7 @@ def print_columns(cols)
   end
 end
 
+ITERS = 1
 Benchmarks = Class.new do
   def define(_name, benchmark)
     @benchmark = benchmark
@@ -167,27 +166,32 @@ Benchmarks = Class.new do
     parsed = Process.clock_gettime(Process::CLOCK_MONOTONIC, :microsecond)
 
     # warmup
-    1000.times { @benchmark.render}
+    ITERS.times { @benchmark.render}
     warm = Process.clock_gettime(Process::CLOCK_MONOTONIC, :microsecond)
 
     res = nil
-    1000.times { res = @benchmark.render }
+    ITERS.times { res = @benchmark.render }
     ran = Process.clock_gettime(Process::CLOCK_MONOTONIC, :microsecond)
 
-    puts res if res.is_a?(String)
+    if res.is_a?(String)
+      puts res
+      puts "Output digest: #{Digest::SHA2.hexdigest(res)}"
+    end
 
     if ENV['SHOW_RUBY'] == '1'
       STDERR.puts "note: SHOW_RUBY prevents gathering parse metrics"
-      STDERR.puts "render: #{(ran - warm) / 1000}µs"
+      STDERR.puts "render: #{(ran - warm) / ITERS}µs"
     else
       STDERR.puts "parse: #{parsed - start}µs"
-      STDERR.puts "render: #{(ran - warm) / 1000}µs"
-      STDERR.puts "total: #{(ran - warm) / 1000 + (parsed - start)}µs"
+      STDERR.puts "render: #{(ran - warm) / ITERS}µs"
+      STDERR.puts "total: #{(ran - warm) / ITERS + (parsed - start)}µs"
     end
   end
 end.new
 
 def execute
+  require 'digest'
+
   if ARGV.count != 2
     STDERR.puts "Usage: benchmark.rb record [output_path]"
     exit(1)

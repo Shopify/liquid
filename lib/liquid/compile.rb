@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require 'pry-byebug'
+require 'set'
 
 module Liquid
   class Compiler
     def initialize
       @ruby = +""
       @nodes = {}
+      @declared = Set.new(['__l_product'])
     end
 
     def <<(line)
@@ -17,33 +19,51 @@ module Liquid
       "__l_#{name}"
     end
 
+    def declare(name)
+      @declared << name
+    end
+
+    def declared?(name)
+      @declared.member?(name)
+    end
+
     def to_proc
-      puts @ruby if ENV['SHOW_RUBY'] == '1'
-      RubyVM::InstructionSequence.compile(<<~RUBY).eval.call(@nodes)
+      show_ruby = ENV["SHOW_RUBY"] && ENV["SHOW_RUBY"].to_i || 0
+      STDERR.puts @ruby if show_ruby >= 1
+      res = RubyVM::InstructionSequence.compile(<<~RUBY).eval.call(@nodes)
       ->(__nodes) {
-        ->(__context, __output) {
+        ->(__context, __output, __l_product) {
+          __scope = __context.environments.first
           #{@ruby}
           __output
         }
       }
       RUBY
+
+      STDERR.puts RubyVM::InstructionSequence.disasm(res) if show_ruby >= 2
+      res
     end
 
-    # Compiles any thing that can be returned by Expression/QuotedFragment
     def compile_expr(node)
-      case node
-      when Liquid::VariableLookup
-        @nodes[node.object_id] = node
+      if node.respond_to?(:compile_expr)
         node.compile_expr(self)
-      when Liquid::RangeLookup
-        @nodes[node.object_id] = node
-        node.compile_expr(self)
-      when Range # returned by RangeLookup when range contains only literals
-        node.inspect
-      when Integer, Float, nil, true, false, ''
-        node.inspect
       else
-        raise ArgumentError, "cannot compile node #{node.inspect}"
+        case node
+        when Range # returned by RangeLookup when range contains only literals
+          node.inspect
+        when Integer, Float, nil, true, false, String
+          node.inspect
+        else
+          raise ArgumentError, "cannot compile node #{node.inspect}"
+        end
+      end
+    end
+
+    def output(node)
+      self << if node.is_a?(String)
+        "__output << #{node.inspect}\n"
+      else
+        "__output << #{compile_expr(node)}.to_s\n"
       end
     end
 
@@ -67,38 +87,6 @@ module Liquid
       RUBY
     end
 
-    def slice_collection_expr(collection_name, from_name, to_name)
-      <<~RUBY.strip
-      (begin
-        if (#{from_name} != 0 || !#{to_name}.nil?) && #{collection_name}.respond_to?(:load_slice)
-          #{collection_name}.load_slice(#{from_name}, #{to_name})
-        else
-          segments = []
-          index = 0
-          if #{collection_name}.is_a?(String)
-            #{collection_name}.empty? ? [] : [collection]
-          elsif !#{collection_name}.respond_to?(:each)
-            []
-          else
-            #{collection_name}.each do |item|
-              if #{to_name} && #{to_name} <= index
-                break
-              end
-
-              if #{from_name} && #{from_name} <= index
-                segments << item
-              end
-
-              index += 1
-            end
-
-            segments
-          end
-        end
-      end)
-      RUBY
-    end
-
     def compile(node)
       if node.instance_of?(String)
         self << "__output << #{node.inspect}\n"
@@ -113,7 +101,7 @@ module Liquid
             nil
           end
           catch_errors(line_number, show_message: !node.blank?) do
-            self << "__nodes[#{node.object_id}].render_to_output_buffer(__context, __output)\n"
+            self << "__nodes[#{node.object_id}].render_to_output_buffer(__context, __output) # #{node.inspect} \n"
           end
         end
       end
@@ -135,13 +123,12 @@ module Liquid
       self << "__output << __error_message\n" if show_message
       self << "end\nend\n"
     end
-
   end
 
   class BlockBody
     def render_to_output_buffer(context, output)
       raise "Tried to render uncompiled block" unless @compiled
-      @compiled.call(context, output)
+      @compiled.call(context, output, context.environments[0][:product])
     end
 
     def compile_top_level
@@ -169,15 +156,87 @@ module Liquid
 
   class VariableLookup
     def compile_expr(compiler)
-      compiler.var_name(@name)
+      # HACK
+      if @name == "forloop" && @lookups == ["first"]
+        return "forloop_first"
+      end
+
+      var_name = compiler.var_name(@name)
+      root = if compiler.declared?(var_name)
+        var_name
+      else
+        "__scope[#{@name.inspect}]"
+      end
+
+      @lookups.reduce(root) do |prev, lookup|
+        "#{prev}[:#{lookup}]"
+      end
     end
   end
 
   class Variable
+    FILTERS = {
+      "modulo" => ->(compiler, expr, args, kwargs) {
+        "(#{expr} % #{args[0]})"
+      },
+      "product_img_url" => ->(compiler, expr, args, kwargs) {
+        style = args.fetch(0, 'small')
+
+        rest = case style
+        when 'original'
+          "\"/files/shops/random_number/\#{url}\""
+        when 'grande', 'large', 'medium', 'compact', 'small', 'thumb', 'icon'
+          "\"/files/shops/random_number/products/\#{$1}_#{style}.\#{$2}\""
+        else
+          "raise ArgumentError, 'valid parameters for filter \"size\" are: original, grande, large, medium, compact, small, thumb and icon '"
+        end
+
+        <<~RUBY.strip
+        (begin
+          if #{expr} =~ %r{\\Aproducts/([\\w\\-\\_]+)\\.(\\w{2,4})}
+            #{rest}
+          else
+            raise ArgumentError, 'filter \"size\" can only be called on product images'
+          end
+        end)
+        RUBY
+      },
+      "escape" => ->(compiler, expr, args, kwargs) {
+        "(_t = #{expr}; CGI.escape(_t) unless _t)"
+      },
+      "money" => ->(compiler, expr, args, kwargs) {
+        "(_m = #{expr}; _m.nil? ? '' : \"\#{(_m / 100.0).round(2)}\")"
+      },
+    }
+
     def compile(compiler)
-      compiler.catch_errors(@line_number, show_message: true) do
-        compiler << "__output << #{@name.compile_expr(compiler)}.to_s\n"
+      if const?
+        compiler.output(name)
+      else
+        compiler.catch_errors(@line_number, show_message: true) do
+          compiler.output(self)
+        end
       end
+    end
+
+    def const?
+      @filters.empty? && !name.respond_to?(:compile_expr)
+    end
+
+    def compile_expr(compiler)
+      @filters.reduce(compiler.compile_expr(name)) do |expr, (name, args, kwargs)|
+        if FILTERS.key?(name)
+          FILTERS[name].call(compiler, expr, args, kwargs)
+        else
+          expr
+        end
+      end
+    end
+  end
+
+  class Echo
+    def compile(compiler)
+      compiler.compile(variable)
     end
   end
 
@@ -206,11 +265,64 @@ module Liquid
         RUBY
       end
 
+      item_var = compiler.var_name(variable_name)
       compiler << <<~RUBY
-        collection.each do |#{compiler.var_name(variable_name)}|
+        forloop_first = true
+        for #{item_var} in collection
       RUBY
+      compiler.declare(item_var)
       compiler.compile(@for_block)
+      compiler << <<~RUBY
+          forloop_first = false
+        end
+      RUBY
+
+    end
+  end
+
+  class If
+    def compile(compiler)
+      compiler << "if #{compiler.compile_expr(blocks[0])}\n"
+      compiler.compile(blocks[0].attachment)
+      blocks.drop(1).each do |block|
+        if block.else?
+          compiler << "else\n"
+        else
+          compiler << "elsif #{block.compile_expr(compiler)}\n"
+        end
+        compiler.compile(block.attachment)
+      end
       compiler << "end\n"
+    end
+  end
+
+  class Comment
+    def compile(_compiler); end
+  end
+
+  class Condition
+    def compile_expr(compiler)
+      condition = if operator
+        left_expr = compiler.compile_expr(left)
+        right_expr = compiler.compile_expr(right)
+        expr = "((#{left_expr} #{operator} #{right_expr}) #{child_relation}"
+      else
+        left_expr = compiler.compile_expr(left)
+        right_expr = compiler.compile_expr(right)
+        expr = "#{left_expr}"
+      end
+      if child_condition
+        child_expr = compiler.compile_expr(child_condition)
+        condition << " #{child_expr}"
+      end
+      condition
+    end
+  end
+
+  class Assign
+    def compile(compiler)
+      compliler.declare(@to)
+      compiler << "#{compiler.var_name(@to)} = #{compiler.compile_expr(@from)}\n"
     end
   end
 end
