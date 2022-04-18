@@ -202,10 +202,10 @@ module Liquid
         RUBY
       },
       "escape" => ->(compiler, expr, args, kwargs) {
-        "(_t = #{expr}; CGI.escape(_t) unless _t)"
+        "(_t = #{expr}; CGI.escape(_t) if _t)"
       },
       "money" => ->(compiler, expr, args, kwargs) {
-        "(_m = #{expr}; _m.nil? ? '' : \"\#{(_m / 100.0).round(2)}\")"
+        "(_m = #{expr}; _m.nil? ? '' : \"$ \#{(_m / 100.0).round(2)}\")"
       },
     }
 
