@@ -31,9 +31,10 @@ module Liquid
       show_ruby = ENV["SHOW_RUBY"] && ENV["SHOW_RUBY"].to_i || 0
       STDERR.puts @ruby if show_ruby >= 1
       res = RubyVM::InstructionSequence.compile(<<~RUBY).eval.call(@nodes)
+      # frozen_string_literal: true
       ->(__nodes) {
         ->(__context, __output, __l_product) {
-          __scope = __context.environments.first
+          __assigns = __context.scopes.last
           #{@ruby}
           __output
         }
@@ -60,10 +61,11 @@ module Liquid
     end
 
     def output(node)
-      self << if node.is_a?(String)
-        "__output << #{node.inspect}\n"
+      compiled = compile_expr(node)
+      self << if compiled.is_a?(String)
+        "__output << #{compiled}\n"
       else
-        "__output << #{compile_expr(node)}.to_s\n"
+        "__output << #{compiled}.to_s\n"
       end
     end
 
@@ -202,7 +204,7 @@ module Liquid
         RUBY
       },
       "escape" => ->(compiler, expr, args, kwargs) {
-        "(_t = #{expr}; CGI.escape(_t) if _t)"
+        "(_t = #{expr}; CGI.escapeHTML(_t) if _t)"
       },
       "money" => ->(compiler, expr, args, kwargs) {
         "(_m = #{expr}; _m.nil? ? '' : \"$ \#{(_m / 100.0).round(2)}\")"
@@ -302,26 +304,26 @@ module Liquid
 
   class Condition
     def compile_expr(compiler)
-      condition = if operator
+      if operator
         left_expr = compiler.compile_expr(left)
         right_expr = compiler.compile_expr(right)
-        expr = "((#{left_expr} #{operator} #{right_expr}) #{child_relation}"
+        if child_relation
+          child_expr = compiler.compile_expr(child_condition)
+          expr = "((#{left_expr} #{operator} #{right_expr}) #{child_relation} #{child_expr})"
+        else
+          expr = "(#{left_expr} #{operator} #{right_expr})"
+        end
+        expr
       else
         left_expr = compiler.compile_expr(left)
-        right_expr = compiler.compile_expr(right)
         expr = "#{left_expr}"
       end
-      if child_condition
-        child_expr = compiler.compile_expr(child_condition)
-        condition << " #{child_expr}"
-      end
-      condition
     end
   end
 
   class Assign
     def compile(compiler)
-      compliler.declare(@to)
+      compiler.declare(compiler.var_name(@to))
       compiler << "#{compiler.var_name(@to)} = #{compiler.compile_expr(@from)}\n"
     end
   end

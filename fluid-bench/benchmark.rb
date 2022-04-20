@@ -18,14 +18,6 @@ Liquid::Template.register_filter(ShopFilter)
 
 context = Liquid::Context.new([tables, {}], {}, {}, false, Liquid::ResourceLimits.new(Liquid::Template.default_resource_limits))
 
-require 'stackprof'
-
-results = StackProf.run(raw: true, out: 'stackprof.dump') do
-  500_000.times do
-    @template.render(context)
-  end
-end
-
 Benchmark.ips do |x|
     x.report("render") { @template.render(context) }
 
