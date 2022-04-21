@@ -47,7 +47,7 @@ module Liquid
 
       name_markup   = Regexp.last_match(1)
       filter_markup = Regexp.last_match(2)
-      @name         = Expression.parse(name_markup)
+      @name         = parse_context.parse_expression(name_markup)
       if filter_markup =~ FilterMarkupRegex
         filters = Regexp.last_match(1).scan(FilterParser)
         filters.each do |f|
@@ -65,7 +65,7 @@ module Liquid
 
       return if p.look(:end_of_string)
 
-      @name = Expression.parse(p.expression)
+      @name = parse_context.parse_expression(p.expression)
       while p.consume?(:pipe)
         filtername = p.consume(:id)
         filterargs = p.consume?(:colon) ? parse_filterargs(p) : []
@@ -122,9 +122,9 @@ module Liquid
       unparsed_args.each do |a|
         if (matches = a.match(JustTagAttributes))
           keyword_args           ||= {}
-          keyword_args[matches[1]] = Expression.parse(matches[2])
+          keyword_args[matches[1]] = parse_context.parse_expression(matches[2])
         else
-          filter_args << Expression.parse(a)
+          filter_args << parse_context.parse_expression(a)
         end
       end
       result = [filter_name, filter_args]
