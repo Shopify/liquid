@@ -1,6 +1,9 @@
 # Liquid Change Log
 
-## 5.3.1 (unreleased)
+## 5.4.0 (unreleased)
+
+### Features
+* Allow `#` to be used as an inline comment tag (#1498) [CP Clermont]
 
 ### Fixes
 * `PartialCache` now shares snippet cache with subcontexts by default (#1553) [Chris AtLee]

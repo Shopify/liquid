@@ -29,6 +29,7 @@ module Liquid
   WhitespaceControl           = '-'
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
+  TagName                     = /#|\w+/
   VariableSignature           = /\(?[\w\-\.\[\]]\)?/
   VariableSegment             = /[\w\-]/
   VariableStart               = /\{\{/
