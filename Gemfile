@@ -23,6 +23,6 @@ group :test do
   gem 'rubocop-performance', require: false
 
   platform :mri, :truffleruby do
-    gem 'liquid-c', github: 'Shopify/liquid-c', ref: 'inline-comment-fresh'
+    gem 'liquid-c', github: 'Shopify/liquid-c', ref: 'master'
   end
 end
