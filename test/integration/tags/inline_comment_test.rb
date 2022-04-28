@@ -37,6 +37,7 @@ class InlineCommentTest < Minitest::Test
       {%-
         # That kind of block comment is also allowed.
         # It would only be a stylistic difference.
+
         # Much like JavaScript's /* */ comments and their
         # leading * on new lines.
       -%}
