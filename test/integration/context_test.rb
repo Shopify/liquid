@@ -529,7 +529,7 @@ class ContextTest < Minitest::Test
     registers = {
       my_register: :my_value,
     }
-    super_context = Context.new({}, {}, StaticRegisters.new(registers))
+    super_context = Context.new({}, {}, Registers.new(registers))
     super_context.registers[:my_register] = :my_alt_value
     subcontext                            = super_context.new_isolated_subcontext
     assert_equal(:my_value, subcontext.registers[:my_register])
@@ -623,12 +623,12 @@ class ContextTest < Minitest::Test
       my_register: :my_value,
     }
     c = Context.new({}, {}, registers)
-    assert_instance_of(StaticRegisters, c.registers)
+    assert_instance_of(Registers, c.registers)
     assert_equal(:my_value, c.registers[:my_register])
 
-    r = StaticRegisters.new(registers)
+    r = Registers.new(registers)
     c = Context.new({}, {}, r)
-    assert_instance_of(StaticRegisters, c.registers)
+    assert_instance_of(Registers, c.registers)
     assert_equal(:my_value, c.registers[:my_register])
   end
 

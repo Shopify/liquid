@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module Liquid
-  class StaticRegisters
+  class Registers
     attr_reader :static
 
     def initialize(registers = {})
-      @static    = registers.is_a?(StaticRegisters) ? registers.static : registers
+      @static    = registers.is_a?(Registers) ? registers.static : registers
       @registers = {}
     end
 
@@ -45,4 +45,7 @@ module Liquid
       @registers.key?(key) || @static.key?(key)
     end
   end
+
+  # Alias for backwards compatibility
+  StaticRegisters = Registers
 end

@@ -85,7 +85,7 @@ require 'liquid/parse_context'
 require 'liquid/partial_cache'
 require 'liquid/usage'
 require 'liquid/register'
-require 'liquid/static_registers'
+require 'liquid/registers'
 require 'liquid/template_factory'
 
 # Load all the tags of the standard library
