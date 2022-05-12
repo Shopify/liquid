@@ -449,6 +449,7 @@ module Liquid
       end
     end
 
+<<<<<<< HEAD
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
@@ -456,6 +457,33 @@ module Liquid
     #   Removes any duplicate items in an array.
     # @liquid_syntax array | uniq
     # @liquid_return [array[untyped]]
+=======
+    # Reject the elements of an array to those with a certain property value.
+    # By default the target is any falsy value.
+    def reject(input, properties, target_value = nil)
+      raise_property_error(properties) unless properties.is_a?(String)
+
+      properties = properties.to_s.split('.')
+      ary = InputIterator.new(input, context)
+
+      ary.reject do |item|
+        if item.is_a?(Hash)
+          value = item.dig(*properties)
+
+          if target_value.nil?
+            !value
+          else
+            value == target_value
+          end
+        else
+          true
+        end
+      end
+    end
+
+    # Remove duplicate elements from an array
+    # provide optional property with which to determine uniqueness
+>>>>>>> bfdcfcea (Add reject filter)
     def uniq(input, property = nil)
       ary = InputIterator.new(input, context)
 
@@ -557,6 +585,7 @@ module Liquid
       input.to_s.sub(string.to_s, replacement.to_s)
     end
 
+<<<<<<< HEAD
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
@@ -585,8 +614,34 @@ module Liquid
     #   Removes any instance of a substring inside a string.
     # @liquid_syntax string | remove: string
     # @liquid_return [string]
+=======
+    # Replace the last occurrences of a string with another
+    def replace_last(input, string, replacement)
+      input = input.to_s
+      string = string.to_s
+      replacement = replacement.to_s
+
+      start_index = input.rindex(string)
+
+      return input unless start_index
+
+      output = input.dup
+      output[start_index, string.length] = replacement
+      output
+    end
+
+    # remove a substring
+>>>>>>> e575c1f1 (Add replace_last and remove_last filters)
     def remove(input, string)
+<<<<<<< HEAD
+<<<<<<< HEAD
       replace(input, string, '')
+=======
+      replace(input.to_s, string, '')
+>>>>>>> f72cfb13 (Delegate functions to corresponding replace functions)
+=======
+      replace(input, string, '')
+>>>>>>> 5187399f (Update lib/liquid/standardfilters.rb)
     end
 
     # @liquid_public_docs
@@ -597,9 +652,18 @@ module Liquid
     # @liquid_syntax string | remove_first: string
     # @liquid_return [string]
     def remove_first(input, string)
+<<<<<<< HEAD
+<<<<<<< HEAD
       replace_first(input, string, '')
+=======
+      replace_first(input.to_s, string, '')
+>>>>>>> f72cfb13 (Delegate functions to corresponding replace functions)
+=======
+      replace_first(input, string, '')
+>>>>>>> 45f186b4 (Remove string formatter)
     end
 
+<<<<<<< HEAD
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
@@ -618,6 +682,14 @@ module Liquid
     #   Adds a given string to the end of a string.
     # @liquid_syntax string | append: string
     # @liquid_return [string]
+=======
+    # remove the last occurences of a substring
+    def remove_last(input, string)
+      replace_last(input, string, '')
+    end
+
+    # add one string to another
+>>>>>>> e575c1f1 (Add replace_last and remove_last filters)
     def append(input, string)
       input.to_s + string.to_s
     end

@@ -1,5 +1,6 @@
 # Liquid Change Log
 
+<<<<<<< HEAD
 ## 5.5.0 2024-03-21
 
 Please reference the GitHub release for more information.
@@ -13,6 +14,7 @@ Please reference the GitHub release for more information.
 * Allow `#` to be used as an inline comment tag (#1498) [CP Clermont]
 
 ### Fixes
+<<<<<<< HEAD
 * `PartialCache` now shares snippet cache with subcontexts by default (#1553) [Chris AtLee]
 * Hash registers no longer leak into subcontexts as static registers (#1564) [Chris AtLee]
 * Fix `ParseTreeVisitor` for `with` variable expressions in `Render` tag (#1596) [CP Clermont]
@@ -34,10 +36,19 @@ Please reference the GitHub release for more information.
 ### Features
 * Add `remove_last`, and `replace_last` filters (#1422) [Anders Hagbard]
 * Eagerly cache global filters (#1524) [Jean Boussier]
+=======
+## 5.2.0 (unreleased)
+
+### Features
+* Add `remove_last`, and `replace_last` filters (#1422) [Anders Hagbard]
+>>>>>>> 588d407e (Fix new changelog entry so it is under unreleased)
 
 ### Fixes
 * Fix some internal errors in filters from invalid input (#1476) [Dylan Thacker-Smith]
 * Allow dash in filter kwarg name for consistency with Liquid::C (#1518) [CP Clermont]
+=======
+* Fix some internal errors in filters from invalid input (#1476) [Dylan Thacker-Smith]
+>>>>>>> 50c88fe7 (History.md: Add missing PR number to previous changelog entry)
 
 ## 5.1.0 / 2021-09-09
 
