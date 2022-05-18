@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.license     = "MIT"
   # s.description = "A secure, non-evaling end user template engine with aesthetic markup."
 
-  s.required_ruby_version     = ">= 2.5.0"
+  s.required_ruby_version     = ">= 2.7.0"
   s.required_rubygems_version = ">= 1.3.7"
 
   s.metadata['allowed_push_host'] = 'https://rubygems.org'
