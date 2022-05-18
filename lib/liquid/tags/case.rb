@@ -1,6 +1,24 @@
 # frozen_string_literal: true
 
 module Liquid
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category conditional
+  # @liquid_name case
+  # @liquid_summary
+  #   Renders a specific expression depending on the value of a specific variable.
+  # @liquid_syntax
+  #   {% case variable %}
+  #     {% when value %}
+  #       expression
+  #     {% when value %}
+  #       expression
+  #     {% else %}
+  #       expression
+  #   {% endcase %}
+  # @liquid_syntax_keyword variable The name of the variable you want to base your case statement on.
+  # @liquid_syntax_keyword value A specific value to check for.
+  # @liquid_syntax_keyword expression An expression to be rendered when the variable's value matches the value being checked.
   class Case < Block
     Syntax     = /(#{QuotedFragment})/o
     WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*\,\s*)(#{QuotedFragment}.*))?/om

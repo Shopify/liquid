@@ -1,16 +1,18 @@
 # frozen_string_literal: true
 
 module Liquid
-  # If is the conditional block
-  #
-  #   {% if user.admin %}
-  #     Admin user!
-  #   {% else %}
-  #     Not admin user
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category conditional
+  # @liquid_name if
+  # @liquid_summary
+  #   Renders an expression if a specific condition is `true`. 
+  # @liquid_syntax
+  #   {% if condition %}
+  #     expression
   #   {% endif %}
-  #
-  #    There are {% if count < 5 %} less {% else %} more {% endif %} items than you need.
-  #
+  # @liquid_syntax_keyword condition The condition to evaluate.
+  # @liquid_syntax_keyword expression The expression to render if the condition is met.
   class If < Block
     Syntax                  = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
     ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o

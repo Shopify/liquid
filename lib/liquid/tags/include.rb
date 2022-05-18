@@ -1,20 +1,23 @@
 # frozen_string_literal: true
 
 module Liquid
-  # Include allows templates to relate with other templates
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category theme
+  # @liquid_name include
+  # @liquid_summary
+  #   Renders a [snippet](/themes/architecture#snippets).
+  # @liquid_description
+  #   Inside the snippet, you can access and alter variables that are [created](/api/liquid/tags#variable-tags) outside of the
+  #   snippet.
+  # @liquid_syntax
+  #   {% include 'filename' %}
+  # @liquid_syntax_keyword filename The name of the snippet to render, without the `.liquid` extension.
+  # @liquid_deprecated
+  #   Deprecated because the way that variables are handled reduces performance and makes code harder to both read and maintain.
   #
-  # Simply include another template:
-  #
-  #   {% include 'product' %}
-  #
-  # Include a template with a local variable:
-  #
-  #   {% include 'product' with products[0] %}
-  #
-  # Include a template for a collection:
-  #
-  #   {% include 'product' for products %}
-  #
+  #   > Tip:
+  #   > The `include` tag has been replaced by [`render`](/api/liquid/tags#render).
   class Include < Tag
     prepend Tag::Disableable
 

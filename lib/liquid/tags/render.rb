@@ -1,6 +1,30 @@
 # frozen_string_literal: true
 
 module Liquid
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category theme
+  # @liquid_name include
+  # @liquid_summary
+  #   Renders a [snippet](/themes/architecture#snippets).
+  # @liquid_description
+  #   > Tip:
+  #   > The `render` tag is also used to [render app blocks](/themes/architecture/sections/section-schema#render-app-blocks).
+  #
+  #   Inside the snippet, there's no direct access to variables that are [created](/api/liquid/tags#variable-tags) outside
+  #   of the snippet. If you want to pass in outside variables, then you can [specify variables as parameters](/api/liquid/tags#render-passing-variables-to-snippets).
+  #
+  #   While there's no direct access to created variables, there's access to global objects, as well as any objects that are
+  #   directly accessible outside the snippet.
+  #
+  #   Outside the snippet, you can't access variables created inside the snippet.
+  #
+  #   > Note:
+  #   > When a snippet is rendered using the `render` tag, you can't use the [`include` tag](/api/liquid/tags#include)
+  #   > inside the snippet.
+  # @liquid_syntax
+  #   {% render 'filename' %}
+  # @liquid_syntax_keyword filename The name of the snippet to render, without the `.liquid` extension.
   class Render < Tag
     FOR = 'for'
     SYNTAX = /(#{QuotedString}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o

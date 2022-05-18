@@ -1,6 +1,28 @@
 # frozen_string_literal: true
 
 module Liquid
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category iteration
+  # @liquid_name tablerow
+  # @liquid_summary
+  #   Generates HTML table rows for every item in an array.
+  # @liquid_desription
+  #   The `tablerow` tag must be wrapped in HTML `<table>` and `</table>` tags.
+  #
+  #   > Tip:
+  #   > Every `tablerow` loop has an associated [`tablerow` object](/api/liquid/objects#tablerow) with information about the loop.
+  # @liquid_syntax
+  #   {% tablerow variable in array %}
+  #     expression
+  #   {% endtablerow %}
+  # @liquid_syntax_keyword variable The current item in the array.
+  # @liquid_syntax_keyword array The array to iterate over.
+  # @liquid_syntax_keyword expression The expression to render.
+  # @liquid_optional_param cols [number] The number of columns that the table should have.
+  # @liquid_optional_param limit [number] The number of iterations to perform.
+  # @liquid_optional_param offset [number] The 1-based index to start iterating at.
+  # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   class TableRow < Block
     Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
 

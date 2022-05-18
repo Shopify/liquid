@@ -1,50 +1,29 @@
 # frozen_string_literal: true
 
 module Liquid
-  # "For" iterates over an array or collection.
-  # Several useful variables are available to you within the loop.
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category iteration
+  # @liquid_name for
+  # @liquid_summary
+  #   Renders an expression for every item in an array.
+  # @liquid_desription
+  #   > Tip:
+  #   > Every `for` loop has an associated [`forloop` object](/api/liquid/objects#forloop) with information about the loop.
   #
-  # == Basic usage:
-  #    {% for item in collection %}
-  #      {{ forloop.index }}: {{ item.name }}
-  #    {% endfor %}
-  #
-  # == Advanced usage:
-  #    {% for item in collection %}
-  #      <div {% if forloop.first %}class="first"{% endif %}>
-  #        Item {{ forloop.index }}: {{ item.name }}
-  #      </div>
-  #    {% else %}
-  #      There is nothing in the collection.
-  #    {% endfor %}
-  #
-  # You can also define a limit and offset much like SQL.  Remember
-  # that offset starts at 0 for the first item.
-  #
-  #    {% for item in collection limit:5 offset:10 %}
-  #      {{ item.name }}
-  #    {% end %}
-  #
-  #  To reverse the for loop simply use {% for item in collection reversed %} (note that the flag's spelling is different to the filter `reverse`)
-  #
-  # == Available variables:
-  #
-  # forloop.name:: 'item-collection'
-  # forloop.length:: Length of the loop
-  # forloop.index:: The current item's position in the collection;
-  #                 forloop.index starts at 1.
-  #                 This is helpful for non-programmers who start believe
-  #                 the first item in an array is 1, not 0.
-  # forloop.index0:: The current item's position in the collection
-  #                  where the first item is 0
-  # forloop.rindex:: Number of items remaining in the loop
-  #                  (length - index) where 1 is the last item.
-  # forloop.rindex0:: Number of items remaining in the loop
-  #                   where 0 is the last item.
-  # forloop.first:: Returns true if the item is the first item.
-  # forloop.last:: Returns true if the item is the last item.
-  # forloop.parentloop:: Provides access to the parent loop, if present.
-  #
+  #   You can do a maximum of 50 iterations with a `for` loop. If you need to iterate over more than 50 items, then use the
+  #   [`paginate` tag](/api/liquid/tags#paginate) to split the items over multiple pages.
+  # @liquid_syntax
+  #   {% for variable in array %}
+  #     expression
+  #   {% endfor %}
+  # @liquid_syntax_keyword variable The current item in the array.
+  # @liquid_syntax_keyword array The array to iterate over.
+  # @liquid_syntax_keyword expression The expression to render.
+  # @liquid_optional_param limit [number] The number of iterations to perform.
+  # @liquid_optional_param offset [number] The 1-based index to start iterating at.
+  # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
+  # @liquid_optional_param reversed [untyped] Iterate in reverse order.
   class For < Block
     Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
 

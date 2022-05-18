@@ -22,39 +22,107 @@ module Liquid
     )
     STRIP_HTML_TAGS = /<.*?>/m
 
-    # Return the size of an array or of an string
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name size
+    # @liquid_summary
+    #   Returns the size of a string or array.
+    # @liquid_description
+    #   The size of a string is the number of characters that the string includes. The size of an array is the number of items
+    #   in the array.
+    # @liquid_syntax variable | size
+    # @liquid_return [number]
     def size(input)
       input.respond_to?(:size) ? input.size : 0
     end
 
-    # convert an input string to DOWNCASE
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name downcase
+    # @liquid_summary
+    #   Converts a string to all lowercase characters.
+    # @liquid_syntax string | downcase
+    # @liquid_return [string]
     def downcase(input)
       input.to_s.downcase
     end
 
-    # convert an input string to UPCASE
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name upcase
+    # @liquid_summary
+    #   Converts a string to all uppercase characters.
+    # @liquid_syntax string | upcase
+    # @liquid_return [string]
     def upcase(input)
       input.to_s.upcase
     end
 
-    # capitalize words in the input centence
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name capitalize
+    # @liquid_summary
+    #   Capitalizes the first word in a string.
+    # @liquid_syntax string | capitalize
+    # @liquid_return [string]
     def capitalize(input)
       input.to_s.capitalize
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name escape
+    # @liquid_summary
+    #   Escapes a string.
+    # @liquid_syntax string | escape
+    # @liquid_return [string]
     def escape(input)
       CGI.escapeHTML(input.to_s) unless input.nil?
     end
     alias_method :h, :escape
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name escape_once
+    # @liquid_summary
+    #   Escapes a string without changing characters that have already been escaped.
+    # @liquid_syntax string | escape_once
+    # @liquid_return [string]
     def escape_once(input)
       input.to_s.gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name url_encode
+    # @liquid_summary
+    #   Converts any URL-unsafe characters in a string to the
+    #   [percent-encoded](https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding) equivalent.
+    # @liquid_description
+    #   > Note:
+    #   > Spaces are converted to a `+` charcter, instead of a percent-encoded character.
+    # @liquid_syntax string | url_encode
+    # @liquid_return [string]
     def url_encode(input)
       CGI.escape(input.to_s) unless input.nil?
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name url_decode
+    # @liquid_summary
+    #   Decodes any [percent-encoded](https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding) characters
+    #   in a string.
+    # @liquid_syntax string | url_decode
+    # @liquid_return [string]
     def url_decode(input)
       return if input.nil?
 
@@ -64,26 +132,71 @@ module Liquid
       result
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name base64_encode
+    # @liquid_summary
+    #   Encodes a string to [Base64 format](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
+    # @liquid_syntax string | base64_encode
+    # @liquid_return [string]
     def base64_encode(input)
       Base64.strict_encode64(input.to_s)
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name base64_decode
+    # @liquid_summary
+    #   Decodes a string in [Base64 format](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
+    # @liquid_syntax string | base64_decode
+    # @liquid_return [string]
     def base64_decode(input)
       Base64.strict_decode64(input.to_s)
     rescue ::ArgumentError
       raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name base64_url_safe_encode
+    # @liquid_summary
+    #   Encodes a string to URL-safe [Base64 format](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
+    # @liquid_syntax string | base64_url_safe_encode
+    # @liquid_return [string]
     def base64_url_safe_encode(input)
       Base64.urlsafe_encode64(input.to_s)
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name base64_url_safe_decode
+    # @liquid_summary
+    #   Decodes a string in URL-safe [Base64 format](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
+    # @liquid_syntax string | base64_url_safe_decode
+    # @liquid_return [string]
     def base64_url_safe_decode(input)
       Base64.urlsafe_decode64(input.to_s)
     rescue ::ArgumentError
       raise Liquid::ArgumentError, "invalid base64 provided to base64_url_safe_decode"
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name slice
+    # @liquid_summary
+    #   Returns a substring or series of array items, starting at a given 0-based index.
+    # @liquid_description
+    #   By default, the substring has a length of one character, and the array series has one array item. However, you can
+    #   provide a second parameter to specify the number of characters or array items.
+    #
+    #   You can also supply a negative index which will count from the end of the string.
+    # @liquid_syntax string | slice
+    # @liquid_return [string]
     def slice(input, offset, length = nil)
       offset = Utils.to_integer(offset)
       length = length ? Utils.to_integer(length) : 1
@@ -95,7 +208,17 @@ module Liquid
       end
     end
 
-    # Truncate a string down to x characters
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name truncate
+    # @liquid_summary
+    #   Truncates a string down to a given number of characters.
+    # @liquid_description
+    #   If the specified number of characters is less than the length of the string, then an ellipsis (`...`) is appended to
+    #   the truncated string. The ellipsis is included in the character count of the truncated string.
+    # @liquid_syntax string | truncate: number
+    # @liquid_return [string]
     def truncate(input, length = 50, truncate_string = "...")
       return if input.nil?
       input_str = input.to_s
@@ -109,6 +232,17 @@ module Liquid
       input_str.length > length ? input_str[0...l].concat(truncate_string_str) : input_str
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name truncatewords
+    # @liquid_summary
+    #   Truncates a string down to a given number of words.
+    # @liquid_description
+    #   If the specified number of words is less than the number of words in the string, then an ellipsis (`...`) is appended to
+    #   the truncated string.
+    # @liquid_syntax string | truncatewords: number
+    # @liquid_return [string]
     def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
       input = input.to_s
@@ -128,27 +262,62 @@ module Liquid
       wordlist.join(" ").concat(truncate_string.to_s)
     end
 
-    # Split input string into an array of substrings separated by given pattern.
-    #
-    # Example:
-    #   <div class="summary">{{ post | split '//' | first }}</div>
-    #
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name split
+    # @liquid_summary
+    #   Splits a string into an array of substrings based on a given separator.
+    # @liquid_syntax string | split: string
+    # @liquid_return [array[string]]
     def split(input, pattern)
       input.to_s.split(pattern.to_s)
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name strip
+    # @liquid_summary
+    #   Strips all whitespace from the left and right of a string.
+    # @liquid_syntax string | strip
+    # @liquid_return [string]
     def strip(input)
       input.to_s.strip
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name lstrip
+    # @liquid_summary
+    #   Strips all whitespace from the left of a string.
+    # @liquid_syntax string | lstrip
+    # @liquid_return [string]
     def lstrip(input)
       input.to_s.lstrip
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name rstrip
+    # @liquid_summary
+    #   Strips all whitespace from the right of a string.
+    # @liquid_syntax string | rstrip
+    # @liquid_return [string]
     def rstrip(input)
       input.to_s.rstrip
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name strip_html
+    # @liquid_summary
+    #   Strips all HTML tags from a string.
+    # @liquid_syntax string | strip_html
+    # @liquid_return [string]
     def strip_html(input)
       empty  = ''
       result = input.to_s.gsub(STRIP_HTML_BLOCKS, empty)
@@ -156,18 +325,38 @@ module Liquid
       result
     end
 
-    # Remove all newlines from the string
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name strip_newlines
+    # @liquid_summary
+    #   Strips all newline characters (line breaks) from a string.
+    # @liquid_syntax string | strip_newlines
+    # @liquid_return [string]
     def strip_newlines(input)
       input.to_s.gsub(/\r?\n/, '')
     end
 
-    # Join elements of the array with certain character between them
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name join
+    # @liquid_summary
+    #   Combines all the items in an array into a single string, separated by a space.
+    # @liquid_syntax array | join
+    # @liquid_return [string]
     def join(input, glue = ' ')
       InputIterator.new(input, context).join(glue)
     end
 
-    # Sort elements of the array
-    # provide optional property with which to sort an array of hashes or drops
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name sort
+    # @liquid_summary
+    #   Sorts the items in an array in case-sensitive alphabetical, or numerical, order.
+    # @liquid_syntax array | sort
+    # @liquid_return [array[untyped]]
     def sort(input, property = nil)
       ary = InputIterator.new(input, context)
 
@@ -186,8 +375,14 @@ module Liquid
       end
     end
 
-    # Sort elements of an array ignoring case if strings
-    # provide optional property with which to sort an array of hashes or drops
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name sort
+    # @liquid_summary
+    #   Sorts the items in an array in case-insensitive alphabetical, or numerical, order.
+    # @liquid_syntax array | sort
+    # @liquid_return [array[untyped]]
     def sort_natural(input, property = nil)
       ary = InputIterator.new(input, context)
 
@@ -206,8 +401,19 @@ module Liquid
       end
     end
 
-    # Filter the elements of an array to those with a certain property value.
-    # By default the target is any truthy value.
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name where
+    # @liquid_summary
+    #   Filters an array to include only items with a specific property value.
+    # @liquid_description
+    #   You can use the  `where` filter in the following ways:
+    #
+    #   - Filter for items with a specific property value. This requires you to provide both the property name and the associated value.
+    #   - Filter for items that have a `true` value for a boolean property. This requires only the property name.
+    # @liquid_syntax array | where: string, string
+    # @liquid_return [array[untyped]]
     def where(input, property, target_value = nil)
       ary = InputIterator.new(input, context)
 
@@ -234,8 +440,14 @@ module Liquid
       end
     end
 
-    # Remove duplicate elements from an array
-    # provide optional property with which to determine uniqueness
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name uniq
+    # @liquid_summary
+    #   Removes any duplicate items in an array.
+    # @liquid_syntax array | uniq
+    # @liquid_return [array[untyped]]
     def uniq(input, property = nil)
       ary = InputIterator.new(input, context)
 
@@ -255,13 +467,27 @@ module Liquid
       end
     end
 
-    # Reverse the elements of an array
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name reverse
+    # @liquid_summary
+    #   Reverses the order of the items in an array.
+    # @liquid_syntax array | reverse
+    # @liquid_return [array[untyped]]
     def reverse(input)
       ary = InputIterator.new(input, context)
       ary.reverse
     end
 
-    # map/collect on a given property
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name map
+    # @liquid_summary
+    #   Creates an array of values from a specific property of the items in an array.
+    # @liquid_syntax array | map: string
+    # @liquid_return [array[untyped]]
     def map(input, property)
       InputIterator.new(input, context).map do |e|
         e = e.call if e.is_a?(Proc)
@@ -277,8 +503,14 @@ module Liquid
       raise_property_error(property)
     end
 
-    # Remove nils within an array
-    # provide optional property with which to check for nil
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name map
+    # @liquid_summary
+    #   Removes any `nil` items from an array.
+    # @liquid_syntax array | compact
+    # @liquid_return [array[untyped]]
     def compact(input, property = nil)
       ary = InputIterator.new(input, context)
 
@@ -298,17 +530,38 @@ module Liquid
       end
     end
 
-    # Replace occurrences of a string with another
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name replace
+    # @liquid_summary
+    #   Replaces any instance of a substring inside a string with a given string.
+    # @liquid_syntax string | replace: string, string
+    # @liquid_return [string]
     def replace(input, string, replacement = '')
       input.to_s.gsub(string.to_s, replacement.to_s)
     end
 
-    # Replace the first occurrences of a string with another
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name replace_first
+    # @liquid_summary
+    #   Replaces the first instance of a substring inside a string with a given string.
+    # @liquid_syntax string | replace_first: string, string
+    # @liquid_return [string]
     def replace_first(input, string, replacement = '')
       input.to_s.sub(string.to_s, replacement.to_s)
     end
 
-    # Replace the last occurrences of a string with another
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name replace_last
+    # @liquid_summary
+    #   Replaces the last instance of a substring inside a string with a given string.
+    # @liquid_syntax string | replace_last: string, string
+    # @liquid_return [string]
     def replace_last(input, string, replacement)
       input = input.to_s
       string = string.to_s
@@ -323,26 +576,66 @@ module Liquid
       output
     end
 
-    # remove a substring
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name replace
+    # @liquid_summary
+    #   Removes any instance of a substring inside a string.
+    # @liquid_syntax string | remove: string
+    # @liquid_return [string]
     def remove(input, string)
       replace(input, string, '')
     end
 
-    # remove the first occurrences of a substring
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name remove_first
+    # @liquid_summary
+    #   Removes the first instance of a substring inside a string.
+    # @liquid_syntax string | remove_first: string
+    # @liquid_return [string]
     def remove_first(input, string)
       replace_first(input, string, '')
     end
 
-    # remove the last occurences of a substring
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name remove_last
+    # @liquid_summary
+    #   Removes the last instance of a substring inside a string.
+    # @liquid_syntax string | remove_last: string
+    # @liquid_return [string]
     def remove_last(input, string)
       replace_last(input, string, '')
     end
 
-    # add one string to another
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name append
+    # @liquid_summary
+    #   Adds a given string to the end of a string.
+    # @liquid_syntax string | append: string
+    # @liquid_return [string]
     def append(input, string)
       input.to_s + string.to_s
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name concat
+    # @liquid_summary
+    #   Concatenates (combines) two arrays.
+    # @liquid_description
+    #   > Note:
+    #   > The `concat` filter won't filter out duplicates. If you want to remove duplicates, then you need to use the
+    #   > [`uniq` filter](/api/liquid/filters#uniq).
+    # @liquid_syntax array | concat: array
+    # @liquid_return [array[untyped]]
     def concat(input, array)
       unless array.respond_to?(:to_ary)
         raise ArgumentError, "concat filter requires an array argument"
@@ -350,12 +643,26 @@ module Liquid
       InputIterator.new(input, context).concat(array)
     end
 
-    # prepend a string to another
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name prepend
+    # @liquid_summary
+    #   Adds a given string to the beginning of a string.
+    # @liquid_syntax string | prepend: string
+    # @liquid_return [string]
     def prepend(input, string)
       string.to_s + input.to_s
     end
 
-    # Add <br /> tags in front of all newlines in input string
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_name newline_to_br
+    # @liquid_summary
+    #   Converts newlines (`\n`) in a string to HTML line breaks (`<br>`).
+    # @liquid_syntax string | newline_to_br
+    # @liquid_return [string]
     def newline_to_br(input)
       input.to_s.gsub(/\r?\n/, "<br />\n")
     end
@@ -399,58 +706,115 @@ module Liquid
       date.strftime(format.to_s)
     end
 
-    # Get the first element of the passed in array
-    #
-    # Example:
-    #    {{ product.images | first | to_img }}
-    #
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name first
+    # @liquid_summary
+    #   Returns the first item in the array.
+    # @liquid_syntax string | first
+    # @liquid_return [string]
     def first(array)
       array.first if array.respond_to?(:first)
     end
 
-    # Get the last element of the passed in array
-    #
-    # Example:
-    #    {{ product.images | last | to_img }}
-    #
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name last
+    # @liquid_summary
+    #   Returns the last item in the array.
+    # @liquid_syntax string | last
+    # @liquid_return [string]
     def last(array)
       array.last if array.respond_to?(:last)
     end
 
-    # absolute value
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category math
+    # @liquid_name abs
+    # @liquid_summary
+    #   Returns the absolute value of a number.
+    # @liquid_syntax number | abs
+    # @liquid_return [number]
     def abs(input)
       result = Utils.to_number(input).abs
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
-    # addition
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category math
+    # @liquid_name plus
+    # @liquid_summary
+    #   Adds two numbers.
+    # @liquid_syntax number | plus: number
+    # @liquid_return [number]
     def plus(input, operand)
       apply_operation(input, operand, :+)
     end
 
-    # subtraction
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category math
+    # @liquid_name minus
+    # @liquid_summary
+    #   Subtracts a given number from another number.
+    # @liquid_syntax number | minus: number
+    # @liquid_return [number]
     def minus(input, operand)
       apply_operation(input, operand, :-)
     end
 
-    # multiplication
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category math
+    # @liquid_name times
+    # @liquid_summary
+    #   Multiplies two numbers.
+    # @liquid_syntax number | times: number
+    # @liquid_return [number]
     def times(input, operand)
       apply_operation(input, operand, :*)
     end
 
-    # division
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category math
+    # @liquid_name minus
+    # @liquid_summary
+    #   Divides a number by a given number.
+    # @liquid_syntax number | minus: number
+    # @liquid_return [number]
     def divided_by(input, operand)
       apply_operation(input, operand, :/)
     rescue ::ZeroDivisionError => e
       raise Liquid::ZeroDivisionError, e.message
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category math
+    # @liquid_name modulo
+    # @liquid_summary
+    #   Returns the remainder of dividing a number by a given number.
+    # @liquid_syntax number | modulo: number
+    # @liquid_return [number]
     def modulo(input, operand)
       apply_operation(input, operand, :%)
     rescue ::ZeroDivisionError => e
       raise Liquid::ZeroDivisionError, e.message
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category math
+    # @liquid_name round
+    # @liquid_summary
+    #   Rounds a number to the nearest integer.
+    # @liquid_syntax number | round
+    # @liquid_return [number]
     def round(input, n = 0)
       result = Utils.to_number(input).round(Utils.to_number(n))
       result = result.to_f if result.is_a?(BigDecimal)
@@ -460,18 +824,42 @@ module Liquid
       raise Liquid::FloatDomainError, e.message
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category math
+    # @liquid_name ceil
+    # @liquid_summary
+    #   Rounds a number up to the nearest integer.
+    # @liquid_syntax number | ceil
+    # @liquid_return [number]
     def ceil(input)
       Utils.to_number(input).ceil.to_i
     rescue ::FloatDomainError => e
       raise Liquid::FloatDomainError, e.message
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category math
+    # @liquid_name floor
+    # @liquid_summary
+    #   Rounds a number down to the nearest integer.
+    # @liquid_syntax number | floor
+    # @liquid_return [number]
     def floor(input)
       Utils.to_number(input).floor.to_i
     rescue ::FloatDomainError => e
       raise Liquid::FloatDomainError, e.message
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category math
+    # @liquid_name at_least
+    # @liquid_summary
+    #   Limits a number to a minimum value.
+    # @liquid_syntax number | at_least
+    # @liquid_return [number]
     def at_least(input, n)
       min_value = Utils.to_number(n)
 
@@ -480,6 +868,14 @@ module Liquid
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category math
+    # @liquid_name at_most
+    # @liquid_summary
+    #   Limits a number to a maximum value.
+    # @liquid_syntax number | at_most
+    # @liquid_return [number]
     def at_most(input, n)
       max_value = Utils.to_number(n)
 
@@ -488,16 +884,19 @@ module Liquid
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
-    # Set a default value when the input is nil, false or empty
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_name default
+    # @liquid_summary
+    #   Sets a default value for any variable whose value is one of the following:
     #
-    # Example:
-    #    {{ product.title | default: "No Title" }}
-    #
-    # Use `allow_false` when an input should only be tested against nil or empty and not false.
-    #
-    # Example:
-    #    {{ product.title | default: "No Title", allow_false: true }}
-    #
+    #   - [`EmptyDrop`](/api/liquid/basics#emptydrop)
+    #   - [`false`](/api/liquid/basics#truthy-and-falsy)
+    #   - [`nil`](/api/liquid/basics#nil)
+    # @liquid_syntax variable | default: variable
+    # @liquid_optional_param allow_false [boolean] Whether to use false values instead of the default.
+    # @liquid_return [variable]
     def default(input, default_value = '', options = {})
       options = {} unless options.is_a?(Hash)
       false_check = options['allow_false'] ? input.nil? : !Liquid::Utils.to_liquid_value(input)

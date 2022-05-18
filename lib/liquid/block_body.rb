@@ -98,6 +98,22 @@ module Liquid
       end
     end
 
+    # @liquid_public_docs
+    # @liquid_type tag
+    # @liquid_category syntax
+    # @liquid_name liquid
+    # @liquid_summary
+    #   Allows you to have a block of Liquid without delimeters on each tag.
+    # @liquid_description
+    #   Because the tags don't have delimeters, each tag needs to be on its own line.
+    #
+    #   > Tip:
+    #   > Use the [`echo` tag](/api/liquid/tags#echo) to output an expression inside `liquid` tags.
+    # @liquid_syntax
+    #   {% liquid
+    #     expression
+    #   %}
+    # @liquid_syntax_keyword expression The expression to be rendered inside the `liquid` tag.
     private def parse_liquid_tag(markup, parse_context)
       liquid_tag_tokenizer = parse_context.new_tokenizer(
         markup, start_line_number: parse_context.line_number, for_liquid_tag: true

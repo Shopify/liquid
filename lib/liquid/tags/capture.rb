@@ -1,17 +1,20 @@
 # frozen_string_literal: true
 
 module Liquid
-  # Capture stores the result of a block into a variable without rendering it inplace.
-  #
-  #   {% capture heading %}
-  #     Monkeys!
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category variable
+  # @liquid_name capture
+  # @liquid_summary
+  #   Creates a new variable with a string value.
+  # @liquid_description
+  #   You can create complex strings with Liquid logic and variables.
+  # @liquid_syntax
+  #   {% capture variable %}
+  #     value
   #   {% endcapture %}
-  #   ...
-  #   <h1>{{ heading }}</h1>
-  #
-  # Capture is useful for saving content for use later in your template, such as
-  # in a sidebar or footer.
-  #
+  # @liquid_syntax_keyword variable The name of the variable being created.
+  # @liquid_syntax_keyword value The value you want to assign to the variable.
   class Capture < Block
     Syntax = /(#{VariableSignature}+)/o
 
