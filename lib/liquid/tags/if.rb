@@ -6,7 +6,7 @@ module Liquid
   # @liquid_category conditional
   # @liquid_name if
   # @liquid_summary
-  #   Renders an expression if a specific condition is `true`. 
+  #   Renders an expression if a specific condition is `true`.
   # @liquid_syntax
   #   {% if condition %}
   #     expression

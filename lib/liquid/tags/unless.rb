@@ -8,7 +8,7 @@ module Liquid
   # @liquid_category conditional
   # @liquid_name unless
   # @liquid_summary
-  #   Renders an expression unless a specific condition is `true`. 
+  #   Renders an expression unless a specific condition is `true`.
   # @liquid_description
   #   > Tip:
   #   > Similar to the [`if` tag](/api/liquid/tags#if), you can use `elsif` to add more conditions to an `unless` tag.

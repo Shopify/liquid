@@ -21,14 +21,14 @@ module Liquid
     #   The number of iterations.
     # @liquid_return [number]
     attr_reader :length
-    
+
     # @liquid_public_docs
     # @liquid_name tablerow.col
     # @liquid_summary
     #   The 1-based index of the current column.
     # @liquid_return [number]
     attr_reader :col
-    
+
     # @liquid_public_docs
     # @liquid_name tablerow.row
     # @liquid_summary
