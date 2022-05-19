@@ -3,7 +3,7 @@
 ## 5.4.0 (unreleased)
 
 ### Breaking Changes
-* Require Ruby >= 2.7 (#1578) [Andy Waite]
+* Drop support for end-of-life Ruby versions (2.5 and 2.6) (#1578) [Andy Waite]
 
 ### Features
 * Allow `#` to be used as an inline comment tag (#1498) [CP Clermont]
