@@ -18,8 +18,7 @@ group :benchmark, :test do
 end
 
 group :test do
-  gem 'rubocop', '~> 1.4', require: false
-  gem 'rubocop-shopify', '~> 1.0.7', require: false
+  gem 'rubocop-shopify', '~> 2.6', require: false
   gem 'rubocop-performance', require: false
 
   platform :mri, :truffleruby do
