@@ -460,6 +460,17 @@ module Liquid
       raise Liquid::FloatDomainError, e.message
     end
 
+    # Defaults are passed as nil so systems can easily override
+    def format_number(input, options = {})
+      options = {} unless options.is_a?(Hash)
+      precision = options['precision'] || 2
+      delimiter = options['delimiter'] || " ".freeze
+      separator = options['separator'] || ".".freeze
+      return input if (prec = Utils.to_number(precision).to_i) < 0
+      whole_part, decimal_part = Kernel.format("%.#{prec}f", Utils.to_number(input)).split('.')
+      [whole_part.gsub(/(\d)(?=\d{3}+$)/, "\\1#{delimiter}"), decimal_part].compact.join(separator.to_s)
+    end
+
     def ceil(input)
       Utils.to_number(input).ceil.to_i
     rescue ::FloatDomainError => e
