@@ -14,7 +14,7 @@ module Liquid
   #   > Tip:
   #   > You can use [filters](/api/liquid/filters) on expressions inside `echo` tags.
   # @liquid_syntax
-  #   {% liquid 
+  #   {% liquid
   #     echo expression
   #   %}
   # @liquid_syntax_keyword expression The expression to be output.
