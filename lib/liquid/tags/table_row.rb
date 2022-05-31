@@ -7,7 +7,7 @@ module Liquid
   # @liquid_name tablerow
   # @liquid_summary
   #   Generates HTML table rows for every item in an array.
-  # @liquid_desription
+  # @liquid_description
   #   The `tablerow` tag must be wrapped in HTML `<table>` and `</table>` tags.
   #
   #   > Tip:

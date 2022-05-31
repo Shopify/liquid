@@ -25,7 +25,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name size
     # @liquid_summary
     #   Returns the size of a string or array.
     # @liquid_description
@@ -40,7 +39,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name downcase
     # @liquid_summary
     #   Converts a string to all lowercase characters.
     # @liquid_syntax string | downcase
@@ -52,7 +50,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name upcase
     # @liquid_summary
     #   Converts a string to all uppercase characters.
     # @liquid_syntax string | upcase
@@ -64,7 +61,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name capitalize
     # @liquid_summary
     #   Capitalizes the first word in a string.
     # @liquid_syntax string | capitalize
@@ -76,7 +72,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name escape
     # @liquid_summary
     #   Escapes a string.
     # @liquid_syntax string | escape
@@ -89,7 +84,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name escape_once
     # @liquid_summary
     #   Escapes a string without changing characters that have already been escaped.
     # @liquid_syntax string | escape_once
@@ -101,13 +95,12 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name url_encode
     # @liquid_summary
     #   Converts any URL-unsafe characters in a string to the
     #   [percent-encoded](https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding) equivalent.
     # @liquid_description
     #   > Note:
-    #   > Spaces are converted to a `+` charcter, instead of a percent-encoded character.
+    #   > Spaces are converted to a `+` character, instead of a percent-encoded character.
     # @liquid_syntax string | url_encode
     # @liquid_return [string]
     def url_encode(input)
@@ -117,7 +110,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name url_decode
     # @liquid_summary
     #   Decodes any [percent-encoded](https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding) characters
     #   in a string.
@@ -135,7 +127,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name base64_encode
     # @liquid_summary
     #   Encodes a string to [Base64 format](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
     # @liquid_syntax string | base64_encode
@@ -147,7 +138,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name base64_decode
     # @liquid_summary
     #   Decodes a string in [Base64 format](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
     # @liquid_syntax string | base64_decode
@@ -161,7 +151,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name base64_url_safe_encode
     # @liquid_summary
     #   Encodes a string to URL-safe [Base64 format](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
     # @liquid_syntax string | base64_url_safe_encode
@@ -173,7 +162,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name base64_url_safe_decode
     # @liquid_summary
     #   Decodes a string in URL-safe [Base64 format](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
     # @liquid_syntax string | base64_url_safe_decode
@@ -187,7 +175,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name slice
     # @liquid_summary
     #   Returns a substring or series of array items, starting at a given 0-based index.
     # @liquid_description
@@ -211,7 +198,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name truncate
     # @liquid_summary
     #   Truncates a string down to a given number of characters.
     # @liquid_description
@@ -235,7 +221,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name truncatewords
     # @liquid_summary
     #   Truncates a string down to a given number of words.
     # @liquid_description
@@ -265,7 +250,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name split
     # @liquid_summary
     #   Splits a string into an array of substrings based on a given separator.
     # @liquid_syntax string | split: string
@@ -277,7 +261,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name strip
     # @liquid_summary
     #   Strips all whitespace from the left and right of a string.
     # @liquid_syntax string | strip
@@ -289,7 +272,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name lstrip
     # @liquid_summary
     #   Strips all whitespace from the left of a string.
     # @liquid_syntax string | lstrip
@@ -301,7 +283,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name rstrip
     # @liquid_summary
     #   Strips all whitespace from the right of a string.
     # @liquid_syntax string | rstrip
@@ -313,7 +294,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name strip_html
     # @liquid_summary
     #   Strips all HTML tags from a string.
     # @liquid_syntax string | strip_html
@@ -328,7 +308,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name strip_newlines
     # @liquid_summary
     #   Strips all newline characters (line breaks) from a string.
     # @liquid_syntax string | strip_newlines
@@ -340,7 +319,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name join
     # @liquid_summary
     #   Combines all the items in an array into a single string, separated by a space.
     # @liquid_syntax array | join
@@ -352,7 +330,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name sort
     # @liquid_summary
     #   Sorts the items in an array in case-sensitive alphabetical, or numerical, order.
     # @liquid_syntax array | sort
@@ -378,10 +355,9 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name sort
     # @liquid_summary
     #   Sorts the items in an array in case-insensitive alphabetical, or numerical, order.
-    # @liquid_syntax array | sort
+    # @liquid_syntax array | sort_natural
     # @liquid_return [array[untyped]]
     def sort_natural(input, property = nil)
       ary = InputIterator.new(input, context)
@@ -404,7 +380,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name where
     # @liquid_summary
     #   Filters an array to include only items with a specific property value.
     # @liquid_description
@@ -443,7 +418,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name uniq
     # @liquid_summary
     #   Removes any duplicate items in an array.
     # @liquid_syntax array | uniq
@@ -470,7 +444,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name reverse
     # @liquid_summary
     #   Reverses the order of the items in an array.
     # @liquid_syntax array | reverse
@@ -483,7 +456,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name map
     # @liquid_summary
     #   Creates an array of values from a specific property of the items in an array.
     # @liquid_syntax array | map: string
@@ -506,7 +478,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name map
     # @liquid_summary
     #   Removes any `nil` items from an array.
     # @liquid_syntax array | compact
@@ -533,7 +504,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name replace
     # @liquid_summary
     #   Replaces any instance of a substring inside a string with a given string.
     # @liquid_syntax string | replace: string, string
@@ -545,7 +515,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name replace_first
     # @liquid_summary
     #   Replaces the first instance of a substring inside a string with a given string.
     # @liquid_syntax string | replace_first: string, string
@@ -557,7 +526,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name replace_last
     # @liquid_summary
     #   Replaces the last instance of a substring inside a string with a given string.
     # @liquid_syntax string | replace_last: string, string
@@ -579,7 +547,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name replace
     # @liquid_summary
     #   Removes any instance of a substring inside a string.
     # @liquid_syntax string | remove: string
@@ -591,7 +558,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name remove_first
     # @liquid_summary
     #   Removes the first instance of a substring inside a string.
     # @liquid_syntax string | remove_first: string
@@ -603,7 +569,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name remove_last
     # @liquid_summary
     #   Removes the last instance of a substring inside a string.
     # @liquid_syntax string | remove_last: string
@@ -615,7 +580,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name append
     # @liquid_summary
     #   Adds a given string to the end of a string.
     # @liquid_syntax string | append: string
@@ -627,7 +591,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name concat
     # @liquid_summary
     #   Concatenates (combines) two arrays.
     # @liquid_description
@@ -646,7 +609,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name prepend
     # @liquid_summary
     #   Adds a given string to the beginning of a string.
     # @liquid_syntax string | prepend: string
@@ -658,7 +620,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
-    # @liquid_name newline_to_br
     # @liquid_summary
     #   Converts newlines (`\n`) in a string to HTML line breaks (`<br>`).
     # @liquid_syntax string | newline_to_br
@@ -709,7 +670,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name first
     # @liquid_summary
     #   Returns the first item in the array.
     # @liquid_syntax string | first
@@ -721,7 +681,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name last
     # @liquid_summary
     #   Returns the last item in the array.
     # @liquid_syntax string | last
@@ -733,7 +692,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category math
-    # @liquid_name abs
     # @liquid_summary
     #   Returns the absolute value of a number.
     # @liquid_syntax number | abs
@@ -746,7 +704,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category math
-    # @liquid_name plus
     # @liquid_summary
     #   Adds two numbers.
     # @liquid_syntax number | plus: number
@@ -758,7 +715,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category math
-    # @liquid_name minus
     # @liquid_summary
     #   Subtracts a given number from another number.
     # @liquid_syntax number | minus: number
@@ -770,9 +726,8 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category math
-    # @liquid_name times
     # @liquid_summary
-    #   Multiplies two numbers.
+    #   Multiplies a number by a given number.
     # @liquid_syntax number | times: number
     # @liquid_return [number]
     def times(input, operand)
@@ -782,10 +737,9 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category math
-    # @liquid_name minus
     # @liquid_summary
     #   Divides a number by a given number.
-    # @liquid_syntax number | minus: number
+    # @liquid_syntax number | divided_by: number
     # @liquid_return [number]
     def divided_by(input, operand)
       apply_operation(input, operand, :/)
@@ -796,7 +750,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category math
-    # @liquid_name modulo
     # @liquid_summary
     #   Returns the remainder of dividing a number by a given number.
     # @liquid_syntax number | modulo: number
@@ -810,7 +763,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category math
-    # @liquid_name round
     # @liquid_summary
     #   Rounds a number to the nearest integer.
     # @liquid_syntax number | round
@@ -827,7 +779,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category math
-    # @liquid_name ceil
     # @liquid_summary
     #   Rounds a number up to the nearest integer.
     # @liquid_syntax number | ceil
@@ -841,7 +792,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category math
-    # @liquid_name floor
     # @liquid_summary
     #   Rounds a number down to the nearest integer.
     # @liquid_syntax number | floor
@@ -855,7 +805,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category math
-    # @liquid_name at_least
     # @liquid_summary
     #   Limits a number to a minimum value.
     # @liquid_syntax number | at_least
@@ -871,7 +820,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category math
-    # @liquid_name at_most
     # @liquid_summary
     #   Limits a number to a maximum value.
     # @liquid_syntax number | at_most
@@ -887,7 +835,6 @@ module Liquid
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
-    # @liquid_name default
     # @liquid_summary
     #   Sets a default value for any variable whose value is one of the following:
     #

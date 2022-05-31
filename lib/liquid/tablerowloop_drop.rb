@@ -3,7 +3,7 @@
 module Liquid
   # @liquid_public_docs
   # @liquid_type object
-  # @liquid_name forloop
+  # @liquid_name tablerow
   # @liquid_summary
   #   The `tablerow` object contains information about a parent [`tablerow` loop](/api/liquid/tags#tablerow).
   class TablerowloopDrop < Drop
@@ -16,21 +16,18 @@ module Liquid
     end
 
     # @liquid_public_docs
-    # @liquid_name tablerow.length
     # @liquid_summary
     #   The number of iterations.
     # @liquid_return [number]
     attr_reader :length
 
     # @liquid_public_docs
-    # @liquid_name tablerow.col
     # @liquid_summary
     #   The 1-based index of the current column.
     # @liquid_return [number]
     attr_reader :col
 
     # @liquid_public_docs
-    # @liquid_name tablerow.row
     # @liquid_summary
     #   The 1-based index of current row.
     # @liquid_return [number]

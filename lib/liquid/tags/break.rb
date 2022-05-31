@@ -1,6 +1,15 @@
 # frozen_string_literal: true
 
 module Liquid
+  # Break tag to be used to break out of a for loop.
+  #
+  # == Basic Usage:
+  #    {% for item in collection %}
+  #      {% if item.condition %}
+  #        {% break %}
+  #      {% endif %}
+  #    {% endfor %}
+  #
   # @liquid_public_docs
   # @liquid_type tag
   # @liquid_category iteration

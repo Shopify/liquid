@@ -8,8 +8,7 @@ module Liquid
   # @liquid_summary
   #   Loops through a group of strings and outputs them one at a time for each iteration of a [`for` loop](/api/liquid/tags#for).
   # @liquid_description
-  #   > Note:
-  #   > The `cycle` tag must be used inside a `for` loop.
+  #   The `cycle` tag must be used inside a `for` loop.
   # @liquid_syntax
   #   {% cycle string, string, ... %}
   class Cycle < Tag

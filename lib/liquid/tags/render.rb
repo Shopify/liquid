@@ -6,21 +6,21 @@ module Liquid
   # @liquid_category theme
   # @liquid_name include
   # @liquid_summary
-  #   Renders a [snippet](/themes/architecture#snippets).
+  #   Renders a [snippet](/themes/architecture#snippets) or [app block](/themes/architecture/sections/section-schema#render-app-blocks).
   # @liquid_description
-  #   > Tip:
-  #   > The `render` tag is also used to [render app blocks](/themes/architecture/sections/section-schema#render-app-blocks).
+  #   Inside snippets and app blocks, you can't directly access variables that are [created](/api/liquid/tags#variable-tags) outside
+  #   of the snippet or app block. However, you can [specify variables as parameters](/api/liquid/tags#render-passing-variables-to-snippets)
+  #   to pass outside variables to snippets.
   #
-  #   Inside the snippet, there's no direct access to variables that are [created](/api/liquid/tags#variable-tags) outside
-  #   of the snippet. If you want to pass in outside variables, then you can [specify variables as parameters](/api/liquid/tags#render-passing-variables-to-snippets).
+  #   While you can't directly access created variables, you can access global objects, as well as any objects that are
+  #   directly accessible outside the snippet or app block. For example, a snippet or app block inside the [product template](/themes/architecture/templates/product)
+  #   can access the [`product` object](/api/liquid/objects#product), and a snippet or app block inside a [section](/themes/architecture/sections)
+  #   can access the [`section` object](/api/liquid/objects#section).
   #
-  #   While there's no direct access to created variables, there's access to global objects, as well as any objects that are
-  #   directly accessible outside the snippet.
-  #
-  #   Outside the snippet, you can't access variables created inside the snippet.
+  #   Outside a snippet or app block, you can't access variables created inside the snippet or app block.
   #
   #   > Note:
-  #   > When a snippet is rendered using the `render` tag, you can't use the [`include` tag](/api/liquid/tags#include)
+  #   > When you render a snippet using the `render` tag, you can't use the [`include` tag](/api/liquid/tags#include)
   #   > inside the snippet.
   # @liquid_syntax
   #   {% render 'filename' %}
