@@ -1,6 +1,19 @@
 # frozen_string_literal: true
 
 module Liquid
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category syntax
+  # @liquid_name inline_comment
+  # @liquid_summary
+  #   Prevents an expression from being rendered or output.
+  # @liquid_description
+  #   Any text inside an `inline_comment` tag won't be rendered or output.
+  #
+  #   You can create multi-line inline comments. However, each line must begin with a `#`.
+  # @liquid_syntax
+  #   {% # content %}
+  # @liquid_syntax_keyword content The content of the comment.
   class InlineComment < Tag
     def initialize(tag_name, markup, options)
       super
