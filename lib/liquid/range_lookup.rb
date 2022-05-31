@@ -8,11 +8,11 @@ module Liquid
       if start_obj.respond_to?(:evaluate) || end_obj.respond_to?(:evaluate)
         new(start_obj, end_obj)
       else
-        Usage.increment('range_float') if start_obj.is_a?(Float) || end_obj.is_a?(Float)
-
         start_obj.to_i..end_obj.to_i
       end
     end
+
+    attr_reader :start_obj, :end_obj
 
     def initialize(start_obj, end_obj)
       @start_obj = start_obj
@@ -35,6 +35,12 @@ module Liquid
         input.to_i
       else
         Utils.to_integer(input)
+      end
+    end
+
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children
+        [@node.start_obj, @node.end_obj]
       end
     end
   end

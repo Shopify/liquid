@@ -108,7 +108,7 @@ class VariableUnitTest < Minitest::Test
     assert_equal(VariableLookup.new('foo-bar'), create_variable('foo-bar').name)
     assert_equal(VariableLookup.new('foo-bar-2'), create_variable('foo-bar-2').name)
 
-    with_error_mode :strict do
+    with_error_mode(:strict) do
       assert_raises(Liquid::SyntaxError) { create_variable('foo - bar') }
       assert_raises(Liquid::SyntaxError) { create_variable('-foo') }
       assert_raises(Liquid::SyntaxError) { create_variable('2foo') }

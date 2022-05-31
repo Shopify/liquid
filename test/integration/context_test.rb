@@ -24,7 +24,7 @@ class ContextSensitiveDrop < Liquid::Drop
   end
 end
 
-class Category < Liquid::Drop
+class Category
   attr_accessor :name
 
   def initialize(name)
@@ -36,8 +36,9 @@ class Category < Liquid::Drop
   end
 end
 
-class CategoryDrop
+class CategoryDrop < Liquid::Drop
   attr_accessor :category, :context
+
   def initialize(category)
     @category = category
   end
@@ -405,45 +406,42 @@ class ContextTest < Minitest::Test
   end
 
   def test_lambda_is_called_once
+    @global = 0
+
     @context['callcount'] = proc {
-      @global ||= 0
-      @global  += 1
+      @global += 1
       @global.to_s
     }
 
     assert_equal('1', @context['callcount'])
     assert_equal('1', @context['callcount'])
     assert_equal('1', @context['callcount'])
-
-    @global = nil
   end
 
   def test_nested_lambda_is_called_once
+    @global = 0
+
     @context['callcount'] = { "lambda" => proc {
-                                            @global ||= 0
-                                            @global  += 1
+                                            @global += 1
                                             @global.to_s
                                           } }
 
     assert_equal('1', @context['callcount.lambda'])
     assert_equal('1', @context['callcount.lambda'])
     assert_equal('1', @context['callcount.lambda'])
-
-    @global = nil
   end
 
   def test_lambda_in_array_is_called_once
+    @global = 0
+
     @context['callcount'] = [1, 2, proc {
-                                     @global ||= 0
-                                     @global  += 1
+                                     @global += 1
                                      @global.to_s
                                    }, 4, 5]
 
     assert_equal('1', @context['callcount[2]'])
     assert_equal('1', @context['callcount[2]'])
     assert_equal('1', @context['callcount[2]'])
-
-    @global = nil
   end
 
   def test_access_to_context_from_proc
@@ -461,6 +459,7 @@ class ContextTest < Minitest::Test
   end
 
   def test_interrupt_avoids_object_allocations
+    @context.interrupt? # ruby 3.0.0 allocates on the first call
     assert_no_object_allocations do
       @context.interrupt?
     end
@@ -566,9 +565,9 @@ class ContextTest < Minitest::Test
   def test_disables_tag_specified
     context = Context.new
     context.with_disabled_tags(%w(foo bar)) do
-      assert_equal true, context.tag_disabled?("foo")
-      assert_equal true, context.tag_disabled?("bar")
-      assert_equal false, context.tag_disabled?("unknown")
+      assert_equal(true, context.tag_disabled?("foo"))
+      assert_equal(true, context.tag_disabled?("bar"))
+      assert_equal(false, context.tag_disabled?("unknown"))
     end
   end
 
@@ -576,19 +575,19 @@ class ContextTest < Minitest::Test
     context = Context.new
     context.with_disabled_tags(["foo"]) do
       context.with_disabled_tags(["foo"]) do
-        assert_equal true, context.tag_disabled?("foo")
-        assert_equal false, context.tag_disabled?("bar")
+        assert_equal(true, context.tag_disabled?("foo"))
+        assert_equal(false, context.tag_disabled?("bar"))
       end
       context.with_disabled_tags(["bar"]) do
-        assert_equal true, context.tag_disabled?("foo")
-        assert_equal true, context.tag_disabled?("bar")
+        assert_equal(true, context.tag_disabled?("foo"))
+        assert_equal(true, context.tag_disabled?("bar"))
         context.with_disabled_tags(["foo"]) do
-          assert_equal true, context.tag_disabled?("foo")
-          assert_equal true, context.tag_disabled?("bar")
+          assert_equal(true, context.tag_disabled?("foo"))
+          assert_equal(true, context.tag_disabled?("bar"))
         end
       end
-      assert_equal true, context.tag_disabled?("foo")
-      assert_equal false, context.tag_disabled?("bar")
+      assert_equal(true, context.tag_disabled?("foo"))
+      assert_equal(false, context.tag_disabled?("bar"))
     end
   end
 
@@ -606,17 +605,31 @@ class ContextTest < Minitest::Test
     end
 
     with_global_filter(global) do
-      assert_equal 'Global test', Template.parse("{{'test' | notice }}").render!
-      assert_equal 'Local test', Template.parse("{{'test' | notice }}").render!({}, filters: [local])
+      assert_equal('Global test', Template.parse("{{'test' | notice }}").render!)
+      assert_equal('Local test', Template.parse("{{'test' | notice }}").render!({}, filters: [local]))
     end
   end
 
   def test_has_key_will_not_add_an_error_for_missing_keys
-    with_error_mode :strict do
+    with_error_mode(:strict) do
       context = Context.new
       context.key?('unknown')
-      assert_empty context.errors
+      assert_empty(context.errors)
     end
+  end
+
+  def test_context_always_uses_static_registers
+    registers = {
+      my_register: :my_value,
+    }
+    c = Context.new({}, {}, registers)
+    assert_instance_of(StaticRegisters, c.registers)
+    assert_equal(:my_value, c.registers[:my_register])
+
+    r = StaticRegisters.new(registers)
+    c = Context.new({}, {}, r)
+    assert_instance_of(StaticRegisters, c.registers)
+    assert_equal(:my_value, c.registers[:my_register])
   end
 
   private

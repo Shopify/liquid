@@ -34,9 +34,9 @@ module Liquid
     end
 
     def render_tag(context, output)
-      # Though we evaluate this here we will only ever parse it as a string literal.
-      template_name = context.evaluate(@template_name_expr)
-      raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
+      # The expression should be a String literal, which parses to a String object
+      template_name = @template_name_expr
+      raise ::ArgumentError unless template_name.is_a?(String)
 
       partial = PartialCache.load(
         template_name,

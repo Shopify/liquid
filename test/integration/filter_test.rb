@@ -169,9 +169,9 @@ class FiltersInTemplate < Minitest::Test
 
   def test_local_global
     with_global_filter(MoneyFilter) do
-      assert_equal " 1000$ ", Template.parse("{{1000 | money}}").render!(nil, nil)
-      assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, filters: CanadianMoneyFilter)
-      assert_equal " 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, filters: [CanadianMoneyFilter])
+      assert_equal(" 1000$ ", Template.parse("{{1000 | money}}").render!(nil, nil))
+      assert_equal(" 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, filters: CanadianMoneyFilter))
+      assert_equal(" 1000$ CAD ", Template.parse("{{1000 | money}}").render!(nil, filters: [CanadianMoneyFilter]))
     end
   end
 

@@ -28,7 +28,7 @@ class I18nUnitTest < Minitest::Test
   # end
 
   def test_raises_unknown_translation
-    assert_raises I18n::TranslationError do
+    assert_raises(I18n::TranslationError) do
       @i18n.translate("doesnt_exist")
     end
   end

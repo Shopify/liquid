@@ -14,7 +14,7 @@ class BlockTest < Minitest::Test
 
   def test_with_custom_tag
     with_custom_tag('testtag', Block) do
-      assert Liquid::Template.parse("{% testtag %} {% endtesttag %}")
+      assert(Liquid::Template.parse("{% testtag %} {% endtesttag %}"))
     end
   end
 
@@ -28,13 +28,13 @@ class BlockTest < Minitest::Test
     with_custom_tag('blabla', klass1) do
       template = Liquid::Template.parse("{% blabla %} bla {% endblabla %}")
 
-      assert_equal 'hello', template.render
+      assert_equal('hello', template.render)
 
       buf    = +''
       output = template.render({}, output: buf)
-      assert_equal 'hello', output
-      assert_equal 'hello', buf
-      assert_equal buf.object_id, output.object_id
+      assert_equal('hello', output)
+      assert_equal('hello', buf)
+      assert_equal(buf.object_id, output.object_id)
     end
 
     klass2 = Class.new(klass1) do
@@ -46,33 +46,13 @@ class BlockTest < Minitest::Test
     with_custom_tag('blabla', klass2) do
       template = Liquid::Template.parse("{% blabla %} foo {% endblabla %}")
 
-      assert_equal 'foohellobar', template.render
+      assert_equal('foohellobar', template.render)
 
       buf    = +''
       output = template.render({}, output: buf)
-      assert_equal 'foohellobar', output
-      assert_equal 'foohellobar', buf
-      assert_equal buf.object_id, output.object_id
+      assert_equal('foohellobar', output)
+      assert_equal('foohellobar', buf)
+      assert_equal(buf.object_id, output.object_id)
     end
-  end
-
-  def test_instrument_for_bug_1346
-    calls = []
-    Liquid::Usage.stub(:increment, ->(name) { calls << name }) do
-      Liquid::Template.parse("{% for i in (1..2) %}{{ i }}{% endfor {% foo %}")
-    end
-    assert_equal(["end_tag_params"], calls)
-
-    calls = []
-    Liquid::Usage.stub(:increment, ->(name) { calls << name }) do
-      Liquid::Template.parse("{% for i in (1..2) %}{{ i }}{% endfor test %}")
-    end
-    assert_equal(["end_tag_params"], calls)
-
-    calls = []
-    Liquid::Usage.stub(:increment, ->(name) { calls << name }) do
-      Liquid::Template.parse("{% for i in (1..2) %}{{ i }}{% endfor %}")
-    end
-    assert_equal([], calls)
   end
 end

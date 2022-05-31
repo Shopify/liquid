@@ -25,7 +25,7 @@ module Liquid
   #     node.code
   #
   #     # Which template and line number of this node.
-  #     # If top level, this will be "<root>".
+  #     # The top-level template name is `nil` by default, but can be set in the Liquid::Context before rendering.
   #     node.partial
   #     node.line_number
   #
@@ -46,126 +46,94 @@ module Liquid
     include Enumerable
 
     class Timing
-      attr_reader :code, :partial, :line_number, :children, :total_time, :self_time
+      attr_reader :code, :template_name, :line_number, :children
+      attr_accessor :total_time
+      alias_method :render_time, :total_time
+      alias_method :partial, :template_name
 
-      def initialize(node, partial)
-        @code        = node.respond_to?(:raw) ? node.raw : node
-        @partial     = partial
-        @line_number = node.respond_to?(:line_number) ? node.line_number : nil
-        @children    = []
+      def initialize(code: nil, template_name: nil, line_number: nil)
+        @code = code
+        @template_name = template_name
+        @line_number = line_number
+        @children = []
       end
 
-      def self.start(node, partial)
-        new(node, partial).tap(&:start)
-      end
-
-      def start
-        @start_time = Time.now
-      end
-
-      def finish
-        @end_time   = Time.now
-        @total_time = @end_time - @start_time
-
-        if @children.empty?
-          @self_time = @total_time
-        else
-          total_children_time = 0
+      def self_time
+        @self_time ||= begin
+          total_children_time = 0.0
           @children.each do |child|
             total_children_time += child.total_time
           end
-          @self_time = @total_time - total_children_time
+          @total_time - total_children_time
         end
       end
+    end
 
-      def render_time
-        @end_time - @start_time
+    attr_reader :total_time
+    alias_method :total_render_time, :total_time
+
+    def initialize
+      @root_children = []
+      @current_children = nil
+      @total_time = 0.0
+    end
+
+    def profile(template_name, &block)
+      # nested renders are done from a tag that already has a timing node
+      return yield if @current_children
+
+      root_children = @root_children
+      render_idx = root_children.length
+      begin
+        @current_children = root_children
+        profile_node(template_name, &block)
+      ensure
+        @current_children = nil
+        if (timing = root_children[render_idx])
+          @total_time += timing.total_time
+        end
       end
     end
 
-    def self.profile_node_render(node)
-      if Profiler.current_profile && node.respond_to?(:render)
-        Profiler.current_profile.start_node(node)
-        output = yield
-        Profiler.current_profile.end_node(node)
-        output
+    def children
+      children = @root_children
+      if children.length == 1
+        children.first.children
       else
-        yield
+        children
       end
-    end
-
-    def self.profile_children(template_name)
-      if Profiler.current_profile
-        Profiler.current_profile.push_partial(template_name)
-        output = yield
-        Profiler.current_profile.pop_partial
-        output
-      else
-        yield
-      end
-    end
-
-    def self.current_profile
-      Thread.current[:liquid_profiler]
-    end
-
-    def initialize(partial_name = "<root>")
-      @partial_stack = [partial_name]
-
-      @root_timing  = Timing.new("", current_partial)
-      @timing_stack = [@root_timing]
-
-      @render_start_at = Time.now
-      @render_end_at   = @render_start_at
-    end
-
-    def start
-      Thread.current[:liquid_profiler] = self
-      @render_start_at = Time.now
-    end
-
-    def stop
-      Thread.current[:liquid_profiler] = nil
-      @render_end_at = Time.now
-    end
-
-    def total_render_time
-      @render_end_at - @render_start_at
     end
 
     def each(&block)
-      @root_timing.children.each(&block)
+      children.each(&block)
     end
 
     def [](idx)
-      @root_timing.children[idx]
+      children[idx]
     end
 
     def length
-      @root_timing.children.length
+      children.length
     end
 
-    def start_node(node)
-      @timing_stack.push(Timing.start(node, current_partial))
+    def profile_node(template_name, code: nil, line_number: nil)
+      timing = Timing.new(code: code, template_name: template_name, line_number: line_number)
+      parent_children = @current_children
+      start_time = monotonic_time
+      begin
+        @current_children = timing.children
+        yield
+      ensure
+        @current_children = parent_children
+        timing.total_time = monotonic_time - start_time
+        parent_children << timing
+      end
     end
 
-    def end_node(_node)
-      timing = @timing_stack.pop
-      timing.finish
+    private
 
-      @timing_stack.last.children << timing
-    end
-
-    def current_partial
-      @partial_stack.last
-    end
-
-    def push_partial(partial_name)
-      @partial_stack.push(partial_name)
-    end
-
-    def pop_partial
-      @partial_stack.pop
+    def monotonic_time
+      Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
   end
 end

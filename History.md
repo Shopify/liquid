@@ -1,10 +1,92 @@
 # Liquid Change Log
 
-### Unreleased
+## 5.4.0 (unreleased)
 
-* Split Strainer class as a factory and a template (#1208) [Thierry Joyal]
+### Breaking Changes
+* Drop support for end-of-life Ruby versions (2.5 and 2.6) (#1578) [Andy Waite]
+
+### Features
+* Allow `#` to be used as an inline comment tag (#1498) [CP Clermont]
+
+### Fixes
+* `PartialCache` now shares snippet cache with subcontexts by default (#1553) [Chris AtLee]
+* Hash registers no longer leak into subcontexts as static registers (#1564) [Chris AtLee]
+
+### Changed
+* Liquid::Context#registers now always returns a Liquid::StaticRegisters object, though supports the most used Hash functions for compatibility (#1553)
+
+## 5.3.0 2022-03-22
+
+### Fixes
+* StandardFilter: Fix missing @context on iterations (#1525) [Thierry Joyal]
+* Fix warning about block and default value in `static_registers.rb` (#1531) [Peter Zhu]
+
+### Deprecation
+* Condition#evaluate to require mandatory context argument in Liquid 6.0.0 (#1527) [Thierry Joyal]
+
+## 5.2.0 2022-03-01
+
+### Features
+* Add `remove_last`, and `replace_last` filters (#1422) [Anders Hagbard]
+* Eagerly cache global filters (#1524) [Jean Boussier]
+
+### Fixes
+* Fix some internal errors in filters from invalid input (#1476) [Dylan Thacker-Smith]
+* Allow dash in filter kwarg name for consistency with Liquid::C (#1518) [CP Clermont]
+
+## 5.1.0 / 2021-09-09
+
+### Features
+* Add `base64_encode`, `base64_decode`, `base64_url_safe_encode`, and `base64_url_safe_decode` filters (#1450) [Daniel Insley]
+* Introduce `to_liquid_value` in `Liquid::Drop` (#1441) [Michael Go]
+
+### Fixes
+* Fix support for using a String subclass for the liquid source (#1421) [Dylan Thacker-Smith]
+* Add `ParseTreeVisitor` to `RangeLookup` (#1470) [CP Clermont]
+* Translate `RangeError` to `Liquid::Error` for `truncatewords` with large int (#1431) [Dylan Thacker-Smith]
+
+## 5.0.1 / 2021-03-24
+
+### Fixes
+* Add ParseTreeVisitor to Echo tag (#1414) [CP Clermont]
+* Test with ruby 3.0 as the latest ruby version (#1398) [Dylan Thacker-Smith]
+* Handle carriage return in newlines_to_br (#1391) [Unending]
+
+### Performance Improvements
+* Use split limit in truncatewords (#1361) [Dylan Thacker-Smith]
+
+## 5.0.0 / 2021-01-06
+
+### Features
+* Add new `{% render %}` tag (#1122) [Samuel Doiron]
+* Add support for `as` in `{% render %}` and `{% include %}` (#1181) [Mike Angell]
+* Add `{% liquid %}` and `{% echo %}` tags (#1086) [Justin Li]
+* Add [usage tracking](README.md#usage-tracking) [Mike Angell]
+* Add `Tag.disable_tags` for disabling tags that prepend `Tag::Disableable` at render time (#1162, #1274, #1275) [Mike Angell]
+* Support using a profiler for multiple renders (#1365, #1366) [Dylan Thacker-Smith]
+
+### Fixes
+* Fix catastrophic backtracking in `RANGES_REGEX` regular expression (#1357) [Dylan Thacker-Smith]
+* Make sure the for tag's limit and offset are integers (#1094) [David Cornu]
+* Invokable methods for enumerable reject include (#1151) [Thierry Joyal]
+* Allow `default` filter to handle `false` as value (#1144) [Mike Angell]
+* Fix render length resource limit so it doesn't multiply nested output (#1285) [Dylan Thacker-Smith]
+* Fix duplication of text in raw tags (#1304) [Peter Zhu]
+* Fix strict parsing of find variable with a name expression (#1317) [Dylan Thacker-Smith]
+* Use monotonic time to measure durations in Liquid::Profiler (#1362) [Dylan Thacker-Smith]
+
+### Breaking Changes
+* Require Ruby >= 2.5 (#1131, #1310) [Mike Angell, Dylan Thacker-Smith]
+* Remove support for taint checking (#1268) [Dylan Thacker-Smith]
+* Split Strainer class into StrainerFactory and StrainerTemplate (#1208) [Thierry Joyal]
 * Remove handling of a nil context in the Strainer class (#1218) [Thierry Joyal]
-* StaticRegisters#fetch to raise on missing key (#1250) [Thierry Joyal]
+* Handle `BlockBody#blank?` at parse time (#1287) [Dylan Thacker-Smith]
+* Pass the tag markup and tokenizer to `Document#unknown_tag` (#1290) [Dylan Thacker-Smith]
+* And several internal changes
+
+### Performance Improvements
+* Reduce allocations (#1073, #1091, #1115, #1099, #1117, #1141, #1322, #1341) [Richard Monette, Florian Weingarten, Ashwin Maroli]
+* Improve resources limits performance (#1093, #1323) [Florian Weingarten, Dylan Thacker-Smith]
 
 ## 4.0.3 / 2019-03-12
 

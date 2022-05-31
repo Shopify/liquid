@@ -31,7 +31,7 @@ module Liquid
     def parse(tokens)
       while parse_body(@blocks.last.attachment, tokens)
       end
-      @blocks.each do |block|
+      @blocks.reverse_each do |block|
         block.attachment.remove_blank_strings if blank?
         block.attachment.freeze
       end
@@ -50,7 +50,11 @@ module Liquid
 
     def render_to_output_buffer(context, output)
       @blocks.each do |block|
-        if block.evaluate(context)
+        result = Liquid::Utils.to_liquid_value(
+          block.evaluate(context)
+        )
+
+        if result
           return block.attachment.render_to_output_buffer(context, output)
         end
       end

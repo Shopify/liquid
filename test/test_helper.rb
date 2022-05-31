@@ -72,21 +72,21 @@ module Minitest
     end
 
     def with_global_filter(*globals)
-      original_global_filters = Liquid::StrainerFactory.instance_variable_get(:@global_filters)
-      Liquid::StrainerFactory.instance_variable_set(:@global_filters, [])
-      globals.each do |global|
-        Liquid::StrainerFactory.add_global_filter(global)
-      end
-
-      Liquid::StrainerFactory.send(:strainer_class_cache).clear
+      original_global_cache = Liquid::StrainerFactory::GlobalCache
+      Liquid::StrainerFactory.send(:remove_const, :GlobalCache)
+      Liquid::StrainerFactory.const_set(:GlobalCache, Class.new(Liquid::StrainerTemplate))
 
       globals.each do |global|
         Liquid::Template.register_filter(global)
       end
-      yield
-    ensure
       Liquid::StrainerFactory.send(:strainer_class_cache).clear
-      Liquid::StrainerFactory.instance_variable_set(:@global_filters, original_global_filters)
+      begin
+        yield
+      ensure
+        Liquid::StrainerFactory.send(:remove_const, :GlobalCache)
+        Liquid::StrainerFactory.const_set(:GlobalCache, original_global_cache)
+        Liquid::StrainerFactory.send(:strainer_class_cache).clear
+      end
     end
 
     def with_error_mode(mode)
@@ -116,6 +116,44 @@ end
 class ThingWithToLiquid
   def to_liquid
     'foobar'
+  end
+end
+
+class IntegerDrop < Liquid::Drop
+  def initialize(value)
+    super()
+    @value = value.to_i
+  end
+
+  def ==(other)
+    @value == other
+  end
+
+  def to_s
+    @value.to_s
+  end
+
+  def to_liquid_value
+    @value
+  end
+end
+
+class BooleanDrop < Liquid::Drop
+  def initialize(value)
+    super()
+    @value = value
+  end
+
+  def ==(other)
+    @value == other
+  end
+
+  def to_liquid_value
+    @value
+  end
+
+  def to_s
+    @value ? "Yay" : "Nay"
   end
 end
 

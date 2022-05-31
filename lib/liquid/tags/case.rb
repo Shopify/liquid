@@ -19,15 +19,16 @@ module Liquid
     end
 
     def parse(tokens)
-      body = new_body
+      body = case_body = new_body
       body = @blocks.last.attachment while parse_body(body, tokens)
-      @blocks.each do |condition|
+      @blocks.reverse_each do |condition|
         body = condition.attachment
         unless body.frozen?
           body.remove_blank_strings if blank?
           body.freeze
         end
       end
+      case_body.freeze
     end
 
     def nodelist
@@ -51,7 +52,14 @@ module Liquid
       @blocks.each do |block|
         if block.else?
           block.attachment.render_to_output_buffer(context, output) if execute_else_block
-        elsif block.evaluate(context)
+          next
+        end
+
+        result = Liquid::Utils.to_liquid_value(
+          block.evaluate(context)
+        )
+
+        if result
           execute_else_block = false
           block.attachment.render_to_output_buffer(context, output)
         end

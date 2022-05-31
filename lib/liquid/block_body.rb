@@ -4,8 +4,8 @@ require 'English'
 
 module Liquid
   class BlockBody
-    LiquidTagToken      = /\A\s*(\w+)\s*(.*?)\z/o
-    FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(\w+)(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    LiquidTagToken      = /\A\s*(#{TagName})\s*(.*?)\z/o
+    FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(#{TagName})(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable   = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
     TAGSTART            = "{%"
@@ -37,7 +37,7 @@ module Liquid
 
     private def parse_for_liquid_tag(tokenizer, parse_context)
       while (token = tokenizer.shift)
-        unless token.empty? || token =~ WhitespaceOrNothing
+        unless token.empty? || token.match?(WhitespaceOrNothing)
           unless token =~ LiquidTagToken
             # line isn't empty but didn't match tag syntax, yield and let the
             # caller raise a syntax error
@@ -99,7 +99,9 @@ module Liquid
     end
 
     private def parse_liquid_tag(markup, parse_context)
-      liquid_tag_tokenizer = Tokenizer.new(markup, line_number: parse_context.line_number, for_liquid_tag: true)
+      liquid_tag_tokenizer = parse_context.new_tokenizer(
+        markup, start_line_number: parse_context.line_number, for_liquid_tag: true
+      )
       parse_for_liquid_tag(liquid_tag_tokenizer, parse_context) do |end_tag_name, _end_tag_markup|
         if end_tag_name
           BlockBody.unknown_tag_in_liquid_tag(end_tag_name, parse_context)
@@ -148,7 +150,7 @@ module Liquid
           end
           parse_context.trim_whitespace = false
           @nodelist << token
-          @blank &&= !!(token =~ WhitespaceOrNothing)
+          @blank &&= token.match?(WhitespaceOrNothing)
         end
         parse_context.line_number = tokenizer.line_number
       end
@@ -229,8 +231,8 @@ module Liquid
     end
 
     def create_variable(token, parse_context)
-      token.scan(ContentOfVariable) do |content|
-        markup = content.first
+      if token =~ ContentOfVariable
+        markup = Regexp.last_match(1)
         return Variable.new(markup, parse_context)
       end
       BlockBody.raise_missing_variable_terminator(token, parse_context)

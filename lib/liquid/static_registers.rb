@@ -31,7 +31,11 @@ module Liquid
       if @registers.key?(key)
         @registers.fetch(key)
       elsif default != UNDEFINED
-        @static.fetch(key, default, &block)
+        if block_given?
+          @static.fetch(key, &block)
+        else
+          @static.fetch(key, default)
+        end
       else
         @static.fetch(key, &block)
       end

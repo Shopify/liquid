@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require 'cgi'
+require 'base64'
 require 'bigdecimal'
 
 module Liquid
   module StandardFilters
+    MAX_INT = (1 << 31) - 1
     HTML_ESCAPE = {
       '&' => '&amp;',
       '>' => '&gt;',
@@ -62,6 +64,26 @@ module Liquid
       result
     end
 
+    def base64_encode(input)
+      Base64.strict_encode64(input.to_s)
+    end
+
+    def base64_decode(input)
+      Base64.strict_decode64(input.to_s)
+    rescue ::ArgumentError
+      raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
+    end
+
+    def base64_url_safe_encode(input)
+      Base64.urlsafe_encode64(input.to_s)
+    end
+
+    def base64_url_safe_decode(input)
+      Base64.urlsafe_decode64(input.to_s)
+    rescue ::ArgumentError
+      raise Liquid::ArgumentError, "invalid base64 provided to base64_url_safe_decode"
+    end
+
     def slice(input, offset, length = nil)
       offset = Utils.to_integer(offset)
       length = length ? Utils.to_integer(length) : 1
@@ -89,13 +111,21 @@ module Liquid
 
     def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
-      wordlist = input.to_s.split
-      words    = Utils.to_integer(words)
+      input = input.to_s
+      words = Utils.to_integer(words)
+      words = 1 if words <= 0
 
-      l = words - 1
-      l = 0 if l < 0
+      wordlist = begin
+        input.split(" ", words + 1)
+      rescue RangeError
+        raise if words + 1 < MAX_INT
+        # e.g. integer #{words} too big to convert to `int'
+        raise Liquid::ArgumentError, "integer #{words} too big for truncatewords"
+      end
+      return input if wordlist.length <= words
 
-      wordlist.length > l ? wordlist[0..l].join(" ").concat(truncate_string.to_s) : input
+      wordlist.pop
+      wordlist.join(" ").concat(truncate_string.to_s)
     end
 
     # Split input string into an array of substrings separated by given pattern.
@@ -183,17 +213,23 @@ module Liquid
 
       if ary.empty?
         []
-      elsif ary.first.respond_to?(:[]) && target_value.nil?
-        begin
-          ary.select { |item| item[property] }
+      elsif target_value.nil?
+        ary.select do |item|
+          item[property]
         rescue TypeError
           raise_property_error(property)
+        rescue NoMethodError
+          return nil unless item.respond_to?(:[])
+          raise
         end
-      elsif ary.first.respond_to?(:[])
-        begin
-          ary.select { |item| item[property] == target_value }
+      else
+        ary.select do |item|
+          item[property] == target_value
         rescue TypeError
           raise_property_error(property)
+        rescue NoMethodError
+          return nil unless item.respond_to?(:[])
+          raise
         end
       end
     end
@@ -207,11 +243,14 @@ module Liquid
         ary.uniq
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
-      elsif ary.first.respond_to?(:[])
-        begin
-          ary.uniq { |a| a[property] }
+      else
+        ary.uniq do |item|
+          item[property]
         rescue TypeError
           raise_property_error(property)
+        rescue NoMethodError
+          return nil unless item.respond_to?(:[])
+          raise
         end
       end
     end
@@ -247,11 +286,14 @@ module Liquid
         ary.compact
       elsif ary.empty? # The next two cases assume a non-empty array.
         []
-      elsif ary.first.respond_to?(:[])
-        begin
-          ary.reject { |a| a[property].nil? }
+      else
+        ary.reject do |item|
+          item[property].nil?
         rescue TypeError
           raise_property_error(property)
+        rescue NoMethodError
+          return nil unless item.respond_to?(:[])
+          raise
         end
       end
     end
@@ -266,14 +308,34 @@ module Liquid
       input.to_s.sub(string.to_s, replacement.to_s)
     end
 
+    # Replace the last occurrences of a string with another
+    def replace_last(input, string, replacement)
+      input = input.to_s
+      string = string.to_s
+      replacement = replacement.to_s
+
+      start_index = input.rindex(string)
+
+      return input unless start_index
+
+      output = input.dup
+      output[start_index, string.length] = replacement
+      output
+    end
+
     # remove a substring
     def remove(input, string)
-      input.to_s.gsub(string.to_s, '')
+      replace(input, string, '')
     end
 
     # remove the first occurrences of a substring
     def remove_first(input, string)
-      input.to_s.sub(string.to_s, '')
+      replace_first(input, string, '')
+    end
+
+    # remove the last occurences of a substring
+    def remove_last(input, string)
+      replace_last(input, string, '')
     end
 
     # add one string to another
@@ -295,7 +357,7 @@ module Liquid
 
     # Add <br /> tags in front of all newlines in input string
     def newline_to_br(input)
-      input.to_s.gsub(/\n/, "<br />\n")
+      input.to_s.gsub(/\r?\n/, "<br />\n")
     end
 
     # Reformat a date using Ruby's core Time#strftime( string ) -> string
@@ -438,7 +500,7 @@ module Liquid
     #
     def default(input, default_value = '', options = {})
       options = {} unless options.is_a?(Hash)
-      false_check = options['allow_false'] ? input.nil? : !input
+      false_check = options['allow_false'] ? input.nil? : !Liquid::Utils.to_liquid_value(input)
       false_check || (input.respond_to?(:empty?) && input.empty?) ? default_value : input
     end
 
@@ -456,10 +518,16 @@ module Liquid
     end
 
     def nil_safe_compare(a, b)
-      if !a.nil? && !b.nil?
-        a <=> b
+      result = a <=> b
+
+      if result
+        result
+      elsif a.nil?
+        1
+      elsif b.nil?
+        -1
       else
-        a.nil? ? 1 : -1
+        raise Liquid::ArgumentError, "cannot sort values of incompatible types"
       end
     end
 
@@ -514,8 +582,9 @@ module Liquid
 
       def each
         @input.each do |e|
+          e = e.respond_to?(:to_liquid) ? e.to_liquid : e
           e.context = @context if e.respond_to?(:context=)
-          yield(e.respond_to?(:to_liquid) ? e.to_liquid : e)
+          yield(e)
         end
       end
     end

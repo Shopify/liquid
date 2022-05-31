@@ -44,7 +44,7 @@ class AssignTest < Minitest::Test
       end
     end
     with_error_mode(:lax) do
-      assert Template.parse("{% assign foo = ('X' | downcase) %}")
+      assert(Template.parse("{% assign foo = ('X' | downcase) %}"))
     end
   end
 
