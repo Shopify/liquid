@@ -843,7 +843,6 @@ module Liquid
     #   - [`nil`](/api/liquid/basics#nil)
     # @liquid_syntax variable | default: variable
     # @liquid_optional_param allow_false [boolean] Whether to use false values instead of the default.
-    # @liquid_return [variable]
     def default(input, default_value = '', options = {})
       options = {} unless options.is_a?(Hash)
       false_check = options['allow_false'] ? input.nil? : !Liquid::Utils.to_liquid_value(input)

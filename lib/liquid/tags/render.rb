@@ -4,7 +4,7 @@ module Liquid
   # @liquid_public_docs
   # @liquid_type tag
   # @liquid_category theme
-  # @liquid_name include
+  # @liquid_name render
   # @liquid_summary
   #   Renders a [snippet](/themes/architecture#snippets) or [app block](/themes/architecture/sections/section-schema#render-app-blocks).
   # @liquid_description
