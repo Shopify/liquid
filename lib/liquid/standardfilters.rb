@@ -180,8 +180,6 @@ module Liquid
     # @liquid_description
     #   By default, the substring has a length of one character, and the array series has one array item. However, you can
     #   provide a second parameter to specify the number of characters or array items.
-    #
-    #   You can also supply a negative index which will count from the end of the string.
     # @liquid_syntax string | slice
     # @liquid_return [string]
     def slice(input, offset, length = nil)
@@ -383,10 +381,7 @@ module Liquid
     # @liquid_summary
     #   Filters an array to include only items with a specific property value.
     # @liquid_description
-    #   You can use the  `where` filter in the following ways:
-    #
-    #   - Filter for items with a specific property value. This requires you to provide both the property name and the associated value.
-    #   - Filter for items that have a `true` value for a boolean property. This requires only the property name.
+    #   This requires you to provide both the property name and the associated value.
     # @liquid_syntax array | where: string, string
     # @liquid_return [array[untyped]]
     def where(input, property, target_value = nil)

@@ -9,6 +9,9 @@ module Liquid
   #   Loops through a group of strings and outputs them one at a time for each iteration of a [`for` loop](/api/liquid/tags#for).
   # @liquid_description
   #   The `cycle` tag must be used inside a `for` loop.
+  #
+  #   > Tip:
+  #   > Use the `cycle` tag to output text in a predictable pattern. For example, to apply odd/even classes to rows in a table.
   # @liquid_syntax
   #   {% cycle string, string, ... %}
   class Cycle < Tag
