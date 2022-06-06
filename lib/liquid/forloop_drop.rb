@@ -5,7 +5,7 @@ module Liquid
   # @liquid_type object
   # @liquid_name forloop
   # @liquid_summary
-  #   The `forloop` object contains information about a parent [`for` loop](/api/liquid/tags#for).
+  #   Information about a parent [`for` loop](/api/liquid/tags#for).
   class ForloopDrop < Drop
     def initialize(name, length, parentloop)
       @name       = name
@@ -17,7 +17,7 @@ module Liquid
     # @liquid_public_docs
     # @liquid_name forloop.length
     # @liquid_summary
-    #   The number of iterations.
+    #   The total number of iterations in the loop.
     # @liquid_return [number]
     attr_reader :length
 
