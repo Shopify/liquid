@@ -22,8 +22,7 @@ Gem::Specification.new do |s|
 
   s.metadata['allowed_push_host'] = 'https://rubygems.org'
 
-  s.test_files  = Dir.glob("{test}/**/*")
-  s.files       = Dir.glob("{lib}/**/*") + %w(LICENSE README.md)
+  s.files = Dir.glob("{lib}/**/*") + %w(LICENSE README.md)
 
   s.extra_rdoc_files = ["History.md", "README.md"]
 
