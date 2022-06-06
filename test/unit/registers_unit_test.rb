@@ -2,11 +2,11 @@
 
 require 'test_helper'
 
-class StaticRegistersUnitTest < Minitest::Test
+class RegistersUnitTest < Minitest::Test
   include Liquid
 
   def test_set
-    static_register = StaticRegisters.new(a: 1, b: 2)
+    static_register = Registers.new(a: 1, b: 2)
     static_register[:b] = 22
     static_register[:c] = 33
 
@@ -16,13 +16,13 @@ class StaticRegistersUnitTest < Minitest::Test
   end
 
   def test_get_missing_key
-    static_register = StaticRegisters.new
+    static_register = Registers.new
 
     assert_nil(static_register[:missing])
   end
 
   def test_delete
-    static_register = StaticRegisters.new(a: 1, b: 2)
+    static_register = Registers.new(a: 1, b: 2)
     static_register[:b] = 22
     static_register[:c] = 33
 
@@ -37,7 +37,7 @@ class StaticRegistersUnitTest < Minitest::Test
   end
 
   def test_fetch
-    static_register = StaticRegisters.new(a: 1, b: 2)
+    static_register = Registers.new(a: 1, b: 2)
     static_register[:b] = 22
     static_register[:c] = 33
 
@@ -61,7 +61,7 @@ class StaticRegistersUnitTest < Minitest::Test
   end
 
   def test_key
-    static_register = StaticRegisters.new(a: 1, b: 2)
+    static_register = Registers.new(a: 1, b: 2)
     static_register[:b] = 22
     static_register[:c] = 33
 
@@ -72,7 +72,7 @@ class StaticRegistersUnitTest < Minitest::Test
   end
 
   def test_static_register_can_be_frozen
-    static_register = StaticRegisters.new(a: 1)
+    static_register = Registers.new(a: 1)
 
     static_register.static.freeze
 
@@ -94,14 +94,14 @@ class StaticRegistersUnitTest < Minitest::Test
   end
 
   def test_new_static_retains_static
-    static_register = StaticRegisters.new(a: 1, b: 2)
+    static_register = Registers.new(a: 1, b: 2)
     static_register[:b] = 22
     static_register[:c] = 33
 
-    new_static_register = StaticRegisters.new(static_register)
+    new_static_register = Registers.new(static_register)
     new_static_register[:b] = 222
 
-    newest_static_register = StaticRegisters.new(new_static_register)
+    newest_static_register = Registers.new(new_static_register)
     newest_static_register[:c] = 333
 
     assert_equal(1, static_register[:a])
@@ -118,11 +118,11 @@ class StaticRegistersUnitTest < Minitest::Test
   end
 
   def test_multiple_instances_are_unique
-    static_register_1 = StaticRegisters.new(a: 1, b: 2)
+    static_register_1 = Registers.new(a: 1, b: 2)
     static_register_1[:b] = 22
     static_register_1[:c] = 33
 
-    static_register_2 = StaticRegisters.new(a: 10, b: 20)
+    static_register_2 = Registers.new(a: 10, b: 20)
     static_register_2[:b] = 220
     static_register_2[:c] = 330
 
@@ -138,11 +138,11 @@ class StaticRegistersUnitTest < Minitest::Test
   end
 
   def test_initialization_reused_static_same_memory_object
-    static_register_1 = StaticRegisters.new(a: 1, b: 2)
+    static_register_1 = Registers.new(a: 1, b: 2)
     static_register_1[:b] = 22
     static_register_1[:c] = 33
 
-    static_register_2 = StaticRegisters.new(static_register_1)
+    static_register_2 = Registers.new(static_register_1)
 
     assert_equal(1, static_register_2[:a])
     assert_equal(2, static_register_2[:b])

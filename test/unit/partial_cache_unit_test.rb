@@ -132,7 +132,7 @@ class PartialCacheUnitTest < Minitest::Test
       'my_partial' => 'my shared value'
     )
     context = Liquid::Context.build(
-      registers: Liquid::StaticRegisters.new(
+      registers: Liquid::Registers.new(
         file_system: shared_file_system,
       )
     )

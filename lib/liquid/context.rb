@@ -28,7 +28,7 @@ module Liquid
 
       @static_environments = [static_environments].flat_map(&:freeze).freeze
       @scopes              = [(outer_scope || {})]
-      @registers           = registers.is_a?(StaticRegisters) ? registers : StaticRegisters.new(registers)
+      @registers           = registers.is_a?(Registers) ? registers : Registers.new(registers)
       @errors              = []
       @partial             = false
       @strict_variables    = false
@@ -144,7 +144,7 @@ module Liquid
       self.class.build(
         resource_limits: resource_limits,
         static_environments: static_environments,
-        registers: StaticRegisters.new(registers)
+        registers: Registers.new(registers)
       ).tap do |subcontext|
         subcontext.base_scope_depth   = base_scope_depth + 1
         subcontext.exception_renderer = exception_renderer
