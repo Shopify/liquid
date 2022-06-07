@@ -363,13 +363,13 @@ Yanked from rubygems, as it contained too many changes that broke compatibility.
 * Removed count helper from standard lib. use size [Tobias Luetke]
 * Fixed bug with string filter parameters failing to tolerate commas in strings. [Paul Hammond]
 * Improved filter parameters. Filter parameters are now context sensitive; Types are resolved according to the rules of the context. Multiple parameters are now separated by the Liquid::ArgumentSeparator: , by default [Paul Hammond]
-  {{ 'Typo' | link_to: 'http://typo.leetsoft.com', 'Typo - a modern weblog engine' }}
+    {{ 'Typo' | link_to: 'http://typo.leetsoft.com', 'Typo - a modern weblog engine' }}
 * Added Liquid::Drop. A base class which you can use for exporting proxy objects to liquid which can acquire more data when used in liquid. [Tobias Luetke]
 
   class ProductDrop < Liquid::Drop
-  def top_sales
-  Shop.current.products.find(:all, :order => 'sales', :limit => 10 )
-  end
+    def top_sales
+       Shop.current.products.find(:all, :order => 'sales', :limit => 10 )
+    end
   end
   t = Liquid::Template.parse( ' {% for product in product.top_sales %} {{ product.name }} {% endfor %} '  )
   t.render('product' => ProductDrop.new )
