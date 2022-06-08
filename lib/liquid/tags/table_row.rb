@@ -11,7 +11,7 @@ module Liquid
   #   The `tablerow` tag must be wrapped in HTML `<table>` and `</table>` tags.
   #
   #   > Tip:
-  #   > Every `tablerow` loop has an associated [`tablerow` object](/api/liquid/objects#tablerow) with information about the loop.
+  #   > Every `tablerow` loop has an associated [`tablerowloop` object](/api/liquid/objects#tablerowloop) with information about the loop.
   # @liquid_syntax
   #   {% tablerow variable in array %}
   #     expression
