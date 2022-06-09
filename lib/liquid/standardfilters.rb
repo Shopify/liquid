@@ -234,6 +234,23 @@ module Liquid
       end
     end
 
+    # Sort elements of an array in numeric order
+    # provide optional property with which to sort an array of hashes or drops
+    def sort_numeric(input, property = nil)
+      ary = InputIterator.new(input)
+      if property.nil?
+        ary.sort do |a, b|
+          Utils.to_number(a) <=> Utils.to_number(b)
+        end
+      elsif ary.empty? # The next two cases assume a non-empty array.
+        []
+      elsif ary.first.respond_to?(:[]) && !ary.first[property].nil?
+        ary.sort do |a, b|
+          Utils.to_number(a[property]) <=> Utils.to_number(b[property])
+        end
+      end
+    end
+
     # Remove duplicate elements from an array
     # provide optional property with which to determine uniqueness
     def uniq(input, property = nil)
