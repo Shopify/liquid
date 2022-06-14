@@ -16,8 +16,7 @@ module Liquid
   # @liquid_deprecated
   #   Deprecated because the way that variables are handled reduces performance and makes code harder to both read and maintain.
   #
-  #   > Tip:
-  #   > The `include` tag has been replaced by [`render`](/api/liquid/tags#render).
+  #   The `include` tag has been replaced by [`render`](/api/liquid/tags#render).
   class Include < Tag
     prepend Tag::Disableable
 

@@ -224,6 +224,10 @@ module Liquid
     # @liquid_description
     #   If the specified number of words is less than the number of words in the string, then an ellipsis (`...`) is appended to
     #   the truncated string.
+    #
+    #   > Caution
+    #   > HTML tags are treated as words, so you should strip any HTML from truncated content. If you don't strip HTML, then
+    #   > closing HTML tags can be removed, which can result in unexpected behavior.
     # @liquid_syntax string | truncatewords: number
     # @liquid_return [string]
     def truncatewords(input, words = 15, truncate_string = "...")
@@ -318,7 +322,7 @@ module Liquid
     # @liquid_type filter
     # @liquid_category array
     # @liquid_summary
-    #   Combines all the items in an array into a single string, separated by a space.
+    #   Combines all of the items in an array into a single string, separated by a space.
     # @liquid_syntax array | join
     # @liquid_return [string]
     def join(input, glue = ' ')
@@ -666,9 +670,9 @@ module Liquid
     # @liquid_type filter
     # @liquid_category array
     # @liquid_summary
-    #   Returns the first item in the array.
-    # @liquid_syntax string | first
-    # @liquid_return [string]
+    #   Returns the first item in an array.
+    # @liquid_syntax array | first
+    # @liquid_return [untyped]
     def first(array)
       array.first if array.respond_to?(:first)
     end
@@ -677,9 +681,9 @@ module Liquid
     # @liquid_type filter
     # @liquid_category array
     # @liquid_summary
-    #   Returns the last item in the array.
-    # @liquid_syntax string | last
-    # @liquid_return [string]
+    #   Returns the last item in an array.
+    # @liquid_syntax array | last
+    # @liquid_return [untyped]
     def last(array)
       array.last if array.respond_to?(:last)
     end
@@ -837,6 +841,7 @@ module Liquid
     #   - [`false`](/api/liquid/basics#truthy-and-falsy)
     #   - [`nil`](/api/liquid/basics#nil)
     # @liquid_syntax variable | default: variable
+    # @liquid_return [untyped]
     # @liquid_optional_param allow_false [boolean] Whether to use false values instead of the default.
     def default(input, default_value = '', options = {})
       options = {} unless options.is_a?(Hash)
