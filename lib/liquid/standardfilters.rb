@@ -833,7 +833,7 @@ module Liquid
 
     # @liquid_public_docs
     # @liquid_type filter
-    # @liquid_category array
+    # @liquid_category default
     # @liquid_summary
     #   Sets a default value for any variable whose value is one of the following:
     #
