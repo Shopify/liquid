@@ -225,7 +225,7 @@ module Liquid
     #   If the specified number of words is less than the number of words in the string, then an ellipsis (`...`) is appended to
     #   the truncated string.
     #
-    #   > Caution
+    #   > Caution:
     #   > HTML tags are treated as words, so you should strip any HTML from truncated content. If you don't strip HTML, then
     #   > closing HTML tags can be removed, which can result in unexpected behavior.
     # @liquid_syntax string | truncatewords: number
