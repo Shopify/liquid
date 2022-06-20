@@ -32,6 +32,10 @@ module Liquid
       end
     end
 
+    def lookup_command?(lookup_index)
+      @command_flags & (1 << lookup_index) != 0
+    end
+
     def evaluate(context)
       name   = context.evaluate(@name)
       object = context.find_variable(name)
@@ -55,7 +59,7 @@ module Liquid
           # Some special cases. If the part wasn't in square brackets and
           # no key with the same name was found we interpret following calls
           # as commands and call them on the current object
-        elsif @command_flags & (1 << i) != 0 && object.respond_to?(key)
+        elsif lookup_command?(i) && object.respond_to?(key)
           object = object.send(key).to_liquid
 
           # No key was present with the desired value and it wasn't one of the directly supported
