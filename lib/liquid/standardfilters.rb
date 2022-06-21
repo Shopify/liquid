@@ -837,7 +837,7 @@ module Liquid
     # @liquid_summary
     #   Sets a default value for any variable whose value is one of the following:
     #
-    #   - [`EmptyDrop`](/api/liquid/basics#emptydrop)
+    #   - [`empty`](/api/liquid/basics#empty)
     #   - [`false`](/api/liquid/basics#truthy-and-falsy)
     #   - [`nil`](/api/liquid/basics#nil)
     # @liquid_syntax variable | default: variable
