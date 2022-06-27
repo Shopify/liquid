@@ -589,7 +589,7 @@ module Liquid
 
     # @liquid_public_docs
     # @liquid_type filter
-    # @liquid_category string
+    # @liquid_category array
     # @liquid_summary
     #   Concatenates (combines) two arrays.
     # @liquid_description
