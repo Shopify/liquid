@@ -1,21 +1,23 @@
 # frozen_string_literal: true
 
 module Liquid
-  # increment is used in a place where one needs to insert a counter
-  #     into a template, and needs the counter to survive across
-  #     multiple instantiations of the template.
-  #     (To achieve the survival, the application must keep the context)
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category variable
+  # @liquid_name increment
+  # @liquid_summary
+  #   Creates a new variable, with a default value of 0, that's increased by 1 with each subsequent call.
+  # @liquid_description
+  #   Variables that are declared with `increment` are unique to the [layout](/themes/architecture/layouts), [template](/themes/architecture/templates),
+  #   or [section](/themes/architecture/sections) file that they're created in. However, the variable is shared across
+  #   [snippets](/themes/architecture#snippets) included in the file.
   #
-  #     if the variable does not exist, it is created with value 0.
-  #
-  #   Hello: {% increment variable %}
-  #
-  # gives you:
-  #
-  #    Hello: 0
-  #    Hello: 1
-  #    Hello: 2
-  #
+  #   Similarly, variables that are created with `increment` are independent from those created with [`assign`](/api/liquid/tags#assign)
+  #   and [`capture`](/api/liquid/tags#capture). However, `increment` and [`decrement`](/api/liquid/tags#decrement) share
+  #   variables.
+  # @liquid_syntax
+  #   {% increment variable_name %}
+  # @liquid_syntax_keyword variable_name The name of the variable being incremented.
   class Increment < Tag
     def initialize(tag_name, markup, options)
       super

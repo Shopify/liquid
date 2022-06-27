@@ -1,14 +1,18 @@
 # frozen_string_literal: true
 
 module Liquid
-  # Assign sets a variable in your template.
-  #
-  #   {% assign foo = 'monkey' %}
-  #
-  # You can then use the variable later in the page.
-  #
-  #  {{ foo }}
-  #
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category variable
+  # @liquid_name assign
+  # @liquid_summary
+  #   Creates a new variable.
+  # @liquid_description
+  #   You can create variables of any [basic type](/api/liquid/basics#types), [object](/api/liquid/objects), or object property.
+  # @liquid_syntax
+  #   {% assign variable_name = value %}
+  # @liquid_syntax_keyword variable_name The name of the variable being created.
+  # @liquid_syntax_keyword value The value you want to assign to the variable.
   class Assign < Tag
     Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/om
 
