@@ -15,12 +15,19 @@ module Liquid
     end
 
     # @liquid_public_docs
-    # @liquid_name forloop.length
+    # @liquid_name length
     # @liquid_summary
     #   The total number of iterations in the loop.
     # @liquid_return [number]
     attr_reader :length
 
+    # @liquid_public_docs
+    # @liquid_name parentloop
+    # @liquid_summary
+    #   The parent `forloop` object.
+    # @liquid_description
+    #   If the current `for` loop isn't nested inside another `for` loop, then `nil` is returned.
+    # @liquid_return [forloop]
     attr_reader :parentloop
 
     def name
