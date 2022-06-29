@@ -10,6 +10,14 @@ module Liquid
   #      {% endif %}
   #    {% endfor %}
   #
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category iteration
+  # @liquid_name break
+  # @liquid_summary
+  #   Stops a [`for` loop](/api/liquid/tags#for) from iterating.
+  # @liquid_syntax
+  #   {% break %}
   class Break < Tag
     INTERRUPT = BreakInterrupt.new.freeze
 

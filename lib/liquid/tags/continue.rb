@@ -1,15 +1,14 @@
 # frozen_string_literal: true
 
 module Liquid
-  # Continue tag to be used to break out of a for loop.
-  #
-  # == Basic Usage:
-  #    {% for item in collection %}
-  #      {% if item.condition %}
-  #        {% continue %}
-  #      {% endif %}
-  #    {% endfor %}
-  #
+  # @liquid_public_docs
+  # @liquid_type tag
+  # @liquid_category iteration
+  # @liquid_name continue
+  # @liquid_summary
+  #   Causes a [`for` loop](/api/liquid/tags#for) to skip to the next iteration.
+  # @liquid_syntax
+  #   {% continue %}
   class Continue < Tag
     INTERRUPT = ContinueInterrupt.new.freeze
 
