@@ -358,7 +358,11 @@ module Liquid
     # @liquid_type filter
     # @liquid_category array
     # @liquid_summary
-    #   Sorts the items in an array in case-insensitive alphabetical, or numerical, order.
+    #   Sorts the items in an array in case-insensitive alphabetical order.
+    # @liquid_description
+    #   > Caution:
+    #   > You shouldn't use the `sort_natural` filter to sort numerical values. When comparing items an array, each item is converted to a
+    #   > string, so sorting on numerical values can lead to unexpected results.
     # @liquid_syntax array | sort_natural
     # @liquid_return [array[untyped]]
     def sort_natural(input, property = nil)

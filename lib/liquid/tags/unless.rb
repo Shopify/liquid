@@ -15,7 +15,7 @@ module Liquid
   # @liquid_syntax
   #   {% unless condition %}
   #     expression
-  #   {% endif %}
+  #   {% endunless %}
   # @liquid_syntax_keyword condition The condition to evaluate.
   # @liquid_syntax_keyword expression The expression to render unless the condition is met.
   class Unless < If
