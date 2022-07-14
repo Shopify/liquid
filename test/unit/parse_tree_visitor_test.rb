@@ -236,6 +236,20 @@ class ParseTreeVisitorTest < Minitest::Test
     )
   end
 
+  def test_render_with
+    assert_equal(
+      ["test"],
+      visit(%({% render "hai" with test %}))
+    )
+  end
+
+  def test_render_for
+    assert_equal(
+      ["test"],
+      visit(%({% render "hai" for test %}))
+    )
+  end
+
   def test_preserve_tree_structure
     assert_equal(
       [[nil, [
