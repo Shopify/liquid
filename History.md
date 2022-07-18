@@ -11,6 +11,7 @@
 ### Fixes
 * `PartialCache` now shares snippet cache with subcontexts by default (#1553) [Chris AtLee]
 * Hash registers no longer leak into subcontexts as static registers (#1564) [Chris AtLee]
+* Fix `ParseTreeVisitor` for `with` variable expressions in `Render` tag (#1596) [CP Clermont]
 
 ### Changed
 * Liquid::Context#registers now always returns a Liquid::Registers object, though supports the most used Hash functions for compatibility (#1553)
