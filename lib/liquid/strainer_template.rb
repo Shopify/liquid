@@ -36,8 +36,6 @@ module Liquid
         subclass.instance_variable_set(:@filter_methods, @filter_methods.dup)
       end
 
-      private
-
       def filter_methods
         @filter_methods ||= Set.new
       end

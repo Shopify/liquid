@@ -14,6 +14,10 @@ module Liquid
       strainer_from_cache(filters).new(context)
     end
 
+    def filters
+      GlobalCache.filter_methods
+    end
+
     GlobalCache = Class.new(StrainerTemplate)
 
     private

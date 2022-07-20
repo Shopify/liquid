@@ -86,6 +86,10 @@ module Liquid
         StrainerFactory.add_global_filter(mod)
       end
 
+      def filters
+        StrainerFactory.filters
+      end
+
       attr_accessor :default_resource_limits
       Template.default_resource_limits = {}
       private :default_resource_limits=
