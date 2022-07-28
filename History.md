@@ -1,6 +1,6 @@
 # Liquid Change Log
 
-## 5.4.0 (unreleased)
+## 5.4.0 2022-07-29
 
 ### Breaking Changes
 * Drop support for end-of-life Ruby versions (2.5 and 2.6) (#1578) [Andy Waite]
