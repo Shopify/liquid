@@ -31,7 +31,7 @@ module Liquid
       case input
       when Integer
         input
-      when NilClass, String
+      when NilClass, String, Float
         input.to_i
       else
         Utils.to_integer(input)

@@ -29,6 +29,7 @@ class ExpressionTest < Minitest::Test
   def test_range
     assert_equal(1..2, parse_and_eval("(1..2)"))
     assert_equal(3..4, parse_and_eval(" ( 3 .. 4 ) "))
+    assert_equal(1..2, parse_and_eval("(1.1..2.2)"))
   end
 
   private
