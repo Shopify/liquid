@@ -24,11 +24,11 @@ module Liquid
 
         include(filter)
 
-        filter_methods.merge(filter.public_instance_methods.map(&:to_s))
+        filter_methods.merge(filter.public_instance_methods)
       end
 
       def invokable?(method)
-        filter_methods.include?(method.to_s)
+        filter_methods.include?(method.to_sym)
       end
 
       def inherited(subclass)
@@ -36,6 +36,9 @@ module Liquid
         subclass.instance_variable_set(:@filter_methods, @filter_methods.dup)
       end
 
+      # Assuming the filter name is a string is deprecated, explicitly
+      # cast to_s or to_sym for compatibility with liquid 6, where it is
+      # planned to return as a symbol.
       def filter_method_names
         filter_methods.map(&:to_s).to_a
       end
@@ -48,6 +51,7 @@ module Liquid
     end
 
     def invoke(method, *args)
+      method = method.to_sym
       if self.class.invokable?(method)
         send(method, *args)
       elsif @context.strict_filters

@@ -18,7 +18,7 @@ module Liquid
     JustTagAttributes        = /\A#{TagAttributes}\z/o
     MarkupWithQuotedFragment = /(#{QuotedFragment})(.*)/om
 
-    attr_accessor :filters, :name, :line_number
+    attr_accessor :name, :line_number
     attr_reader :parse_context
     alias_method :options, :parse_context
 
@@ -52,7 +52,7 @@ module Liquid
         filters = Regexp.last_match(1).scan(FilterParser)
         filters.each do |f|
           next unless f =~ /\w+/
-          filtername = Regexp.last_match(0)
+          filtername = Regexp.last_match(0).to_sym
           filterargs = f.scan(FilterArgsRegex).flatten
           @filters << parse_filter_expressions(filtername, filterargs)
         end
@@ -67,11 +67,19 @@ module Liquid
 
       @name = parse_context.parse_expression(p.expression)
       while p.consume?(:pipe)
-        filtername = p.consume(:id)
+        filtername = p.consume(:id).to_sym
         filterargs = p.consume?(:colon) ? parse_filterargs(p) : []
         @filters << parse_filter_expressions(filtername, filterargs)
       end
       p.consume(:end_of_string)
+    end
+
+    # Assuming the filter name is a string is deprecated, explicitly
+    # cast to_s or to_sym for compatibility with liquid 6, where it is
+    # planned to return as a symbol.
+    def filters
+      # Remove to_s in liquid 6.0
+      @filters.map { |key, *args| [key.to_s, *args].freeze }.freeze
     end
 
     def parse_filterargs(p)
