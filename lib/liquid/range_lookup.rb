@@ -8,7 +8,18 @@ module Liquid
       if start_obj.respond_to?(:evaluate) || end_obj.respond_to?(:evaluate)
         new(start_obj, end_obj)
       else
-        start_obj.to_i..end_obj.to_i
+        to_integer(start_obj)..to_integer(end_obj)
+      end
+    end
+
+    def self.to_integer(input)
+      case input
+      when Integer
+        input
+      when NilClass, String
+        input.to_i
+      else
+        Utils.to_integer(input)
       end
     end
 
@@ -20,22 +31,9 @@ module Liquid
     end
 
     def evaluate(context)
-      start_int = to_integer(context.evaluate(@start_obj))
-      end_int   = to_integer(context.evaluate(@end_obj))
+      start_int = RangeLookup.to_integer(context.evaluate(@start_obj))
+      end_int   = RangeLookup.to_integer(context.evaluate(@end_obj))
       start_int..end_int
-    end
-
-    private
-
-    def to_integer(input)
-      case input
-      when Integer
-        input
-      when NilClass, String
-        input.to_i
-      else
-        Utils.to_integer(input)
-      end
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
