@@ -29,6 +29,11 @@ class ExpressionTest < Minitest::Test
   def test_range
     assert_equal(1..2, parse_and_eval("(1..2)"))
     assert_equal(3..4, parse_and_eval(" ( 3 .. 4 ) "))
+
+    exc = assert_raises(Liquid::SyntaxError) { Liquid::Expression.parse("(false..true)") }
+    assert_equal("Liquid syntax error: Invalid expression type 'false' in range expression", exc.message)
+    exc = assert_raises(Liquid::SyntaxError) { Liquid::Expression.parse("((1..2)..3)") }
+    assert_equal("Liquid syntax error: Invalid expression type '(1..2)' in range expression", exc.message)
   end
 
   private
