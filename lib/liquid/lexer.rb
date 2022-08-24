@@ -18,6 +18,7 @@ module Liquid
     IDENTIFIER            = /[a-zA-Z_][\w-]*\??/
     SINGLE_STRING_LITERAL = /'[^\']*'/
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
+    STRING_LITERAL        = Regexp.union(SINGLE_STRING_LITERAL, DOUBLE_STRING_LITERAL)
     NUMBER_LITERAL        = /-?\d+(\.\d+)?/
     DOTDOT                = /\.\./
     COMPARISON_OPERATOR   = /==|!=|<>|<=?|>=?|contains(?=\s)/
@@ -35,9 +36,7 @@ module Liquid
         break if @ss.eos?
         tok      = if (t = @ss.scan(COMPARISON_OPERATOR))
           [:comparison, t]
-        elsif (t = @ss.scan(SINGLE_STRING_LITERAL))
-          [:string, t]
-        elsif (t = @ss.scan(DOUBLE_STRING_LITERAL))
+        elsif (t = @ss.scan(STRING_LITERAL))
           [:string, t]
         elsif (t = @ss.scan(NUMBER_LITERAL))
           [:number, t]
