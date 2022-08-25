@@ -64,6 +64,42 @@ class NumberLikeThing < Liquid::Drop
   end
 end
 
+class MeasurementDrop < Liquid::Drop
+  include Comparable
+
+  attr_reader :amount, :unit
+
+  def initialize(amount, unit = nil)
+    @amount = amount
+    @unit = unit
+  end
+
+  def <=>(other)
+    amount <=> other.amount
+  end
+
+  def to_number
+    self
+  end
+
+  def coerce(other)
+    coerced_other =
+      case other
+      when MeasurementDrop then other if other.unit == unit
+      when Numeric then self.class.new(other, unit)
+      end
+
+    raise Liquid::ArgumentError, "Can't coerce #{other} into MeasurementDrop" if coerced_other.nil?
+
+    [coerced_other, self]
+  end
+
+  def to_s
+    "#{@amount}#{@unit}"
+  end
+
+end
+
 class StandardFiltersTest < Minitest::Test
   Filters = Class.new(Liquid::StrainerTemplate)
   Filters.add_filter(Liquid::StandardFilters)
@@ -723,6 +759,8 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("5", "{{ width | at_most:5 }}", 'width' => NumberLikeThing.new(6))
     assert_template_result("4", "{{ width | at_most:5 }}", 'width' => NumberLikeThing.new(4))
     assert_template_result("4", "{{ 5 | at_most: width }}", 'width' => NumberLikeThing.new(4))
+    assert_template_result("4mm", "{{ width | at_most: 5 }}", 'width' => MeasurementDrop.new(4, "mm"))
+    assert_template_result("5mm", "{{ width | at_most: 5 }}", 'width' => MeasurementDrop.new(6, "mm"))
   end
 
   def test_at_least
@@ -730,10 +768,12 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("5", "{{ 5 | at_least:5 }}")
     assert_template_result("6", "{{ 5 | at_least:6 }}")
 
-    assert_template_result("5", "{{ 4.5 | at_least:5 }}")
+    assert_template_result("5.0", "{{ 4.5 | at_least:5 }}")
     assert_template_result("6", "{{ width | at_least:5 }}", 'width' => NumberLikeThing.new(6))
     assert_template_result("5", "{{ width | at_least:5 }}", 'width' => NumberLikeThing.new(4))
     assert_template_result("6", "{{ 5 | at_least: width }}", 'width' => NumberLikeThing.new(6))
+    assert_template_result("5mm", "{{ width | at_least: 5 }}", 'width' => MeasurementDrop.new(4, "mm"))
+    assert_template_result("6mm", "{{ width | at_least: 5 }}", 'width' => MeasurementDrop.new(6, "mm"))
   end
 
   def test_append

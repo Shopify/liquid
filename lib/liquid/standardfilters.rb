@@ -813,9 +813,10 @@ module Liquid
     # @liquid_syntax number | at_least
     # @liquid_return [number]
     def at_least(input, n)
-      min_value = Utils.to_number(n)
-
       result = Utils.to_number(input)
+      min_value = Utils.to_number(n)
+      min_value, result = result.coerce(min_value) if result.respond_to?(:coerce)
+
       result = min_value if min_value > result
       result.is_a?(BigDecimal) ? result.to_f : result
     end
@@ -828,9 +829,10 @@ module Liquid
     # @liquid_syntax number | at_most
     # @liquid_return [number]
     def at_most(input, n)
-      max_value = Utils.to_number(n)
-
       result = Utils.to_number(input)
+      max_value = Utils.to_number(n)
+      max_value, result = result.coerce(max_value) if result.respond_to?(:coerce)
+
       result = max_value if max_value < result
       result.is_a?(BigDecimal) ? result.to_f : result
     end
