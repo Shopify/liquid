@@ -8,7 +8,17 @@ module Liquid
       if start_obj.respond_to?(:evaluate) || end_obj.respond_to?(:evaluate)
         new(start_obj, end_obj)
       else
-        start_obj.to_i..end_obj.to_i
+        begin
+          start_obj.to_i..end_obj.to_i
+        rescue NoMethodError
+          invalid_expr = start_markup unless start_obj.respond_to?(:to_i)
+          invalid_expr ||= end_markup unless end_obj.respond_to?(:to_i)
+          if invalid_expr
+            raise Liquid::SyntaxError, "Invalid expression type '#{invalid_expr}' in range expression"
+          end
+
+          raise
+        end
       end
     end
 
