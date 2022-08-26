@@ -125,7 +125,7 @@ module Liquid
       end
 
       collection = context.evaluate(@collection_name)
-      collection = collection.to_a if collection.is_a?(Range)
+      collection = collection.step(1).to_a if collection.is_a?(Range)
 
       limit_value = context.evaluate(@limit)
       to = if limit_value.nil?
