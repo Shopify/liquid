@@ -7,7 +7,7 @@ module Liquid
       'true' => true,
       'false' => false,
       'blank' => '',
-      'empty' => ''
+      'empty' => [].freeze
     }.freeze
 
     INTEGERS_REGEX       = /\A(-?\d+)\z/

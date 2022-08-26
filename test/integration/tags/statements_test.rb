@@ -2,17 +2,27 @@
 
 require 'test_helper'
 
+class EmptyDrop < Liquid::Drop
+  def empty?
+    true
+  end
+end
+
 class StatementsTest < Minitest::Test
   include Liquid
 
   def test_true_eql_true
     text = ' {% if true == true %} true {% else %} false {% endif %} '
     assert_template_result('  true  ', text)
+    text = ' {% if var == true %} true {% else %} false {% endif %} '
+    assert_template_result('  true  ', text, 'var' => true)
   end
 
   def test_true_not_eql_true
     text = ' {% if true != true %} true {% else %} false {% endif %} '
     assert_template_result('  false  ', text)
+    text = ' {% if var != true %} true {% else %} false {% endif %} '
+    assert_template_result('  false  ', text, 'var' => true)
   end
 
   def test_true_lq_true
@@ -93,6 +103,30 @@ class StatementsTest < Minitest::Test
   def test_is_not_collection_empty
     text = ' {% if array == empty %} true {% else %} false {% endif %} '
     assert_template_result('  false  ', text, 'array' => [1, 2, 3])
+
+    text = ' {% if array != empty %} true {% else %} false {% endif %} '
+    assert_template_result('  true  ', text, 'array' => [1, 2, 3])
+  end
+
+  def test_is_collection_empty_backward
+    text = ' {% if empty == array %} true {% else %} false {% endif %} '
+    assert_template_result('  true  ', text, 'array' => [])
+  end
+
+  def test_is_string_empty
+    text = ' {% if string == empty %} true {% else %} false {% endif %} '
+    assert_template_result('  true  ', text, 'string' => '')
+
+    text = ' {% if empty == string %} true {% else %} false {% endif %} '
+    assert_template_result('  true  ', text, 'string' => '')
+  end
+
+  def test_is_non_array_empty
+    text = ' {% if obj == empty %} true {% else %} false {% endif %} '
+    assert_template_result('  true  ', text, 'obj' => EmptyDrop.new)
+
+    text = ' {% if empty == obj %} true {% else %} false {% endif %} '
+    assert_template_result('  true  ', text, 'obj' => EmptyDrop.new)
   end
 
   def test_nil
