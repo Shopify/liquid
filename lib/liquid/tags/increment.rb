@@ -19,14 +19,17 @@ module Liquid
   #   {% increment variable_name %}
   # @liquid_syntax_keyword variable_name The name of the variable being incremented.
   class Increment < Tag
+    attr_reader :variable_name
+
     def initialize(tag_name, markup, options)
       super
-      @variable = markup.strip
+      @variable_name = markup.strip
     end
 
     def render_to_output_buffer(context, output)
-      value = context.environments.first[@variable] ||= 0
-      context.environments.first[@variable] = value + 1
+      counter_environment = context.environments.first
+      value = counter_environment[@variable_name] || 0
+      counter_environment[@variable_name] = value + 1
 
       output << value.to_s
       output

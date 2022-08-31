@@ -19,15 +19,18 @@ module Liquid
   #   {% decrement variable_name %}
   # @liquid_syntax_keyword variable_name The name of the variable being decremented.
   class Decrement < Tag
+    attr_reader :variable_name
+
     def initialize(tag_name, markup, options)
       super
-      @variable = markup.strip
+      @variable_name = markup.strip
     end
 
     def render_to_output_buffer(context, output)
-      value = context.environments.first[@variable] ||= 0
+      counter_environment = context.environments.first
+      value = counter_environment[@variable_name] || 0
       value -= 1
-      context.environments.first[@variable] = value
+      counter_environment[@variable_name] = value
       output << value.to_s
       output
     end
