@@ -530,14 +530,9 @@ class TrimModeTest < Minitest::Test
   end
 
   def test_pre_trim_blank_preceding_text
-    template = Liquid::Template.parse("\n{%- raw %}{% endraw %}")
-    assert_equal("", template.render)
-
-    template = Liquid::Template.parse("\n{%- if true %}{% endif %}")
-    assert_equal("", template.render)
-
-    template = Liquid::Template.parse("{{ 'B' }} \n{%- if true %}C{% endif %}")
-    assert_equal("BC", template.render)
+    assert_template_result("", "\n{%- raw %}{% endraw %}")
+    assert_template_result("", "\n{%- if true %}{% endif %}")
+    assert_template_result("BC", "{{ 'B' }} \n{%- if true %}C{% endif %}")
   end
 
   def test_bug_compatible_pre_trim

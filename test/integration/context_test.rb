@@ -102,7 +102,7 @@ class ContextTest < Minitest::Test
   end
 
   def test_variables_not_existing
-    assert_nil(@context['does_not_exist'])
+    assert_template_result("true", "{% if does_not_exist == nil %}true{% endif %}")
   end
 
   def test_scoping
@@ -121,22 +121,18 @@ class ContextTest < Minitest::Test
   end
 
   def test_length_query
-    @context['numbers'] = [1, 2, 3, 4]
+    assert_template_result("true", "{% if numbers.size == 4 %}true{% endif %}",
+      { "numbers" => [1, 2, 3, 4] })
 
-    assert_equal(4, @context['numbers.size'])
+    assert_template_result("true", "{% if numbers.size == 4 %}true{% endif %}",
+      { "numbers" => { 1 => 1, 2 => 2, 3 => 3, 4 => 4 } })
 
-    @context['numbers'] = { 1 => 1, 2 => 2, 3 => 3, 4 => 4 }
-
-    assert_equal(4, @context['numbers.size'])
-
-    @context['numbers'] = { 1 => 1, 2 => 2, 3 => 3, 4 => 4, 'size' => 1000 }
-
-    assert_equal(1000, @context['numbers.size'])
+    assert_template_result("true", "{% if numbers.size == 1000 %}true{% endif %}",
+      { "numbers" => { 1 => 1, 2 => 2, 3 => 3, 4 => 4, 'size' => 1000 } })
   end
 
   def test_hyphenated_variable
-    @context['oh-my'] = 'godz'
-    assert_equal('godz', @context['oh-my'])
+    assert_template_result("godz", "{{ oh-my }}", { "oh-my" => 'godz' })
   end
 
   def test_add_filter
@@ -188,24 +184,24 @@ class ContextTest < Minitest::Test
   end
 
   def test_hierachical_data
-    @context['hash'] = { "name" => 'tobi' }
-    assert_equal('tobi', @context['hash.name'])
-    assert_equal('tobi', @context['hash["name"]'])
+    assigns = { 'hash' => { "name" => 'tobi' } }
+    assert_template_result("tobi", "{{ hash.name }}", assigns)
+    assert_template_result("tobi", '{{ hash["name"] }}', assigns)
   end
 
   def test_keywords
-    assert_equal(true, @context['true'])
-    assert_equal(false, @context['false'])
+    assert_template_result("pass", "{% if true == expect %}pass{% endif %}", { "expect" => true })
+    assert_template_result("pass", "{% if false == expect %}pass{% endif %}", { "expect" => false })
   end
 
   def test_digits
-    assert_equal(100, @context['100'])
-    assert_equal(100.00, @context['100.00'])
+    assert_template_result("pass", "{% if 100 == expect %}pass{% endif %}", { "expect" => 100 })
+    assert_template_result("pass", "{% if 100.00 == expect %}pass{% endif %}", { "expect" => 100.00 })
   end
 
   def test_strings
-    assert_equal("hello!", @context['"hello!"'])
-    assert_equal("hello!", @context["'hello!'"])
+    assert_template_result("hello!", '{{ "hello!" }}')
+    assert_template_result("hello!", "{{ 'hello!' }}")
   end
 
   def test_merge
@@ -217,99 +213,90 @@ class ContextTest < Minitest::Test
   end
 
   def test_array_notation
-    @context['test'] = [1, 2, 3, 4, 5]
-
-    assert_equal(1, @context['test[0]'])
-    assert_equal(2, @context['test[1]'])
-    assert_equal(3, @context['test[2]'])
-    assert_equal(4, @context['test[3]'])
-    assert_equal(5, @context['test[4]'])
+    assigns = { "test" => ["a", "b"] }
+    assert_template_result("a", "{{ test[0] }}", assigns)
+    assert_template_result("b", "{{ test[1] }}", assigns)
+    assert_template_result("pass", "{% if test[2] == nil %}pass{% endif %}", assigns)
   end
 
   def test_recoursive_array_notation
-    @context['test'] = { 'test' => [1, 2, 3, 4, 5] }
+    assigns = { "test" => { 'test' => [1, 2, 3, 4, 5] } }
+    assert_template_result("1", "{{ test.test[0] }}", assigns)
 
-    assert_equal(1, @context['test.test[0]'])
-
-    @context['test'] = [{ 'test' => 'worked' }]
-
-    assert_equal('worked', @context['test[0].test'])
+    assigns = { "test" => [{ 'test' => 'worked' }] }
+    assert_template_result("worked", "{{ test[0].test }}", assigns)
   end
 
   def test_hash_to_array_transition
-    @context['colors'] = {
+    assigns = { 'colors' => {
       'Blue' => ['003366', '336699', '6699CC', '99CCFF'],
       'Green' => ['003300', '336633', '669966', '99CC99'],
       'Yellow' => ['CC9900', 'FFCC00', 'FFFF99', 'FFFFCC'],
       'Red' => ['660000', '993333', 'CC6666', 'FF9999'],
-    }
+    } }
 
-    assert_equal('003366', @context['colors.Blue[0]'])
-    assert_equal('FF9999', @context['colors.Red[3]'])
+    assert_template_result("003366", "{{ colors.Blue[0] }}", assigns)
+    assert_template_result("FF9999", "{{ colors.Red[3] }}", assigns)
   end
 
   def test_try_first
-    @context['test'] = [1, 2, 3, 4, 5]
+    assigns = { 'test' => [1, 2, 3, 4, 5] }
+    assert_template_result("1", "{{ test.first }}", assigns)
+    assert_template_result("pass", "{% if test.last == 5 %}pass{% endif %}", assigns)
 
-    assert_equal(1, @context['test.first'])
-    assert_equal(5, @context['test.last'])
+    assigns = { "test" => { "test" => [1, 2, 3, 4, 5] } }
+    assert_template_result("1", "{{ test.test.first }}", assigns)
+    assert_template_result("5", "{{ test.test.last }}", assigns)
 
-    @context['test'] = { 'test' => [1, 2, 3, 4, 5] }
-
-    assert_equal(1, @context['test.test.first'])
-    assert_equal(5, @context['test.test.last'])
-
-    @context['test'] = [1]
-    assert_equal(1, @context['test.first'])
-    assert_equal(1, @context['test.last'])
+    assigns = { "test" => [1] }
+    assert_template_result("1", "{{ test.first }}", assigns)
+    assert_template_result("1", "{{ test.last }}", assigns)
   end
 
   def test_access_hashes_with_hash_notation
-    @context['products'] = { 'count' => 5, 'tags' => ['deepsnow', 'freestyle'] }
-    @context['product']  = { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] }
+    assigns = { 'products' => { 'count' => 5, 'tags' => ['deepsnow', 'freestyle'] } }
+    assert_template_result("5", '{{ products["count"] }}', assigns)
+    assert_template_result("deepsnow", '{{ products["tags"][0] }}', assigns)
+    assert_template_result("deepsnow", '{{ products["tags"].first }}', assigns)
 
-    assert_equal(5, @context['products["count"]'])
-    assert_equal('deepsnow', @context['products["tags"][0]'])
-    assert_equal('deepsnow', @context['products["tags"].first'])
-    assert_equal('draft151cm', @context['product["variants"][0]["title"]'])
-    assert_equal('element151cm', @context['product["variants"][1]["title"]'])
-    assert_equal('draft151cm', @context['product["variants"][0]["title"]'])
-    assert_equal('element151cm', @context['product["variants"].last["title"]'])
+    assigns = { 'product' => { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] } }
+    assert_template_result("draft151cm", '{{ product["variants"][0]["title"] }}', assigns)
+    assert_template_result("element151cm", '{{ product["variants"][1]["title"] }}', assigns)
+    assert_template_result("draft151cm", '{{ product["variants"][0]["title"] }}', assigns)
+    assert_template_result("element151cm", '{{ product["variants"].last["title"] }}', assigns)
   end
 
   def test_access_variable_with_hash_notation
-    @context['foo'] = 'baz'
-    @context['bar'] = 'foo'
-
-    assert_equal('baz', @context['["foo"]'])
-    assert_equal('baz', @context['[bar]'])
+    assert_template_result('baz', '{{ ["foo"] }}', { "foo" => "baz" })
+    assert_template_result('baz', '{{ [bar] }}', { 'foo' => 'baz', 'bar' => 'foo' })
   end
 
   def test_access_hashes_with_hash_access_variables
-    @context['var']      = 'tags'
-    @context['nested']   = { 'var' => 'tags' }
-    @context['products'] = { 'count' => 5, 'tags' => ['deepsnow', 'freestyle'] }
+    assigns = {
+      'var' => 'tags',
+      'nested' => { 'var' => 'tags' },
+      'products' => { 'count' => 5, 'tags' => ['deepsnow', 'freestyle'] },
+    }
 
-    assert_equal('deepsnow', @context['products[var].first'])
-    assert_equal('freestyle', @context['products[nested.var].last'])
+    assert_template_result('deepsnow', '{{ products[var].first }}', assigns)
+    assert_template_result('freestyle', '{{ products[nested.var].last }}', assigns)
   end
 
   def test_hash_notation_only_for_hash_access
-    @context['array'] = [1, 2, 3, 4, 5]
-    @context['hash']  = { 'first' => 'Hello' }
+    assigns = { "array" => [1, 2, 3, 4, 5] }
+    assert_template_result("1", "{{ array.first }}", assigns)
+    assert_template_result("pass", '{% if array["first"] == nil %}pass{% endif %}', assigns)
 
-    assert_equal(1, @context['array.first'])
-    assert_nil(@context['array["first"]'])
-    assert_equal('Hello', @context['hash["first"]'])
+    assert_template_result("Hello", '{{ hash["first"] }}', { "hash" => { "first" => "Hello" } })
   end
 
   def test_first_can_appear_in_middle_of_callchain
-    @context['product'] = { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] }
+    assigns = { "product" => { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] } }
 
-    assert_equal('draft151cm', @context['product.variants[0].title'])
-    assert_equal('element151cm', @context['product.variants[1].title'])
-    assert_equal('draft151cm', @context['product.variants.first.title'])
-    assert_equal('element151cm', @context['product.variants.last.title'])
+    assert_template_result('draft151cm', '{{ product.variants[0].title }}', assigns)
+    assert_template_result('element151cm', '{{ product.variants[1].title }}', assigns)
+    assert_template_result('draft151cm', '{{ product.variants.first.title }}', assigns)
+    assert_template_result('element151cm', '{{ product.variants.last.title }}', assigns)
   end
 
   def test_cents
@@ -351,10 +338,12 @@ class ContextTest < Minitest::Test
   end
 
   def test_ranges
-    @context.merge("test" => '5')
-    assert_equal((1..5), @context['(1..5)'])
-    assert_equal((1..5), @context['(1..test)'])
-    assert_equal((5..5), @context['(test..test)'])
+    assert_template_result("1..5", '{{ (1..5) }}')
+    assert_template_result("pass", '{% if (1..5) == expect %}pass{% endif %}', { "expect" => (1..5) })
+
+    assigns = { "test" => '5' }
+    assert_template_result("1..5", "{{ (1..test) }}", assigns)
+    assert_template_result("5..5", "{{ (test..test) }}", assigns)
   end
 
   def test_cents_through_drop_nestedly
