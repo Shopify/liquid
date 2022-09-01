@@ -32,9 +32,7 @@ class AssignTest < Minitest::Test
   end
 
   def test_assign_syntax_error
-    assert_match_syntax_error(/assign/,
-      '{% assign foo not values %}.',
-      { 'values' => "foo,bar,baz" })
+    assert_match_syntax_error(/assign/, '{% assign foo not values %}.')
   end
 
   def test_assign_uses_error_mode
