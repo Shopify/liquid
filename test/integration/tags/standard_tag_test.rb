@@ -71,7 +71,7 @@ class StandardTagTest < Minitest::Test
     assert_raises(SyntaxError) do
       assert_template_result('content foo content foo ',
         '{{ var2 }}{% capture %}{{ var }} foo {% endcapture %}{{ var2 }}{{ var2 }}',
-        'var' => 'content')
+        { 'var' => 'content' })
     end
   end
 
@@ -120,38 +120,38 @@ class StandardTagTest < Minitest::Test
   end
 
   def test_case_on_size
-    assert_template_result('',  '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', 'a' => [])
-    assert_template_result('1', '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', 'a' => [1])
-    assert_template_result('2', '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', 'a' => [1, 1])
-    assert_template_result('',  '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', 'a' => [1, 1, 1])
-    assert_template_result('',  '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', 'a' => [1, 1, 1, 1])
-    assert_template_result('',  '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', 'a' => [1, 1, 1, 1, 1])
+    assert_template_result('',  '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', { 'a' => [] })
+    assert_template_result('1', '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', { 'a' => [1] })
+    assert_template_result('2', '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', { 'a' => [1, 1] })
+    assert_template_result('',  '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', { 'a' => [1, 1, 1] })
+    assert_template_result('',  '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', { 'a' => [1, 1, 1, 1] })
+    assert_template_result('',  '{% case a.size %}{% when 1 %}1{% when 2 %}2{% endcase %}', { 'a' => [1, 1, 1, 1, 1] })
   end
 
   def test_case_on_size_with_else
     assert_template_result('else',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      'a' => [])
+      { 'a' => [] })
 
     assert_template_result('1',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      'a' => [1])
+      { 'a' => [1] })
 
     assert_template_result('2',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      'a' => [1, 1])
+      { 'a' => [1, 1] })
 
     assert_template_result('else',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      'a' => [1, 1, 1])
+      { 'a' => [1, 1, 1] })
 
     assert_template_result('else',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      'a' => [1, 1, 1, 1])
+      { 'a' => [1, 1, 1, 1] })
 
     assert_template_result('else',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      'a' => [1, 1, 1, 1, 1])
+      { 'a' => [1, 1, 1, 1, 1] })
   end
 
   def test_case_on_length_with_else
@@ -185,37 +185,37 @@ class StandardTagTest < Minitest::Test
 
   def test_case_when_or
     code = '{% case condition %}{% when 1 or 2 or 3 %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}'
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 1)
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 2)
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 3)
-    assert_template_result(' its 4 ', code, 'condition' => 4)
-    assert_template_result('', code, 'condition' => 5)
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 1 })
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 2 })
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 3 })
+    assert_template_result(' its 4 ', code, { 'condition' => 4 })
+    assert_template_result('', code, { 'condition' => 5 })
 
     code = '{% case condition %}{% when 1 or "string" or null %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}'
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 1)
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 'string')
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => nil)
-    assert_template_result('', code, 'condition' => 'something else')
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 1 })
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 'string' })
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => nil })
+    assert_template_result('', code, { 'condition' => 'something else' })
   end
 
   def test_case_when_comma
     code = '{% case condition %}{% when 1, 2, 3 %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}'
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 1)
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 2)
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 3)
-    assert_template_result(' its 4 ', code, 'condition' => 4)
-    assert_template_result('', code, 'condition' => 5)
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 1 })
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 2 })
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 3 })
+    assert_template_result(' its 4 ', code, { 'condition' => 4 })
+    assert_template_result('', code, { 'condition' => 5 })
 
     code = '{% case condition %}{% when 1, "string", null %} its 1 or 2 or 3 {% when 4 %} its 4 {% endcase %}'
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 1)
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => 'string')
-    assert_template_result(' its 1 or 2 or 3 ', code, 'condition' => nil)
-    assert_template_result('', code, 'condition' => 'something else')
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 1 })
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => 'string' })
+    assert_template_result(' its 1 or 2 or 3 ', code, { 'condition' => nil })
+    assert_template_result('', code, { 'condition' => 'something else' })
   end
 
   def test_case_when_comma_and_blank_body
     code = '{% case condition %}{% when 1, 2 %} {% assign r = "result" %} {% endcase %}{{ r }}'
-    assert_template_result('result', code, 'condition' => 2)
+    assert_template_result('result', code, { 'condition' => 2 })
   end
 
   def test_assign

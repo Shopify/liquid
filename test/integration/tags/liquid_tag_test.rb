@@ -6,13 +6,13 @@ class LiquidTagTest < Minitest::Test
   include Liquid
 
   def test_liquid_tag
-    assert_template_result('1 2 3', <<~LIQUID, 'array' => [1, 2, 3])
+    assert_template_result('1 2 3', <<~LIQUID, { 'array' => [1, 2, 3] })
       {%- liquid
         echo array | join: " "
       -%}
     LIQUID
 
-    assert_template_result('1 2 3', <<~LIQUID, 'array' => [1, 2, 3])
+    assert_template_result('1 2 3', <<~LIQUID, { 'array' => [1, 2, 3] })
       {%- liquid
         for value in array
           echo value
@@ -23,7 +23,7 @@ class LiquidTagTest < Minitest::Test
       -%}
     LIQUID
 
-    assert_template_result('4 8 12 6', <<~LIQUID, 'array' => [1, 2, 3])
+    assert_template_result('4 8 12 6', <<~LIQUID, { 'array' => [1, 2, 3] })
       {%- liquid
         for value in array
           assign double_value = value | times: 2

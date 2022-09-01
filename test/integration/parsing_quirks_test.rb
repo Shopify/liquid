@@ -129,6 +129,6 @@ class ParsingQuirksTest < Minitest::Test
   end
 
   def test_contains_in_id
-    assert_template_result(' YES ', '{% if containsallshipments == true %} YES {% endif %}', 'containsallshipments' => true)
+    assert_template_result(' YES ', '{% if containsallshipments == true %} YES {% endif %}', { 'containsallshipments' => true })
   end
 end # ParsingQuirksTest

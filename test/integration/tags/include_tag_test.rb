@@ -91,27 +91,31 @@ class IncludeTagTest < Minitest::Test
 
   def test_include_tag_with
     assert_template_result("Product: Draft 151cm ",
-      "{% include 'product' with products[0] %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+      "{% include 'product' with products[0] %}",
+      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] })
   end
 
   def test_include_tag_with_alias
     assert_template_result("Product: Draft 151cm ",
-      "{% include 'product_alias' with products[0] as product %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+      "{% include 'product_alias' with products[0] as product %}",
+      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] })
   end
 
   def test_include_tag_for_alias
     assert_template_result("Product: Draft 151cm Product: Element 155cm ",
-      "{% include 'product_alias' for products as product %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+      "{% include 'product_alias' for products as product %}",
+      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] })
   end
 
   def test_include_tag_with_default_name
     assert_template_result("Product: Draft 151cm ",
-      "{% include 'product' %}", "product" => { 'title' => 'Draft 151cm' })
+      "{% include 'product' %}", { "product" => { 'title' => 'Draft 151cm' } })
   end
 
   def test_include_tag_for
     assert_template_result("Product: Draft 151cm Product: Element 155cm ",
-      "{% include 'product' for products %}", "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }])
+      "{% include 'product' for products %}",
+      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] })
   end
 
   def test_include_tag_with_local_variables
@@ -126,7 +130,7 @@ class IncludeTagTest < Minitest::Test
   def test_include_tag_with_multiple_local_variables_from_context
     assert_template_result("Locale: test123 test321",
       "{% include 'locale_variables' echo1: echo1, echo2: more_echos.echo2 %}",
-      'echo1' => 'test123', 'more_echos' => { "echo2" => 'test321' })
+      { 'echo1' => 'test123', 'more_echos' => { "echo2" => 'test321' } })
   end
 
   def test_included_templates_assigns_variables
@@ -141,10 +145,10 @@ class IncludeTagTest < Minitest::Test
 
   def test_nested_include_with_variable
     assert_template_result("Product: Draft 151cm details ",
-      "{% include 'nested_product_template' with product %}", "product" => { "title" => 'Draft 151cm' })
+      "{% include 'nested_product_template' with product %}", { "product" => { "title" => 'Draft 151cm' } })
 
     assert_template_result("Product: Draft 151cm details Product: Element 155cm details ",
-      "{% include 'nested_product_template' for products %}", "products" => [{ "title" => 'Draft 151cm' }, { "title" => 'Element 155cm' }])
+      "{% include 'nested_product_template' for products %}", { "products" => [{ "title" => 'Draft 151cm' }, { "title" => 'Element 155cm' }] })
   end
 
   def test_recursively_included_template_does_not_produce_endless_loop
@@ -162,11 +166,11 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_dynamically_choosen_template
-    assert_template_result("Test123", "{% include template %}", "template" => 'Test123')
-    assert_template_result("Test321", "{% include template %}", "template" => 'Test321')
+    assert_template_result("Test123", "{% include template %}", { "template" => 'Test123' })
+    assert_template_result("Test321", "{% include template %}", { "template" => 'Test321' })
 
     assert_template_result("Product: Draft 151cm ", "{% include template for product %}",
-      "template" => 'product', 'product' => { 'title' => 'Draft 151cm' })
+      { "template" => 'product', 'product' => { 'title' => 'Draft 151cm' } })
   end
 
   def test_include_tag_caches_second_read_of_same_partial
@@ -250,9 +254,11 @@ class IncludeTagTest < Minitest::Test
   def test_including_via_variable_value
     assert_template_result("from TestFileSystem", "{% assign page = 'pick_a_source' %}{% include page %}")
 
-    assert_template_result("Product: Draft 151cm ", "{% assign page = 'product' %}{% include page %}", "product" => { 'title' => 'Draft 151cm' })
+    assert_template_result("Product: Draft 151cm ", "{% assign page = 'product' %}{% include page %}",
+      { "product" => { 'title' => 'Draft 151cm' } })
 
-    assert_template_result("Product: Draft 151cm ", "{% assign page = 'product' %}{% include page for foo %}", "foo" => { 'title' => 'Draft 151cm' })
+    assert_template_result("Product: Draft 151cm ", "{% assign page = 'product' %}{% include page for foo %}",
+      { "foo" => { 'title' => 'Draft 151cm' } })
   end
 
   def test_including_with_strict_variables
