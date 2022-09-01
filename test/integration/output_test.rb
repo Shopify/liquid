@@ -33,31 +33,25 @@ class OutputTest < Minitest::Test
 
   def setup
     @assigns = {
-      'best_cars' => 'bmw',
       'car' => { 'bmw' => 'good', 'gm' => 'bad' },
     }
   end
 
   def test_variable
-    text = %( {{best_cars}} )
-
-    expected = %( bmw )
-    assert_equal(expected, Template.parse(text).render!(@assigns))
+    assert_template_result(" bmw ", " {{best_cars}} ", { "best_cars" => "bmw" })
   end
 
   def test_variable_traversing_with_two_brackets
-    text = %({{ site.data.menu[include.menu][include.locale] }})
-    assert_equal("it works!", Template.parse(text).render!(
+    source = "{{ site.data.menu[include.menu][include.locale] }}"
+    assert_template_result("it works!", source, {
       "site" => { "data" => { "menu" => { "foo" => { "bar" => "it works!" } } } },
-      "include" => { "menu" => "foo", "locale" => "bar" }
-    ))
+      "include" => { "menu" => "foo", "locale" => "bar" },
+    })
   end
 
   def test_variable_traversing
-    text = %( {{car.bmw}} {{car.gm}} {{car.bmw}} )
-
-    expected = %( good bad good )
-    assert_equal(expected, Template.parse(text).render!(@assigns))
+    source = " {{car.bmw}} {{car.gm}} {{car.bmw}} "
+    assert_template_result(" good bad good ", source, @assigns)
   end
 
   def test_variable_piping
@@ -110,10 +104,11 @@ class OutputTest < Minitest::Test
   end
 
   def test_multiple_pipings
+    assigns = { 'best_cars' => 'bmw' }
     text     = %( {{ best_cars | cite_funny | paragraph }} )
     expected = %( <p>LOL: bmw</p> )
 
-    assert_equal(expected, Template.parse(text).render!(@assigns, filters: [FunnyFilter]))
+    assert_equal(expected, Template.parse(text).render!(assigns, filters: [FunnyFilter]))
   end
 
   def test_link_to

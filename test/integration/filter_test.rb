@@ -59,84 +59,66 @@ class FiltersTest < Minitest::Test
   end
 
   def test_size
-    @context['var'] = 'abcd'
-    @context.add_filters(MoneyFilter)
-
-    assert_equal('4', Template.parse("{{var | size}}").render(@context))
+    assert_template_result("4", "{{var | size}}", { "var" => 'abcd' })
   end
 
   def test_join
-    @context['var'] = [1, 2, 3, 4]
-
-    assert_equal("1 2 3 4", Template.parse("{{var | join}}").render(@context))
+    assert_template_result("1 2 3 4", "{{var | join}}", { "var" => [1, 2, 3, 4] })
   end
 
   def test_sort
-    @context['value']   = 3
-    @context['numbers'] = [2, 1, 4, 3]
-    @context['words']   = ['expected', 'as', 'alphabetic']
-    @context['arrays']  = ['flower', 'are']
-    @context['case_sensitive'] = ['sensitive', 'Expected', 'case']
-
-    assert_equal('1 2 3 4', Template.parse("{{numbers | sort | join}}").render(@context))
-    assert_equal('alphabetic as expected', Template.parse("{{words | sort | join}}").render(@context))
-    assert_equal('3', Template.parse("{{value | sort}}").render(@context))
-    assert_equal('are flower', Template.parse("{{arrays | sort | join}}").render(@context))
-    assert_equal('Expected case sensitive', Template.parse("{{case_sensitive | sort | join}}").render(@context))
+    assert_template_result("1 2 3 4", "{{numbers | sort | join}}", { "numbers" => [2, 1, 4, 3] })
+    assert_template_result("alphabetic as expected", "{{words | sort | join}}",
+      { "words" => ['expected', 'as', 'alphabetic'] })
+    assert_template_result("3", "{{value | sort}}", { "value" => 3 })
+    assert_template_result('are flower', "{{arrays | sort | join}}", { 'arrays' => ['flower', 'are'] })
+    assert_template_result("Expected case sensitive", "{{case_sensitive | sort | join}}",
+      { "case_sensitive" => ["sensitive", "Expected", "case"] })
   end
 
   def test_sort_natural
-    @context['words']   = ['case', 'Assert', 'Insensitive']
-    @context['hashes']  = [{ 'a' => 'A' }, { 'a' => 'b' }, { 'a' => 'C' }]
-    @context['objects'] = [TestObject.new('A'), TestObject.new('b'), TestObject.new('C')]
-
     # Test strings
-    assert_equal('Assert case Insensitive', Template.parse("{{words | sort_natural | join}}").render(@context))
+    assert_template_result("Assert case Insensitive", "{{words | sort_natural | join}}",
+      { "words" => ["case", "Assert", "Insensitive"] })
 
     # Test hashes
-    assert_equal('A b C', Template.parse("{{hashes | sort_natural: 'a' | map: 'a' | join}}").render(@context))
+    assert_template_result("A b C", "{{hashes | sort_natural: 'a' | map: 'a' | join}}",
+      { "hashes" => [{ "a" => "A" }, { "a" => "b" }, { "a" => "C" }] })
 
     # Test objects
+    @context['objects'] = [TestObject.new('A'), TestObject.new('b'), TestObject.new('C')]
     assert_equal('A b C', Template.parse("{{objects | sort_natural: 'a' | map: 'a' | join}}").render(@context))
   end
 
   def test_compact
-    @context['words']   = ['a', nil, 'b', nil, 'c']
-    @context['hashes']  = [{ 'a' => 'A' }, { 'a' => nil }, { 'a' => 'C' }]
-    @context['objects'] = [TestObject.new('A'), TestObject.new(nil), TestObject.new('C')]
-
     # Test strings
-    assert_equal('a b c', Template.parse("{{words | compact | join}}").render(@context))
+    assert_template_result("a b c", "{{words | compact | join}}",
+      { "words" => ['a', nil, 'b', nil, 'c'] })
 
     # Test hashes
-    assert_equal('A C', Template.parse("{{hashes | compact: 'a' | map: 'a' | join}}").render(@context))
+    assert_template_result("A C", "{{hashes | compact: 'a' | map: 'a' | join}}",
+      { "hashes" => [{ "a" => "A" }, { "a" => nil }, { "a" => "C" }] })
 
     # Test objects
+    @context['objects'] = [TestObject.new('A'), TestObject.new(nil), TestObject.new('C')]
     assert_equal('A C', Template.parse("{{objects | compact: 'a' | map: 'a' | join}}").render(@context))
   end
 
   def test_strip_html
-    @context['var'] = "<b>bla blub</a>"
-
-    assert_equal("bla blub", Template.parse("{{ var | strip_html }}").render(@context))
+    assert_template_result("bla blub", "{{ var | strip_html }}", { "var" => "<b>bla blub</a>" })
   end
 
   def test_strip_html_ignore_comments_with_html
-    @context['var'] = "<!-- split and some <ul> tag --><b>bla blub</a>"
-
-    assert_equal("bla blub", Template.parse("{{ var | strip_html }}").render(@context))
+    assert_template_result("bla blub", "{{ var | strip_html }}",
+      { "var" => "<!-- split and some <ul> tag --><b>bla blub</a>" })
   end
 
   def test_capitalize
-    @context['var'] = "blub"
-
-    assert_equal("Blub", Template.parse("{{ var | capitalize }}").render(@context))
+    assert_template_result("Blub", "{{ var | capitalize }}", { "var" => "blub" })
   end
 
   def test_nonexistent_filter_is_ignored
-    @context['var'] = 1000
-
-    assert_equal('1000', Template.parse("{{ var | xyzzy }}").render(@context))
+    assert_template_result("1000", "{{ var | xyzzy }}", { "var" => 1000 })
   end
 
   def test_filter_with_keyword_arguments

@@ -6,9 +6,8 @@ class VariableTest < Minitest::Test
   include Liquid
 
   def test_simple_variable
-    template = Template.parse(%({{test}}))
-    assert_equal('worked', template.render!('test' => 'worked'))
-    assert_equal('worked wonderfully', template.render!('test' => 'worked wonderfully'))
+    assert_template_result('worked', "{{test}}", { 'test' => 'worked' })
+    assert_template_result('worked wonderfully', "{{test}}", { 'test' => 'worked wonderfully' })
   end
 
   def test_variable_render_calls_to_liquid
@@ -43,9 +42,8 @@ class VariableTest < Minitest::Test
   end
 
   def test_simple_with_whitespaces
-    template = Template.parse(%(  {{ test }}  ))
-    assert_equal('  worked  ', template.render!('test' => 'worked'))
-    assert_equal('  worked wonderfully  ', template.render!('test' => 'worked wonderfully'))
+    assert_template_result("  worked  ", "  {{ test }}  ", { "test" => "worked" })
+    assert_template_result("  worked wonderfully  ", "  {{ test }}  ", { "test" => "worked wonderfully" })
   end
 
   def test_expression_with_whitespace_in_square_brackets
@@ -54,18 +52,15 @@ class VariableTest < Minitest::Test
   end
 
   def test_ignore_unknown
-    template = Template.parse(%({{ test }}))
-    assert_equal('', template.render!)
+    assert_template_result("", "{{ test }}")
   end
 
   def test_using_blank_as_variable_name
-    template = Template.parse("{% assign foo = blank %}{{ foo }}")
-    assert_equal('', template.render!)
+    assert_template_result("", "{% assign foo = blank %}{{ foo }}")
   end
 
   def test_using_empty_as_variable_name
-    template = Template.parse("{% assign foo = empty %}{{ foo }}")
-    assert_equal('', template.render!)
+    assert_template_result("", "{% assign foo = empty %}{{ foo }}")
   end
 
   def test_hash_scoping
@@ -74,13 +69,13 @@ class VariableTest < Minitest::Test
   end
 
   def test_false_renders_as_false
-    assert_equal('false', Template.parse("{{ foo }}").render!('foo' => false))
-    assert_equal('false', Template.parse("{{ false }}").render!)
+    assert_template_result("false", "{{ foo }}", { 'foo' => false })
+    assert_template_result("false", "{{ false }}")
   end
 
   def test_nil_renders_as_empty_string
-    assert_equal('', Template.parse("{{ nil }}").render!)
-    assert_equal('cat', Template.parse("{{ nil | append: 'cat' }}").render!)
+    assert_template_result("", "{{ nil }}")
+    assert_template_result("cat", "{{ nil | append: 'cat' }}")
   end
 
   def test_preset_assigns
@@ -121,7 +116,7 @@ class VariableTest < Minitest::Test
   end
 
   def test_multiline_variable
-    assert_equal('worked', Template.parse("{{\ntest\n}}").render!('test' => 'worked'))
+    assert_template_result("worked", "{{\ntest\n}}", { "test" => "worked" })
   end
 
   def test_render_symbol

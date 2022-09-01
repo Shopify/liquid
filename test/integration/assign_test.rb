@@ -6,13 +6,11 @@ class AssignTest < Minitest::Test
   include Liquid
 
   def test_assign_with_hyphen_in_variable_name
-    template_source = <<-END_TEMPLATE
-    {% assign this-thing = 'Print this-thing' %}
-    {{ this-thing }}
+    template_source = <<~END_TEMPLATE
+      {% assign this-thing = 'Print this-thing' -%}
+      {{ this-thing -}}
     END_TEMPLATE
-    template        = Template.parse(template_source)
-    rendered        = template.render!
-    assert_equal("Print this-thing", rendered.strip)
+    assert_template_result("Print this-thing", template_source)
   end
 
   def test_assigned_variable

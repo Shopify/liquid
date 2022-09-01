@@ -6,16 +6,12 @@ class DocumentTest < Minitest::Test
   include Liquid
 
   def test_unexpected_outer_tag
-    exc = assert_raises(SyntaxError) do
-      Template.parse("{% else %}")
-    end
-    assert_equal(exc.message, "Liquid syntax error: Unexpected outer 'else' tag")
+    source = "{% else %}"
+    assert_match_syntax_error("Liquid syntax error (line 1): Unexpected outer 'else' tag", source)
   end
 
   def test_unknown_tag
-    exc = assert_raises(SyntaxError) do
-      Template.parse("{% foo %}")
-    end
-    assert_equal(exc.message, "Liquid syntax error: Unknown tag 'foo'")
+    source = "{% foo %}"
+    assert_match_syntax_error("Liquid syntax error (line 1): Unknown tag 'foo'", source)
   end
 end

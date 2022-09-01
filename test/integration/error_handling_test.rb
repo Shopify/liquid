@@ -63,9 +63,7 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_missing_endtag_parse_time_error
-    assert_raises(Liquid::SyntaxError) do
-      Liquid::Template.parse(' {% for a in b %} ... ')
-    end
+    assert_match_syntax_error(/: 'for' tag was never closed\z/, ' {% for a in b %} ... ')
   end
 
   def test_unrecognized_operator
@@ -84,33 +82,26 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_with_line_numbers_adds_numbers_to_parser_errors
-    err = assert_raises(SyntaxError) do
-      Liquid::Template.parse('
-          foobar
+    source = <<~LIQUID
+      foobar
 
-          {% "cat" | foobar %}
+      {% "cat" | foobar %}
 
-          bla
-        ',
-        line_numbers: true)
-    end
-
-    assert_match(/Liquid syntax error \(line 4\)/, err.message)
+      bla
+    LIQUID
+    assert_match_syntax_error(/Liquid syntax error \(line 3\)/, source)
   end
 
   def test_with_line_numbers_adds_numbers_to_parser_errors_with_whitespace_trim
-    err = assert_raises(SyntaxError) do
-      Liquid::Template.parse('
-          foobar
+    source = <<~LIQUID
+      foobar
 
-          {%- "cat" | foobar -%}
+      {%- "cat" | foobar -%}
 
-          bla
-        ',
-        line_numbers: true)
-    end
+      bla
+    LIQUID
 
-    assert_match(/Liquid syntax error \(line 4\)/, err.message)
+    assert_match_syntax_error(/Liquid syntax error \(line 3\)/, source)
   end
 
   def test_parsing_warn_with_line_numbers_adds_numbers_to_lexer_errors
@@ -145,20 +136,17 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_syntax_errors_in_nested_blocks_have_correct_line_number
-    err = assert_raises(SyntaxError) do
-      Liquid::Template.parse('
-          foobar
+    source = <<~LIQUID
+      foobar
 
-          {% if 1 != 2 %}
-            {% foo %}
-          {% endif %}
+      {% if 1 != 2 %}
+        {% foo %}
+      {% endif %}
 
-          bla
-                ',
-        line_numbers: true)
-    end
+      bla
+    LIQUID
 
-    assert_equal("Liquid syntax error (line 5): Unknown tag 'foo'", err.message)
+    assert_match_syntax_error("Liquid syntax error (line 4): Unknown tag 'foo'", source)
   end
 
   def test_strict_error_messages
