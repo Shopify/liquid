@@ -426,7 +426,7 @@ class StandardFiltersTest < Minitest::Test
   def test_map
     assert_equal([1, 2, 3, 4], @filters.map([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], 'a'))
     assert_template_result('abc', "{{ ary | map:'foo' | map:'bar' }}",
-      'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }])
+      { 'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }] })
   end
 
   def test_map_doesnt_call_arbitrary_stuff
@@ -436,7 +436,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map_calls_to_liquid
     t = TestThing.new
-    assert_template_result("woot: 1", '{{ foo | map: "whatever" }}', "foo" => [t])
+    assert_template_result("woot: 1", '{{ foo | map: "whatever" }}', { "foo" => [t] })
   end
 
   def test_map_calls_context=
@@ -451,13 +451,13 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map_on_hashes
     assert_template_result("4217", '{{ thing | map: "foo" | map: "bar" }}',
-      "thing" => { "foo" => [{ "bar" => 42 }, { "bar" => 17 }] })
+      { "thing" => { "foo" => [{ "bar" => 42 }, { "bar" => 17 }] } })
   end
 
   def test_legacy_map_on_hashes_with_dynamic_key
     template = "{% assign key = 'foo' %}{{ thing | map: key | map: 'bar' }}"
     hash     = { "foo" => { "bar" => 42 } }
-    assert_template_result("42", template, "thing" => hash)
+    assert_template_result("42", template, { "thing" => hash })
   end
 
   def test_sort_calls_to_liquid
@@ -470,7 +470,7 @@ class StandardFiltersTest < Minitest::Test
     drop  = TestDrop.new(value: "testfoo")
     p     = proc { drop }
     templ = '{{ procs | map: "value" }}'
-    assert_template_result("testfoo", templ, "procs" => [p])
+    assert_template_result("testfoo", templ, { "procs" => [p] })
   end
 
   def test_map_over_drops_returning_procs
@@ -483,11 +483,11 @@ class StandardFiltersTest < Minitest::Test
       },
     ]
     templ = '{{ drops | map: "proc" }}'
-    assert_template_result("foobar", templ, "drops" => drops)
+    assert_template_result("foobar", templ, { "drops" => drops })
   end
 
   def test_map_works_on_enumerables
-    assert_template_result("123", '{{ foo | map: "foo" }}', "foo" => TestEnumerable.new)
+    assert_template_result("123", '{{ foo | map: "foo" }}', { "foo" => TestEnumerable.new })
   end
 
   def test_map_returns_empty_on_2d_input_array
@@ -514,16 +514,16 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_sort_works_on_enumerables
-    assert_template_result("213", '{{ foo | sort: "bar" | map: "foo" }}', "foo" => TestEnumerable.new)
+    assert_template_result("213", '{{ foo | sort: "bar" | map: "foo" }}', { "foo" => TestEnumerable.new })
   end
 
   def test_first_and_last_call_to_liquid
-    assert_template_result('foobar', '{{ foo | first }}', 'foo' => [ThingWithToLiquid.new])
-    assert_template_result('foobar', '{{ foo | last }}', 'foo' => [ThingWithToLiquid.new])
+    assert_template_result('foobar', '{{ foo | first }}', { 'foo' => [ThingWithToLiquid.new] })
+    assert_template_result('foobar', '{{ foo | last }}', { 'foo' => [ThingWithToLiquid.new] })
   end
 
   def test_truncate_calls_to_liquid
-    assert_template_result("wo...", '{{ foo | truncate: 5 }}', "foo" => TestThing.new)
+    assert_template_result("wo...", '{{ foo | truncate: 5 }}', { "foo" => TestThing.new })
   end
 
   def test_date
@@ -597,42 +597,42 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_strip
-    assert_template_result('ab c', "{{ source | strip }}", 'source' => " ab c  ")
-    assert_template_result('ab c', "{{ source | strip }}", 'source' => " \tab c  \n \t")
+    assert_template_result('ab c', "{{ source | strip }}", { 'source' => " ab c  " })
+    assert_template_result('ab c', "{{ source | strip }}", { 'source' => " \tab c  \n \t" })
   end
 
   def test_lstrip
-    assert_template_result('ab c  ', "{{ source | lstrip }}", 'source' => " ab c  ")
-    assert_template_result("ab c  \n \t", "{{ source | lstrip }}", 'source' => " \tab c  \n \t")
+    assert_template_result('ab c  ', "{{ source | lstrip }}", { 'source' => " ab c  " })
+    assert_template_result("ab c  \n \t", "{{ source | lstrip }}", { 'source' => " \tab c  \n \t" })
   end
 
   def test_rstrip
-    assert_template_result(" ab c", "{{ source | rstrip }}", 'source' => " ab c  ")
-    assert_template_result(" \tab c", "{{ source | rstrip }}", 'source' => " \tab c  \n \t")
+    assert_template_result(" ab c", "{{ source | rstrip }}", { 'source' => " ab c  " })
+    assert_template_result(" \tab c", "{{ source | rstrip }}", { 'source' => " \tab c  \n \t" })
   end
 
   def test_strip_newlines
-    assert_template_result('abc', "{{ source | strip_newlines }}", 'source' => "a\nb\nc")
-    assert_template_result('abc', "{{ source | strip_newlines }}", 'source' => "a\r\nb\nc")
+    assert_template_result('abc', "{{ source | strip_newlines }}", { 'source' => "a\nb\nc" })
+    assert_template_result('abc', "{{ source | strip_newlines }}", { 'source' => "a\r\nb\nc" })
   end
 
   def test_newlines_to_br
-    assert_template_result("a<br />\nb<br />\nc", "{{ source | newline_to_br }}", 'source' => "a\nb\nc")
-    assert_template_result("a<br />\nb<br />\nc", "{{ source | newline_to_br }}", 'source' => "a\r\nb\nc")
+    assert_template_result("a<br />\nb<br />\nc", "{{ source | newline_to_br }}", { 'source' => "a\nb\nc" })
+    assert_template_result("a<br />\nb<br />\nc", "{{ source | newline_to_br }}", { 'source' => "a\r\nb\nc" })
   end
 
   def test_plus
     assert_template_result("2", "{{ 1 | plus:1 }}")
     assert_template_result("2.0", "{{ '1' | plus:'1.0' }}")
 
-    assert_template_result("5", "{{ price | plus:'2' }}", 'price' => NumberLikeThing.new(3))
+    assert_template_result("5", "{{ price | plus:'2' }}", { 'price' => NumberLikeThing.new(3) })
   end
 
   def test_minus
-    assert_template_result("4", "{{ input | minus:operand }}", 'input' => 5, 'operand' => 1)
+    assert_template_result("4", "{{ input | minus:operand }}", { 'input' => 5, 'operand' => 1 })
     assert_template_result("2.3", "{{ '4.3' | minus:'2' }}")
 
-    assert_template_result("5", "{{ price | minus:'2' }}", 'price' => NumberLikeThing.new(7))
+    assert_template_result("5", "{{ price | minus:'2' }}", { 'price' => NumberLikeThing.new(7) })
   end
 
   def test_abs
@@ -655,7 +655,7 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("7.25", "{{ 0.0725 | times:100 }}")
     assert_template_result("-7.25", '{{ "-0.0725" | times:100 }}')
     assert_template_result("7.25", '{{ "-0.0725" | times: -100 }}')
-    assert_template_result("4", "{{ price | times:2 }}", 'price' => NumberLikeThing.new(2))
+    assert_template_result("4", "{{ price | times:2 }}", { 'price' => NumberLikeThing.new(2) })
   end
 
   def test_divided_by
@@ -670,7 +670,7 @@ class StandardFiltersTest < Minitest::Test
       assert_template_result("4", "{{ 1 | modulo: 0 }}")
     end
 
-    assert_template_result("5", "{{ price | divided_by:2 }}", 'price' => NumberLikeThing.new(10))
+    assert_template_result("5", "{{ price | divided_by:2 }}", { 'price' => NumberLikeThing.new(10) })
   end
 
   def test_modulo
@@ -679,39 +679,39 @@ class StandardFiltersTest < Minitest::Test
       assert_template_result("4", "{{ 1 | modulo: 0 }}")
     end
 
-    assert_template_result("1", "{{ price | modulo:2 }}", 'price' => NumberLikeThing.new(3))
+    assert_template_result("1", "{{ price | modulo:2 }}", { 'price' => NumberLikeThing.new(3) })
   end
 
   def test_round
-    assert_template_result("5", "{{ input | round }}", 'input' => 4.6)
+    assert_template_result("5", "{{ input | round }}", { 'input' => 4.6 })
     assert_template_result("4", "{{ '4.3' | round }}")
-    assert_template_result("4.56", "{{ input | round: 2 }}", 'input' => 4.5612)
+    assert_template_result("4.56", "{{ input | round: 2 }}", { 'input' => 4.5612 })
     assert_raises(Liquid::FloatDomainError) do
       assert_template_result("4", "{{ 1.0 | divided_by: 0.0 | round }}")
     end
 
-    assert_template_result("5", "{{ price | round }}", 'price' => NumberLikeThing.new(4.6))
-    assert_template_result("4", "{{ price | round }}", 'price' => NumberLikeThing.new(4.3))
+    assert_template_result("5", "{{ price | round }}", { 'price' => NumberLikeThing.new(4.6) })
+    assert_template_result("4", "{{ price | round }}", { 'price' => NumberLikeThing.new(4.3) })
   end
 
   def test_ceil
-    assert_template_result("5", "{{ input | ceil }}", 'input' => 4.6)
+    assert_template_result("5", "{{ input | ceil }}", { 'input' => 4.6 })
     assert_template_result("5", "{{ '4.3' | ceil }}")
     assert_raises(Liquid::FloatDomainError) do
       assert_template_result("4", "{{ 1.0 | divided_by: 0.0 | ceil }}")
     end
 
-    assert_template_result("5", "{{ price | ceil }}", 'price' => NumberLikeThing.new(4.6))
+    assert_template_result("5", "{{ price | ceil }}", { 'price' => NumberLikeThing.new(4.6) })
   end
 
   def test_floor
-    assert_template_result("4", "{{ input | floor }}", 'input' => 4.6)
+    assert_template_result("4", "{{ input | floor }}", { 'input' => 4.6 })
     assert_template_result("4", "{{ '4.3' | floor }}")
     assert_raises(Liquid::FloatDomainError) do
       assert_template_result("4", "{{ 1.0 | divided_by: 0.0 | floor }}")
     end
 
-    assert_template_result("5", "{{ price | floor }}", 'price' => NumberLikeThing.new(5.4))
+    assert_template_result("5", "{{ price | floor }}", { 'price' => NumberLikeThing.new(5.4) })
   end
 
   def test_at_most
@@ -720,9 +720,9 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("5", "{{ 5 | at_most:6 }}")
 
     assert_template_result("4.5", "{{ 4.5 | at_most:5 }}")
-    assert_template_result("5", "{{ width | at_most:5 }}", 'width' => NumberLikeThing.new(6))
-    assert_template_result("4", "{{ width | at_most:5 }}", 'width' => NumberLikeThing.new(4))
-    assert_template_result("4", "{{ 5 | at_most: width }}", 'width' => NumberLikeThing.new(4))
+    assert_template_result("5", "{{ width | at_most:5 }}", { 'width' => NumberLikeThing.new(6) })
+    assert_template_result("4", "{{ width | at_most:5 }}", { 'width' => NumberLikeThing.new(4) })
+    assert_template_result("4", "{{ 5 | at_most: width }}", { 'width' => NumberLikeThing.new(4) })
   end
 
   def test_at_least
@@ -731,9 +731,9 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("6", "{{ 5 | at_least:6 }}")
 
     assert_template_result("5", "{{ 4.5 | at_least:5 }}")
-    assert_template_result("6", "{{ width | at_least:5 }}", 'width' => NumberLikeThing.new(6))
-    assert_template_result("5", "{{ width | at_least:5 }}", 'width' => NumberLikeThing.new(4))
-    assert_template_result("6", "{{ 5 | at_least: width }}", 'width' => NumberLikeThing.new(6))
+    assert_template_result("6", "{{ width | at_least:5 }}", { 'width' => NumberLikeThing.new(6) })
+    assert_template_result("5", "{{ width | at_least:5 }}", { 'width' => NumberLikeThing.new(4) })
+    assert_template_result("6", "{{ 5 | at_least: width }}", { 'width' => NumberLikeThing.new(6) })
   end
 
   def test_append
@@ -766,8 +766,8 @@ class StandardFiltersTest < Minitest::Test
     assert_equal("bar", @filters.default([], "bar"))
     assert_equal("bar", @filters.default({}, "bar"))
     assert_template_result('bar', "{{ false | default: 'bar' }}")
-    assert_template_result('bar', "{{ drop | default: 'bar' }}", 'drop' => BooleanDrop.new(false))
-    assert_template_result('Yay', "{{ drop | default: 'bar' }}", 'drop' => BooleanDrop.new(true))
+    assert_template_result('bar', "{{ drop | default: 'bar' }}", { 'drop' => BooleanDrop.new(false) })
+    assert_template_result('Yay', "{{ drop | default: 'bar' }}", { 'drop' => BooleanDrop.new(true) })
   end
 
   def test_default_handle_false
@@ -778,8 +778,8 @@ class StandardFiltersTest < Minitest::Test
     assert_equal("bar", @filters.default([], "bar", "allow_false" => true))
     assert_equal("bar", @filters.default({}, "bar", "allow_false" => true))
     assert_template_result('false', "{{ false | default: 'bar', allow_false: true }}")
-    assert_template_result('Nay', "{{ drop | default: 'bar', allow_false: true }}", 'drop' => BooleanDrop.new(false))
-    assert_template_result('Yay', "{{ drop | default: 'bar', allow_false: true }}", 'drop' => BooleanDrop.new(true))
+    assert_template_result('Nay', "{{ drop | default: 'bar', allow_false: true }}", { 'drop' => BooleanDrop.new(false) })
+    assert_template_result('Yay', "{{ drop | default: 'bar', allow_false: true }}", { 'drop' => BooleanDrop.new(true) })
   end
 
   def test_cannot_access_private_methods

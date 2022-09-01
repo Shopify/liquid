@@ -12,10 +12,10 @@ class ForTagTest < Minitest::Test
   include Liquid
 
   def test_for
-    assert_template_result(' yo  yo  yo  yo ', '{%for item in array%} yo {%endfor%}', 'array' => [1, 2, 3, 4])
-    assert_template_result('yoyo', '{%for item in array%}yo{%endfor%}', 'array' => [1, 2])
-    assert_template_result(' yo ', '{%for item in array%} yo {%endfor%}', 'array' => [1])
-    assert_template_result('', '{%for item in array%}{%endfor%}', 'array' => [1, 2])
+    assert_template_result(' yo  yo  yo  yo ', '{%for item in array%} yo {%endfor%}', { 'array' => [1, 2, 3, 4] })
+    assert_template_result('yoyo', '{%for item in array%}yo{%endfor%}', { 'array' => [1, 2] })
+    assert_template_result(' yo ', '{%for item in array%} yo {%endfor%}', { 'array' => [1] })
+    assert_template_result('', '{%for item in array%}{%endfor%}', { 'array' => [1, 2] })
     expected = <<HERE
 
   yo
@@ -30,7 +30,7 @@ HERE
         yo
       {%endfor%}
     HERE
-    assert_template_result(expected, template, 'array' => [1, 2, 3])
+    assert_template_result(expected, template, { 'array' => [1, 2, 3] })
   end
 
   def test_for_reversed
@@ -45,30 +45,30 @@ HERE
       Template.parse('{% for i in (a..2) %}{% endfor %}').render!("a" => [1, 2])
     end
 
-    assert_template_result(' 0  1  2  3 ', '{% for item in (a..3) %} {{item}} {% endfor %}', "a" => "invalid integer")
+    assert_template_result(' 0  1  2  3 ', '{% for item in (a..3) %} {{item}} {% endfor %}', { "a" => "invalid integer" })
   end
 
   def test_for_with_variable_range
-    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar) %} {{item}} {%endfor%}', "foobar" => 3)
+    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar) %} {{item}} {%endfor%}', { "foobar" => 3 })
   end
 
   def test_for_with_hash_value_range
     foobar = { "value" => 3 }
-    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', "foobar" => foobar)
+    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', { "foobar" => foobar })
   end
 
   def test_for_with_drop_value_range
     foobar = ThingWithValue.new
-    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', "foobar" => foobar)
+    assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', { "foobar" => foobar })
   end
 
   def test_for_with_variable
-    assert_template_result(' 1  2  3 ', '{%for item in array%} {{item}} {%endfor%}', 'array' => [1, 2, 3])
-    assert_template_result('123', '{%for item in array%}{{item}}{%endfor%}', 'array' => [1, 2, 3])
-    assert_template_result('123', '{% for item in array %}{{item}}{% endfor %}', 'array' => [1, 2, 3])
-    assert_template_result('abcd', '{%for item in array%}{{item}}{%endfor%}', 'array' => ['a', 'b', 'c', 'd'])
-    assert_template_result('a b c', '{%for item in array%}{{item}}{%endfor%}', 'array' => ['a', ' ', 'b', ' ', 'c'])
-    assert_template_result('abc', '{%for item in array%}{{item}}{%endfor%}', 'array' => ['a', '', 'b', '', 'c'])
+    assert_template_result(' 1  2  3 ', '{%for item in array%} {{item}} {%endfor%}', { 'array' => [1, 2, 3] })
+    assert_template_result('123', '{%for item in array%}{{item}}{%endfor%}', { 'array' => [1, 2, 3] })
+    assert_template_result('123', '{% for item in array %}{{item}}{% endfor %}', { 'array' => [1, 2, 3] })
+    assert_template_result('abcd', '{%for item in array%}{{item}}{%endfor%}', { 'array' => ['a', 'b', 'c', 'd'] })
+    assert_template_result('a b c', '{%for item in array%}{{item}}{%endfor%}', { 'array' => ['a', ' ', 'b', ' ', 'c'] })
+    assert_template_result('abc', '{%for item in array%}{{item}}{%endfor%}', { 'array' => ['a', '', 'b', '', 'c'] })
   end
 
   def test_for_helpers
@@ -92,9 +92,9 @@ HERE
   end
 
   def test_for_else
-    assert_template_result('+++', '{%for item in array%}+{%else%}-{%endfor%}', 'array' => [1, 2, 3])
-    assert_template_result('-',   '{%for item in array%}+{%else%}-{%endfor%}', 'array' => [])
-    assert_template_result('-',   '{%for item in array%}+{%else%}-{%endfor%}', 'array' => nil)
+    assert_template_result('+++', '{%for item in array%}+{%else%}-{%endfor%}', { 'array' => [1, 2, 3] })
+    assert_template_result('-',   '{%for item in array%}+{%else%}-{%endfor%}', { 'array' => [] })
+    assert_template_result('-',   '{%for item in array%}+{%else%}-{%endfor%}', { 'array' => nil })
   end
 
   def test_limiting
@@ -313,11 +313,11 @@ HERE
 
     assert_template_result('test string',
       '{%for val in string%}{{val}}{%endfor%}',
-      'string' => "test string")
+      { 'string' => "test string" })
 
     assert_template_result('test string',
       '{%for val in string limit:1%}{{val}}{%endfor%}',
-      'string' => "test string")
+      { 'string' => "test string" })
 
     assert_template_result('val-string-1-1-0-1-0-true-true-test string',
       '{%for val in string%}' \
@@ -330,7 +330,7 @@ HERE
       '{{forloop.first}}-' \
       '{{forloop.last}}-' \
       '{{val}}{%endfor%}',
-      'string' => "test string")
+      { 'string' => "test string" })
   end
 
   def test_for_parentloop_references_parent_loop
@@ -338,7 +338,7 @@ HERE
       '{% for inner in outer %}{% for k in inner %}' \
       '{{ forloop.parentloop.index }}.{{ forloop.index }} ' \
       '{% endfor %}{% endfor %}',
-      'outer' => [[1, 1, 1], [1, 1, 1]])
+      { 'outer' => [[1, 1, 1], [1, 1, 1]] })
   end
 
   def test_for_parentloop_nil_when_not_present
@@ -346,7 +346,7 @@ HERE
       '{% for inner in outer %}' \
       '{{ forloop.parentloop.index }}.{{ forloop.index }} ' \
       '{% endfor %}',
-      'outer' => [[1, 1, 1], [1, 1, 1]])
+      { 'outer' => [[1, 1, 1], [1, 1, 1]] })
   end
 
   def test_inner_for_over_empty_input
@@ -354,7 +354,7 @@ HERE
   end
 
   def test_blank_string_not_iterable
-    assert_template_result('', "{% for char in characters %}I WILL NOT BE OUTPUT{% endfor %}", 'characters' => '')
+    assert_template_result('', "{% for char in characters %}I WILL NOT BE OUTPUT{% endfor %}", { 'characters' => '' })
   end
 
   def test_bad_variable_naming_in_for_loop

@@ -60,22 +60,22 @@ class StatementsTest < Minitest::Test
 
   def test_var_strings_equal
     text = ' {% if var == "hello there!" %} true {% else %} false {% endif %} '
-    assert_template_result('  true  ', text, 'var' => 'hello there!')
+    assert_template_result('  true  ', text, { 'var' => 'hello there!' })
   end
 
   def test_var_strings_are_not_equal
     text = ' {% if "hello there!" == var %} true {% else %} false {% endif %} '
-    assert_template_result('  true  ', text, 'var' => 'hello there!')
+    assert_template_result('  true  ', text, { 'var' => 'hello there!' })
   end
 
   def test_var_and_long_string_are_equal
     text = " {% if var == 'hello there!' %} true {% else %} false {% endif %} "
-    assert_template_result('  true  ', text, 'var' => 'hello there!')
+    assert_template_result('  true  ', text, { 'var' => 'hello there!' })
   end
 
   def test_var_and_long_string_are_equal_backwards
     text = " {% if 'hello there!' == var %} true {% else %} false {% endif %} "
-    assert_template_result('  true  ', text, 'var' => 'hello there!')
+    assert_template_result('  true  ', text, { 'var' => 'hello there!' })
   end
 
   # def test_is_nil
@@ -87,27 +87,27 @@ class StatementsTest < Minitest::Test
 
   def test_is_collection_empty
     text = ' {% if array == empty %} true {% else %} false {% endif %} '
-    assert_template_result('  true  ', text, 'array' => [])
+    assert_template_result('  true  ', text, { 'array' => [] })
   end
 
   def test_is_not_collection_empty
     text = ' {% if array == empty %} true {% else %} false {% endif %} '
-    assert_template_result('  false  ', text, 'array' => [1, 2, 3])
+    assert_template_result('  false  ', text, { 'array' => [1, 2, 3] })
   end
 
   def test_nil
     text = ' {% if var == nil %} true {% else %} false {% endif %} '
-    assert_template_result('  true  ', text, 'var' => nil)
+    assert_template_result('  true  ', text, { 'var' => nil })
 
     text = ' {% if var == null %} true {% else %} false {% endif %} '
-    assert_template_result('  true  ', text, 'var' => nil)
+    assert_template_result('  true  ', text, { 'var' => nil })
   end
 
   def test_not_nil
     text = ' {% if var != nil %} true {% else %} false {% endif %} '
-    assert_template_result('  true  ', text, 'var' => 1)
+    assert_template_result('  true  ', text, { 'var' => 1 })
 
     text = ' {% if var != null %} true {% else %} false {% endif %} '
-    assert_template_result('  true  ', text, 'var' => 1)
+    assert_template_result('  true  ', text, { 'var' => 1 })
   end
 end # StatementsTest
