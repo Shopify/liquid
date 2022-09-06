@@ -49,9 +49,9 @@ module Minitest
       assert_equal(expected, output, message)
     end
 
-    def assert_match_syntax_error(match, template)
+    def assert_match_syntax_error(match, template, error_mode: nil)
       exception = assert_raises(Liquid::SyntaxError) do
-        Template.parse(template, line_numbers: true).render
+        Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym).render
       end
       assert_match(match, exception.message)
     end
