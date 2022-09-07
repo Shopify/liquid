@@ -9,12 +9,6 @@ class FoobarTag < Liquid::Tag
   end
 end
 
-class BlankTestFileSystem
-  def read_template_file(template_path)
-    template_path
-  end
-end
-
 class BlankTest < Minitest::Test
   include Liquid
   N = 10
@@ -95,10 +89,12 @@ class BlankTest < Minitest::Test
   end
 
   def test_include_is_blank
-    Liquid::Template.file_system = BlankTestFileSystem.new
-    assert_template_result("foobar" * (N + 1), wrap("{% include 'foobar' %}"))
-    assert_template_result(" foobar " * (N + 1), wrap("{% include ' foobar ' %}"))
-    assert_template_result("   " * (N + 1), wrap(" {% include ' ' %} "))
+    assert_template_result("foobar" * (N + 1), wrap("{% include 'foobar' %}"),
+      partials: { 'foobar' => 'foobar' })
+    assert_template_result(" foobar " * (N + 1), wrap("{% include ' foobar ' %}"),
+      partials: { ' foobar ' => ' foobar ' })
+    assert_template_result("   " * (N + 1), wrap(" {% include ' ' %} "),
+      partials: { ' ' => ' ' })
   end
 
   def test_case_is_blank

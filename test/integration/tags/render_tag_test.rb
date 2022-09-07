@@ -134,14 +134,17 @@ class RenderTagTest < Minitest::Test
   end
 
   def test_includes_will_not_render_inside_nested_sibling_tags
-    Liquid::Template.file_system = StubFileSystem.new(
-      'foo' => 'bar',
-      'nested_render_with_sibling_include' => '{% render "test_include" %}{% include "foo" %}',
-      'test_include' => '{% include "foo" %}'
+    assert_template_result(
+      "Liquid error (test_include line 1): include usage is not allowed in this context" \
+        "Liquid error (nested_render_with_sibling_include line 1): include usage is not allowed in this context",
+      '{% render "nested_render_with_sibling_include" %}',
+      partials: {
+        'foo' => 'bar',
+        'nested_render_with_sibling_include' => '{% render "test_include" %}{% include "foo" %}',
+        'test_include' => '{% include "foo" %}',
+      },
+      render_errors: true
     )
-
-    output = Liquid::Template.parse('{% render "nested_render_with_sibling_include" %}').render
-    assert_equal('Liquid error: include usage is not allowed in this contextLiquid error: include usage is not allowed in this context', output)
   end
 
   def test_render_tag_with

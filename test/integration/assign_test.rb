@@ -34,14 +34,9 @@ class AssignTest < Minitest::Test
   end
 
   def test_assign_uses_error_mode
-    with_error_mode(:strict) do
-      assert_raises(SyntaxError) do
-        Template.parse("{% assign foo = ('X' | downcase) %}")
-      end
-    end
-    with_error_mode(:lax) do
-      assert(Template.parse("{% assign foo = ('X' | downcase) %}"))
-    end
+    assert_match_syntax_error("Expected dotdot but found pipe in ",
+      "{% assign foo = ('X' | downcase) %}", error_mode: :strict)
+    assert_template_result("", "{% assign foo = ('X' | downcase) %}", error_mode: :lax)
   end
 
   def test_expression_with_whitespace_in_square_brackets
