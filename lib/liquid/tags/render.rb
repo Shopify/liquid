@@ -32,7 +32,7 @@ module Liquid
     disable_tags "include"
 
     attr_reader :template_name_expr, :variable_name_expr, :attributes, :alias_name
-    
+
     def for_loop?
       @is_for_loop
     end
