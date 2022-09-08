@@ -263,6 +263,19 @@ HERE
     assert_template_result(expected, markup, assigns)
   end
 
+  def test_for_with_break_after_nested_loop
+    source = <<~LIQUID.chomp
+      {% for i in (1..2) -%}
+        {% for j in (1..2) -%}
+          {{ i }}-{{ j }},
+        {%- endfor -%}
+        {% break -%}
+      {% endfor -%}
+      after
+    LIQUID
+    assert_template_result("1-1,1-2,after", source)
+  end
+
   def test_for_with_continue
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5] } }
 
