@@ -31,7 +31,7 @@ module Liquid
 
     disable_tags "include"
 
-    attr_reader :template_name_expr, :variable_name_expr, :attributes
+    attr_reader :template_name_expr, :variable_name_expr, :attributes, :alias_name
 
     def initialize(tag_name, markup, options)
       super
@@ -45,12 +45,16 @@ module Liquid
       @alias_name = Regexp.last_match(6)
       @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
       @template_name_expr = parse_expression(template_name)
-      @for = (with_or_for == FOR)
+      @is_for_loop = (with_or_for == FOR)
 
       @attributes = {}
       markup.scan(TagAttributes) do |key, value|
         @attributes[key] = parse_expression(value)
       end
+    end
+
+    def for_loop?
+      @is_for_loop
     end
 
     def render_to_output_buffer(context, output)
@@ -85,7 +89,7 @@ module Liquid
       }
 
       variable = @variable_name_expr ? context.evaluate(@variable_name_expr) : nil
-      if @for && variable.respond_to?(:each) && variable.respond_to?(:count)
+      if @is_for_loop && variable.respond_to?(:each) && variable.respond_to?(:count)
         forloop = Liquid::ForloopDrop.new(template_name, variable.count, nil)
         variable.each { |var| render_partial_func.call(var, forloop) }
       else
