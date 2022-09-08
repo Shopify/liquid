@@ -31,7 +31,7 @@ module Liquid
 
     disable_tags "include"
 
-    attr_reader :template_name_expr, :variable_name_expr, :attributes, :alias_name, :is_for_loop
+    attr_reader :template_name_expr, :variable_name_expr, :attributes, :alias_name
 
     def initialize(tag_name, markup, options)
       super
@@ -51,6 +51,10 @@ module Liquid
       markup.scan(TagAttributes) do |key, value|
         @attributes[key] = parse_expression(value)
       end
+    end
+
+    def for_loop?
+      @is_for_loop
     end
 
     def render_to_output_buffer(context, output)
