@@ -6,7 +6,7 @@ require 'bigdecimal'
 
 module Liquid
   module StandardFilters
-    MAX_INT = (1 << 31) - 1
+    MAX_I32 = (1 << 31) - 1
     HTML_ESCAPE = {
       '&' => '&amp;',
       '>' => '&gt;',
@@ -239,9 +239,9 @@ module Liquid
       wordlist = begin
         input.split(" ", words + 1)
       rescue RangeError
-        raise if words + 1 < MAX_INT
-        # e.g. integer #{words} too big to convert to `int'
-        raise Liquid::ArgumentError, "integer #{words} too big for truncatewords"
+        # integer too big for String#split, but we can semantically assume no truncation is needed
+        return input if words + 1 > MAX_I32
+        raise # unexpected error
       end
       return input if wordlist.length <= words
 
