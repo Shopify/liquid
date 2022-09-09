@@ -7,6 +7,13 @@ require 'bigdecimal'
 module Liquid
   module StandardFilters
     MAX_I32 = (1 << 31) - 1
+    private_constant :MAX_I32
+
+    MIN_I64 = -(1 << 63)
+    MAX_I64 = (1 << 63) - 1
+    I64_RANGE = MIN_I64..MAX_I64
+    private_constant :MIN_I64, :MAX_I64, :I64_RANGE
+
     HTML_ESCAPE = {
       '&' => '&amp;',
       '>' => '&gt;',
@@ -186,10 +193,19 @@ module Liquid
       offset = Utils.to_integer(offset)
       length = length ? Utils.to_integer(length) : 1
 
-      if input.is_a?(Array)
-        input.slice(offset, length) || []
-      else
-        input.to_s.slice(offset, length) || ''
+      begin
+        if input.is_a?(Array)
+          input.slice(offset, length) || []
+        else
+          input.to_s.slice(offset, length) || ''
+        end
+      rescue RangeError
+        if I64_RANGE.cover?(length) && I64_RANGE.cover?(offset)
+          raise # unexpected error
+        end
+        offset = offset.clamp(I64_RANGE)
+        length = length.clamp(I64_RANGE)
+        retry
       end
     end
 
