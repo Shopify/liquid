@@ -27,7 +27,7 @@ class BlankTest < Minitest::Test
 
   def test_new_tags_are_not_blank_by_default
     with_custom_tag('foobar', FoobarTag) do
-      assert_template_result(" " * N, wrap_in_for("{% foobar %}"))
+      assert_equal(" " * N, Liquid::Template.parse(wrap_in_for("{% foobar %}")).render!)
     end
   end
 
