@@ -26,7 +26,7 @@ module Liquid
       @environments = [environments]
       @environments.flatten!
 
-      @static_environments = [static_environments].flat_map(&:freeze).freeze
+      @static_environments = [static_environments].flatten(1).freeze
       @scopes              = [(outer_scope || {})]
       @registers           = registers.is_a?(Registers) ? registers : Registers.new(registers)
       @errors              = []
