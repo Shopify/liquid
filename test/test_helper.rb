@@ -56,6 +56,10 @@ module Minitest
       assert_match(match, exception.message)
     end
 
+    def assert_syntax_error(template, error_mode: nil)
+      assert_match_syntax_error("", template, error_mode: error_mode)
+    end
+
     def assert_usage_increment(name, times: 1)
       old_method = Liquid::Usage.method(:increment)
       calls = 0
