@@ -469,8 +469,8 @@ class StandardFiltersTest < Minitest::Test
   def test_map_over_proc
     drop  = TestDrop.new(value: "testfoo")
     p     = proc { drop }
-    templ = '{{ procs | map: "value" }}'
-    assert_template_result("testfoo", templ, { "procs" => [p] })
+    output = Liquid::Template.parse('{{ procs | map: "value" }}').render!({ "procs" => [p] })
+    assert_equal("testfoo", output)
   end
 
   def test_map_over_drops_returning_procs
@@ -482,12 +482,13 @@ class StandardFiltersTest < Minitest::Test
         "proc" => -> { "bar" },
       },
     ]
-    templ = '{{ drops | map: "proc" }}'
-    assert_template_result("foobar", templ, { "drops" => drops })
+    output = Liquid::Template.parse('{{ drops | map: "proc" }}').render!({ "drops" => drops })
+    assert_equal("foobar", output)
   end
 
   def test_map_works_on_enumerables
-    assert_template_result("123", '{{ foo | map: "foo" }}', { "foo" => TestEnumerable.new })
+    output = Liquid::Template.parse('{{ foo | map: "foo" }}').render!({ "foo" => TestEnumerable.new })
+    assert_equal("123", output)
   end
 
   def test_map_returns_empty_on_2d_input_array
