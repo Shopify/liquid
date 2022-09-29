@@ -2,7 +2,7 @@
 
 module Liquid
   class ParseContext
-    attr_accessor :locale, :line_number, :trim_whitespace, :depth
+    attr_accessor :locale, :line_number, :trim_whitespace, :depth, :tags
     attr_reader :partial, :warnings, :error_mode
 
     def initialize(options = {})
@@ -10,6 +10,7 @@ module Liquid
 
       @locale   = @template_options[:locale] ||= I18n.new
       @warnings = []
+      @tags = @template_options[:tags] || Liquid::Template.tags
 
       self.depth   = 0
       self.partial = false
