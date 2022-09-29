@@ -1,5 +1,8 @@
 # Liquid Change Log
 
+### Features
+* Add ability to pass `tags` to parse context to take precedence over `Liquid::Template.tags`
+
 ## 5.4.0 2022-07-29
 
 ### Breaking Changes

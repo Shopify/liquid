@@ -42,4 +42,35 @@ class TagTest < Minitest::Test
       assert_equal(buf.object_id, output.object_id)
     end
   end
+
+  def test_tags_can_be_overwritten_using_parse_context
+    tag_name = 'testtag'
+
+    original_tag = Class.new(Block) do
+      def render(*)
+        'original_tag'
+      end
+    end
+
+    new_tag = Class.new(Block) do
+      def render(*)
+        'new_tag'
+      end
+    end
+
+    tags_overwrite = Liquid::Template::TagRegistry.new
+    tags_overwrite[tag_name] = new_tag
+
+    with_custom_tag(tag_name, original_tag) do
+      liquid = "{% #{tag_name} %} {% end#{tag_name} %}"
+
+      template = Liquid::Template.parse(liquid)
+      assert_equal('original_tag', template.render)
+
+      unless ENV['LIQUID_C'] == '1'
+        template_with_overwrite = Liquid::Template.parse(liquid, tags: tags_overwrite)
+        assert_equal('new_tag', template_with_overwrite.render)
+      end
+    end
+  end
 end
