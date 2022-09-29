@@ -67,10 +67,8 @@ class TagTest < Minitest::Test
       template = Liquid::Template.parse(liquid)
       assert_equal('original_tag', template.render)
 
-      unless ENV['LIQUID_C'] == '1'
-        template_with_overwrite = Liquid::Template.parse(liquid, tags: tags_overwrite)
-        assert_equal('new_tag', template_with_overwrite.render)
-      end
+      template_with_overwrite = Liquid::Template.parse(liquid, tags: tags_overwrite)
+      assert_equal('new_tag', template_with_overwrite.render)
     end
   end
 end
