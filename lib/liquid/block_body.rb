@@ -45,7 +45,7 @@ module Liquid
           end
           tag_name = Regexp.last_match(1)
           markup   = Regexp.last_match(2)
-          unless (tag = registered_tag(tag_name, parse_context))
+          unless (tag = parse_context.tags[tag_name])
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
             return yield tag_name, markup
@@ -132,7 +132,7 @@ module Liquid
             next
           end
 
-          unless (tag = registered_tag(tag_name, parse_context))
+          unless (tag = parse_context.tags[tag_name])
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
             return yield tag_name, markup
@@ -246,11 +246,6 @@ module Liquid
     # @deprecated Use {.raise_missing_variable_terminator} instead
     def raise_missing_variable_terminator(token, parse_context)
       BlockBody.raise_missing_variable_terminator(token, parse_context)
-    end
-
-    def registered_tag(tag_name, parse_context)
-      context_tag = parse_context.tags[tag_name] if parse_context.tags.respond_to?(:[])
-      context_tag || Template.tags[tag_name]
     end
   end
 end
