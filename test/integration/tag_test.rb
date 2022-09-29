@@ -44,31 +44,37 @@ class TagTest < Minitest::Test
   end
 
   def test_tags_can_be_overwritten_using_parse_context
-    tag_name = 'testtag'
+    static_tag = Class.new(Tag) do
+      def render(*)
+        'static_tag'
+      end
+    end
 
-    original_tag = Class.new(Block) do
+    original_tag = Class.new(Tag) do
       def render(*)
         'original_tag'
       end
     end
 
-    new_tag = Class.new(Block) do
+    new_tag = Class.new(Tag) do
       def render(*)
         'new_tag'
       end
     end
 
     tags_overwrite = Liquid::Template::TagRegistry.new
-    tags_overwrite[tag_name] = new_tag
+    tags_overwrite['dynamic_tag'] = new_tag
 
-    with_custom_tag(tag_name, original_tag) do
-      liquid = "{% #{tag_name} %} {% end#{tag_name} %}"
+    with_custom_tag('static_tag', static_tag) do
+      with_custom_tag('dynamic_tag', original_tag) do
+        liquid = '{% static_tag %} {% dynamic_tag %}'
 
-      template = Liquid::Template.parse(liquid)
-      assert_equal('original_tag', template.render)
+        template = Liquid::Template.parse(liquid)
+        assert_equal('static_tag original_tag', template.render)
 
-      template_with_overwrite = Liquid::Template.parse(liquid, tags: tags_overwrite)
-      assert_equal('new_tag', template_with_overwrite.render)
+        template_with_overwrite = Liquid::Template.parse(liquid, tags: tags_overwrite)
+        assert_equal('static_tag new_tag', template_with_overwrite.render)
+      end
     end
   end
 end
