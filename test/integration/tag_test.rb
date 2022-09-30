@@ -62,8 +62,7 @@ class TagTest < Minitest::Test
       end
     end
 
-    tags_overwrite = Liquid::Template::TagRegistry.new
-    tags_overwrite['dynamic_tag'] = new_tag
+    tags_overwrite = { 'dynamic_tag' => new_tag }
 
     with_custom_tag('static_tag', static_tag) do
       with_custom_tag('dynamic_tag', original_tag) do
