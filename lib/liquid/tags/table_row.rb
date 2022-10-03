@@ -51,7 +51,7 @@ module Liquid
       collection = Utils.slice_collection(collection, from, to)
       length     = collection.length
 
-      cols = context.evaluate(@attributes['cols']).to_i
+      cols = @attributes['cols'].nil? ? length : context.evaluate(@attributes['cols']).to_i
 
       output << "<tr class=\"row1\">\n"
       context.stack do
