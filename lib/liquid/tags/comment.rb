@@ -8,7 +8,7 @@ module Liquid
   # @liquid_summary
   #   Prevents an expression from being rendered or output.
   # @liquid_description
-  #   Any text inside `comment` tags won't be output, and any Liquid code won't be rendered.
+  #   Any text inside `comment` tags won't be output, and any Liquid code will be parsed, but not executed.
   # @liquid_syntax
   #   {% comment %}
   #     content
