@@ -65,4 +65,56 @@ class TableRowTest < Minitest::Test
       "{% tablerow char in characters cols:3 %}I WILL NOT BE OUTPUT{% endtablerow %}",
       { 'characters' => '' })
   end
+
+  def test_tablerow_loop_drop_attributes
+    template = <<~LIQUID.chomp
+      {% tablerow i in (1...2) %}
+      col: {{ tablerowloop.col }}
+      col0: {{ tablerowloop.col0 }}
+      col_first: {{ tablerowloop.col_first }}
+      col_last: {{ tablerowloop.col_last }}
+      first: {{ tablerowloop.first }}
+      index: {{ tablerowloop.index }}
+      index0: {{ tablerowloop.index0 }}
+      last: {{ tablerowloop.last }}
+      length: {{ tablerowloop.length }}
+      rindex: {{ tablerowloop.rindex }}
+      rindex0: {{ tablerowloop.rindex0 }}
+      row: {{ tablerowloop.row }}
+      {% endtablerow %}
+    LIQUID
+
+    expected_output = <<~OUTPUT
+      <tr class="row1">
+      <td class="col1">
+      col: 1
+      col0: 0
+      col_first: true
+      col_last: false
+      first: true
+      index: 1
+      index0: 0
+      last: false
+      length: 2
+      rindex: 2
+      rindex0: 1
+      row: 1
+      </td><td class="col2">
+      col: 2
+      col0: 1
+      col_first: false
+      col_last: true
+      first: false
+      index: 2
+      index0: 1
+      last: true
+      length: 2
+      rindex: 1
+      rindex0: 0
+      row: 1
+      </td></tr>
+    OUTPUT
+
+    assert_template_result(expected_output, template)
+  end
 end
