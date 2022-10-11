@@ -109,6 +109,10 @@ class StandardFiltersTest < Minitest::Test
     assert_raises(Liquid::ArgumentError) do
       @filters.slice('foobar', 0, "")
     end
+    assert_equal("", @filters.slice("foobar", 0, -(1 << 64)))
+    assert_equal("foobar", @filters.slice("foobar", 0, 1 << 63))
+    assert_equal("", @filters.slice("foobar", 1 << 63, 6))
+    assert_equal("", @filters.slice("foobar", -(1 << 63), 6))
   end
 
   def test_slice_on_arrays
@@ -123,6 +127,10 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(%w(r), @filters.slice(input, -1))
     assert_equal(%w(), @filters.slice(input, 100, 10))
     assert_equal(%w(), @filters.slice(input, -100, 10))
+    assert_equal([], @filters.slice(input, 0, -(1 << 64)))
+    assert_equal(input, @filters.slice(input, 0, 1 << 63))
+    assert_equal([], @filters.slice(input, 1 << 63, 6))
+    assert_equal([], @filters.slice(input, -(1 << 63), 6))
   end
 
   def test_truncate
@@ -132,6 +140,8 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('1234567890', @filters.truncate('1234567890'))
     assert_equal("测试...", @filters.truncate("测试测试测试测试", 5))
     assert_equal('12341', @filters.truncate("1234567890", 5, 1))
+    assert_equal("foobar", @filters.truncate("foobar", 1 << 63))
+    assert_equal("...", @filters.truncate("foobar", -(1 << 63)))
   end
 
   def test_split
@@ -227,10 +237,8 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('one two three...', @filters.truncatewords("one  two\tthree\nfour", 3))
     assert_equal('one two...', @filters.truncatewords("one two three four", 2))
     assert_equal('one...', @filters.truncatewords("one two three four", 0))
-    exception = assert_raises(Liquid::ArgumentError) do
-      @filters.truncatewords("one two three four", 1 << 31)
-    end
-    assert_equal("Liquid error: integer #{1 << 31} too big for truncatewords", exception.message)
+    assert_equal('one two three four', @filters.truncatewords("one two three four", 1 << 31))
+    assert_equal('one...', @filters.truncatewords("one two three four", -(1 << 32)))
   end
 
   def test_strip_html

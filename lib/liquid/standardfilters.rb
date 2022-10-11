@@ -6,7 +6,14 @@ require 'bigdecimal'
 
 module Liquid
   module StandardFilters
-    MAX_INT = (1 << 31) - 1
+    MAX_I32 = (1 << 31) - 1
+    private_constant :MAX_I32
+
+    MIN_I64 = -(1 << 63)
+    MAX_I64 = (1 << 63) - 1
+    I64_RANGE = MIN_I64..MAX_I64
+    private_constant :MIN_I64, :MAX_I64, :I64_RANGE
+
     HTML_ESCAPE = {
       '&' => '&amp;',
       '>' => '&gt;',
@@ -186,10 +193,19 @@ module Liquid
       offset = Utils.to_integer(offset)
       length = length ? Utils.to_integer(length) : 1
 
-      if input.is_a?(Array)
-        input.slice(offset, length) || []
-      else
-        input.to_s.slice(offset, length) || ''
+      begin
+        if input.is_a?(Array)
+          input.slice(offset, length) || []
+        else
+          input.to_s.slice(offset, length) || ''
+        end
+      rescue RangeError
+        if I64_RANGE.cover?(length) && I64_RANGE.cover?(offset)
+          raise # unexpected error
+        end
+        offset = offset.clamp(I64_RANGE)
+        length = length.clamp(I64_RANGE)
+        retry
       end
     end
 
@@ -239,9 +255,9 @@ module Liquid
       wordlist = begin
         input.split(" ", words + 1)
       rescue RangeError
-        raise if words + 1 < MAX_INT
-        # e.g. integer #{words} too big to convert to `int'
-        raise Liquid::ArgumentError, "integer #{words} too big for truncatewords"
+        # integer too big for String#split, but we can semantically assume no truncation is needed
+        return input if words + 1 > MAX_I32
+        raise # unexpected error
       end
       return input if wordlist.length <= words
 
