@@ -128,7 +128,7 @@ class StandardFiltersTest < Minitest::Test
 
   def test_escape
     assert_equal '&lt;strong&gt;', @filters.escape('<strong>')
-    assert_equal nil, @filters.escape(nil)
+    assert_nil @filters.escape(nil)
     assert_equal '&lt;strong&gt;', @filters.h('<strong>')
   end
 
@@ -138,14 +138,14 @@ class StandardFiltersTest < Minitest::Test
 
   def test_url_encode
     assert_equal 'foo%2B1%40example.com', @filters.url_encode('foo+1@example.com')
-    assert_equal nil, @filters.url_encode(nil)
+    assert_nil @filters.url_encode(nil)
   end
 
   def test_url_decode
     assert_equal 'foo bar', @filters.url_decode('foo+bar')
     assert_equal 'foo bar', @filters.url_decode('foo%20bar')
     assert_equal 'foo+1@example.com', @filters.url_decode('foo%2B1%40example.com')
-    assert_equal nil, @filters.url_decode(nil)
+    assert_nil @filters.url_decode(nil)
   end
 
   def test_truncatewords
@@ -329,7 +329,7 @@ class StandardFiltersTest < Minitest::Test
     assert_equal "#{Date.today.year}", @filters.date('today', '%Y')
     assert_equal "#{Date.today.year}", @filters.date('Today', '%Y')
 
-    assert_equal nil, @filters.date(nil, "%B")
+    assert_nil @filters.date(nil, "%B")
 
     assert_equal '', @filters.date('', "%B")
 
@@ -342,8 +342,8 @@ class StandardFiltersTest < Minitest::Test
   def test_first_last
     assert_equal 1, @filters.first([1, 2, 3])
     assert_equal 3, @filters.last([1, 2, 3])
-    assert_equal nil, @filters.first([])
-    assert_equal nil, @filters.last([])
+    assert_nil @filters.first([])
+    assert_nil @filters.last([])
   end
 
   def test_replace
