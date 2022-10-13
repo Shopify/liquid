@@ -80,7 +80,7 @@ module Liquid
 
       obj = context.apply_global_filter(obj)
 
-      taint_check(context, obj)
+      # taint_check(context, obj)
 
       obj
     end
