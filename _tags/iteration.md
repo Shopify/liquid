@@ -222,60 +222,22 @@ Information about a parent [`for` loop](#for).
 {% endraw %}
 ```
 
-<p class="code-label">Input</p>
+<p class="code-label">Output</p>
 ```text
 orange-strawberry-banana
 ```
 
-### properties
+### forloop (properties)
 
-#### length
-
-The total number of iterations in the loop.
-
-returns `number`
-
-#### parentloop
-
-The parent `forloop` object. If the current `for` loop isn't nested inside another `for` loop, then `nil` is returned.
-
-returns `forloop`
-
-#### index
-
-The 1-based index of the current iteration.
-
-returns `number`
-
-#### index0
-
-The 0-based index of the current iteration.
-
-returns `number`
-
-#### rindex
-
-The 1-based index of the current iteration, in reverse order.
-
-returns `number`
-
-#### rindex0
-
-The 0-based index of the current iteration, in reverse order.
-
-returns `number`
-
-#### first
-
-Returns `true` if the current iteration is the first. Returns `false` if not.
-
-returns `boolean`
-
-#### last
-
-Returns `true` if the current iteration is the last. Returns `false` if not.
-
-returns `boolean`
+| Property | Description | Returns |
+| `length` | The total number of iterations in the loop. |  `number` |
+| `parentloop` | The parent `forloop` object. If the current `for` loop isn't nested inside another `for` loop, then `nil` is returned. | `forloop` |
+| `index` | The 1-based index of the current iteration. | `number` |
+| `index0` | The 0-based index of the current iteration. | `number` |
+| `rindex` | The 1-based index of the current iteration, in reverse order. | `number` |
+| `rindex0` | The 0-based index of the current iteration, in reverse order. | `number` |
+| `first` | Returns `true` if the current iteration is the first. Returns `false` if not. | `boolean` |
+| `last` | Returns `true` if the current iteration is the last. Returns `false` if not. | `boolean` |
 
 ## cycle
 
@@ -484,76 +446,18 @@ Information about a parent [`tablerow` loop](#tablerow).
 }
 ```
 
-### Properties
+### tablerowloop (properties)
 
-#### col
-
-The 1-based index of the current column.
-
-returns `number`
-
-#### col0
-
-The 0-based index of the current column.
-
-returns `number`
-
-#### col_first
-
-Returns `true` if the current column is the first in the row. Returns `false` if not.
-
-returns `boolean`
-
-#### col_last
-
-Returns `true` if the current column is the last in the row. Returns `false` if not.
-
-returns `boolean`
-
-#### first
-
-Returns `true` if the current iteration is the first. Returns `false` if not.
-
-returns `boolean`
-
-#### index
-
-The 1-based index of the current iteration.
-
-returns `number`
-
-#### index0
-
-The 0-based index of the current iteration.
-
-returns `number`
-
-#### last
-
-Returns `true` if the current iteration is the last. Returns `false` if not.
-
-returns `boolean`
-
-#### length
-
-The total number of iterations in the loop.
-
-returns `number`
-
-#### rindex
-
-The 1-based index of the current iteration, in reverse order.
-
-returns `number`
-
-#### rindex0
-
-The 0-based index of the current iteration, in reverse order.
-
-returns `number`
-
-#### row
-
-The 1-based index of current row.
-
-returns `number`
+| Property | Description | Returns |
+| `col` | The 1-based index of the current column. | `number` |
+| `col0` | The 0-based index of the current column. | `number` |
+| `col_first` | Returns `true` if the current column is the first in the row. Returns `false` if not. | `boolean` |
+| `col_last` | Returns `true` if the current column is the last in the row. Returns `false` if not. | `boolean` |
+| `first` | Returns `true` if the current iteration is the first. Returns `false` if not. | `boolean` |
+| `index` | The 1-based index of the current iteration. | `number` |
+| `index0` | The 0-based index of the current iteration. | `number` |
+| `last` | Returns `true` if the current iteration is the last. Returns `false` if not. | `boolean` |
+| `length` | The total number of iterations in the loop. | `number` |
+| `rindex` | The 1-based index of the current iteration, in reverse order. | `number` |
+| `rindex0` | The 0-based index of the current iteration, in reverse order. | `number` |
+| `row` | The 1-based index of current row. | `number` |
