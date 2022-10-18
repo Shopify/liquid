@@ -79,6 +79,8 @@ Hey Anonymous!
 
 Creates a switch statement to execute a particular block of code when a variable has a specified value. `case` initializes the switch statement, and `when` statements define the various conditions.
 
+A `when` tag can accept multiple values. When multiple values are provided, the expression is returned when the variable matches any of the values inside of the tag. Provide the values as a comma-separated list, or separate them using an `or` operator.
+
 An optional `else` statement at the end of the case provides code to execute if none of the conditions are met.
 
 <p class="code-label">Input</p>

@@ -153,7 +153,7 @@ A template can be rendered once for each value of an enumerable object by using 
 
 In the example above, the template will be rendered once for each variant of the product, and the `variant` variable will hold a different product variant object for each iteration.
 
-When using the `for` parameter, the [`forloop`](https://shopify.dev/docs/themes/liquid/reference/objects/for-loops) object is accessible within the rendered template.
+When using the `for` parameter, the [`forloop`](({{ "/tags/iteration/#forloop-object" | prepend: site.baseurl }})) object is accessible within the rendered template.
 
 ## include
 
