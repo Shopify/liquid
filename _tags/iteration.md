@@ -292,7 +292,7 @@ Uses for `cycle` include:
 
 ## tablerow
 
-Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags. For a full list of attributes available within a `tablerow` loop, see [tablerowloop (object)](#tablerowloop-object).
+Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags. For a full list of attributes available within a `tablerow` loop, refer to [tablerowloop (object)](#tablerowloop-object).
 
 <p class="code-label">Input</p>
 ```liquid
