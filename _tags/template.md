@@ -34,6 +34,54 @@ Anything you put between {% comment %} and {% endcomment %} tags
 is {{ verb }} into a comment.
 ```
 
+## Inline comments {%- include version-badge.html version="5.4.0" %}
+
+You can use inline comments to prevent an expression from being rendered or output. Any text inside of the tag also won't be rendered or output.
+
+You can create multi-line inline comments. However, each line must begin with a `#`.
+
+<p class="code-label">Input</p>
+```liquid
+{%- raw -%}
+{% # for i in (1..3) -%}
+  {{ i }}
+{% # endfor %}
+
+{%
+  ###############################
+  # This is a comment
+  # across multiple lines
+  ###############################
+%}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+
+
+```
+
+### Inline comments inside `liquid` tags
+
+You can use the inline comment tag inside [`liquid` tags](#liquid). The tag must be used for each line that you want to comment.
+
+<p class="code-label">Input</p>
+```liquid
+{%- raw -%}
+{% liquid
+  # this is a comment
+  assign topic = 'Learning about comments!'
+  echo topic
+%}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+Learning about comments!
+```
+
 ## raw
 
 Temporarily disables tag processing. This is useful for generating certain content that uses conflicting syntax, such as [Mustache](https://mustache.github.io/) or [Handlebars](https://handlebarsjs.com/).
