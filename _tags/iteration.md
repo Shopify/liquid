@@ -7,7 +7,7 @@ Iteration tags repeatedly run blocks of code.
 
 ## for
 
-Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, refer to [forloop (object)](#forloop-object).
+Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, refer to the [`forloop` object](#forloop-object).
 
 <p class="code-label">Input</p>
 ```liquid
@@ -230,6 +230,7 @@ orange-strawberry-banana
 ### forloop (properties)
 
 | Property | Description | Returns |
+| --- | --- | --- |
 | `length` | The total number of iterations in the loop. |  `number` |
 | `parentloop` | The parent `forloop` object. If the current `for` loop isn't nested inside another `for` loop, then `nil` is returned. | `forloop` |
 | `index` | The 1-based index of the current iteration. | `number` |
@@ -292,7 +293,7 @@ Uses for `cycle` include:
 
 ## tablerow
 
-Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags. For a full list of attributes available within a `tablerow` loop, refer to [tablerowloop (object)](#tablerowloop-object).
+Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags. For a full list of attributes available within a `tablerow` loop, refer to the [`tablerowloop` object](#tablerowloop-object).
 
 <p class="code-label">Input</p>
 ```liquid
@@ -449,6 +450,7 @@ Information about a parent [`tablerow` loop](#tablerow).
 ### tablerowloop (properties)
 
 | Property | Description | Returns |
+| --- | --- | --- |
 | `col` | The 1-based index of the current column. | `number` |
 | `col0` | The 0-based index of the current column. | `number` |
 | `col_first` | Returns `true` if the current column is the first in the row. Returns `false` if not. | `boolean` |
