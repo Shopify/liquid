@@ -66,6 +66,20 @@ class TableRowTest < Minitest::Test
       { 'characters' => '' })
   end
 
+  def test_cols_nil_constant_same_as_evaluated_nil_expression
+    expect = "<tr class=\"row1\">\n" \
+      "<td class=\"col1\">false</td>" \
+      "<td class=\"col2\">false</td>" \
+      "</tr>\n"
+
+    assert_template_result(expect,
+      "{% tablerow i in (1..2) cols:nil %}{{ tablerowloop.col_last }}{% endtablerow %}")
+
+    assert_template_result(expect,
+      "{% tablerow i in (1..2) cols:var %}{{ tablerowloop.col_last }}{% endtablerow %}",
+      { "var" => nil })
+  end
+
   def test_tablerow_loop_drop_attributes
     template = <<~LIQUID.chomp
       {% tablerow i in (1...2) %}
