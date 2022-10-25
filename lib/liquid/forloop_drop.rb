@@ -30,10 +30,7 @@ module Liquid
     # @liquid_return [forloop]
     attr_reader :parentloop
 
-    def name
-      Usage.increment('forloop_drop_name')
-      @name
-    end
+    attr_reader :name
 
     # @liquid_public_docs
     # @liquid_summary
