@@ -37,6 +37,7 @@ module Liquid
         @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
         @template_name_expr = parse_expression(template_name)
         @attributes         = {}
+        @indentation        = options.indentation
 
         markup.scan(TagAttributes) do |key, value|
           @attributes[key] = parse_expression(value)
@@ -80,15 +81,25 @@ module Liquid
             context[key] = context.evaluate(value)
           end
 
+          partial_output = +''
           if variable.is_a?(Array)
             variable.each do |var|
               context[context_variable_name] = var
-              partial.render_to_output_buffer(context, output)
+              partial.render_to_output_buffer(context, partial_output)
             end
           else
             context[context_variable_name] = variable
-            partial.render_to_output_buffer(context, output)
+            partial.render_to_output_buffer(context, partial_output)
           end
+
+          if @indentation
+            partial_output = partial_output.lines.map.with_index do |line, i|
+              next line if i == 0
+              @indentation + line
+            end.join
+          end
+
+          output << partial_output
         end
       ensure
         context.template_name = old_template_name

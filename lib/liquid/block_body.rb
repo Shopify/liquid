@@ -164,6 +164,7 @@ module Liquid
             token.lstrip!
           end
           parse_context.trim_whitespace = false
+          parse_context.strip_trailing = false
           @nodelist << token
           @blank &&= token.match?(WhitespaceOrNothing)
         end
@@ -174,7 +175,8 @@ module Liquid
     end
 
     def whitespace_handler(token, parse_context)
-      if token[2] == WhitespaceControl
+      parse_context.indentation = nil
+      if token[2] == WhitespaceTrim
         previous_token = @nodelist.last
         if previous_token.is_a?(String)
           first_byte = previous_token.getbyte(0)
@@ -183,8 +185,15 @@ module Liquid
             previous_token << first_byte
           end
         end
+      elsif token[2] == WhitespaceTrimIndent
+        previous_token = @nodelist.last
+        if previous_token.is_a?(String)
+          start_of_line = previous_token.rindex("\n") || 0
+          parse_context.indentation = previous_token[start_of_line + 1..]
+        end
       end
-      parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
+      parse_context.trim_whitespace = (token[-3] == WhitespaceTrim)
+      parse_context.strip_trailing = (token[-3] == WhitespaceTrimIndent)
     end
 
     def blank?
@@ -248,7 +257,7 @@ module Liquid
     def create_variable(token, parse_context)
       if token.end_with?("}}")
         i = 2
-        i = 3 if token[i] == "-"
+        i = 3 if token[i] == "-" or token[i] == "~"
         parse_end = token.length - 3
         parse_end -= 1 if token[parse_end] == "-"
         markup_end = parse_end - i + 1

@@ -29,6 +29,8 @@ module Liquid
       @name          = nil
       @parse_context = parse_context
       @line_number   = parse_context.line_number
+      @indentation   = parse_context.indentation
+      @strip_trailing = parse_context.strip_trailing
 
       strict_parse_with_error_mode_fallback(markup)
     end
@@ -96,12 +98,26 @@ module Liquid
     def render_to_output_buffer(context, output)
       obj = render(context)
 
+      obj_output = ''
       if obj.is_a?(Array)
-        output << obj.join
+        obj_output = obj.join
       elsif obj.nil?
       else
-        output << obj.to_s
+        obj_output = obj.to_s
       end
+
+      if @indentation
+        obj_output = obj_output.lines.map.with_index do |line, i|
+          next line if i == 0
+          @indentation + line
+        end.join
+      end
+
+      if @strip_trailing
+        obj_output.rstrip!
+      end
+
+      output << obj_output
 
       output
     end

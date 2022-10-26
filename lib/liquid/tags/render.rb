@@ -46,6 +46,8 @@ module Liquid
       @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
       @template_name_expr = parse_expression(template_name)
       @is_for_loop = (with_or_for == FOR)
+      @indentation = options.indentation
+      @strip_trailing = options.strip_trailing
 
       @attributes = {}
       markup.scan(TagAttributes) do |key, value|
@@ -84,7 +86,18 @@ module Liquid
           inner_context[key] = context.evaluate(value)
         end
         inner_context[context_variable_name] = var unless var.nil?
-        partial.render_to_output_buffer(inner_context, output)
+        partial_output = +''
+        partial.render_to_output_buffer(inner_context, partial_output)
+        if @indentation
+          partial_output = partial_output.lines.map.with_index do |line, i|
+            next line if i == 0
+            @indentation + line
+          end.join
+        end
+        if @strip_trailing
+          partial_output.rstrip!
+        end
+        output << partial_output
         forloop&.send(:increment!)
       }
 

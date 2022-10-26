@@ -555,4 +555,139 @@ class TrimModeTest < Minitest::Test
   def test_trim_blank
     assert_template_result('foobar', 'foo {{-}} bar')
   end
+
+  def test_trim_indent_variable
+    text = <<-END_TEMPLATE
+      <div>
+        <p>
+          {{~ 'Hello\nWorld' ~}}
+        </p>
+      </div>
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
+      <div>
+        <p>
+          Hello
+          World
+        </p>
+      </div>
+    END_EXPECTED
+    assert_template_result(expected, text)
+  end
+
+  def test_trim_indent_variable_trims_trailing_whitespace
+    text = <<-END_TEMPLATE
+      <div>
+        <p>
+          {{~ 'Hello\nWorld\n' ~}}
+        </p>
+      </div>
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
+      <div>
+        <p>
+          Hello
+          World
+        </p>
+      </div>
+    END_EXPECTED
+    assert_template_result(expected, text)
+  end
+
+
+  def test_trim_indent_tags
+    text = <<-END_TEMPLATE
+      <div>
+        <p>
+          {%~ echo 'Hello\nWorld' ~%}
+        </p>
+      </div>
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
+      <div>
+        <p>
+          Hello
+          World
+        </p>
+      </div>
+    END_EXPECTED
+    assert_template_result(expected, text)
+  end
+
+  def test_trim_indent_include
+    text = <<-END_TEMPLATE
+      <div>
+        <p>
+          {%~ include "snippet" ~%}
+        </p>
+      </div>
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
+      <div>
+        <p>
+          Hello
+          World
+        </p>
+      </div>
+    END_EXPECTED
+    assert_template_result(expected, text, partials: {"snippet" => "Hello\nWorld"})
+  end
+
+  def test_trim_indent_render
+    text = <<-END_TEMPLATE
+      <div>
+        <p>
+          {%~ render "snippet" ~%}
+        </p>
+      </div>
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
+      <div>
+        <p>
+          Hello
+          World
+        </p>
+      </div>
+    END_EXPECTED
+    assert_template_result(expected, text, partials: {"snippet" => "Hello\nWorld"})
+  end
+
+  def test_trim_indent_render_trim_trailing_whitespace
+    text = <<-END_TEMPLATE
+      <div>
+        <p>
+          {%~ render "snippet" ~%}
+        </p>
+      </div>
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
+      <div>
+        <p>
+          Hello
+          World
+        </p>
+      </div>
+    END_EXPECTED
+    assert_template_result(expected, text, partials: {"snippet" => "Hello\nWorld\n"})
+  end
+
+  def test_trim_indent_nested_render
+    text = <<-END_TEMPLATE
+      <div>
+        <p>
+          {%~ render "snippet" ~%}
+        </p>
+      </div>
+    END_TEMPLATE
+    expected = <<-END_EXPECTED
+      <div>
+        <p>
+          Hello
+              inside
+          World
+        </p>
+      </div>
+    END_EXPECTED
+    assert_template_result(expected, text, partials: {"snippet" => "Hello\n    {%~ render \"snippet2\" ~%}\nWorld", "snippet2" => "inside"})
+  end
 end # TrimModeTest

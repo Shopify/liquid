@@ -26,7 +26,9 @@ module Liquid
   ArgumentSeparator           = ','
   FilterArgumentSeparator     = ':'
   VariableAttributeSeparator  = '.'
-  WhitespaceControl           = '-'
+  WhitespaceControl           = '(?:[-~])'
+  WhitespaceTrim              = '-'
+  WhitespaceTrimIndent        = '~'
   TagStart                    = /\{\%/
   TagEnd                      = /\%\}/
   TagName                     = /#|\w+/

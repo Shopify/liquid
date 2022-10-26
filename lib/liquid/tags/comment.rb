@@ -63,10 +63,11 @@ module Liquid
             comment_tag_depth -= 1
           end
 
-          if comment_tag_depth.zero?
-            parse_context.trim_whitespace = (token[-3] == WhitespaceControl) unless tokenizer.for_liquid_tag
-            return false
-          end
+          next unless comment_tag_depth.zero?
+
+          parse_context.trim_whitespace = (token[-3] == WhitespaceTrim) unless tokenizer.for_liquid_tag
+          parse_context.strip_trailing = (token[-3] == WhitespaceTrimIndent) unless tokenizer.for_liquid_tag
+          return false
         end
 
         raise_tag_never_closed(block_name)
