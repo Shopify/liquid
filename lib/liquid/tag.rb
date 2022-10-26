@@ -14,12 +14,18 @@ module Liquid
       end
 
       def disable_tags(*tag_names)
-        @disabled_tags ||= []
-        @disabled_tags.concat(tag_names)
+        tag_names += disabled_tags
+        define_singleton_method(:disabled_tags) { tag_names }
         prepend(Disabler)
       end
 
       private :new
+
+      protected
+
+      def disabled_tags
+        []
+      end
     end
 
     def initialize(tag_name, markup, parse_context)
