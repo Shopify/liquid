@@ -11,7 +11,7 @@ module Liquid
   #   Renders an expression unless a specific condition is `true`.
   # @liquid_description
   #   > Tip:
-  #   > Similar to the [`if` tag](/api/liquid/tags#if), you can use `elsif` to add more conditions to an `unless` tag.
+  #   > Similar to the [`if` tag](/api/liquid/tags/if), you can use `elsif` to add more conditions to an `unless` tag.
   # @liquid_syntax
   #   {% unless condition %}
   #     expression

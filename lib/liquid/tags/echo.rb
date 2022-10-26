@@ -9,7 +9,7 @@ module Liquid
   #   Outputs an expression.
   # @liquid_description
   #   Using the `echo` tag is the same as wrapping an expression in curly brackets (`{{` and `}}`). However, unlike the curly
-  #   bracket method, you can use the `echo` tag inside [`liquid` tags](/api/liquid/tags#liquid).
+  #   bracket method, you can use the `echo` tag inside [`liquid` tags](/api/liquid/tags/liquid).
   #
   #   > Tip:
   #   > You can use [filters](/api/liquid/filters) on expressions inside `echo` tags.

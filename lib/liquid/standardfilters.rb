@@ -615,7 +615,7 @@ module Liquid
     # @liquid_description
     #   > Note:
     #   > The `concat` filter won't filter out duplicates. If you want to remove duplicates, then you need to use the
-    #   > [`uniq` filter](/api/liquid/filters#uniq).
+    #   > [`uniq` filter](/api/liquid/filters/uniq).
     # @liquid_syntax array | concat: array
     # @liquid_return [array[untyped]]
     def concat(input, array)
