@@ -52,7 +52,7 @@ module Liquid
 
     def render_to_output_buffer(context, output)
       template_name = context.evaluate(@template_name_expr)
-      raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name
+      raise ArgumentError, options[:locale].t("errors.argument.include") unless template_name.is_a?(String)
 
       partial = PartialCache.load(
         template_name,
