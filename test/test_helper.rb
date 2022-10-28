@@ -42,7 +42,7 @@ module Minitest
       message: nil, partials: nil, error_mode: nil, render_errors: false
     )
       template = Liquid::Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym)
-      file_system = StubFileSystem.new(partials) if partials
+      file_system = StubFileSystem.new(partials || {})
       registers = Liquid::Registers.new(file_system: file_system)
       context = Liquid::Context.build(environments: assigns, rethrow_errors: !render_errors, registers: registers)
       output = template.render(context)
