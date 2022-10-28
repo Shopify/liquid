@@ -249,6 +249,11 @@ class IncludeTagTest < Minitest::Test
       "{% include nil %}", render_errors: true)
   end
 
+  def test_render_raise_argument_error_when_template_is_not_a_string
+    assert_template_result("Liquid error (line 1): Argument error in tag 'include' - Illegal template name",
+      "{% include 123 %}", render_errors: true)
+  end
+
   def test_including_via_variable_value
     assert_template_result("from TestFileSystem", "{% assign page = 'pick_a_source' %}{% include page %}",
       partials: { "pick_a_source" => "from TestFileSystem" })
