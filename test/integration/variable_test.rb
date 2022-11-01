@@ -130,4 +130,8 @@ class VariableTest < Minitest::Test
   def test_raw_value_variable
     assert_template_result('bar', '{{ [key] }}', { 'key' => 'foo', 'foo' => 'bar' })
   end
+
+  def test_hash_last
+    assert_template_result('last', '{{ hash.last }}', { 'hash' => { 'first' => 'first', 'last' => 'last' } })
+  end
 end

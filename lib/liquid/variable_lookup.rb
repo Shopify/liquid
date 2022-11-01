@@ -61,11 +61,15 @@ module Liquid
           # as commands and call them on the current object
         elsif lookup_command?(i) && object.respond_to?(key)
           object = object.send(key).to_liquid
+        elsif lookup_command?(i) && object.is_a?(Hash) && key == 'last'
+          # Ruby defines Hash#first via Enumerable but not Hash#last.
+          # This is unexpected, so we explicitly handle that case here.
+          object = object.values.last.to_liquid
+        else
 
           # No key was present with the desired value and it wasn't one of the directly supported
           # keywords either. The only thing we got left is to return nil or
           # raise an exception if `strict_variables` option is set to true
-        else
           return nil unless context.strict_variables
           raise Liquid::UndefinedVariable, "undefined variable #{key}"
         end
