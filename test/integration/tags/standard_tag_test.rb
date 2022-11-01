@@ -36,6 +36,8 @@ class StandardTagTest < Minitest::Test
     assert_template_result('', '{%comment%}{% endif %}{%endcomment%}')
     assert_template_result('', '{% comment %}{% endwhatever %}{% endcomment %}')
     assert_template_result('', '{% comment %}{% raw %} {{%%%%}}  }} { {% endcomment %} {% comment {% endraw %} {% endcomment %}')
+    assert_template_result('', '{% comment %}{% " %}{% endcomment %}')
+    assert_template_result('', '{% comment %}{%%}{% endcomment %}')
 
     assert_template_result('foobar', 'foo{%comment%}comment{%endcomment%}bar')
     assert_template_result('foobar', 'foo{% comment %}comment{% endcomment %}bar')
