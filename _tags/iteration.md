@@ -7,7 +7,7 @@ Iteration tags repeatedly run blocks of code.
 
 ## for
 
-Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://shopify.dev/docs/themes/liquid/reference/objects/for-loops).
+Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, refer to the [`forloop` object](#forloop-object).
 
 <p class="code-label">Input</p>
 ```liquid
@@ -192,6 +192,54 @@ Reverses the order of the loop. Note that this flag's spelling is different from
 6 5 4 3 2 1
 ```
 
+## forloop (object)
+
+Information about a parent [`for` loop](#for).
+
+```json
+{
+  "first": true,
+  "index": 1,
+  "index0": 0,
+  "last": false,
+  "length": 4,
+  "rindex": 3
+}
+```
+
+### Use the `forloop` object
+
+<p class="code-label">Input</p>
+```liquid
+{%- raw -%}
+{% assign smoothie_flavors = "orange, strawberry, banana" | split: ", " %}
+
+{% for flavor in smoothie_flavors -%}
+  {%- if forloop.length > 0 -%}
+    {{ flavor }}{% unless forloop.last %}-{% endunless -%}
+  {%- endif -%}
+{% endfor %}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+```text
+orange-strawberry-banana
+```
+
+### forloop (properties)
+
+| Property | Description | Returns |
+| --- | --- | --- |
+| `length` | The total number of iterations in the loop. |  `number` |
+| `parentloop` | The parent `forloop` object. If the current `for` loop isn't nested inside another `for` loop, then `nil` is returned. | `forloop` |
+| `index` | The 1-based index of the current iteration. | `number` |
+| `index0` | The 0-based index of the current iteration. | `number` |
+| `rindex` | The 1-based index of the current iteration, in reverse order. | `number` |
+| `rindex0` | The 0-based index of the current iteration, in reverse order. | `number` |
+| `first` | Returns `true` if the current iteration is the first. Returns `false` if not. | `boolean` |
+| `last` | Returns `true` if the current iteration is the last. Returns `false` if not. | `boolean` |
+
 ## cycle
 
 Loops through a group of strings and prints them in the order that they were passed as arguments. Each time `cycle` is called, the next string argument is printed.
@@ -245,7 +293,7 @@ Uses for `cycle` include:
 
 ## tablerow
 
-Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags. For a full list of attributes available within a `tablerow` loop, see [tablerow (object)](https://shopify.dev/docs/themes/liquid/reference/objects/tablerow).
+Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags. For a full list of attributes available within a `tablerow` loop, refer to the [`tablerowloop` object](#tablerowloop-object).
 
 <p class="code-label">Input</p>
 ```liquid
@@ -377,3 +425,41 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 </table>
 {% endraw %}
 ```
+
+## tablerowloop (object)
+
+Information about a parent [`tablerow` loop](#tablerow).
+
+```json
+{
+  "col": 1,
+  "col0": 0,
+  "col_first": true,
+  "col_last": false,
+  "first": true,
+  "index": 1,
+  "index0": 0,
+  "last": false,
+  "length": 5,
+  "rindex": 5,
+  "rindex0": 4,
+  "row": 1
+}
+```
+
+### tablerowloop (properties)
+
+| Property | Description | Returns |
+| --- | --- | --- |
+| `col` | The 1-based index of the current column. | `number` |
+| `col0` | The 0-based index of the current column. | `number` |
+| `col_first` | Returns `true` if the current column is the first in the row. Returns `false` if not. | `boolean` |
+| `col_last` | Returns `true` if the current column is the last in the row. Returns `false` if not. | `boolean` |
+| `first` | Returns `true` if the current iteration is the first. Returns `false` if not. | `boolean` |
+| `index` | The 1-based index of the current iteration. | `number` |
+| `index0` | The 0-based index of the current iteration. | `number` |
+| `last` | Returns `true` if the current iteration is the last. Returns `false` if not. | `boolean` |
+| `length` | The total number of iterations in the loop. | `number` |
+| `rindex` | The 1-based index of the current iteration, in reverse order. | `number` |
+| `rindex0` | The 0-based index of the current iteration, in reverse order. | `number` |
+| `row` | The 1-based index of current row. | `number` |

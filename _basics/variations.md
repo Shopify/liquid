@@ -3,7 +3,7 @@ title: Variations of Liquid
 description: An overview of the different installations of Liquid and how Liquid can change depending on where you're using it.
 ---
 
-Liquid is a flexible, safe language, and is used in many different environments. Liquid was created for use in [Shopify](https://www.shopify.com) stores, and is also used extensively on [Jekyll](https://jekyllrb.com) websites. Over time, both Shopify and Jekyll have added their own objects, tags, and filters to Liquid. The most popular versions of Liquid that exist are **Liquid**, **Shopify Liquid**, and **Jekyll Liquid**.
+Liquid is a flexible, safe language, and is used in many different environments. Liquid was created for use in [Shopify](https://www.shopify.com) stores, and is also used extensively on [Jekyll](https://jekyllrb.com) websites. Over time, both Shopify and Jekyll have added their own objects, tags, and filters to Liquid. The most popular versions of Liquid that exist are **Liquid**, **Shopify Liquid for themes**, and **Jekyll Liquid**.
 
 This site documents the latest version of **Liquid** including betas and release candidates — that is, Liquid as it exists outside of Shopify and Jekyll. If you download the Liquid repository or install it as a [gem](https://rubygems.org/gems/liquid), you will get access to whatever objects, tags, and filters are in the version of Liquid that you chose.
 
@@ -11,7 +11,7 @@ This site documents the latest version of **Liquid** including betas and release
 
 Shopify always uses the latest version of Liquid as a base, but Shopify adds a significant number of objects, tags, and filters to Liquid for use in merchants' stores. These include objects representing store, product, and customer information, and filters for displaying store data and manipulating storefront assets like product images.
 
-Shopify's version of Liquid is documented in the [Shopify developer documentation](https://shopify.dev/docs/themes/liquid/reference). If you want to try out Shopify's version of Liquid, you can create a development store through the [Shopify Partner Dashboard](https://help.shopify.com/en/partners/dashboard/managing-stores/development-stores).
+Shopify has several versions of Liquid. The most popular version is used to build Shopify themes. To learn about the Liquid elements that you can use to build Shopify themes, and to learn about the other versions of Liquid at Shopify, refer to the [Shopify Liquid reference](https://shopify.dev/api/liquid).
 
 ## Jekyll
 
