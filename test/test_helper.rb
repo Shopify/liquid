@@ -44,7 +44,7 @@ module Minitest
       template = Liquid::Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym)
       file_system = StubFileSystem.new(partials || {})
       registers = Liquid::Registers.new(file_system: file_system)
-      context = Liquid::Context.build(environments: assigns, rethrow_errors: !render_errors, registers: registers)
+      context = Liquid::Context.build(static_environments: assigns, rethrow_errors: !render_errors, registers: registers)
       output = template.render(context)
       assert_equal(expected, output, message)
     end
