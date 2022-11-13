@@ -14,7 +14,7 @@ module Liquid
   # @liquid_syntax_keyword expression The expression to be output without being rendered.
   class Raw < Block
     Syntax = /\A\s*\z/
-    FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
+    EndRawTag = /\A(.*)#{TagStart}\s*endraw.*?#{TagEnd}\z/om
 
     def initialize(tag_name, markup, parse_context)
       super
@@ -25,7 +25,7 @@ module Liquid
     def parse(tokens)
       @body = +''
       while (token = tokens.shift)
-        if token =~ FullTokenPossiblyInvalid && block_delimiter == Regexp.last_match(2)
+        if token =~ EndRawTag
           @body << Regexp.last_match(1) if Regexp.last_match(1) != ""
           return
         end
