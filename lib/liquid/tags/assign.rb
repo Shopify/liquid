@@ -21,6 +21,18 @@ module Liquid
       raise Liquid::SyntaxError, parse_context.locale.t('errors.syntax.assign')
     end
 
+    def self.migrate(tag_name, markup, tokenizer, parse_context)
+      match = markup.match(/\s*#{Syntax}/)
+      new_variable_markup = Variable.migrate(match[2], parse_context)
+      new_markup = Utils.match_captures_replace(match, 2 => new_variable_markup)
+
+      # replace scanned over characters with a space to ensure there is a space
+      # to separate the tag name and the variable name
+      new_markup.prepend(" ") if match.begin(0) > 0
+
+      new_markup
+    end
+
     attr_reader :to, :from
 
     def initialize(tag_name, markup, parse_context)

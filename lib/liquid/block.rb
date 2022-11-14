@@ -60,6 +60,21 @@ module Liquid
       @block_delimiter ||= "end#{block_name}"
     end
 
+    def self.migrate_body(start_tag_name, tokenizer, parse_context)
+      new_body, unknown_tag = BlockBody.migrate(tokenizer, parse_context)
+
+      raise SyntaxError unless unknown_tag
+
+      block_delimiter = "end#{start_tag_name}"
+      if unknown_tag.tag_name == block_delimiter
+        new_body << unknown_tag.replaced_markup("") # markup was ignored on end tags
+        return [new_body, nil]
+      end
+
+      # handle the delimiter tag in the caller
+      [new_body, unknown_tag]
+    end
+
     private
 
     # @api public

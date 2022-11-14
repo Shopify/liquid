@@ -28,6 +28,16 @@ module Liquid
       raise
     end
 
+    def self.migrate(tokenizer, parse_context)
+      new_body, unknown_tag = BlockBody.migrate(tokenizer, parse_context)
+      raise SyntaxError if unknown_tag
+
+      new_body
+    rescue SyntaxError => e
+      e.line_number ||= parse_context.line_number
+      raise
+    end
+
     def unknown_tag(tag, _markup, _tokenizer)
       case tag
       when 'else', 'end'

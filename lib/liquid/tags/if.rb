@@ -20,6 +20,39 @@ module Liquid
 
     attr_reader :blocks
 
+    def self.migrate(tag_name, markup, tokenizer, parse_context)
+      new_markup = migrate_with_selected_parser(tag_name, markup, tokenizer, parse_context)
+      new_body = migrate_body(tag_name, tokenizer, parse_context)
+      [new_markup, new_body]
+    end
+
+    def self.migrate_body(start_tag_name, tokenizer, parse_context)
+      result = +""
+
+      loop do
+        new_body, delimiter_tag = super(start_tag_name, tokenizer, parse_context)
+        result << new_body
+
+        break unless delimiter_tag
+
+        case delimiter_tag.tag_name
+        when "else"
+          result << delimiter_tag.replaced_markup("") # markup was ignored on end tags
+        when "elsif"
+          new_markup = migrate_with_selected_parser(delimiter_tag.tag_name, delimiter_tag.markup, tokenizer, parse_context)
+          result << delimiter_tag.replaced_markup(new_markup)
+        else
+          raise SyntaxError
+        end
+      end
+
+      result
+    end
+
+    private_class_method def self.strict_migrate(tag_name, markup, tokenizer, parse_context)
+      markup
+    end
+
     def initialize(tag_name, markup, options)
       super
       @blocks = []
@@ -81,6 +114,10 @@ module Liquid
       Condition.parse_expression(parse_context, markup)
     end
 
+    private_class_method def self.lax_migrate_expression(markup)
+      Expression.lax_migrate(markup)
+    end
+
     def lax_parse(markup)
       expressions = markup.scan(ExpressionsAndOperators)
       raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop =~ Syntax
@@ -99,6 +136,40 @@ module Liquid
       end
 
       condition
+    end
+
+    private_class_method def self.lax_migrate(tag_name, markup, tokenizer, parse_context)
+      expressions = markup.scan(ExpressionsAndOperators)
+
+      new_markup = lax_migrate_condition(expressions.pop)
+      until expressions.empty?
+        operator = expressions.pop
+        new_left_markup = lax_migrate_condition(expressions.pop)
+        new_markup = new_left_markup << operator << new_markup
+      end
+
+      new_markup
+    end
+
+    private_class_method def self.lax_migrate_condition(markup)
+      Utils.migrate_stripped(markup) do |markup|
+        match = markup.match(Syntax)
+        left = lax_migrate_expression(match[1])
+        op = match[2]
+        right_capture = match[3]
+        if op
+          right = lax_migrate_expression(right_capture) if right_capture
+        elsif right_capture
+          right = "" # remove right capture, since it is ignored with no operator
+        end
+        new_markup = Utils.match_captures_replace(match, { 1 => left, 2 => op, 3 => right }.compact)
+        new_markup.prepend(' ') if match.begin(0) > 0
+        new_markup << ' ' if match.end(0) < markup.length
+        if op && !right # missing right operand missing
+          new_markup << " nil" # replace with nil, which it was semantically treated as
+        end
+        new_markup
+      end
     end
 
     def strict_parse(markup)

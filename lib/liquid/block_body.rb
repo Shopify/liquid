@@ -4,8 +4,8 @@ require 'English'
 
 module Liquid
   class BlockBody
-    LiquidTagToken      = /\A\s*(#{TagName})\s*(.*?)\z/o
-    FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(#{TagName})(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    LiquidTagToken      = /\A\s*(#{TagName})\s*(.*?)\s*\z/o
+    FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(#{TagName})(\s*)(.*?)\s*?#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable   = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
     TAGSTART            = "{%"
@@ -27,6 +27,16 @@ module Liquid
         parse_for_liquid_tag(tokenizer, parse_context, &block)
       else
         parse_for_document(tokenizer, parse_context, &block)
+      end
+    end
+
+    def self.migrate(tokenizer, parse_context, &block)
+      parse_context.line_number = tokenizer.line_number
+
+      if tokenizer.for_liquid_tag
+        migrate_for_liquid_tag(tokenizer, parse_context, &block)
+      else
+        migrate_for_document(tokenizer, parse_context, &block)
       end
     end
 
@@ -58,6 +68,56 @@ module Liquid
       end
 
       yield nil, nil
+    end
+
+    class UnknownTagMigrator
+      attr_reader :tag_name, :markup
+
+      def initialize(match:, markup_capture_number:, tag_name:, markup:)
+        @match = match
+        @tag_name = tag_name
+        @markup = markup
+        @markup_capture_number = markup_capture_number
+      end
+
+      def replaced_markup(new_markup)
+        Utils.match_capture_replace(@match, @markup_capture_number, new_markup)
+      end
+    end
+
+    private_class_method def self.migrate_for_liquid_tag(tokenizer, parse_context)
+      result = +""
+      while (token = tokenizer.shift)
+        if token.empty? || token.match?(WhitespaceOrNothing)
+          result << token
+          result << "\n" if tokenizer.more?
+        else
+          match = token.match(LiquidTagToken)
+          unless match
+            # Missing tag name, which was allowed in comment tags through its
+            # unknown tag handling
+            raise NotImplementedError, "TODO"
+          end
+          tag_name = match[1]
+          markup   = match[2]
+          unless (tag = Template.tags[tag_name])
+            # delegate handling of unknown tags to the caller, where a block tag may treat
+            # it as an end tag or body delimiter.
+            unknown_tag = UnknownTagMigrator.new(
+              match: match, markup_capture_number: 2, tag_name: tag_name, markup: markup
+            )
+            return [result, unknown_tag]
+          end
+          has_more_tokens = tokenizer.more?
+          new_markup, new_tag_body = tag.migrate(tag_name, markup, tokenizer, parse_context)
+          result << Utils.match_capture_replace(match, 2, new_markup)
+          result << "\n" if has_more_tokens
+          result << new_tag_body.to_s
+        end
+        parse_context.line_number = tokenizer.line_number
+      end
+
+      [result, nil]
     end
 
     # @api private
@@ -107,6 +167,15 @@ module Liquid
           BlockBody.unknown_tag_in_liquid_tag(end_tag_name, parse_context)
         end
       end
+    end
+
+    private_class_method def self.migrate_liquid_tag(markup, parse_context)
+      liquid_tag_tokenizer = parse_context.new_tokenizer(
+        markup, start_line_number: parse_context.line_number, for_liquid_tag: true
+      )
+      result, unknown_tag = migrate_for_liquid_tag(liquid_tag_tokenizer, parse_context)
+      raise SyntaxError if unknown_tag
+      result
     end
 
     private def handle_invalid_tag_token(token, parse_context)
@@ -164,6 +233,56 @@ module Liquid
       end
 
       yield nil, nil
+    end
+
+    private_class_method def self.migrate_for_document(tokenizer, parse_context, &block)
+      result = +""
+      while (token = tokenizer.shift)
+        next if token.empty?
+
+        case
+        when token.start_with?(TAGSTART)
+          raise SyntaxError unless token.end_with?('%}')
+          match = token.match(FullToken)
+          unless match
+            # Missing tag name, which was allowed in comment tags through its
+            # unknown tag handling
+            raise NotImplementedError, "TODO"
+          end
+          tag_name = match[2]
+          markup   = match[4]
+
+          if parse_context.line_number
+            # newlines inside the tag should increase the line number,
+            # particularly important for multiline {% liquid %} tags
+            parse_context.line_number += Regexp.last_match(1).count("\n") + Regexp.last_match(3).count("\n")
+          end
+
+          if tag_name == 'liquid'
+            new_markup = migrate_liquid_tag(markup, parse_context)
+            result << Utils.match_capture_replace(match, 4, new_markup)
+            next
+          end
+
+          unless (tag = Template.tags[tag_name])
+            # delegate handling of unknown tags to the caller, where a block tag may treat
+            # it as an end tag or body delimiter.
+            unknown_tag = UnknownTagMigrator.new(
+              match: match, markup_capture_number: 4, tag_name: tag_name, markup: markup
+            )
+            return [result, unknown_tag]
+          end
+          new_markup, new_tag_body = tag.migrate(tag_name, markup, tokenizer, parse_context)
+          result << Utils.match_capture_replace(match, 4, new_markup) << new_tag_body.to_s
+        when token.start_with?(VARSTART)
+          result << migrate_variable(token, parse_context)
+        else
+          result << token
+        end
+        parse_context.line_number = tokenizer.line_number
+      end
+
+      [result, nil]
     end
 
     def whitespace_handler(token, parse_context)
@@ -242,6 +361,17 @@ module Liquid
       if token =~ ContentOfVariable
         markup = Regexp.last_match(1)
         return Variable.new(markup, parse_context)
+      end
+      BlockBody.raise_missing_variable_terminator(token, parse_context)
+    end
+
+    private_class_method def self.migrate_variable(token, parse_context)
+      match = token.match(ContentOfVariable)
+      if match
+        new_markup = Utils.migrate_stripped(match[1]) do |markup|
+          Variable.migrate(markup, parse_context)
+        end
+        return Utils.match_capture_replace(match, 1, new_markup)
       end
       BlockBody.raise_missing_variable_terminator(token, parse_context)
     end

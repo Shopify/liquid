@@ -41,5 +41,36 @@ module Liquid
         end
       end
     end
+
+    def self.lax_migrate(markup)
+      Utils.migrate_stripped(markup) do |markup|
+        raise ArgumentError, "unexpected empty expression" if markup.empty?
+
+        if (markup.start_with?('"') && markup.end_with?('"')) ||
+           (markup.start_with?("'") && markup.end_with?("'"))
+          markup
+        else
+          case markup
+          when INTEGERS_REGEX
+            markup
+          when RANGES_REGEX
+            match = Regexp.last_match
+            new_start, new_end = RangeLookup.lax_migrate(match[1], match[2])
+            Utils.match_captures_replace(match, 1 => new_start, 2 => new_end)
+          when FLOATS_REGEX
+            # lax parser allowed multiple periods, but the second period and following characters were ignored
+            new_markup = markup.slice(/\A(-?\d+\.\d*)/)
+            new_markup << "0" if new_markup.end_with?(".")
+            new_markup
+          else
+            if LITERALS.key?(markup)
+              markup
+            else
+              VariableLookup.lax_migrate(markup)
+            end
+          end
+        end
+      end
+    end
   end
 end

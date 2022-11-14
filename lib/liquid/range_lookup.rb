@@ -22,6 +22,37 @@ module Liquid
       end
     end
 
+    def self.lax_migrate(start_markup, end_markup)
+      new_start = Expression.lax_migrate(start_markup)
+      new_end = Expression.lax_migrate(end_markup)
+
+      # cast literals
+      start_obj = Expression.parse(new_start)
+      end_obj   = Expression.parse(new_end)
+      if start_obj.respond_to?(:evaluate) || end_obj.respond_to?(:evaluate)
+        new_start = lax_migrate_range_expression(new_start, start_obj)
+        new_end = lax_migrate_range_expression(new_end, end_obj)
+      else
+        new_start = start_obj.to_i.to_s unless start_obj.is_a?(Integer)
+        new_end = end_obj.to_i.to_s unless end_obj.is_a?(Integer)
+      end
+
+      [new_start, new_end]
+    end
+
+    def self.lax_migrate_range_expression(markup, expression)
+      return markup if expression.respond_to?(:evaluate)
+
+      case expression
+      when Integer
+        markup
+      when NilClass, String
+        expression.to_i.to_s
+      else
+        Utils.to_integer(input).to_s
+      end
+    end
+
     attr_reader :start_obj, :end_obj
 
     def initialize(start_obj, end_obj)

@@ -25,6 +25,10 @@ module Liquid
       token
     end
 
+    def more?
+      @offset < @tokens.length
+    end
+
     private
 
     def tokenize

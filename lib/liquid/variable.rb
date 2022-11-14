@@ -41,6 +41,77 @@ module Liquid
       "in \"{{#{markup}}}\""
     end
 
+    STRICT_PARSE_CONTEXT = ParseContext.new(error_mode: :strict).freeze
+    private_constant :STRICT_PARSE_CONTEXT
+
+    def self.migrate(markup, parse_context)
+      new(markup, STRICT_PARSE_CONTEXT)
+      # TODO: migrate non-integer range expression literals
+      markup
+    rescue Liquid::SyntaxError
+      raise if parse_context.error_mode == :strict
+      lax_migrate(markup, parse_context)
+    end
+
+    def self.lax_migrate(markup, parse_context)
+      # unanchored match that may skip over characters preceding the name expression
+      markup_match = markup.match(MarkupWithQuotedFragment)
+      unless markup_match
+        # Treated as a blank variable (e.g. `{{ -}}`), which outputs nothing
+        # but may still have an effect on whitespace trimming
+        return ""
+      end
+
+      name_markup = markup_match[1]
+      filters_markup = markup_match[2]
+
+      new_name_markup = Expression.lax_migrate(name_markup)
+
+      new_filter_markup = ""
+      # unanchored match that may skip over characters preceding the pipe for the first filter
+      if (filters_match = filters_markup.match(/\s*#{FilterMarkupRegex}/o))
+        filters = filters_match[1].scan(FilterParser) # may skip over unterminated quote characters
+        filters.map! do |f|
+          filter_match = f.match(/\A(\s*)\W*(\w+)(\s*)/)
+          next unless filter_match
+
+          # omit non-word characters preceding the filter name that the lax parser skips over
+          transformed_filter = +"#{filter_match[1]}#{filter_match[2]}#{filter_match[3]}"
+
+          filter_args = []
+          f.scan(/#{FilterArgsRegex}\s*/o) do # may skip over characters before the argument separator
+            filter_arg_match = Regexp.last_match
+            new_filter_arg = lax_migrate_filter_argument(filter_arg_match[1])
+            filter_arg_string = Utils.match_captures_replace(filter_arg_match, 1 => new_filter_arg)
+            filter_arg_string = filter_arg_string[1...] # remove separator character
+            filter_args << filter_arg_string
+          end
+
+          unless filter_args.empty?
+            transformed_filter << ":" << filter_args.join(",")
+          end
+
+          transformed_filter
+        end
+        filters.compact!
+        new_filters_markup = filters.join('|')
+
+        # include pipe separator along with whitespace surrounding it
+        new_filter_markup = Utils.match_captures_replace(filters_match, 1 => new_filters_markup)
+      end
+
+      Utils.match_captures_replace(markup_match, 1 => new_name_markup, 2 => new_filter_markup)
+    end
+
+    def self.lax_migrate_filter_argument(unparsed_arg)
+      if (match = unparsed_arg.match(JustTagAttributes))
+        new_value_markup = Expression.lax_migrate(match[2])
+        Utils.match_captures_replace(match, 2 => new_value_markup)
+      else
+        Expression.lax_migrate(unparsed_arg)
+      end
+    end
+
     def lax_parse(markup)
       @filters = []
       return unless markup =~ MarkupWithQuotedFragment

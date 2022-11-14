@@ -96,6 +96,11 @@ module Liquid
       def parse(source, options = {})
         new.parse(source, options)
       end
+
+      def migrate(source, parse_options = {})
+        parse(source, parse_options) # raise if source has syntax errors
+        new.migrate(source, parse_options)
+      end
     end
 
     def initialize
@@ -110,6 +115,12 @@ module Liquid
       tokenizer     = parse_context.new_tokenizer(source, start_line_number: @line_numbers && 1)
       @root         = Document.parse(tokenizer, parse_context)
       self
+    end
+
+    def migrate(source, parse_options = {})
+      parse_context = configure_options(parse_options)
+      tokenizer     = parse_context.new_tokenizer(source, start_line_number: @line_numbers && 1)
+      Document.migrate(tokenizer, parse_context)
     end
 
     def registers

@@ -89,5 +89,33 @@ module Liquid
       # Otherwise return the object itself
       obj
     end
+
+    def self.migrate_stripped(markup)
+      match = markup.match(/\A\s*(.*?)\s*\z/m)
+      new_markup = yield match[1]
+      Utils.match_captures_replace(match, 1 => new_markup)
+    end
+
+    # @api private
+    def self.match_capture_replace(match, capture_number, replacement_string)
+      match_captures_replace(match, { capture_number => replacement_string })
+    end
+
+    def self.match_captures_replace(match, replacements = {})
+      new_string = match[0].dup
+      capture_numbers = replacements.keys
+      unless capture_numbers.all?(Integer)
+        raise TypeError, "Currently, only numbered captures are supported"
+      end
+      # replace from later captures first, to avoid affecting the position for following replacements
+      match_begin = match.begin(0)
+      capture_numbers.sort.reverse_each do |capture_number|
+        replacement_string = replacements.fetch(capture_number)
+        capture_start = match.begin(capture_number)
+        capture_length = match.end(capture_number) - capture_start
+        new_string[capture_start - match_begin, capture_length] = replacement_string
+      end
+      new_string
+    end
   end
 end

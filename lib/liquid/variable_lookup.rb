@@ -10,6 +10,41 @@ module Liquid
       new(markup)
     end
 
+    LITERALS = Expression::LITERALS.keys.freeze
+    private_constant :LITERALS
+
+    def self.lax_migrate(markup)
+      new_markup = nil
+      last_match = nil
+      first_match = nil
+      markup.scan(VariableParser) do |lookup|
+        last_match = Regexp.last_match
+        first_match ||= last_match
+        if lookup&.start_with?('[') && lookup&.end_with?(']')
+          new_markup ||= +""
+          new_markup << "[" << Expression.lax_migrate(lookup[1..-2]) << "]"
+        else
+          new_markup << "." if new_markup
+          new_markup ||= +""
+          new_markup << lookup
+        end
+      end
+
+      case new_markup
+      when nil
+        # `markup.scan(VariableParser)` may skip over all characters
+        new_markup ||= " nil "
+      when Expression::INTEGERS_REGEX, Expression::RANGES_REGEX, Expression::FLOATS_REGEX, *LITERALS
+        # Quote variable lookups that match literals after characters are skipped by regex scanning
+        new_markup = "['#{new_markup}']"
+      else
+        new_markup.prepend(" ") if first_match.begin(0) > 0
+        new_markup << ' ' if last_match.end(0) < markup.length
+      end
+
+      new_markup
+    end
+
     def initialize(markup)
       lookups = markup.scan(VariableParser)
 
