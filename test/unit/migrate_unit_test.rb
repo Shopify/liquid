@@ -29,7 +29,8 @@ class MigrateUnitTest < Minitest::Test
     with_error_mode(:lax) do
       assert_migration({
         %({{ ,|"' }}) => "{{  }}", # no MarkupWithQuotedFragment match, skipping characters
-        %({{ ,|"' 123 }}) => "{{ 123 }}", # MarkupWithQuotedFragment skipped characters
+        %({{ ,|"' 123 }}) => "{{  123 }}", # MarkupWithQuotedFragment skipped characters
+        "{{,-2}}" => "{{ -2}}", # preserve separators when removing ignored characters
         "{{  12 34  }}" => "{{  12  }}", # no FilterMarkupRegex match, skipping characters
         "{{ -12 34 | abs }}" => "{{ -12 | abs }}", # FilterMarkupRegex skipped characters
         %({{ -12 | '" abs }}) => "{{ -12 |  abs }}", # FilterParser skipped characters

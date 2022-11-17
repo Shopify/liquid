@@ -100,7 +100,9 @@ module Liquid
         new_filter_markup = Utils.match_captures_replace(filters_match, 1 => new_filters_markup)
       end
 
-      Utils.match_captures_replace(markup_match, 1 => new_name_markup, 2 => new_filter_markup)
+      new_markup = Utils.match_captures_replace(markup_match, 1 => new_name_markup, 2 => new_filter_markup)
+      new_markup.prepend(" ") if markup_match.begin(0) > 0
+      new_markup
     end
 
     def self.lax_migrate_filter_argument(unparsed_arg)
