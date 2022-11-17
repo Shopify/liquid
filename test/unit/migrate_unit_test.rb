@@ -38,7 +38,7 @@ class MigrateUnitTest < Minitest::Test
         "{{ -1 | ! abs }}" => "{{ -1 | abs }}", # ignored non-word characters preceding filter name
         "{{ 'a' | append WAT: 'b' }}" => "{{ 'a' | append : 'b' }}", # FilterArgsRegex skipped characters
         "{{ '!' | replace, '!': '?' }}" => "{{ '!' | replace: '!', '?' }}", # FilterArgsRegex unexpected separators
-        "{{!-a-!}}" => "{{ -a- }}", # preserve separators when removing ignored characters
+        "{{ -a.1b }}" => "{{ ['-a']['1b'] }}", # quote separators when removing ignored characters
       })
     end
   end
@@ -57,7 +57,7 @@ class MigrateUnitTest < Minitest::Test
   def test_migrate_variable_lookup
     with_error_mode(:lax) do
       assert_migration({
-        "{{@-a[b].c-@}}" => "{{ -a[b].c- }}", # VariableParser skipped characters
+        "{{@a[b].c@}}" => "{{ a[b].c }}", # VariableParser skipped characters
         "{{ a!b$c }}" => "{{ a.b.c }}", # VariableParser unexpected separators
       })
     end
@@ -66,7 +66,7 @@ class MigrateUnitTest < Minitest::Test
   def test_migrate_assign
     with_error_mode(:lax) do
       assert_migration({
-        "{% assign!a = b-!%}" => "{% assign a = b- %}", # Syntax skipped characters
+        "{% assign!a = b!%}" => "{% assign a = b %}", # Syntax skipped characters
         "{% assign a = @b ! %}" => "{% assign a =  b %}", # Variable skipped characters
         "{% assign|x=1 %}" => "{% assign x=1 %}", # ensure tag name separated from markup
       })
@@ -76,12 +76,12 @@ class MigrateUnitTest < Minitest::Test
   def test_lax_migrate_if
     with_error_mode(:lax) do
       assert_migration({
-        "{% if@a-@%}Y{% endif %}" => "{% if a- %}Y{% endif %}", # Syntax skipped character
+        "{% if@a@%}Y{% endif %}" => "{% if a %}Y{% endif %}", # Syntax skipped character
         "{% if &a contains^b and *c %}A{% elsif %d or$e %}B{% endif %}" =>
           "{% if  a contains b and  c %}A{% elsif  d or e %}B{% endif %}", # test more expressions
         "{% if b 1 %}Y{% endif %}" => "{% if b  %}Y{% endif %}", # missing operator with right operand
         "{% if c == %}Y{% endif %}" => "{% if c == nil %}Y{% endif %}", # operator with missing right operand
-        "{% if!a-!%}T{% endif %}" => "{% if a- %}T{% endif %}", # VariableParser skipped characters
+        "{% if!a!%}T{% endif %}" => "{% if a %}T{% endif %}", # VariableParser skipped characters
         "{% if!%}T{% endif %}" => "{% if nil %}T{% endif %}", # VariableParser skipping all characters
       })
     end

@@ -20,12 +20,14 @@ module Liquid
       markup.scan(VariableParser) do |lookup|
         last_match = Regexp.last_match
         first_match ||= last_match
+        new_markup ||= +""
         if lookup&.start_with?('[') && lookup&.end_with?(']')
-          new_markup ||= +""
           new_markup << "[" << Expression.lax_migrate(lookup[1..-2]) << "]"
+        elsif !lookup.match?(/\A#{Liquid::Lexer::IDENTIFIER}\z/)
+          # quote non-strictly valid identifiers
+          new_markup << "['" << lookup << "']"
         else
-          new_markup << "." if new_markup
-          new_markup ||= +""
+          new_markup << "." unless new_markup.empty?
           new_markup << lookup
         end
       end
