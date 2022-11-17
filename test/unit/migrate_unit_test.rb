@@ -116,7 +116,7 @@ class MigrateUnitTest < Minitest::Test
       message = "source: #{source.inspect}"
       assert_equal(expect, Liquid::Template.migrate(source), message)
       assert_no_migration(expect)
-      assert_equal(Liquid::Template.parse(expect).render!, Liquid::Template.parse(source).render!, message)
+      assert_equal(Liquid::Template.parse(expect, parse_mode: :strict).render!, Liquid::Template.parse(source).render!, message)
     end
   end
 end
