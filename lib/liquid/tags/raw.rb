@@ -16,6 +16,31 @@ module Liquid
     Syntax = /\A\s*\z/
     FullTokenPossiblyInvalid = /\A(.*)#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}\z/om
 
+    def self.migrate(tag_name, markup, tokenizer, parse_context)
+      raise SyntaxError unless Syntax.match?(markup)
+
+      new_body = migrate_body(tag_name, tokenizer, parse_context)
+      [markup, new_body]
+    end
+
+    def self.migrate_body(start_tag_name, tokenizer, parse_context)
+      block_delimiter = "end#{start_tag_name}"
+
+      body = +''
+      while (token = tokenizer.shift)
+        match = token.match(FullTokenPossiblyInvalid)
+        if match && block_delimiter == match[2]
+          body << Utils.match_captures_replace(match, { 3 => "" })
+          return body
+        end
+        body << token unless token.empty?
+      end
+
+      raise SyntaxError
+    end
+
+    attr_reader :body
+
     def initialize(tag_name, markup, parse_context)
       super
 

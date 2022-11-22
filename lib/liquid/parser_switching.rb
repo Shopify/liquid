@@ -20,7 +20,7 @@ module Liquid
             strict_migrate(tag_name, markup, tokenizer, parse_context)
           rescue SyntaxError => e
             parse_context.warnings << e
-            lax_migrate(markup)
+            lax_migrate(tag_name, markup, tokenizer, parse_context)
           end
         end
       end

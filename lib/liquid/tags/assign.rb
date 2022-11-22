@@ -22,7 +22,7 @@ module Liquid
     end
 
     def self.migrate(tag_name, markup, tokenizer, parse_context)
-      match = markup.match(/\s*#{Syntax}/)
+      match = markup.match(Syntax)
       new_variable_markup = Variable.migrate(match[2], parse_context)
       new_markup = Utils.match_captures_replace(match, 2 => new_variable_markup)
 

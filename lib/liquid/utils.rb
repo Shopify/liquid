@@ -96,6 +96,21 @@ module Liquid
       Utils.match_captures_replace(match, 1 => new_markup)
     end
 
+    def self.migrate_tag_attributes(markup)
+      attributes = []
+      markup.scan(/\s*,?\s*#{TagAttributes}/) do
+        tag_match = Regexp.last_match
+        new_value_markup = Expression.lax_migrate(tag_match[2])
+        attribute_markup = Utils.match_captures_replace(tag_match, { 2 => new_value_markup })
+        unless attribute_markup.match?(/\A[,\s]/)
+          attribute_markup.prepend(", ")
+        end
+        attributes << attribute_markup
+      end
+      return "" if attributes.empty?
+      attributes.join
+    end
+
     # @api private
     def self.match_capture_replace(match, capture_number, replacement_string)
       match_captures_replace(match, { capture_number => replacement_string })

@@ -25,9 +25,15 @@ module Liquid
   # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   # @liquid_optional_param reversed [untyped] Iterate in reverse order.
   class For < Block
-    Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
+    Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)(\s*reversed)?/o
 
     attr_reader :collection_name, :variable_name, :limit, :from
+
+    def self.migrate(tag_name, markup, tokenizer, parse_context)
+      new_markup = migrate_with_selected_parser(tag_name, markup, tokenizer, parse_context)
+      new_body = migrate_body(tag_name, tokenizer, parse_context)
+      [new_markup, new_body]
+    end
 
     def initialize(tag_name, markup, options)
       super
@@ -53,6 +59,27 @@ module Liquid
       @else_block ? [@for_block, @else_block] : [@for_block]
     end
 
+    def self.migrate_body(start_tag_name, tokenizer, parse_context)
+      result = +""
+
+      new_body, delimiter_tag = super(start_tag_name, tokenizer, parse_context)
+      result << new_body
+
+      else_tag = delimiter_tag
+      else_body = nil
+      while delimiter_tag
+        raise SyntaxError unless delimiter_tag.tag_name == 'else'
+        else_tag = delimiter_tag
+        else_body, delimiter_tag = super(start_tag_name, tokenizer, parse_context)
+      end
+      if else_tag
+        result << else_tag.replaced_markup("") # markup was ignored in else tags
+        result << else_body
+      end
+
+      result
+    end
+
     def unknown_tag(tag, markup, tokens)
       return super unless tag == 'else'
       @else_block = new_body
@@ -72,6 +99,13 @@ module Liquid
 
     protected
 
+    private_class_method def self.lax_migrate(tag_name, markup, tokenizer, parse_context)
+      match = markup.match(Syntax) || raise(SyntaxError)
+      new_collection_name = Expression.lax_migrate(match[2])
+      new_markup = Utils.match_captures_replace(match, { 2 => new_collection_name }.compact)
+      new_markup << Utils.migrate_tag_attributes(markup)
+    end
+
     def lax_parse(markup)
       if markup =~ Syntax
         @variable_name   = Regexp.last_match(1)
@@ -87,6 +121,10 @@ module Liquid
       end
     end
 
+    private_class_method def self.strict_migrate(tag_name, markup, tokenizer, parse_context)
+      markup
+    end
+
     def strict_parse(markup)
       p = Parser.new(markup)
       @variable_name = p.consume(:id)
@@ -98,11 +136,12 @@ module Liquid
       @name     = "#{@variable_name}-#{collection_name}"
       @reversed = p.id?('reversed')
 
-      while p.look(:id) && p.look(:colon, 1)
+      while p.look(:comma) || p.look(:id)
+        p.consume?(:comma)
         unless (attribute = p.id?('limit') || p.id?('offset'))
           raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_attribute")
         end
-        p.consume
+        p.consume(:colon)
         set_attribute(attribute, p.expression)
       end
       p.consume(:end_of_string)

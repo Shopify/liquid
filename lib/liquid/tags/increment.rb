@@ -21,6 +21,10 @@ module Liquid
   class Increment < Tag
     attr_reader :variable_name
 
+    def self.migrate(_tag_name, markup, _tokenizer, _parse_context)
+      markup # no characters ignored, it just uses anything for the variable name
+    end
+
     def initialize(tag_name, markup, options)
       super
       @variable_name = markup.strip

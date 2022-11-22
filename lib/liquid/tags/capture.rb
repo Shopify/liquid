@@ -18,6 +18,21 @@ module Liquid
   class Capture < Block
     Syntax = /(#{VariableSignature}+)/o
 
+    def self.migrate(tag_name, markup, tokenizer, parse_context)
+      match = markup.match(Syntax)
+
+      new_markup = match[1]
+
+      # replace scanned over characters with a space to ensure there is a space
+      # to separate the tag name and the variable name
+      new_markup.prepend(" ") if match.begin(0) > 0
+
+      new_body, unknown_tag = migrate_body(tag_name, tokenizer, parse_context)
+      raise SyntaxError if unknown_tag
+
+      [new_markup, new_body]
+    end
+
     def initialize(tag_name, markup, options)
       super
       if markup =~ Syntax

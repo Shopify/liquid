@@ -18,7 +18,42 @@ module Liquid
     SimpleSyntax = /\A#{QuotedFragment}+/o
     NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om
 
+    def self.migrate(tag_name, markup, tokenizer, parse_context)
+      new_markup = case markup
+      when NamedSyntax
+        match = Regexp.last_match
+
+        new_name_syntax = Expression.lax_migrate(match[1])
+        new_variables_markup = migrate_variables_from_string(match[2])
+
+        Utils.match_captures_replace(match, 1 => new_name_syntax, 2 => new_variables_markup)
+      when SimpleSyntax
+        match = Regexp.last_match
+        migrate_variables_from_string(markup)
+      else
+        raise SyntaxError
+      end
+
+      # replace scanned over characters with a space to ensure there is a space
+      # to separate the tag name and the variable name
+      new_markup.prepend(" ") if match.begin(0) > 0
+
+      new_markup
+    end
+
+    def self.migrate_variables_from_string(markup)
+      markup.split(',').collect do |var|
+        match = var.match(/\s*(#{QuotedFragment})\s*/o)
+        if match
+          Utils.match_captures_replace(match, 1 => Expression.lax_migrate(match[1]))
+        end
+      end.compact.join(",")
+    end
+
     attr_reader :variables
+
+    # @api private
+    attr_reader :name
 
     def initialize(tag_name, markup, options)
       super

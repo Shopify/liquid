@@ -5,6 +5,9 @@ module Liquid
     attr_accessor :locale, :line_number, :trim_whitespace, :depth
     attr_reader :partial, :warnings, :error_mode
 
+    # @api private
+    attr_writer :error_mode
+
     def initialize(options = {})
       @template_options = options ? options.dup : {}
 

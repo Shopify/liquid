@@ -21,6 +21,10 @@ module Liquid
   class Echo < Tag
     attr_reader :variable
 
+    def self.migrate(tag_name, markup, tokenizer, parse_context)
+      Variable.migrate(markup, parse_context)
+    end
+
     def initialize(tag_name, markup, parse_context)
       super
       @variable = Variable.new(markup, parse_context)

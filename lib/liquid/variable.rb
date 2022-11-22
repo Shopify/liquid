@@ -41,7 +41,7 @@ module Liquid
       "in \"{{#{markup}}}\""
     end
 
-    STRICT_PARSE_CONTEXT = ParseContext.new(error_mode: :strict).freeze
+    STRICT_PARSE_CONTEXT = ParseContext.new(error_mode: :strict)
     private_constant :STRICT_PARSE_CONTEXT
 
     def self.migrate(markup, parse_context)

@@ -15,6 +15,24 @@ module Liquid
   #   {% endcomment %}
   # @liquid_syntax_keyword content The content of the comment.
   class Comment < Block
+    def self.migrate(tag_name, _markup, tokenizer, parse_context)
+      new_markup = "" # markup was ignored
+      new_body = migrate_body(tag_name, tokenizer, parse_context)
+      [new_markup, new_body]
+    end
+
+    def self.migrate_body(start_tag_name, tokenizer, parse_context)
+      result = +""
+      loop do
+        new_body, delimiter_tag = super(start_tag_name, tokenizer, parse_context)
+        result << new_body
+        break unless delimiter_tag
+
+        result << delimiter_tag.original_tag_string # unknown tags allowed
+      end
+      result
+    end
+
     def render_to_output_buffer(_context, output)
       output
     end

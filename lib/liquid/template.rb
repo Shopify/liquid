@@ -118,7 +118,7 @@ module Liquid
     end
 
     def migrate(source, parse_options = {})
-      parse_context = configure_options(parse_options)
+      parse_context = configure_options(parse_options.merge(disable_liquid_c_nodes: true))
       tokenizer     = parse_context.new_tokenizer(source, start_line_number: @line_numbers && 1)
       Document.migrate(tokenizer, parse_context)
     end

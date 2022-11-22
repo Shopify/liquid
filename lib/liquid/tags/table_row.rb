@@ -26,6 +26,20 @@ module Liquid
   class TableRow < Block
     Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
 
+    def self.migrate(tag_name, markup, tokenizer, parse_context)
+      match = markup.match(Syntax) || raise(SyntaxError)
+
+      new_collection_name = Expression.lax_migrate(match[2])
+
+      new_markup = Utils.match_captures_replace(match, { 2 => new_collection_name }.compact)
+      new_markup << Utils.migrate_tag_attributes(markup)
+
+      new_body, unknown_tag = migrate_body(tag_name, tokenizer, parse_context)
+      raise SyntaxError if unknown_tag
+
+      [new_markup, new_body]
+    end
+
     attr_reader :variable_name, :collection_name, :attributes
 
     def initialize(tag_name, markup, options)

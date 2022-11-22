@@ -2,6 +2,10 @@
 
 module Liquid
   class InlineComment < Tag
+    def self.migrate(_tag_name, markup, _tokenizer, _parse_context)
+      markup
+    end
+
     def initialize(tag_name, markup, options)
       super
 

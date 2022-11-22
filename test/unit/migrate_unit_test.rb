@@ -97,7 +97,7 @@ class MigrateUnitTest < Minitest::Test
       LIQUID
       expect = <<~LIQUID
         {% liquid
-          assign   a = 1
+          assign  a = 1
           assign a =  b
         %}
       LIQUID

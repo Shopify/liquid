@@ -37,7 +37,7 @@ module Liquid
 
         case delimiter_tag.tag_name
         when "else"
-          result << delimiter_tag.replaced_markup("") # markup was ignored on end tags
+          result << delimiter_tag.replaced_markup("") # markup was ignored on else tags
         when "elsif"
           new_markup = migrate_with_selected_parser(delimiter_tag.tag_name, delimiter_tag.markup, tokenizer, parse_context)
           result << delimiter_tag.replaced_markup(new_markup)

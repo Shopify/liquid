@@ -28,6 +28,20 @@ module Liquid
 
     attr_reader :blocks, :left
 
+    def self.migrate(tag_name, markup, tokenizer, parse_context)
+      match = markup.match(/\s*#{Syntax}\s*/o) || raise(SyntaxError)
+
+      new_expression = Expression.lax_migrate(match[1])
+      new_markup = Utils.match_captures_replace(match, { 1 => new_expression })
+
+      # replace scanned over characters with a space to ensure there is a space
+      # to separate the tag name and the variable name
+      new_markup.prepend(" ") if match.begin(0) > 0
+
+      new_body = migrate_body(tag_name, tokenizer, parse_context)
+      [new_markup, new_body]
+    end
+
     def initialize(tag_name, markup, options)
       super
       @blocks = []
@@ -37,6 +51,37 @@ module Liquid
       else
         raise SyntaxError, options[:locale].t("errors.syntax.case")
       end
+    end
+
+    def self.migrate_body(start_tag_name, tokenizer, parse_context)
+      result = +""
+
+      # body before first `when` delimiter tag is ignored
+      unused_body, delimiter_tag = super(start_tag_name, tokenizer, parse_context)
+      unless delimiter_tag
+        raise NotImplementedError, "TODO: migrate `case` tag with no `when` or `else` tags"
+      end
+
+      result << Utils.migrate_stripped(unused_body) { "" } # just keep whitespace (e.g. newline and indent)
+
+      while delimiter_tag
+        break unless delimiter_tag
+
+        case delimiter_tag.tag_name
+        when "when"
+          new_markup = migrate_when_markup(delimiter_tag.markup)
+          result << delimiter_tag.replaced_markup(new_markup)
+        when "else"
+          result << delimiter_tag.original_tag_string
+        else
+          raise SyntaxError
+        end
+
+        new_body, delimiter_tag = super(start_tag_name, tokenizer, parse_context)
+        result << new_body
+      end
+
+      result
     end
 
     def parse(tokens)
@@ -90,6 +135,25 @@ module Liquid
     end
 
     private
+
+    private_class_method def self.migrate_when_markup(unstripped_markup)
+      Utils.migrate_stripped(unstripped_markup) do |markup|
+        match = markup.match(WhenSyntax) || raise(SyntaxError)
+
+        replacements = { 1 => Expression.lax_migrate(match[1]) }
+        if (right = match[2])
+          replacements[2] = migrate_when_markup(right)
+        end
+
+        new_markup = Utils.match_captures_replace(match, replacements)
+
+        # replace scanned over characters with a space to ensure there is a space
+        # to separate the tag name and the variable name
+        new_markup.prepend(" ") if match.begin(0) > 0
+
+        new_markup
+      end
+    end
 
     def record_when_condition(markup)
       body = new_body

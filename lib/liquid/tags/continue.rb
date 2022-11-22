@@ -12,6 +12,10 @@ module Liquid
   class Continue < Tag
     INTERRUPT = ContinueInterrupt.new.freeze
 
+    def self.migrate(_tag_name, _markup, _tokenizer, _parse_context)
+      "" # markup was ignored
+    end
+
     def render_to_output_buffer(context, output)
       context.push_interrupt(INTERRUPT)
       output

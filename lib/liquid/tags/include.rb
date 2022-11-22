@@ -25,6 +25,22 @@ module Liquid
 
     attr_reader :template_name_expr, :variable_name_expr, :attributes
 
+    def self.migrate(_tag_name, markup, _tokenizer, parse_context)
+      match = markup.match(SYNTAX) || raise(SyntaxError)
+
+      template_name = Expression.lax_migrate(match[1])
+      variable_name = Expression.lax_migrate(match[3]) if match[3]
+
+      new_markup = Utils.match_captures_replace(match, { 1 => template_name, 3 => variable_name }.compact)
+      new_markup << Utils.migrate_tag_attributes(markup)
+
+      # replace scanned over characters with a space to ensure there is a space
+      # to separate the tag name and the variable name
+      new_markup.prepend(" ") if match.begin(0) > 0
+
+      new_markup
+    end
+
     def initialize(tag_name, markup, options)
       super
 

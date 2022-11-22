@@ -4,8 +4,8 @@ require 'English'
 
 module Liquid
   class BlockBody
-    LiquidTagToken      = /\A\s*(#{TagName})\s*(.*?)\s*\z/o
-    FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(#{TagName})(\s*)(.*?)\s*?#{WhitespaceControl}?#{TagEnd}\z/om
+    LiquidTagToken      = /\A\s*(#{TagName})\s*(.*?)\z/o
+    FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(#{TagName})(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable   = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
     TAGSTART            = "{%"
@@ -80,6 +80,10 @@ module Liquid
         @markup_capture_number = markup_capture_number
       end
 
+      def original_tag_string
+        @match[0]
+      end
+
       def replaced_markup(new_markup)
         Utils.match_capture_replace(@match, @markup_capture_number, new_markup)
       end
@@ -88,16 +92,15 @@ module Liquid
     private_class_method def self.migrate_for_liquid_tag(tokenizer, parse_context)
       result = +""
       while (token = tokenizer.shift)
+        token += "\n" if tokenizer.more?
         if token.empty? || token.match?(WhitespaceOrNothing)
           result << token
-          result << "\n" if tokenizer.more?
         else
-          match = token.match(LiquidTagToken)
-          unless match
-            # Missing tag name, which was allowed in comment tags through its
-            # unknown tag handling
-            raise NotImplementedError, "TODO"
-          end
+          # modified version of LiquidTagToken with following changes:
+          # * TagName is optional, to continue supporting its absence in the comment tag
+          # * trailing spaces is allowed to support the newline appended above and so the tag
+          #   migrate method doesn't have to handle trailing whitespace
+          match = token.match(/\A\s*(#{TagName})?\s*(.*?)\s*\z/o)
           tag_name = match[1]
           markup   = match[2]
           unless (tag = Template.tags[tag_name])
@@ -108,10 +111,8 @@ module Liquid
             )
             return [result, unknown_tag]
           end
-          has_more_tokens = tokenizer.more?
           new_markup, new_tag_body = tag.migrate(tag_name, markup, tokenizer, parse_context)
           result << Utils.match_capture_replace(match, 2, new_markup)
-          result << "\n" if has_more_tokens
           result << new_tag_body.to_s
         end
         parse_context.line_number = tokenizer.line_number
@@ -243,12 +244,8 @@ module Liquid
         case
         when token.start_with?(TAGSTART)
           raise SyntaxError unless token.end_with?('%}')
-          match = token.match(FullToken)
-          unless match
-            # Missing tag name, which was allowed in comment tags through its
-            # unknown tag handling
-            raise NotImplementedError, "TODO"
-          end
+          # modified FullToken regex with optional tag name, to allow its absence in a comment tag
+          match = token.match(/\A#{TagStart}#{WhitespaceControl}?(\s*)(#{TagName})?(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om)
           tag_name = match[2]
           markup   = match[4]
 
@@ -259,7 +256,9 @@ module Liquid
           end
 
           if tag_name == 'liquid'
-            new_markup = migrate_liquid_tag(markup, parse_context)
+            new_markup = Utils.migrate_stripped(markup) do |stripped_markup|
+              migrate_liquid_tag(stripped_markup, parse_context)
+            end
             result << Utils.match_capture_replace(match, 4, new_markup)
             next
           end
@@ -272,7 +271,11 @@ module Liquid
             )
             return [result, unknown_tag]
           end
-          new_markup, new_tag_body = tag.migrate(tag_name, markup, tokenizer, parse_context)
+          new_tag_body = nil
+          new_markup = Utils.migrate_stripped(markup) do |stripped_markup|
+            new_stripped_markup, new_tag_body = tag.migrate(tag_name, stripped_markup, tokenizer, parse_context)
+            new_stripped_markup
+          end
           result << Utils.match_capture_replace(match, 4, new_markup) << new_tag_body.to_s
         when token.start_with?(VARSTART)
           result << migrate_variable(token, parse_context)
