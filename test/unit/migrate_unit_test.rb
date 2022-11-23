@@ -107,10 +107,6 @@ class MigrateUnitTest < Minitest::Test
 
   private
 
-  def assert_no_migration(source)
-    assert_equal(source, Liquid::Template.migrate(source))
-  end
-
   def assert_migration(source_to_expected_output_hash)
     source_to_expected_output_hash.each do |source, expect|
       message = "source: #{source.inspect}"

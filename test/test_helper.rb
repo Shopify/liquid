@@ -49,6 +49,27 @@ module Minitest
       assert_equal(expected, output, message)
     end
 
+    if ENV['LIQUID_MIGRATOR']
+      puts "-- Liquid Migrator Enabled"
+
+      alias_method(:assert_template_result_without_migrator, :assert_template_result)
+
+      def assert_template_result(expected, source, assigns = {}, error_mode: nil, partials: nil, **kwargs)
+        migrated_source = Liquid::Template.migrate(source, line_numbers: true, error_mode: error_mode&.to_sym)
+        assert_no_migration(migrated_source)
+        if partials
+          migrated_partials = {}
+          partials.each do |name, partial|
+            new_partial = Liquid::Template.migrate(partial, line_numbers: true, error_mode: error_mode&.to_sym)
+            assert_no_migration(new_partial)
+            migrated_partials[name] = new_partial
+          end
+        end
+        assert_template_result_without_migrator(expected, migrated_source, assigns,
+          error_mode: 'strict', partials: migrated_partials, **kwargs)
+      end
+    end
+
     def assert_match_syntax_error(match, template, error_mode: nil)
       exception = assert_raises(Liquid::SyntaxError) do
         Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym).render
@@ -58,6 +79,10 @@ module Minitest
 
     def assert_syntax_error(template, error_mode: nil)
       assert_match_syntax_error("", template, error_mode: error_mode)
+    end
+
+    def assert_no_migration(source)
+      assert_equal(source, Liquid::Template.migrate(source))
     end
 
     def assert_usage_increment(name, times: 1)

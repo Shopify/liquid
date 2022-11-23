@@ -5,7 +5,7 @@ require 'rake/testtask'
 $LOAD_PATH.unshift(File.expand_path("../lib", __FILE__))
 require "liquid/version"
 
-task(default: [:test, :rubocop])
+task(default: [:test, "test:migrator_integration", :rubocop])
 
 desc('run test suite with default parser')
 Rake::TestTask.new(:base_test) do |t|
@@ -30,6 +30,23 @@ task :rubocop do
   if RUBY_ENGINE == 'ruby'
     require 'rubocop/rake_task'
     RuboCop::RakeTask.new
+  end
+end
+
+namespace :test do
+  task :migrator_integration do
+    ENV['LIQUID_MIGRATOR'] = '1'
+    original_parse_mode = ENV['LIQUID_PARSER_MODE']
+    begin
+      Rake::Task['integration_test'].reenable
+      ["lax", "strict"].each do |parse_mode|
+        ENV['LIQUID_PARSER_MODE'] = parse_mode
+        Rake::Task['integration_test'].invoke
+        Rake::Task['integration_test'].reenable
+      end
+    ensure
+      ENV['LIQUID_PARSER_MODE'] = original_parse_mode
+    end
   end
 end
 
