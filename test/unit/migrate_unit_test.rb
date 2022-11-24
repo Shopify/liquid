@@ -105,6 +105,21 @@ class MigrateUnitTest < Minitest::Test
     end
   end
 
+  def test_migrate_for
+    with_error_mode(:lax) do
+      assert_migration({
+        # VariableLookup ignored character
+        "{% for i in !array %}x{% endfor %}" => "{% for i in  array %}x{% endfor %}",
+
+        # TagAttributes scanned over separators
+        "{% for i in array|offset: 1|limit: 5 %}x{% endfor %}" => "{% for i in array, offset: 1, limit: 5 %}x{% endfor %}",
+
+        # TagAttributes scans all the markup, which can overlap with what Syntax already matched
+        "{% for i in foo.offset: wat %}x{% endfor %}" => "{% for i in foo.offset , offset: wat %}x{% endfor %}",
+      })
+    end
+  end
+
   private
 
   def assert_migration(source_to_expected_output_hash)
