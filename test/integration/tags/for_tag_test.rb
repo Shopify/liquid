@@ -103,6 +103,7 @@ HERE
     assert_template_result('1234', '{%for i in array limit:4 %}{{ i }}{%endfor%}', assigns)
     assert_template_result('3456', '{%for i in array limit:4 offset:2 %}{{ i }}{%endfor%}', assigns)
     assert_template_result('3456', '{%for i in array limit: 4 offset: 2 %}{{ i }}{%endfor%}', assigns)
+    assert_template_result('3456', '{%for i in array, limit: 4, offset: 2 %}{{ i }}{%endfor%}', assigns)
   end
 
   def test_limiting_with_invalid_limit

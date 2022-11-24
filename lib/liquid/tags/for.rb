@@ -98,11 +98,12 @@ module Liquid
       @name     = "#{@variable_name}-#{collection_name}"
       @reversed = p.id?('reversed')
 
-      while p.look(:id) && p.look(:colon, 1)
+      while p.look(:comma) || p.look(:id)
+        p.consume?(:comma)
         unless (attribute = p.id?('limit') || p.id?('offset'))
           raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_attribute")
         end
-        p.consume
+        p.consume(:colon)
         set_attribute(attribute, p.expression)
       end
       p.consume(:end_of_string)
