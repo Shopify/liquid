@@ -757,7 +757,7 @@ module Liquid
     # @liquid_type filter
     # @liquid_category math
     # @liquid_summary
-    #   Divides a number by a given number.
+    #   Divides a number by a given number. The `divided_by` filter produces a result of the same type as the divisor. This means if you divide by an integer, the result will be an integer, and if you divide by a float, the result will be a float.
     # @liquid_syntax number | divided_by: number
     # @liquid_return [number]
     def divided_by(input, operand)
