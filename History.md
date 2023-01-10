@@ -1,5 +1,10 @@
 # Liquid Change Log
 
+## 4.0.4 / (unreleased)
+
+### Fixed
+* Fix ruby 3.2 compatibility by avoiding use of the removed taint API
+
 ## 4.0.3 / 2019-03-12
 
 ### Fixed
