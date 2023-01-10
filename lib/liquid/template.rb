@@ -63,10 +63,7 @@ module Liquid
       # :strict will enforce correct syntax.
       attr_writer :error_mode
 
-      # Sets how strict the taint checker should be.
-      # :lax is the default, and ignores the taint flag completely
-      # :warn adds a warning, but does not interrupt the rendering
-      # :error raises an error when tainted output is used
+      # Deprecated. No longer used. Removed in version 5
       attr_writer :taint_mode
 
       attr_accessor :default_exception_renderer
@@ -94,6 +91,7 @@ module Liquid
         @error_mode ||= :lax
       end
 
+      # Deprecated. Removed in version 5
       def taint_mode
         @taint_mode ||= :lax
       end
