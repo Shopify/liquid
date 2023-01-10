@@ -4,6 +4,7 @@ AllCops:
   Exclude:
     - 'performance/shopify/*'
     - 'pkg/**'
+    - 'vendor/bundle/**/*'
 
 Metrics/BlockNesting:
   Max: 3
