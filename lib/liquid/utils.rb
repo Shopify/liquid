@@ -16,7 +16,11 @@ module Liquid
 
       # Maintains Ruby 1.8.7 String#each behaviour on 1.9
       if collection.is_a?(String)
-        return collection.empty? ? [] : [collection]
+        return [] if collection.empty?
+        if from > 0 || to == 0
+          Usage.increment("string_slice_bug")
+        end
+        return [collection]
       end
       return [] unless collection.respond_to?(:each)
 
