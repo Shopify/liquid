@@ -15,6 +15,6 @@ group :test do
   gem 'rubocop', '~> 0.49.0'
 
   platform :mri do
-    gem 'liquid-c', '~> 4.0.0'
+    gem 'liquid-c', github: 'Shopify/liquid-c', branch: '4-0-stable'
   end
 end
