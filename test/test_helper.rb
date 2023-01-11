@@ -69,14 +69,6 @@ module Minitest
       Liquid::Strainer.class_variable_set(:@@global_strainer, original_global_strainer)
     end
 
-    def with_taint_mode(mode)
-      old_mode = Liquid::Template.taint_mode
-      Liquid::Template.taint_mode = mode
-      yield
-    ensure
-      Liquid::Template.taint_mode = old_mode
-    end
-
     def with_error_mode(mode)
       old_mode = Liquid::Template.error_mode
       Liquid::Template.error_mode = mode
