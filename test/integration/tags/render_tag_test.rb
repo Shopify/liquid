@@ -207,7 +207,7 @@ class RenderTagTest < Minitest::Test
       })
   end
 
-  def test_render_tag_catches_strict_variables_errors
+  def test_render_tag_raises_strict_variables_errors
     assert_raises(Liquid::UndefinedVariable) do
       assert_template_result("123",
         '{% render "partial" %}',
@@ -218,7 +218,7 @@ class RenderTagTest < Minitest::Test
     end
   end
 
-  def test_render_tag_catches_strict_filters_errors
+  def test_render_tag_raises_strict_filters_errors
     assert_raises(Liquid::UndefinedFilter) do
       assert_template_result("123",
         '{% render "partial" %}',
