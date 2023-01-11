@@ -35,6 +35,7 @@ class VariableTest < Minitest::Test
 
   def test_unless_tag_calls_to_liquid_value
     assert_template_result('', '{% unless foo %}true{% endunless %}', { 'foo' => BooleanDrop.new(true) })
+    assert_template_result('true', '{% unless foo %}true{% endunless %}', { 'foo' => BooleanDrop.new(false) })
   end
 
   def test_case_tag_calls_to_liquid_value
