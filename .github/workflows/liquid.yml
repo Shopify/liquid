@@ -2,7 +2,6 @@ name: Liquid
 on: [push, pull_request]
 
 env:
-  BUNDLE_PATH: "vendor/bundle"
   BUNDLE_JOBS: 4
   BUNDLE_RETRY: 3
 
