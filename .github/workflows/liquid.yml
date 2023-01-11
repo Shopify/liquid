@@ -13,7 +13,7 @@ jobs:
       matrix:
         entry:
           - { ruby: 2.7, allowed-failure: false } # minimum supported
-          - { ruby: 3.1, allowed-failure: false } # latest
+          - { ruby: 3.2, allowed-failure: false } # latest
           - { ruby: ruby-head, allowed-failure: true }
     name: Test Ruby ${{ matrix.entry.ruby }}
     steps:
