@@ -447,6 +447,7 @@ class ContextUnitTest < Minitest::Test
   end
 
   def test_interrupt_avoids_object_allocations
+    @context.interrupt? # ruby 3.0.0 allocates on the first call
     assert_no_object_allocations do
       @context.interrupt?
     end
