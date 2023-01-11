@@ -1,5 +1,10 @@
 name: Liquid
 on: [push, pull_request]
+
+env:
+  BUNDLE_JOBS: 4
+  BUNDLE_RETRY: 3
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -7,22 +12,18 @@ jobs:
       matrix:
         entry:
           - { ruby: 2.7, allowed-failure: false } # minimum supported
-          - { ruby: 3.1, allowed-failure: false } # latest
+          - { ruby: 3.2, allowed-failure: false } # latest
           - { ruby: ruby-head, allowed-failure: true }
-    name: test (${{ matrix.entry.ruby }})
+    name: Test Ruby ${{ matrix.entry.ruby }}
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.entry.ruby }}
-      - uses: actions/cache@v1
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('Gemfile') }}
-          restore-keys: ${{ runner.os }}-gems-
-      - run: bundle install --jobs=3 --retry=3 --path=vendor/bundle
+          bundler-cache: true
       - run: bundle exec rake
         continue-on-error: ${{ matrix.entry.allowed-failure }}
+
   memory_profile:
     runs-on: ubuntu-latest
     steps:
@@ -30,10 +31,5 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
-      - uses: actions/cache@v1
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('Gemfile') }}
-          restore-keys: ${{ runner.os }}-gems-
-      - run: bundle install --jobs=3 --retry=3 --path=vendor/bundle
+          bundler-cache: true
       - run: bundle exec rake memory_profile:run
