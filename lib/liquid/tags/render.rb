@@ -84,6 +84,7 @@ module Liquid
           inner_context[key] = context.evaluate(value)
         end
         inner_context[context_variable_name] = var unless var.nil?
+
         partial.render_to_output_buffer(inner_context, output)
         forloop&.send(:increment!)
       }
@@ -97,6 +98,9 @@ module Liquid
       end
 
       output
+    rescue SyntaxError => e
+      e.template_name ||= template_name
+      raise
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
