@@ -25,6 +25,10 @@ module Liquid
   class Drop
     attr_writer :context
 
+    def initialize
+      @context = nil
+    end
+
     # Catch all for the method
     def liquid_method_missing(method)
       return nil unless @context&.strict_variables
