@@ -131,10 +131,6 @@ class IntegerDrop < Liquid::Drop
     @value = value.to_i
   end
 
-  def ==(other)
-    @value == other
-  end
-
   def to_s
     @value.to_s
   end
@@ -148,10 +144,6 @@ class BooleanDrop < Liquid::Drop
   def initialize(value)
     super()
     @value = value
-  end
-
-  def ==(other)
-    @value == other
   end
 
   def to_liquid_value
