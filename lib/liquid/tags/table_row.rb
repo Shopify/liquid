@@ -45,13 +45,24 @@ module Liquid
     def render_to_output_buffer(context, output)
       (collection = context.evaluate(@collection_name)) || (return '')
 
-      from = @attributes.key?('offset') ? context.evaluate(@attributes['offset']).to_i : 0
-      to   = @attributes.key?('limit')  ? from + context.evaluate(@attributes['limit']).to_i : nil
+      from = if @attributes.key?('offset')
+        Utils.to_integer(context.evaluate(@attributes['offset']), allow_nil: true)
+      else
+        0
+      end
+
+      to = if @attributes.key?('limit')
+        from + Utils.to_integer(context.evaluate(@attributes['limit']), allow_nil: true)
+      end
 
       collection = Utils.slice_collection(collection, from, to)
       length     = collection.length
 
-      cols = @attributes.key?('cols') ? context.evaluate(@attributes['cols']).to_i : length
+      cols = if @attributes.key?('cols')
+        Utils.to_integer(context.evaluate(@attributes['cols']), allow_nil: true)
+      else
+        length
+      end
 
       output << "<tr class=\"row1\">\n"
       context.stack do

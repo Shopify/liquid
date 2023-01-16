@@ -80,6 +80,32 @@ class TableRowTest < Minitest::Test
       { "var" => nil })
   end
 
+  def test_nil_limit_is_treated_as_zero
+    expect = "<tr class=\"row1\">\n" \
+      "</tr>\n"
+
+    assert_template_result(expect,
+      "{% tablerow i in (1..2) limit:nil %}{{ i }}{% endtablerow %}")
+
+    assert_template_result(expect,
+      "{% tablerow i in (1..2) limit:var %}{{ i }}{% endtablerow %}",
+      { "var" => nil })
+  end
+
+  def test_nil_offset_is_treated_as_zero
+    expect = "<tr class=\"row1\">\n" \
+      "<td class=\"col1\">1:false</td>" \
+      "<td class=\"col2\">2:true</td>" \
+      "</tr>\n"
+
+    assert_template_result(expect,
+      "{% tablerow i in (1..2) offset:nil %}{{ i }}:{{ tablerowloop.col_last }}{% endtablerow %}")
+
+    assert_template_result(expect,
+      "{% tablerow i in (1..2) offset:var %}{{ i }}:{{ tablerowloop.col_last }}{% endtablerow %}",
+      { "var" => nil })
+  end
+
   def test_tablerow_loop_drop_attributes
     template = <<~LIQUID.chomp
       {% tablerow i in (1...2) %}
@@ -130,5 +156,25 @@ class TableRowTest < Minitest::Test
     OUTPUT
 
     assert_template_result(expected_output, template)
+  end
+
+  def test_table_row_renders_correct_error_message_for_invalid_parameters
+    assert_template_result(
+      "Liquid error (line 1): invalid integer",
+      '{% tablerow n in (1...10) limit:true %} {{n}} {% endtablerow %}',
+      render_errors: true,
+    )
+
+    assert_template_result(
+      "Liquid error (line 1): invalid integer",
+      '{% tablerow n in (1...10) offset:true %} {{n}} {% endtablerow %}',
+      render_errors: true,
+    )
+
+    assert_template_result(
+      "Liquid error (line 1): invalid integer",
+      '{% tablerow n in (1...10) cols:true %} {{n}} {% endtablerow %}',
+      render_errors: true,
+    )
   end
 end

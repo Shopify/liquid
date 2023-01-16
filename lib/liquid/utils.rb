@@ -39,8 +39,11 @@ module Liquid
       segments
     end
 
-    def self.to_integer(num)
+    def self.to_integer(num, allow_nil: false)
       return num if num.is_a?(Integer)
+      # with allow_nil param, return 0 which is equal to nil.to_i
+      return 0 if num.nil? && allow_nil
+
       num = num.to_s
       begin
         Integer(num)
