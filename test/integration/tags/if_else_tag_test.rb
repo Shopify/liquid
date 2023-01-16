@@ -62,7 +62,7 @@ class IfElseTagTest < Minitest::Test
   def test_if_and
     assert_template_result(' YES ', '{% if true and true %} YES {% endif %}')
     assert_template_result('', '{% if false and true %} YES {% endif %}')
-    assert_template_result('', '{% if false and true %} YES {% endif %}')
+    assert_template_result('', '{% if true and false %} YES {% endif %}')
   end
 
   def test_hash_miss_generates_false
