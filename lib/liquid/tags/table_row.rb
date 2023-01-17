@@ -45,24 +45,13 @@ module Liquid
     def render_to_output_buffer(context, output)
       (collection = context.evaluate(@collection_name)) || (return '')
 
-      from = if @attributes.key?('offset')
-        Utils.to_integer(context.evaluate(@attributes['offset']), allow_nil: true)
-      else
-        0
-      end
-
-      to = if @attributes.key?('limit')
-        from + Utils.to_integer(context.evaluate(@attributes['limit']), allow_nil: true)
-      end
+      from = @attributes.key?('offset') ? to_integer(context.evaluate(@attributes['offset'])) : 0
+      to = @attributes.key?('limit') ? from + to_integer(context.evaluate(@attributes['limit'])) : nil
 
       collection = Utils.slice_collection(collection, from, to)
       length     = collection.length
 
-      cols = if @attributes.key?('cols')
-        Utils.to_integer(context.evaluate(@attributes['cols']), allow_nil: true)
-      else
-        length
-      end
+      cols = @attributes.key?('cols') ? to_integer(context.evaluate(@attributes['cols'])) : length
 
       output << "<tr class=\"row1\">\n"
       context.stack do
@@ -92,6 +81,14 @@ module Liquid
       def children
         super + @node.attributes.values + [@node.collection_name]
       end
+    end
+
+    private
+
+    def to_integer(value)
+      value.to_i
+    rescue NoMethodError
+      raise Liquid::ArgumentError, "invalid integer"
     end
   end
 
