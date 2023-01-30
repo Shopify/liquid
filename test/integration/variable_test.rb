@@ -135,4 +135,26 @@ class VariableTest < Minitest::Test
   def test_raw_value_variable
     assert_template_result('bar', '{{ [key] }}', { 'key' => 'foo', 'foo' => 'bar' })
   end
+
+  def test_dynamic_find_var_with_drop
+    assert_template_result(
+      'bar',
+      '{{ [list[settings.zero]] }}',
+      {
+        'list' => ['foo'],
+        'settings' => SettingsDrop.new("zero" => 0),
+        'foo' => 'bar',
+      }
+    )
+
+    assert_template_result(
+      'foo',
+      '{{ [list[settings.zero]["foo"]] }}',
+      {
+        'list' => [{ 'foo' => 'bar' }],
+        'settings' => SettingsDrop.new("zero" => 0),
+        'bar' => 'foo',
+      }
+    )
+  end
 end

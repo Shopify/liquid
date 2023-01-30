@@ -125,6 +125,17 @@ class ThingWithToLiquid
   end
 end
 
+class SettingsDrop < Liquid::Drop
+  def initialize(settings)
+    super()
+    @settings = settings
+  end
+
+  def liquid_method_missing(key)
+    @settings[key]
+  end
+end
+
 class IntegerDrop < Liquid::Drop
   def initialize(value)
     super()
