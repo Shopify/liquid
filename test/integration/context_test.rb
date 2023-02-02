@@ -262,7 +262,7 @@ class ContextTest < Minitest::Test
     assigns = { 'product' => { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] } }
     assert_template_result("draft151cm", '{{ product["variants"][0]["title"] }}', assigns)
     assert_template_result("element151cm", '{{ product["variants"][1]["title"] }}', assigns)
-    assert_template_result("draft151cm", '{{ product["variants"][0]["title"] }}', assigns)
+    assert_template_result("draft151cm", '{{ product["variants"].first["title"] }}', assigns)
     assert_template_result("element151cm", '{{ product["variants"].last["title"] }}', assigns)
   end
 
