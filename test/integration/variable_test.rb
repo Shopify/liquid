@@ -185,15 +185,23 @@ class VariableTest < Minitest::Test
 
     very_long_key = "1234567890" * 100
 
-    Timeout.timeout(1) do
-      assert_template_result(
-        'bar',
-        "{{['#{very_long_key}'}}",
-        {
-          very_long_key => 'bar',
-        },
-        error_mode: :lax,
-      )
+    template_list = [
+      "{{['#{very_long_key}']}}", # valid
+      "{{['#{very_long_key}'}}", # missing closing bracket
+      "{{[['#{very_long_key}']}}", # extra open bracket
+    ]
+
+    template_list.each do |template|
+      Timeout.timeout(1) do
+        assert_template_result(
+          'bar',
+          template,
+          {
+            very_long_key => 'bar',
+          },
+          error_mode: :lax,
+        )
+      end
     end
   end
 end
