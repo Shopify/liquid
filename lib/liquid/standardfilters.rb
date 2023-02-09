@@ -615,7 +615,7 @@ module Liquid
     # @liquid_description
     #   > Note:
     #   > The `concat` filter won't filter out duplicates. If you want to remove duplicates, then you need to use the
-    #   > [`uniq` filter](/api/liquid/filters/uniq).
+    #   > [`uniq` filter](/docs/api/liquid/filters/uniq).
     # @liquid_syntax array | concat: array
     # @liquid_return [array[untyped]]
     def concat(input, array)
@@ -857,9 +857,9 @@ module Liquid
     # @liquid_summary
     #   Sets a default value for any variable whose value is one of the following:
     #
-    #   - [`empty`](/api/liquid/basics#empty)
-    #   - [`false`](/api/liquid/basics#truthy-and-falsy)
-    #   - [`nil`](/api/liquid/basics#nil)
+    #   - [`empty`](/docs/api/liquid/basics#empty)
+    #   - [`false`](/docs/api/liquid/basics#truthy-and-falsy)
+    #   - [`nil`](/docs/api/liquid/basics#nil)
     # @liquid_syntax variable | default: variable
     # @liquid_return [untyped]
     # @liquid_optional_param allow_false [boolean] Whether to use false values instead of the default.

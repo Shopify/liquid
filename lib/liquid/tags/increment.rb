@@ -12,8 +12,8 @@ module Liquid
   #   or [section](/themes/architecture/sections) file that they're created in. However, the variable is shared across
   #   [snippets](/themes/architecture#snippets) included in the file.
   #
-  #   Similarly, variables that are created with `increment` are independent from those created with [`assign`](/api/liquid/tags/assign)
-  #   and [`capture`](/api/liquid/tags/capture). However, `increment` and [`decrement`](/api/liquid/tags/decrement) share
+  #   Similarly, variables that are created with `increment` are independent from those created with [`assign`](/docs/api/liquid/tags/assign)
+  #   and [`capture`](/docs/api/liquid/tags/capture). However, `increment` and [`decrement`](/docs/api/liquid/tags/decrement) share
   #   variables.
   # @liquid_syntax
   #   {% increment variable_name %}

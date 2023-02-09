@@ -9,10 +9,10 @@ module Liquid
   #   Renders an expression for every item in an array.
   # @liquid_description
   #   You can do a maximum of 50 iterations with a `for` loop. If you need to iterate over more than 50 items, then use the
-  #   [`paginate` tag](/api/liquid/tags/paginate) to split the items over multiple pages.
+  #   [`paginate` tag](/docs/api/liquid/tags/paginate) to split the items over multiple pages.
   #
   #   > Tip:
-  #   > Every `for` loop has an associated [`forloop` object](/api/liquid/objects/forloop) with information about the loop.
+  #   > Every `for` loop has an associated [`forloop` object](/docs/api/liquid/objects/forloop) with information about the loop.
   # @liquid_syntax
   #   {% for variable in array %}
   #     expression

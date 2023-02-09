@@ -5,7 +5,7 @@
 
 * [Contributing guidelines](CONTRIBUTING.md)
 * [Version history](History.md)
-* [Liquid documentation from Shopify](https://shopify.dev/api/liquid)
+* [Liquid documentation from Shopify](https://shopify.dev/docs/docs/api/liquid)
 * [Liquid Wiki at GitHub](https://github.com/Shopify/liquid/wiki)
 * [Website](http://liquidmarkup.org/)
 
