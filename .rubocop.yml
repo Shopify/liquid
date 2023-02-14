@@ -12,6 +12,7 @@ Performance:
 AllCops:
   TargetRubyVersion: 2.7
   NewCops: disable
+  SuggestExtensions: false
   Exclude:
     - 'vendor/bundle/**/*'
 
@@ -22,3 +23,10 @@ Naming/MethodName:
 # Backport https://github.com/Shopify/ruby-style-guide/pull/258
 Layout/BeginEndAlignment:
   Enabled: true
+
+Style/ClassMethodsDefinitions:
+  Enabled: false
+
+Style/ConcatArrayLiterals:
+  Exclude:
+    - 'test/integration/standard_filter_test.rb'
