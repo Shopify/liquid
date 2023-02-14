@@ -23,7 +23,7 @@ module Liquid
       # First condition is interpreted backwards ( if not )
       first_block = @blocks.first
       result = Liquid::Utils.to_liquid_value(
-        first_block.evaluate(context)
+        first_block.evaluate(context),
       )
 
       unless result
@@ -33,7 +33,7 @@ module Liquid
       # After the first condition unless works just like if
       @blocks[1..-1].each do |block|
         result = Liquid::Utils.to_liquid_value(
-          block.evaluate(context)
+          block.evaluate(context),
         )
 
         if result

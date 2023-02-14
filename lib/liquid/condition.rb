@@ -159,8 +159,10 @@ module Liquid
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
         [
-          @node.left, @node.right,
-          @node.child_condition, @node.attachment
+          @node.left,
+          @node.right,
+          @node.child_condition,
+          @node.attachment
         ].compact
       end
     end

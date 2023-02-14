@@ -17,7 +17,7 @@ class FilterKwargTest < Minitest::Test
     with_global_filter(KwargFilter) do
       assert_equal(
         "data-src='src' data-widths='100, 200'",
-        Template.parse("{{ 'img' | html_tag: data-src: 'src', data-widths: '100, 200' }}").render(nil, nil)
+        Template.parse("{{ 'img' | html_tag: data-src: 'src', data-widths: '100, 200' }}").render(nil, nil),
       )
     end
   end

@@ -69,7 +69,7 @@ module Liquid
       partial = PartialCache.load(
         template_name,
         context: context,
-        parse_context: parse_context
+        parse_context: parse_context,
       )
 
       context_variable_name = @alias_name || template_name.split('/').last
