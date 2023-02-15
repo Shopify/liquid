@@ -95,9 +95,9 @@ class TemplateTest < Minitest::Test
     t = Template.new
     assigns = {
       'number' => -> {
-                    @global ||= 0
-                    @global += 1
-                  },
+        @global ||= 0
+        @global += 1
+      },
     }
     assert_equal('1', t.parse("{{number}}").render!(assigns))
     assert_equal('1', t.parse("{{number}}").render!(assigns))
