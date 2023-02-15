@@ -20,10 +20,6 @@ Naming/MethodName:
   Exclude:
     - 'example/server/liquid_servlet.rb'
 
-# Backport https://github.com/Shopify/ruby-style-guide/pull/258
-Layout/BeginEndAlignment:
-  Enabled: true
-
 Style/ClassMethodsDefinitions:
   Enabled: false
 
