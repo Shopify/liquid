@@ -27,6 +27,7 @@ Layout/BeginEndAlignment:
 Style/ClassMethodsDefinitions:
   Enabled: false
 
+# liquid filter calls were being mistaken to be calls on arrays
 Style/ConcatArrayLiterals:
   Exclude:
     - 'test/integration/standard_filter_test.rb'
