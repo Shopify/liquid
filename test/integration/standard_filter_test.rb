@@ -188,7 +188,7 @@ class StandardFiltersTest < Minitest::Test
   def test_base64_url_safe_encode
     assert_equal(
       'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8',
-      @filters.base64_url_safe_encode('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\|')
+      @filters.base64_url_safe_encode('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\|'),
     )
     assert_equal('', @filters.base64_url_safe_encode(nil))
   end
@@ -196,7 +196,7 @@ class StandardFiltersTest < Minitest::Test
   def test_base64_url_safe_decode
     assert_equal(
       'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\|',
-      @filters.base64_url_safe_decode('YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8')
+      @filters.base64_url_safe_decode('YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8'),
     )
     exception = assert_raises(Liquid::ArgumentError) do
       @filters.base64_url_safe_decode("invalidbase64")
@@ -230,7 +230,7 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('one two three', @filters.truncatewords('one two three'))
     assert_equal(
       'Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221;...',
-      @filters.truncatewords('Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221; x 16&#8221; x 10.5&#8221; high) with cover.', 15)
+      @filters.truncatewords('Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221; x 16&#8221; x 10.5&#8221; high) with cover.', 15),
     )
     assert_equal("测试测试测试测试", @filters.truncatewords('测试测试测试测试', 5))
     assert_equal('one two1', @filters.truncatewords("one two three", 2, 1))
@@ -433,8 +433,11 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map
     assert_equal([1, 2, 3, 4], @filters.map([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], 'a'))
-    assert_template_result('abc', "{{ ary | map:'foo' | map:'bar' }}",
-      { 'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }] })
+    assert_template_result(
+      'abc',
+      "{{ ary | map:'foo' | map:'bar' }}",
+      { 'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }] },
+    )
   end
 
   def test_map_doesnt_call_arbitrary_stuff
@@ -458,8 +461,11 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_map_on_hashes
-    assert_template_result("4217", '{{ thing | map: "foo" | map: "bar" }}',
-      { "thing" => { "foo" => [{ "bar" => 42 }, { "bar" => 17 }] } })
+    assert_template_result(
+      "4217",
+      '{{ thing | map: "foo" | map: "bar" }}',
+      { "thing" => { "foo" => [{ "bar" => 42 }, { "bar" => 17 }] } },
+    )
   end
 
   def test_legacy_map_on_hashes_with_dynamic_key

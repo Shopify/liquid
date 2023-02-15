@@ -12,6 +12,7 @@ Performance:
 AllCops:
   TargetRubyVersion: 2.7
   NewCops: disable
+  SuggestExtensions: false
   Exclude:
     - 'vendor/bundle/**/*'
 
@@ -19,6 +20,10 @@ Naming/MethodName:
   Exclude:
     - 'example/server/liquid_servlet.rb'
 
-# Backport https://github.com/Shopify/ruby-style-guide/pull/258
-Layout/BeginEndAlignment:
-  Enabled: true
+Style/ClassMethodsDefinitions:
+  Enabled: false
+
+# liquid filter calls were being mistaken to be calls on arrays
+Style/ConcatArrayLiterals:
+  Exclude:
+    - 'test/integration/standard_filter_test.rb'

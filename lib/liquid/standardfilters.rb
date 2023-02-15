@@ -25,7 +25,7 @@ module Liquid
     STRIP_HTML_BLOCKS       = Regexp.union(
       %r{<script.*?</script>}m,
       /<!--.*?-->/m,
-      %r{<style.*?</style>}m
+      %r{<style.*?</style>}m,
     )
     STRIP_HTML_TAGS = /<.*?>/m
 

@@ -105,7 +105,8 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_parsing_warn_with_line_numbers_adds_numbers_to_lexer_errors
-    template = Liquid::Template.parse('
+    template = Liquid::Template.parse(
+      '
         foobar
 
         {% if 1 =! 2 %}ok{% endif %}
@@ -113,15 +114,19 @@ class ErrorHandlingTest < Minitest::Test
         bla
             ',
       error_mode: :warn,
-      line_numbers: true)
+      line_numbers: true,
+    )
 
-    assert_equal(['Liquid syntax error (line 4): Unexpected character = in "1 =! 2"'],
-      template.warnings.map(&:message))
+    assert_equal(
+      ['Liquid syntax error (line 4): Unexpected character = in "1 =! 2"'],
+      template.warnings.map(&:message),
+    )
   end
 
   def test_parsing_strict_with_line_numbers_adds_numbers_to_lexer_errors
     err = assert_raises(SyntaxError) do
-      Liquid::Template.parse('
+      Liquid::Template.parse(
+        '
           foobar
 
           {% if 1 =! 2 %}ok{% endif %}
@@ -129,7 +134,8 @@ class ErrorHandlingTest < Minitest::Test
           bla
                 ',
         error_mode: :strict,
-        line_numbers: true)
+        line_numbers: true,
+      )
     end
 
     assert_equal('Liquid syntax error (line 4): Unexpected character = in "1 =! 2"', err.message)

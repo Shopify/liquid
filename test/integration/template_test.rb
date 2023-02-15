@@ -93,10 +93,12 @@ class TemplateTest < Minitest::Test
 
   def test_lambda_is_called_once_from_custom_assigns_over_multiple_parses_and_renders
     t = Template.new
-    assigns = { 'number' => -> {
-                              @global ||= 0
-                              @global  += 1
-                            } }
+    assigns = {
+      'number' => -> {
+        @global ||= 0
+        @global += 1
+      },
+    }
     assert_equal('1', t.parse("{{number}}").render!(assigns))
     assert_equal('1', t.parse("{{number}}").render!(assigns))
     assert_equal('1', t.render!(assigns))

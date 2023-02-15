@@ -145,7 +145,7 @@ class VariableTest < Minitest::Test
         'list' => ['foo'],
         'settings' => SettingsDrop.new("zero" => 0),
         'foo' => 'bar',
-      }
+      },
     )
 
     assert_template_result(
@@ -155,7 +155,7 @@ class VariableTest < Minitest::Test
         'list' => [{ 'foo' => 'bar' }],
         'settings' => SettingsDrop.new("zero" => 0),
         'bar' => 'foo',
-      }
+      },
     )
   end
 
@@ -167,7 +167,7 @@ class VariableTest < Minitest::Test
         'list' => [1, { 'foo' => 'bar' }],
         'settings' => SettingsDrop.new("zero" => 0),
         'bar' => 'foo',
-      }
+      },
     )
   end
 

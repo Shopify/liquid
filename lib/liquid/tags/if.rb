@@ -53,7 +53,7 @@ module Liquid
     def render_to_output_buffer(context, output)
       @blocks.each do |block|
         result = Liquid::Utils.to_liquid_value(
-          block.evaluate(context)
+          block.evaluate(context),
         )
 
         if result
