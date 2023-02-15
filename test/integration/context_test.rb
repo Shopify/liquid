@@ -436,16 +436,11 @@ class ContextTest < Minitest::Test
   def test_lambda_in_array_is_called_once
     @global = 0
 
-    @context['callcount'] = [
-      1,
-      2,
-      proc {
-        @global += 1
-        @global.to_s
-      },
-      4,
-      5
-    ]
+    p = proc {
+      @global += 1
+      @global.to_s
+    }
+    @context['callcount'] = [1, 2, p, 4, 5]
 
     assert_equal('1', @context['callcount[2]'])
     assert_equal('1', @context['callcount[2]'])
