@@ -70,9 +70,15 @@ module Liquid
 
       old_template_name = context.template_name
       old_partial       = context.partial
+
       begin
-        context.template_name = template_name
-        context.partial       = true
+        context.template_name = if Template.file_system.respond_to?(:actual_template_name)
+          Template.file_system.actual_template_name(template_name).delete_suffix('.liquid')
+        else
+          template_name
+        end
+
+        context.partial = true
         context.stack do
           @attributes.each do |key, value|
             context[key] = context.evaluate(value)

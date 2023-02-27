@@ -356,4 +356,17 @@ class IncludeTagTest < Minitest::Test
       partials: { 'break' => "{% break %}" },
     )
   end
+
+  def test_include_tag_renders_actual_template_name_for_error
+    original_file_system = Liquid::Template.file_system
+
+    Liquid::Template.file_system = MemoryFileSystem.new(
+      '/some/path/snippets/foo.liquid' => "{{ foo.standard_error }}",
+    )
+
+    template = Liquid::Template.parse("{% include 'foo' with errors %}", line_numbers: true)
+    assert_equal('Liquid error (/some/path/snippets/foo line 1): standard error', template.render('errors' => ErrorDrop.new))
+  ensure
+    Liquid::Template.file_system = original_file_system
+  end
 end # IncludeTagTest

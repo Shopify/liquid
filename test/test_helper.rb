@@ -214,3 +214,25 @@ class StubTemplateFactory
     Liquid::Template.new
   end
 end
+
+class MemoryFileSystem
+  def initialize(values)
+    # values is a hash of template_path => template_source
+    @snippets = {}
+    values.each do |file_path, source|
+      key = file_path.split('/').last.delete_suffix(".liquid")
+      @snippets[key] = {
+        source: source,
+        actual_template_name: file_path,
+      }
+    end
+  end
+
+  def read_template_file(template_name)
+    @snippets[template_name][:source]
+  end
+
+  def actual_template_name(template_name)
+    @snippets[template_name][:actual_template_name]
+  end
+end
