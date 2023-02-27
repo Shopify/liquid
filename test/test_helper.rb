@@ -233,6 +233,6 @@ class MemoryFileSystem
   end
 
   def actual_template_name(template_name)
-    @snippets[template_name][:actual_template_name]
+    @snippets[template_name][:actual_template_name].delete_suffix(".liquid")
   end
 end

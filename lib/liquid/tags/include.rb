@@ -72,11 +72,7 @@ module Liquid
       old_partial       = context.partial
 
       begin
-        context.template_name = if Template.file_system.respond_to?(:actual_template_name)
-          Template.file_system.actual_template_name(template_name).delete_suffix('.liquid')
-        else
-          template_name
-        end
+        context.template_name = partial.name if partial.name
 
         context.partial = true
         context.stack do

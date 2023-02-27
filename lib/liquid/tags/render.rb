@@ -77,11 +77,7 @@ module Liquid
       render_partial_func = ->(var, forloop) {
         inner_context               = context.new_isolated_subcontext
 
-        inner_context.template_name = if Template.file_system.respond_to?(:actual_template_name)
-          Template.file_system.actual_template_name(template_name).delete_suffix('.liquid')
-        else
-          template_name
-        end
+        inner_context.template_name = partial.name if partial.name
 
         inner_context.partial       = true
         inner_context['forloop']    = forloop if forloop
