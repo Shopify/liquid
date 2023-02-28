@@ -16,12 +16,7 @@ module Liquid
       template = template_factory.for(template_name)
 
       partial = template.parse(source, parse_context)
-
-      partial.name ||= if context.registers[:file_system]&.respond_to?(:actual_template_name)
-        context.registers[:file_system].actual_template_name(template_name)
-      else
-        template_name
-      end
+      partial.name ||= template_name
 
       cached_partials[template_name] = partial
     ensure

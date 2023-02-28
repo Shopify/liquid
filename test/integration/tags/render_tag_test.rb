@@ -265,18 +265,24 @@ class RenderTagTest < Minitest::Test
     )
   end
 
-  def test_render_tag_renders_actual_template_name_for_error
-    original_file_system = Liquid::Template.file_system
-
-    context = Liquid::Context.new('errors' => ErrorDrop.new)
-
-    context.registers[:file_system] = MemoryFileSystem.new(
-      '/some/path/snippets/foo.liquid' => "{{ foo.standard_error }}",
+  def test_render_tag_renders_error_with_template_name
+    assert_template_result(
+      'Liquid error (foo line 1): standard error',
+      "{% render 'foo' with errors %}",
+      { 'errors' => ErrorDrop.new },
+      partials: { 'foo' => '{{ foo.standard_error }}' },
+      render_errors: true,
     )
+  end
 
-    template = Liquid::Template.parse("{% render 'foo' with errors %}", line_numbers: true)
-    assert_equal('Liquid error (/some/path/snippets/foo line 1): standard error', template.render(context))
-  ensure
-    Liquid::Template.file_system = original_file_system
+  def test_render_tag_renders_error_with_template_name_from_template_factory
+    assert_template_result(
+      'Liquid error (some/path/foo line 1): standard error',
+      "{% render 'foo' with errors %}",
+      { 'errors' => ErrorDrop.new },
+      partials: { 'foo' => '{{ foo.standard_error }}' },
+      template_factory: StubTemplateFactory.new,
+      render_errors: true,
+    )
   end
 end

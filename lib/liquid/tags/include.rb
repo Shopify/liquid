@@ -72,9 +72,9 @@ module Liquid
       old_partial       = context.partial
 
       begin
-        context.template_name = partial.name if partial.name
-
+        context.template_name = partial.name
         context.partial = true
+
         context.stack do
           @attributes.each do |key, value|
             context[key] = context.evaluate(value)
