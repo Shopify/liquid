@@ -16,6 +16,8 @@ module Liquid
       template = template_factory.for(template_name)
 
       partial = template.parse(source, parse_context)
+      partial.name ||= template_name
+
       cached_partials[template_name] = partial
     ensure
       parse_context.partial = false

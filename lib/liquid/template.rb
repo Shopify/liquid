@@ -15,7 +15,7 @@ module Liquid
   #   template.render('user_name' => 'bob')
   #
   class Template
-    attr_accessor :root
+    attr_accessor :root, :name
     attr_reader :resource_limits, :warnings
 
     class TagRegistry

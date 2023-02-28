@@ -39,11 +39,12 @@ module Minitest
 
     def assert_template_result(
       expected, template, assigns = {},
-      message: nil, partials: nil, error_mode: nil, render_errors: false
+      message: nil, partials: nil, error_mode: nil, render_errors: false,
+      template_factory: nil
     )
       template = Liquid::Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym)
       file_system = StubFileSystem.new(partials || {})
-      registers = Liquid::Registers.new(file_system: file_system)
+      registers = Liquid::Registers.new(file_system: file_system, template_factory: template_factory)
       context = Liquid::Context.build(static_environments: assigns, rethrow_errors: !render_errors, registers: registers)
       output = template.render(context)
       assert_equal(expected, output, message)
@@ -209,8 +210,10 @@ class StubTemplateFactory
     @count = 0
   end
 
-  def for(_template_name)
+  def for(template_name)
     @count += 1
-    Liquid::Template.new
+    template = Liquid::Template.new
+    template.name = "some/path/" + template_name
+    template
   end
 end
