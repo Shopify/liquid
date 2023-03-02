@@ -15,7 +15,13 @@ module Liquid
       template_factory = context.registers[:template_factory]
       template = template_factory.for(template_name)
 
-      partial = template.parse(source, parse_context)
+      begin
+        partial = template.parse(source, parse_context)
+      rescue Liquid::Error => e
+        e.template_name = template&.name || template_name
+        raise e
+      end
+
       partial.name ||= template_name
 
       cached_partials[template_name] = partial
