@@ -189,6 +189,8 @@ module Liquid
         @profiler = context.profiler = Liquid::Profiler.new
       end
 
+      context.template_name ||= name
+
       begin
         # render the nodelist.
         @root.render_to_output_buffer(context, output || +'')
