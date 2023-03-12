@@ -170,6 +170,30 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('&lt;strong&gt;Hulk&lt;/strong&gt;', @filters.escape_once('&lt;strong&gt;Hulk</strong>'))
   end
 
+  def test_json_encode
+    assert_equal('{"name":"Fizz Buzz","id":1235}', @filters.json_encode({"name"=>"Fizz Buzz", "id"=>1235}))
+    assert_equal('[1,2,3,5]', @filters.json_encode([1, 2, 3, 5]))
+
+    assert_equal("null", @filters.json_encode(nil))
+    assert_equal("1", @filters.json_encode(1))
+  end
+
+  def test_json_decode
+    assert_equal({"name"=>"Fizz Buzz", "id"=>1235}, @filters.json_decode('{"name":"Fizz Buzz","id":1235}'))
+
+    assert_template_result('{"foo"=>{"bar"=>[1, 2, 3]}}', '{% assign json_result = json_data | json_decode %}{{ json_result }}', {"json_data" => '{"foo":{"bar":[1,2,3]}}'})
+    assert_template_result('{"bar"=>[1, 2, 3]}', '{% assign json_result = json_data | json_decode %}{{ json_result.foo }}', {"json_data" => '{"foo":{"bar":[1,2,3]}}'})
+    assert_template_result('123', '{% assign json_result = json_data | json_decode %}{{ json_result.foo.bar }}', {"json_data" => '{"foo":{"bar":[1,2,3]}}'})
+    assert_template_result('123', '{% assign json_result = json_data | json_decode %}{{ json_result.foo["bar"] }}', {"json_data" => '{"foo":{"bar":[1,2,3]}}'})
+    assert_template_result('1', '{% assign json_result = json_data | json_decode %}{{ json_result.foo.bar[0] }}', {"json_data" => '{"foo":{"bar":[1,2,3]}}'})
+
+    assert_equal(1, @filters.json_decode(1))
+    assert_nil(@filters.json_decode(nil))
+    assert_raises(Liquid::ArgumentError) do
+      @filters.json_decode('{"name":"BrokenFragment')
+    end
+  end
+
   def test_base64_encode
     assert_equal('b25lIHR3byB0aHJlZQ==', @filters.base64_encode('one two three'))
     assert_equal('', @filters.base64_encode(nil))

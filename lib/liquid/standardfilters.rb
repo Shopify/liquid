@@ -3,6 +3,7 @@
 require 'cgi'
 require 'base64'
 require 'bigdecimal'
+require 'json'
 
 module Liquid
   module StandardFilters
@@ -97,6 +98,30 @@ module Liquid
     # @liquid_return [string]
     def escape_once(input)
       input.to_s.gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_summary
+    #   JSON encodes the input.
+    # @liquid_syntax variable | json_encode.
+    # @liquid_return [string]
+    def json_encode(input)
+      JSON.generate(input)
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_summary
+    #   JSON decodes an input.
+    # @liquid_syntax string | json_decode.
+    # @liquid_return [string]
+    def json_decode(input)
+      JSON.parse(input.to_s) unless input.nil?
+    rescue JSON::ParserError, TypeError => e
+      raise Liquid::ArgumentError, e.message
     end
 
     # @liquid_public_docs
