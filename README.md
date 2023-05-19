@@ -27,7 +27,7 @@ Liquid is a template engine which was written with very specific requirements:
 
 ## What does it look like?
 
-```html
+```liquid
 <ul id="products">
   {% for product in products %}
     <li>
