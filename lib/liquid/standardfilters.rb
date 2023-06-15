@@ -434,13 +434,8 @@ module Liquid
       end
     end
 
-    # @liquid_public_docs
-    # @liquid_type filter
-    # @liquid_category array
-    # @liquid_summary
-    #   Removes any duplicate items in an array.
-    # @liquid_syntax array | uniq
-    # @liquid_return [array[untyped]]
+    # Remove duplicate elements from an array
+    # provide optional property with which to determine uniqueness
     def uniq(input, property = nil)
       ary = InputIterator.new(input, context)
 
