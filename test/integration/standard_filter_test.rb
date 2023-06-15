@@ -928,6 +928,60 @@ class StandardFiltersTest < Minitest::Test
     assert_equal([{ "foo" => true }, { "foo" => "for sure" }], @filters.where(input, "foo"))
   end
 
+  def test_sum_with_all_numbers
+    input = [1, 2]
+
+    assert_equal(3, @filters.sum(input))
+    assert_raises(Liquid::ArgumentError, "cannot select the property 'quantity'") do
+      @filters.sum(input, "quantity")
+    end
+  end
+
+  def test_sum_with_numeric_strings
+    input = [1, 2, "3", "4"]
+
+    assert_equal(10, @filters.sum(input))
+    assert_raises(Liquid::ArgumentError, "cannot select the property 'quantity'") do
+      @filters.sum(input, "quantity")
+    end
+  end
+
+  def test_sum_with_nested_arrays
+    input = [1, [2, [3, 4]]]
+
+    assert_equal(10, @filters.sum(input))
+    assert_raises(Liquid::ArgumentError, "cannot select the property 'quantity'") do
+      @filters.sum(input, "quantity")
+    end
+  end
+
+  def test_sum_with_indexable_map_values
+    input = [{ "quantity" => 1 }, { "quantity" => 2, "weight" => 3 }, { "weight" => 4 }]
+
+    assert_equal(0, @filters.sum(input))
+    assert_equal(3, @filters.sum(input, "quantity"))
+    assert_equal(7, @filters.sum(input, "weight"))
+    assert_equal(0, @filters.sum(input, "subtotal"))
+  end
+
+  def test_sum_with_indexable_non_map_values
+    input = [1, [2], "foo", { "quantity" => 3 }]
+
+    assert_equal(3, @filters.sum(input))
+    assert_raises(Liquid::ArgumentError, "cannot select the property 'quantity'") do
+      @filters.sum(input, "quantity")
+    end
+  end
+
+  def test_sum_with_unindexable_values
+    input = [1, true, nil, { "quantity" => 2 }]
+
+    assert_equal(1, @filters.sum(input))
+    assert_raises(Liquid::ArgumentError, "cannot select the property 'quantity'") do
+      @filters.sum(input, "quantity")
+    end
+  end
+
   private
 
   def with_timezone(tz)
