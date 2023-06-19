@@ -869,6 +869,31 @@ module Liquid
       false_check || (input.respond_to?(:empty?) && input.empty?) ? default_value : input
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Returns the sum of all elements in an array.
+    # @liquid_syntax array | sum
+    # @liquid_return [number]
+    def sum(input, property = nil)
+      ary = InputIterator.new(input, context)
+
+      if ary.empty?
+        0
+      elsif property.nil?
+        ary.sum do |item|
+          Utils.to_number(item)
+        end
+      else
+        ary.sum do |item|
+          item.respond_to?(:[]) ? Utils.to_number(item[property]) : 0
+        rescue TypeError
+          raise_property_error(property)
+        end
+      end
+    end
+
     private
 
     attr_reader :context
