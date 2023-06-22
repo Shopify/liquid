@@ -878,19 +878,22 @@ module Liquid
     # @liquid_return [number]
     def sum(input, property = nil)
       ary = InputIterator.new(input, context)
+      return 0 if ary.empty?
 
-      if ary.empty?
-        0
-      elsif property.nil?
-        ary.sum do |item|
-          Utils.to_number(item)
+      values_for_sum = ary.map do |item|
+        if property.nil?
+          item
+        elsif item.respond_to?(:[])
+          item[property]
+        else
+          0
         end
-      else
-        ary.sum do |item|
-          item.respond_to?(:[]) ? Utils.to_number(item[property]) : 0
-        rescue TypeError
-          raise_property_error(property)
-        end
+      rescue TypeError
+        raise_property_error(property)
+      end
+
+      InputIterator.new(values_for_sum, context).sum do |item|
+        Utils.to_number(item)
       end
     end
 
