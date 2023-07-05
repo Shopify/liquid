@@ -69,7 +69,7 @@ module Liquid
     # @liquid_type filter
     # @liquid_category string
     # @liquid_summary
-    #   Capitalizes the first word in a string.
+    #   Capitalizes the first word in a string and downcases the remaining characters.
     # @liquid_syntax string | capitalize
     # @liquid_return [string]
     def capitalize(input)
