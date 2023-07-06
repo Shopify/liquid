@@ -131,4 +131,16 @@ class ParsingQuirksTest < Minitest::Test
   def test_contains_in_id
     assert_template_result(' YES ', '{% if containsallshipments == true %} YES {% endif %}', { 'containsallshipments' => true })
   end
+
+  def test_delimiter_can_have_characters_after
+    assert_template_result('123', "{% if true %}123{% endif this is a valid syntax %}")
+  end
+
+  def test_none_breaking_whitespaces_in_tag
+    assert_template_result('123', "{% raw %}123{%\u{00A0}endraw\u{00A0}%}")
+
+    assert_template_result('123', "{% raw %}123{%\u{2000}endraw%}")
+
+    assert_template_result('123', "{% raw %}123{%endraw\u{200B}%}")
+  end
 end # ParsingQuirksTest
