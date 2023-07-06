@@ -45,6 +45,9 @@ module Liquid
           end
           tag_name = Regexp.last_match(1)
           markup   = Regexp.last_match(2)
+          if tag_name == "liquid"
+            next
+          end
           unless (tag = registered_tags[tag_name])
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
