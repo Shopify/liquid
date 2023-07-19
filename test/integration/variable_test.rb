@@ -34,6 +34,7 @@ class VariableTest < Minitest::Test
 
     assert_template_result('', '{% if foo %}true{% endif %}', { 'foo' => BooleanDrop.new(false) })
     assert_template_result('', '{% if foo == true %}True{% endif %}', { 'foo' => BooleanDrop.new(false) })
+    assert_template_result('', '{% if foo and true %}SHOULD NOT HAPPEN{% endif %}', { 'foo' => BooleanDrop.new(false) })
 
     assert_template_result('one', '{% if a contains x %}one{% endif %}', { 'a' => [1], 'x' => IntegerDrop.new(1) })
   end

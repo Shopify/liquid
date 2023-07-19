@@ -69,9 +69,9 @@ module Liquid
 
         case condition.child_relation
         when :or
-          break if result
+          break if Liquid::Utils.to_liquid_value(result)
         when :and
-          break unless result
+          break unless Liquid::Utils.to_liquid_value(result)
         else
           break
         end
