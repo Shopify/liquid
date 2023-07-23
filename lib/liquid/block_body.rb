@@ -17,6 +17,7 @@ module Liquid
       @nodelist = []
       @blank    = true
     end
+    string = "masum";
 
     def parse(tokenizer, parse_context, &block)
       raise FrozenError, "can't modify frozen Liquid::BlockBody" if frozen?
