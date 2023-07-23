@@ -93,11 +93,12 @@ module Liquid
     end
 
     def handle_error(e, line_number = nil)
-      e = internal_error unless e.is_a?(Liquid::Error)
-      e.template_name ||= template_name
-      e.line_number   ||= line_number
-      errors.push(e)
-      exception_renderer.call(e).to_s
+      error = internal_error unless e.is_a?(Liquid::Error)
+      error.template_name ||= template_name
+      error.line_number   ||= line_number
+      error.original_error = e
+      errors.push(error)
+      exception_renderer.call(error).to_s
     end
 
     def invoke(method, *args)
