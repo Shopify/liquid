@@ -5,6 +5,7 @@ module Liquid
     attr_accessor :line_number
     attr_accessor :template_name
     attr_accessor :markup_context
+    attr_accessor :original_error
 
     def to_s(with_prefix = true)
       str = +""
