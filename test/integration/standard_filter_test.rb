@@ -946,6 +946,21 @@ class StandardFiltersTest < Minitest::Test
     end
   end
 
+  def test_sum_with_floats
+    input = [0.1, 0.2, 0.3]
+    assert_equal(0.6, @filters.sum(input))
+  end
+
+  def test_sum_with_negative_float
+    input = [0.1, 0.2, -0.3]
+    assert_equal(0.0, @filters.sum(input))
+  end
+
+  def test_sum_with_float_strings
+    input = [0.1, "0.2", "0.3"]
+    assert_equal(0.6, @filters.sum(input))
+  end
+
   def test_sum_with_nested_arrays
     input = [1, [2, [3, 4]]]
 
@@ -992,6 +1007,38 @@ class StandardFiltersTest < Minitest::Test
     t = TestThing.new
     Liquid::Template.parse('{{ foo | sum: "quantity" }}').render("foo" => [{ "quantity" => t }])
     assert(t.foo > 0)
+  end
+
+  def test_render_sum_of_floats
+    assert_equal(Liquid::Template.parse('{{ foo | sum }}').render("foo" => [0.1, 0.2, 0.3]), "0.6")
+  end
+
+  def test_render_sum_of_negative_floats
+    assert_equal(Liquid::Template.parse('{{ foo | sum }}').render("foo" => [0.1, -0.2, 0.3]), "0.2")
+  end
+
+  def test_render_sum_negative_float_result
+    assert_equal(Liquid::Template.parse('{{ foo | sum }}').render("foo" => [0.1, -0.2, -0.3]), "-0.4")
+  end
+
+  def test_render_sum_float_zero_result
+    assert_equal(Liquid::Template.parse('{{ foo | sum }}').render("foo" => [0.1, 0.2, -0.3]), "0.0")
+  end
+
+  def test_render_sum_with_floats_and_indexable_map_values
+    input = [{ "quantity" => 1 }, { "quantity" => 0.2, "weight" => -0.3 }, { "weight" => 0.4 }]
+    assert_equal(Liquid::Template.parse('{{ foo | sum }}').render("foo" => input), "0")
+    assert_equal(Liquid::Template.parse('{{ foo | sum: "quantity" }}').render("foo" => input), "1.2")
+    assert_equal(Liquid::Template.parse('{{ foo | sum: "weight" }}').render("foo" => input), "0.1")
+    assert_equal(Liquid::Template.parse('{{ foo | sum: "subtotal" }}').render("foo" => input), "0")
+  end
+
+  def test_sum_with_floats_and_indexable_map_values
+    input = [{ "quantity" => 1 }, { "quantity" => 0.2, "weight" => -0.3 }, { "weight" => 0.4 }]
+    assert_equal(0, @filters.sum(input))
+    assert_equal(1.2, @filters.sum(input, "quantity"))
+    assert_equal(0.1, @filters.sum(input, "weight"))
+    assert_equal(0, @filters.sum(input, "subtotal"))
   end
 
   private
