@@ -1025,6 +1025,22 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(Liquid::Template.parse('{{ foo | sum }}').render("foo" => [0.1, 0.2, -0.3]), "0.0")
   end
 
+  def test_render_sum_with_floats_and_indexable_map_values
+    input = [{ "quantity" => 1 }, { "quantity" => 0.2, "weight" => -0.3 }, { "weight" => 0.4 }]
+    assert_equal(Liquid::Template.parse('{{ foo | sum }}').render("foo" => input), "0")
+    assert_equal(Liquid::Template.parse('{{ foo | sum: "quantity" }}').render("foo" => input), "1.2")
+    assert_equal(Liquid::Template.parse('{{ foo | sum: "weight" }}').render("foo" => input), "0.1")
+    assert_equal(Liquid::Template.parse('{{ foo | sum: "subtotal" }}').render("foo" => input), "0")
+  end
+
+  def test_sum_with_floats_and_indexable_map_values
+    input = [{ "quantity" => 1 }, { "quantity" => 0.2, "weight" => -0.3 }, { "weight" => 0.4 }]
+    assert_equal(0, @filters.sum(input))
+    assert_equal(1.2, @filters.sum(input, "quantity"))
+    assert_equal(0.1, @filters.sum(input, "weight"))
+    assert_equal(0, @filters.sum(input, "subtotal"))
+  end
+
   private
 
   def with_timezone(tz)
