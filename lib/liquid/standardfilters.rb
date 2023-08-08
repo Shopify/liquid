@@ -895,6 +895,7 @@ module Liquid
       result = InputIterator.new(values_for_sum, context).sum do |item|
         Utils.to_number(item)
       end
+
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
