@@ -3,7 +3,7 @@ title: date
 description: Liquid filter that prints and formats dates.
 ---
 
-Converts a timestamp into another date format. The format for this syntax is the same as [`strftime`](http://strftime.net). The input uses the same format as Ruby's [`Time.parse`](https://ruby-doc.org/stdlib/libdoc/time/rdoc/Time.html#method-c-parse).
+Converts a timestamp into another date format. The format for this syntax is the same as [`strftime`](http://strftime.net). The input uses the same format as Ruby's [`Time.parse`](https://docs.ruby-lang.org/en/master/Time.html#method-c-parse).
 
 <p class="code-label">Input</p>
 ```liquid
