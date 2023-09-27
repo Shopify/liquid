@@ -892,9 +892,11 @@ module Liquid
         raise_property_error(property)
       end
 
-      InputIterator.new(values_for_sum, context).sum do |item|
+      result = InputIterator.new(values_for_sum, context).sum do |item|
         Utils.to_number(item)
       end
+
+      result.is_a?(BigDecimal) ? result.to_f : result
     end
 
     private
