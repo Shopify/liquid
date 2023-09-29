@@ -34,7 +34,7 @@ module Liquid
         original_encoding = input.encoding
         if input.encoding != encoding
           input.force_encoding(encoding)
-          if !input.valid_encoding?
+          unless input.valid_encoding?
             input.force_encoding(original_encoding)
           end
         end
