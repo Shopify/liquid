@@ -368,10 +368,10 @@ module Liquid
         begin
           ary.sort do |a, b|
             if deep[:enable]
-              return nil_safe_compare(a.dig(*deep[:properties]), b.dig(*deep[:properties]))
+              nil_safe_compare(a.dig(*deep[:properties]), b.dig(*deep[:properties]))
+            else
+              nil_safe_compare(a[property], b[property])
             end
-
-            nil_safe_compare(a[property], b[property])
           end
         rescue TypeError
           raise_property_error(property)
@@ -406,10 +406,10 @@ module Liquid
         begin
           ary.sort do |a, b|
             if deep[:enable]
-              return nil_safe_casecmp(a.dig(*deep[:properties]), b.dig(*deep[:properties]))
+              nil_safe_casecmp(a.dig(*deep[:properties]), b.dig(*deep[:properties]))
+            else
+              nil_safe_casecmp(a[property], b[property])
             end
-
-            nil_safe_casecmp(a[property], b[property])
           end
         rescue TypeError
           raise_property_error(property)
