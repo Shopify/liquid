@@ -265,6 +265,60 @@ class StandardFiltersTest < Minitest::Test
     assert_equal([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], @filters.sort([{ "a" => 4 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a"))
   end
 
+  def test_sort_deep_default_separator
+    input = [
+      { "foo" => { "price" => 4, "handle" => "alpha" } } ,
+      { "foo" => { "handle" => "beta" } } ,
+      { "foo" => { "price" => 1, "handle" => "gamma" } } ,
+      { "foo" => { "handle" => "delta" } } ,
+      { "foo" => { "price" => 2, "handle" => "epsilon" } } ,
+    ]
+    expectation = [
+      { "foo" => { "price" => 1, "handle" => "gamma" } },
+      { "foo" => { "price" => 2, "handle" => "epsilon" } },
+      { "foo" => { "price" => 4, "handle" => "alpha" } },
+      { "foo" => { "handle" => "beta" } },
+      { "foo" => { "handle" => "delta" } },
+    ]
+    assert_equal(expectation, @filters.sort(input, "foo.price", { "deep" => true }))
+  end
+
+  def test_sort_deep_custom_separator
+    input = [
+      { "foo" => { "price" => 4, "handle" => "alpha" } } ,
+      { "foo" => { "handle" => "beta" } } ,
+      { "foo" => { "price" => 1, "handle" => "gamma" } } ,
+      { "foo" => { "handle" => "delta" } } ,
+      { "foo" => { "price" => 2, "handle" => "epsilon" } } ,
+    ]
+    expectation = [
+      { "foo" => { "price" => 1, "handle" => "gamma" } },
+      { "foo" => { "price" => 2, "handle" => "epsilon" } },
+      { "foo" => { "price" => 4, "handle" => "alpha" } },
+      { "foo" => { "handle" => "beta" } },
+      { "foo" => { "handle" => "delta" } },
+    ]
+    assert_equal(expectation, @filters.sort(input, "foo_price", { "deep" => "_" }))
+  end
+
+  def test_sort_deep_off_by_default
+    input = [
+      { "foo.price" => 4, "handle" => "alpha" },
+      { "handle" => "beta" },
+      { "foo.price" => 1, "handle" => "gamma" },
+      { "handle" => "delta" },
+      { "foo.price" => 2, "handle" => "epsilon" },
+    ]
+    expectation = [
+      { "foo.price" => 1, "handle" => "gamma" },
+      { "foo.price" => 2, "handle" => "epsilon" },
+      { "foo.price" => 4, "handle" => "alpha" },
+      { "handle" => "beta" },
+      { "handle" => "delta" },
+    ]
+    assert_equal(expectation, @filters.sort(input, "foo.price"))
+  end
+
   def test_sort_with_nils
     assert_equal([1, 2, 3, 4, nil], @filters.sort([nil, 4, 3, 2, 1]))
     assert_equal([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }, {}], @filters.sort([{ "a" => 4 }, { "a" => 3 }, {}, { "a" => 1 }, { "a" => 2 }], "a"))
@@ -337,6 +391,72 @@ class StandardFiltersTest < Minitest::Test
     ]
     assert_equal(expectation, @filters.sort_natural(input, "key"))
     assert_equal(["a", "b", "c", "X", "Y", "Z"], @filters.sort_natural(["X", "Y", "Z", "a", "b", "c"]))
+  end
+
+  def test_sort_natural_deep_default_separator
+    input = [
+      { "foo" => { "key" => "X" } },
+      { "foo" => { "key" => "Y" } },
+      { "foo" => { "key" => "Z" } },
+      { "foo" => { "fake" => "t" } },
+      { "foo" => { "key" => "a" } },
+      { "foo" => { "key" => "b" } },
+      { "foo" => { "key" => "c" } },
+    ]
+    expectation = [
+      { "foo" => { "key" => "a" } },
+      { "foo" => { "key" => "b" } },
+      { "foo" => { "key" => "c" } },
+      { "foo" => { "key" => "X" } },
+      { "foo" => { "key" => "Y" } },
+      { "foo" => { "key" => "Z" } },
+      { "foo" => { "fake" => "t" } },
+    ]
+    assert_equal(expectation, @filters.sort_natural(input, "foo.key", { "deep" => true }))
+  end
+
+  def test_sort_natural_deep_custom_separator
+    input = [
+      { "foo" => { "key" => "X" } },
+      { "foo" => { "key" => "Y" } },
+      { "foo" => { "key" => "Z" } },
+      { "foo" => { "fake" => "t" } },
+      { "foo" => { "key" => "a" } },
+      { "foo" => { "key" => "b" } },
+      { "foo" => { "key" => "c" } },
+    ]
+    expectation = [
+      { "foo" => { "key" => "a" } },
+      { "foo" => { "key" => "b" } },
+      { "foo" => { "key" => "c" } },
+      { "foo" => { "key" => "X" } },
+      { "foo" => { "key" => "Y" } },
+      { "foo" => { "key" => "Z" } },
+      { "foo" => { "fake" => "t" } },
+    ]
+    assert_equal(expectation, @filters.sort_natural(input, "foo_key", { "deep" => "_" }))
+  end
+
+  def test_sort_natural_deep_off_by_default
+    input = [
+      { "foo.key" => "X" },
+      { "foo.key" => "Y" },
+      { "foo.key" => "Z" },
+      { "foo.fake" => "t" },
+      { "foo.key" => "a" },
+      { "foo.key" => "b" },
+      { "foo.key" => "c" },
+    ]
+    expectation = [
+      { "foo.key" => "a" },
+      { "foo.key" => "b" },
+      { "foo.key" => "c" },
+      { "foo.key" => "X" },
+      { "foo.key" => "Y" },
+      { "foo.key" => "Z" },
+      { "foo.fake" => "t" },
+    ]
+    assert_equal(expectation, @filters.sort_natural(input, "foo.key" ))
   end
 
   def test_sort_empty_array
@@ -437,6 +557,30 @@ class StandardFiltersTest < Minitest::Test
       'abc',
       "{{ ary | map:'foo' | map:'bar' }}",
       { 'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }] },
+    )
+  end
+
+  def test_map_deep_default_separator
+    assert_template_result(
+      'abc',
+      "{{ ary | map: 'foo.bar', deep: true }}",
+      { 'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }] },
+    )
+  end
+
+  def test_map_deep_custom_separator
+    assert_template_result(
+      'abc',
+      "{{ ary | map: 'foo_bar', deep: '_' }}",
+      { 'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }] },
+    )
+  end
+
+  def test_map_deep_off_by_default
+    assert_template_result(
+      'abc',
+      "{{ ary | map: 'foo.bar' }}",
+      { 'ary' => [{ 'foo.bar' => 'a' }, { 'foo.bar' => 'b' }, { 'foo.bar' => 'c' }] },
     )
   end
 
@@ -992,6 +1136,36 @@ class StandardFiltersTest < Minitest::Test
     t = TestThing.new
     Liquid::Template.parse('{{ foo | sum: "quantity" }}').render("foo" => [{ "quantity" => t }])
     assert(t.foo > 0)
+  end
+
+  def test_sum_deep_default_separator
+    input = [
+      { "foo" => { "quantity" => 1 } },
+      { "foo" => { "quantity" => 2 } },
+      { "foo" => { "quantity" => 3 } },
+      { "foo" => { "quantity" => 4 } },
+    ]
+    assert_equal(10, @filters.sum(input, "foo.quantity", { "deep" => true }))
+  end
+
+  def test_sum_deep_custom_separator
+    input = [
+      { "foo" => { "quantity" => 1 } },
+      { "foo" => { "quantity" => 2 } },
+      { "foo" => { "quantity" => 3 } },
+      { "foo" => { "quantity" => 4 } },
+    ]
+    assert_equal(10, @filters.sum(input, "foo_quantity", { "deep" => "_" }))
+  end
+
+  def test_sum_deep_off_by_default
+    input = [
+      { "foo.quantity" => 1 },
+      { "foo.quantity" => 2 },
+      { "foo.quantity" => 3 },
+      { "foo.quantity" => 4 },
+    ]
+    assert_equal(10, @filters.sum(input, "foo.quantity"))
   end
 
   private
