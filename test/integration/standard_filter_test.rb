@@ -267,11 +267,11 @@ class StandardFiltersTest < Minitest::Test
 
   def test_sort_deep_default_separator
     input = [
-      { "foo" => { "price" => 4, "handle" => "alpha" } } ,
-      { "foo" => { "handle" => "beta" } } ,
-      { "foo" => { "price" => 1, "handle" => "gamma" } } ,
-      { "foo" => { "handle" => "delta" } } ,
-      { "foo" => { "price" => 2, "handle" => "epsilon" } } ,
+      { "foo" => { "price" => 4, "handle" => "alpha" } },
+      { "foo" => { "handle" => "beta" } },
+      { "foo" => { "price" => 1, "handle" => "gamma" } },
+      { "foo" => { "handle" => "delta" } },
+      { "foo" => { "price" => 2, "handle" => "epsilon" } },
     ]
     expectation = [
       { "foo" => { "price" => 1, "handle" => "gamma" } },
@@ -285,11 +285,11 @@ class StandardFiltersTest < Minitest::Test
 
   def test_sort_deep_custom_separator
     input = [
-      { "foo" => { "price" => 4, "handle" => "alpha" } } ,
-      { "foo" => { "handle" => "beta" } } ,
-      { "foo" => { "price" => 1, "handle" => "gamma" } } ,
-      { "foo" => { "handle" => "delta" } } ,
-      { "foo" => { "price" => 2, "handle" => "epsilon" } } ,
+      { "foo" => { "price" => 4, "handle" => "alpha" } },
+      { "foo" => { "handle" => "beta" } },
+      { "foo" => { "price" => 1, "handle" => "gamma" } },
+      { "foo" => { "handle" => "delta" } },
+      { "foo" => { "price" => 2, "handle" => "epsilon" } },
     ]
     expectation = [
       { "foo" => { "price" => 1, "handle" => "gamma" } },
@@ -529,13 +529,13 @@ class StandardFiltersTest < Minitest::Test
 
   def test_uniq_deep_default_separator
     input = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } } ,
-      { "foo" => { "bar" => "baz", "handle" => "beta" } } ,
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } } ,
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "bar" => "baz", "handle" => "beta" } },
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
     ]
     expectation = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } } ,
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } } ,
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
     ]
     assert_equal(expectation, @filters.uniq(input, "foo.bar", { "deep" => true }))
   end
