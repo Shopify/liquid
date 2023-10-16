@@ -176,7 +176,17 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_base64_decode
-    assert_equal('one two three', @filters.base64_decode('b25lIHR3byB0aHJlZQ=='))
+    decoded = @filters.base64_decode('b25lIHR3byB0aHJlZQ==')
+    assert_equal('one two three', decoded)
+    assert_equal(Encoding::UTF_8, decoded.encoding)
+
+    decoded = @filters.base64_decode('4pyF')
+    assert_equal('✅', decoded)
+    assert_equal(Encoding::UTF_8, decoded.encoding)
+
+    decoded = @filters.base64_decode("/w==")
+    assert_equal(Encoding::ASCII_8BIT, decoded.encoding)
+    assert_equal((+"\xFF").force_encoding(Encoding::ASCII_8BIT), decoded)
 
     exception = assert_raises(Liquid::ArgumentError) do
       @filters.base64_decode("invalidbase64")
@@ -194,10 +204,21 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_base64_url_safe_decode
+    decoded = @filters.base64_url_safe_decode('YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8')
     assert_equal(
       'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\|',
-      @filters.base64_url_safe_decode('YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8'),
+      decoded,
     )
+    assert_equal(Encoding::UTF_8, decoded.encoding)
+
+    decoded = @filters.base64_url_safe_decode('4pyF')
+    assert_equal('✅', decoded)
+    assert_equal(Encoding::UTF_8, decoded.encoding)
+
+    decoded = @filters.base64_url_safe_decode("_w==")
+    assert_equal(Encoding::ASCII_8BIT, decoded.encoding)
+    assert_equal((+"\xFF").force_encoding(Encoding::ASCII_8BIT), decoded)
+
     exception = assert_raises(Liquid::ArgumentError) do
       @filters.base64_url_safe_decode("invalidbase64")
     end
@@ -1283,6 +1304,42 @@ class StandardFiltersTest < Minitest::Test
       { "foo.quantity" => 4 },
     ]
     assert_equal(10, @filters.sum(input, "foo.quantity"))
+  end
+
+  def test_sum_of_floats
+    input = [0.1, 0.2, 0.3]
+    assert_equal(0.6, @filters.sum(input))
+    assert_template_result("0.6", "{{ input | sum }}", { "input" => input })
+  end
+
+  def test_sum_of_negative_floats
+    input = [0.1, 0.2, -0.3]
+    assert_equal(0.0, @filters.sum(input))
+    assert_template_result("0.0", "{{ input | sum }}", { "input" => input })
+  end
+
+  def test_sum_with_float_strings
+    input = [0.1, "0.2", "0.3"]
+    assert_equal(0.6, @filters.sum(input))
+    assert_template_result("0.6", "{{ input | sum }}", { "input" => input })
+  end
+
+  def test_sum_resulting_in_negative_float
+    input = [0.1, -0.2, -0.3]
+    assert_equal(-0.4, @filters.sum(input))
+    assert_template_result("-0.4", "{{ input | sum }}", { "input" => input })
+  end
+
+  def test_sum_with_floats_and_indexable_map_values
+    input = [{ "quantity" => 1 }, { "quantity" => 0.2, "weight" => -0.3 }, { "weight" => 0.4 }]
+    assert_equal(0.0, @filters.sum(input))
+    assert_equal(1.2, @filters.sum(input, "quantity"))
+    assert_equal(0.1, @filters.sum(input, "weight"))
+    assert_equal(0.0, @filters.sum(input, "subtotal"))
+    assert_template_result("0", "{{ input | sum }}", { "input" => input })
+    assert_template_result("1.2", "{{ input | sum: 'quantity' }}", { "input" => input })
+    assert_template_result("0.1", "{{ input | sum: 'weight' }}", { "input" => input })
+    assert_template_result("0", "{{ input | sum: 'subtotal' }}", { "input" => input })
   end
 
   private

@@ -29,6 +29,19 @@ module Liquid
     )
     STRIP_HTML_TAGS = /<.*?>/m
 
+    class << self
+      def try_coerce_encoding(input, encoding:)
+        original_encoding = input.encoding
+        if input.encoding != encoding
+          input.force_encoding(encoding)
+          unless input.valid_encoding?
+            input.force_encoding(original_encoding)
+          end
+        end
+        input
+      end
+    end
+
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
@@ -150,7 +163,8 @@ module Liquid
     # @liquid_syntax string | base64_decode
     # @liquid_return [string]
     def base64_decode(input)
-      Base64.strict_decode64(input.to_s)
+      input = input.to_s
+      StandardFilters.try_coerce_encoding(Base64.strict_decode64(input), encoding: input.encoding)
     rescue ::ArgumentError
       raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
     end
@@ -174,7 +188,8 @@ module Liquid
     # @liquid_syntax string | base64_url_safe_decode
     # @liquid_return [string]
     def base64_url_safe_decode(input)
-      Base64.urlsafe_decode64(input.to_s)
+      input = input.to_s
+      StandardFilters.try_coerce_encoding(Base64.urlsafe_decode64(input), encoding: input.encoding)
     rescue ::ArgumentError
       raise Liquid::ArgumentError, "invalid base64 provided to base64_url_safe_decode"
     end
@@ -928,9 +943,11 @@ module Liquid
         raise_property_error(property)
       end
 
-      InputIterator.new(values_for_sum, context).sum do |item|
+      result = InputIterator.new(values_for_sum, context).sum do |item|
         Utils.to_number(item)
       end
+
+      result.is_a?(BigDecimal) ? result.to_f : result
     end
 
     private
