@@ -527,6 +527,45 @@ class StandardFiltersTest < Minitest::Test
     end
   end
 
+  def test_uniq_deep_default_separator
+    input = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } } ,
+      { "foo" => { "bar" => "baz", "handle" => "beta" } } ,
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } } ,
+    ]
+    expectation = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } } ,
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } } ,
+    ]
+    assert_equal(expectation, @filters.uniq(input, "foo.bar", { "deep" => true }))
+  end
+
+  def test_uniq_deep_custom_separator
+    input = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "bar" => "baz", "handle" => "beta" } },
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
+    ]
+    expectation = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
+    ]
+    assert_equal(expectation, @filters.uniq(input, "foo_bar", { "deep" => "_" }))
+  end
+
+  def test_uniq_deep_off_by_default
+    input = [
+      { "foo.bar" => "baz", "handle" => "alpha" },
+      { "foo.bar" => "baz", "handle" => "beta" },
+      { "foo.bar" => "qux", "handle" => "charlie" },
+    ]
+    expectation = [
+      { "foo.bar" => "baz", "handle" => "alpha" },
+      { "foo.bar" => "qux", "handle" => "charlie" },
+    ]
+    assert_equal(expectation, @filters.uniq(input, "foo.bar"))
+  end
+
   def test_compact_empty_array
     assert_equal([], @filters.compact([], "a"))
   end
@@ -1021,6 +1060,45 @@ class StandardFiltersTest < Minitest::Test
   def test_where_array_of_only_unindexable_values
     assert_nil(@filters.where([nil], "ok", true))
     assert_nil(@filters.where([nil], "ok"))
+  end
+
+  def test_where_deep_default_separator
+    input = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "bar" => "baz", "handle" => "beta" } },
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
+    ]
+    expectation = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "bar" => "baz", "handle" => "beta" } },
+    ]
+    assert_equal(expectation, @filters.where(input, "foo.bar", "baz", { "deep" => true }))
+  end
+
+  def test_where_deep_custom_separator
+    input = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "bar" => "baz", "handle" => "beta" } },
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
+    ]
+    expectation = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "bar" => "baz", "handle" => "beta" } },
+    ]
+    assert_equal(expectation, @filters.where(input, "foo_bar", "baz", { "deep" => "_" }))
+  end
+
+  def test_where_deep_off_by_default
+    input = [
+      { "foo.bar" => "baz", "handle" => "alpha" },
+      { "foo.bar" => "baz", "handle" => "beta" },
+      { "foo.bar" => "qux", "handle" => "charlie" },
+    ]
+    expectation = [
+      { "foo.bar" => "baz", "handle" => "alpha" },
+      { "foo.bar" => "baz", "handle" => "beta" },
+    ]
+    assert_equal(expectation, @filters.where(input, "foo.bar", "baz"))
   end
 
   def test_all_filters_never_raise_non_liquid_exception
