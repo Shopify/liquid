@@ -605,7 +605,7 @@ class StandardFiltersTest < Minitest::Test
       { "foo" => { "bar" => "baz", "handle" => "alpha" } },
       { "foo" => { "bar" => "qux", "handle" => "charlie" } },
     ]
-    assert_equal(expectation, @filters.where(input, "foo_bar", "baz", { "deep" => "_" }))
+    assert_equal(expectation, @filters.compact(input, "foo_bar", { "deep" => "_" }))
   end
 
   def test_compact_deep_off_by_default
@@ -618,7 +618,7 @@ class StandardFiltersTest < Minitest::Test
       { "foo.bar" => "baz", "handle" => "alpha" },
       { "foo.bar" => "qux", "handle" => "charlie" },
     ]
-    assert_equal(expectation, @filters.where(input, "foo.bar", "baz"))
+    assert_equal(expectation, @filters.compact(input, "foo.bar"))
   end
 
   def test_reverse
