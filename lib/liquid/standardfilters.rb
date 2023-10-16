@@ -989,13 +989,13 @@ module Liquid
       options = {} unless options.is_a?(Hash)
 
       enable = options['deep'] ? true : false
-      separator = options['deep'].kind_of?(String) ? options['deep'] : '.' if enable
+      separator = options['deep'].is_a?(String) ? options['deep'] : '.' if enable
       properties = key.to_s.split(separator) if enable
 
       {
-        :enable => enable,
-        :separator => separator,
-        :properties => properties
+        enable: enable,
+        separator: separator,
+        properties: properties,
       }
     end
 

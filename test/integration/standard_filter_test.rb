@@ -477,7 +477,7 @@ class StandardFiltersTest < Minitest::Test
       { "foo.key" => "Z" },
       { "foo.fake" => "t" },
     ]
-    assert_equal(expectation, @filters.sort_natural(input, "foo.key" ))
+    assert_equal(expectation, @filters.sort_natural(input, "foo.key"))
   end
 
   def test_sort_empty_array
