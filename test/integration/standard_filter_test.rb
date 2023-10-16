@@ -582,6 +582,45 @@ class StandardFiltersTest < Minitest::Test
     end
   end
 
+  def test_compact_deep_default_separator
+    input = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "handle" => "beta" } },
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
+    ]
+    expectation = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
+    ]
+    assert_equal(expectation, @filters.compact(input, "foo.bar", { "deep" => true }))
+  end
+
+  def test_compact_deep_custom_separator
+    input = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "handle" => "beta" } },
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
+    ]
+    expectation = [
+      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
+      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
+    ]
+    assert_equal(expectation, @filters.where(input, "foo_bar", "baz", { "deep" => "_" }))
+  end
+
+  def test_compact_deep_off_by_default
+    input = [
+      { "foo.bar" => "baz", "handle" => "alpha" },
+      { "foo.handle" => "beta" },
+      { "foo.bar" => "qux", "handle" => "charlie" },
+    ]
+    expectation = [
+      { "foo.bar" => "baz", "handle" => "alpha" },
+      { "foo.bar" => "qux", "handle" => "charlie" },
+    ]
+    assert_equal(expectation, @filters.where(input, "foo.bar", "baz"))
+  end
+
   def test_reverse
     assert_equal([4, 3, 2, 1], @filters.reverse([1, 2, 3, 4]))
   end

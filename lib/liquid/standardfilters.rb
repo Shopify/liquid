@@ -530,7 +530,10 @@ module Liquid
     #   Removes any `nil` items from an array.
     # @liquid_syntax array | compact
     # @liquid_return [array[untyped]]
-    def compact(input, property = nil)
+    # @liquid_optional_param deep [boolean | string] Whether to use dot notation to perform a deep search. A string can be passed to change separator.
+    def compact(input, property = nil, options = {})
+      options = {} unless options.is_a?(Hash)
+      deep = deep_search_properties(property, options)
       ary = InputIterator.new(input, context)
 
       if property.nil?
@@ -539,7 +542,7 @@ module Liquid
         []
       else
         ary.reject do |item|
-          item[property].nil?
+          deep[:enable] ? item.dig(*deep[:properties]).nil? : item[property].nil?
         rescue TypeError
           raise_property_error(property)
         rescue NoMethodError
