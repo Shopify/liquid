@@ -6,7 +6,7 @@ module Liquid
   # @liquid_category iteration
   # @liquid_name cycle
   # @liquid_summary
-  #   Loops through a group of strings and outputs them one at a time for each iteration of a [`for` loop](/api/liquid/tags/for).
+  #   Loops through a group of strings and outputs them one at a time for each iteration of a [`for` loop](/docs/api/liquid/tags/for).
   # @liquid_description
   #   The `cycle` tag must be used inside a `for` loop.
   #

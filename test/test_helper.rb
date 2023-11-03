@@ -39,11 +39,12 @@ module Minitest
 
     def assert_template_result(
       expected, template, assigns = {},
-      message: nil, partials: nil, error_mode: nil, render_errors: false, strict_variables: nil, strict_filters: nil
+      message: nil, partials: nil, error_mode: nil, render_errors: false, strict_variables: nil, strict_filters: nil,
+      template_factory: nil
     )
       template = Liquid::Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym)
       file_system = StubFileSystem.new(partials || {})
-      registers = Liquid::Registers.new(file_system: file_system)
+      registers = Liquid::Registers.new(file_system: file_system, template_factory: template_factory)
       context = Liquid::Context.build(static_environments: assigns, rethrow_errors: !render_errors, registers: registers)
       output = template.render(context, strict_variables: strict_variables, strict_filters: strict_filters)
       assert_equal(expected, output, message)
@@ -125,14 +126,21 @@ class ThingWithToLiquid
   end
 end
 
+class SettingsDrop < Liquid::Drop
+  def initialize(settings)
+    super()
+    @settings = settings
+  end
+
+  def liquid_method_missing(key)
+    @settings[key]
+  end
+end
+
 class IntegerDrop < Liquid::Drop
   def initialize(value)
     super()
     @value = value.to_i
-  end
-
-  def ==(other)
-    @value == other
   end
 
   def to_s
@@ -148,10 +156,6 @@ class BooleanDrop < Liquid::Drop
   def initialize(value)
     super()
     @value = value
-  end
-
-  def ==(other)
-    @value == other
   end
 
   def to_liquid_value
@@ -206,8 +210,10 @@ class StubTemplateFactory
     @count = 0
   end
 
-  def for(_template_name)
+  def for(template_name)
     @count += 1
-    Liquid::Template.new
+    template = Liquid::Template.new
+    template.name = "some/path/" + template_name
+    template
   end
 end

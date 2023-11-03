@@ -164,13 +164,17 @@ class ConditionUnitTest < Minitest::Test
   private
 
   def assert_evaluates_true(left, op, right)
-    assert(Condition.new(left, op, right).evaluate(@context),
-      "Evaluated false: #{left} #{op} #{right}")
+    assert(
+      Condition.new(left, op, right).evaluate(@context),
+      "Evaluated false: #{left} #{op} #{right}",
+    )
   end
 
   def assert_evaluates_false(left, op, right)
-    assert(!Condition.new(left, op, right).evaluate(@context),
-      "Evaluated true: #{left} #{op} #{right}")
+    assert(
+      !Condition.new(left, op, right).evaluate(@context),
+      "Evaluated true: #{left} #{op} #{right}",
+    )
   end
 
   def assert_evaluates_argument_error(left, op, right)

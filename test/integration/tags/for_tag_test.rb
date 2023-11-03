@@ -73,9 +73,11 @@ HERE
 
   def test_for_helpers
     assigns = { 'array' => [1, 2, 3] }
-    assert_template_result(' 1/3  2/3  3/3 ',
+    assert_template_result(
+      ' 1/3  2/3  3/3 ',
       '{%for item in array%} {{forloop.index}}/{{forloop.length}} {%endfor%}',
-      assigns)
+      assigns,
+    )
     assert_template_result(' 1  2  3 ', '{%for item in array%} {{forloop.index}} {%endfor%}', assigns)
     assert_template_result(' 0  1  2 ', '{%for item in array%} {{forloop.index0}} {%endfor%}', assigns)
     assert_template_result(' 2  1  0 ', '{%for item in array%} {{forloop.rindex0}} {%endfor%}', assigns)
@@ -86,9 +88,11 @@ HERE
 
   def test_for_and_if
     assigns = { 'array' => [1, 2, 3] }
-    assert_template_result('+--',
+    assert_template_result(
+      '+--',
       '{%for item in array%}{% if forloop.first %}+{% else %}-{% endif %}{%endfor%}',
-      assigns)
+      assigns,
+    )
   end
 
   def test_for_else
@@ -325,15 +329,20 @@ HERE
     # ruby 1.9.3 no longer supports .each on String though we mimic
     # the functionality for backwards compatibility
 
-    assert_template_result('test string',
+    assert_template_result(
+      'test string',
       '{%for val in string%}{{val}}{%endfor%}',
-      { 'string' => "test string" })
+      { 'string' => "test string" },
+    )
 
-    assert_template_result('test string',
+    assert_template_result(
+      'test string',
       '{%for val in string limit:1%}{{val}}{%endfor%}',
-      { 'string' => "test string" })
+      { 'string' => "test string" },
+    )
 
-    assert_template_result('val-string-1-1-0-1-0-true-true-test string',
+    assert_template_result(
+      'val-string-1-1-0-1-0-true-true-test string',
       '{%for val in string%}' \
       '{{forloop.name}}-' \
       '{{forloop.index}}-' \
@@ -344,23 +353,28 @@ HERE
       '{{forloop.first}}-' \
       '{{forloop.last}}-' \
       '{{val}}{%endfor%}',
-      { 'string' => "test string" })
+      { 'string' => "test string" },
+    )
   end
 
   def test_for_parentloop_references_parent_loop
-    assert_template_result('1.1 1.2 1.3 2.1 2.2 2.3 ',
+    assert_template_result(
+      '1.1 1.2 1.3 2.1 2.2 2.3 ',
       '{% for inner in outer %}{% for k in inner %}' \
       '{{ forloop.parentloop.index }}.{{ forloop.index }} ' \
       '{% endfor %}{% endfor %}',
-      { 'outer' => [[1, 1, 1], [1, 1, 1]] })
+      { 'outer' => [[1, 1, 1], [1, 1, 1]] },
+    )
   end
 
   def test_for_parentloop_nil_when_not_present
-    assert_template_result('.1 .2 ',
+    assert_template_result(
+      '.1 .2 ',
       '{% for inner in outer %}' \
       '{{ forloop.parentloop.index }}.{{ forloop.index }} ' \
       '{% endfor %}',
-      { 'outer' => [[1, 1, 1], [1, 1, 1]] })
+      { 'outer' => [[1, 1, 1], [1, 1, 1]] },
+    )
   end
 
   def test_inner_for_over_empty_input

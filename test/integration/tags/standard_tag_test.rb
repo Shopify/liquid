@@ -6,8 +6,10 @@ class StandardTagTest < Minitest::Test
   include Liquid
 
   def test_no_transform
-    assert_template_result('this text should come out of the template without change...',
-      'this text should come out of the template without change...')
+    assert_template_result(
+      'this text should come out of the template without change...',
+      'this text should come out of the template without change...',
+    )
 
     assert_template_result('blah', 'blah')
     assert_template_result('<blah>', '<blah>')
@@ -20,8 +22,10 @@ class StandardTagTest < Minitest::Test
   end
 
   def test_has_a_block_which_does_nothing
-    assert_template_result(%(the comment block should be removed  .. right?),
-      %(the comment block should be removed {%comment%} be gone.. {%endcomment%} .. right?))
+    assert_template_result(
+      %(the comment block should be removed  .. right?),
+      %(the comment block should be removed {%comment%} be gone.. {%endcomment%} .. right?),
+    )
 
     assert_template_result('', '{%comment%}{%endcomment%}')
     assert_template_result('', '{%comment%}{% endcomment %}')
@@ -64,61 +68,81 @@ class StandardTagTest < Minitest::Test
 
   def test_capture
     assigns = { 'var' => 'content' }
-    assert_template_result('content foo content foo ',
+    assert_template_result(
+      'content foo content foo ',
       '{{ var2 }}{% capture var2 %}{{ var }} foo {% endcapture %}{{ var2 }}{{ var2 }}',
-      assigns)
+      assigns,
+    )
   end
 
   def test_capture_detects_bad_syntax
     assert_raises(SyntaxError) do
-      assert_template_result('content foo content foo ',
+      assert_template_result(
+        'content foo content foo ',
         '{{ var2 }}{% capture %}{{ var }} foo {% endcapture %}{{ var2 }}{{ var2 }}',
-        { 'var' => 'content' })
+        { 'var' => 'content' },
+      )
     end
   end
 
   def test_case
     assigns = { 'condition' => 2 }
-    assert_template_result(' its 2 ',
+    assert_template_result(
+      ' its 2 ',
       '{% case condition %}{% when 1 %} its 1 {% when 2 %} its 2 {% endcase %}',
-      assigns)
+      assigns,
+    )
 
     assigns = { 'condition' => 1 }
-    assert_template_result(' its 1 ',
+    assert_template_result(
+      ' its 1 ',
       '{% case condition %}{% when 1 %} its 1 {% when 2 %} its 2 {% endcase %}',
-      assigns)
+      assigns,
+    )
 
     assigns = { 'condition' => 3 }
-    assert_template_result('',
+    assert_template_result(
+      '',
       '{% case condition %}{% when 1 %} its 1 {% when 2 %} its 2 {% endcase %}',
-      assigns)
+      assigns,
+    )
 
     assigns = { 'condition' => "string here" }
-    assert_template_result(' hit ',
+    assert_template_result(
+      ' hit ',
       '{% case condition %}{% when "string here" %} hit {% endcase %}',
-      assigns)
+      assigns,
+    )
 
     assigns = { 'condition' => "bad string here" }
-    assert_template_result('',
+    assert_template_result(
+      '',
       '{% case condition %}{% when "string here" %} hit {% endcase %}',\
-      assigns)
+      assigns,
+    )
   end
 
   def test_case_with_else
     assigns = { 'condition' => 5 }
-    assert_template_result(' hit ',
+    assert_template_result(
+      ' hit ',
       '{% case condition %}{% when 5 %} hit {% else %} else {% endcase %}',
-      assigns)
+      assigns,
+    )
 
     assigns = { 'condition' => 6 }
-    assert_template_result(' else ',
+    assert_template_result(
+      ' else ',
       '{% case condition %}{% when 5 %} hit {% else %} else {% endcase %}',
-      assigns)
+      assigns,
+    )
 
     assigns = { 'condition' => 6 }
-    assert_template_result(' else ',
+    assert_template_result(
+      ' else ',
       '{% case condition %} {% when 5 %} hit {% else %} else {% endcase %}',
-      assigns)
+      assigns,
+    )
   end
 
   def test_case_on_size
@@ -131,47 +155,67 @@ class StandardTagTest < Minitest::Test
   end
 
   def test_case_on_size_with_else
-    assert_template_result('else',
+    assert_template_result(
+      'else',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      { 'a' => [] })
+      { 'a' => [] },
+    )
 
-    assert_template_result('1',
+    assert_template_result(
+      '1',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      { 'a' => [1] })
+      { 'a' => [1] },
+    )
 
-    assert_template_result('2',
+    assert_template_result(
+      '2',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      { 'a' => [1, 1] })
+      { 'a' => [1, 1] },
+    )
 
-    assert_template_result('else',
+    assert_template_result(
+      'else',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      { 'a' => [1, 1, 1] })
+      { 'a' => [1, 1, 1] },
+    )
 
-    assert_template_result('else',
+    assert_template_result(
+      'else',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      { 'a' => [1, 1, 1, 1] })
+      { 'a' => [1, 1, 1, 1] },
+    )
 
-    assert_template_result('else',
+    assert_template_result(
+      'else',
       '{% case a.size %}{% when 1 %}1{% when 2 %}2{% else %}else{% endcase %}',
-      { 'a' => [1, 1, 1, 1, 1] })
+      { 'a' => [1, 1, 1, 1, 1] },
+    )
   end
 
   def test_case_on_length_with_else
-    assert_template_result('else',
+    assert_template_result(
+      'else',
       '{% case a.empty? %}{% when true %}true{% when false %}false{% else %}else{% endcase %}',
-      {})
+      {},
+    )
 
-    assert_template_result('false',
+    assert_template_result(
+      'false',
       '{% case false %}{% when true %}true{% when false %}false{% else %}else{% endcase %}',
-      {})
+      {},
+    )
 
-    assert_template_result('true',
+    assert_template_result(
+      'true',
       '{% case true %}{% when true %}true{% when false %}false{% else %}else{% endcase %}',
-      {})
+      {},
+    )
 
-    assert_template_result('else',
+    assert_template_result(
+      'else',
       '{% case NULL %}{% when true %}true{% when false %}false{% else %}else{% endcase %}',
-      {})
+      {},
+    )
   end
 
   def test_assign_from_case
@@ -253,24 +297,33 @@ class StandardTagTest < Minitest::Test
 
     assert_template_result('one two one', '{%cycle "one", "two"%} {%cycle "one", "two"%} {%cycle "one", "two"%}')
 
-    assert_template_result('text-align: left text-align: right',
-      '{%cycle "text-align: left", "text-align: right" %} {%cycle "text-align: left", "text-align: right"%}')
+    assert_template_result(
+      'text-align: left text-align: right',
+      '{%cycle "text-align: left", "text-align: right" %} {%cycle "text-align: left", "text-align: right"%}',
+    )
   end
 
   def test_multiple_cycles
-    assert_template_result('1 2 1 1 2 3 1',
-      '{%cycle 1,2%} {%cycle 1,2%} {%cycle 1,2%} {%cycle 1,2,3%} {%cycle 1,2,3%} {%cycle 1,2,3%} {%cycle 1,2,3%}')
+    assert_template_result(
+      '1 2 1 1 2 3 1',
+      '{%cycle 1,2%} {%cycle 1,2%} {%cycle 1,2%} {%cycle 1,2,3%} {%cycle 1,2,3%} {%cycle 1,2,3%} {%cycle 1,2,3%}',
+    )
   end
 
   def test_multiple_named_cycles
-    assert_template_result('one one two two one one',
-      '{%cycle 1: "one", "two" %} {%cycle 2: "one", "two" %} {%cycle 1: "one", "two" %} {%cycle 2: "one", "two" %} {%cycle 1: "one", "two" %} {%cycle 2: "one", "two" %}')
+    assert_template_result(
+      'one one two two one one',
+      '{%cycle 1: "one", "two" %} {%cycle 2: "one", "two" %} {%cycle 1: "one", "two" %} {%cycle 2: "one", "two" %} {%cycle 1: "one", "two" %} {%cycle 2: "one", "two" %}',
+    )
   end
 
   def test_multiple_named_cycles_with_names_from_context
     assigns = { "var1" => 1, "var2" => 2 }
-    assert_template_result('one one two two one one',
-      '{%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %}', assigns)
+    assert_template_result(
+      'one one two two one one',
+      '{%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %}',
+      assigns,
+    )
   end
 
   def test_size_of_array

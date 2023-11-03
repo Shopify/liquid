@@ -8,19 +8,19 @@ module Liquid
   # @liquid_summary
   #   Renders a [snippet](/themes/architecture#snippets) or [app block](/themes/architecture/sections/section-schema#render-app-blocks).
   # @liquid_description
-  #   Inside snippets and app blocks, you can't directly access variables that are [created](/api/liquid/tags/variable-tags) outside
-  #   of the snippet or app block. However, you can [specify variables as parameters](/api/liquid/tags/render#render-passing-variables-to-a-snippet)
+  #   Inside snippets and app blocks, you can't directly access variables that are [created](/docs/api/liquid/tags/variable-tags) outside
+  #   of the snippet or app block. However, you can [specify variables as parameters](/docs/api/liquid/tags/render#render-passing-variables-to-a-snippet)
   #   to pass outside variables to snippets.
   #
   #   While you can't directly access created variables, you can access global objects, as well as any objects that are
   #   directly accessible outside the snippet or app block. For example, a snippet or app block inside the [product template](/themes/architecture/templates/product)
-  #   can access the [`product` object](/api/liquid/objects/product), and a snippet or app block inside a [section](/themes/architecture/sections)
-  #   can access the [`section` object](/api/liquid/objects/section).
+  #   can access the [`product` object](/docs/api/liquid/objects/product), and a snippet or app block inside a [section](/themes/architecture/sections)
+  #   can access the [`section` object](/docs/api/liquid/objects/section).
   #
   #   Outside a snippet or app block, you can't access variables created inside the snippet or app block.
   #
   #   > Note:
-  #   > When you render a snippet using the `render` tag, you can't use the [`include` tag](/api/liquid/tags/include)
+  #   > When you render a snippet using the `render` tag, you can't use the [`include` tag](/docs/api/liquid/tags/include)
   #   > inside the snippet.
   # @liquid_syntax
   #   {% render 'filename' %}
@@ -69,14 +69,14 @@ module Liquid
       partial = PartialCache.load(
         template_name,
         context: context,
-        parse_context: parse_context
+        parse_context: parse_context,
       )
 
       context_variable_name = @alias_name || template_name.split('/').last
 
       render_partial_func = ->(var, forloop) {
         inner_context               = context.new_isolated_subcontext
-        inner_context.template_name = template_name
+        inner_context.template_name = partial.name
         inner_context.partial       = true
         inner_context['forloop']    = forloop if forloop
 

@@ -58,65 +58,88 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_include_tag_looks_for_file_system_in_registers_first
-    assert_equal('from OtherFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render!({}, registers: { file_system: OtherFileSystem.new }))
+    assert_equal(
+      'from OtherFileSystem',
+      Template.parse("{% include 'pick_a_source' %}").render!({}, registers: { file_system: OtherFileSystem.new }),
+    )
   end
 
   def test_include_tag_with
-    assert_template_result("Product: Draft 151cm ",
+    assert_template_result(
+      "Product: Draft 151cm ",
       "{% include 'product' with products[0] %}",
       { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] },
-      partials: { "product" => "Product: {{ product.title }} " })
+      partials: { "product" => "Product: {{ product.title }} " },
+    )
   end
 
   def test_include_tag_with_alias
-    assert_template_result("Product: Draft 151cm ",
+    assert_template_result(
+      "Product: Draft 151cm ",
       "{% include 'product_alias' with products[0] as product %}",
       { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] },
-      partials: { "product_alias" => "Product: {{ product.title }} " })
+      partials: { "product_alias" => "Product: {{ product.title }} " },
+    )
   end
 
   def test_include_tag_for_alias
-    assert_template_result("Product: Draft 151cm Product: Element 155cm ",
+    assert_template_result(
+      "Product: Draft 151cm Product: Element 155cm ",
       "{% include 'product_alias' for products as product %}",
       { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] },
-      partials: { "product_alias" => "Product: {{ product.title }} " })
+      partials: { "product_alias" => "Product: {{ product.title }} " },
+    )
   end
 
   def test_include_tag_with_default_name
-    assert_template_result("Product: Draft 151cm ",
-      "{% include 'product' %}", { "product" => { 'title' => 'Draft 151cm' } },
-      partials: { "product" => "Product: {{ product.title }} " })
+    assert_template_result(
+      "Product: Draft 151cm ",
+      "{% include 'product' %}",
+      { "product" => { 'title' => 'Draft 151cm' } },
+      partials: { "product" => "Product: {{ product.title }} " },
+    )
   end
 
   def test_include_tag_for
-    assert_template_result("Product: Draft 151cm Product: Element 155cm ",
+    assert_template_result(
+      "Product: Draft 151cm Product: Element 155cm ",
       "{% include 'product' for products %}",
       { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] },
-      partials: { "product" => "Product: {{ product.title }} " })
+      partials: { "product" => "Product: {{ product.title }} " },
+    )
   end
 
   def test_include_tag_with_local_variables
-    assert_template_result("Locale: test123 ", "{% include 'locale_variables' echo1: 'test123' %}",
-      partials: { "locale_variables" => "Locale: {{echo1}} {{echo2}}" })
+    assert_template_result(
+      "Locale: test123 ",
+      "{% include 'locale_variables' echo1: 'test123' %}",
+      partials: { "locale_variables" => "Locale: {{echo1}} {{echo2}}" },
+    )
   end
 
   def test_include_tag_with_multiple_local_variables
-    assert_template_result("Locale: test123 test321",
+    assert_template_result(
+      "Locale: test123 test321",
       "{% include 'locale_variables' echo1: 'test123', echo2: 'test321' %}",
-      partials: { "locale_variables" => "Locale: {{echo1}} {{echo2}}" })
+      partials: { "locale_variables" => "Locale: {{echo1}} {{echo2}}" },
+    )
   end
 
   def test_include_tag_with_multiple_local_variables_from_context
-    assert_template_result("Locale: test123 test321",
+    assert_template_result(
+      "Locale: test123 test321",
       "{% include 'locale_variables' echo1: echo1, echo2: more_echos.echo2 %}",
       { 'echo1' => 'test123', 'more_echos' => { "echo2" => 'test321' } },
-      partials: { "locale_variables" => "Locale: {{echo1}} {{echo2}}" })
+      partials: { "locale_variables" => "Locale: {{echo1}} {{echo2}}" },
+    )
   end
 
   def test_included_templates_assigns_variables
-    assert_template_result("bar", "{% include 'assignments' %}{{ foo }}",
-      partials: { 'assignments' => "{% assign foo = 'bar' %}" })
+    assert_template_result(
+      "bar",
+      "{% include 'assignments' %}{{ foo }}",
+      partials: { 'assignments' => "{% assign foo = 'bar' %}" },
+    )
   end
 
   def test_nested_include_tag
@@ -137,13 +160,19 @@ class IncludeTagTest < Minitest::Test
       "details" => "details",
     }
 
-    assert_template_result("Product: Draft 151cm details ",
-      "{% include 'nested_product_template' with product %}", { "product" => { "title" => 'Draft 151cm' } },
-      partials: partials)
+    assert_template_result(
+      "Product: Draft 151cm details ",
+      "{% include 'nested_product_template' with product %}",
+      { "product" => { "title" => 'Draft 151cm' } },
+      partials: partials,
+    )
 
-    assert_template_result("Product: Draft 151cm details Product: Element 155cm details ",
-      "{% include 'nested_product_template' for products %}", { "products" => [{ "title" => 'Draft 151cm' }, { "title" => 'Element 155cm' }] },
-      partials: partials)
+    assert_template_result(
+      "Product: Draft 151cm details Product: Element 155cm details ",
+      "{% include 'nested_product_template' for products %}",
+      { "products" => [{ "title" => 'Draft 151cm' }, { "title" => 'Element 155cm' }] },
+      partials: partials,
+    )
   end
 
   def test_recursively_included_template_does_not_produce_endless_loop
@@ -161,46 +190,68 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_dynamically_choosen_template
-    assert_template_result("Test123", "{% include template %}", { "template" => 'Test123' },
-      partials: { "Test123" => "Test123" })
+    assert_template_result(
+      "Test123",
+      "{% include template %}",
+      { "template" => 'Test123' },
+      partials: { "Test123" => "Test123" },
+    )
 
-    assert_template_result("Test321", "{% include template %}", { "template" => 'Test321' },
-      partials: { "Test321" => "Test321" })
+    assert_template_result(
+      "Test321",
+      "{% include template %}",
+      { "template" => 'Test321' },
+      partials: { "Test321" => "Test321" },
+    )
 
-    assert_template_result("Product: Draft 151cm ", "{% include template for product %}",
+    assert_template_result(
+      "Product: Draft 151cm ",
+      "{% include template for product %}",
       { "template" => 'product', 'product' => { 'title' => 'Draft 151cm' } },
-      partials: { "product" => "Product: {{ product.title }} " })
+      partials: { "product" => "Product: {{ product.title }} " },
+    )
   end
 
   def test_include_tag_caches_second_read_of_same_partial
     file_system = CountingFileSystem.new
-    assert_equal('from CountingFileSystemfrom CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system }))
+    assert_equal(
+      'from CountingFileSystemfrom CountingFileSystem',
+      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system }),
+    )
     assert_equal(1, file_system.count)
   end
 
   def test_include_tag_doesnt_cache_partials_across_renders
     file_system = CountingFileSystem.new
-    assert_equal('from CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system }))
+    assert_equal(
+      'from CountingFileSystem',
+      Template.parse("{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system }),
+    )
     assert_equal(1, file_system.count)
 
-    assert_equal('from CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system }))
+    assert_equal(
+      'from CountingFileSystem',
+      Template.parse("{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system }),
+    )
     assert_equal(2, file_system.count)
   end
 
   def test_include_tag_within_if_statement
-    assert_template_result("foo_if_true", "{% if true %}{% include 'foo_if_true' %}{% endif %}",
-      partials: { "foo_if_true" => "foo_if_true" })
+    assert_template_result(
+      "foo_if_true",
+      "{% if true %}{% include 'foo_if_true' %}{% endif %}",
+      partials: { "foo_if_true" => "foo_if_true" },
+    )
   end
 
   def test_custom_include_tag
     original_tag = Liquid::Template.tags['include']
     Liquid::Template.tags['include'] = CustomInclude
     begin
-      assert_equal("custom_foo",
-        Template.parse("{% include 'custom_foo' %}").render!)
+      assert_equal(
+        "custom_foo",
+        Template.parse("{% include 'custom_foo' %}").render!,
+      )
     ensure
       Liquid::Template.tags['include'] = original_tag
     end
@@ -210,8 +261,10 @@ class IncludeTagTest < Minitest::Test
     original_tag = Liquid::Template.tags['include']
     Liquid::Template.tags['include'] = CustomInclude
     begin
-      assert_equal("custom_foo_if_true",
-        Template.parse("{% if true %}{% include 'custom_foo_if_true' %}{% endif %}").render!)
+      assert_equal(
+        "custom_foo_if_true",
+        Template.parse("{% if true %}{% include 'custom_foo_if_true' %}{% endif %}").render!,
+      )
     ensure
       Liquid::Template.tags['include'] = original_tag
     end
@@ -242,31 +295,49 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_render_raise_argument_error_when_template_is_undefined
-    assert_template_result("Liquid error (line 1): Argument error in tag 'include' - Illegal template name",
-      "{% include undefined_variable %}", render_errors: true)
+    assert_template_result(
+      "Liquid error (line 1): Argument error in tag 'include' - Illegal template name",
+      "{% include undefined_variable %}",
+      render_errors: true,
+    )
 
-    assert_template_result("Liquid error (line 1): Argument error in tag 'include' - Illegal template name",
-      "{% include nil %}", render_errors: true)
+    assert_template_result(
+      "Liquid error (line 1): Argument error in tag 'include' - Illegal template name",
+      "{% include nil %}",
+      render_errors: true,
+    )
   end
 
   def test_render_raise_argument_error_when_template_is_not_a_string
-    assert_template_result("Liquid error (line 1): Argument error in tag 'include' - Illegal template name",
-      "{% include 123 %}", render_errors: true)
+    assert_template_result(
+      "Liquid error (line 1): Argument error in tag 'include' - Illegal template name",
+      "{% include 123 %}",
+      render_errors: true,
+    )
   end
 
   def test_including_via_variable_value
-    assert_template_result("from TestFileSystem", "{% assign page = 'pick_a_source' %}{% include page %}",
-      partials: { "pick_a_source" => "from TestFileSystem" })
+    assert_template_result(
+      "from TestFileSystem",
+      "{% assign page = 'pick_a_source' %}{% include page %}",
+      partials: { "pick_a_source" => "from TestFileSystem" },
+    )
 
     partials = { "product" => "Product: {{ product.title }} " }
 
-    assert_template_result("Product: Draft 151cm ", "{% assign page = 'product' %}{% include page %}",
+    assert_template_result(
+      "Product: Draft 151cm ",
+      "{% assign page = 'product' %}{% include page %}",
       { "product" => { 'title' => 'Draft 151cm' } },
-      partials: partials)
+      partials: partials,
+    )
 
-    assert_template_result("Product: Draft 151cm ", "{% assign page = 'product' %}{% include page for foo %}",
+    assert_template_result(
+      "Product: Draft 151cm ",
+      "{% assign page = 'product' %}{% include page for foo %}",
       { "foo" => { 'title' => 'Draft 151cm' } },
-      partials: partials)
+      partials: partials,
+    )
   end
 
   def test_including_with_strict_variables
@@ -279,7 +350,31 @@ class IncludeTagTest < Minitest::Test
 
   def test_break_through_include
     assert_template_result("1", "{% for i in (1..3) %}{{ i }}{% break %}{{ i }}{% endfor %}")
-    assert_template_result("1", "{% for i in (1..3) %}{{ i }}{% include 'break' %}{{ i }}{% endfor %}",
-      partials: { 'break' => "{% break %}" })
+    assert_template_result(
+      "1",
+      "{% for i in (1..3) %}{{ i }}{% include 'break' %}{{ i }}{% endfor %}",
+      partials: { 'break' => "{% break %}" },
+    )
+  end
+
+  def test_render_tag_renders_error_with_template_name
+    assert_template_result(
+      'Liquid error (foo line 1): standard error',
+      "{% include 'foo' with errors %}",
+      { 'errors' => ErrorDrop.new },
+      partials: { 'foo' => '{{ foo.standard_error }}' },
+      render_errors: true,
+    )
+  end
+
+  def test_render_tag_renders_error_with_template_name_from_template_factory
+    assert_template_result(
+      'Liquid error (some/path/foo line 1): standard error',
+      "{% include 'foo' with errors %}",
+      { 'errors' => ErrorDrop.new },
+      partials: { 'foo' => '{{ foo.standard_error }}' },
+      template_factory: StubTemplateFactory.new,
+      render_errors: true,
+    )
   end
 end # IncludeTagTest

@@ -11,7 +11,7 @@ module Liquid
   #   The `tablerow` tag must be wrapped in HTML `<table>` and `</table>` tags.
   #
   #   > Tip:
-  #   > Every `tablerow` loop has an associated [`tablerowloop` object](/api/liquid/objects/tablerowloop) with information about the loop.
+  #   > Every `tablerow` loop has an associated [`tablerowloop` object](/docs/api/liquid/objects/tablerowloop) with information about the loop.
   # @liquid_syntax
   #   {% tablerow variable in array %}
   #     expression
@@ -45,13 +45,13 @@ module Liquid
     def render_to_output_buffer(context, output)
       (collection = context.evaluate(@collection_name)) || (return '')
 
-      from = @attributes.key?('offset') ? context.evaluate(@attributes['offset']).to_i : 0
-      to   = @attributes.key?('limit')  ? from + context.evaluate(@attributes['limit']).to_i : nil
+      from = @attributes.key?('offset') ? to_integer(context.evaluate(@attributes['offset'])) : 0
+      to = @attributes.key?('limit') ? from + to_integer(context.evaluate(@attributes['limit'])) : nil
 
       collection = Utils.slice_collection(collection, from, to)
       length     = collection.length
 
-      cols = @attributes.key?('cols') ? context.evaluate(@attributes['cols']).to_i : length
+      cols = @attributes.key?('cols') ? to_integer(context.evaluate(@attributes['cols'])) : length
 
       output << "<tr class=\"row1\">\n"
       context.stack do
@@ -81,6 +81,14 @@ module Liquid
       def children
         super + @node.attributes.values + [@node.collection_name]
       end
+    end
+
+    private
+
+    def to_integer(value)
+      value.to_i
+    rescue NoMethodError
+      raise Liquid::ArgumentError, "invalid integer"
     end
   end
 

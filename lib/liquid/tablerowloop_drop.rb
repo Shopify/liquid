@@ -5,7 +5,7 @@ module Liquid
   # @liquid_type object
   # @liquid_name tablerowloop
   # @liquid_summary
-  #   Information about a parent [`tablerow` loop](/api/liquid/tags/tablerow).
+  #   Information about a parent [`tablerow` loop](/docs/api/liquid/tags/tablerow).
   class TablerowloopDrop < Drop
     def initialize(length, cols)
       @length = length

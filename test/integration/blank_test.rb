@@ -57,9 +57,11 @@ class BlankTest < Minitest::Test
 
   def test_nested_blocks_are_blank_but_only_if_all_children_are
     assert_template_result("", wrap(wrap(" ")))
-    assert_template_result("\n       but this is not " * (N + 1),
+    assert_template_result(
+      "\n       but this is not " * (N + 1),
       wrap('{% if true %} {% comment %} this is blank {% endcomment %} {% endif %}
-      {% if true %} but this is not {% endif %}'))
+      {% if true %} but this is not {% endif %}'),
+    )
   end
 
   def test_assigns_are_blank
@@ -89,12 +91,21 @@ class BlankTest < Minitest::Test
   end
 
   def test_include_is_blank
-    assert_template_result("foobar" * (N + 1), wrap("{% include 'foobar' %}"),
-      partials: { 'foobar' => 'foobar' })
-    assert_template_result(" foobar " * (N + 1), wrap("{% include ' foobar ' %}"),
-      partials: { ' foobar ' => ' foobar ' })
-    assert_template_result("   " * (N + 1), wrap(" {% include ' ' %} "),
-      partials: { ' ' => ' ' })
+    assert_template_result(
+      "foobar" * (N + 1),
+      wrap("{% include 'foobar' %}"),
+      partials: { 'foobar' => 'foobar' },
+    )
+    assert_template_result(
+      " foobar " * (N + 1),
+      wrap("{% include ' foobar ' %}"),
+      partials: { ' foobar ' => ' foobar ' },
+    )
+    assert_template_result(
+      "   " * (N + 1),
+      wrap(" {% include ' ' %} "),
+      partials: { ' ' => ' ' },
+    )
   end
 
   def test_case_is_blank

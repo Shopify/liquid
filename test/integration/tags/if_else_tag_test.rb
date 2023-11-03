@@ -7,8 +7,10 @@ class IfElseTagTest < Minitest::Test
 
   def test_if
     assert_template_result('  ', ' {% if false %} this text should not go into the output {% endif %} ')
-    assert_template_result('  this text should go into the output  ',
-      ' {% if true %} this text should go into the output {% endif %} ')
+    assert_template_result(
+      '  this text should go into the output  ',
+      ' {% if true %} this text should go into the output {% endif %} ',
+    )
     assert_template_result('  you rock ?', '{% if false %} you suck {% endif %} {% if true %} you rock {% endif %}?')
   end
 
@@ -51,18 +53,22 @@ class IfElseTagTest < Minitest::Test
 
   def test_comparison_of_expressions_starting_with_and_or_or
     assigns = { 'order' => { 'items_count' => 0 }, 'android' => { 'name' => 'Roy' } }
-    assert_template_result("YES",
+    assert_template_result(
+      "YES",
       "{% if android.name == 'Roy' %}YES{% endif %}",
-      assigns)
-    assert_template_result("YES",
+      assigns,
+    )
+    assert_template_result(
+      "YES",
       "{% if order.items_count == 0 %}YES{% endif %}",
-      assigns)
+      assigns,
+    )
   end
 
   def test_if_and
     assert_template_result(' YES ', '{% if true and true %} YES {% endif %}')
     assert_template_result('', '{% if false and true %} YES {% endif %}')
-    assert_template_result('', '{% if false and true %} YES {% endif %}')
+    assert_template_result('', '{% if true and false %} YES {% endif %}')
   end
 
   def test_hash_miss_generates_false
@@ -155,8 +161,10 @@ class IfElseTagTest < Minitest::Test
     original_op = Condition.operators['contains']
     Condition.operators['contains'] = :[]
 
-    assert_template_result('yes',
-      %({% if 'gnomeslab-and-or-liquid' contains 'gnomeslab-and-or-liquid' %}yes{% endif %}))
+    assert_template_result(
+      'yes',
+      %({% if 'gnomeslab-and-or-liquid' contains 'gnomeslab-and-or-liquid' %}yes{% endif %}),
+    )
   ensure
     Condition.operators['contains'] = original_op
   end

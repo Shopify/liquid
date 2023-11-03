@@ -8,7 +8,7 @@ module Liquid
   # @liquid_summary
   #   Renders a [snippet](/themes/architecture#snippets).
   # @liquid_description
-  #   Inside the snippet, you can access and alter variables that are [created](/api/liquid/tags/variable-tags) outside of the
+  #   Inside the snippet, you can access and alter variables that are [created](/docs/api/liquid/tags/variable-tags) outside of the
   #   snippet.
   # @liquid_syntax
   #   {% include 'filename' %}
@@ -16,7 +16,7 @@ module Liquid
   # @liquid_deprecated
   #   Deprecated because the way that variables are handled reduces performance and makes code harder to both read and maintain.
   #
-  #   The `include` tag has been replaced by [`render`](/api/liquid/tags/render).
+  #   The `include` tag has been replaced by [`render`](/docs/api/liquid/tags/render).
   class Include < Tag
     prepend Tag::Disableable
 
@@ -57,7 +57,7 @@ module Liquid
       partial = PartialCache.load(
         template_name,
         context: context,
-        parse_context: parse_context
+        parse_context: parse_context,
       )
 
       context_variable_name = @alias_name || template_name.split('/').last
@@ -70,9 +70,11 @@ module Liquid
 
       old_template_name = context.template_name
       old_partial       = context.partial
+
       begin
-        context.template_name = template_name
-        context.partial       = true
+        context.template_name = partial.name
+        context.partial = true
+
         context.stack do
           @attributes.each do |key, value|
             context[key] = context.evaluate(value)

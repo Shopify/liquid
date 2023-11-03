@@ -15,7 +15,7 @@ module Liquid
   #   template.render('user_name' => 'bob')
   #
   class Template
-    attr_accessor :root
+    attr_accessor :root, :name
     attr_reader :resource_limits, :warnings
 
     class TagRegistry
@@ -188,6 +188,8 @@ module Liquid
       if @profiling && context.profiler.nil?
         @profiler = context.profiler = Liquid::Profiler.new
       end
+
+      context.template_name ||= name
 
       begin
         # render the nodelist.

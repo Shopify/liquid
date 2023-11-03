@@ -144,7 +144,7 @@ module Liquid
       self.class.build(
         resource_limits: resource_limits,
         static_environments: static_environments,
-        registers: Registers.new(registers)
+        registers: Registers.new(registers),
       ).tap do |subcontext|
         subcontext.base_scope_depth   = base_scope_depth + 1
         subcontext.exception_renderer = exception_renderer
