@@ -25,6 +25,59 @@ module Liquid
     def blank?
       true
     end
+
+    private
+
+    def parse_body(body, tokens)
+      if parse_context.depth >= MAX_DEPTH
+        raise StackLevelError, "Nesting too deep"
+      end
+
+      parse_context.depth += 1
+      comment_tag_depth = 1
+
+      begin
+        # Consume tokens without creating child nodes.
+        # The children tag doesn't require to be a valid Liquid except the comment and raw tag.
+        # The child comment and raw tag must be closed.
+        while (token = tokens.send(:shift))
+          tag_name_match = BlockBody::FullToken.match(token)
+
+          next if tag_name_match.nil?
+
+          tag_name = tag_name_match[2]
+
+          if tag_name == "raw"
+            # raw tags are required to be closed
+            parse_raw_tag_body(tokens)
+            next
+          end
+
+          if tag_name_match[2] == "comment"
+            comment_tag_depth += 1
+            next
+          elsif tag_name_match[2] == "endcomment"
+            comment_tag_depth -= 1
+
+            return false if comment_tag_depth.zero?
+          end
+        end
+
+        raise_tag_never_closed(block_name)
+      ensure
+        parse_context.depth -= 1
+      end
+
+      false
+    end
+
+    def parse_raw_tag_body(tokens)
+      while (token = tokens.send(:shift))
+        return if token =~ Raw::FullTokenPossiblyInvalid && "endraw" == Regexp.last_match(2)
+      end
+
+      raise_tag_never_closed("raw")
+    end
   end
 
   Template.register_tag('comment', Comment)
