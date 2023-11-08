@@ -47,16 +47,12 @@ module Liquid
 
           tag_name = tag_name_match[2]
 
-          if tag_name == "raw"
-            # raw tags are required to be closed
+          case tag_name
+          when "raw"
             parse_raw_tag_body(tokens)
-            next
-          end
-
-          if tag_name_match[2] == "comment"
+          when "comment"
             comment_tag_depth += 1
-            next
-          elsif tag_name_match[2] == "endcomment"
+          when "endcomment"
             comment_tag_depth -= 1
 
             return false if comment_tag_depth.zero?
