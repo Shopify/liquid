@@ -4,7 +4,7 @@ require 'test_helper'
 
 class CommentTagUnitTest < Minitest::Test
   def test_does_not_parse_nodes_inside_a_comment
-    template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
+    assert_template_result("", <<~LIQUID.chomp)
       {% comment %}
         {% if true %}
         {% if ... %}
@@ -16,22 +16,31 @@ class CommentTagUnitTest < Minitest::Test
         {% endcase %}
       {% endcomment %}
     LIQUID
-
-    assert_equal("", template.render)
   end
 
   def test_allows_incomplete_tags_inside_a_comment
-    template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
+    assert_template_result("", <<~LIQUID.chomp)
       {% comment %}
         {% assign foo = "1"
       {% endcomment %}
     LIQUID
 
-    assert_equal("", template.render)
+    assert_template_result("", <<~LIQUID.chomp)
+      {% comment %}
+        {% comment %}
+          {% invalid
+        {% endcomment %}
+      {% endcomment %}
+    LIQUID
+
+    assert_template_result("", <<~LIQUID.chomp)
+      {% comment %}
+      {% {{ {%- endcomment %}
+    LIQUID
   end
 
   def test_child_comment_tags_need_to_be_closed
-    template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
+    assert_template_result("", <<~LIQUID.chomp)
       {% comment %}
         {% comment %}
           {% comment %}{%    endcomment     %}
@@ -39,10 +48,8 @@ class CommentTagUnitTest < Minitest::Test
       {% endcomment %}
     LIQUID
 
-    assert_equal("", template.render)
-
     assert_raises(Liquid::SyntaxError) do
-      Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
+      assert_template_result("", <<~LIQUID.chomp)
         {% comment %}
           {% comment %}
             {% comment %}
@@ -53,7 +60,7 @@ class CommentTagUnitTest < Minitest::Test
   end
 
   def test_child_raw_tags_need_to_be_closed
-    template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
+    assert_template_result("", <<~LIQUID.chomp)
       {% comment %}
         {% raw %}
           {% endcomment %}
@@ -61,10 +68,8 @@ class CommentTagUnitTest < Minitest::Test
       {% endcomment %}
     LIQUID
 
-    assert_equal("", template.render)
-
     assert_raises(Liquid::SyntaxError) do
-      Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
+      Liquid::Template.parse(<<~LIQUID.chomp)
         {% comment %}
           {% raw %}
           {% endcomment %}
