@@ -41,7 +41,7 @@ module Liquid
         # The children tag doesn't require to be a valid Liquid except the comment and raw tag.
         # The child comment and raw tag must be closed.
         while (token = tokens.send(:shift))
-          tag_name_match = BlockBody::FullToken.match(token)
+          tag_name_match = BlockBody::FullTokenPossiblyInvalid.match(token)
 
           next if tag_name_match.nil?
 
@@ -69,7 +69,7 @@ module Liquid
 
     def parse_raw_tag_body(tokens)
       while (token = tokens.send(:shift))
-        return if token =~ Raw::FullTokenPossiblyInvalid && "endraw" == Regexp.last_match(2)
+        return if token =~ BlockBody::FullTokenPossiblyInvalid && "endraw" == Regexp.last_match(2)
       end
 
       raise_tag_never_closed("raw")
