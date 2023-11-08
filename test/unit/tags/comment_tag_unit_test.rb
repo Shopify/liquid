@@ -20,6 +20,16 @@ class CommentTagUnitTest < Minitest::Test
     assert_equal("", template.render)
   end
 
+  def test_allows_incomplete_tags_inside_a_comment
+    template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
+      {% comment %}
+        {% assign foo = "1"
+      {% endcomment %}
+    LIQUID
+
+    assert_equal("", template.render)
+  end
+
   def test_child_comment_tags_need_to_be_closed
     template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
       {% comment %}
