@@ -28,7 +28,7 @@ module Liquid
 
     private
 
-    def parse_body(body, tokens)
+    def parse_body(body, tokenizer)
       if parse_context.depth >= MAX_DEPTH
         raise StackLevelError, "Nesting too deep"
       end
@@ -40,16 +40,26 @@ module Liquid
         # Consume tokens without creating child nodes.
         # The children tag doesn't require to be a valid Liquid except the comment and raw tag.
         # The child comment and raw tag must be closed.
-        while (token = tokens.send(:shift))
-          tag_name_match = BlockBody::FullTokenPossiblyInvalid.match(token)
+        while (token = tokenizer.send(:shift))
+          tag_name = if tokenizer.for_liquid_tag
+            next if token.empty? || token.match?(BlockBody::WhitespaceOrNothing)
 
-          next if tag_name_match.nil?
+            tag_name_match = BlockBody::LiquidTagToken.match(token)
 
-          tag_name = tag_name_match[2]
+            next if tag_name_match.nil?
+
+            tag_name_match[1]
+          else
+            tag_name_match = BlockBody::FullTokenPossiblyInvalid.match(token)
+
+            next if tag_name_match.nil?
+
+            tag_name_match[2]
+          end
 
           case tag_name
           when "raw"
-            parse_raw_tag_body(tokens)
+            parse_raw_tag_body(tokenizer)
           when "comment"
             comment_tag_depth += 1
           when "endcomment"
@@ -67,8 +77,8 @@ module Liquid
       false
     end
 
-    def parse_raw_tag_body(tokens)
-      while (token = tokens.send(:shift))
+    def parse_raw_tag_body(tokenizer)
+      while (token = tokenizer.send(:shift))
         return if token =~ BlockBody::FullTokenPossiblyInvalid && "endraw" == Regexp.last_match(2)
       end
 

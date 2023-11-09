@@ -3,6 +3,19 @@
 require 'test_helper'
 
 class CommentTagUnitTest < Minitest::Test
+  def test_comment_inside_liquid_tag
+    assert_template_result("", <<~LIQUID.chomp)
+      {% liquid
+        if 1 != 1
+        comment
+        else
+          echo 123
+        endcomment
+        endif
+      %}
+    LIQUID
+  end
+
   def test_does_not_parse_nodes_inside_a_comment
     assert_template_result("", <<~LIQUID.chomp)
       {% comment %}
