@@ -15,6 +15,8 @@ module Liquid
   #   {% endcomment %}
   # @liquid_syntax_keyword content The content of the comment.
   class Comment < Block
+    TagDelimiter = /\A(.*)#{TagStart}#{WhitespaceControl}?\s*(endcomment)\s*(.*)?#{WhitespaceControl}?#{TagEnd}\z/om
+
     def render_to_output_buffer(_context, output)
       output
     end
@@ -49,6 +51,9 @@ module Liquid
             next if tag_name_match.nil?
 
             tag_name_match[1]
+          elsif TagDelimiter.match?(token)
+            # aggressively match comment delimiter first
+            "endcomment"
           else
             tag_name_match = BlockBody::FullTokenPossiblyInvalid.match(token)
 

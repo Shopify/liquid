@@ -107,4 +107,18 @@ class CommentTagUnitTest < Minitest::Test
 
     assert_equal(expected, output)
   end
+
+  def test_comment_tag_delimiter_with_extra_strings
+    assert_template_result(
+      '',
+      <<~LIQUID.chomp,
+        {% comment %}
+          {% comment %}
+          {% endcomment
+          {% if true %}
+          {% endif %}
+        {% endcomment %}
+      LIQUID
+    )
+  end
 end
