@@ -121,4 +121,18 @@ class CommentTagUnitTest < Minitest::Test
       LIQUID
     )
   end
+
+  def test_nested_comment_tag_with_extra_strings
+    assert_template_result(
+      '',
+      <<~LIQUID.chomp,
+        {% comment %}
+          {% comment
+            {% assign foo = 1 %}
+          {% endcomment
+          {% assign foo = 1 %}
+        {% endcomment %}
+      LIQUID
+    )
+  end
 end
