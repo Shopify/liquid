@@ -15,7 +15,7 @@ module Liquid
   #   {% endcomment %}
   # @liquid_syntax_keyword content The content of the comment.
   class Comment < Block
-    TAG_DELIMITER = /\A(.*)#{TagStart}#{WhitespaceControl}?\s*(endcomment)\s*(.*)?#{WhitespaceControl}?#{TagEnd}\z/om
+    TAG_DELIMITER = /\A(.*)#{TagStart}#{WhitespaceControl}?\s*(endcomment)\s*(\s.*)?#{WhitespaceControl}?#{TagEnd}\z/om
 
     def render_to_output_buffer(_context, output)
       output
