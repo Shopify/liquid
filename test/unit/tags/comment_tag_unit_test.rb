@@ -135,4 +135,24 @@ class CommentTagUnitTest < Minitest::Test
       LIQUID
     )
   end
+
+  def test_ignores_delimiter_with_extra_strings
+    assert_template_result(
+      '',
+      <<~LIQUID.chomp,
+        {% if true %}
+          {% comment %}
+            {% commentXXXXX %}wut{% endcommentXXXXX %}
+          {% endcomment %}
+        {% endif %}
+      LIQUID
+    )
+  end
+
+  def test_delimiter_can_have_extra_strings
+    assert_template_result('', "{% comment %}123{% endcomment xyz %}")
+    assert_template_result('', "{% comment %}123{% endcomment\txyz %}")
+    assert_template_result('', "{% comment %}123{% endcomment\nxyz %}")
+    assert_template_result('', "{% comment %}123{% endcomment\n   xyz  endcomment %}")
+  end
 end
