@@ -155,4 +155,15 @@ class CommentTagUnitTest < Minitest::Test
     assert_template_result('', "{% comment %}123{% endcomment\nxyz %}")
     assert_template_result('', "{% comment %}123{% endcomment\n   xyz  endcomment %}")
   end
+
+  def test_with_whitespace_control
+    assert_template_result("Hello!", "      {%- comment -%}123{%- endcomment -%}Hello!")
+    assert_template_result("Hello!", "{%- comment -%}123{%- endcomment -%}     Hello!")
+    assert_template_result("Hello!", "      {%- comment -%}123{%- endcomment -%}     Hello!")
+
+    assert_template_result("Hello!", <<~LIQUID.chomp)
+      {%- comment %}Whitespace control!{% endcomment -%}
+      Hello!
+    LIQUID
+  end
 end
