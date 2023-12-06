@@ -73,7 +73,10 @@ module Liquid
           when "endcomment"
             comment_tag_depth -= 1
 
-            return false if comment_tag_depth.zero?
+            if comment_tag_depth.zero?
+              parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
+              return false
+            end
           end
         end
 
