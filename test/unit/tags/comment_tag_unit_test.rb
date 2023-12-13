@@ -154,6 +154,7 @@ class CommentTagUnitTest < Minitest::Test
     assert_template_result('', "{% comment %}123{% endcomment\txyz %}")
     assert_template_result('', "{% comment %}123{% endcomment\nxyz %}")
     assert_template_result('', "{% comment %}123{% endcomment\n   xyz  endcomment %}")
+    assert_template_result('', "{%comment}{% assign a = 1 %}{%endcomment}{% endif %}")
   end
 
   def test_with_whitespace_control
