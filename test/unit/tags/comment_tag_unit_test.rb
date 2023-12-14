@@ -39,7 +39,7 @@ class CommentTagUnitTest < Minitest::Test
     LIQUID
   end
 
-  def test_block_body_must_be_valid
+  def test_open_tags_in_comment
     assert_template_result('', <<~LIQUID.chomp)
       {% comment %}
         {% assign a = 123 {% comment %}
