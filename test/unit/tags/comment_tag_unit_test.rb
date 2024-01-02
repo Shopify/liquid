@@ -31,25 +31,45 @@ class CommentTagUnitTest < Minitest::Test
     LIQUID
   end
 
-  def test_allows_incomplete_tags_inside_a_comment
-    assert_template_result("", <<~LIQUID.chomp)
+  def test_allows_unclosed_tags
+    assert_template_result('', <<~LIQUID.chomp)
       {% comment %}
-        {% assign foo = "1"
+        {% if true %}
+      {% endcomment %}
+    LIQUID
+  end
+
+  def test_open_tags_in_comment
+    assert_template_result('', <<~LIQUID.chomp)
+      {% comment %}
+        {% assign a = 123 {% comment %}
       {% endcomment %}
     LIQUID
 
-    assert_template_result("", <<~LIQUID.chomp)
-      {% comment %}
+    assert_raises(Liquid::SyntaxError) do
+      assert_template_result("", <<~LIQUID.chomp)
         {% comment %}
-          {% invalid
+          {% assign foo = "1"
         {% endcomment %}
-      {% endcomment %}
-    LIQUID
+      LIQUID
+    end
 
-    assert_template_result("", <<~LIQUID.chomp)
-      {% comment %}
-      {% {{ {%- endcomment %}
-    LIQUID
+    assert_raises(Liquid::SyntaxError) do
+      assert_template_result("", <<~LIQUID.chomp)
+        {% comment %}
+          {% comment %}
+            {% invalid
+          {% endcomment %}
+        {% endcomment %}
+      LIQUID
+    end
+
+    assert_raises(Liquid::SyntaxError) do
+      assert_template_result("", <<~LIQUID.chomp)
+        {% comment %}
+        {% {{ {%- endcomment %}
+      LIQUID
+    end
   end
 
   def test_child_comment_tags_need_to_be_closed

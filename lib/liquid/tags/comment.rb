@@ -49,15 +49,9 @@ module Liquid
             next if tag_name_match.nil?
 
             tag_name_match[1]
-          elsif token =~ BlockBody::FullToken && Regexp.last_match(2) == "comment" || Regexp.last_match(2) == "endcomment"
-            # aggressively match comment tag or comment tag delimiter
-            Regexp.last_match(2)
           else
-            tag_name_match = BlockBody::FullTokenPossiblyInvalid.match(token)
-
-            next if tag_name_match.nil?
-
-            tag_name_match[2]
+            token =~ BlockBody::FullToken
+            Regexp.last_match(2)
           end
 
           case tag_name
