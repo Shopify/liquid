@@ -187,4 +187,16 @@ class CommentTagUnitTest < Minitest::Test
       Hello!
     LIQUID
   end
+
+  def test_dont_override_liquid_tag_whitespace_control
+    assert_template_result("Hello!World!", <<~LIQUID.chomp)
+      Hello!
+      {%- liquid
+        comment
+         this is inside a liquid tag
+        endcomment
+      -%}
+      World!
+    LIQUID
+  end
 end
