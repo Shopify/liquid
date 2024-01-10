@@ -349,4 +349,9 @@ class TemplateTest < Minitest::Test
 
     assert_equal('Liquid syntax error: Invalid template encoding', e.message)
   end
+
+  def test_allows_nil_as_source
+    template = Template.parse(nil)
+    assert_equal('', template.render)
+  end
 end
