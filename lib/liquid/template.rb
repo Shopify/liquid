@@ -107,6 +107,11 @@ module Liquid
     # Returns self for easy chaining
     def parse(source, options = {})
       parse_context = configure_options(options)
+
+      unless source.valid_encoding?
+        raise SyntaxError, parse_context.locale.t("errors.syntax.invalid_template_encoding")
+      end
+
       tokenizer     = parse_context.new_tokenizer(source, start_line_number: @line_numbers && 1)
       @root         = Document.parse(tokenizer, parse_context)
       self
