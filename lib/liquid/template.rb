@@ -107,8 +107,9 @@ module Liquid
     # Returns self for easy chaining
     def parse(source, options = {})
       parse_context = configure_options(options)
+      source = source.to_s.to_str
 
-      if source.is_a?(String) && !source.valid_encoding?
+      unless source.valid_encoding?
         raise SyntaxError, parse_context.locale.t("errors.syntax.invalid_template_encoding")
       end
 
