@@ -131,4 +131,16 @@ class ParsingQuirksTest < Minitest::Test
   def test_contains_in_id
     assert_template_result(' YES ', '{% if containsallshipments == true %} YES {% endif %}', { 'containsallshipments' => true })
   end
+
+  def test_invalid_float_with_no_leading_integer
+    with_error_mode(:lax) do
+      assert_template_result("", "{{ -.1 }}")
+      assert_template_result("", "{{ .1 }}")
+    end
+
+    with_error_mode(:strict) do
+      assert_raises(SyntaxError) { Template.parse("{{ -.1 }}") }
+      assert_raises(SyntaxError) { Template.parse("{{ .1 }}") }
+    end
+  end
 end # ParsingQuirksTest
