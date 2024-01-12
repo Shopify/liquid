@@ -109,7 +109,7 @@ module Liquid
       parse_context = configure_options(options)
 
       unless source.valid_encoding?
-        raise SyntaxError, parse_context.locale.t("errors.syntax.invalid_template_encoding")
+        raise TemplateEncodingError, parse_context.locale.t("errors.syntax.invalid_template_encoding")
       end
 
       tokenizer     = parse_context.new_tokenizer(source, start_line_number: @line_numbers && 1)

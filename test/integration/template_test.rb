@@ -339,7 +339,7 @@ class TemplateTest < Minitest::Test
   end
 
   def test_raises_error_with_invalid_utf8
-    e = assert_raises(SyntaxError) do
+    e = assert_raises(TemplateEncodingError) do
       Template.parse(<<~LIQUID)
         {% comment %}
           \xC0
@@ -347,6 +347,6 @@ class TemplateTest < Minitest::Test
       LIQUID
     end
 
-    assert_equal('Liquid syntax error: Invalid template encoding', e.message)
+    assert_equal('Liquid error: Invalid template encoding', e.message)
   end
 end
