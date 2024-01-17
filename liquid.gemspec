@@ -28,6 +28,10 @@ Gem::Specification.new do |s|
 
   s.require_path = "lib"
 
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.4')
+    s.add_dependency('bigdecimal', '~> 3.1')
+  end
+
   s.add_development_dependency('rake', '~> 13.0')
   s.add_development_dependency('minitest')
 end
