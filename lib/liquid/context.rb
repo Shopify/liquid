@@ -197,10 +197,14 @@ module Liquid
         try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
       end
 
-      variable         = variable.to_liquid
+      # update variable's context before invoking #to_liquid
       variable.context = self if variable.respond_to?(:context=)
 
-      variable
+      liquid_variable = variable.to_liquid
+
+      liquid_variable.context = self if variable != liquid_variable && liquid_variable.respond_to?(:context=)
+
+      liquid_variable
     end
 
     def lookup_and_evaluate(obj, key, raise_on_not_found: true)
