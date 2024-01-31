@@ -55,6 +55,11 @@ class ConditionUnitTest < Minitest::Test
     assert_evaluates_false('bob', 'contains', '---')
   end
 
+  def test_contains_binary_encoding_compatibility_with_utf8
+    assert_evaluates_true('🙈'.b, 'contains', '🙈')
+    assert_evaluates_true('🙈', 'contains', '🙈'.b)
+  end
+
   def test_invalid_comparation_operator
     assert_evaluates_argument_error(1, '~~', 0)
   end
@@ -166,14 +171,14 @@ class ConditionUnitTest < Minitest::Test
   def assert_evaluates_true(left, op, right)
     assert(
       Condition.new(left, op, right).evaluate(@context),
-      "Evaluated false: #{left} #{op} #{right}",
+      "Evaluated false: #{left.inspect} #{op} #{right.inspect}",
     )
   end
 
   def assert_evaluates_false(left, op, right)
     assert(
       !Condition.new(left, op, right).evaluate(@context),
-      "Evaluated true: #{left} #{op} #{right}",
+      "Evaluated true: #{left.inspect} #{op} #{right.inspect}",
     )
   end
 
