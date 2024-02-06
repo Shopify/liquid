@@ -6,7 +6,14 @@ require 'bigdecimal'
 
 module Liquid
   module StandardFilters
-    MAX_INT = (1 << 31) - 1
+    MAX_I32 = (1 << 31) - 1
+    private_constant :MAX_I32
+
+    MIN_I64 = -(1 << 63)
+    MAX_I64 = (1 << 63) - 1
+    I64_RANGE = MIN_I64..MAX_I64
+    private_constant :MIN_I64, :MAX_I64, :I64_RANGE
+
     HTML_ESCAPE = {
       '&' => '&amp;',
       '>' => '&gt;',
@@ -18,9 +25,22 @@ module Liquid
     STRIP_HTML_BLOCKS       = Regexp.union(
       %r{<script.*?</script>}m,
       /<!--.*?-->/m,
-      %r{<style.*?</style>}m
+      %r{<style.*?</style>}m,
     )
     STRIP_HTML_TAGS = /<.*?>/m
+
+    class << self
+      def try_coerce_encoding(input, encoding:)
+        original_encoding = input.encoding
+        if input.encoding != encoding
+          input.force_encoding(encoding)
+          unless input.valid_encoding?
+            input.force_encoding(original_encoding)
+          end
+        end
+        input
+      end
+    end
 
     # @liquid_public_docs
     # @liquid_type filter
@@ -62,7 +82,7 @@ module Liquid
     # @liquid_type filter
     # @liquid_category string
     # @liquid_summary
-    #   Capitalizes the first word in a string.
+    #   Capitalizes the first word in a string and downcases the remaining characters.
     # @liquid_syntax string | capitalize
     # @liquid_return [string]
     def capitalize(input)
@@ -73,7 +93,7 @@ module Liquid
     # @liquid_type filter
     # @liquid_category string
     # @liquid_summary
-    #   Escapes a string.
+    #   Escapes special characters in HTML, such as `<>`, `'`, and `&`, and converts characters into escape sequences. The filter doesn't effect characters within the string that don’t have a corresponding escape sequence.".
     # @liquid_syntax string | escape
     # @liquid_return [string]
     def escape(input)
@@ -143,7 +163,8 @@ module Liquid
     # @liquid_syntax string | base64_decode
     # @liquid_return [string]
     def base64_decode(input)
-      Base64.strict_decode64(input.to_s)
+      input = input.to_s
+      StandardFilters.try_coerce_encoding(Base64.strict_decode64(input), encoding: input.encoding)
     rescue ::ArgumentError
       raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
     end
@@ -167,7 +188,8 @@ module Liquid
     # @liquid_syntax string | base64_url_safe_decode
     # @liquid_return [string]
     def base64_url_safe_decode(input)
-      Base64.urlsafe_decode64(input.to_s)
+      input = input.to_s
+      StandardFilters.try_coerce_encoding(Base64.urlsafe_decode64(input), encoding: input.encoding)
     rescue ::ArgumentError
       raise Liquid::ArgumentError, "invalid base64 provided to base64_url_safe_decode"
     end
@@ -186,10 +208,19 @@ module Liquid
       offset = Utils.to_integer(offset)
       length = length ? Utils.to_integer(length) : 1
 
-      if input.is_a?(Array)
-        input.slice(offset, length) || []
-      else
-        input.to_s.slice(offset, length) || ''
+      begin
+        if input.is_a?(Array)
+          input.slice(offset, length) || []
+        else
+          input.to_s.slice(offset, length) || ''
+        end
+      rescue RangeError
+        if I64_RANGE.cover?(length) && I64_RANGE.cover?(offset)
+          raise # unexpected error
+        end
+        offset = offset.clamp(I64_RANGE)
+        length = length.clamp(I64_RANGE)
+        retry
       end
     end
 
@@ -239,9 +270,9 @@ module Liquid
       wordlist = begin
         input.split(" ", words + 1)
       rescue RangeError
-        raise if words + 1 < MAX_INT
-        # e.g. integer #{words} too big to convert to `int'
-        raise Liquid::ArgumentError, "integer #{words} too big for truncatewords"
+        # integer too big for String#split, but we can semantically assume no truncation is needed
+        return input if words + 1 > MAX_I32
+        raise # unexpected error
       end
       return input if wordlist.length <= words
 
@@ -599,7 +630,7 @@ module Liquid
     # @liquid_description
     #   > Note:
     #   > The `concat` filter won't filter out duplicates. If you want to remove duplicates, then you need to use the
-    #   > [`uniq` filter](/api/liquid/filters#uniq).
+    #   > [`uniq` filter](/docs/api/liquid/filters/uniq).
     # @liquid_syntax array | concat: array
     # @liquid_return [array[untyped]]
     def concat(input, array)
@@ -741,7 +772,7 @@ module Liquid
     # @liquid_type filter
     # @liquid_category math
     # @liquid_summary
-    #   Divides a number by a given number.
+    #   Divides a number by a given number. The `divided_by` filter produces a result of the same type as the divisor. This means if you divide by an integer, the result will be an integer, and if you divide by a float, the result will be a float.
     # @liquid_syntax number | divided_by: number
     # @liquid_return [number]
     def divided_by(input, operand)
@@ -841,9 +872,9 @@ module Liquid
     # @liquid_summary
     #   Sets a default value for any variable whose value is one of the following:
     #
-    #   - [`empty`](/api/liquid/basics#empty)
-    #   - [`false`](/api/liquid/basics#truthy-and-falsy)
-    #   - [`nil`](/api/liquid/basics#nil)
+    #   - [`empty`](/docs/api/liquid/basics#empty)
+    #   - [`false`](/docs/api/liquid/basics#truthy-and-falsy)
+    #   - [`nil`](/docs/api/liquid/basics#nil)
     # @liquid_syntax variable | default: variable
     # @liquid_return [untyped]
     # @liquid_optional_param allow_false [boolean] Whether to use false values instead of the default.
@@ -851,6 +882,36 @@ module Liquid
       options = {} unless options.is_a?(Hash)
       false_check = options['allow_false'] ? input.nil? : !Liquid::Utils.to_liquid_value(input)
       false_check || (input.respond_to?(:empty?) && input.empty?) ? default_value : input
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Returns the sum of all elements in an array.
+    # @liquid_syntax array | sum
+    # @liquid_return [number]
+    def sum(input, property = nil)
+      ary = InputIterator.new(input, context)
+      return 0 if ary.empty?
+
+      values_for_sum = ary.map do |item|
+        if property.nil?
+          item
+        elsif item.respond_to?(:[])
+          item[property]
+        else
+          0
+        end
+      rescue TypeError
+        raise_property_error(property)
+      end
+
+      result = InputIterator.new(values_for_sum, context).sum do |item|
+        Utils.to_number(item)
+      end
+
+      result.is_a?(BigDecimal) ? result.to_f : result
     end
 
     private

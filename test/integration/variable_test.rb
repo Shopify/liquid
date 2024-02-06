@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'timeout'
 
 class VariableTest < Minitest::Test
   include Liquid
@@ -24,17 +25,23 @@ class VariableTest < Minitest::Test
 
   def test_if_tag_calls_to_liquid_value
     assert_template_result('one', '{% if foo == 1 %}one{% endif %}', { 'foo' => IntegerDrop.new('1') })
+    assert_template_result('one', '{% if foo == eqv %}one{% endif %}', { 'foo' => IntegerDrop.new(1), 'eqv' => IntegerDrop.new(1) })
     assert_template_result('one', '{% if 0 < foo %}one{% endif %}', { 'foo' => IntegerDrop.new('1') })
     assert_template_result('one', '{% if foo > 0 %}one{% endif %}', { 'foo' => IntegerDrop.new('1') })
+    assert_template_result('one', '{% if b > a %}one{% endif %}', { 'b' => IntegerDrop.new(1), 'a' => IntegerDrop.new(0) })
     assert_template_result('true', '{% if foo == true %}true{% endif %}', { 'foo' => BooleanDrop.new(true) })
     assert_template_result('true', '{% if foo %}true{% endif %}', { 'foo' => BooleanDrop.new(true) })
 
     assert_template_result('', '{% if foo %}true{% endif %}', { 'foo' => BooleanDrop.new(false) })
     assert_template_result('', '{% if foo == true %}True{% endif %}', { 'foo' => BooleanDrop.new(false) })
+    assert_template_result('', '{% if foo and true %}SHOULD NOT HAPPEN{% endif %}', { 'foo' => BooleanDrop.new(false) })
+
+    assert_template_result('one', '{% if a contains x %}one{% endif %}', { 'a' => [1], 'x' => IntegerDrop.new(1) })
   end
 
   def test_unless_tag_calls_to_liquid_value
     assert_template_result('', '{% unless foo %}true{% endunless %}', { 'foo' => BooleanDrop.new(true) })
+    assert_template_result('true', '{% unless foo %}true{% endunless %}', { 'foo' => BooleanDrop.new(false) })
   end
 
   def test_case_tag_calls_to_liquid_value
@@ -129,5 +136,73 @@ class VariableTest < Minitest::Test
 
   def test_raw_value_variable
     assert_template_result('bar', '{{ [key] }}', { 'key' => 'foo', 'foo' => 'bar' })
+  end
+
+  def test_dynamic_find_var_with_drop
+    assert_template_result(
+      'bar',
+      '{{ [list[settings.zero]] }}',
+      {
+        'list' => ['foo'],
+        'settings' => SettingsDrop.new("zero" => 0),
+        'foo' => 'bar',
+      },
+    )
+
+    assert_template_result(
+      'foo',
+      '{{ [list[settings.zero]["foo"]] }}',
+      {
+        'list' => [{ 'foo' => 'bar' }],
+        'settings' => SettingsDrop.new("zero" => 0),
+        'bar' => 'foo',
+      },
+    )
+  end
+
+  def test_double_nested_variable_lookup
+    assert_template_result(
+      'bar',
+      '{{ list[list[settings.zero]]["foo"] }}',
+      {
+        'list' => [1, { 'foo' => 'bar' }],
+        'settings' => SettingsDrop.new("zero" => 0),
+        'bar' => 'foo',
+      },
+    )
+  end
+
+  def test_variable_lookup_should_not_hang_with_invalid_syntax
+    Timeout.timeout(1) do
+      assert_template_result(
+        'bar',
+        "{{['foo'}}",
+        {
+          'foo' => 'bar',
+        },
+        error_mode: :lax,
+      )
+    end
+
+    very_long_key = "1234567890" * 100
+
+    template_list = [
+      "{{['#{very_long_key}']}}", # valid
+      "{{['#{very_long_key}'}}", # missing closing bracket
+      "{{[['#{very_long_key}']}}", # extra open bracket
+    ]
+
+    template_list.each do |template|
+      Timeout.timeout(1) do
+        assert_template_result(
+          'bar',
+          template,
+          {
+            very_long_key => 'bar',
+          },
+          error_mode: :lax,
+        )
+      end
+    end
   end
 end

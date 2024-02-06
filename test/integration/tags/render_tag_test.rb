@@ -6,53 +6,79 @@ class RenderTagTest < Minitest::Test
   include Liquid
 
   def test_render_with_no_arguments
-    Liquid::Template.file_system = StubFileSystem.new('source' => 'rendered content')
-    assert_template_result('rendered content', '{% render "source" %}')
+    assert_template_result(
+      'rendered content',
+      '{% render "source" %}',
+      partials: { 'source' => 'rendered content' },
+    )
   end
 
   def test_render_tag_looks_for_file_system_in_registers_first
-    file_system = StubFileSystem.new('pick_a_source' => 'from register file system')
-    assert_equal('from register file system',
-      Template.parse('{% render "pick_a_source" %}').render!({}, registers: { file_system: file_system }))
+    assert_template_result(
+      'from register file system',
+      '{% render "pick_a_source" %}',
+      partials: { 'pick_a_source' => 'from register file system' },
+    )
   end
 
   def test_render_passes_named_arguments_into_inner_scope
-    Liquid::Template.file_system = StubFileSystem.new('product' => '{{ inner_product.title }}')
-    assert_template_result('My Product', '{% render "product", inner_product: outer_product %}',
-      { 'outer_product' => { 'title' => 'My Product' } })
+    assert_template_result(
+      'My Product',
+      '{% render "product", inner_product: outer_product %}',
+      { 'outer_product' => { 'title' => 'My Product' } },
+      partials: { 'product' => '{{ inner_product.title }}' },
+    )
   end
 
   def test_render_accepts_literals_as_arguments
-    Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ price }}')
-    assert_template_result('123', '{% render "snippet", price: 123 %}')
+    assert_template_result(
+      '123',
+      '{% render "snippet", price: 123 %}',
+      partials: { 'snippet' => '{{ price }}' },
+    )
   end
 
   def test_render_accepts_multiple_named_arguments
-    Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ one }} {{ two }}')
-    assert_template_result('1 2', '{% render "snippet", one: 1, two: 2 %}')
+    assert_template_result(
+      '1 2',
+      '{% render "snippet", one: 1, two: 2 %}',
+      partials: { 'snippet' => '{{ one }} {{ two }}' },
+    )
   end
 
   def test_render_does_not_inherit_parent_scope_variables
-    Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ outer_variable }}')
-    assert_template_result('', '{% assign outer_variable = "should not be visible" %}{% render "snippet" %}')
+    assert_template_result(
+      '',
+      '{% assign outer_variable = "should not be visible" %}{% render "snippet" %}',
+      partials: { 'snippet' => '{{ outer_variable }}' },
+    )
   end
 
   def test_render_does_not_inherit_variable_with_same_name_as_snippet
-    Liquid::Template.file_system = StubFileSystem.new('snippet' => '{{ snippet }}')
-    assert_template_result('', "{% assign snippet = 'should not be visible' %}{% render 'snippet' %}")
+    assert_template_result(
+      '',
+      "{% assign snippet = 'should not be visible' %}{% render 'snippet' %}",
+      partials: { 'snippet' => '{{ snippet }}' },
+    )
   end
 
   def test_render_does_not_mutate_parent_scope
-    Liquid::Template.file_system = StubFileSystem.new('snippet' => '{% assign inner = 1 %}')
-    assert_template_result('', "{% render 'snippet' %}{{ inner }}")
+    assert_template_result(
+      '',
+      "{% render 'snippet' %}{{ inner }}",
+      partials: { 'snippet' => '{% assign inner = 1 %}' },
+    )
   end
 
   def test_nested_render_tag
-    Liquid::Template.file_system = StubFileSystem.new(
-      'one' => "one {% render 'two' %}",
-      'two' => 'two'
+    assert_template_result(
+      'one two',
+      "{% render 'one' %}",
+      partials: {
+        'one' => "one {% render 'two' %}",
+        'two' => 'two',
+      },
     )
-    assert_template_result('one two', "{% render 'one' %}")
   end
 
   def test_recursively_rendered_template_does_not_produce_endless_loop
@@ -73,146 +99,190 @@ class RenderTagTest < Minitest::Test
   end
 
   def test_dynamically_choosen_templates_are_not_allowed
-    Liquid::Template.file_system = StubFileSystem.new('snippet' => 'should not be rendered')
-
-    assert_raises(Liquid::SyntaxError) do
-      Liquid::Template.parse("{% assign name = 'snippet' %}{% render name %}")
-    end
+    assert_syntax_error("{% assign name = 'snippet' %}{% render name %}")
   end
 
   def test_include_tag_caches_second_read_of_same_partial
     file_system = StubFileSystem.new('snippet' => 'echo')
-    assert_equal('echoecho',
+    assert_equal(
+      'echoecho',
       Template.parse('{% render "snippet" %}{% render "snippet" %}')
-      .render!({}, registers: { file_system: file_system }))
+      .render!({}, registers: { file_system: file_system }),
+    )
     assert_equal(1, file_system.file_read_count)
   end
 
   def test_render_tag_doesnt_cache_partials_across_renders
     file_system = StubFileSystem.new('snippet' => 'my message')
 
-    assert_equal('my message',
-      Template.parse('{% include "snippet" %}').render!({}, registers: { file_system: file_system }))
+    assert_equal(
+      'my message',
+      Template.parse('{% include "snippet" %}').render!({}, registers: { file_system: file_system }),
+    )
     assert_equal(1, file_system.file_read_count)
 
-    assert_equal('my message',
-      Template.parse('{% include "snippet" %}').render!({}, registers: { file_system: file_system }))
+    assert_equal(
+      'my message',
+      Template.parse('{% include "snippet" %}').render!({}, registers: { file_system: file_system }),
+    )
     assert_equal(2, file_system.file_read_count)
   end
 
   def test_render_tag_within_if_statement
-    Liquid::Template.file_system = StubFileSystem.new('snippet' => 'my message')
-    assert_template_result('my message', '{% if true %}{% render "snippet" %}{% endif %}')
+    assert_template_result(
+      'my message',
+      '{% if true %}{% render "snippet" %}{% endif %}',
+      partials: { 'snippet' => 'my message' },
+    )
   end
 
   def test_break_through_render
-    Liquid::Template.file_system = StubFileSystem.new('break' => '{% break %}')
-    assert_template_result('1', '{% for i in (1..3) %}{{ i }}{% break %}{{ i }}{% endfor %}')
-    assert_template_result('112233', '{% for i in (1..3) %}{{ i }}{% render "break" %}{{ i }}{% endfor %}')
+    options = { partials: { 'break' => '{% break %}' } }
+    assert_template_result('1', '{% for i in (1..3) %}{{ i }}{% break %}{{ i }}{% endfor %}', **options)
+    assert_template_result('112233', '{% for i in (1..3) %}{{ i }}{% render "break" %}{{ i }}{% endfor %}', **options)
   end
 
   def test_increment_is_isolated_between_renders
-    Liquid::Template.file_system = StubFileSystem.new('incr' => '{% increment %}')
-    assert_template_result('010', '{% increment %}{% increment %}{% render "incr" %}')
+    assert_template_result(
+      '010',
+      '{% increment %}{% increment %}{% render "incr" %}',
+      partials: { 'incr' => '{% increment %}' },
+    )
   end
 
   def test_decrement_is_isolated_between_renders
-    Liquid::Template.file_system = StubFileSystem.new('decr' => '{% decrement %}')
-    assert_template_result('-1-2-1', '{% decrement %}{% decrement %}{% render "decr" %}')
+    assert_template_result(
+      '-1-2-1',
+      '{% decrement %}{% decrement %}{% render "decr" %}',
+      partials: { 'decr' => '{% decrement %}' },
+    )
   end
 
   def test_includes_will_not_render_inside_render_tag
-    Liquid::Template.file_system = StubFileSystem.new(
-      'foo' => 'bar',
-      'test_include' => '{% include "foo" %}'
+    assert_template_result(
+      'Liquid error (test_include line 1): include usage is not allowed in this context',
+      '{% render "test_include" %}',
+      render_errors: true,
+      partials: {
+        'foo' => 'bar',
+        'test_include' => '{% include "foo" %}',
+      },
     )
-
-    exc = assert_raises(Liquid::DisabledError) do
-      Liquid::Template.parse('{% render "test_include" %}').render!
-    end
-    assert_equal('Liquid error: include usage is not allowed in this context', exc.message)
   end
 
   def test_includes_will_not_render_inside_nested_sibling_tags
-    Liquid::Template.file_system = StubFileSystem.new(
-      'foo' => 'bar',
-      'nested_render_with_sibling_include' => '{% render "test_include" %}{% include "foo" %}',
-      'test_include' => '{% include "foo" %}'
+    assert_template_result(
+      "Liquid error (test_include line 1): include usage is not allowed in this context" \
+        "Liquid error (nested_render_with_sibling_include line 1): include usage is not allowed in this context",
+      '{% render "nested_render_with_sibling_include" %}',
+      partials: {
+        'foo' => 'bar',
+        'nested_render_with_sibling_include' => '{% render "test_include" %}{% include "foo" %}',
+        'test_include' => '{% include "foo" %}',
+      },
+      render_errors: true,
     )
-
-    output = Liquid::Template.parse('{% render "nested_render_with_sibling_include" %}').render
-    assert_equal('Liquid error: include usage is not allowed in this contextLiquid error: include usage is not allowed in this context', output)
   end
 
   def test_render_tag_with
-    Liquid::Template.file_system = StubFileSystem.new(
-      'product' => "Product: {{ product.title }} ",
-      'product_alias' => "Product: {{ product.title }} ",
-    )
-
-    assert_template_result("Product: Draft 151cm ",
+    assert_template_result(
+      "Product: Draft 151cm ",
       "{% render 'product' with products[0] %}",
-      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] })
+      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] },
+      partials: {
+        'product' => "Product: {{ product.title }} ",
+        'product_alias' => "Product: {{ product.title }} ",
+      },
+    )
   end
 
   def test_render_tag_with_alias
-    Liquid::Template.file_system = StubFileSystem.new(
-      'product' => "Product: {{ product.title }} ",
-      'product_alias' => "Product: {{ product.title }} ",
-    )
-
-    assert_template_result("Product: Draft 151cm ",
+    assert_template_result(
+      "Product: Draft 151cm ",
       "{% render 'product_alias' with products[0] as product %}",
-      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] })
+      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] },
+      partials: {
+        'product' => "Product: {{ product.title }} ",
+        'product_alias' => "Product: {{ product.title }} ",
+      },
+    )
   end
 
   def test_render_tag_for_alias
-    Liquid::Template.file_system = StubFileSystem.new(
-      'product' => "Product: {{ product.title }} ",
-      'product_alias' => "Product: {{ product.title }} ",
-    )
-
-    assert_template_result("Product: Draft 151cm Product: Element 155cm ",
+    assert_template_result(
+      "Product: Draft 151cm Product: Element 155cm ",
       "{% render 'product_alias' for products as product %}",
-      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] })
+      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] },
+      partials: {
+        'product' => "Product: {{ product.title }} ",
+        'product_alias' => "Product: {{ product.title }} ",
+      },
+    )
   end
 
   def test_render_tag_for
-    Liquid::Template.file_system = StubFileSystem.new(
-      'product' => "Product: {{ product.title }} ",
-      'product_alias' => "Product: {{ product.title }} ",
-    )
-
-    assert_template_result("Product: Draft 151cm Product: Element 155cm ",
+    assert_template_result(
+      "Product: Draft 151cm Product: Element 155cm ",
       "{% render 'product' for products %}",
-      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] })
+      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] },
+      partials: {
+        'product' => "Product: {{ product.title }} ",
+        'product_alias' => "Product: {{ product.title }} ",
+      },
+    )
   end
 
   def test_render_tag_forloop
-    Liquid::Template.file_system = StubFileSystem.new(
-      'product' => "Product: {{ product.title }} {% if forloop.first %}first{% endif %} {% if forloop.last %}last{% endif %} index:{{ forloop.index }} ",
-    )
-
-    assert_template_result("Product: Draft 151cm first  index:1 Product: Element 155cm  last index:2 ",
+    assert_template_result(
+      "Product: Draft 151cm first  index:1 Product: Element 155cm  last index:2 ",
       "{% render 'product' for products %}",
-      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] })
+      { "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] },
+      partials: {
+        'product' => "Product: {{ product.title }} {% if forloop.first %}first{% endif %} {% if forloop.last %}last{% endif %} index:{{ forloop.index }} ",
+      },
+    )
   end
 
   def test_render_tag_for_drop
-    Liquid::Template.file_system = StubFileSystem.new(
-      'loop' => "{{ value.foo }}",
+    assert_template_result(
+      "123",
+      "{% render 'loop' for loop as value %}",
+      { "loop" => TestEnumerable.new },
+      partials: {
+        'loop' => "{{ value.foo }}",
+      },
     )
-
-    assert_template_result("123",
-      "{% render 'loop' for loop as value %}", { "loop" => TestEnumerable.new })
   end
 
   def test_render_tag_with_drop
-    Liquid::Template.file_system = StubFileSystem.new(
-      'loop' => "{{ value }}",
+    assert_template_result(
+      "TestEnumerable",
+      "{% render 'loop' with loop as value %}",
+      { "loop" => TestEnumerable.new },
+      partials: {
+        'loop' => "{{ value }}",
+      },
     )
+  end
 
-    assert_template_result("TestEnumerable",
-      "{% render 'loop' with loop as value %}", { "loop" => TestEnumerable.new })
+  def test_render_tag_renders_error_with_template_name
+    assert_template_result(
+      'Liquid error (foo line 1): standard error',
+      "{% render 'foo' with errors %}",
+      { 'errors' => ErrorDrop.new },
+      partials: { 'foo' => '{{ foo.standard_error }}' },
+      render_errors: true,
+    )
+  end
+
+  def test_render_tag_renders_error_with_template_name_from_template_factory
+    assert_template_result(
+      'Liquid error (some/path/foo line 1): standard error',
+      "{% render 'foo' with errors %}",
+      { 'errors' => ErrorDrop.new },
+      partials: { 'foo' => '{{ foo.standard_error }}' },
+      template_factory: StubTemplateFactory.new,
+      render_errors: true,
+    )
   end
 end

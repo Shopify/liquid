@@ -9,10 +9,10 @@ module Liquid
   #   Renders an expression for every item in an array.
   # @liquid_description
   #   You can do a maximum of 50 iterations with a `for` loop. If you need to iterate over more than 50 items, then use the
-  #   [`paginate` tag](/api/liquid/tags#paginate) to split the items over multiple pages.
+  #   [`paginate` tag](/docs/api/liquid/tags/paginate) to split the items over multiple pages.
   #
   #   > Tip:
-  #   > Every `for` loop has an associated [`forloop` object](/api/liquid/objects#forloop) with information about the loop.
+  #   > Every `for` loop has an associated [`forloop` object](/docs/api/liquid/objects/forloop) with information about the loop.
   # @liquid_syntax
   #   {% for variable in array %}
   #     expression
@@ -98,11 +98,12 @@ module Liquid
       @name     = "#{@variable_name}-#{collection_name}"
       @reversed = p.id?('reversed')
 
-      while p.look(:id) && p.look(:colon, 1)
+      while p.look(:comma) || p.look(:id)
+        p.consume?(:comma)
         unless (attribute = p.id?('limit') || p.id?('offset'))
           raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_attribute")
         end
-        p.consume
+        p.consume(:colon)
         set_attribute(attribute, p.expression)
       end
       p.consume(:end_of_string)
@@ -177,7 +178,6 @@ module Liquid
       case key
       when 'offset'
         @from = if expr == 'continue'
-          Usage.increment('for_offset_continue')
           :continue
         else
           parse_expression(expr)

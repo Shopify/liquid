@@ -109,6 +109,10 @@ class StandardFiltersTest < Minitest::Test
     assert_raises(Liquid::ArgumentError) do
       @filters.slice('foobar', 0, "")
     end
+    assert_equal("", @filters.slice("foobar", 0, -(1 << 64)))
+    assert_equal("foobar", @filters.slice("foobar", 0, 1 << 63))
+    assert_equal("", @filters.slice("foobar", 1 << 63, 6))
+    assert_equal("", @filters.slice("foobar", -(1 << 63), 6))
   end
 
   def test_slice_on_arrays
@@ -123,6 +127,10 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(%w(r), @filters.slice(input, -1))
     assert_equal(%w(), @filters.slice(input, 100, 10))
     assert_equal(%w(), @filters.slice(input, -100, 10))
+    assert_equal([], @filters.slice(input, 0, -(1 << 64)))
+    assert_equal(input, @filters.slice(input, 0, 1 << 63))
+    assert_equal([], @filters.slice(input, 1 << 63, 6))
+    assert_equal([], @filters.slice(input, -(1 << 63), 6))
   end
 
   def test_truncate
@@ -132,6 +140,8 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('1234567890', @filters.truncate('1234567890'))
     assert_equal("测试...", @filters.truncate("测试测试测试测试", 5))
     assert_equal('12341', @filters.truncate("1234567890", 5, 1))
+    assert_equal("foobar", @filters.truncate("foobar", 1 << 63))
+    assert_equal("...", @filters.truncate("foobar", -(1 << 63)))
   end
 
   def test_split
@@ -166,7 +176,17 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_base64_decode
-    assert_equal('one two three', @filters.base64_decode('b25lIHR3byB0aHJlZQ=='))
+    decoded = @filters.base64_decode('b25lIHR3byB0aHJlZQ==')
+    assert_equal('one two three', decoded)
+    assert_equal(Encoding::UTF_8, decoded.encoding)
+
+    decoded = @filters.base64_decode('4pyF')
+    assert_equal('✅', decoded)
+    assert_equal(Encoding::UTF_8, decoded.encoding)
+
+    decoded = @filters.base64_decode("/w==")
+    assert_equal(Encoding::ASCII_8BIT, decoded.encoding)
+    assert_equal((+"\xFF").force_encoding(Encoding::ASCII_8BIT), decoded)
 
     exception = assert_raises(Liquid::ArgumentError) do
       @filters.base64_decode("invalidbase64")
@@ -178,16 +198,27 @@ class StandardFiltersTest < Minitest::Test
   def test_base64_url_safe_encode
     assert_equal(
       'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8',
-      @filters.base64_url_safe_encode('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\|')
+      @filters.base64_url_safe_encode('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\|'),
     )
     assert_equal('', @filters.base64_url_safe_encode(nil))
   end
 
   def test_base64_url_safe_decode
+    decoded = @filters.base64_url_safe_decode('YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8')
     assert_equal(
       'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\|',
-      @filters.base64_url_safe_decode('YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8')
+      decoded,
     )
+    assert_equal(Encoding::UTF_8, decoded.encoding)
+
+    decoded = @filters.base64_url_safe_decode('4pyF')
+    assert_equal('✅', decoded)
+    assert_equal(Encoding::UTF_8, decoded.encoding)
+
+    decoded = @filters.base64_url_safe_decode("_w==")
+    assert_equal(Encoding::ASCII_8BIT, decoded.encoding)
+    assert_equal((+"\xFF").force_encoding(Encoding::ASCII_8BIT), decoded)
+
     exception = assert_raises(Liquid::ArgumentError) do
       @filters.base64_url_safe_decode("invalidbase64")
     end
@@ -220,17 +251,15 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('one two three', @filters.truncatewords('one two three'))
     assert_equal(
       'Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221;...',
-      @filters.truncatewords('Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221; x 16&#8221; x 10.5&#8221; high) with cover.', 15)
+      @filters.truncatewords('Two small (13&#8221; x 5.5&#8221; x 10&#8221; high) baskets fit inside one large basket (13&#8221; x 16&#8221; x 10.5&#8221; high) with cover.', 15),
     )
     assert_equal("测试测试测试测试", @filters.truncatewords('测试测试测试测试', 5))
     assert_equal('one two1', @filters.truncatewords("one two three", 2, 1))
     assert_equal('one two three...', @filters.truncatewords("one  two\tthree\nfour", 3))
     assert_equal('one two...', @filters.truncatewords("one two three four", 2))
     assert_equal('one...', @filters.truncatewords("one two three four", 0))
-    exception = assert_raises(Liquid::ArgumentError) do
-      @filters.truncatewords("one two three four", 1 << 31)
-    end
-    assert_equal("Liquid error: integer #{1 << 31} too big for truncatewords", exception.message)
+    assert_equal('one two three four', @filters.truncatewords("one two three four", 1 << 31))
+    assert_equal('one...', @filters.truncatewords("one two three four", -(1 << 32)))
   end
 
   def test_strip_html
@@ -425,8 +454,11 @@ class StandardFiltersTest < Minitest::Test
 
   def test_map
     assert_equal([1, 2, 3, 4], @filters.map([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], 'a'))
-    assert_template_result('abc', "{{ ary | map:'foo' | map:'bar' }}",
-      { 'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }] })
+    assert_template_result(
+      'abc',
+      "{{ ary | map:'foo' | map:'bar' }}",
+      { 'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }] },
+    )
   end
 
   def test_map_doesnt_call_arbitrary_stuff
@@ -450,8 +482,11 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_map_on_hashes
-    assert_template_result("4217", '{{ thing | map: "foo" | map: "bar" }}',
-      { "thing" => { "foo" => [{ "bar" => 42 }, { "bar" => 17 }] } })
+    assert_template_result(
+      "4217",
+      '{{ thing | map: "foo" | map: "bar" }}',
+      { "thing" => { "foo" => [{ "bar" => 42 }, { "bar" => 17 }] } },
+    )
   end
 
   def test_legacy_map_on_hashes_with_dynamic_key
@@ -469,8 +504,8 @@ class StandardFiltersTest < Minitest::Test
   def test_map_over_proc
     drop  = TestDrop.new(value: "testfoo")
     p     = proc { drop }
-    templ = '{{ procs | map: "value" }}'
-    assert_template_result("testfoo", templ, { "procs" => [p] })
+    output = Liquid::Template.parse('{{ procs | map: "value" }}').render!({ "procs" => [p] })
+    assert_equal("testfoo", output)
   end
 
   def test_map_over_drops_returning_procs
@@ -482,12 +517,13 @@ class StandardFiltersTest < Minitest::Test
         "proc" => -> { "bar" },
       },
     ]
-    templ = '{{ drops | map: "proc" }}'
-    assert_template_result("foobar", templ, { "drops" => drops })
+    output = Liquid::Template.parse('{{ drops | map: "proc" }}').render!({ "drops" => drops })
+    assert_equal("foobar", output)
   end
 
   def test_map_works_on_enumerables
-    assert_template_result("123", '{{ foo | map: "foo" }}', { "foo" => TestEnumerable.new })
+    output = Liquid::Template.parse('{{ foo | map: "foo" }}').render!({ "foo" => TestEnumerable.new })
+    assert_equal("123", output)
   end
 
   def test_map_returns_empty_on_2d_input_array
@@ -911,6 +947,108 @@ class StandardFiltersTest < Minitest::Test
     ]
 
     assert_equal([{ "foo" => true }, { "foo" => "for sure" }], @filters.where(input, "foo"))
+  end
+
+  def test_sum_with_all_numbers
+    input = [1, 2]
+
+    assert_equal(3, @filters.sum(input))
+    assert_raises(Liquid::ArgumentError, "cannot select the property 'quantity'") do
+      @filters.sum(input, "quantity")
+    end
+  end
+
+  def test_sum_with_numeric_strings
+    input = [1, 2, "3", "4"]
+
+    assert_equal(10, @filters.sum(input))
+    assert_raises(Liquid::ArgumentError, "cannot select the property 'quantity'") do
+      @filters.sum(input, "quantity")
+    end
+  end
+
+  def test_sum_with_nested_arrays
+    input = [1, [2, [3, 4]]]
+
+    assert_equal(10, @filters.sum(input))
+    assert_raises(Liquid::ArgumentError, "cannot select the property 'quantity'") do
+      @filters.sum(input, "quantity")
+    end
+  end
+
+  def test_sum_with_indexable_map_values
+    input = [{ "quantity" => 1 }, { "quantity" => 2, "weight" => 3 }, { "weight" => 4 }]
+
+    assert_equal(0, @filters.sum(input))
+    assert_equal(3, @filters.sum(input, "quantity"))
+    assert_equal(7, @filters.sum(input, "weight"))
+    assert_equal(0, @filters.sum(input, "subtotal"))
+  end
+
+  def test_sum_with_indexable_non_map_values
+    input = [1, [2], "foo", { "quantity" => 3 }]
+
+    assert_equal(3, @filters.sum(input))
+    assert_raises(Liquid::ArgumentError, "cannot select the property 'quantity'") do
+      @filters.sum(input, "quantity")
+    end
+  end
+
+  def test_sum_with_unindexable_values
+    input = [1, true, nil, { "quantity" => 2 }]
+
+    assert_equal(1, @filters.sum(input))
+    assert_raises(Liquid::ArgumentError, "cannot select the property 'quantity'") do
+      @filters.sum(input, "quantity")
+    end
+  end
+
+  def test_sum_without_property_calls_to_liquid
+    t = TestThing.new
+    Liquid::Template.parse('{{ foo | sum }}').render("foo" => [t])
+    assert(t.foo > 0)
+  end
+
+  def test_sum_with_property_calls_to_liquid_on_property_values
+    t = TestThing.new
+    Liquid::Template.parse('{{ foo | sum: "quantity" }}').render("foo" => [{ "quantity" => t }])
+    assert(t.foo > 0)
+  end
+
+  def test_sum_of_floats
+    input = [0.1, 0.2, 0.3]
+    assert_equal(0.6, @filters.sum(input))
+    assert_template_result("0.6", "{{ input | sum }}", { "input" => input })
+  end
+
+  def test_sum_of_negative_floats
+    input = [0.1, 0.2, -0.3]
+    assert_equal(0.0, @filters.sum(input))
+    assert_template_result("0.0", "{{ input | sum }}", { "input" => input })
+  end
+
+  def test_sum_with_float_strings
+    input = [0.1, "0.2", "0.3"]
+    assert_equal(0.6, @filters.sum(input))
+    assert_template_result("0.6", "{{ input | sum }}", { "input" => input })
+  end
+
+  def test_sum_resulting_in_negative_float
+    input = [0.1, -0.2, -0.3]
+    assert_equal(-0.4, @filters.sum(input))
+    assert_template_result("-0.4", "{{ input | sum }}", { "input" => input })
+  end
+
+  def test_sum_with_floats_and_indexable_map_values
+    input = [{ "quantity" => 1 }, { "quantity" => 0.2, "weight" => -0.3 }, { "weight" => 0.4 }]
+    assert_equal(0.0, @filters.sum(input))
+    assert_equal(1.2, @filters.sum(input, "quantity"))
+    assert_equal(0.1, @filters.sum(input, "weight"))
+    assert_equal(0.0, @filters.sum(input, "subtotal"))
+    assert_template_result("0", "{{ input | sum }}", { "input" => input })
+    assert_template_result("1.2", "{{ input | sum: 'quantity' }}", { "input" => input })
+    assert_template_result("0.1", "{{ input | sum: 'weight' }}", { "input" => input })
+    assert_template_result("0", "{{ input | sum: 'subtotal' }}", { "input" => input })
   end
 
   private

@@ -15,7 +15,7 @@ module Liquid
   #   template.render('user_name' => 'bob')
   #
   class Template
-    attr_accessor :root
+    attr_accessor :root, :name
     attr_reader :resource_limits, :warnings
 
     class TagRegistry
@@ -107,6 +107,12 @@ module Liquid
     # Returns self for easy chaining
     def parse(source, options = {})
       parse_context = configure_options(options)
+      source = source.to_s.to_str
+
+      unless source.valid_encoding?
+        raise TemplateEncodingError, parse_context.locale.t("errors.syntax.invalid_template_encoding")
+      end
+
       tokenizer     = parse_context.new_tokenizer(source, start_line_number: @line_numbers && 1)
       @root         = Document.parse(tokenizer, parse_context)
       self
@@ -188,6 +194,8 @@ module Liquid
       if @profiling && context.profiler.nil?
         @profiler = context.profiler = Liquid::Profiler.new
       end
+
+      context.template_name ||= name
 
       begin
         # render the nodelist.

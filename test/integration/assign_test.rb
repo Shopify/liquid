@@ -14,19 +14,25 @@ class AssignTest < Minitest::Test
   end
 
   def test_assigned_variable
-    assert_template_result('.foo.',
+    assert_template_result(
+      '.foo.',
       '{% assign foo = values %}.{{ foo[0] }}.',
-      { 'values' => %w(foo bar baz) })
+      { 'values' => %w(foo bar baz) },
+    )
 
-    assert_template_result('.bar.',
+    assert_template_result(
+      '.bar.',
       '{% assign foo = values %}.{{ foo[1] }}.',
-      { 'values' => %w(foo bar baz) })
+      { 'values' => %w(foo bar baz) },
+    )
   end
 
   def test_assign_with_filter
-    assert_template_result('.bar.',
+    assert_template_result(
+      '.bar.',
       '{% assign foo = values | split: "," %}.{{ foo[1] }}.',
-      { 'values' => "foo,bar,baz" })
+      { 'values' => "foo,bar,baz" },
+    )
   end
 
   def test_assign_syntax_error
@@ -34,14 +40,12 @@ class AssignTest < Minitest::Test
   end
 
   def test_assign_uses_error_mode
-    with_error_mode(:strict) do
-      assert_raises(SyntaxError) do
-        Template.parse("{% assign foo = ('X' | downcase) %}")
-      end
-    end
-    with_error_mode(:lax) do
-      assert(Template.parse("{% assign foo = ('X' | downcase) %}"))
-    end
+    assert_match_syntax_error(
+      "Expected dotdot but found pipe in ",
+      "{% assign foo = ('X' | downcase) %}",
+      error_mode: :strict,
+    )
+    assert_template_result("", "{% assign foo = ('X' | downcase) %}", error_mode: :lax)
   end
 
   def test_expression_with_whitespace_in_square_brackets

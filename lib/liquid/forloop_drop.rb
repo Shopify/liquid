@@ -5,7 +5,7 @@ module Liquid
   # @liquid_type object
   # @liquid_name forloop
   # @liquid_summary
-  #   Information about a parent [`for` loop](/api/liquid/tags#for).
+  #   Information about a parent [`for` loop](/docs/api/liquid/tags/for).
   class ForloopDrop < Drop
     def initialize(name, length, parentloop)
       @name       = name
@@ -30,10 +30,7 @@ module Liquid
     # @liquid_return [forloop]
     attr_reader :parentloop
 
-    def name
-      Usage.increment('forloop_drop_name')
-      @name
-    end
+    attr_reader :name
 
     # @liquid_public_docs
     # @liquid_summary

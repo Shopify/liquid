@@ -73,9 +73,11 @@ HERE
 
   def test_for_helpers
     assigns = { 'array' => [1, 2, 3] }
-    assert_template_result(' 1/3  2/3  3/3 ',
+    assert_template_result(
+      ' 1/3  2/3  3/3 ',
       '{%for item in array%} {{forloop.index}}/{{forloop.length}} {%endfor%}',
-      assigns)
+      assigns,
+    )
     assert_template_result(' 1  2  3 ', '{%for item in array%} {{forloop.index}} {%endfor%}', assigns)
     assert_template_result(' 0  1  2 ', '{%for item in array%} {{forloop.index0}} {%endfor%}', assigns)
     assert_template_result(' 2  1  0 ', '{%for item in array%} {{forloop.rindex0}} {%endfor%}', assigns)
@@ -86,9 +88,11 @@ HERE
 
   def test_for_and_if
     assigns = { 'array' => [1, 2, 3] }
-    assert_template_result('+--',
+    assert_template_result(
+      '+--',
       '{%for item in array%}{% if forloop.first %}+{% else %}-{% endif %}{%endfor%}',
-      assigns)
+      assigns,
+    )
   end
 
   def test_for_else
@@ -103,6 +107,7 @@ HERE
     assert_template_result('1234', '{%for i in array limit:4 %}{{ i }}{%endfor%}', assigns)
     assert_template_result('3456', '{%for i in array limit:4 offset:2 %}{{ i }}{%endfor%}', assigns)
     assert_template_result('3456', '{%for i in array limit: 4 offset: 2 %}{{ i }}{%endfor%}', assigns)
+    assert_template_result('3456', '{%for i in array, limit: 4, offset: 2 %}{{ i }}{%endfor%}', assigns)
   end
 
   def test_limiting_with_invalid_limit
@@ -263,6 +268,19 @@ HERE
     assert_template_result(expected, markup, assigns)
   end
 
+  def test_for_with_break_after_nested_loop
+    source = <<~LIQUID.chomp
+      {% for i in (1..2) -%}
+        {% for j in (1..2) -%}
+          {{ i }}-{{ j }},
+        {%- endfor -%}
+        {% break -%}
+      {% endfor -%}
+      after
+    LIQUID
+    assert_template_result("1-1,1-2,after", source)
+  end
+
   def test_for_with_continue
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5] } }
 
@@ -311,15 +329,20 @@ HERE
     # ruby 1.9.3 no longer supports .each on String though we mimic
     # the functionality for backwards compatibility
 
-    assert_template_result('test string',
+    assert_template_result(
+      'test string',
       '{%for val in string%}{{val}}{%endfor%}',
-      { 'string' => "test string" })
+      { 'string' => "test string" },
+    )
 
-    assert_template_result('test string',
+    assert_template_result(
+      'test string',
       '{%for val in string limit:1%}{{val}}{%endfor%}',
-      { 'string' => "test string" })
+      { 'string' => "test string" },
+    )
 
-    assert_template_result('val-string-1-1-0-1-0-true-true-test string',
+    assert_template_result(
+      'val-string-1-1-0-1-0-true-true-test string',
       '{%for val in string%}' \
       '{{forloop.name}}-' \
       '{{forloop.index}}-' \
@@ -330,23 +353,28 @@ HERE
       '{{forloop.first}}-' \
       '{{forloop.last}}-' \
       '{{val}}{%endfor%}',
-      { 'string' => "test string" })
+      { 'string' => "test string" },
+    )
   end
 
   def test_for_parentloop_references_parent_loop
-    assert_template_result('1.1 1.2 1.3 2.1 2.2 2.3 ',
+    assert_template_result(
+      '1.1 1.2 1.3 2.1 2.2 2.3 ',
       '{% for inner in outer %}{% for k in inner %}' \
       '{{ forloop.parentloop.index }}.{{ forloop.index }} ' \
       '{% endfor %}{% endfor %}',
-      { 'outer' => [[1, 1, 1], [1, 1, 1]] })
+      { 'outer' => [[1, 1, 1], [1, 1, 1]] },
+    )
   end
 
   def test_for_parentloop_nil_when_not_present
-    assert_template_result('.1 .2 ',
+    assert_template_result(
+      '.1 .2 ',
       '{% for inner in outer %}' \
       '{{ forloop.parentloop.index }}.{{ forloop.index }} ' \
       '{% endfor %}',
-      { 'outer' => [[1, 1, 1], [1, 1, 1]] })
+      { 'outer' => [[1, 1, 1], [1, 1, 1]] },
+    )
   end
 
   def test_inner_for_over_empty_input
@@ -436,31 +464,5 @@ HERE
     end
 
     assert(context.registers[:for_stack].empty?)
-  end
-
-  def test_instrument_for_offset_continue
-    assert_usage_increment('for_offset_continue') do
-      Template.parse('{% for item in items offset:continue %}{{item}}{% endfor %}')
-    end
-
-    assert_usage_increment('for_offset_continue', times: 0) do
-      Template.parse('{% for item in items offset:2 %}{{item}}{% endfor %}')
-    end
-  end
-
-  def test_instrument_forloop_drop_name
-    assigns = { 'items' => [1, 2, 3, 4, 5] }
-
-    assert_usage_increment('forloop_drop_name', times: 5) do
-      Template.parse('{% for item in items %}{{forloop.name}}{% endfor %}').render!(assigns)
-    end
-
-    assert_usage_increment('forloop_drop_name', times: 0) do
-      Template.parse('{% for item in items %}{{forloop.index}}{% endfor %}').render!(assigns)
-    end
-
-    assert_usage_increment('forloop_drop_name', times: 0) do
-      Template.parse('{% for item in items %}{{item}}{% endfor %}').render!(assigns)
-    end
   end
 end

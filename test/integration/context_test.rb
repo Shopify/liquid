@@ -121,14 +121,23 @@ class ContextTest < Minitest::Test
   end
 
   def test_length_query
-    assert_template_result("true", "{% if numbers.size == 4 %}true{% endif %}",
-      { "numbers" => [1, 2, 3, 4] })
+    assert_template_result(
+      "true",
+      "{% if numbers.size == 4 %}true{% endif %}",
+      { "numbers" => [1, 2, 3, 4] },
+    )
 
-    assert_template_result("true", "{% if numbers.size == 4 %}true{% endif %}",
-      { "numbers" => { 1 => 1, 2 => 2, 3 => 3, 4 => 4 } })
+    assert_template_result(
+      "true",
+      "{% if numbers.size == 4 %}true{% endif %}",
+      { "numbers" => { 1 => 1, 2 => 2, 3 => 3, 4 => 4 } },
+    )
 
-    assert_template_result("true", "{% if numbers.size == 1000 %}true{% endif %}",
-      { "numbers" => { 1 => 1, 2 => 2, 3 => 3, 4 => 4, 'size' => 1000 } })
+    assert_template_result(
+      "true",
+      "{% if numbers.size == 1000 %}true{% endif %}",
+      { "numbers" => { 1 => 1, 2 => 2, 3 => 3, 4 => 4, 'size' => 1000 } },
+    )
   end
 
   def test_hyphenated_variable
@@ -228,12 +237,14 @@ class ContextTest < Minitest::Test
   end
 
   def test_hash_to_array_transition
-    assigns = { 'colors' => {
-      'Blue' => ['003366', '336699', '6699CC', '99CCFF'],
-      'Green' => ['003300', '336633', '669966', '99CC99'],
-      'Yellow' => ['CC9900', 'FFCC00', 'FFFF99', 'FFFFCC'],
-      'Red' => ['660000', '993333', 'CC6666', 'FF9999'],
-    } }
+    assigns = {
+      'colors' => {
+        'Blue' => ['003366', '336699', '6699CC', '99CCFF'],
+        'Green' => ['003300', '336633', '669966', '99CC99'],
+        'Yellow' => ['CC9900', 'FFCC00', 'FFFF99', 'FFFFCC'],
+        'Red' => ['660000', '993333', 'CC6666', 'FF9999'],
+      },
+    }
 
     assert_template_result("003366", "{{ colors.Blue[0] }}", assigns)
     assert_template_result("FF9999", "{{ colors.Red[3] }}", assigns)
@@ -262,7 +273,7 @@ class ContextTest < Minitest::Test
     assigns = { 'product' => { 'variants' => [{ 'title' => 'draft151cm' }, { 'title' => 'element151cm' }] } }
     assert_template_result("draft151cm", '{{ product["variants"][0]["title"] }}', assigns)
     assert_template_result("element151cm", '{{ product["variants"][1]["title"] }}', assigns)
-    assert_template_result("draft151cm", '{{ product["variants"][0]["title"] }}', assigns)
+    assert_template_result("draft151cm", '{{ product["variants"].first["title"] }}', assigns)
     assert_template_result("element151cm", '{{ product["variants"].last["title"] }}', assigns)
   end
 
@@ -410,10 +421,12 @@ class ContextTest < Minitest::Test
   def test_nested_lambda_is_called_once
     @global = 0
 
-    @context['callcount'] = { "lambda" => proc {
-                                            @global += 1
-                                            @global.to_s
-                                          } }
+    @context['callcount'] = {
+      "lambda" => proc {
+                    @global += 1
+                    @global.to_s
+                  },
+    }
 
     assert_equal('1', @context['callcount.lambda'])
     assert_equal('1', @context['callcount.lambda'])
@@ -423,10 +436,11 @@ class ContextTest < Minitest::Test
   def test_lambda_in_array_is_called_once
     @global = 0
 
-    @context['callcount'] = [1, 2, proc {
-                                     @global += 1
-                                     @global.to_s
-                                   }, 4, 5]
+    p = proc {
+      @global += 1
+      @global.to_s
+    }
+    @context['callcount'] = [1, 2, p, 4, 5]
 
     assert_equal('1', @context['callcount[2]'])
     assert_equal('1', @context['callcount[2]'])
@@ -473,7 +487,7 @@ class ContextTest < Minitest::Test
   def test_static_environments_are_read_with_lower_priority_than_environments
     context = Context.build(
       static_environments: { 'shadowed' => 'static', 'unshadowed' => 'static' },
-      environments: { 'shadowed' => 'dynamic' }
+      environments: { 'shadowed' => 'dynamic' },
     )
 
     assert_equal('dynamic', context['shadowed'])

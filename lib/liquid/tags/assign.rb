@@ -8,7 +8,7 @@ module Liquid
   # @liquid_summary
   #   Creates a new variable.
   # @liquid_description
-  #   You can create variables of any [basic type](/api/liquid/basics#types), [object](/api/liquid/objects), or object property.
+  #   You can create variables of any [basic type](/docs/api/liquid/basics#types), [object](/docs/api/liquid/objects), or object property.
   # @liquid_syntax
   #   {% assign variable_name = value %}
   # @liquid_syntax_keyword variable_name The name of the variable being created.

@@ -3,7 +3,10 @@
 module Liquid
   class Expression
     LITERALS = {
-      nil => nil, 'nil' => nil, 'null' => nil, '' => nil,
+      nil => nil,
+      'nil' => nil,
+      'null' => nil,
+      '' => nil,
       'true' => true,
       'false' => false,
       'blank' => '',
