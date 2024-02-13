@@ -134,6 +134,13 @@ class IncludeTagTest < Minitest::Test
     )
   end
 
+  def test_include_tag_does_not_reset_resource_limits
+    t = Template.parse("{% for a in (0..10) %}x{% assign foo = 1 %} {% endfor %}{% include 'product' with products[0] %}")
+    t.render!({ "products" => [{ 'title' => 'Draft 151cm' }, { 'title' => 'Element 155cm' }] })
+    assert(t.resource_limits.assign_score > 10)
+    assert(t.resource_limits.render_score > 10)
+  end
+
   def test_included_templates_assigns_variables
     assert_template_result(
       "bar",

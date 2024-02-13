@@ -189,7 +189,7 @@ module Liquid
       end
 
       # Retrying a render resets resource usage
-      context.resource_limits.reset
+      context.resource_limits.reset unless context.partial
 
       if @profiling && context.profiler.nil?
         @profiler = context.profiler = Liquid::Profiler.new
