@@ -24,7 +24,7 @@ module Liquid
   # @liquid_syntax_keyword third_expression An expression to be rendered when the variable's value has no match.
   class Case < Block
     Syntax     = /(#{QuotedFragment})/o
-    WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*\,\s*)(#{QuotedFragment}.*))?/om
+    WhenSyntax = /(#{QuotedFragment})(?:(?:[[:space:]]+or[[:space:]]+|[[:space:]]*\,[[:space:]]*)(#{QuotedFragment}.*))?/om
 
     attr_reader :blocks, :left
 

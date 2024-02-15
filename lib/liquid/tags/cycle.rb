@@ -16,7 +16,7 @@ module Liquid
   #   {% cycle string, string, ... %}
   class Cycle < Tag
     SimpleSyntax = /\A#{QuotedFragment}+/o
-    NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om
+    NamedSyntax  = /\A(#{QuotedFragment})[[:space:]]*\:[[:space:]]*(.*)/om
 
     attr_reader :variables
 
@@ -61,7 +61,7 @@ module Liquid
 
     def variables_from_string(markup)
       markup.split(',').collect do |var|
-        var =~ /\s*(#{QuotedFragment})\s*/o
+        var =~ /[[:space:]]*(#{QuotedFragment})[[:space:]]*/o
         Regexp.last_match(1) ? parse_expression(Regexp.last_match(1)) : nil
       end.compact
     end
