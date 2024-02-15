@@ -27,7 +27,7 @@ module Liquid
   # @liquid_syntax_keyword filename The name of the snippet to render, without the `.liquid` extension.
   class Render < Tag
     FOR = 'for'
-    SYNTAX = /(#{QuotedString}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
+    SYNTAX = /(#{QuotedString}+)([[:space:]]+(with|#{FOR})[[:space:]]+(#{QuotedFragment}+))?([[:space:]]+(?:as)[[:space:]]+(#{VariableSegment}+))?/o
 
     disable_tags "include"
 

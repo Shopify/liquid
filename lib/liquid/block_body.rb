@@ -4,11 +4,11 @@ require 'English'
 
 module Liquid
   class BlockBody
-    LiquidTagToken      = /\A\s*(#{TagName})\s*(.*?)\z/o
-    FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(#{TagName})(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
-    FullTokenPossiblyInvalid = /\A(.*)#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*)?#{WhitespaceControl}?#{TagEnd}\z/om
+    LiquidTagToken      = /\A[[:space:]]*(#{TagName})[[:space:]]*(.*?)\z/o
+    FullToken           = /\A#{TagStart}#{WhitespaceControl}?([[:space:]]*)(#{TagName})([[:space:]]*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    FullTokenPossiblyInvalid = /\A(.*)#{TagStart}#{WhitespaceControl}?[[:space:]]*(\w+)[[:space:]]*(.*)?#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable   = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
-    WhitespaceOrNothing = /\A\s*\z/
+    WhitespaceOrNothing = /\A[[:space:]]*\z/
     TAGSTART            = "{%"
     VARSTART            = "{{"
 

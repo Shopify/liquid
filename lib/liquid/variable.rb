@@ -12,9 +12,9 @@ module Liquid
   #   {{ user | link }}
   #
   class Variable
-    FilterMarkupRegex        = /#{FilterSeparator}\s*(.*)/om
-    FilterParser             = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
-    FilterArgsRegex          = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o
+    FilterMarkupRegex        = /#{FilterSeparator}[[:space:]]*(.*)/om
+    FilterParser             = /(?:[[:space:]]+|#{QuotedFragment}|#{ArgumentSeparator})+/o
+    FilterArgsRegex          = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})[[:space:]]*((?:\w+[[:space:]]*\:[[:space:]]*)?#{QuotedFragment})/o
     JustTagAttributes        = /\A#{TagAttributes}\z/o
     MarkupWithQuotedFragment = /(#{QuotedFragment})(.*)/om
 

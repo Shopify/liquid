@@ -24,7 +24,7 @@ module Liquid
   # @liquid_optional_param offset [number] The 1-based index to start iterating at.
   # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   class TableRow < Block
-    Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
+    Syntax = /(\w+)[[:space:]]+in[[:space:]]+(#{QuotedFragment}+)/o
 
     attr_reader :variable_name, :collection_name, :attributes
 

@@ -12,7 +12,7 @@ module Liquid
       #
       # As such, we're forcing users to put a # symbol on every line otherwise this
       # tag will throw an error.
-      if markup.match?(/\n\s*[^#\s]/)
+      if markup.match?(/\n[[:space:]]*[^#[[:space:]]]/)
         raise SyntaxError, options[:locale].t("errors.syntax.inline_comment_invalid")
       end
     end
