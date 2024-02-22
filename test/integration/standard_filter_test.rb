@@ -168,6 +168,8 @@ class StandardFiltersTest < Minitest::Test
 
   def test_escape_once
     assert_equal('&lt;strong&gt;Hulk&lt;/strong&gt;', @filters.escape_once('&lt;strong&gt;Hulk</strong>'))
+    assert_equal("1 &lt;&gt;&amp;&quot;&#39; 2 &amp; 3", @filters.escape_once('1 <>&"\' 2 &amp; 3'))
+    assert_equal(" &#X27; &#x27; &#x03BB; &#X03bb; &quot; &#39; &lt; &gt; ", @filters.escape_once(" &#X27; &#x27; &#x03BB; &#X03bb; \" ' < > "))
   end
 
   def test_base64_encode
