@@ -331,8 +331,8 @@ class StandardFiltersTest < Minitest::Test
       { "price" => "1", "handle" => "gamma" },
       { "price" => 2, "handle" => "epsilon" },
       { "price" => "4", "handle" => "alpha" },
-      { "handle" => "delta" },
       { "handle" => "beta" },
+      { "handle" => "delta" },
     ]
     assert_equal(expectation, @filters.sort_natural(input, "price"))
   end

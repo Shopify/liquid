@@ -944,6 +944,8 @@ module Liquid
     def nil_safe_casecmp(a, b)
       if !a.nil? && !b.nil?
         a.to_s.casecmp(b.to_s)
+      elsif a.nil? && b.nil?
+        0
       else
         a.nil? ? 1 : -1
       end
