@@ -1,5 +1,9 @@
 # Liquid Change Log
 
+## 5.5.0 2024-03-21
+
+Please reference the GitHub release for more information.
+
 ## 5.4.0 2022-07-29
 
 ### Breaking Changes
