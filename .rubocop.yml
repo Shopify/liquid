@@ -10,7 +10,6 @@ Performance:
   Enabled: true
 
 AllCops:
-  TargetRubyVersion: 2.7
   NewCops: disable
   SuggestExtensions: false
   Exclude:
