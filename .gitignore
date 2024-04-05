@@ -4,6 +4,5 @@
 pkg
 *.rbc
 .rvmrc
-Gemfile.lock
 .bundle
 .byebug_history
