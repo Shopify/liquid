@@ -22,6 +22,7 @@ jobs:
         with:
           ruby-version: ${{ matrix.entry.ruby }}
           bundler-cache: true
+          bundler: latest
       - run: bundle exec rake
         continue-on-error: ${{ matrix.entry.allowed-failure }}
 
