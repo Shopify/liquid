@@ -3,6 +3,7 @@
 require 'cgi'
 require 'base64'
 require 'bigdecimal'
+require 'uri'
 
 module Liquid
   module StandardFilters
@@ -110,6 +111,36 @@ module Liquid
     # @liquid_return [string]
     def escape_once(input)
       input.to_s.gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
+    end
+
+    def url_add_param(input, key, value)
+      begin
+        uri = URI.parse(input)
+        uri.query = URI.encode_www_form(
+          URI.decode_www_form(uri.query || '') << [key, value]
+        )
+
+        uri.to_s
+      rescue URI::InvalidURIError
+        raise_property_error(input)
+      end
+    end
+
+    def url_remove_param(input, key)
+      begin
+        uri = URI.parse(input)
+        query = URI.decode_www_form(uri.query || '').to_h
+        query.delete(key)
+        uri.query = if query.empty?
+          ''
+        else
+          URI.encode_www_form(query)
+        end
+
+        uri.to_s
+      rescue URI::InvalidURIError
+        raise_property_error(input)
+      end
     end
 
     # @liquid_public_docs
