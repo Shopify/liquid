@@ -285,4 +285,16 @@ class RenderTagTest < Minitest::Test
       render_errors: true,
     )
   end
+
+  def test_render_reports_error_in_correct_template
+    assert_template_result(
+      "Liquid syntax error (inner_partial line 2): Unknown tag 'undefined_tag'",
+      '{% render "outer_partial" %}',
+      partials: {
+        'outer_partial' => '{% render "inner_partial" %}',
+        'inner_partial' => "\n{% undefined_tag %}",
+      },
+      render_errors: true
+    )
+  end
 end
