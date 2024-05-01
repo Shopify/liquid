@@ -153,6 +153,8 @@ module Liquid
         subcontext.errors   = errors
         subcontext.warnings = warnings
         subcontext.disabled_tags = @disabled_tags
+        subcontext.strict_filters = strict_filters
+        subcontext.strict_variables = strict_variables
       end
     end
 

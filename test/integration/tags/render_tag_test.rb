@@ -285,4 +285,26 @@ class RenderTagTest < Minitest::Test
       render_errors: true,
     )
   end
+
+  def test_render_tag_raises_strict_variables_errors
+    assert_raises(Liquid::UndefinedVariable) do
+      assert_template_result("123",
+        '{% render "partial" %}',
+        partials: {
+          'partial' => "{{ undefined_variable }}",
+        },
+        strict_variables: true)
+    end
+  end
+
+  def test_render_tag_raises_strict_filters_errors
+    assert_raises(Liquid::UndefinedFilter) do
+      assert_template_result("123",
+        '{% render "partial" %}',
+        partials: {
+          'partial' => "{{ '123' | undefined_filter }}",
+        },
+        strict_filters: true)
+    end
+  end
 end
