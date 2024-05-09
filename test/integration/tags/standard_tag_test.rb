@@ -326,6 +326,62 @@ class StandardTagTest < Minitest::Test
     )
   end
 
+  def test_cycle_variables_from_context
+    assigns = { "a" => 1, "b" => 2, "c" => 3 }
+    assert_template_result('1 2 3', '{%cycle a,b,c%} {%cycle a,b,c%} {%cycle a,b,c%}', assigns)
+  end
+
+  def test_cycle_undefined_variables
+    assert_template_result('  ', '{%cycle a,b,c%} {%cycle a,b,c%} {%cycle a,b,c%}')
+  end
+
+  def test_cycle_string_and_integer_keys
+    assert_template_result('1 1 2 2', '{%cycle 1,2,3%} {%cycle "1","2","3"%} {%cycle 1,2,3%} {%cycle "1","2","3"%}')
+  end
+
+  def test_cycle_mixed_context_variables_and_literals
+    assigns = { "a" => 1, "b" => 2 }
+    assert_template_result(
+      '1 2 three 1',
+      '{%cycle a,b,"three"%} {%cycle a,b,"three"%} {%cycle a,b,"three"%} {%cycle a,b,"three"%}',
+      assigns
+    )
+  end
+
+  def test_cycle_boolean_literals
+    assert_template_result(
+      'true true false true',
+      '{%cycle true, true, false%} {%cycle true, true, false%} {%cycle true, true, false%} {%cycle true, true, false%}',
+    )
+  end
+
+  def test_cycle_variable_keys_dont_conflict_with_literals
+    assigns = { "a" => 1, "b" => 2, "c" => 3 }
+    assert_template_result(
+      '1 1 2 c',
+      '{%cycle a,b,"c"%} {%cycle a,b,c%} {%cycle a,b,"c"%} {%cycle a,b,"c"%}',
+      assigns
+    )
+  end
+
+  def test_cycle_over_changing_context_variables
+    assigns = { "a" => 1, "b" => 2, "c" => 3 }
+    assert_template_result(
+      '1 2 z x',
+      '{%cycle a,b,c%} {%assign a="x"%}{%assign c="z"%}{%cycle a,b,c%} {%cycle a,b,c%} {%cycle a,b,c%}',
+      assigns
+    )
+  end
+
+  def test_cycle_with_a_changing_variable_name
+    assigns = { "x" => "var1" }
+    assert_template_result(
+      'a a b',
+      '{%cycle x: "a","b","c"%} {%assign x="var2" %}{%cycle x: "a","b","c"%} {%cycle x: "a","b","c"%}',
+      assigns
+    )
+  end
+
   def test_size_of_array
     assigns = { "array" => [1, 2, 3, 4] }
     assert_template_result('array has 4 elements', "array has {{ array.size }} elements", assigns)

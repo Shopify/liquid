@@ -27,8 +27,8 @@ module Liquid
         @variables = variables_from_string(Regexp.last_match(2))
         @name      = parse_expression(Regexp.last_match(1))
       when SimpleSyntax
-        @variables = variables_from_string(markup)
-        @name      = @variables.to_s
+        @variables, names = variables_and_names_from_string(markup)
+        @name             = names.to_s
       else
         raise SyntaxError, options[:locale].t("errors.syntax.cycle")
       end
@@ -64,6 +64,18 @@ module Liquid
         var =~ /\s*(#{QuotedFragment})\s*/o
         Regexp.last_match(1) ? parse_expression(Regexp.last_match(1)) : nil
       end.compact
+    end
+
+    def variables_and_names_from_string(markup)
+      markup.split(',').collect do |var|
+        next unless var =~ /\s*(#{QuotedFragment})\s*/o
+        object = parse_expression(Regexp.last_match(1))
+        if object.respond_to?(:evaluate)
+          [object, "#{object.class}-#{Regexp.last_match(1)}"]
+        else
+          [object, object]
+        end
+      end.transpose
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
