@@ -290,7 +290,7 @@ module Liquid
     def split(input, pattern, limit = nil)
       limit = limit.respond_to?(:to_i) ? limit.to_i : 0
 
-      input.to_s.split(pattern.to_s, limit.to_i)
+      input.to_s.split(pattern.to_s, limit)
     end
 
     # @liquid_public_docs
