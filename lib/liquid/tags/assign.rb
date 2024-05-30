@@ -27,14 +27,28 @@ module Liquid
       super
       if markup =~ Syntax
         @to   = Regexp.last_match(1)
-        @from = Variable.new(Regexp.last_match(2), parse_context)
+        from_ = Regexp.last_match(2).strip
+        if /^\[.*\]$/.match?(from_)
+          from_ = from_[1..-2].split(",")
+          @from = from_.map { |s| Variable.new(s.strip, parse_context) }
+        else
+          @from = Variable.new(from_, parse_context)
+        end
       else
         self.class.raise_syntax_error(parse_context)
       end
     end
 
     def render_to_output_buffer(context, output)
-      val = @from.render(context)
+      val = nil
+      if @from.is_a?(Array)
+        val = []
+        @from.each do |var|
+          val << var.render(context)
+        end
+      else
+        val = @from.render(context)
+      end
       context.scopes.last[@to] = val
       context.resource_limits.increment_assign_score(assign_score_of(val))
       output

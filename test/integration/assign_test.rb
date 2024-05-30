@@ -53,6 +53,21 @@ class AssignTest < Minitest::Test
     assert_template_result('result', source, { 'a' => { 'b' => 'result' } })
   end
 
+  def test_assign_array
+    source = "{% assign r = [1, 2, 3] %}{{ r | join: ';' }}"
+    assert_template_result('1;2;3', source)
+
+    source = <<~LIQUID
+      {%- assign a = "one" -%}
+      {%- assign b = "two" -%}
+      {%- assign c = "three" -%}
+      {%- assign l = [a, b, c] -%}
+      {{- l | join: ", and " -}}
+    LIQUID
+
+    assert_template_result("one, and two, and three", source)
+  end
+
   def test_assign_score_exceeding_resource_limit
     t = Template.parse("{% assign foo = 42 %}{% assign bar = 23 %}")
     t.resource_limits.assign_score_limit = 1
