@@ -1,0 +1,97 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "optparse"
+
+if %x(which samply).empty?
+  print "samply is not installed. Would you like to install it? [y/n] "
+  answer = $stdin.gets.chomp
+  if answer.downcase == "y"
+    puts "Installing samply..."
+    system("cargo install --git https://github.com/mstange/samply samply")
+  else
+    puts "samply is required for this script to run. Exiting..."
+    exit
+  end
+end
+
+options = {
+  db: File.expand_path("../bench/benchmarks/basic/db.yml", __dir__),
+  n_runs: 50000,
+  samply_run: true,
+  yjit_perfmap: false,
+  samply_output: "profile.json",
+  vernier: false,
+}
+
+optparse = OptionParser.new do |opts|
+  opts.on("--db [DB]", "use the provided db file instead of the default") do |db|
+    options[:db] = db
+  end
+  opts.on("--n-runs [N]", "number of runs") do |n|
+    options[:n_runs] = n.to_i
+  end
+  opts.on("--skip-samply-run", "skip running samply") do
+    options[:samply_run] = false
+  end
+  opts.on("--yjit-perfmap", "enable yjit perfmap") do
+    options[:yjit_perfmap] = true
+  end
+  opts.on("--samply-output [OUTPUT]", "output file for samply") do |output|
+    options[:samply_output] = output
+  end
+  opts.on("--vernier", "enable vernier") do
+    options[:vernier] = true
+  end
+end
+optparse.parse!
+
+if options[:samply_run] && !options[:vernier]
+  samply_output = options[:samply_output]
+  if options[:yjit_perfmap]
+    exec(
+      "samply",
+      "record",
+      "--output",
+      samply_output,
+      "bundle",
+      "exec",
+      "ruby",
+      "--yjit",
+      "--yjit-perf",
+      __FILE__,
+      "--skip-samply-run",
+      *ARGV,
+    )
+  else
+    exec("samply", "record", "--output", samply_output, "bundle", "exec", __FILE__, "--skip-samply-run", *ARGV)
+  end
+end
+
+lib = File.expand_path("../lib", __dir__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+n_runs = options[:n_runs]
+code = ARGF.read
+
+require "liquid"
+
+cpu_time_start = Process.clock_gettime(Process::CLOCK_PROCESS_CPUTIME_ID)
+
+if options[:vernier]
+  require "vernier"
+  Vernier.trace(out: "profile.json") do
+    n_runs.times do
+      Liquid::Template.parse(code)
+    end
+  end
+else
+  n_runs.times do
+    Liquid::Template.parse(code)
+  end
+end
+
+cpu_time_end = Process.clock_gettime(Process::CLOCK_PROCESS_CPUTIME_ID)
+cpu_time = cpu_time_end - cpu_time_start
+puts "CPU time: #{cpu_time}"
