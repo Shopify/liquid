@@ -26,3 +26,7 @@ group :test do
     gem 'liquid-c', github: 'Shopify/liquid-c', ref: 'main'
   end
 end
+
+gem "vernier", "~> 1.0"
+
+gem "debug", "~> 1.9"

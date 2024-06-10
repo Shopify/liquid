@@ -49,6 +49,7 @@ module Liquid
   self.cache_classes = true
 end
 
+require "debug"
 require "liquid/version"
 require 'liquid/parse_tree_visitor'
 require 'liquid/lexer'

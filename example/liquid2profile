@@ -29,7 +29,7 @@ optparse = OptionParser.new do |opts|
   opts.on("--db [DB]", "use the provided db file instead of the default") do |db|
     options[:db] = db
   end
-  opts.on("--n-runs [N]", "number of runs") do |n|
+  opts.on("-n [N]", "number of runs") do |n|
     options[:n_runs] = n.to_i
   end
   opts.on("--skip-samply-run", "skip running samply") do
@@ -55,8 +55,6 @@ if options[:samply_run] && !options[:vernier]
       "record",
       "--output",
       samply_output,
-      "bundle",
-      "exec",
       "ruby",
       "--yjit",
       "--yjit-perf",
