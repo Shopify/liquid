@@ -112,6 +112,8 @@ module Liquid
       if left.is_a?(MethodLiteral)
         if right.respond_to?(left.method_name)
           return right.send(left.method_name)
+        elsif (res = fallback_simulation_of_active_support(left.method_name, right))
+          return res
         else
           return nil
         end
@@ -120,12 +122,25 @@ module Liquid
       if right.is_a?(MethodLiteral)
         if left.respond_to?(right.method_name)
           return left.send(right.method_name)
+        elsif (res = fallback_simulation_of_active_support(right.method_name, left))
+          return res
         else
           return nil
         end
       end
 
       left == right
+    end
+
+    # ActiveSupport creates #blank? as an alias for #empty? on Hash and Array.
+    # Without this simulation, [] == blank behaves differently when AS is loaded vs. not.
+    def fallback_simulation_of_active_support(method_name, obj)
+      return nil unless method_name == :blank?
+
+      case obj
+      when Array, Hash
+        obj.empty?
+      end # else nil
     end
 
     def interpret_condition(left, right, op, context)
