@@ -74,6 +74,7 @@ n_runs = options[:n_runs]
 code = ARGF.read
 
 require "liquid"
+# require "liquid/c"
 
 cpu_time_start = Process.clock_gettime(Process::CLOCK_PROCESS_CPUTIME_ID)
 

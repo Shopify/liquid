@@ -65,11 +65,11 @@ module Liquid
 
       return if p.look(:end_of_string)
 
-      @name = parse_context.parse_expression(p.expression)
+      @name = p.expression
       while p.consume?(:pipe)
         filtername = p.consume(:id)
         filterargs = p.consume?(:colon) ? parse_filterargs(p) : []
-        @filters << parse_filter_expressions(filtername, filterargs)
+        @filters << parse_strict_filter_expressions(filtername, filterargs)
       end
       p.consume(:end_of_string)
     end
@@ -125,6 +125,22 @@ module Liquid
           keyword_args[matches[1]] = parse_context.parse_expression(matches[2])
         else
           filter_args << parse_context.parse_expression(a)
+        end
+      end
+      result = [filter_name, filter_args]
+      result << keyword_args if keyword_args
+      result
+    end
+
+    def parse_strict_filter_expressions(filter_name, args)
+      filter_args  = []
+      keyword_args = nil
+      args.each do |a|
+        if a.is_a?(Liquid::Parser::Kwarg)
+          keyword_args ||= {}
+          keyword_args[a.name] = a.value
+        else
+          filter_args << a.value
         end
       end
       result = [filter_name, filter_args]

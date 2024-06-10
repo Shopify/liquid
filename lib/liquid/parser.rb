@@ -2,6 +2,9 @@
 
 module Liquid
   class Parser
+    Kwarg = Struct.new(:name, :value)
+    Arg = Struct.new(:value)
+
     def initialize(input)
       l       = Lexer.new(input)
       @tokens = l.tokenize
@@ -50,8 +53,15 @@ module Liquid
       token = @tokens[@p]
       case token[0]
       when :id
-        str = consume
-        str << variable_lookups
+        name = consume
+        lookups = variable_lookups
+        command_flags = 0
+        lookups.each_index do |i|
+          if VariableLookup::COMMAND_METHODS.include?(lookups[i])
+            @command_flags |= 1 << i
+          end
+        end
+        VariableLookup.new_with(name, lookups, command_flags)
       when :open_square
         str = consume
         str << expression
@@ -72,31 +82,32 @@ module Liquid
     end
 
     def argument
-      str = +""
       # might be a keyword argument (identifier: expression)
       if look(:id) && look(:colon, 1)
-        str << consume << consume << ' '
+        name = consume(:id)
+        consume(:colon)
+        value = expression
+        Kwarg.new(name, value)
+      else
+        Arg.new(expression)
       end
-
-      str << expression
-      str
     end
 
     def variable_lookups
-      str = +""
+      lookups = []
       loop do
         if look(:open_square)
-          str << consume
-          str << expression
-          str << consume(:close_square)
+          consume
+          lookups << expression
+          consume(:close_square)
         elsif look(:dot)
-          str << consume
-          str << consume(:id)
+          consume
+          lookups << consume(:id)
         else
           break
         end
       end
-      str
+      lookups
     end
   end
 end

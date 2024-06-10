@@ -246,8 +246,10 @@ module Liquid
     end
 
     def create_variable(token, parse_context)
-      if token =~ ContentOfVariable
-        markup = Regexp.last_match(1)
+      if token.end_with?("}}")
+        start_markup = token[2] == WhitespaceControl ? 3 : 2
+        end_markup = token[-3] == WhitespaceControl ? -3 : -2
+        markup = token[start_markup...end_markup]
         return Variable.new(markup, parse_context)
       end
       BlockBody.raise_missing_variable_terminator(token, parse_context)

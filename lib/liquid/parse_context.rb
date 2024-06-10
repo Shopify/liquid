@@ -28,7 +28,7 @@ module Liquid
     end
 
     def parse_expression(markup)
-      Expression.parse(markup)
+      Expression.parse(markup, self)
     end
 
     def partial=(value)

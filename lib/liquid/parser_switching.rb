@@ -33,6 +33,7 @@ module Liquid
     def strict_parse_with_error_context(markup)
       strict_parse(markup)
     rescue SyntaxError => e
+      puts e
       e.line_number    = line_number
       e.markup_context = markup_context(markup)
       raise e
