@@ -15,6 +15,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.2)
+    base64 (0.2.0)
     benchmark-ips (2.13.0)
     json (2.7.2)
     language_server-protocol (3.17.0.3)
@@ -57,6 +58,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  base64
   benchmark-ips
   liquid!
   liquid-c!
