@@ -26,12 +26,18 @@ module Liquid
       when NamedSyntax
         @variables = variables_from_string(Regexp.last_match(2))
         @name      = parse_expression(Regexp.last_match(1))
+        @is_named = true
       when SimpleSyntax
         @variables = variables_from_string(markup)
         @name      = @variables.to_s
+        @is_named = !@name.match?(/\w+:0x\h{8}/)
       else
         raise SyntaxError, options[:locale].t("errors.syntax.cycle")
       end
+    end
+
+    def named?
+      @is_named
     end
 
     def render_to_output_buffer(context, output)
