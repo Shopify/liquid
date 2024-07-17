@@ -44,6 +44,4 @@ module Liquid
       output
     end
   end
-
-  Template.register_tag('unless', Unless)
 end

@@ -3,9 +3,10 @@
 module Liquid
   class ParseContext
     attr_accessor :locale, :line_number, :trim_whitespace, :depth
-    attr_reader :partial, :warnings, :error_mode
+    attr_reader :partial, :warnings, :error_mode, :world
 
-    def initialize(options = {})
+    def initialize(options = Const::EMPTY_HASH)
+      @world = options.fetch(:world, World.default)
       @template_options = options ? options.dup : {}
 
       @locale   = @template_options[:locale] ||= I18n.new
@@ -35,7 +36,7 @@ module Liquid
       @partial = value
       @options = value ? partial_options : @template_options
 
-      @error_mode = @options[:error_mode] || Template.error_mode
+      @error_mode = @options[:error_mode] || @world.error_mode
     end
 
     def partial_options

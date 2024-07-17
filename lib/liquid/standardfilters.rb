@@ -1001,6 +1001,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_filter(StandardFilters)
 end

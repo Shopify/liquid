@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'liquid/tag/disabler'
+require 'liquid/tag/disableable'
+
 module Liquid
   class Tag
     attr_reader :nodelist, :tag_name, :line_number, :parse_context

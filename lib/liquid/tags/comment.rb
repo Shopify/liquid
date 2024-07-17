@@ -85,6 +85,4 @@ module Liquid
       raise_tag_never_closed("raw")
     end
   end
-
-  Template.register_tag('comment', Comment)
 end

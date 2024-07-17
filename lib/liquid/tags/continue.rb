@@ -17,6 +17,4 @@ module Liquid
       output
     end
   end
-
-  Template.register_tag('continue', Continue)
 end

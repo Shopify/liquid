@@ -18,42 +18,6 @@ module Liquid
     attr_accessor :root, :name
     attr_reader :resource_limits, :warnings
 
-    class TagRegistry
-      include Enumerable
-
-      def initialize
-        @tags  = {}
-        @cache = {}
-      end
-
-      def [](tag_name)
-        return nil unless @tags.key?(tag_name)
-        return @cache[tag_name] if Liquid.cache_classes
-
-        lookup_class(@tags[tag_name]).tap { |o| @cache[tag_name] = o }
-      end
-
-      def []=(tag_name, klass)
-        @tags[tag_name]  = klass.name
-        @cache[tag_name] = klass
-      end
-
-      def delete(tag_name)
-        @tags.delete(tag_name)
-        @cache.delete(tag_name)
-      end
-
-      def each(&block)
-        @tags.each(&block)
-      end
-
-      private
-
-      def lookup_class(name)
-        Object.const_get(name)
-      end
-    end
-
     attr_reader :profiler
 
     class << self
@@ -61,46 +25,71 @@ module Liquid
       # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
       # :warn is the default and will give deprecation warnings when invalid syntax is used.
       # :strict will enforce correct syntax.
-      attr_accessor :error_mode
-      Template.error_mode = :lax
-
-      attr_accessor :default_exception_renderer
-      Template.default_exception_renderer = lambda do |exception|
-        exception
+      def error_mode=(mode)
+        Deprecations.warn("Template.error_mode=", "World#error_mode=")
+        World.default.error_mode = mode
       end
 
-      attr_accessor :file_system
-      Template.file_system = BlankFileSystem.new
+      def error_mode
+        World.default.error_mode
+      end
 
-      attr_accessor :tags
-      Template.tags = TagRegistry.new
-      private :tags=
+      def default_exception_renderer=(renderer)
+        Deprecations.warn("Template.default_exception_renderer=", "World#exception_renderer=")
+        World.default.exception_renderer = renderer
+      end
+
+      def default_exception_renderer
+        World.default.exception_renderer
+      end
+
+      def file_system=(file_system)
+        Deprecations.warn("Template.file_system=", "World#file_system=")
+        World.default.file_system = file_system
+      end
+
+      def file_system
+        World.default.file_system
+      end
+
+      def tags
+        World.default.tags
+      end
 
       def register_tag(name, klass)
-        tags[name.to_s] = klass
+        Deprecations.warn("Template.register_tag", "World#register_tag")
+        World.default.register_tag(name, klass)
       end
 
       # Pass a module with filter methods which should be available
       # to all liquid views. Good for registering the standard library
       def register_filter(mod)
-        StrainerFactory.add_global_filter(mod)
+        Deprecations.warn("Template.register_filter", "World#register_filter")
+        World.default.register_filter(mod)
       end
 
-      attr_accessor :default_resource_limits
-      Template.default_resource_limits = {}
-      private :default_resource_limits=
+      private def default_resource_limits=(limits)
+        Deprecations.warn("Template.default_resource_limits=", "World#default_resource_limits=")
+        World.default.default_resource_limits = limits
+      end
+
+      def default_resource_limits
+        World.default.default_resource_limits
+      end
 
       # creates a new <tt>Template</tt> object from liquid source code
       # To enable profiling, pass in <tt>profile: true</tt> as an option.
       # See Liquid::Profiler for more information
       def parse(source, options = {})
-        new.parse(source, options)
+        world = options[:world] || World.default
+        new(world: world).parse(source, options)
       end
     end
 
-    def initialize
+    def initialize(world: World.default)
+      @world = world
       @rethrow_errors  = false
-      @resource_limits = ResourceLimits.new(Template.default_resource_limits)
+      @resource_limits = ResourceLimits.new(world.default_resource_limits)
     end
 
     # Parse source code.
@@ -162,11 +151,11 @@ module Liquid
         c
       when Liquid::Drop
         drop         = args.shift
-        drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits, {}, @world)
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits, {}, @world)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
+        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits, {}, @world)
       else
         raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
       end
@@ -226,8 +215,14 @@ module Liquid
       @options      = options
       @profiling    = profiling
       @line_numbers = options[:line_numbers] || @profiling
-      parse_context = options.is_a?(ParseContext) ? options : ParseContext.new(options)
-      @warnings     = parse_context.warnings
+      parse_context = if options.is_a?(ParseContext)
+        options
+      else
+        opts = options.key?(:world) ? options : options.merge(world: @world)
+        ParseContext.new(opts)
+      end
+
+      @warnings = parse_context.warnings
       parse_context
     end
 

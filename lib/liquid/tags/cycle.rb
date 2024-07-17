@@ -78,6 +78,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('cycle', Cycle)
 end

@@ -201,6 +201,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('for', For)
 end

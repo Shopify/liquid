@@ -91,6 +91,4 @@ module Liquid
       raise Liquid::ArgumentError, "invalid integer"
     end
   end
-
-  Template.register_tag('tablerow', TableRow)
 end
