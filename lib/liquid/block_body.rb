@@ -52,7 +52,7 @@ module Liquid
             next parse_liquid_tag(markup, parse_context)
           end
 
-          unless (tag = parse_context.world.tag_for_name(tag_name))
+          unless (tag = parse_context.environment.tag_for_name(tag_name))
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
             return yield tag_name, markup
@@ -147,7 +147,7 @@ module Liquid
             next
           end
 
-          unless (tag = parse_context.world.tag_for_name(tag_name))
+          unless (tag = parse_context.environment.tag_for_name(tag_name))
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
             return yield tag_name, markup

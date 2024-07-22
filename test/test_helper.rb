@@ -43,10 +43,10 @@ module Minitest
       template_factory: nil
     )
       file_system = StubFileSystem.new(partials || {})
-      world = Liquid::World.build(file_system: file_system)
-      template = Liquid::Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym, world: world)
+      environment = Liquid::Environment.build(file_system: file_system)
+      template = Liquid::Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym, environment: environment)
       registers = Liquid::Registers.new(file_system: file_system, template_factory: template_factory)
-      context = Liquid::Context.build(static_environments: assigns, rethrow_errors: !render_errors, registers: registers, world: world)
+      context = Liquid::Context.build(static_environments: assigns, rethrow_errors: !render_errors, registers: registers, environment: environment)
       output = template.render(context)
       assert_equal(expected, output, message)
     end
@@ -80,11 +80,11 @@ module Minitest
     end
 
     def with_global_filter(*globals, &blk)
-      world = Liquid::World.build do |w|
+      environment = Liquid::Environment.build do |w|
         w.register_filters(globals)
       end
 
-      World.dangerously_override(world, &blk)
+      Environment.dangerously_override(environment, &blk)
     end
 
     def with_error_mode(mode)
@@ -96,10 +96,10 @@ module Minitest
     end
 
     def with_custom_tag(tag_name, tag_class, &block)
-      world = Liquid::World.default.dup
-      world.register_tag(tag_name, tag_class)
+      environment = Liquid::Environment.default.dup
+      environment.register_tag(tag_name, tag_class)
 
-      World.dangerously_override(world, &block)
+      Environment.dangerously_override(environment, &block)
     end
   end
 end

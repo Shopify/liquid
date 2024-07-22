@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Liquid
-  # The World is the container for all configuration options of Liquid, such as
+  # The Environment is the container for all configuration options of Liquid, such as
   # the registered tags, filters, and the default error mode.
-  class World
+  class Environment
     # The default error mode for all templates. This can be overridden on a
     # per-template basis.
     attr_accessor :error_mode
@@ -27,7 +27,7 @@ module Liquid
     attr_accessor :default_resource_limits
 
     class << self
-      # Creates a new world instance.
+      # Creates a new environment instance.
       #
       # @param tags [Hash] The tags that are available to use in
       #  the template.
@@ -37,8 +37,8 @@ module Liquid
       #  (either :strict, :warn, or :lax).
       # @param exception_renderer [Proc] The exception renderer that is used to
       #   render exceptions.
-      # @yieldparam world [World] The world instance that is being built.
-      # @return [World] The new world instance.
+      # @yieldparam environment [Environment] The environment instance that is being built.
+      # @return [Environment] The new environment instance.
       def build(tags: nil, file_system: nil, error_mode: nil, exception_renderer: nil)
         ret = new
         ret.tags = Template::TagRegistry.new(tags) if tags
@@ -49,29 +49,29 @@ module Liquid
         ret.freeze
       end
 
-      # Returns the default world instance.
+      # Returns the default environment instance.
       #
-      # @return [World] The default world instance.
+      # @return [Environment] The default environment instance.
       def default
         @default ||= new
       end
 
-      # Sets the default world instance for the duration of the block
+      # Sets the default environment instance for the duration of the block
       #
-      # @param world [World] The world instance to use as the default for the
+      # @param environment [Environment] The environment instance to use as the default for the
       #   duration of the block.
       # @yield
       # @return [Object] The return value of the block.
-      def dangerously_override(world)
+      def dangerously_override(environment)
         original_default = @default
-        @default = world
+        @default = environment
         yield
       ensure
         @default = original_default
       end
     end
 
-    # Initializes a new world instance.
+    # Initializes a new environment instance.
     # @api private
     def initialize
       @tags = Template::TagRegistry.new(Tags::STANDARD_TAGS)
@@ -85,7 +85,7 @@ module Liquid
       @strainer_template_class_cache = {}
     end
 
-    # Registers a new tag with the world.
+    # Registers a new tag with the environment.
     #
     # @param name [String] The name of the tag.
     # @param klass [Liquid::Tag] The class that implements the tag.
@@ -94,7 +94,7 @@ module Liquid
       @tags[name] = klass
     end
 
-    # Registers a new filter with the world.
+    # Registers a new filter with the environment.
     #
     # @param filter [Module] The module that contains the filter methods.
     # @return [void]
@@ -103,7 +103,7 @@ module Liquid
       @strainer_template.add_filter(filter)
     end
 
-    # Registers multiple filters with this world.
+    # Registers multiple filters with this environment.
     #
     # @param filters [Array<Module>] The modules that contain the filter methods.
     # @return [self]

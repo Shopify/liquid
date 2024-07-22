@@ -26,70 +26,70 @@ module Liquid
       # :warn is the default and will give deprecation warnings when invalid syntax is used.
       # :strict will enforce correct syntax.
       def error_mode=(mode)
-        Deprecations.warn("Template.error_mode=", "World#error_mode=")
-        World.default.error_mode = mode
+        Deprecations.warn("Template.error_mode=", "Environment#error_mode=")
+        Environment.default.error_mode = mode
       end
 
       def error_mode
-        World.default.error_mode
+        Environment.default.error_mode
       end
 
       def default_exception_renderer=(renderer)
-        Deprecations.warn("Template.default_exception_renderer=", "World#exception_renderer=")
-        World.default.exception_renderer = renderer
+        Deprecations.warn("Template.default_exception_renderer=", "Environment#exception_renderer=")
+        Environment.default.exception_renderer = renderer
       end
 
       def default_exception_renderer
-        World.default.exception_renderer
+        Environment.default.exception_renderer
       end
 
       def file_system=(file_system)
-        Deprecations.warn("Template.file_system=", "World#file_system=")
-        World.default.file_system = file_system
+        Deprecations.warn("Template.file_system=", "Environment#file_system=")
+        Environment.default.file_system = file_system
       end
 
       def file_system
-        World.default.file_system
+        Environment.default.file_system
       end
 
       def tags
-        World.default.tags
+        Environment.default.tags
       end
 
       def register_tag(name, klass)
-        Deprecations.warn("Template.register_tag", "World#register_tag")
-        World.default.register_tag(name, klass)
+        Deprecations.warn("Template.register_tag", "Environment#register_tag")
+        Environment.default.register_tag(name, klass)
       end
 
       # Pass a module with filter methods which should be available
       # to all liquid views. Good for registering the standard library
       def register_filter(mod)
-        Deprecations.warn("Template.register_filter", "World#register_filter")
-        World.default.register_filter(mod)
+        Deprecations.warn("Template.register_filter", "Environment#register_filter")
+        Environment.default.register_filter(mod)
       end
 
       private def default_resource_limits=(limits)
-        Deprecations.warn("Template.default_resource_limits=", "World#default_resource_limits=")
-        World.default.default_resource_limits = limits
+        Deprecations.warn("Template.default_resource_limits=", "Environment#default_resource_limits=")
+        Environment.default.default_resource_limits = limits
       end
 
       def default_resource_limits
-        World.default.default_resource_limits
+        Environment.default.default_resource_limits
       end
 
       # creates a new <tt>Template</tt> object from liquid source code
       # To enable profiling, pass in <tt>profile: true</tt> as an option.
       # See Liquid::Profiler for more information
       def parse(source, options = {})
-        world = options[:world] || World.default
-        new(world: world).parse(source, options)
+        environment = options[:environment] || Environment.default
+        new(environment: environment).parse(source, options)
       end
     end
 
-    def initialize(world: World.default)
-      @world = world
+    def initialize(environment: Environment.default)
+      @environment = environment
       @rethrow_errors  = false
-      @resource_limits = ResourceLimits.new(world.default_resource_limits)
+      @resource_limits = ResourceLimits.new(environment.default_resource_limits)
     end
 
     # Parse source code.
@@ -151,11 +151,11 @@ module Liquid
         c
       when Liquid::Drop
         drop         = args.shift
-        drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits, {}, @world)
+        drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits, {}, @environment)
       when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits, {}, @world)
+        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits, {}, @environment)
       when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits, {}, @world)
+        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits, {}, @environment)
       else
         raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
       end
@@ -218,7 +218,7 @@ module Liquid
       parse_context = if options.is_a?(ParseContext)
         options
       else
-        opts = options.key?(:world) ? options : options.merge(world: @world)
+        opts = options.key?(:environment) ? options : options.merge(environment: @environment)
         ParseContext.new(opts)
       end
 

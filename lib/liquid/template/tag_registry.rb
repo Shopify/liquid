@@ -9,7 +9,7 @@ module Liquid
         @tags  = {}
         @cache = {}
         tags.each { |tag_name, klass| self[tag_name] = klass }
-        Deprecations.warn("Template::TagRegistry", "Use a World instance with zeitwerk")
+        Deprecations.warn("Template::TagRegistry", "Use a Environment instance with zeitwerk")
       end
 
       def [](tag_name)
@@ -20,7 +20,7 @@ module Liquid
       end
 
       def delete(tag_name)
-        Deprecations.warn("Template::TagRegistry#delete", "Use a World instance with immutable tags")
+        Deprecations.warn("Template::TagRegistry#delete", "Use a Environment instance with immutable tags")
         @tags.delete(tag_name)
         @cache.delete(tag_name)
       end

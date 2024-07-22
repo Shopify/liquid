@@ -61,7 +61,7 @@ require 'liquid/block'
 require 'liquid/parse_tree_visitor'
 require 'liquid/interrupts'
 require 'liquid/tags'
-require "liquid/world"
+require "liquid/environment"
 require 'liquid/lexer'
 require 'liquid/parser'
 require 'liquid/i18n'

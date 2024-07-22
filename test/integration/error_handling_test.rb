@@ -219,15 +219,15 @@ class ErrorHandlingTest < Minitest::Test
     Liquid::Template.default_exception_renderer = old_exception_renderer if old_exception_renderer
   end
 
-  def test_setting_exception_renderer_on_world
+  def test_setting_exception_renderer_on_environment
     exceptions = []
     exception_renderer = ->(e) do
       exceptions << e
       ''
     end
 
-    world = Liquid::World.build(exception_renderer: exception_renderer)
-    template = Liquid::Template.parse('This is a runtime error: {{ errors.argument_error }}', world: world)
+    environment = Liquid::Environment.build(exception_renderer: exception_renderer)
+    template = Liquid::Template.parse('This is a runtime error: {{ errors.argument_error }}', environment: environment)
     output = template.render('errors' => ErrorDrop.new)
 
     assert_equal('This is a runtime error: ', output)
@@ -257,8 +257,8 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_included_template_name_with_line_numbers
-    world = Liquid::World.build(file_system: TestFileSystem.new)
-    template = Liquid::Template.parse("Argument error:\n{% include 'product' %}", line_numbers: true, world: world)
+    environment = Liquid::Environment.build(file_system: TestFileSystem.new)
+    template = Liquid::Template.parse("Argument error:\n{% include 'product' %}", line_numbers: true, environment: environment)
     page     = template.render('errors' => ErrorDrop.new)
 
     assert_equal("Argument error:\nLiquid error (product line 1): argument error", page)
