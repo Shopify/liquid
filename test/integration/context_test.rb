@@ -583,6 +583,20 @@ class ContextTest < Minitest::Test
     assert_equal('my filter result', template.render(subcontext))
   end
 
+  def test_new_isolated_subcontext_inherits_strict_filters
+    super_context = Context.new
+    super_context.strict_filters = true
+    subcontext = super_context.new_isolated_subcontext
+    assert_equal(true, subcontext.strict_filters)
+  end
+
+  def test_new_isolated_subcontext_inherits_strict_variables
+    super_context = Context.new
+    super_context.strict_variables = true
+    subcontext = super_context.new_isolated_subcontext
+    assert_equal(true, subcontext.strict_variables)
+  end
+
   def test_disables_tag_specified
     context = Context.new
     context.with_disabled_tags(%w(foo bar)) do
