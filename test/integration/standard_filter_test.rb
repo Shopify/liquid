@@ -225,6 +225,30 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('Liquid error: invalid base64 provided to base64_url_safe_decode', exception.message)
   end
 
+  def test_url_add_param
+    assert_equal('https://shopify.com?foo=bar', @filters.url_add_param('https://shopify.com', 'foo', 'bar'))
+    assert_equal('https://shopify.com?foo=bar&baz=qux', @filters.url_add_param('https://shopify.com?foo=bar', 'baz', 'qux'))
+    assert_equal('https://shopify.com?foo=bar#baz', @filters.url_add_param('https://shopify.com#baz', 'foo', 'bar'))
+    assert_equal('not-an-url?foo=bar', @filters.url_add_param('not-an-url', 'foo', 'bar'))
+    assert_equal('not-an-url?foo=bar&baz=qux', @filters.url_add_param('not-an-url?foo=bar', 'baz', 'qux'))
+    assert_equal('not-an-url?foo=bar#baz', @filters.url_add_param('not-an-url#baz', 'foo', 'bar'))
+    assert_equal('?foo=bar', @filters.url_add_param('', 'foo', 'bar'))
+    assert_equal('?foo=bar&baz=qux', @filters.url_add_param('?foo=bar', 'baz', 'qux'))
+    assert_equal('?foo=bar#baz', @filters.url_add_param('#baz', 'foo', 'bar'))
+  end
+
+  def test_url_remove_param
+    assert_equal('https://shopify.com?', @filters.url_remove_param('https://shopify.com?foo=bar', 'foo'))
+    assert_equal('https://shopify.com?foo=bar', @filters.url_remove_param('https://shopify.com?foo=bar&baz=qux', 'baz'))
+    assert_equal('https://shopify.com?#baz', @filters.url_remove_param('https://shopify.com?foo=bar#baz', 'foo'))
+    assert_equal('not-an-url?', @filters.url_remove_param('not-an-url', 'foo'))
+    assert_equal('not-an-url?foo=bar', @filters.url_remove_param('not-an-url?foo=bar&baz=qux', 'baz'))
+    assert_equal('not-an-url?#baz', @filters.url_remove_param('not-an-url#baz', 'foo'))
+    assert_equal('?', @filters.url_remove_param('?foo=bar', 'foo'))
+    assert_equal('?foo=bar', @filters.url_remove_param('?foo=bar&baz=qux', 'baz'))
+    assert_equal('?#baz', @filters.url_remove_param('?foo=bar#baz', 'foo'))
+  end
+
   def test_url_encode
     assert_equal('foo%2B1%40example.com', @filters.url_encode('foo+1@example.com'))
     assert_equal('1', @filters.url_encode(1))
