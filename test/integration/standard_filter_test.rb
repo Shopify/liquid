@@ -900,6 +900,81 @@ class StandardFiltersTest < Minitest::Test
     assert_nil(@filters.where([nil], "ok"))
   end
 
+  def test_reject
+    input = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    expectation = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    assert_equal(expectation, @filters.reject(input, "ok", false))
+    assert_equal(expectation, @filters.reject(input, "ok"))
+  end
+
+  def test_reject_no_key_set
+    input = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta" },
+      { "handle" => "gamma" },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    expectation = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    assert_equal(expectation, @filters.reject(input, "ok"))
+  end
+
+  def test_reject_non_array_map_input
+    assert_equal([], @filters.reject({ "foo" => "bar" }, "foo", "bar"))
+    assert_equal([{ "foo" => "baz" }], @filters.reject({ "foo" => "baz" }, "foo", "bar"))
+  end
+
+  def test_reject_indexable_but_non_map_value
+    assert_equal([], @filters.reject(1, "ok", true))
+    assert_equal([], @filters.reject(1, "ok"))
+  end
+
+  def test_reject_non_boolean_value
+    input = [
+      { "message" => "Bonjour!", "language" => "French" },
+      { "message" => "Hello!", "language" => "English" },
+    ]
+
+    assert_equal([{ "message" => "Hello!", "language" => "English" }], @filters.reject(input, "language", "French"))
+    assert_equal([{ "message" => "Bonjour!", "language" => "French" }], @filters.reject(input, "language", "English"))
+  end
+
+  def test_reject_array_of_only_unindexable_values
+    assert_equal([], @filters.reject([nil, nil], "ok", true))
+    assert_equal([], @filters.reject([nil, nil], "ok"))
+  end
+
+  def test_reject_deep
+    input = [
+      { "item" => { "handle" => "alpha", "ok" => true } },
+      { "item" => { "handle" => "beta", "ok" => false } },
+      { "item" => { "handle" => "gamma", "ok" => false } },
+      { "item" => { "handle" => "delta", "ok" => true } },
+    ]
+
+    expectation = [
+      { "item" => { "handle" => "alpha", "ok" => true } },
+      { "item" => { "handle" => "delta", "ok" => true } },
+    ]
+
+    assert_equal(expectation, @filters.reject(input, "item.ok", false))
+    assert_equal(expectation, @filters.reject(input, "item.ok"))
+  end
+
   def test_all_filters_never_raise_non_liquid_exception
     test_drop = TestDrop.new(value: "test")
     test_drop.context = Context.new
