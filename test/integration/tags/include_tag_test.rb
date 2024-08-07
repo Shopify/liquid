@@ -49,14 +49,6 @@ end
 class IncludeTagTest < Minitest::Test
   include Liquid
 
-  def setup
-    @default_file_system = Liquid::Template.file_system
-  end
-
-  def teardown
-    Liquid::Template.file_system = @default_file_system
-  end
-
   def test_include_tag_looks_for_file_system_in_registers_first
     assert_equal(
       'from OtherFileSystem',
@@ -214,9 +206,10 @@ class IncludeTagTest < Minitest::Test
 
   def test_include_tag_caches_second_read_of_same_partial
     file_system = CountingFileSystem.new
+    environment = Liquid::Environment.build(file_system: file_system)
     assert_equal(
       'from CountingFileSystemfrom CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system }),
+      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}", environment: environment).render!({}, registers: { file_system: file_system }),
     )
     assert_equal(1, file_system.count)
   end

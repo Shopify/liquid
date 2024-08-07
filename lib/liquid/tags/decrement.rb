@@ -35,6 +35,4 @@ module Liquid
       output
     end
   end
-
-  Template.register_tag('decrement', Decrement)
 end

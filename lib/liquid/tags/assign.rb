@@ -72,6 +72,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('assign', Assign)
 end

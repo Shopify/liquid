@@ -15,14 +15,15 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits, :static_registers, :static_environments
-    attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
+    attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters, :environment
 
     # rubocop:disable Metrics/ParameterLists
-    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {}, &block)
+    def self.build(environment: Environment.default, environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {}, &block)
       new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments, &block)
     end
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {})
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {}, environment = Environment.default)
+      @environment = environment
       @environments = [environments]
       @environments.flatten!
 
@@ -32,7 +33,7 @@ module Liquid
       @errors              = []
       @partial             = false
       @strict_variables    = false
-      @resource_limits     = resource_limits || ResourceLimits.new(Template.default_resource_limits)
+      @resource_limits     = resource_limits || ResourceLimits.new(environment.default_resource_limits)
       @base_scope_depth    = 0
       @interrupts          = []
       @filters             = []
@@ -40,10 +41,10 @@ module Liquid
       @disabled_tags       = {}
 
       @registers.static[:cached_partials] ||= {}
-      @registers.static[:file_system] ||= Liquid::Template.file_system
+      @registers.static[:file_system] ||= environment.file_system
       @registers.static[:template_factory] ||= Liquid::TemplateFactory.new
 
-      self.exception_renderer = Template.default_exception_renderer
+      self.exception_renderer = environment.exception_renderer
       if rethrow_errors
         self.exception_renderer = Liquid::RAISE_EXCEPTION_LAMBDA
       end
@@ -60,7 +61,7 @@ module Liquid
     end
 
     def strainer
-      @strainer ||= StrainerFactory.create(self, @filters)
+      @strainer ||= @environment.create_strainer(self, @filters)
     end
 
     # Adds filters to this context.

@@ -56,6 +56,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('raw', Raw)
 end
