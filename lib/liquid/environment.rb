@@ -46,7 +46,7 @@ module Liquid
         ret.error_mode = error_mode if error_mode
         ret.exception_renderer = exception_renderer if exception_renderer
         yield ret if block_given?
-        ret.freeze
+        # ret.freeze
       end
 
       # Returns the default environment instance.
