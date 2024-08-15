@@ -9,7 +9,7 @@ GIT
 PATH
   remote: .
   specs:
-    liquid (5.5.1)
+    liquid (5.6.0.alpha)
 
 GEM
   remote: https://rubygems.org/
