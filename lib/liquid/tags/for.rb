@@ -126,7 +126,14 @@ module Liquid
       end
 
       collection = context.evaluate(@collection_name)
-      collection = collection.to_a if collection.is_a?(Range)
+      if collection.is_a?(Range)
+        score_limit = context.resource_limits.render_score_limit
+        if score_limit && score_limit < collection.size
+          context.resource_limits.render_score += collection.size
+          raise MemoryError.new("Memory limits exceeded".freeze)
+        end
+        collection = collection.to_a
+      end
 
       limit_value = context.evaluate(@limit)
       to = if limit_value.nil?
