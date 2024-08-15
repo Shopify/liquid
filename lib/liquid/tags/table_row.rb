@@ -65,6 +65,12 @@ module Liquid
           super
           output << '</td>'
 
+          # Handle any interrupts if they exist.
+          if context.interrupt?
+            interrupt = context.pop_interrupt
+            break if interrupt.is_a?(BreakInterrupt)
+          end
+
           if tablerowloop.col_last && !tablerowloop.last
             output << "</tr>\n<tr class=\"row#{tablerowloop.row + 1}\">"
           end
