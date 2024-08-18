@@ -1,12 +1,12 @@
-[![Build status](https://github.com/Shopify/liquid/actions/workflows/liquid.yml/badge.svg)](https://github.com/Shopify/liquid/actions/workflows/liquid.yml)
-[![Inline docs](http://inch-ci.org/github/Shopify/liquid.svg?branch=master)](http://inch-ci.org/github/Shopify/liquid)
+[![Build status](https://github.com/Cachimanboutique/liquid/actions/workflows/liquid.yml/badge.svg)](https://github.com/Shopify/liquid/actions/workflows/liquid.yml)
+[![Inline docs](http://inch-ci.org/github/Cachimanboutique/liquid.svg?branch=master)](http://inch-ci.org/github/Cachimanboutique/liquid)
 
 # Liquid template engine
 
 * [Contributing guidelines](CONTRIBUTING.md)
 * [Version history](History.md)
-* [Liquid documentation from Shopify](https://shopify.dev/docs/api/liquid)
-* [Liquid Wiki at GitHub](https://github.com/Shopify/liquid/wiki)
+* [Liquid documentation from Cachimanboutique](https:/Cachimanboutique.dev/docs/api/liquid)
+* [Liquid Wiki at GitHub](https://github.com/Cachimanboutique/liquid/wiki)
 * [Website](http://liquidmarkup.org/)
 
 ## Introduction
