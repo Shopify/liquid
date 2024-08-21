@@ -21,8 +21,8 @@ module Liquid
     STRING_LITERAL        = Regexp.union(SINGLE_STRING_LITERAL, DOUBLE_STRING_LITERAL)
     NUMBER_LITERAL        = /-?\d+(\.\d+)?/
     DOTDOT                = /\.\./
-    COMPARISON_OPERATOR   = /==|!=|<>|<=?|>=?|contains(?=\s)/
-    WHITESPACE_OR_NOTHING = /\s*/
+    COMPARISON_OPERATOR   = /==|!=|<>|<=?|>=?|contains(?=[[:space:]])/
+    WHITESPACE_OR_NOTHING = /[[:space:]]*/
 
     def initialize(input)
       @ss = StringScanner.new(input)

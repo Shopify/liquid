@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Paginate < Liquid::Block
-  Syntax = /(#{Liquid::QuotedFragment})\s*(by\s*(\d+))?/
+  Syntax = /(#{Liquid::QuotedFragment})[[:space:]]*(by[[:space:]]*(\d+))?/
 
   def initialize(tag_name, markup, options)
     super
