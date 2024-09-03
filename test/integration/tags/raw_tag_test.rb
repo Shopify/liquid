@@ -10,6 +10,10 @@ class RawTagTest < Minitest::Test
       '{% comment %} test {% endcomment %}',
       '{% raw %}{% comment %} test {% endcomment %}{% endraw %}',
     )
+    assert_template_result(
+      '',
+      '{% comment %} {% if true %}{% end %} {% endcomment %}',
+    )
   end
 
   def test_output_in_raw

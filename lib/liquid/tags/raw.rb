@@ -22,6 +22,10 @@ module Liquid
       ensure_valid_markup(tag_name, markup, parse_context)
     end
 
+    def supports_end_tag?
+      false
+    end
+
     def parse(tokens)
       @body = +''
       while (token = tokens.shift)

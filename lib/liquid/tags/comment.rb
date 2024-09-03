@@ -22,6 +22,10 @@ module Liquid
     def unknown_tag(_tag, _markup, _tokens)
     end
 
+    def supports_end_tag?
+      false
+    end
+
     def blank?
       true
     end

@@ -34,7 +34,7 @@ module Liquid
     end
 
     # @api private
-    def self.raise_unknown_tag(tag, block_name, block_delimiter, parse_context)
+    def self.raise_unknown_tag(tag, block_name, block_delimiter, parse_context, supports_end_tag = true)
       if tag == 'else'
         raise SyntaxError, parse_context.locale.t(
           "errors.syntax.unexpected_else",
@@ -42,7 +42,7 @@ module Liquid
         )
       elsif tag.start_with?('end')
         raise SyntaxError, parse_context.locale.t(
-          "errors.syntax.invalid_delimiter",
+          supports_end_tag ? "errors.syntax.invalid_delimiter" : "errors.syntax.invalid_delimiter_no_end",
           tag: tag,
           block_name: block_name,
           block_delimiter: block_delimiter,
@@ -64,6 +64,10 @@ module Liquid
       @block_delimiter ||= "end#{block_name}"
     end
 
+    def supports_end_tag?
+      true
+    end
+
     private
 
     # @api public
@@ -81,7 +85,7 @@ module Liquid
         body.parse(tokens, parse_context) do |end_tag_name, end_tag_params|
           @blank &&= body.blank?
 
-          return false if end_tag_name == block_delimiter
+          return false if end_tag_name == block_delimiter || (supports_end_tag? && end_tag_name == 'end')
           raise_tag_never_closed(block_name) unless end_tag_name
 
           # this tag is not registered with the system
