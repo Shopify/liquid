@@ -106,6 +106,11 @@ class LiquidTagTest < Minitest::Test
       42
       {%- liquid endif -%}
     LIQUID
+    assert_match_syntax_error("syntax error (line 3): 'end' is not a valid delimiter for liquid tags. use %}", <<~LIQUID)
+      {%- if true -%}
+      42
+      {%- liquid end -%}
+    LIQUID
   end
 
   def test_liquid_tag_in_raw
@@ -121,6 +126,15 @@ class LiquidTagTest < Minitest::Test
           if true
             echo "good"
           endif
+      -%}
+    LIQUID
+
+    assert_template_result('good', <<~LIQUID)
+      {%- liquid
+        liquid
+          if true
+            echo "good"
+          end
       -%}
     LIQUID
   end

@@ -68,7 +68,7 @@ module Liquid
 
     # @api private
     def self.unknown_tag_in_liquid_tag(tag, parse_context)
-      Block.raise_unknown_tag(tag, 'liquid', '%}', parse_context)
+      Block.raise_unknown_tag(tag, 'liquid', '%}', parse_context, false)
     end
 
     # @api private

@@ -12,6 +12,7 @@ class IfElseTagTest < Minitest::Test
       ' {% if true %} this text should go into the output {% endif %} ',
     )
     assert_template_result('  you rock ?', '{% if false %} you suck {% endif %} {% if true %} you rock {% endif %}?')
+    assert_template_result('  you rock ?', '{% if false %} you suck {% endif %} {% if true %} you rock {% end %}?')
   end
 
   def test_literal_comparisons
