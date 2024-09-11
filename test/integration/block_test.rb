@@ -5,31 +5,9 @@ require 'test_helper'
 class BlockTest < Minitest::Test
   include Liquid
 
-  def test_simple_end_tag
-    assert_template_result('you rock', '{% if true %}you rock{% end %}')
-    assert_template_result('you rock', '{% if true %}{% unless false %}you rock{% end %}{% end %}')
-  end
-
   def test_unexpected_end_tag
     source = '{% if true %}{% endunless %}'
-    assert_match_syntax_error("Liquid syntax error (line 1): 'endunless' is not a valid delimiter for if tags. use end or endif", source)
-  end
-
-  def test_end_closes_closest_open_tag
-    source = '{% if true %}{% unless true %}{% end %}{% endunless %}'
-    assert_match_syntax_error("Liquid syntax error (line 1): 'endunless' is not a valid delimiter for if tags. use end or endif", source)
-  end
-
-  # comments are special and can't be closed by `end`
-  def test_unexpected_end_tag_comment
-    source = '{% comment %}{% end %}'
-    assert_match_syntax_error("Liquid syntax error (line 1): 'comment' tag was never closed", source)
-  end
-
-  # raw is special and can't be closed by `end`
-  def test_unexpected_end_tag_raw
-    source = '{% raw %}{% end %}'
-    assert_match_syntax_error("Liquid syntax error (line 1): 'raw' tag was never closed", source)
+    assert_match_syntax_error("Liquid syntax error (line 1): 'endunless' is not a valid delimiter for if tags. use endif", source)
   end
 
   def test_with_custom_tag
