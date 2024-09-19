@@ -66,6 +66,14 @@ module Liquid
       template_name = @template_name_expr
       raise ::ArgumentError unless template_name.is_a?(String)
 
+      puts '---------------'
+      puts template_name
+      puts '---------------'
+      if (inline_snippet = context.registers[:inline_snippet][template_name])
+        puts '!!!'
+        p(inline_snippet)
+      end
+
       partial = PartialCache.load(
         template_name,
         context: context,
