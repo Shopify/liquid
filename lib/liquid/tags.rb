@@ -20,6 +20,7 @@ require_relative "tags/raw"
 require_relative "tags/render"
 require_relative "tags/cycle"
 require_relative "tags/doc"
+require_relative "tags/snippet"
 
 module Liquid
   module Tags
@@ -44,6 +45,7 @@ module Liquid
       'echo' => Echo,
       'tablerow' => TableRow,
       'doc' => Doc,
+      'snippet' => Snippet,
     }.freeze
   end
 end
