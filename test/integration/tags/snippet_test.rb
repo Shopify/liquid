@@ -29,15 +29,44 @@ class SnippetTest < Minitest::Test
 
   def test_render_inline_snippet
     template = <<~LIQUID.strip
-      {% snippet "input" %}
+      {% snippet "hey" %}
       Hey
       {% endsnippet %}
 
-      {%- render "input" -%}
+      {%- render "hey" -%}
     LIQUID
     expected = <<~OUTPUT
 
       Hey
+    OUTPUT
+
+    assert_template_result(expected, template)
+  end
+
+  def test_render_multiple_inline_snippets
+    template = <<~LIQUID.strip
+      {% snippet "input" %}
+      <input />
+      {% endsnippet %}
+
+      {% snippet "banner" %}
+      <marquee direction="up" height="100px">
+        Welcome to my store!
+      </marquee>
+      {% endsnippet %}
+
+      {%- render "input" -%}
+      {%- render "banner" -%}
+    LIQUID
+    expected = <<~OUTPUT
+
+
+
+      <input />
+
+      <marquee direction="up" height="100px">
+        Welcome to my store!
+      </marquee>
     OUTPUT
 
     assert_template_result(expected, template)
