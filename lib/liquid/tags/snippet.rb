@@ -6,15 +6,13 @@ module Liquid
   # @liquid_category theme
   # @liquid_name snippet
   # @liquid_summary
-  #   Creates a new variable with a string value.
+  #   Creates a new inline snippet using a string value as the identifier.
   # @liquid_description
-  #   You can create complex strings with Liquid logic and variables.
+  #   You can create inline snippets to make your Liquid code more modular.
   # @liquid_syntax
   #   {% snippet "input" %}
   #     value
   #   {% endsnippet %}
-  # @liquid_syntax_keyword variable The name of the variable being created.
-  # @liquid_syntax_keyword value The value you want to assign to the variable.
   class Snippet < Block
     SYNTAX = /(#{QuotedString}+)/o
 
@@ -29,8 +27,18 @@ module Liquid
 
     def render(context)
       context.registers[:inline_snippet] ||= {}
-      context.registers[@to] = @body
+      context.registers[:inline_snippet][snippet_id] = snippet_body
       ''
+    end
+
+    private
+
+    def snippet_id
+      @to[1, @to.size - 2]
+    end
+
+    def snippet_body
+      @body
     end
   end
 end

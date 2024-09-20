@@ -5,7 +5,7 @@ require 'test_helper'
 class SnippetTest < Minitest::Test
   include Liquid
 
-  def xtest_valid_inline_snippet
+  def test_valid_inline_snippet
     template = <<~LIQUID.strip
       {% snippet "input" %}
         Hey
@@ -16,7 +16,7 @@ class SnippetTest < Minitest::Test
     assert_template_result(expected, template)
   end
 
-  def xtest_invalid_inline_snippet
+  def test_invalid_inline_snippet
     template = <<~LIQUID.strip
       {% snippet input %}
         Hey
@@ -30,17 +30,16 @@ class SnippetTest < Minitest::Test
   def test_render_inline_snippet
     template = <<~LIQUID.strip
       {% snippet "input" %}
-        Hey
+      Hey
       {% endsnippet %}
 
-      {%- render "input" %}{% render "input" %}
+      {%- render "input" -%}
     LIQUID
-    expected = <<~OUTPUT.strip
-      HeyHey
+    expected = <<~OUTPUT
+
+      Hey
     OUTPUT
 
-    assert_template_result(expected, template, partials: {
-      'input' => 'Hey',
-    })
+    assert_template_result(expected, template)
   end
 end

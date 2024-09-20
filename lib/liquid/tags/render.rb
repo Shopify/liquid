@@ -66,12 +66,9 @@ module Liquid
       template_name = @template_name_expr
       raise ::ArgumentError unless template_name.is_a?(String)
 
-      puts '---------------'
-      puts template_name
-      puts '---------------'
+      # Inline snippets take precedence over external snippets
       if (inline_snippet = context.registers[:inline_snippet][template_name])
-        puts '!!!'
-        p(inline_snippet)
+        return output << inline_snippet.render(context)
       end
 
       partial = PartialCache.load(

@@ -9,7 +9,7 @@ module Liquid
       return cached if cached
 
       file_system = context.registers[:file_system]
-      source = file_system.read_template_file(template_name)
+      source      = file_system.read_template_file(template_name)
 
       parse_context.partial = true
 
