@@ -28,3 +28,7 @@ group :test do
     gem 'liquid-c', github: 'Shopify/liquid-c', ref: 'main'
   end
 end
+
+group :development do
+  gem "webrick"
+end

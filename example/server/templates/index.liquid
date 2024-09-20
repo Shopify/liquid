@@ -1,6 +1,73 @@
-<p>Hello world!</p>
+<!DOCTYPE html>
+  <html lang="en">
 
-<p>It is {{date}}</p>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Simple Code Editor</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/xml/xml.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/htmlmixed/htmlmixed.min.js"></script>
+      <style>
+        .liquid, .CodeMirror {
+          position: fixed;
+          height: 100vh;
+          width: 50vw;
+          top: 0;
+          font-size: 24px;
+        }
+        .liquid {
+          left: 0;
+        }
+        .CodeMirror {
+          left: 50%;
+        }
+        .CodeMirror-hscrollbar {
+          overflow: hidden;
+        }
+      </style>
+  </head>
+
+  <body>
+    <div class="liquid">
+      {% snippet "main" %}
+
+        {% # Snippet input %}
+        {% snippet "input" %}
+          <label>User:</label>
+          <input />
+        {% endsnippet %}
 
 
-<p>Check out the <a href="/products">Products</a> screen </p>
+        {% # Snippet banner %}
+        {% snippet "banner" %}
+          <marquee direction="up" height="100px">
+            Welcome to my store!
+          </marquee>
+        {% endsnippet %}
+
+        {% render 'input' %}
+        {% render 'input' %}
+        {% render 'banner' %}
+
+      {% endsnippet %}
+      {% render 'main' %}
+    </div>
+
+    <textarea id="code">
+      {% capture html %}{% render 'main' %}{% endcapture %}
+      {{ html | escape }}
+    </textarea>
+
+    <script>
+      const editorElement = document.querySelector('#code')
+      const editor = CodeMirror.fromTextArea(editorElement, {
+          lineNumbers: true,
+          mode: "htmlmixed",
+          theme: "dracula"
+      });
+    </script>
+  </body>
+</html>
