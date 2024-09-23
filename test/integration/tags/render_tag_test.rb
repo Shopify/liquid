@@ -22,11 +22,17 @@ class RenderTagTest < Minitest::Test
   end
 
   def test_render_passes_named_arguments_into_inner_scope
+    partial_cache = Class.new do
+      def load(template_name, context:, parse_context:)
+        Liquid::Template.parse("my own partial cache (#{template_name})")
+      end
+    end.new
+    environment = Liquid::Environment.build(partial_cache: partial_cache)
+
     assert_template_result(
-      'My Product',
-      '{% render "product", inner_product: outer_product %}',
-      { 'outer_product' => { 'title' => 'My Product' } },
-      partials: { 'product' => '{{ inner_product.title }}' },
+      'my own partial cache (my_partial.liquid)',
+      '{% render "my_partial.liquid" %}',
+      environment: environment,
     )
   end
 

@@ -26,6 +26,9 @@ module Liquid
     # template can consume.
     attr_accessor :default_resource_limits
 
+    # Implementation for partial caching must respond to `load`
+    attr_accessor :partial_cache
+
     class << self
       # Creates a new environment instance.
       #
@@ -39,12 +42,13 @@ module Liquid
       #   render exceptions.
       # @yieldparam environment [Environment] The environment instance that is being built.
       # @return [Environment] The new environment instance.
-      def build(tags: nil, file_system: nil, error_mode: nil, exception_renderer: nil)
+      def build(tags: nil, file_system: nil, error_mode: nil, exception_renderer: nil, partial_cache: nil)
         ret = new
         ret.tags = Template::TagRegistry.new(tags) if tags
         ret.file_system = file_system if file_system
         ret.error_mode = error_mode if error_mode
         ret.exception_renderer = exception_renderer if exception_renderer
+        ret.partial_cache = partial_cache if partial_cache
         yield ret if block_given?
         ret.freeze
       end
@@ -83,6 +87,7 @@ module Liquid
       @file_system = BlankFileSystem.new
       @default_resource_limits = Const::EMPTY_HASH
       @strainer_template_class_cache = {}
+      @partial_cache = PartialCache
     end
 
     # Registers a new tag with the environment.

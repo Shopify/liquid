@@ -19,7 +19,7 @@ module Liquid
 
     # rubocop:disable Metrics/ParameterLists
     def self.build(environment: Environment.default, environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {}, &block)
-      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments, &block)
+      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments, environment, &block)
     end
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {}, environment = Environment.default)
@@ -41,6 +41,7 @@ module Liquid
       @disabled_tags       = {}
 
       @registers.static[:cached_partials] ||= {}
+      @registers.static[:partial_cache] ||= environment.partial_cache
       @registers.static[:file_system] ||= environment.file_system
       @registers.static[:template_factory] ||= Liquid::TemplateFactory.new
 

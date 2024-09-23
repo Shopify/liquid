@@ -40,10 +40,10 @@ module Minitest
     def assert_template_result(
       expected, template, assigns = {},
       message: nil, partials: nil, error_mode: nil, render_errors: false,
-      template_factory: nil
+      template_factory: nil, environment: nil
     )
       file_system = StubFileSystem.new(partials || {})
-      environment = Liquid::Environment.build(file_system: file_system)
+      environment ||= Liquid::Environment.build(file_system: file_system)
       template = Liquid::Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym, environment: environment)
       registers = Liquid::Registers.new(file_system: file_system, template_factory: template_factory)
       context = Liquid::Context.build(static_environments: assigns, rethrow_errors: !render_errors, registers: registers, environment: environment)

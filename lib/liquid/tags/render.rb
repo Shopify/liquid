@@ -66,7 +66,8 @@ module Liquid
       template_name = @template_name_expr
       raise ::ArgumentError unless template_name.is_a?(String)
 
-      partial = PartialCache.load(
+      partial_cache = context.registers[:partial_cache]
+      partial = partial_cache.load(
         template_name,
         context: context,
         parse_context: parse_context,
