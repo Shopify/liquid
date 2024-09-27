@@ -68,7 +68,13 @@ module Liquid
 
       # Inline snippets take precedence over external snippets
       if (inline_snippet = context.registers[:inline_snippet][template_name])
-        return output << inline_snippet.render(context)
+        inner_context = context.new_isolated_subcontext
+
+        @attributes.each do |key, value|
+          inner_context[key] = context.evaluate(value)
+        end
+
+        return output << inline_snippet.render(inner_context)
       end
 
       partial = PartialCache.load(

@@ -36,8 +36,14 @@
 
         {% # Snippet input %}
         {% snippet "input" %}
-          <label>User:</label>
-          <input />
+        <div>
+          <label>{{ label }}</label>
+          <input type={{ type }}>
+          </div>
+        {% endsnippet %}
+
+        {% snippet "league" %}
+          <h1>Welcome to the {{ team }} of super {{ name }}</h1>
         {% endsnippet %}
 
 
@@ -48,8 +54,9 @@
           </marquee>
         {% endsnippet %}
 
-        {% render 'input' %}
-        {% render 'input' %}
+        {% render 'league', team: "league", name: "Evil" %}
+        {% render 'input', label: "User", type: "text" %}
+        {% render 'input', label: "Pass", type: "password" %}
         {% render 'banner' %}
 
       {% endsnippet %}

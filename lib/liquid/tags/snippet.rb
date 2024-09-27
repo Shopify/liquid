@@ -14,12 +14,17 @@ module Liquid
   #     value
   #   {% endsnippet %}
   class Snippet < Block
+    # SYNTAX = /(#{QuotedString}+) +\|(#{VariableSegment}*)\|/o
     SYNTAX = /(#{QuotedString}+)/o
-
     def initialize(tag_name, markup, options)
       super
       if markup =~ SYNTAX
+        # binding.irb
         @to = Regexp.last_match(1)
+        # arg = Regexp.last_match(2)
+
+        # @args = []
+        # @args << arg if arg
       else
         raise SyntaxError, options[:locale].t("errors.syntax.snippet")
       end
@@ -38,7 +43,8 @@ module Liquid
     end
 
     def snippet_body
-      @body
+      body = @body
+      body
     end
   end
 end
