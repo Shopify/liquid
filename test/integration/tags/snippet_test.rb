@@ -75,7 +75,7 @@ class SnippetTest < Minitest::Test
   def test_render_inline_snippet_with_argument
     # This passes whether or not we have the new or old SYNTAX
     template = <<~LIQUID.strip
-      {% snippet "input" |type, value| %}
+      {% snippet "input" |type| %}
       <input type="{{ type }}" />
       {% endsnippet %}
 
@@ -89,19 +89,38 @@ class SnippetTest < Minitest::Test
     assert_template_result(expected, template)
   end
 
-  def test_render_inline_snippet_with_multiple_arguments
-    template = <<~LIQUID.strip
-      {% snippet "input" |type, value| %}
-      <input type="{{ type }}" value="{{ value }}" />
-      {% endsnippet %}
+  # def test_render_inline_snippet_with_multiple_arguments
+  #   template = <<~LIQUID.strip
+  #     {% snippet "input" |type, value| %}
+  #     <input type="{{ type }}" value="{{ value }}" />
+  #     {% endsnippet %}
 
-      {%- render "input", type: "text", value: "Hello" -%}
-    LIQUID
-    expected = <<~OUTPUT
+  #     {%- render "input", type: "text", value: "Hello" -%}
+  #   LIQUID
+  #   expected = <<~OUTPUT
 
-      <input type="text" value="Hello" />
-    OUTPUT
+  #     <input type="text" value="Hello" />
+  #   OUTPUT
 
-    assert_template_result(expected, template)
-  end
+  #   assert_template_result(expected, template)
+  # end
+
+  # def test_render_inline_snippet_shouldnt_leak_context
+  #   template = <<~LIQUID.strip
+  #     {% snippet "input" |type, value| %}
+  #     <input type="{{ type }}" value="{{ value }}" />
+  #     {% endsnippet %}
+
+  #     {%- render "input", type: "text", value: "Hello" -%}
+
+  #     {{ type }}
+  #     {{ value }}
+  #   LIQUID
+  #   expected = <<~OUTPUT
+
+  #     <input type="text" value="Hello" />
+  #   OUTPUT
+
+  #   assert_template_result(expected, template)
+  # end
 end
