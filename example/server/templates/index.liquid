@@ -35,29 +35,20 @@
       {% snippet "main" %}
 
         {% # Snippet input %}
-        {% snippet "input" %}
-        <div>
-          <label>{{ label }}</label>
-          <input type={{ type }}>
+        {% snippet "input" |type, name| %}
+          <div>
+            <label>{{ type | capitalize }}</label>
+            <input type={{ type }}>
           </div>
         {% endsnippet %}
 
         {% snippet "league" %}
-          <h1>Welcome to the {{ team }} of super {{ name }}</h1>
+        <h1>Welcome to the league of super evil</h1>
         {% endsnippet %}
 
-
-        {% # Snippet banner %}
-        {% snippet "banner" %}
-          <marquee direction="up" height="100px">
-            Welcome to my store!
-          </marquee>
-        {% endsnippet %}
-
-        {% render 'league', team: "league", name: "Evil" %}
-        {% render 'input', label: "User", type: "text" %}
-        {% render 'input', label: "Pass", type: "password" %}
-        {% render 'banner' %}
+        {% render "league" %}
+        {% render "input", type: "text" %}
+        {% render "input", type: "password" %}
 
       {% endsnippet %}
       {% render 'main' %}

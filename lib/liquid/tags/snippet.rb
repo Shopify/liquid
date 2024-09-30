@@ -14,17 +14,15 @@ module Liquid
   #     value
   #   {% endsnippet %}
   class Snippet < Block
-    SYNTAX = /(#{QuotedString}+) +\|(#{VariableSegment}*)\|/o
+    SYNTAX = /(#{QuotedString})(?:\s*\|\s*([\w\s,]+)\s*\|)?/o
     def initialize(tag_name, markup, options)
       super
 
       if markup =~ SYNTAX
-        # binding.irb
         @to = Regexp.last_match(1)
-        arg = Regexp.last_match(2)
+        args = Regexp.last_match(2)
 
-        @args = []
-        @args << arg if arg
+        @args = args ? args.split(/\s*,\s*/) : []
       else
         raise SyntaxError, options[:locale].t("errors.syntax.snippet")
       end
@@ -32,7 +30,10 @@ module Liquid
 
     def render(context)
       context.registers[:inline_snippet] ||= {}
-      context.registers[:inline_snippet][snippet_id] = snippet_body
+      context.registers[:inline_snippet][snippet_id] = {
+        body: snippet_body,
+        args: @args,
+      }
       ''
     end
 
