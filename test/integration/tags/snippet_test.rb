@@ -104,6 +104,31 @@ class SnippetTest < Minitest::Test
     assert_template_result(expected, template)
   end
 
+  def test_render_inline_snippets_using_same_argument_name
+    template = <<~LIQUID.strip
+      {% snippet "input" |type| %}
+      <input type="{{ type }}" />
+      {% endsnippet %}
+
+      {% snippet "inputs" |type, value| %}
+        <input type="{{ type }}" value="{{ value }}" />
+      {% endsnippet %}
+
+      {%- render "input", type: "text" -%}
+      {%- render "inputs", type: "password", value: "pass" -%}
+    LIQUID
+    expected = <<~OUTPUT
+
+
+
+      <input type="text" />
+
+        <input type="password" value="pass" />
+    OUTPUT
+
+    assert_template_result(expected, template)
+  end
+
   def test_render_inline_snippet_empty_string_when_missing_argument
     template = <<~LIQUID.strip
       {% snippet "input" |type| %}
@@ -145,19 +170,19 @@ class SnippetTest < Minitest::Test
       {% snippet "input" |type| %}
       <input type="{{ type }}" />
       {% endsnippet %}
-
-      {% snippet "banner"%}
-        {{ type }}
+      {% snippet "no_leak" %}
+      <input type="{{ type }}" />
       {% endsnippet %}
 
       {%- render "input", type: "text" -%}
-      {%- render "banner" -%}
+      {%- render "no_leak" -%}
     LIQUID
-    expected = <<~OUTPUT.strip
+    expected = <<~OUTPUT
+
 
       <input type="text" />
 
-
+      <input type="" />
     OUTPUT
 
     assert_template_result(expected, template)
