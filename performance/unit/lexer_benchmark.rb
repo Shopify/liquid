@@ -26,7 +26,20 @@ EXPRESSIONS = [
   "foo != 'bar'",
   "'foo' contains 'bar'",
   '234089',
+  "foo | default: -1",
 ]
+
+EXPRESSIONS.each do |expr|
+  lexer_1_result = Liquid::Lexer1.new(expr).tokenize
+  lexer_2_result = Liquid::Lexer2.new(expr).tokenize
+
+  next if lexer_1_result == lexer_2_result
+
+  warn "Lexer1 and Lexer2 results are different for expression: #{expr}"
+  warn "expected: #{lexer_1_result}"
+  warn "got: #{lexer_2_result}"
+  abort
+end
 
 Benchmark.ips do |x|
   x.config(time: 10, warmup: 5)

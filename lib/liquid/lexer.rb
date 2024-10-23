@@ -143,10 +143,18 @@ module Liquid
       table["-".ord] = DASH
     end
 
+    NUMBER_TABLE = [].tap do |table|
+      "0".upto("9") do |c|
+        table[c.ord] = true
+      end
+      table.freeze
+    end
+
     def initialize(input)
       @ss = StringScanner.new(input)
     end
 
+    # rubocop:disable Metrics/BlockNesting
     def tokenize
       @output = []
 
@@ -159,16 +167,24 @@ module Liquid
 
         if (special = SPECIAL_TABLE[peeked])
           @ss.scan_byte
+          # Special case for ".."
           if special == DOT && @ss.peek_byte == DOT_ORD
             @ss.scan_byte
             @output << DOTDOT
+          elsif special == DASH
+            # Special case for negative numbers
+            if NUMBER_TABLE[@ss.peek_byte]
+              @ss.pos -= 1
+              @output << [:number, @ss.scan(NUMBER_LITERAL)]
+            else
+              @output << special
+            end
           else
             @output << special
           end
         elsif (sub_table = COMPARISON_JUMP_TABLE[peeked])
           @ss.scan_byte
-          next_peeked = @ss.peek_byte
-          if (found = sub_table[next_peeked])
+          if (found = sub_table[@ss.peek_byte])
             @output << found
             @ss.scan_byte
           else
@@ -178,18 +194,18 @@ module Liquid
           type, pattern = NEXT_MATCHER_JUMP_TABLE[peeked]
 
           if type && (t = @ss.scan(pattern))
-            # rubocop:disable Metrics/BlockNesting
+            # Special case for "contains"
             @output << if type == :id && t == "contains"
               COMPARISON_CONTAINS
             else
               [type, t]
             end
-            # rubocop:enable Metrics/BlockNesting
           else
             raise SyntaxError, "Unexpected character #{peeked.chr}"
           end
         end
       end
+      # rubocop:enable Metrics/BlockNesting
 
       @output << EOS
     end
