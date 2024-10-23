@@ -53,7 +53,7 @@ module Liquid
         str = consume
         str << variable_lookups
       when :open_square
-        str = consume
+        str = consume.dup
         str << expression
         str << consume(:close_square)
         str << variable_lookups

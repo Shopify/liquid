@@ -11,10 +11,10 @@ jobs:
     strategy:
       matrix:
         entry:
-          - { ruby: 2.7, allowed-failure: false } # minimum supported
+          - { ruby: 3.0, allowed-failure: false } # minimum supported
           - { ruby: 3.2, allowed-failure: false }
           - { ruby: 3.3, allowed-failure: false } # latest
-          - { ruby: ruby-head, allowed-failure: true }
+          - { ruby: ruby-head, allowed-failure: false }
     name: Test Ruby ${{ matrix.entry.ruby }}
     steps:
       - uses: actions/checkout@v3

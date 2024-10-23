@@ -32,7 +32,7 @@ class TestDrop < Liquid::Drop
   attr_reader :value
 
   def registers
-    { @value => @context.registers[@value] }
+    "{#{@value.inspect}=>#{@context.registers[@value].inspect}}"
   end
 end
 

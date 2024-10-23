@@ -50,4 +50,14 @@ class LexerUnitTest < Minitest::Test
       Lexer.new("%").tokenize
     end
   end
+
+  def test_negative_numbers
+    tokens = Lexer.new("foo | default: -1").tokenize
+    assert_equal([[:id, 'foo'], [:pipe, '|'], [:id, 'default'], [:colon, ":"], [:number, '-1'], [:end_of_string]], tokens)
+  end
+
+  def test_greater_than_two_digits
+    tokens = Lexer.new("foo > 12").tokenize
+    assert_equal([[:id, 'foo'], [:comparison, '>'], [:number, '12'], [:end_of_string]], tokens)
+  end
 end
