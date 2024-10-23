@@ -6,3 +6,4 @@ pkg
 .rvmrc
 .bundle
 .byebug_history
+Gemfile.lock

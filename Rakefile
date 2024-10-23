@@ -81,6 +81,14 @@ namespace :benchmark do
   task :strict do
     ruby "./performance/benchmark.rb strict"
   end
+
+  desc "Run unit benchmarks"
+  task :unit do
+    Dir["./performance/unit/*_benchmark.rb"].each do |file|
+      puts "🧪 Running #{file}"
+      ruby file
+    end
+  end
 end
 
 namespace :profile do

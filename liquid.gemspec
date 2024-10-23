@@ -28,6 +28,9 @@ Gem::Specification.new do |s|
 
   s.require_path = "lib"
 
+  s.add_dependency("strscan")
+  s.add_dependency("bigdecimal")
+
   s.add_development_dependency('rake', '~> 13.0')
   s.add_development_dependency('minitest')
 end
