@@ -9,17 +9,30 @@ module Liquid
       @line_number    = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
       @offset         = 0
-      @tokens         = tokenize
+      @state = :outside
+      @ss = StringScanner.new(source)
+      @n = 0
     end
 
     def shift
-      token = @tokens[@offset]
-      return nil unless token
+      @n += 1
 
-      @offset += 1
+      puts @ss.string if @n > 10000
+      puts @ss.pos if @n > 10000
+      return nil if @ss.eos?
 
-      if @line_number
-        @line_number += @for_liquid_tag ? 1 : token.count("\n")
+      token = +""
+
+      if (t = take_new_next)
+        token << t
+      end
+
+      until @state == :outside || @ss.eos?
+        token << if @state == :inside_variable || @state == :inside_tag
+          take_inside
+        else
+          take_rest
+        end
       end
 
       token
@@ -27,19 +40,68 @@ module Liquid
 
     private
 
-    def tokenize
-      return [] if @source.empty?
+    def take_rest
+      puts "take_rest: #{@state}"
+      xtake_rest
+    end
 
-      return @source.split("\n") if @for_liquid_tag
+    def take_new_next
+      puts "take_new_next: #{@state}"
+      xtake_new_next
+    end
 
-      tokens = @source.split(TemplateParser)
+    def take_inside
+      puts "take_inside: #{@state}"
+      xtake_inside
+    end
 
-      # removes the rogue empty element at the beginning of the array
-      if tokens[0]&.empty?
-        @offset += 1
+    def xtake_rest
+      token = @ss.rest
+      @ss.terminate
+      @state = :outside
+      token
+    end
+
+    "{% foo %}"
+    def xtake_new_next
+      start_pos = @ss.pos
+
+      if (n = @ss.skip_until(VariableStart))
+        @state = :inside_variable unless n == 2
+        end_pos = @ss.pos
+        token = @source.byteslice(start_pos, end_pos - start_pos)
+        @line_number += @for_liquid_tag ? 1 : token.count("\n") if @line_number
+        token
+      elsif (n = @ss.skip_until(TagStart))
+        @state = :inside_tag unless n == 2
+        end_pos = @ss.pos
+        token = @source.byteslice(start_pos, end_pos - start_pos)
+        @line_number += @for_liquid_tag ? 1 : token.count("\n") if @line_number
+        token
+      else
+        take_rest
       end
+    end
 
-      tokens
+    def xtake_inside
+      start_pos = @ss.pos
+      if @state == :inside_variable
+        if (n = @ss.skip_until(VariableEnd))
+          @state = :outside
+          token = @source.byteslice(start_pos, start_pos + n)
+          @line_number += @for_liquid_tag ? 1 : token.count("\n") if @line_number
+          token
+        end
+      elsif @state == :inside_tag
+        if (n = @ss.skip_until(TagEnd))
+          @state = :outside
+          token = @source.byteslice(start_pos, start_pos + n)
+          @line_number += @for_liquid_tag ? 1 : token.count("\n") if @line_number
+          token
+        end
+      else
+        raise SyntaxError, "Unknown state: #{@state}"
+      end
     end
   end
 end
