@@ -91,7 +91,7 @@ module Liquid
       byte_a = @ss.scan_byte
 
       until @ss.eos?
-        while @ss.eos? == false && byte_a != OPEN_CURLEY && byte_a != CLOSE_CURLEY
+        while @ss.eos? == false && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
           byte_a = @ss.scan_byte
         end
 
