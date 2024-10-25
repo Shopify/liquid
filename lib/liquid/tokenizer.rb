@@ -65,7 +65,7 @@ module Liquid
     def next_text_token
       start = @ss.pos
 
-      if @ss.scan_until(TAG_OR_VARIABLE_START).nil?
+      if @ss.skip_until(TAG_OR_VARIABLE_START).nil?
         token = @ss.rest
         @ss.terminate
         return token
