@@ -6,17 +6,20 @@ module Liquid
   class Tokenizer
     attr_reader :line_number, :for_liquid_tag
 
-    TAG_START = /\{%/
     TAG_END = /%\}/
     VARIABLE_START = /\{\{/
     VARIABLE_END = /\}\}/
     TAG_OR_VARIABLE_START = /\{[\{\%}]/
+    NEWLINE = /\n/
+
+    OPEN_CURLEY = 123
+    CLOSE_CURLEY = 125
+    PERCENTAGE = 37
 
     def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
       @source         = source
       @line_number    = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
-      @offset         = 0
       @ss = StringScanner.new(source)
     end
 
@@ -26,8 +29,6 @@ module Liquid
       token = @for_liquid_tag ? next_liquid_token : next_token
 
       return nil unless token
-
-      @offset += 1
 
       if @line_number
         @line_number += @for_liquid_tag ? 1 : token.count("\n")
@@ -41,7 +42,7 @@ module Liquid
     def next_liquid_token
       # read until we find a \n
       start = @ss.pos
-      if @ss.scan_until(/\n/).nil?
+      if @ss.scan_until(NEWLINE).nil?
         token = @ss.rest
         @ss.terminate
         return token
@@ -106,9 +107,7 @@ module Liquid
       start = @ss.pos if start.nil?
       @ss.pos += 2
 
-      if @ss.scan_until(TAG_END).nil?
-        raise_syntax_error("tag was not properly terminated")
-      end
+      @ss.scan_until(TAG_END).nil?
 
       @ss.string.byteslice(start, @ss.pos - start)
     end
