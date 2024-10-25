@@ -49,16 +49,6 @@ module Liquid
     end
 
     def next_token
-      if @ss.pos == 0
-        if @ss.string.start_with?("{{")
-          return next_variable_token
-        elsif @ss.string.start_with?("{%")
-          return next_tag_token
-        else
-          return next_text_token
-        end
-      end
-
       # possible states: :text, :tag, :variable
       byte_a = @ss.scan_byte
 
@@ -66,10 +56,8 @@ module Liquid
         byte_b = @ss.scan_byte
 
         if byte_b == PERCENTAGE
-          @ss.pos -= 2
           return next_tag_token
         elsif byte_b == OPEN_CURLEY
-          @ss.pos -= 2
           return next_variable_token
         end
 
@@ -94,8 +82,7 @@ module Liquid
     end
 
     def next_variable_token
-      start = @ss.pos
-      @ss.pos += 2
+      start = @ss.pos - 2
 
       # it is possible to see a {% before a }} so we need to check for that
       byte_a = @ss.scan_byte
@@ -125,8 +112,7 @@ module Liquid
     end
 
     def next_tag_token(start = nil)
-      start ||= @ss.pos
-      @ss.pos += 2
+      start ||= @ss.pos - 2
 
       @ss.scan_until(TAG_END)
 
