@@ -50,16 +50,24 @@ module Liquid
 
     def next_token
       # possible states: :text, :tag, :variable
-      c_list = @ss.peek(2)
+      byte_a = @ss.scan_byte
 
-      case c_list
-      when "{%"
-        next_tag_token
-      when "{{"
-        next_variable_token
-      else
-        next_text_token
+      if byte_a == OPEN_CURLEY
+        byte_b = @ss.scan_byte
+
+        if byte_b == PERCENTAGE
+          @ss.pos -= 2
+          return next_tag_token
+        elsif byte_b == OPEN_CURLEY
+          @ss.pos -= 2
+          return next_variable_token
+        end
+
+        @ss.pos -= 1
       end
+
+      @ss.pos -= 1
+      next_text_token
     end
 
     def next_text_token
