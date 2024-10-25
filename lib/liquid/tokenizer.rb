@@ -75,7 +75,6 @@ module Liquid
       end
 
       @ss.pos -= 2
-
       @ss.string.byteslice(start, @ss.pos - start)
     end
 
@@ -85,16 +84,21 @@ module Liquid
       found_variable_end = false
 
       # it is possible to see a {% before a }} so we need to check for that
+      byte_a = @ss.peek_byte
+      @ss.pos += 1
+
       until @ss.eos?
-        case @ss.peek(2)
-        when "}}"
-          @ss.pos += 2
+        byte_b = @ss.peek_byte
+
+        if byte_a == CLOSE_CURLEY && byte_b == CLOSE_CURLEY
+          @ss.pos += 1
           found_variable_end = true
           break
-        when "{%"
+        elsif byte_a == OPEN_CURLEY && byte_b == PERCENTAGE
           return next_tag_token(start)
         end
 
+        byte_a = byte_b
         @ss.pos += 1
       end
 
