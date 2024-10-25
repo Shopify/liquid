@@ -87,6 +87,13 @@ module Liquid
       @ss.pos += 1
 
       until @ss.eos?
+        while byte_a != OPEN_CURLEY && byte_a != CLOSE_CURLEY && @ss.eos? == false
+          byte_a = @ss.peek_byte
+          @ss.pos += 1
+        end
+
+        break if @ss.eos?
+
         byte_b = @ss.peek_byte
 
         if byte_a == CLOSE_CURLEY && byte_b == CLOSE_CURLEY
