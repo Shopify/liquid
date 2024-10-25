@@ -16,14 +16,10 @@ module Liquid
 
     def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
       @line_number = line_number || (line_numbers ? 1 : nil)
-      original_line_number = @line_number
 
       @for_liquid_tag = for_liquid_tag
       @tokens = []
-      @line_numbers = []
       tokenize(source)
-
-      @line_number = original_line_number
     end
 
     private def tokenize(source)
@@ -31,19 +27,11 @@ module Liquid
 
       while token = t_shift(ss)
         @tokens.push(token)
-        @line_numbers.push(@line_number) if @line_number
       end
     end
 
     def shift
-      @line_number = @line_numbers.shift if @line_number
-      @tokens.shift
-    end
-
-    private def t_shift(ss)
-      return nil if ss.eos?
-
-      token = @for_liquid_tag ? next_liquid_token(ss) : next_token(ss)
+      token = @tokens.shift
 
       return nil unless token
 
@@ -52,6 +40,12 @@ module Liquid
       end
 
       token
+    end
+
+    private def t_shift(ss)
+      return nil if ss.eos?
+
+      @for_liquid_tag ? next_liquid_token(ss) : next_token(ss)
     end
 
     private
