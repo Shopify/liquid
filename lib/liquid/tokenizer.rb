@@ -114,10 +114,10 @@ module Liquid
     end
 
     def next_tag_token(start = nil)
-      start = @ss.pos if start.nil?
+      start ||= @ss.pos
       @ss.pos += 2
 
-      @ss.scan_until(TAG_END).nil?
+      @ss.scan_until(TAG_END)
 
       @ss.string.byteslice(start, @ss.pos - start)
     end
