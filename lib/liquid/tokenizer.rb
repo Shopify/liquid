@@ -17,7 +17,8 @@ module Liquid
     def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
       @line_number    = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
-      @ss = StringScanner.new(source)
+      @source         = source
+      @ss             = StringScanner.new(source)
     end
 
     def shift
@@ -78,7 +79,7 @@ module Liquid
       end
 
       @ss.pos -= 2
-      @ss.string.byteslice(start, @ss.pos - start)
+      @source.byteslice(start, @ss.pos - start)
     end
 
     def next_variable_token
@@ -88,9 +89,7 @@ module Liquid
       byte_a = @ss.scan_byte
 
       until @ss.eos?
-        while @ss.eos? == false && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
-          byte_a = @ss.scan_byte
-        end
+        byte_a = @ss.scan_byte while @ss.eos? == false && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
 
         break if @ss.eos?
 
@@ -108,7 +107,7 @@ module Liquid
         end
       end
 
-      return "{{"
+      "{{"
     end
 
     def next_tag_token(start = nil)
@@ -116,7 +115,7 @@ module Liquid
 
       @ss.scan_until(TAG_END)
 
-      @ss.string.byteslice(start, @ss.pos - start)
+      @source.byteslice(start, @ss.pos - start)
     end
   end
 end

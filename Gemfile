@@ -28,3 +28,5 @@ group :test do
     gem 'liquid-c', github: 'Shopify/liquid-c', ref: 'main'
   end
 end
+
+gem "strscan", ">= 3.1.1"
