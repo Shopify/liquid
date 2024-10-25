@@ -14,6 +14,9 @@ module Liquid
     CLOSE_CURLEY = "}".ord
     PERCENTAGE = "%".ord
 
+    CLOSE_CURLEY_FOLLOWED_BY_CLOSE_CURLEY = (CLOSE_CURLEY << 8) | CLOSE_CURLEY
+    OPEN_CURLEY_FOLLOWED_BY_PERCENTAGE = (OPEN_CURLEY << 8) | PERCENTAGE
+
     def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
       @line_number    = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
@@ -24,18 +27,34 @@ module Liquid
     def shift
       return if @ss.eos?
 
-      token = @for_liquid_tag ? next_liquid_token : next_token
+      @for_liquid_tag ? shift_liquid_tag : shift_normal
+    end
+
+    private
+
+    def shift_normal
+      token = next_token
 
       return nil unless token
 
       if @line_number
-        @line_number += @for_liquid_tag ? 1 : token.count("\n")
+        @line_number += token.count("\n")
       end
 
       token
     end
 
-    private
+    def shift_liquid_tag
+      token = next_liquid_token
+
+      return (@ss = nil) unless token
+
+      if @line_number
+        @line_number += 1
+      end
+
+      token
+    end
 
     def next_liquid_token
       # read until we find a \n
@@ -93,20 +112,21 @@ module Liquid
       byte_b = byte_a
 
       while byte_b
-        byte_a = @ss.scan_byte while byte_a && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
+        byte_a = @ss.scan_byte while byte_a && (byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY)
 
         break unless byte_a
 
         byte_b = @ss.scan_byte
 
-        if byte_b != CLOSE_CURLEY && byte_b != PERCENTAGE
+        if byte_b > CLOSE_CURLEY || (byte_b != CLOSE_CURLEY && byte_b != PERCENTAGE)
           byte_a = byte_b
           next
         end
 
-        if byte_a == CLOSE_CURLEY && byte_b == CLOSE_CURLEY
+        val = (byte_a << 8) | byte_b
+        if val == CLOSE_CURLEY_FOLLOWED_BY_CLOSE_CURLEY
           return @source.byteslice(start, @ss.pos - start)
-        elsif byte_a == OPEN_CURLEY && byte_b == PERCENTAGE
+        elsif val == OPEN_CURLEY_FOLLOWED_BY_PERCENTAGE
           return next_tag_token_with_start(start)
         end
       end
