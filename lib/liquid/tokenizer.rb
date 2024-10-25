@@ -22,7 +22,7 @@ module Liquid
     end
 
     def shift
-      return nil if @ss.eos?
+      return if @ss.eos?
 
       token = @for_liquid_tag ? next_liquid_token : next_token
 
@@ -40,32 +40,35 @@ module Liquid
     def next_liquid_token
       # read until we find a \n
       start = @ss.pos
-      if @ss.scan_until(NEWLINE).nil?
+      if @ss.skip_until(NEWLINE).nil?
         token = @ss.rest
         @ss.terminate
         return token
       end
 
-      @ss.string.byteslice(start, @ss.pos - start - 1)
+      @source.byteslice(start, @ss.pos - start - 1)
     end
 
     def next_token
       # possible states: :text, :tag, :variable
-      byte_a = @ss.scan_byte
+      byte_a = @ss.peek_byte
 
       if byte_a == OPEN_CURLEY
-        byte_b = @ss.scan_byte
+        @ss.scan_byte
+
+        byte_b = @ss.peek_byte
 
         if byte_b == PERCENTAGE
+          @ss.scan_byte
           return next_tag_token
         elsif byte_b == OPEN_CURLEY
+          @ss.scan_byte
           return next_variable_token
         end
 
         @ss.pos -= 1
       end
 
-      @ss.pos -= 1
       next_text_token
     end
 
@@ -78,8 +81,8 @@ module Liquid
         return token
       end
 
-      @ss.pos -= 2
-      @source.byteslice(start, @ss.pos - start)
+      pos = @ss.pos -= 2
+      @source.byteslice(start, pos - start)
     end
 
     def next_variable_token
@@ -89,9 +92,9 @@ module Liquid
       byte_a = @ss.scan_byte
 
       until @ss.eos?
-        byte_a = @ss.scan_byte while @ss.eos? == false && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
+        byte_a = @ss.scan_byte while byte_a && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
 
-        break if @ss.eos?
+        break unless byte_a
 
         byte_b = @ss.scan_byte
 
@@ -101,20 +104,23 @@ module Liquid
         end
 
         if byte_a == CLOSE_CURLEY && byte_b == CLOSE_CURLEY
-          return @ss.string.byteslice(start, @ss.pos - start)
+          return @source.byteslice(start, @ss.pos - start)
         elsif byte_a == OPEN_CURLEY && byte_b == PERCENTAGE
-          return next_tag_token(start)
+          return next_tag_token_with_start(start)
         end
       end
 
       "{{"
     end
 
-    def next_tag_token(start = nil)
-      start ||= @ss.pos - 2
+    def next_tag_token
+      start = @ss.pos - 2
+      len = @ss.skip_until(TAG_END) || 0
+      @source.byteslice(start, len + 2)
+    end
 
-      @ss.scan_until(TAG_END)
-
+    def next_tag_token_with_start(start)
+      @ss.skip_until(TAG_END)
       @source.byteslice(start, @ss.pos - start)
     end
   end

@@ -15,7 +15,10 @@ Benchmark.ips do |x|
   puts "Running benchmark for #{x.time} seconds (with #{x.warmup} seconds warmup)."
   puts
 
-  x.report("parse:") { profiler.compile }
-  # x.report("render:") { profiler.render }
-  # x.report("parse & render:") { profiler.run }
+  phase = ENV["PHASE"] || "all"
+
+  x.report("tokenize:") { profiler.tokenize } if phase == "all" || phase == "tokenize"
+  x.report("parse:") { profiler.compile } if phase == "all" || phase == "parse"
+  x.report("render:") { profiler.render } if phase == "all" || phase == "render"
+  x.report("parse & render:") { profiler.run } if phase == "all" || phase == "run"
 end
