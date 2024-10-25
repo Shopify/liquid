@@ -125,9 +125,7 @@ module Liquid
         if byte_b != CLOSE_CURLEY && byte_b != PERCENTAGE
           byte_a = byte_b
           next
-        end
-
-        if byte_a == CLOSE_CURLEY && byte_b == CLOSE_CURLEY
+        elsif byte_a == CLOSE_CURLEY && byte_b == CLOSE_CURLEY
           return ss.string.byteslice(start, ss.pos - start)
         elsif byte_a == OPEN_CURLEY && byte_b == PERCENTAGE
           return next_tag_token(ss, start)
