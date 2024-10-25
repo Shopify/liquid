@@ -81,7 +81,6 @@ module Liquid
     def next_variable_token
       start = @ss.pos
       @ss.pos += 2
-      found_variable_end = false
 
       # it is possible to see a {% before a }} so we need to check for that
       byte_a = @ss.peek_byte
@@ -92,8 +91,7 @@ module Liquid
 
         if byte_a == CLOSE_CURLEY && byte_b == CLOSE_CURLEY
           @ss.pos += 1
-          found_variable_end = true
-          break
+          return @ss.string.byteslice(start, @ss.pos - start)
         elsif byte_a == OPEN_CURLEY && byte_b == PERCENTAGE
           return next_tag_token(start)
         end
@@ -102,9 +100,7 @@ module Liquid
         @ss.pos += 1
       end
 
-      return "{{" unless found_variable_end
-
-      @ss.string.byteslice(start, @ss.pos - start)
+      return "{{"
     end
 
     def next_tag_token(start = nil)
