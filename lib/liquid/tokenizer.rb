@@ -49,6 +49,16 @@ module Liquid
     end
 
     def next_token
+      if @ss.pos == 0
+        if @ss.string.start_with?("{{")
+          return next_variable_token
+        elsif @ss.string.start_with?("{%")
+          return next_tag_token
+        else
+          return next_text_token
+        end
+      end
+
       # possible states: :text, :tag, :variable
       byte_a = @ss.scan_byte
 
