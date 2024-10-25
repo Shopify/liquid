@@ -91,7 +91,7 @@ module Liquid
       byte_a = @ss.scan_byte
 
       until @ss.eos?
-        while byte_a != OPEN_CURLEY && byte_a != CLOSE_CURLEY && @ss.eos? == false
+        while @ss.eos? == false && byte_a != OPEN_CURLEY && byte_a != CLOSE_CURLEY
           byte_a = @ss.scan_byte
         end
 
@@ -121,10 +121,6 @@ module Liquid
       @ss.scan_until(TAG_END)
 
       @ss.string.byteslice(start, @ss.pos - start)
-    end
-
-    def raise_syntax_error(message)
-      raise SyntaxError, message
     end
   end
 end
