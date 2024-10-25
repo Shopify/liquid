@@ -10,9 +10,9 @@ module Liquid
     TAG_OR_VARIABLE_START = /\{[\{\%}]/
     NEWLINE = /\n/
 
-    OPEN_CURLEY = 123
-    CLOSE_CURLEY = 125
-    PERCENTAGE = 37
+    OPEN_CURLEY = "{".ord
+    CLOSE_CURLEY = "}".ord
+    PERCENTAGE = "%".ord
 
     def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
       @line_number    = line_number || (line_numbers ? 1 : nil)
@@ -90,8 +90,9 @@ module Liquid
 
       # it is possible to see a {% before a }} so we need to check for that
       byte_a = @ss.scan_byte
+      byte_b = byte_a
 
-      until @ss.eos?
+      while byte_b
         byte_a = @ss.scan_byte while byte_a && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
 
         break unless byte_a
@@ -115,8 +116,11 @@ module Liquid
 
     def next_tag_token
       start = @ss.pos - 2
-      len = @ss.skip_until(TAG_END) || 0
-      @source.byteslice(start, len + 2)
+      if (len = @ss.skip_until(TAG_END))
+        @source.byteslice(start, len + 2)
+      else
+        "{%"
+      end
     end
 
     def next_tag_token_with_start(start)
