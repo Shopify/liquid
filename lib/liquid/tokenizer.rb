@@ -15,15 +15,35 @@ module Liquid
     PERCENTAGE = 37
 
     def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
-      @line_number    = line_number || (line_numbers ? 1 : nil)
+      @line_number = line_number || (line_numbers ? 1 : nil)
+      original_line_number = @line_number
+
       @for_liquid_tag = for_liquid_tag
-      @ss = StringScanner.new(source)
+      @tokens = []
+      @line_numbers = []
+      tokenize(source)
+
+      @line_number = original_line_number
+    end
+
+    private def tokenize(source)
+      ss = StringScanner.new(source)
+
+      while token = t_shift(ss)
+        @tokens.push(token)
+        @line_numbers.push(@line_number) if @line_number
+      end
     end
 
     def shift
-      return nil if @ss.eos?
+      @line_number = @line_numbers.shift if @line_number
+      @tokens.shift
+    end
 
-      token = @for_liquid_tag ? next_liquid_token : next_token
+    private def t_shift(ss)
+      return nil if ss.eos?
+
+      token = @for_liquid_tag ? next_liquid_token(ss) : next_token(ss)
 
       return nil unless token
 
@@ -36,65 +56,65 @@ module Liquid
 
     private
 
-    def next_liquid_token
+    def next_liquid_token(ss)
       # read until we find a \n
-      start = @ss.pos
-      if @ss.scan_until(NEWLINE).nil?
-        token = @ss.rest
-        @ss.terminate
+      start = ss.pos
+      if ss.scan_until(NEWLINE).nil?
+        token = ss.rest
+        ss.terminate
         return token
       end
 
-      @ss.string.byteslice(start, @ss.pos - start - 1)
+      ss.string.byteslice(start, ss.pos - start - 1)
     end
 
-    def next_token
+    def next_token(ss)
       # possible states: :text, :tag, :variable
-      byte_a = @ss.scan_byte
+      byte_a = ss.scan_byte
 
       if byte_a == OPEN_CURLEY
-        byte_b = @ss.scan_byte
+        byte_b = ss.scan_byte
 
         if byte_b == PERCENTAGE
-          return next_tag_token
+          return next_tag_token(ss)
         elsif byte_b == OPEN_CURLEY
-          return next_variable_token
+          return next_variable_token(ss)
         end
 
-        @ss.pos -= 1
+        ss.pos -= 1
       end
 
-      @ss.pos -= 1
-      next_text_token
+      ss.pos -= 1
+      next_text_token(ss)
     end
 
-    def next_text_token
-      start = @ss.pos
+    def next_text_token(ss)
+      start = ss.pos
 
-      unless @ss.skip_until(TAG_OR_VARIABLE_START)
-        token = @ss.rest
-        @ss.terminate
+      unless ss.skip_until(TAG_OR_VARIABLE_START)
+        token = ss.rest
+        ss.terminate
         return token
       end
 
-      @ss.pos -= 2
-      @ss.string.byteslice(start, @ss.pos - start)
+      ss.pos -= 2
+      ss.string.byteslice(start, ss.pos - start)
     end
 
-    def next_variable_token
-      start = @ss.pos - 2
+    def next_variable_token(ss)
+      start = ss.pos - 2
 
       # it is possible to see a {% before a }} so we need to check for that
-      byte_a = @ss.scan_byte
+      byte_a = ss.scan_byte
 
-      until @ss.eos?
-        while @ss.eos? == false && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
-          byte_a = @ss.scan_byte
+      until ss.eos?
+        while ss.eos? == false && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
+          byte_a = ss.scan_byte
         end
 
-        break if @ss.eos?
+        break if ss.eos?
 
-        byte_b = @ss.scan_byte
+        byte_b = ss.scan_byte
 
         if byte_b != CLOSE_CURLEY && byte_b != PERCENTAGE
           byte_a = byte_b
@@ -102,21 +122,21 @@ module Liquid
         end
 
         if byte_a == CLOSE_CURLEY && byte_b == CLOSE_CURLEY
-          return @ss.string.byteslice(start, @ss.pos - start)
+          return ss.string.byteslice(start, ss.pos - start)
         elsif byte_a == OPEN_CURLEY && byte_b == PERCENTAGE
-          return next_tag_token(start)
+          return next_tag_token(ss, start)
         end
       end
 
       return "{{"
     end
 
-    def next_tag_token(start = nil)
-      start ||= @ss.pos - 2
+    def next_tag_token(ss, start = nil)
+      start ||= ss.pos - 2
 
-      @ss.scan_until(TAG_END)
+      ss.scan_until(TAG_END)
 
-      @ss.string.byteslice(start, @ss.pos - start)
+      ss.string.byteslice(start, ss.pos - start)
     end
   end
 end
