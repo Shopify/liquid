@@ -90,7 +90,12 @@ module Liquid
     SINGLE_STRING_LITERAL = /'[^\']*'/
     WHITESPACE_OR_NOTHING = /\s*/
 
-    COMPARISON_JUMP_TABLE = [].tap do |table|
+    SINGLE_COMPARISON_TOKENS = [].tap do |table|
+      table["<".ord] = COMPARISON_LESS_THAN
+      table[">".ord] = COMPARISON_GREATER_THAN
+    end
+
+    TWO_CHARS_COMPARISON_JUMP_TABLE = [].tap do |table|
       table["=".ord] = [].tap do |sub_table|
         sub_table["=".ord] = COMPARISON_EQUAL
         sub_table.freeze
@@ -99,6 +104,9 @@ module Liquid
         sub_table["=".ord] = COMPARISION_NOT_EQUAL
         sub_table.freeze
       end
+    end
+
+    COMPARISON_JUMP_TABLE = [].tap do |table|
       table["<".ord] = [].tap do |sub_table|
         sub_table["=".ord] = COMPARISON_LESS_THAN_OR_EQUAL
         sub_table[">".ord] = COMPARISON_NOT_EQUAL_ALT
@@ -182,13 +190,21 @@ module Liquid
           else
             @output << special
           end
-        elsif (sub_table = COMPARISON_JUMP_TABLE[peeked])
+        elsif (sub_table = TWO_CHARS_COMPARISON_JUMP_TABLE[peeked])
           @ss.scan_byte
           if (found = sub_table[@ss.peek_byte])
             @output << found
             @ss.scan_byte
           else
             raise SyntaxError, "Unexpected character #{peeked.chr}"
+          end
+        elsif (sub_table = COMPARISON_JUMP_TABLE[peeked])
+          @ss.scan_byte
+          if (found = sub_table[@ss.peek_byte])
+            @output << found
+            @ss.scan_byte
+          else
+            @output << SINGLE_COMPARISON_TOKENS[peeked]
           end
         else
           type, pattern = NEXT_MATCHER_JUMP_TABLE[peeked]
