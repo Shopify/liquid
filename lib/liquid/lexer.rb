@@ -92,6 +92,7 @@ module Liquid
     SINGLE_COMPARISON_TOKENS = [].tap do |table|
       table["<".ord] = COMPARISON_LESS_THAN
       table[">".ord] = COMPARISON_GREATER_THAN
+      table.freeze
     end
 
     TWO_CHARS_COMPARISON_JUMP_TABLE = [].tap do |table|
@@ -103,18 +104,17 @@ module Liquid
         sub_table["=".ord] = COMPARISION_NOT_EQUAL
         sub_table.freeze
       end
+      table.freeze
     end
 
     COMPARISON_JUMP_TABLE = [].tap do |table|
       table["<".ord] = [].tap do |sub_table|
         sub_table["=".ord] = COMPARISON_LESS_THAN_OR_EQUAL
         sub_table[">".ord] = COMPARISON_NOT_EQUAL_ALT
-        RUBY_WHITESPACE.each { |c| sub_table[c.ord] = COMPARISON_LESS_THAN }
         sub_table.freeze
       end
       table[">".ord] = [].tap do |sub_table|
         sub_table["=".ord] = COMPARISON_GREATER_THAN_OR_EQUAL
-        RUBY_WHITESPACE.each { |c| sub_table[c.ord] = COMPARISON_GREATER_THAN }
         sub_table.freeze
       end
       table.freeze
