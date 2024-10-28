@@ -25,6 +25,30 @@ class LexerUnitTest < Minitest::Test
     assert_equal([[:comparison, '=='], [:comparison, '<>'], [:comparison, 'contains'], [:end_of_string]], tokens)
   end
 
+  def test_comparison_without_whitespace
+    tokens = Lexer.new('1>0').tokenize
+    assert_equal([[:number, '1'], [:comparison, '>'], [:number, '0'], [:end_of_string]], tokens)
+  end
+
+  def test_comparison_with_negative_number
+    tokens = Lexer.new('1>-1').tokenize
+    assert_equal([[:number, '1'], [:comparison, '>'], [:number, '-1'], [:end_of_string]], tokens)
+  end
+
+  def test_raise_for_invalid_comparison
+    assert_raises(SyntaxError) do
+      Lexer.new('1>!1').tokenize
+    end
+
+    assert_raises(SyntaxError) do
+      Lexer.new('1=<1').tokenize
+    end
+
+    assert_raises(SyntaxError) do
+      Lexer.new('1!!1').tokenize
+    end
+  end
+
   def test_specials
     tokens = Lexer.new('| .:').tokenize
     assert_equal([[:pipe, '|'], [:dot, '.'], [:colon, ':'], [:end_of_string]], tokens)
