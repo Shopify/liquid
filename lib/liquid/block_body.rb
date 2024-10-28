@@ -252,7 +252,7 @@ module Liquid
         parse_end = token.length - 3
         parse_end -= 1 if token[parse_end] == "-"
         markup_end = parse_end - i + 1
-        markup = markup_end <= 0 ? "" : token.byteslice(i, markup_end)
+        markup = markup_end <= 0 ? "" : token.slice(i, markup_end)
 
         return Variable.new(markup, parse_context)
       end

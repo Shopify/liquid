@@ -32,6 +32,12 @@ class BlockUnitTest < Minitest::Test
     assert_equal(String, template.root.nodelist[2].class)
   end
 
+  def test_variable_with_multibyte_character
+    template = Liquid::Template.parse("{{ '❤️' }}")
+    assert_equal(1, template.root.nodelist.size)
+    assert_equal(Variable, template.root.nodelist[0].class)
+  end
+
   def test_variable_many_embedded_fragments
     template = Liquid::Template.parse("  {{funk}} {{so}} {{brother}} ")
     assert_equal(7, template.root.nodelist.size)
