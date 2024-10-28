@@ -6,6 +6,7 @@ class TokenizerTest < Minitest::Test
   def test_tokenize_strings
     assert_equal([' '], tokenize(' '))
     assert_equal(['hello world'], tokenize('hello world'))
+    assert_equal(['{}'], tokenize('{}'))
   end
 
   def test_tokenize_variables

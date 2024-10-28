@@ -7,7 +7,7 @@ module Liquid
     attr_reader :line_number, :for_liquid_tag
 
     TAG_END = /%\}/
-    TAG_OR_VARIABLE_START = /\{[\{\%}]/
+    TAG_OR_VARIABLE_START = /\{[\{\%]/
     NEWLINE = /\n/
 
     OPEN_CURLEY = "{".ord
