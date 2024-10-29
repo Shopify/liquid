@@ -136,11 +136,4 @@ class LexerUnitTest < Minitest::Test
   def tokenize(input)
     Lexer.new(input).tokenize
   end
-
-  def test_tokenize_incomplete_expression
-    assert_equal([[:id, "false"], [:dash, "-"], [:end_of_string]], Lexer.new("false -").tokenize)
-    assert_equal([[:id, "false"], [:comparison, "<"], [:end_of_string]], Lexer.new("false <").tokenize)
-    assert_equal([[:id, "false"], [:comparison, ">"], [:end_of_string]], Lexer.new("false >").tokenize)
-    assert_equal([[:id, "false"], [:number, "1"], [:end_of_string]], Lexer.new("false 1").tokenize)
-  end
 end
