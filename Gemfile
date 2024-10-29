@@ -29,4 +29,4 @@ group :test do
   end
 end
 
-gem "strscan", ">= 3.1.1"
+gem "strscan", ">= 3.1"
