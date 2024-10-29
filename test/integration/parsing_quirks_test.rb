@@ -134,6 +134,14 @@ class ParsingQuirksTest < Minitest::Test
 
   def test_incomplete_expression
     with_error_mode(:lax) do
+      assert_template_result("false", "{{ false - }}")
+      assert_template_result("false", "{{ false > }}")
+      assert_template_result("false", "{{ false < }}")
+      assert_template_result("false", "{{ false = }}")
+      assert_template_result("false", "{{ false ! }}")
+      assert_template_result("false", "{{ false 1 }}")
+      assert_template_result("false", "{{ false a }}")
+
       assert_template_result("false", "{% liquid assign foo = false -\n%}{{ foo }}")
       assert_template_result("false", "{% liquid assign foo = false >\n%}{{ foo }}")
       assert_template_result("false", "{% liquid assign foo = false <\n%}{{ foo }}")
