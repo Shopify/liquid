@@ -14,9 +14,6 @@ module Liquid
     CLOSE_CURLEY = "}".ord
     PERCENTAGE = "%".ord
 
-    CLOSE_CURLEY_FOLLOWED_BY_CLOSE_CURLEY = (CLOSE_CURLEY << 8) | CLOSE_CURLEY
-    OPEN_CURLEY_FOLLOWED_BY_PERCENTAGE = (OPEN_CURLEY << 8) | PERCENTAGE
-
     def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
       @line_number    = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
@@ -107,7 +104,6 @@ module Liquid
     def next_variable_token
       start = @ss.pos - 2
 
-      # it is possible to see a {% before a }} so we need to check for that
       byte_a = @ss.scan_byte
       byte_b = byte_a
 
@@ -116,19 +112,28 @@ module Liquid
 
         break unless byte_a
 
+        if @ss.eos?
+          if byte_a == CLOSE_CURLEY
+            return @source.byteslice(start, @ss.pos - start)
+          else
+            break
+          end
+        end
+
         byte_b = @ss.scan_byte
 
-        if byte_b > CLOSE_CURLEY || (byte_b != CLOSE_CURLEY && byte_b != PERCENTAGE)
-          byte_a = byte_b
-          next
-        end
-
-        val = (byte_a << 8) | byte_b
-        if val == CLOSE_CURLEY_FOLLOWED_BY_CLOSE_CURLEY
-          return @source.byteslice(start, @ss.pos - start)
-        elsif val == OPEN_CURLEY_FOLLOWED_BY_PERCENTAGE
+        if byte_a == CLOSE_CURLEY
+          if byte_b == CLOSE_CURLEY
+            return @source.byteslice(start, @ss.pos - start)
+          elsif byte_b != CLOSE_CURLEY
+            @ss.pos -= 1
+            return @source.byteslice(start, @ss.pos - start)
+          end
+        elsif byte_a == OPEN_CURLEY && byte_b == PERCENTAGE
           return next_tag_token_with_start(start)
         end
+
+        byte_a = byte_b
       end
 
       "{{"

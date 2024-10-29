@@ -31,6 +31,19 @@ class TokenizerTest < Minitest::Test
     assert_equal([1, 1, 3], tokenize_line_numbers(" {{\n funk \n}} "))
   end
 
+  def test_incomplete_curly_braces
+    assert_equal(["{{.}", " "], tokenize('{{.} '))
+    assert_equal(["{{}", "%}"], tokenize('{{}%}'))
+    assert_equal(["{{}}", "}"], tokenize('{{}}}'))
+  end
+
+  def test_unmatching_start_and_end
+    assert_equal(["{{%}"], tokenize('{{%}'))
+    assert_equal(["{{%%%}}"], tokenize('{{%%%}}'))
+    assert_equal(["{%", "}}"], tokenize('{%}}'))
+    assert_equal(["{%%}", "}"], tokenize('{%%}}'))
+  end
+
   private
 
   def new_tokenizer(source, parse_context: Liquid::ParseContext.new, start_line_number: nil)
