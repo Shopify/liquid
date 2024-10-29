@@ -181,7 +181,7 @@ module Liquid
             @output << DOTDOT
           elsif special == DASH
             # Special case for negative numbers
-            if NUMBER_TABLE[@ss.peek_byte]
+            if !@ss.eos? && NUMBER_TABLE[@ss.peek_byte]
               @ss.pos -= 1
               @output << [:number, @ss.scan(NUMBER_LITERAL)]
             else
@@ -192,7 +192,7 @@ module Liquid
           end
         elsif (sub_table = TWO_CHARS_COMPARISON_JUMP_TABLE[peeked])
           @ss.scan_byte
-          if (found = sub_table[@ss.peek_byte])
+          if !@ss.eos? && (found = sub_table[@ss.peek_byte])
             @output << found
             @ss.scan_byte
           else
@@ -200,7 +200,7 @@ module Liquid
           end
         elsif (sub_table = COMPARISON_JUMP_TABLE[peeked])
           @ss.scan_byte
-          if (found = sub_table[@ss.peek_byte])
+          if !@ss.eos? && (found = sub_table[@ss.peek_byte])
             @output << found
             @ss.scan_byte
           else

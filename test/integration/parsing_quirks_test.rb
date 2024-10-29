@@ -131,4 +131,16 @@ class ParsingQuirksTest < Minitest::Test
   def test_contains_in_id
     assert_template_result(' YES ', '{% if containsallshipments == true %} YES {% endif %}', { 'containsallshipments' => true })
   end
+
+  def test_incomplete_expression
+    with_error_mode(:lax) do
+      assert_template_result("false", "{% liquid assign foo = false -\n%}{{ foo }}")
+      assert_template_result("false", "{% liquid assign foo = false >\n%}{{ foo }}")
+      assert_template_result("false", "{% liquid assign foo = false <\n%}{{ foo }}")
+      assert_template_result("false", "{% liquid assign foo = false =\n%}{{ foo }}")
+      assert_template_result("false", "{% liquid assign foo = false !\n%}{{ foo }}")
+      assert_template_result("false", "{% liquid assign foo = false 1\n%}{{ foo }}")
+      assert_template_result("false", "{% liquid assign foo = false a\n%}{{ foo }}")
+    end
+  end
 end # ParsingQuirksTest
