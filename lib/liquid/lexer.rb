@@ -171,6 +171,7 @@ module Liquid
 
         break if @ss.eos?
 
+        start_pos = @ss.pos
         peeked = @ss.peek_byte
 
         if (special = SPECIAL_TABLE[peeked])
@@ -196,7 +197,7 @@ module Liquid
             @output << found
             @ss.scan_byte
           else
-            raise SyntaxError, "Unexpected character #{peeked.chr}"
+            raise_syntax_error(start_pos)
           end
         elsif (sub_table = COMPARISON_JUMP_TABLE[peeked])
           @ss.scan_byte
@@ -217,13 +218,19 @@ module Liquid
               [type, t]
             end
           else
-            raise SyntaxError, "Unexpected character #{peeked.chr}"
+            raise_syntax_error(start_pos)
           end
         end
       end
       # rubocop:enable Metrics/BlockNesting
 
       @output << EOS
+    end
+
+    def raise_syntax_error(start_pos)
+      @ss.pos = start_pos
+      # the character could be a UTF-8 character, use getch to get all the bytes
+      raise SyntaxError, "Unexpected character #{@ss.getch}"
     end
   end
 
