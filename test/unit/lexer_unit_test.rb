@@ -108,7 +108,7 @@ class LexerUnitTest < Minitest::Test
 
   def test_error_with_utf8_character
     error = assert_raises(SyntaxError) do
-      Lexer.new("1 < 1Ø").tokenize
+      tokenize("1 < 1Ø")
     end
 
     assert_equal(
@@ -120,7 +120,7 @@ class LexerUnitTest < Minitest::Test
   def test_contains_as_attribute_name
     assert_equal(
       [[:id, "a"], [:dot, "."], [:id, "contains"], [:dot, "."], [:id, "b"], [:end_of_string]],
-      Lexer.new("a.contains.b").tokenize,
+      tokenize("a.contains.b"),
     )
   end
 
