@@ -84,4 +84,15 @@ class LexerUnitTest < Minitest::Test
     tokens = Lexer.new("foo > 12").tokenize
     assert_equal([[:id, 'foo'], [:comparison, '>'], [:number, '12'], [:end_of_string]], tokens)
   end
+
+  def test_error_with_utf8_character
+    error = assert_raises(SyntaxError) do
+      Lexer.new("1 < 1Ø").tokenize
+    end
+
+    assert_equal(
+      'Liquid syntax error: Unexpected character Ø',
+      error.message,
+    )
+  end
 end
