@@ -95,4 +95,11 @@ class LexerUnitTest < Minitest::Test
       error.message,
     )
   end
+
+  def test_contains_as_attribute_name
+    assert_equal(
+      [[:id, "a"], [:dot, "."], [:id, "contains"], [:dot, "."], [:id, "b"], [:end_of_string]],
+      Lexer.new("a.contains.b").tokenize,
+    )
+  end
 end

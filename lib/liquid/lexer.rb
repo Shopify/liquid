@@ -73,7 +73,6 @@ module Liquid
     COMPARISON_LESS_THAN = [:comparison, "<"].freeze
     COMPARISON_LESS_THAN_OR_EQUAL = [:comparison, "<="].freeze
     COMPARISON_NOT_EQUAL_ALT = [:comparison, "<>"].freeze
-    CONTAINS = /contains(?=\s)/
     DASH = [:dash, "-"].freeze
     DOT = [:dot, "."].freeze
     DOTDOT = [:dotdot, ".."].freeze
@@ -212,7 +211,7 @@ module Liquid
 
           if type && (t = @ss.scan(pattern))
             # Special case for "contains"
-            @output << if type == :id && t == "contains"
+            @output << if type == :id && t == "contains" && @output.last&.first != :dot
               COMPARISON_CONTAINS
             else
               [type, t]
