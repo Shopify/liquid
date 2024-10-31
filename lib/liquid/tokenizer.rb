@@ -61,24 +61,40 @@ module Liquid
       @for_liquid_tag = for_liquid_tag
       @source         = source
       @ss             = StringScanner.new(source)
+      @offset         = 0
+      @tokens         = []
+      tokenize
     end
 
     def shift
-      return if @ss.eos?
+      token = @tokens[@offset]
 
-      @for_liquid_tag ? shift_liquid_tag : shift_normal
+      return nil unless token
+
+      @offset += 1
+
+      if @line_number
+        @line_number += @for_liquid_tag ? 1 : token.count("\n")
+      end
+
+      token
     end
 
     private
 
+    def tokenize
+      until @ss.eos?
+        token = @for_liquid_tag ? shift_liquid_tag : shift_normal
+        @tokens << token
+      end
+
+      @ss = nil
+    end
+
     def shift_normal
       token = next_token
 
-      return nil unless token
-
-      if @line_number
-        @line_number += token.count("\n")
-      end
+      return unless token
 
       token
     end
@@ -86,11 +102,7 @@ module Liquid
     def shift_liquid_tag
       token = next_liquid_token
 
-      return (@ss = nil) unless token
-
-      if @line_number
-        @line_number += 1
-      end
+      return unless token
 
       token
     end
