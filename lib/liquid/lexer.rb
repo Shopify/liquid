@@ -233,6 +233,6 @@ module Liquid
     end
   end
 
-  # TODO: Remove this once Ruby 3.4.0 release is out
+  # Remove this once we can depend on strscan >= 3.1.1
   Lexer = StringScanner.instance_methods.include?(:scan_byte) ? Lexer2 : Lexer1
 end
