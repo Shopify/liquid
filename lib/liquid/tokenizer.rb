@@ -92,6 +92,7 @@ module Liquid
       end
 
       @ss = nil
+      @source = nil
     end
 
     def shift_normal
