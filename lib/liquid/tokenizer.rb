@@ -60,7 +60,6 @@ module Liquid
       @line_number    = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
       @source         = source
-      @ss             = StringScanner.new(source)
       @offset         = 0
       @tokens         = []
       tokenize
@@ -86,6 +85,7 @@ module Liquid
       if @for_liquid_tag
         @tokens = @source.split("\n")
       else
+        @ss = StringScanner.new(source)
         @tokens << shift_normal until @ss.eos?
       end
 
