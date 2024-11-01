@@ -84,9 +84,7 @@ module Liquid
 
     def tokenize
       if @for_liquid_tag
-        until @ss.eos?
-          @tokens << shift_liquid_tag
-        end
+        @tokens = @source.split("\n")
       else
         until @ss.eos?
           @tokens << shift_normal
@@ -102,26 +100,6 @@ module Liquid
       return unless token
 
       token
-    end
-
-    def shift_liquid_tag
-      token = next_liquid_token
-
-      return unless token
-
-      token
-    end
-
-    def next_liquid_token
-      # read until we find a \n
-      start = @ss.pos
-      if @ss.skip_until(NEWLINE).nil?
-        token = @ss.rest
-        @ss.terminate
-        return token
-      end
-
-      @source.byteslice(start, @ss.pos - start - 1)
     end
 
     def next_token
