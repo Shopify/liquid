@@ -83,9 +83,14 @@ module Liquid
     private
 
     def tokenize
-      until @ss.eos?
-        token = @for_liquid_tag ? shift_liquid_tag : shift_normal
-        @tokens << token
+      if @for_liquid_tag
+        until @ss.eos?
+          @tokens << shift_liquid_tag
+        end
+      else
+        until @ss.eos?
+          @tokens << shift_normal
+        end
       end
 
       @ss = nil
