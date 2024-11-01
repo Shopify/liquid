@@ -68,6 +68,7 @@ module Liquid
 
     def shift
       token = @tokens[@offset]
+      @tokens[@offset] = nil
 
       return nil unless token
 
