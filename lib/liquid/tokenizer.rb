@@ -70,7 +70,7 @@ module Liquid
       token = @tokens[@offset]
       @tokens[@offset] = nil
 
-      return nil unless token
+      return unless token
 
       @offset += 1
 
@@ -159,8 +159,7 @@ module Liquid
     def next_variable_token
       start = @ss.pos - 2
 
-      byte_a = @ss.scan_byte
-      byte_b = byte_a
+      byte_a = byte_b = @ss.scan_byte
 
       while byte_b
         byte_a = @ss.scan_byte while byte_a && (byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY)
@@ -168,11 +167,7 @@ module Liquid
         break unless byte_a
 
         if @ss.eos?
-          if byte_a == CLOSE_CURLEY
-            return @source.byteslice(start, @ss.pos - start)
-          else
-            break
-          end
+          return byte_a == CLOSE_CURLEY ? @source.byteslice(start, @ss.pos - start) : "{{"
         end
 
         byte_b = @ss.scan_byte
@@ -210,5 +205,6 @@ module Liquid
   end
 
   # Remove this once we can depend on strscan >= 3.1.1
-  Tokenizer = StringScanner.instance_methods.include?(:scan_byte) ? Tokenizer2 : Tokenizer1
+  # Tokenizer = StringScanner.instance_methods.include?(:scan_byte) ? Tokenizer2 : Tokenizer1
+  Tokenizer = Tokenizer2
 end
