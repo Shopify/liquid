@@ -68,7 +68,6 @@ module Liquid
 
     def shift
       token = @tokens[@offset]
-      @tokens[@offset] = nil
 
       return unless token
 
@@ -205,6 +204,5 @@ module Liquid
   end
 
   # Remove this once we can depend on strscan >= 3.1.1
-  # Tokenizer = StringScanner.instance_methods.include?(:scan_byte) ? Tokenizer2 : Tokenizer1
-  Tokenizer = Tokenizer2
+  Tokenizer = StringScanner.instance_methods.include?(:scan_byte) ? Tokenizer2 : Tokenizer1
 end
