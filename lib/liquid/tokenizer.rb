@@ -86,9 +86,7 @@ module Liquid
       if @for_liquid_tag
         @tokens = @source.split("\n")
       else
-        until @ss.eos?
-          @tokens << shift_normal
-        end
+        @tokens << shift_normal until @ss.eos?
       end
 
       @ss = nil
