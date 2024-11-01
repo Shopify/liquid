@@ -85,7 +85,7 @@ module Liquid
       if @for_liquid_tag
         @tokens = @source.split("\n")
       else
-        @ss = StringScanner.new(source)
+        @ss = StringScanner.new(@source)
         @tokens << shift_normal until @ss.eos?
       end
 
