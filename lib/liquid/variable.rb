@@ -68,7 +68,7 @@ module Liquid
       @name = parse_context.parse_expression(p.expression)
       while p.consume?(:pipe)
         filtername = p.consume(:id)
-        filterargs = p.consume?(:colon) ? parse_filterargs(p) : []
+        filterargs = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
         @filters << parse_filter_expressions(filtername, filterargs)
       end
       p.consume(:end_of_string)
