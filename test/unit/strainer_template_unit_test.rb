@@ -25,11 +25,13 @@ class StrainerTemplateUnitTest < Minitest::Test
   end
 
   def test_add_filter_raises_when_module_privately_overrides_registered_public_methods
-    strainer = Context.new.strainer
-
     error = assert_raises(Liquid::MethodOverrideError) do
-      strainer.class.add_filter(PrivateMethodOverrideFilter)
+      Liquid::Environment.build do |env|
+        env.register_filter(PublicMethodOverrideFilter)
+        env.register_filter(PrivateMethodOverrideFilter)
+      end
     end
+
     assert_equal('Liquid error: Filter overrides registered public methods as non public: public_filter', error.message)
   end
 
@@ -42,11 +44,13 @@ class StrainerTemplateUnitTest < Minitest::Test
   end
 
   def test_add_filter_raises_when_module_overrides_registered_public_method_as_protected
-    strainer = Context.new.strainer
-
     error = assert_raises(Liquid::MethodOverrideError) do
-      strainer.class.add_filter(ProtectedMethodOverrideFilter)
+      Liquid::Environment.build do |env|
+        env.register_filter(PublicMethodOverrideFilter)
+        env.register_filter(ProtectedMethodOverrideFilter)
+      end
     end
+
     assert_equal('Liquid error: Filter overrides registered public methods as non public: public_filter', error.message)
   end
 

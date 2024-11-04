@@ -82,19 +82,22 @@ class RenderTagTest < Minitest::Test
   end
 
   def test_recursively_rendered_template_does_not_produce_endless_loop
-    Liquid::Template.file_system = StubFileSystem.new('loop' => '{% render "loop" %}')
+    env = Liquid::Environment.build(
+      file_system: StubFileSystem.new('loop' => '{% render "loop" %}'),
+    )
 
     assert_raises(Liquid::StackLevelError) do
-      Template.parse('{% render "loop" %}').render!
+      Template.parse('{% render "loop" %}', environment: env).render!
     end
   end
 
   def test_sub_contexts_count_towards_the_same_recursion_limit
-    Liquid::Template.file_system = StubFileSystem.new(
-      'loop_render' => '{% render "loop_render" %}',
+    env = Liquid::Environment.build(
+      file_system: StubFileSystem.new('loop_render' => '{% render "loop_render" %}'),
     )
+
     assert_raises(Liquid::StackLevelError) do
-      Template.parse('{% render "loop_render" %}').render!
+      Template.parse('{% render "loop_render" %}', environment: env).render!
     end
   end
 

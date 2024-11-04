@@ -13,7 +13,7 @@ if (env_mode = ENV['LIQUID_PARSER_MODE'])
   puts "-- #{env_mode.upcase} ERROR MODE"
   mode = env_mode.to_sym
 end
-Liquid::Template.error_mode = mode
+Liquid::Environment.default.error_mode = mode
 
 if ENV['LIQUID_C'] == '1'
   puts "-- LIQUID C"
@@ -88,11 +88,11 @@ module Minitest
     end
 
     def with_error_mode(mode)
-      old_mode = Liquid::Template.error_mode
-      Liquid::Template.error_mode = mode
+      old_mode = Liquid::Environment.default.error_mode
+      Liquid::Environment.default.error_mode = mode
       yield
     ensure
-      Liquid::Template.error_mode = old_mode
+      Liquid::Environment.default.error_mode = old_mode
     end
 
     def with_custom_tag(tag_name, tag_class, &block)
