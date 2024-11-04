@@ -44,9 +44,6 @@ module Liquid
   VariableParser              = /\[(?>[^\[\]]+|\g<0>)*\]|#{VariableSegment}+\??/o
 
   RAISE_EXCEPTION_LAMBDA = ->(_e) { raise }
-
-  singleton_class.send(:attr_accessor, :cache_classes)
-  self.cache_classes = true
 end
 
 require "liquid/version"

@@ -20,25 +20,6 @@ class TemplateUnitTest < Minitest::Test
     assert_equal(fixture("en_locale.yml"), locale.path)
   end
 
-  def test_with_cache_classes_tags_returns_the_same_class
-    original_cache_setting = Liquid.cache_classes
-    Liquid.cache_classes   = true
-
-    original_klass = Class.new
-    Object.send(:const_set, :CustomTag, original_klass)
-    Template.register_tag('custom', CustomTag)
-
-    Object.send(:remove_const, :CustomTag)
-
-    new_klass = Class.new
-    Object.send(:const_set, :CustomTag, new_klass)
-
-    assert(Template.tags['custom'].equal?(original_klass))
-  ensure
-    Object.send(:remove_const, :CustomTag)
-    Liquid.cache_classes = original_cache_setting
-  end
-
   class FakeTag; end
 
   def test_tags_can_be_looped_over
