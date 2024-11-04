@@ -41,7 +41,7 @@ module Liquid
       # @return [Environment] The new environment instance.
       def build(tags: nil, file_system: nil, error_mode: nil, exception_renderer: nil)
         ret = new
-        ret.tags = Template::TagRegistry.new(tags) if tags
+        ret.tags = tags if tags
         ret.file_system = file_system if file_system
         ret.error_mode = error_mode if error_mode
         ret.exception_renderer = exception_renderer if exception_renderer
@@ -74,7 +74,7 @@ module Liquid
     # Initializes a new environment instance.
     # @api private
     def initialize
-      @tags = Template::TagRegistry.new(Tags::STANDARD_TAGS)
+      @tags = Tags::STANDARD_TAGS.dup
       @error_mode = :lax
       @strainer_template = Class.new(StrainerTemplate).tap do |klass|
         klass.add_filter(StandardFilters)
