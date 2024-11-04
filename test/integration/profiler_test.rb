@@ -33,7 +33,7 @@ class ProfilerTest < Minitest::Test
   end
 
   def setup
-    Liquid::Template.file_system = ProfilingFileSystem.new
+    Liquid::Environment.default.file_system = ProfilingFileSystem.new
   end
 
   def test_template_allows_flagging_profiling
