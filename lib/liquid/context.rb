@@ -19,7 +19,7 @@ module Liquid
 
     # rubocop:disable Metrics/ParameterLists
     def self.build(environment: Environment.default, environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {}, &block)
-      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments, &block)
+      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments, environment, &block)
     end
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {}, environment = Environment.default)
@@ -143,6 +143,7 @@ module Liquid
       check_overflow
 
       self.class.build(
+        environment: @environment,
         resource_limits: resource_limits,
         static_environments: static_environments,
         registers: Registers.new(registers),
