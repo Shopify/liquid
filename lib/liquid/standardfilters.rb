@@ -21,7 +21,7 @@ module Liquid
       '"' => '&quot;',
       "'" => '&#39;',
     }.freeze
-    HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/
+    HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+)|(#[xX][\dA-Fa-f]+));)/
     STRIP_HTML_BLOCKS       = Regexp.union(
       %r{<script.*?</script>}m,
       /<!--.*?-->/m,
