@@ -18,7 +18,7 @@ module Liquid
 
     # Use an atomic group (?>...) to avoid pathological backtracing from
     # malicious input as described in https://github.com/Shopify/liquid/issues/1357
-    RANGES_REGEX         = /\A\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\z/
+    RANGES_REGEX         = /\A\([[:space:]]*(?>(\S+)[[:space:]]*\.\.)[[:space:]]*(\S+)[[:space:]]*\)\z/
 
     def self.parse(markup)
       return nil unless markup

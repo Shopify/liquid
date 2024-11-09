@@ -13,7 +13,7 @@ module Liquid
   #   {% endraw %}
   # @liquid_syntax_keyword expression The expression to be output without being rendered.
   class Raw < Block
-    Syntax = /\A\s*\z/
+    Syntax = /\A[[:space:]]*\z/
 
     def initialize(tag_name, markup, parse_context)
       super

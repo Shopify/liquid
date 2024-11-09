@@ -29,7 +29,7 @@ class CountingFileSystem
 end
 
 class CustomInclude < Liquid::Tag
-  Syntax = /(#{Liquid::QuotedFragment}+)(\s+(?:with|for)\s+(#{Liquid::QuotedFragment}+))?/o
+  Syntax = /(#{Liquid::QuotedFragment}+)([[:space:]]+(?:with|for)[[:space:]]+(#{Liquid::QuotedFragment}+))?/o
 
   def initialize(tag_name, markup, tokens)
     markup =~ Syntax

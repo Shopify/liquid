@@ -25,7 +25,7 @@ module Liquid
   # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   # @liquid_optional_param reversed [untyped] Iterate in reverse order.
   class For < Block
-    Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
+    Syntax = /\A(#{VariableSegment}+)[[:space:]]+in[[:space:]]+(#{QuotedFragment}+)[[:space:]]*(reversed)?/o
 
     attr_reader :collection_name, :variable_name, :limit, :from
 

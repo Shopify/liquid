@@ -14,8 +14,8 @@ module Liquid
   # @liquid_syntax_keyword condition The condition to evaluate.
   # @liquid_syntax_keyword expression The expression to render if the condition is met.
   class If < Block
-    Syntax                  = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
-    ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
+    Syntax                  = /(#{QuotedFragment})[[:space:]]*([=!<>a-z_]+)?[[:space:]]*(#{QuotedFragment})?/o
+    ExpressionsAndOperators = /(?:\b(?:[[:space:]]?and[[:space:]]?|[[:space:]]?or[[:space:]]?)\b|(?:[[:space:]]*(?!\b(?:[[:space:]]?and[[:space:]]?|[[:space:]]?or[[:space:]]?)\b)(?:#{QuotedFragment}|\S+)[[:space:]]*)+)/o
     BOOLEAN_OPERATORS       = %w(and or).freeze
 
     attr_reader :blocks
