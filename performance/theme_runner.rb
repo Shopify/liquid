@@ -48,6 +48,14 @@ class ThemeRunner
     end
   end
 
+  # `tokenize` will just test the tokenizen portion of liquid without any templates
+  def tokenize
+    @tests.each do |test_hash|
+      tokenizer = Liquid::Tokenizer.new(test_hash[:liquid], true)
+      while tokenizer.shift; end
+    end
+  end
+
   # `run` is called to benchmark rendering and compiling at the same time
   def run
     each_test do |liquid, layout, assigns, page_template, template_name|
