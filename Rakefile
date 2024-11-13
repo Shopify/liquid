@@ -73,7 +73,7 @@ end
 
 namespace :benchmark do
   desc "Run the liquid benchmark with lax parsing"
-  task :run do
+  task :lax do
     ruby "./performance/benchmark.rb lax"
   end
 
@@ -82,11 +82,30 @@ namespace :benchmark do
     ruby "./performance/benchmark.rb strict"
   end
 
+  desc "Run the liquid benchmark with both lax and strict parsing"
+  task run: [:lax, :strict]
+
   desc "Run unit benchmarks"
-  task :unit do
-    Dir["./performance/unit/*_benchmark.rb"].each do |file|
-      puts "🧪 Running #{file}"
-      ruby file
+  namespace :unit do
+    task :all do
+      Dir["./performance/unit/*_benchmark.rb"].each do |file|
+        puts "🧪 Running #{file}"
+        ruby file
+      end
+    end
+
+    task :lexer do
+      Dir["./performance/unit/lexer_benchmark.rb"].each do |file|
+        puts "🧪 Running #{file}"
+        ruby file
+      end
+    end
+
+    task :expression do
+      Dir["./performance/unit/expression_benchmark.rb"].each do |file|
+        puts "🧪 Running #{file}"
+        ruby file
+      end
     end
   end
 end

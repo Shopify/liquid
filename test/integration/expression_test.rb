@@ -13,6 +13,7 @@ class ExpressionTest < Minitest::Test
     assert_template_result("double quoted", '{{"double quoted"}}')
     assert_template_result("spaced", "{{ 'spaced' }}")
     assert_template_result("spaced2", "{{ 'spaced2' }}")
+    assert_template_result("emoji🔥", "{{ 'emoji🔥' }}")
   end
 
   def test_int
@@ -22,6 +23,7 @@ class ExpressionTest < Minitest::Test
   end
 
   def test_float
+    assert_template_result("-17.42", "{{ -17.42  }}")
     assert_template_result("2.5", "{{ 2.5 }}")
     assert_expression_result(1.5, "1.5")
   end
