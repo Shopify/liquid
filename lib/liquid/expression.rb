@@ -84,6 +84,8 @@ module Liquid
         if (markup.start_with?('"') && markup.end_with?('"')) ||
           (markup.start_with?("'") && markup.end_with?("'"))
           return markup[1..-2]
+        elsif LITERALS.key?(markup)
+          return LITERALS[markup]
         end
 
         return CACHE[markup] if CACHE.key?(markup)
@@ -95,8 +97,6 @@ module Liquid
         if (markup.start_with?("(") && markup.end_with?(")")) && markup =~ RANGES_REGEX
           return RangeLookup.parse(Regexp.last_match(1), Regexp.last_match(2))
         end
-
-        return LITERALS[markup] if LITERALS.key?(markup)
 
         if (num = parse_number(markup))
           num
