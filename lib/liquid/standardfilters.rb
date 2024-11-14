@@ -285,10 +285,10 @@ module Liquid
     # @liquid_category string
     # @liquid_summary
     #   Splits a string into an array of substrings based on a given separator and an optional limit number
-    # @liquid_syntax string | split: string
+    # @liquid_syntax string | split: string, integer
     # @liquid_return [array[string]]
     def split(input, pattern, limit = nil)
-      limit = limit.respond_to?(:to_i) ? limit.to_i : 0
+      limit = Utils.to_number(limit).to_i
 
       input.to_s.split(pattern.to_s, limit)
     end
