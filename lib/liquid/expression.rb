@@ -81,16 +81,18 @@ module Liquid
 
         markup = markup.strip # markup can be a frozen string
 
+        if (markup.start_with?('"') && markup.end_with?('"')) ||
+          (markup.start_with?("'") && markup.end_with?("'"))
+          return markup[1..-2]
+        end
+
         return CACHE[markup] if CACHE.key?(markup)
 
         CACHE[markup] = inner_parse(markup)
       end
 
       def inner_parse(markup)
-        if (markup.start_with?('"') && markup.end_with?('"')) ||
-          (markup.start_with?("'") && markup.end_with?("'"))
-          return markup[1..-2]
-        elsif (markup.start_with?("(") && markup.end_with?(")")) && markup =~ RANGES_REGEX
+        if (markup.start_with?("(") && markup.end_with?(")")) && markup =~ RANGES_REGEX
           return RangeLookup.parse(Regexp.last_match(1), Regexp.last_match(2))
         end
 
