@@ -23,7 +23,7 @@ class ExpressionTest < Minitest::Test
   end
 
   def test_float
-    assert_template_result("-17.42", "{{ -17.42  }}")
+    assert_template_result("-17.42", "{{ -17.42 }}")
     assert_template_result("2.5", "{{ 2.5 }}")
     assert_expression_result(1.5, "1.5")
   end
@@ -39,6 +39,18 @@ class ExpressionTest < Minitest::Test
     assert_match_syntax_error(
       "Liquid syntax error (line 1): Invalid expression type '(1..2)' in range expression",
       "{{ ((1..2)..3) }}",
+    )
+  end
+
+  def test_quirky_negative_sign_expression_markup
+    result = Expression.parse("-")
+    assert(result.is_a?(VariableLookup))
+    assert_equal("-", result.name)
+
+    # for this template, the expression markup is "-"
+    assert_template_result(
+      "",
+      "{{ - 'theme.css' - }}",
     )
   end
 

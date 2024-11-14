@@ -57,7 +57,8 @@ module Liquid
       'true' => true,
       'false' => false,
       'blank' => '',
-      'empty' => ''
+      'empty' => '',
+      '-' => VariableLookup.parse("-")
     }.freeze
 
     DOT = ".".ord
