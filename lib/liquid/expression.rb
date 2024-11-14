@@ -68,7 +68,7 @@ module Liquid
     # Use an atomic group (?>...) to avoid pathological backtracing from
     # malicious input as described in https://github.com/Shopify/liquid/issues/1357
     RANGES_REGEX = /\A\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\z/
-    CACHE = LruRedux::Cache.new(1_000_000) # most themes would have less than 2,000 unique expression
+    CACHE = LruRedux::Cache.new(10_000) # most themes would have less than 2,000 unique expression
 
     class << self
       def string_scanner
