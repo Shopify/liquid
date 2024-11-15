@@ -164,7 +164,7 @@ module Liquid
     end
 
     def initialize(input)
-      @ss = Lexer2.string_scanner
+      @ss = self.class.string_scanner
       @ss.string = input
     end
 
