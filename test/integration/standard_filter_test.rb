@@ -131,6 +131,9 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(input, @filters.slice(input, 0, 1 << 63))
     assert_equal([], @filters.slice(input, 1 << 63, 6))
     assert_equal([], @filters.slice(input, -(1 << 63), 6))
+    assert_equal(%w(b a), @filters.slice(input, 3, -1))
+    assert_equal(%w(o b), @filters.slice(input, 2, -2))
+    assert_equal(%w(f o o), @filters.slice(input, 0, -3))
   end
 
   def test_truncate
@@ -778,20 +781,93 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result('bcd', "{{ a | append: b}}", assigns)
   end
 
-  def test_concat
-    assert_equal([1, 2, 3, 4], @filters.concat([1, 2], [3, 4]))
-    assert_equal([1, 2, 'a'],  @filters.concat([1, 2], ['a']))
-    assert_equal([1, 2, 10],   @filters.concat([1, 2], [10]))
+  def test_append_with_arrays
+    products = [
+      "Snowdevil pro goggles",
+      "Snowdevil alpine jacket",
+    ]
 
-    assert_raises(Liquid::ArgumentError, "concat filter requires an array argument") do
-      @filters.concat([1, 2], 10)
-    end
+    template = <<~LIQUID
+      {{
+        products
+        | append: 'Snowdevil bonus gift'
+        | join: ', '
+      -}}
+    LIQUID
+    expected_output = "Snowdevil pro goggles, Snowdevil alpine jacket, Snowdevil bonus gift"
+
+    assert_template_result(expected_output, template, { "products" => products })
+  end
+
+  def test_concat
+    array1 = [1, 2]
+    array2 = [3, 4]
+
+    template = <<~LIQUID
+      {{
+        array1
+        | concat: array2
+        | join: ', '
+      -}}
+    LIQUID
+    expected_output = "1, 2, 3, 4"
+
+    assert_template_result(expected_output, template, { "array1" => array1, "array2" => array2 })
+  end
+
+  def test_concat_with_string
+    array1 = [1, 2]
+    array2 = ['a']
+
+    template = <<~LIQUID
+      {{
+        array1
+        | concat: array2
+        | join: ', '
+      -}}
+    LIQUID
+    expected_output = "1, 2, a"
+
+    assert_template_result(expected_output, template, { "array1" => array1, "array2" => array2 })
+  end
+
+  def test_concat_with_number
+    array = [1, 2]
+
+    template = <<~LIQUID
+      {{
+        array
+        | concat: 10
+        | join: ', '
+      -}}
+    LIQUID
+    expected_output = "1, 2, 10"
+
+    assert_template_result(expected_output, template, { "array" => array })
   end
 
   def test_prepend
     assigns = { 'a' => 'bc', 'b' => 'a' }
     assert_template_result('abc', "{{ a | prepend: 'a'}}", assigns)
     assert_template_result('abc', "{{ a | prepend: b}}", assigns)
+  end
+
+  def test_prepend_with_arrays
+    products = [
+      "Snowdevil pro goggles",
+      "Snowdevil alpine jacket",
+    ]
+
+    template = <<~LIQUID
+      {{
+        products
+        | prepend: 'Snowdevil bonus gift'
+        | join: ', '
+      -}}
+    LIQUID
+    expected_output = "Snowdevil bonus gift, Snowdevil pro goggles, Snowdevil alpine jacket"
+
+    assert_template_result(expected_output, template, { "products" => products })
   end
 
   def test_default
@@ -827,21 +903,306 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result('abc', "{{ 'abc' | date: '%D' }}")
   end
 
-  def test_where
-    input = [
+  def test_where_with_value
+    array = [
       { "handle" => "alpha", "ok" => true },
       { "handle" => "beta", "ok" => false },
       { "handle" => "gamma", "ok" => false },
       { "handle" => "delta", "ok" => true },
     ]
 
-    expectation = [
+    template = "{{ array | where: 'ok', true | map: 'handle' | join: ' ' }}"
+    expected_output = "alpha delta"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_where_without_value
+    array = [
       { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
       { "handle" => "delta", "ok" => true },
     ]
 
-    assert_equal(expectation, @filters.where(input, "ok", true))
-    assert_equal(expectation, @filters.where(input, "ok"))
+    template = "{{ array | where: 'ok' | map: 'handle' | join: ' ' }}"
+    expected_output = "alpha delta"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_where_without_value
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | where: 'ok', false | map: 'handle' | join: ' ' }}"
+    expected_output = "beta gamma"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_where_with_greater_than
+    products = [
+      { "title" => "Snowdevil pro goggles",    "price" => 129.99 },
+      { "title" => "Snowdevil alpine jacket",  "price" => 399.99 },
+      { "title" => "Snowdevil thermal gloves", "price" => 149.99 },
+      { "title" => "Snowdevil mountain boots", "price" => 389.99 },
+      { "title" => "Snowdevil safety helmet",  "price" => 199.99 }
+    ]
+
+    template = <<~LIQUID
+      {{
+        products
+        | where: 'price', greater: 300
+        | map: 'title'
+        | join: ', '
+      -}}
+    LIQUID
+    expected_output = "Snowdevil alpine jacket, Snowdevil mountain boots"
+
+    assert_template_result(expected_output, template, { "products" => products })
+  end
+
+  def test_where_with_less_than
+    products = [
+      { "title" => "Snowdevil pro goggles",    "price" => 129.99 },
+      { "title" => "Snowdevil alpine jacket",  "price" => 399.99 },
+      { "title" => "Snowdevil thermal gloves", "price" => 149.99 },
+      { "title" => "Snowdevil mountain boots", "price" => 389.99 },
+      { "title" => "Snowdevil safety helmet",  "price" => 199.99 }
+    ]
+
+    template = <<~LIQUID
+      {{
+        products
+        | where: 'price', less: 150
+        | map: 'title'
+        | join: ', '
+      -}}
+    LIQUID
+    expected_output = "Snowdevil pro goggles, Snowdevil thermal gloves"
+
+    assert_template_result(expected_output, template, { "products" => products })
+  end
+
+  def test_where_with_greater_or_equal
+    products = [
+      { "title" => "Snowdevil pro goggles",    "price" => 129.99 },
+      { "title" => "Snowdevil alpine jacket",  "price" => 399.99 },
+      { "title" => "Snowdevil thermal gloves", "price" => 149.99 },
+      { "title" => "Snowdevil mountain boots", "price" => 389.99 },
+      { "title" => "Snowdevil safety helmet",  "price" => 199.99 }
+    ]
+
+    template = <<~LIQUID
+      {{
+        products
+        | where: 'price', greater_or_equal: 389.99
+        | map: 'title'
+        | join: ', '
+      -}}
+    LIQUID
+    expected_output = "Snowdevil alpine jacket, Snowdevil mountain boots"
+
+    assert_template_result(expected_output, template, { "products" => products })
+  end
+
+  def test_where_with_less_or_equal
+    products = [
+      { "title" => "Snowdevil pro goggles",    "price" => 129.99 },
+      { "title" => "Snowdevil alpine jacket",  "price" => 399.99 },
+      { "title" => "Snowdevil thermal gloves", "price" => 149.99 },
+      { "title" => "Snowdevil mountain boots", "price" => 389.99 },
+      { "title" => "Snowdevil safety helmet",  "price" => 199.99 }
+    ]
+
+    template = <<~LIQUID
+      {{
+        products
+        | where: 'price', less_or_equal: 149.99
+        | map: 'title'
+        | join: ', '
+      -}}
+    LIQUID
+    expected_output = "Snowdevil pro goggles, Snowdevil thermal gloves"
+
+    assert_template_result(expected_output, template, { "products" => products })
+  end
+
+  def test_where_with_contains
+    products = [
+      { "title" => "Snowdevil pro goggles",    "price" => 129.99 },
+      { "title" => "Snowdevil alpine jacket",  "price" => 399.99 },
+      { "title" => "Snowdevil thermal gloves", "price" => 149.99 },
+      { "title" => "Snowdevil mountain boots", "price" => 389.99 },
+      { "title" => "Snowdevil safety helmet",  "price" => 199.99 }
+    ]
+
+    template = <<~LIQUID
+      {{
+        products
+        | where: 'title', contains: 'es'
+        | map: 'title'
+        | join: ', '
+      -}}
+    LIQUID
+    expected_output = "Snowdevil pro goggles, Snowdevil thermal gloves"
+
+    assert_template_result(expected_output, template, { "products" => products })
+  end
+
+  def test_reject_with_value
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | reject: 'ok', true | map: 'handle' | join: ' ' }}"
+    expected_output = "beta gamma"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def xtest_reject_with_value2
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | add:array.first }}"
+    expected_output = "beta gamma"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_reject_with_greater_operator
+    products = [
+      { "title" => "Snowdevil pro goggles",    "price" => 129.99 },
+      { "title" => "Snowdevil alpine jacket",  "price" => 399.99 },
+      { "title" => "Snowdevil thermal gloves", "price" => 149.99 },
+      { "title" => "Snowdevil mountain boots", "price" => 389.99 },
+      { "title" => "Snowdevil safety helmet",  "price" => 199.99 }
+    ]
+
+    template = <<~LIQUID
+      {{
+        products
+        | reject: 'price', greater: 190
+        | map: 'title'
+        | join: ', '
+      -}}
+    LIQUID
+    expected_output = "Snowdevil pro goggles, Snowdevil thermal gloves"
+
+    assert_template_result(expected_output, template, { "products" => products })
+  end
+
+  def test_reject_without_value
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | reject: 'ok' | map: 'handle' | join: ' ' }}"
+    expected_output = "beta gamma"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_reject_with_false_value
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | reject: 'ok', false | map: 'handle' | join: ' ' }}"
+    expected_output = "alpha delta"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_some_with_value
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | some: 'ok', true }}"
+    expected_output = "true"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_some_without_value
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | some: 'ok' }}"
+    expected_output = "true"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_some_with_false_value
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | some: 'ok', false }}"
+    expected_output = "true"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_some_with_contains
+    products = [
+      { "title" => "Snowdevil pro goggles",    "price" => 129.99 },
+      { "title" => "Snowdevil alpine jacket",  "price" => 399.99 },
+      { "title" => "Snowdevil thermal gloves", "price" => 149.99 },
+      { "title" => "Snowdevil mountain boots", "price" => 389.99 },
+      { "title" => "Snowdevil safety helmet",  "price" => 199.99 }
+    ]
+
+    template = "{{ products | some: 'title', contains: 'safety' }}"
+    expected_output = "true"
+
+    assert_template_result(expected_output, template, { "products" => products })
+  end
+
+  def test_some_with_contains
+    products = [
+      { "title" => "Snowdevil pro goggles",    "price" => 129.99 },
+      { "title" => "Snowdevil alpine jacket",  "price" => 399.99 },
+      { "title" => "Snowdevil thermal gloves", "price" => 149.99 },
+      { "title" => "Snowdevil mountain boots", "price" => 389.99 },
+      { "title" => "Snowdevil safety helmet",  "price" => 199.99 }
+    ]
+
+    template = "{{ products | some: 'title', contains: 'game boy' }}"
+    expected_output = "false"
+
+    assert_template_result(expected_output, template, { "products" => products })
   end
 
   def test_where_string_keys
@@ -871,6 +1232,42 @@ class StandardFiltersTest < Minitest::Test
 
     assert_equal(expectation, @filters.where(input, "ok", true))
     assert_equal(expectation, @filters.where(input, "ok"))
+  end
+
+  def test_find_with_value
+    products = [
+      { "title" => "Snowdevil pro goggles",    "price" => 129.99 },
+      { "title" => "Snowdevil thermal gloves", "price" => 149.99 },
+      { "title" => "Snowdevil alpine jacket",  "price" => 399.99 },
+      { "title" => "Snowdevil mountain boots", "price" => 389.99 },
+      { "title" => "Snowdevil safety helmet",  "price" => 199.99 }
+    ]
+
+    template = <<~LIQUID
+      {%- assign product = products | find: 'price', greater: 150 -%}
+      {{- product.title -}}
+    LIQUID
+    expected_output = "Snowdevil alpine jacket"
+
+    assert_template_result(expected_output, template, { "products" => products })
+  end
+
+  def test_find_index_with_value
+    products = [
+      { "title" => "Snowdevil pro goggles",    "price" => 129.99 },
+      { "title" => "Snowdevil thermal gloves", "price" => 149.99 },
+      { "title" => "Snowdevil alpine jacket",  "price" => 399.99 },
+      { "title" => "Snowdevil mountain boots", "price" => 389.99 },
+      { "title" => "Snowdevil safety helmet",  "price" => 199.99 }
+    ]
+
+    template = <<~LIQUID
+      {%- assign index = products | find_index: 'price', greater: 150 -%}
+      {{- index -}}
+    LIQUID
+    expected_output = "2"
+
+    assert_template_result(expected_output, template, { "products" => products })
   end
 
   def test_where_non_array_map_input

@@ -207,12 +207,18 @@ module Liquid
     def slice(input, offset, length = nil)
       offset = Utils.to_integer(offset)
       length = length ? Utils.to_integer(length) : 1
+      default_value = []
 
       begin
-        if input.is_a?(Array)
-          input.slice(offset, length) || []
+        unless input.is_a?(Array)
+          default_value = ''
+          input = input.to_s
+        end
+
+        if length.negative?
+          input[offset...length] || default_value
         else
-          input.to_s.slice(offset, length) || ''
+          input.slice(offset, length) || default_value
         end
       rescue RangeError
         if I64_RANGE.cover?(length) && I64_RANGE.cover?(offset)
@@ -424,29 +430,59 @@ module Liquid
     # @liquid_syntax array | where: string, string
     # @liquid_return [array[untyped]]
     def where(input, property, target_value = nil)
-      ary = InputIterator.new(input, context)
+      filter_array(input, property, target_value, :select)
+    end
 
-      if ary.empty?
-        []
-      elsif target_value.nil?
-        ary.select do |item|
-          item[property]
-        rescue TypeError
-          raise_property_error(property)
-        rescue NoMethodError
-          return nil unless item.respond_to?(:[])
-          raise
-        end
-      else
-        ary.select do |item|
-          item[property] == target_value
-        rescue TypeError
-          raise_property_error(property)
-        rescue NoMethodError
-          return nil unless item.respond_to?(:[])
-          raise
-        end
-      end
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Filters an array to exclude items with a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | reject: string, string
+    # @liquid_return [array[untyped]]
+    def reject(input, property, target_value = nil)
+      filter_array(input, property, target_value, :reject)
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Tests if any item in an array has a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | some: string, string
+    # @liquid_return [boolean]
+    def has?(input, property, target_value = nil)
+      filter_array(input, property, target_value, :any?)
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Returns the first item in an array with a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | find: string, string
+    # @liquid_return [untyped]
+    def find(input, property, target_value = nil)
+      filter_array(input, property, target_value, :find)
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Returns the index of the first item in an array with a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | find_index: string, string
+    # @liquid_return [number]
+    def find_index(input, property, target_value = nil)
+      filter_array(input, property, target_value, :find_index)
     end
 
     # @liquid_public_docs
@@ -917,6 +953,47 @@ module Liquid
     private
 
     attr_reader :context
+
+    def filter_array(input, property, target_value, method)
+      ary = InputIterator.new(input, context)
+
+      return [] if ary.empty?
+
+      ary.public_send(method) do |item|
+        case target_value
+        when nil
+          item[property]
+        when Hash
+          compare_with_operator(item[property], target_value)
+        else
+          item[property] == target_value
+        end
+      rescue TypeError
+        raise_property_error(property)
+      rescue NoMethodError
+        return nil unless item.respond_to?(:[])
+        raise
+      end
+    end
+
+    def compare_with_operator(value, comparison)
+      operation = comparison.keys.first
+      compare_value = comparison.values.first
+      operators = {
+        'greater' => ->(a, b) { a > b },
+        'less' => ->(a, b) { a < b },
+        'greater_or_equal' => ->(a, b) { a >= b },
+        'less_or_equal' => ->(a, b) { a <= b },
+        'contains' => ->(a, b) { a.to_s.include?(b.to_s) },
+      }
+
+      operator = operators[operation]
+      operator && operator.call(value, compare_value)
+    rescue NoMethodError, TypeError, ArgumentError
+      false
+    rescue StandardError
+      false
+    end
 
     def raise_property_error(property)
       raise Liquid::ArgumentError, "cannot select the property '#{property}'"
