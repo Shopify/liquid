@@ -287,8 +287,8 @@ module Liquid
     #   Splits a string into an array of substrings based on a given separator and an optional limit number
     # @liquid_syntax string | split: string, integer
     # @liquid_return [array[string]]
-    def split(input, pattern, limit = nil)
-      limit = Utils.to_number(limit).to_i
+    def split(input, pattern, limit = 0)
+      limit = Utils.to_integer(limit)
 
       input.to_s.split(pattern.to_s, limit)
     end

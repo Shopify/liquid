@@ -151,6 +151,11 @@ class StandardFiltersTest < Minitest::Test
     assert_equal([], @filters.split(nil, ' '))
     assert_equal(['A', 'Z'], @filters.split('A1Z', 1))
     assert_equal(['a', 'b', 'c,d,e'], @filters.split('a,b,c,d,e', ',', 3))
+
+    nil_limit_exception = assert_raises(Liquid::ArgumentError) do
+      @filters.split('a,b,c,d,e', ',', nil)
+    end
+    assert_equal('Liquid error: invalid integer', nil_limit_exception.message)
   end
 
   def test_escape
