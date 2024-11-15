@@ -91,7 +91,7 @@ module Liquid
       if @for_liquid_tag
         @tokens = @source.split("\n")
       else
-        @ss = Tokenizer2.string_scanner
+        @ss = self.class.string_scanner
         @ss.string = @source
         @tokens << shift_normal until @ss.eos?
       end
