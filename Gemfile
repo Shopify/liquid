@@ -29,5 +29,4 @@ group :test do
   end
 end
 
-gem "strscan", ">= 3.1"
 gem "lru_redux"
