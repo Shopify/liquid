@@ -25,5 +25,4 @@ group :test do
   gem 'rubocop-performance', require: false
 end
 
-gem "strscan", ">= 3.1"
 gem "lru_redux"
