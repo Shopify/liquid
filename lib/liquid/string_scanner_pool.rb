@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Liquid
   class StringScannerPool
     class << self
       def pop(input)
-        @ss_pool ||= [StringScanner.new("")] * 5
+        @ss_pool ||= 5.times.each_with_object([]) { |_i, arr| arr << StringScanner.new("") }
 
         if @ss_pool.empty?
           StringScanner.new(input)
@@ -14,7 +16,6 @@ module Liquid
       end
 
       def release(ss)
-        binding.irb if ss.nil?
         @ss_pool ||= []
         @ss_pool << ss
       end
