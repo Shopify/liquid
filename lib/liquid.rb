@@ -49,6 +49,7 @@ end
 require "liquid/version"
 require "liquid/deprecations"
 require "liquid/const"
+require "liquid/string_scanner_pool"
 require 'liquid/standardfilters'
 require 'liquid/file_system'
 require 'liquid/parser_switching'

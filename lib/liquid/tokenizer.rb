@@ -56,12 +56,6 @@ module Liquid
     CLOSE_CURLEY = "}".ord
     PERCENTAGE = "%".ord
 
-    class << self
-      def string_scanner
-        @string_scanner ||= StringScanner.new("")
-      end
-    end
-
     def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
       @line_number    = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
@@ -91,13 +85,13 @@ module Liquid
       if @for_liquid_tag
         @tokens = @source.split("\n")
       else
-        @ss = self.class.string_scanner
-        @ss.string = @source
+        @ss = StringScannerPool.pop(@source)
         @tokens << shift_normal until @ss.eos?
       end
 
-      @ss = nil
       @source = nil
+    ensure
+      StringScannerPool.release(@ss) if @ss
     end
 
     def shift_normal

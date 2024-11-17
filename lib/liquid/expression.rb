@@ -72,10 +72,6 @@ module Liquid
     CACHE = LruRedux::Cache.new(10_000) # most themes would have less than 2,000 unique expression
 
     class << self
-      def string_scanner
-        @ss ||= StringScanner.new("")
-      end
-
       def parse(markup)
         return unless markup
 
@@ -106,8 +102,7 @@ module Liquid
       end
 
       def parse_number(markup)
-        ss = string_scanner
-        ss.string = markup
+        ss = StringScannerPool.pop(markup)
 
         is_integer = true
         last_dot_pos = nil
@@ -147,6 +142,8 @@ module Liquid
           # we should never reach this point
           false
         end
+      ensure
+        StringScannerPool.release(ss)
       end
     end
   end

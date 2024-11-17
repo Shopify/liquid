@@ -157,40 +157,34 @@ module Liquid
       table.freeze
     end
 
-    class << self
-      def string_scanner
-        @string_scanner ||= StringScanner.new("")
-      end
-    end
-
     def initialize(input)
-      @ss = self.class.string_scanner
-      @ss.string = input
+      @input = input
     end
 
     # rubocop:disable Metrics/BlockNesting
     def tokenize
+      ss = StringScannerPool.pop(@input)
       @output = []
 
-      until @ss.eos?
-        @ss.skip(WHITESPACE_OR_NOTHING)
+      until ss.eos?
+        ss.skip(WHITESPACE_OR_NOTHING)
 
-        break if @ss.eos?
+        break if ss.eos?
 
-        start_pos = @ss.pos
-        peeked = @ss.peek_byte
+        start_pos = ss.pos
+        peeked = ss.peek_byte
 
         if (special = SPECIAL_TABLE[peeked])
-          @ss.scan_byte
+          ss.scan_byte
           # Special case for ".."
-          if special == DOT && @ss.peek_byte == DOT_ORD
-            @ss.scan_byte
+          if special == DOT && ss.peek_byte == DOT_ORD
+            ss.scan_byte
             @output << DOTDOT
           elsif special == DASH
             # Special case for negative numbers
-            if (peeked_byte = @ss.peek_byte) && NUMBER_TABLE[peeked_byte]
-              @ss.pos -= 1
-              @output << [:number, @ss.scan(NUMBER_LITERAL)]
+            if (peeked_byte = ss.peek_byte) && NUMBER_TABLE[peeked_byte]
+              ss.pos -= 1
+              @output << [:number, ss.scan(NUMBER_LITERAL)]
             else
               @output << special
             end
@@ -198,25 +192,25 @@ module Liquid
             @output << special
           end
         elsif (sub_table = TWO_CHARS_COMPARISON_JUMP_TABLE[peeked])
-          @ss.scan_byte
-          if (peeked_byte = @ss.peek_byte) && (found = sub_table[peeked_byte])
+          ss.scan_byte
+          if (peeked_byte = ss.peek_byte) && (found = sub_table[peeked_byte])
             @output << found
-            @ss.scan_byte
+            ss.scan_byte
           else
-            raise_syntax_error(start_pos)
+            raise_syntax_error(start_pos, ss)
           end
         elsif (sub_table = COMPARISON_JUMP_TABLE[peeked])
-          @ss.scan_byte
-          if (peeked_byte = @ss.peek_byte) && (found = sub_table[peeked_byte])
+          ss.scan_byte
+          if (peeked_byte = ss.peek_byte) && (found = sub_table[peeked_byte])
             @output << found
-            @ss.scan_byte
+            ss.scan_byte
           else
             @output << SINGLE_COMPARISON_TOKENS[peeked]
           end
         else
           type, pattern = NEXT_MATCHER_JUMP_TABLE[peeked]
 
-          if type && (t = @ss.scan(pattern))
+          if type && (t = ss.scan(pattern))
             # Special case for "contains"
             @output << if type == :id && t == "contains" && @output.last&.first != :dot
               COMPARISON_CONTAINS
@@ -224,19 +218,21 @@ module Liquid
               [type, t]
             end
           else
-            raise_syntax_error(start_pos)
+            raise_syntax_error(start_pos, ss)
           end
         end
       end
       # rubocop:enable Metrics/BlockNesting
 
       @output << EOS
+    ensure
+      StringScannerPool.release(ss)
     end
 
-    def raise_syntax_error(start_pos)
-      @ss.pos = start_pos
+    def raise_syntax_error(start_pos, ss)
+      ss.pos = start_pos
       # the character could be a UTF-8 character, use getch to get all the bytes
-      raise SyntaxError, "Unexpected character #{@ss.getch}"
+      raise SyntaxError, "Unexpected character #{ss.getch}"
     end
   end
 
