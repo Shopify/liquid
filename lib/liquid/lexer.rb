@@ -25,38 +25,37 @@ module Liquid
     COMPARISON_OPERATOR   = /==|!=|<>|<=?|>=?|contains(?=\s)/
     WHITESPACE_OR_NOTHING = /\s*/
 
-    def initialize(input)
-      @ss = StringScanner.new(input)
-    end
+    class << self
+      def tokenize(input)
+        ss = StringScanner.new(input)
+        output = []
 
-    def tokenize
-      @output = []
-
-      until @ss.eos?
-        @ss.skip(WHITESPACE_OR_NOTHING)
-        break if @ss.eos?
-        tok      = if (t = @ss.scan(COMPARISON_OPERATOR))
-          [:comparison, t]
-        elsif (t = @ss.scan(STRING_LITERAL))
-          [:string, t]
-        elsif (t = @ss.scan(NUMBER_LITERAL))
-          [:number, t]
-        elsif (t = @ss.scan(IDENTIFIER))
-          [:id, t]
-        elsif (t = @ss.scan(DOTDOT))
-          [:dotdot, t]
-        else
-          c     = @ss.getch
-          if (s = SPECIALS[c])
-            [s, c]
+        until ss.eos?
+          ss.skip(WHITESPACE_OR_NOTHING)
+          break if ss.eos?
+          tok      = if (t = ss.scan(COMPARISON_OPERATOR))
+            [:comparison, t]
+          elsif (t = ss.scan(STRING_LITERAL))
+            [:string, t]
+          elsif (t = ss.scan(NUMBER_LITERAL))
+            [:number, t]
+          elsif (t = ss.scan(IDENTIFIER))
+            [:id, t]
+          elsif (t = ss.scan(DOTDOT))
+            [:dotdot, t]
           else
-            raise SyntaxError, "Unexpected character #{c}"
+            c     = ss.getch
+            if (s = SPECIALS[c])
+              [s, c]
+            else
+              raise SyntaxError, "Unexpected character #{c}"
+            end
           end
+          output << tok
         end
-        @output << tok
-      end
 
-      @output << [:end_of_string]
+        output << [:end_of_string]
+      end
     end
   end
 
@@ -157,82 +156,79 @@ module Liquid
       table.freeze
     end
 
-    def initialize(input)
-      @input = input
-    end
-
     # rubocop:disable Metrics/BlockNesting
-    def tokenize
-      ss = StringScannerPool.pop(@input)
-      @output = []
+    class << self
+      def tokenize(input)
+        ss = StringScannerPool.pop(input)
+        output = []
 
-      until ss.eos?
-        ss.skip(WHITESPACE_OR_NOTHING)
+        until ss.eos?
+          ss.skip(WHITESPACE_OR_NOTHING)
 
-        break if ss.eos?
+          break if ss.eos?
 
-        start_pos = ss.pos
-        peeked = ss.peek_byte
+          start_pos = ss.pos
+          peeked = ss.peek_byte
 
-        if (special = SPECIAL_TABLE[peeked])
-          ss.scan_byte
-          # Special case for ".."
-          if special == DOT && ss.peek_byte == DOT_ORD
+          if (special = SPECIAL_TABLE[peeked])
             ss.scan_byte
-            @output << DOTDOT
-          elsif special == DASH
-            # Special case for negative numbers
-            if (peeked_byte = ss.peek_byte) && NUMBER_TABLE[peeked_byte]
-              ss.pos -= 1
-              @output << [:number, ss.scan(NUMBER_LITERAL)]
+            # Special case for ".."
+            if special == DOT && ss.peek_byte == DOT_ORD
+              ss.scan_byte
+              output << DOTDOT
+            elsif special == DASH
+              # Special case for negative numbers
+              if (peeked_byte = ss.peek_byte) && NUMBER_TABLE[peeked_byte]
+                ss.pos -= 1
+                output << [:number, ss.scan(NUMBER_LITERAL)]
+              else
+                output << special
+              end
             else
-              @output << special
+              output << special
+            end
+          elsif (sub_table = TWO_CHARS_COMPARISON_JUMP_TABLE[peeked])
+            ss.scan_byte
+            if (peeked_byte = ss.peek_byte) && (found = sub_table[peeked_byte])
+              output << found
+              ss.scan_byte
+            else
+              raise_syntax_error(start_pos, ss)
+            end
+          elsif (sub_table = COMPARISON_JUMP_TABLE[peeked])
+            ss.scan_byte
+            if (peeked_byte = ss.peek_byte) && (found = sub_table[peeked_byte])
+              output << found
+              ss.scan_byte
+            else
+              output << SINGLE_COMPARISON_TOKENS[peeked]
             end
           else
-            @output << special
-          end
-        elsif (sub_table = TWO_CHARS_COMPARISON_JUMP_TABLE[peeked])
-          ss.scan_byte
-          if (peeked_byte = ss.peek_byte) && (found = sub_table[peeked_byte])
-            @output << found
-            ss.scan_byte
-          else
-            raise_syntax_error(start_pos, ss)
-          end
-        elsif (sub_table = COMPARISON_JUMP_TABLE[peeked])
-          ss.scan_byte
-          if (peeked_byte = ss.peek_byte) && (found = sub_table[peeked_byte])
-            @output << found
-            ss.scan_byte
-          else
-            @output << SINGLE_COMPARISON_TOKENS[peeked]
-          end
-        else
-          type, pattern = NEXT_MATCHER_JUMP_TABLE[peeked]
+            type, pattern = NEXT_MATCHER_JUMP_TABLE[peeked]
 
-          if type && (t = ss.scan(pattern))
-            # Special case for "contains"
-            @output << if type == :id && t == "contains" && @output.last&.first != :dot
-              COMPARISON_CONTAINS
+            if type && (t = ss.scan(pattern))
+              # Special case for "contains"
+              output << if type == :id && t == "contains" && output.last&.first != :dot
+                COMPARISON_CONTAINS
+              else
+                [type, t]
+              end
             else
-              [type, t]
+              raise_syntax_error(start_pos, ss)
             end
-          else
-            raise_syntax_error(start_pos, ss)
           end
         end
+        # rubocop:enable Metrics/BlockNesting
+        output << EOS
+      ensure
+        StringScannerPool.release(ss)
       end
-      # rubocop:enable Metrics/BlockNesting
 
-      @output << EOS
-    ensure
-      StringScannerPool.release(ss)
-    end
-
-    def raise_syntax_error(start_pos, ss)
-      ss.pos = start_pos
-      # the character could be a UTF-8 character, use getch to get all the bytes
-      raise SyntaxError, "Unexpected character #{ss.getch}"
+      def raise_syntax_error(start_pos, ss)
+        ss.pos = start_pos
+        # the character could be a UTF-8 character, use getch to get all the bytes
+        raise SyntaxError, "Unexpected character #{ss.getch}"
+      end
     end
   end
 
