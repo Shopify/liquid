@@ -69,6 +69,9 @@ module Liquid
     # Use an atomic group (?>...) to avoid pathological backtracing from
     # malicious input as described in https://github.com/Shopify/liquid/issues/1357
     RANGES_REGEX = /\A\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\z/
+    INTEGER_REGEX = /\A(-?\d+)\z/
+    FLOAT_REGEX = /\A(-?\d+)\.\d+\z/
+
     CACHE = LruRedux::Cache.new(10_000) # most themes would have less than 2,000 unique expression
 
     class << self
@@ -112,8 +115,16 @@ module Liquid
 
         return false if byte != DASH && byte != DOT && (byte < ZERO || byte > NINE)
 
-        is_integer = true
-        last_dot_pos = nil
+        # check if the markup is simple integer or float
+        case markup
+        when INTEGER_REGEX
+          return markup.to_i
+        when FLOAT_REGEX
+          return markup.to_f
+        end
+
+        # The markup could be a float with multiple dots
+        first_dot_pos = nil
         num_end_pos = nil
 
         while (byte = ss.scan_byte)
@@ -123,24 +134,23 @@ module Liquid
           next if num_end_pos
 
           if byte == DOT
-            if is_integer == false
-              num_end_pos = ss.pos - 1
+            if first_dot_pos.nil?
+              first_dot_pos = ss.pos
             else
-              is_integer = false
-              last_dot_pos = ss.pos
+              # we found another dot, so we know that the number ends here
+              num_end_pos = ss.pos - 1
             end
           end
         end
 
         num_end_pos = markup.length if ss.eos?
 
-        return markup.to_i if is_integer
-
         if num_end_pos
           # number ends with a number "123.123"
           markup.byteslice(0, num_end_pos).to_f
         else
-          markup.byteslice(0, last_dot_pos).to_f
+          # number ends with a dot "123."
+          markup.byteslice(0, first_dot_pos).to_f
         end
       end
     end
