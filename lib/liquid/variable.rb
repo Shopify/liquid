@@ -61,7 +61,7 @@ module Liquid
 
     def strict_parse(markup)
       @filters = []
-      p = Parser.new(markup)
+      p = @parse_context.new_parser(markup)
 
       return if p.look(:end_of_string)
 

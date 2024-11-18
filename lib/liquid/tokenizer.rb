@@ -6,7 +6,13 @@ module Liquid
   class Tokenizer1
     attr_reader :line_number, :for_liquid_tag
 
-    def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
+    def initialize(
+      source:,
+      string_scanner:, # this is not used
+      line_numbers: false,
+      line_number: nil,
+      for_liquid_tag: false
+    )
       @source         = source.to_s.to_str
       @line_number    = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
@@ -56,12 +62,22 @@ module Liquid
     CLOSE_CURLEY = "}".ord
     PERCENTAGE = "%".ord
 
-    def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
-      @line_number    = line_number || (line_numbers ? 1 : nil)
+    def initialize(
+      source:,
+      string_scanner:,
+      line_numbers: false,
+      line_number: nil,
+      for_liquid_tag: false
+    )
+      @line_number = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
-      @source         = source
-      @offset         = 0
-      @tokens         = []
+      @source = source
+      @offset = 0
+      @tokens = []
+
+      @ss = string_scanner
+      @ss.string = @source
+
       tokenize
     end
 
@@ -85,13 +101,11 @@ module Liquid
       if @for_liquid_tag
         @tokens = @source.split("\n")
       else
-        @ss = StringScannerPool.pop(@source)
         @tokens << shift_normal until @ss.eos?
       end
 
       @source = nil
-    ensure
-      StringScannerPool.release(@ss) if @ss
+      @ss = nil
     end
 
     def shift_normal

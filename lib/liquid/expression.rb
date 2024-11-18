@@ -22,7 +22,7 @@ module Liquid
     # malicious input as described in https://github.com/Shopify/liquid/issues/1357
     RANGES_REGEX         = /\A\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\z/
 
-    def self.parse(markup)
+    def self.parse(markup, _ss = nil)
       return nil unless markup
 
       markup = markup.strip
@@ -35,14 +35,14 @@ module Liquid
       when INTEGERS_REGEX
         Regexp.last_match(1).to_i
       when RANGES_REGEX
-        RangeLookup.parse(Regexp.last_match(1), Regexp.last_match(2))
+        RangeLookup.parse(Regexp.last_match(1), Regexp.last_match(2), nil)
       when FLOATS_REGEX
         Regexp.last_match(1).to_f
       else
         if LITERALS.key?(markup)
           LITERALS[markup]
         else
-          VariableLookup.parse(markup)
+          VariableLookup.parse(markup, nil)
         end
       end
     end
@@ -58,7 +58,7 @@ module Liquid
       'false' => false,
       'blank' => '',
       'empty' => '',
-      '-' => VariableLookup.parse("-")
+      '-' => VariableLookup.parse("-", nil),
     }.freeze
 
     DOT = ".".ord
@@ -72,7 +72,7 @@ module Liquid
     CACHE = LruRedux::Cache.new(10_000) # most themes would have less than 2,000 unique expression
 
     class << self
-      def parse(markup)
+      def parse(markup, ss = StringScanner.new(""))
         return unless markup
 
         markup = markup.strip # markup can be a frozen string
@@ -86,32 +86,35 @@ module Liquid
 
         return CACHE[markup] if CACHE.key?(markup)
 
-        CACHE[markup] = inner_parse(markup)
+        CACHE[markup] = inner_parse(markup, ss)
       end
 
-      def inner_parse(markup)
+      def inner_parse(markup, ss)
         if (markup.start_with?("(") && markup.end_with?(")")) && markup =~ RANGES_REGEX
-          return RangeLookup.parse(Regexp.last_match(1), Regexp.last_match(2))
+          return RangeLookup.parse(
+            Regexp.last_match(1),
+            Regexp.last_match(2),
+            ss,
+          )
         end
 
-        if (num = parse_number(markup))
+        if (num = parse_number(markup, ss))
           num
         else
-          VariableLookup.parse(markup)
+          VariableLookup.parse(markup, ss)
         end
       end
 
-      def parse_number(markup)
-        ss = StringScannerPool.pop(markup)
-
-        is_integer = true
-        last_dot_pos = nil
-        num_end_pos = nil
-
+      def parse_number(markup, ss)
+        ss.string = markup
         # the first byte must be a digit, a period, or  a dash
         byte = ss.scan_byte
 
         return false if byte != DASH && byte != DOT && (byte < ZERO || byte > NINE)
+
+        is_integer = true
+        last_dot_pos = nil
+        num_end_pos = nil
 
         while (byte = ss.scan_byte)
           return false if byte != DOT && (byte < ZERO || byte > NINE)
@@ -136,14 +139,9 @@ module Liquid
         if num_end_pos
           # number ends with a number "123.123"
           markup.byteslice(0, num_end_pos).to_f
-        elsif last_dot_pos
-          markup.byteslice(0, last_dot_pos).to_f
         else
-          # we should never reach this point
-          false
+          markup.byteslice(0, last_dot_pos).to_f
         end
-      ensure
-        StringScannerPool.release(ss)
       end
     end
   end

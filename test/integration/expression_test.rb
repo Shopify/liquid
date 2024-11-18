@@ -43,7 +43,7 @@ class ExpressionTest < Minitest::Test
   end
 
   def test_quirky_negative_sign_expression_markup
-    result = Expression.parse("-")
+    result = Expression.parse("-", nil)
     assert(result.is_a?(VariableLookup))
     assert_equal("-", result.name)
 
