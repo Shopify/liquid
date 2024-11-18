@@ -26,8 +26,8 @@ module Liquid
     WHITESPACE_OR_NOTHING = /\s*/
 
     class << self
-      def tokenize(input)
-        ss = StringScanner.new(input)
+      def tokenize(input, ss = StringScanner.new(""))
+        ss.string = input
         output = []
 
         until ss.eos?
@@ -158,8 +158,8 @@ module Liquid
 
     # rubocop:disable Metrics/BlockNesting
     class << self
-      def tokenize(input)
-        ss = StringScannerPool.pop(input)
+      def tokenize(input, ss)
+        ss.string = input
         output = []
 
         until ss.eos?
@@ -220,8 +220,6 @@ module Liquid
         end
         # rubocop:enable Metrics/BlockNesting
         output << EOS
-      ensure
-        StringScannerPool.release(ss)
       end
 
       def raise_syntax_error(start_pos, ss)

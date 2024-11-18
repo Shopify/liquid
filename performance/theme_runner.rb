@@ -50,8 +50,13 @@ class ThemeRunner
 
   # `tokenize` will just test the tokenizen portion of liquid without any templates
   def tokenize
+    ss = StringScanner.new("")
     @tests.each do |test_hash|
-      tokenizer = Liquid::Tokenizer.new(test_hash[:liquid], true)
+      tokenizer = Liquid::Tokenizer.new(
+        source: test_hash[:liquid],
+        string_scanner: ss,
+        line_numbers: true,
+      )
       while tokenizer.shift; end
     end
   end

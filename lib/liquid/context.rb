@@ -40,6 +40,10 @@ module Liquid
       @global_filter       = nil
       @disabled_tags       = {}
 
+      # Instead of constructing new StringScanner objects for each Expression parse,
+      # we recycle the same one.
+      @string_scanner = StringScanner.new("")
+
       @registers.static[:cached_partials] ||= {}
       @registers.static[:file_system] ||= environment.file_system
       @registers.static[:template_factory] ||= Liquid::TemplateFactory.new
@@ -176,7 +180,7 @@ module Liquid
     # Example:
     #   products == empty #=> products.empty?
     def [](expression)
-      evaluate(Expression.parse(expression))
+      evaluate(Expression.parse(expression, @string_scanner))
     end
 
     def key?(key)
