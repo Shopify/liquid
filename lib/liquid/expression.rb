@@ -109,12 +109,6 @@ module Liquid
       end
 
       def parse_number(markup, ss)
-        ss.string = markup
-        # the first byte must be a digit, a period, or  a dash
-        byte = ss.scan_byte
-
-        return false if byte != DASH && byte != DOT && (byte < ZERO || byte > NINE)
-
         # check if the markup is simple integer or float
         case markup
         when INTEGER_REGEX
@@ -122,6 +116,12 @@ module Liquid
         when FLOAT_REGEX
           return markup.to_f
         end
+
+        ss.string = markup
+        # the first byte must be a digit, a period, or  a dash
+        byte = ss.scan_byte
+
+        return false if byte != DASH && byte != DOT && (byte < ZERO || byte > NINE)
 
         # The markup could be a float with multiple dots
         first_dot_pos = nil
