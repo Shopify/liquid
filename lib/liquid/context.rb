@@ -176,7 +176,12 @@ module Liquid
     # Example:
     #   products == empty #=> products.empty?
     def [](expression)
-      evaluate(Expression.parse(expression))
+      start = Process.clock_gettime(Process::CLOCK_REALTIME, :nanosecond)
+      expression_parse_result = Expression.parse(expression)
+      duration = Process.clock_gettime(Process::CLOCK_REALTIME, :nanosecond) - start
+      registers.static[:expression_parse_duration] ||= 0
+      registers.static[:expression_parse_duration] += duration
+      evaluate(expression_parse_result)
     end
 
     def key?(key)
