@@ -22,7 +22,7 @@ module Liquid
     # malicious input as described in https://github.com/Shopify/liquid/issues/1357
     RANGES_REGEX         = /\A\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\z/
 
-    def self.parse(markup, _ss = nil)
+    def self.parse(markup, _ss = nil, _cache = nil)
       return nil unless markup
 
       markup = markup.strip
@@ -72,10 +72,8 @@ module Liquid
     INTEGER_REGEX = /\A(-?\d+)\z/
     FLOAT_REGEX = /\A(-?\d+)\.\d+\z/
 
-    CACHE = LruRedux::Cache.new(10_000) # most themes would have less than 2,000 unique expression
-
     class << self
-      def parse(markup, ss = StringScanner.new(""))
+      def parse(markup, ss = StringScanner.new(""), cache = nil)
         return unless markup
 
         markup = markup.strip # markup can be a frozen string
@@ -87,24 +85,30 @@ module Liquid
           return LITERALS[markup]
         end
 
-        return CACHE[markup] if CACHE.key?(markup)
+        # Cache only exists during parsing
+        if cache
+          return cache[markup] if cache.key?(markup)
 
-        CACHE[markup] = inner_parse(markup, ss)
+          cache[markup] = inner_parse(markup, ss, cache)
+        else
+          inner_parse(markup, ss, nil)
+        end
       end
 
-      def inner_parse(markup, ss)
+      def inner_parse(markup, ss, cache)
         if (markup.start_with?("(") && markup.end_with?(")")) && markup =~ RANGES_REGEX
           return RangeLookup.parse(
             Regexp.last_match(1),
             Regexp.last_match(2),
             ss,
+            cache,
           )
         end
 
         if (num = parse_number(markup, ss))
           num
         else
-          VariableLookup.parse(markup, ss)
+          VariableLookup.parse(markup, ss, cache)
         end
       end
 
