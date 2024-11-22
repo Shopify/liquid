@@ -26,7 +26,7 @@ module Liquid
     WHITESPACE_OR_NOTHING = /\s*/
 
     class << self
-      def tokenize(input, ss = StringScanner.new(""))
+      def tokenize(input, ss = StringScanner.new(input))
         ss.string = input
         output = []
 
