@@ -3,7 +3,7 @@
 module Liquid
   class ParseContext
     attr_accessor :locale, :line_number, :trim_whitespace, :depth
-    attr_reader :partial, :warnings, :error_mode, :environment, :string_scanner
+    attr_reader :partial, :warnings, :error_mode, :environment, :string_scanner, :expression_cache
 
     def initialize(options = Const::EMPTY_HASH)
       @environment = options.fetch(:environment, Environment.default)
@@ -15,6 +15,7 @@ module Liquid
       # constructing new StringScanner in Lexer, Tokenizer, etc is expensive
       # This StringScanner will be shared by all of them
       @string_scanner = StringScanner.new("")
+      @expression_cache = LruRedux::Cache.new(10_000)
 
       self.depth   = 0
       self.partial = false
@@ -42,7 +43,7 @@ module Liquid
     end
 
     def parse_expression(markup)
-      Expression.parse(markup, string_scanner)
+      Expression.parse(markup, string_scanner, expression_cache)
     end
 
     def partial=(value)
