@@ -8,6 +8,7 @@ end
 gemspec
 
 gem "base64"
+gem "lru_redux"
 
 group :benchmark, :test do
   gem 'benchmark-ips'
@@ -28,5 +29,3 @@ group :test do
     gem 'liquid-c', github: 'Shopify/liquid-c', ref: 'main'
   end
 end
-
-gem "lru_redux"

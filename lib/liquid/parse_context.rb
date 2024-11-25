@@ -15,7 +15,10 @@ module Liquid
       # constructing new StringScanner in Lexer, Tokenizer, etc is expensive
       # This StringScanner will be shared by all of them
       @string_scanner = StringScanner.new("")
-      @expression_cache = LruRedux::Cache.new(10_000)
+
+      @expression_cache = if options[:expression_cache] != false
+        options[:expression_cache] || LruRedux::Cache.new(10_000)
+      end
 
       self.depth   = 0
       self.partial = false
