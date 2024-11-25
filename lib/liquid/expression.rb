@@ -160,5 +160,6 @@ module Liquid
     end
   end
 
-  Expression = StringScanner.instance_methods.include?(:scan_byte) ? Expression2 : Expression1
+  # Remove this once we can depend on strscan >= 3.1.1
+  Expression = HAS_STRING_SCANNER_SCAN_BYTE ? Expression2 : Expression1
 end

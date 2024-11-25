@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "strscan"
-
 module Liquid
   class Lexer1
     SPECIALS = {
@@ -229,5 +227,5 @@ module Liquid
   end
 
   # Remove this once we can depend on strscan >= 3.1.1
-  Lexer = StringScanner.instance_methods.include?(:scan_byte) ? Lexer2 : Lexer1
+  Lexer = HAS_STRING_SCANNER_SCAN_BYTE ? Lexer2 : Lexer1
 end
