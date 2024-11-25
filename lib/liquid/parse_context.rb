@@ -3,7 +3,7 @@
 module Liquid
   class ParseContext
     attr_accessor :locale, :line_number, :trim_whitespace, :depth
-    attr_reader :partial, :warnings, :error_mode, :environment, :string_scanner, :expression_cache
+    attr_reader :partial, :warnings, :error_mode, :environment
 
     def initialize(options = Const::EMPTY_HASH)
       @environment = options.fetch(:environment, Environment.default)
@@ -44,7 +44,7 @@ module Liquid
     end
 
     def parse_expression(markup)
-      Expression.parse(markup, string_scanner, expression_cache)
+      Expression.parse(markup, @string_scanner, @expression_cache)
     end
 
     def partial=(value)
