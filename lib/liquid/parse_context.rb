@@ -30,7 +30,8 @@ module Liquid
     end
 
     def new_parser(input)
-      Parser.new(input, @string_scanner)
+      @string_scanner.string = input
+      Parser.new(@string_scanner)
     end
 
     def new_tokenizer(source, start_line_number: nil, for_liquid_tag: false)
