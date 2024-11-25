@@ -26,8 +26,7 @@ module Liquid
     WHITESPACE_OR_NOTHING = /\s*/
 
     class << self
-      def tokenize(input, ss = StringScanner.new(input))
-        ss.string = input
+      def tokenize(ss)
         output = []
 
         until ss.eos?
@@ -158,8 +157,7 @@ module Liquid
 
     # rubocop:disable Metrics/BlockNesting
     class << self
-      def tokenize(input, ss)
-        ss.string = input
+      def tokenize(ss)
         output = []
 
         until ss.eos?
