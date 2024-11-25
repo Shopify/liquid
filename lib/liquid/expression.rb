@@ -58,7 +58,9 @@ module Liquid
       'false' => false,
       'blank' => '',
       'empty' => '',
-      '-' => VariableLookup.parse("-", nil),
+      # in lax mode, minus sign can be a VariableLookup
+      # For simplicity and performace, we treat it like a literal
+      '-' => VariableLookup.parse("-", nil).freeze,
     }.freeze
 
     DOT = ".".ord
