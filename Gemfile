@@ -8,6 +8,7 @@ end
 gemspec
 
 gem "base64"
+gem "lru_redux"
 
 group :benchmark, :test do
   gem 'benchmark-ips'
@@ -24,5 +25,3 @@ group :test do
   gem 'rubocop-shopify', '~> 2.12.0', require: false
   gem 'rubocop-performance', require: false
 end
-
-gem "lru_redux"

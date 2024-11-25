@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'lru_redux'
 
 class ExpressionTest < Minitest::Test
   def test_keyword_literals
@@ -52,6 +53,44 @@ class ExpressionTest < Minitest::Test
       "",
       "{{ - 'theme.css' - }}",
     )
+  end
+
+  def test_expression_cache
+    skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+
+    cache = LruRedux::Cache.new(10)
+    template = <<~LIQUID
+      {% assign x = 1 %}
+      {{ x }}
+      {% assign x = 2 %}
+      {{ x }}
+      {% assign y = 1 %}
+      {{ y }}
+    LIQUID
+
+    Liquid::Template.parse(template, expression_cache: cache).render
+
+    assert_equal(
+      ["1", "2", "x", "y"],
+      cache.to_a.map { _1[0] }.sort,
+    )
+  end
+
+  def test_disable_expression_cache
+    skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+
+    template = <<~LIQUID
+      {% assign x = 1 %}
+      {{ x }}
+      {% assign x = 2 %}
+      {{ x }}
+      {% assign y = 1 %}
+      {{ y }}
+    LIQUID
+
+    parse_context = Liquid::ParseContext.new(expression_cache: false)
+    Liquid::Template.parse(template, parse_context).render
+    assert(parse_context.instance_variable_get(:@expression_cache).nil?)
   end
 
   private
