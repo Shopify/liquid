@@ -116,7 +116,7 @@ module Liquid
         # check if the markup is simple integer or float
         case markup
         when INTEGER_REGEX
-          return markup.to_i
+          return Integer(markup, 10)
         when FLOAT_REGEX
           return markup.to_f
         end
