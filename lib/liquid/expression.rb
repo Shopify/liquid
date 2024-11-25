@@ -89,9 +89,9 @@ module Liquid
         if cache
           return cache[markup] if cache.key?(markup)
 
-          cache[markup] = inner_parse(markup, ss, cache)
+          cache[markup] = inner_parse(markup, ss, cache).freeze
         else
-          inner_parse(markup, ss, nil)
+          inner_parse(markup, ss, nil).freeze
         end
       end
 
