@@ -2,7 +2,8 @@
 
 module Liquid
   class Parser
-    def initialize(input, string_scanner)
+    def initialize(input)
+      input = input.is_a?(StringScanner) ? input : StringScanner.new(input.to_s)
       @tokens = Lexer.tokenize(input, string_scanner)
       @p      = 0 # pointer to current location
     end
