@@ -57,6 +57,7 @@ class ExpressionTest < Minitest::Test
 
   def test_expression_cache
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+    skip("Expression Caching is only available with Expression2") if Liquid::Expression != Liquid::Expression2
 
     cache = LruRedux::Cache.new(10)
     template = <<~LIQUID
@@ -78,6 +79,7 @@ class ExpressionTest < Minitest::Test
 
   def test_disable_expression_cache
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+    skip("Expression Caching is only available with Expression2") if Liquid::Expression != Liquid::Expression2
 
     template = <<~LIQUID
       {% assign x = 1 %}
