@@ -6,6 +6,7 @@ class TokenizerTest < Minitest::Test
   def test_tokenize_strings
     assert_equal([' '], tokenize(' '))
     assert_equal(['hello world'], tokenize('hello world'))
+    assert_equal(['{}'], tokenize('{}'))
   end
 
   def test_tokenize_variables
@@ -28,6 +29,19 @@ class TokenizerTest < Minitest::Test
     assert_equal([1, 1, 1], tokenize_line_numbers(" {{funk}} "))
     assert_equal([1, 2, 2], tokenize_line_numbers("\n{{funk}}\n"))
     assert_equal([1, 1, 3], tokenize_line_numbers(" {{\n funk \n}} "))
+  end
+
+  def test_incomplete_curly_braces
+    assert_equal(["{{.}", " "], tokenize('{{.} '))
+    assert_equal(["{{}", "%}"], tokenize('{{}%}'))
+    assert_equal(["{{}}", "}"], tokenize('{{}}}'))
+  end
+
+  def test_unmatching_start_and_end
+    assert_equal(["{{%}"], tokenize('{{%}'))
+    assert_equal(["{{%%%}}"], tokenize('{{%%%}}'))
+    assert_equal(["{%", "}}"], tokenize('{%}}'))
+    assert_equal(["{%%}", "}"], tokenize('{%%}}'))
   end
 
   private

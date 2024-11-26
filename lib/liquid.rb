@@ -21,6 +21,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+require "strscan"
+
 module Liquid
   FilterSeparator             = /\|/
   ArgumentSeparator           = ','
@@ -44,6 +46,7 @@ module Liquid
   VariableParser              = /\[(?>[^\[\]]+|\g<0>)*\]|#{VariableSegment}+\??/o
 
   RAISE_EXCEPTION_LAMBDA = ->(_e) { raise }
+  HAS_STRING_SCANNER_SCAN_BYTE = StringScanner.instance_methods.include?(:scan_byte)
 end
 
 require "liquid/version"
@@ -68,7 +71,6 @@ require 'liquid/extensions'
 require 'liquid/errors'
 require 'liquid/interrupts'
 require 'liquid/strainer_template'
-require 'liquid/expression'
 require 'liquid/context'
 require 'liquid/tag'
 require 'liquid/block_body'
@@ -77,6 +79,7 @@ require 'liquid/variable'
 require 'liquid/variable_lookup'
 require 'liquid/range_lookup'
 require 'liquid/resource_limits'
+require 'liquid/expression'
 require 'liquid/template'
 require 'liquid/condition'
 require 'liquid/utils'
