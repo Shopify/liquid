@@ -218,6 +218,9 @@ module Liquid
     def render_to_output_buffer(context, output)
       freeze unless frozen?
 
+      context.registers[:render_scores] ||= []
+      context.registers[:render_scores] << @nodelist.length
+
       context.resource_limits.increment_render_score(@nodelist.length)
 
       idx = 0
@@ -232,6 +235,11 @@ module Liquid
           break if context.interrupt? # might have happened in a for-block
         end
         idx += 1
+
+        context.registers[:write_scores] ||= []
+
+        last_captured = context.registers[:write_scores].any? ? context.registers[:write_scores].last : 0
+        context.registers[:write_scores] << (output.bytesize - last_captured)
 
         context.resource_limits.increment_write_score(output)
       end
