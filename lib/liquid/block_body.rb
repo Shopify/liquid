@@ -218,8 +218,8 @@ module Liquid
     def render_to_output_buffer(context, output)
       freeze unless frozen?
 
-      context.registers[:render_scores] ||= []
-      context.registers[:render_scores] << @nodelist.length
+      context.registers.static[:render_scores] ||= []
+      context.registers.static[:render_scores] << @nodelist.length
 
       context.resource_limits.increment_render_score(@nodelist.length)
 
@@ -236,10 +236,11 @@ module Liquid
         end
         idx += 1
 
-        context.registers[:write_scores] ||= []
+        context.registers.static[:write_scores] ||= []
 
-        last_captured = context.registers[:write_scores].any? ? context.registers[:write_scores].last : 0
-        context.registers[:write_scores] << (output.bytesize - last_captured)
+        # THIS ISNT ACTUALLY A LIST OF NET OUTPUTS
+        last_captured = context.registers.static[:write_scores].any? ? context.registers.static[:write_scores].last : 0
+        context.registers.static[:write_scores] << (output.bytesize - last_captured)
 
         context.resource_limits.increment_write_score(output)
       end

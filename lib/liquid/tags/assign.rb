@@ -37,8 +37,8 @@ module Liquid
       val = @from.render(context)
       context.scopes.last[@to] = val
 
-      context.registers[:assign_scores] ||= []
-      context.registers[:assign_scores] << assign_score_of(val)
+      context.registers.static[:assign_scores] ||= []
+      context.registers.static[:assign_scores] << assign_score_of(val)
 
       context.resource_limits.increment_assign_score(assign_score_of(val))
       output
