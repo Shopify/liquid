@@ -238,9 +238,15 @@ module Liquid
 
         context.registers.static[:write_scores] ||= []
 
-        # THIS ISNT ACTUALLY A LIST OF NET OUTPUTS
-        last_captured = context.registers.static[:write_scores].any? ? context.registers.static[:write_scores].last : 0
-        context.registers.static[:write_scores] << (output.bytesize - last_captured)
+        if (last_captured = context.resource_limits.last_capture_length)
+          captured = output.bytesize
+          increment = captured - last_captured
+          context.registers.static[:assign_scores] ||= []
+          context.registers.static[:assign_scores] << ['cap', increment]
+        else
+          context.registers.static[:write_scores] ||= []
+          context.registers.static[:write_scores] << (output.bytesize)
+        end
 
         context.resource_limits.increment_write_score(output)
       end
