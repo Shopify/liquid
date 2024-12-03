@@ -378,7 +378,7 @@ module Liquid
         end
       elsif ary.all? { |el| el.respond_to?(:[]) }
         begin
-          ary.sort { |a, b| nil_safe_compare(a[property], b[property]) }
+          ary.sort { |a, b| nil_safe_compare(fetch_property(a, property), fetch_property(b, property)) }
         rescue TypeError
           raise_property_error(property)
         end
@@ -407,7 +407,7 @@ module Liquid
         end
       elsif ary.all? { |el| el.respond_to?(:[]) }
         begin
-          ary.sort { |a, b| nil_safe_casecmp(a[property], b[property]) }
+          ary.sort { |a, b| nil_safe_casecmp(fetch_property(a, property), fetch_property(b, property)) }
         rescue TypeError
           raise_property_error(property)
         end
@@ -424,29 +424,59 @@ module Liquid
     # @liquid_syntax array | where: string, string
     # @liquid_return [array[untyped]]
     def where(input, property, target_value = nil)
-      ary = InputIterator.new(input, context)
+      filter_array(input, property, target_value, :select)
+    end
 
-      if ary.empty?
-        []
-      elsif target_value.nil?
-        ary.select do |item|
-          item[property]
-        rescue TypeError
-          raise_property_error(property)
-        rescue NoMethodError
-          return nil unless item.respond_to?(:[])
-          raise
-        end
-      else
-        ary.select do |item|
-          item[property] == target_value
-        rescue TypeError
-          raise_property_error(property)
-        rescue NoMethodError
-          return nil unless item.respond_to?(:[])
-          raise
-        end
-      end
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Filters an array to exclude items with a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | reject: string, string
+    # @liquid_return [array[untyped]]
+    def reject(input, property, target_value = nil)
+      filter_array(input, property, target_value, :reject)
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Tests if any item in an array has a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | some: string, string
+    # @liquid_return [boolean]
+    def has(input, property, target_value = nil)
+      filter_array(input, property, target_value, :any?)
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Returns the first item in an array with a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | find: string, string
+    # @liquid_return [untyped]
+    def find(input, property, target_value = nil)
+      filter_array(input, property, target_value, :find)
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Returns the index of the first item in an array with a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | find_index: string, string
+    # @liquid_return [number]
+    def find_index(input, property, target_value = nil)
+      filter_array(input, property, target_value, :find_index)
     end
 
     # @liquid_public_docs
@@ -465,7 +495,7 @@ module Liquid
         []
       else
         ary.uniq do |item|
-          item[property]
+          fetch_property(item, property)
         rescue TypeError
           raise_property_error(property)
         rescue NoMethodError
@@ -501,7 +531,7 @@ module Liquid
         if property == "to_liquid"
           e
         elsif e.respond_to?(:[])
-          r = e[property]
+          r = fetch_property(e, property)
           r.is_a?(Proc) ? r.call : r
         end
       end
@@ -525,7 +555,7 @@ module Liquid
         []
       else
         ary.reject do |item|
-          item[property].nil?
+          fetch_property(item, property).nil?
         rescue TypeError
           raise_property_error(property)
         rescue NoMethodError
@@ -899,7 +929,7 @@ module Liquid
         if property.nil?
           item
         elsif item.respond_to?(:[])
-          item[property]
+          fetch_property(item, property)
         else
           0
         end
@@ -917,6 +947,50 @@ module Liquid
     private
 
     attr_reader :context
+
+    def filter_array(input, property, target_value, method)
+      ary = InputIterator.new(input, context)
+
+      return [] if ary.empty?
+
+      ary.public_send(method) do |item|
+        if target_value.nil?
+          fetch_property(item, property)
+        else
+          fetch_property(item, property) == target_value
+        end
+      rescue TypeError
+        raise_property_error(property)
+      rescue NoMethodError
+        return nil unless item.respond_to?(:[])
+        raise
+      end
+    end
+
+    def fetch_property(drop, property_or_keys)
+      ##
+      # This keeps backward compatibility by supporting properties containing
+      # dots. This is valid in Liquid syntax and used in some runtimes, such as
+      # Shopify with metafields.
+      #
+      # Using this approach, properties like 'price.value' can be accessed in
+      # both of the following examples:
+      #
+      # ```
+      # [
+      #   { 'name' => 'Item 1', 'price.price' => 40000 },
+      #   { 'name' => 'Item 2', 'price' => { 'value' => 39900 } }
+      # ]
+      # ```
+      value = drop[property_or_keys]
+
+      return value if !value.nil? || !property_or_keys.is_a?(String)
+
+      keys = property_or_keys.split('.')
+      keys.reduce(drop) do |drop, key|
+        drop.respond_to?(:[]) ? drop[key] : drop
+      end
+    end
 
     def raise_property_error(property)
       raise Liquid::ArgumentError, "cannot select the property '#{property}'"
