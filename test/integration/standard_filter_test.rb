@@ -286,60 +286,6 @@ class StandardFiltersTest < Minitest::Test
     assert_equal([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], @filters.sort([{ "a" => 4 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a"))
   end
 
-  def test_sort_deep_default_separator
-    input = [
-      { "foo" => { "price" => 4, "handle" => "alpha" } },
-      { "foo" => { "handle" => "beta" } },
-      { "foo" => { "price" => 1, "handle" => "gamma" } },
-      { "foo" => { "handle" => "delta" } },
-      { "foo" => { "price" => 2, "handle" => "epsilon" } },
-    ]
-    expectation = [
-      { "foo" => { "price" => 1, "handle" => "gamma" } },
-      { "foo" => { "price" => 2, "handle" => "epsilon" } },
-      { "foo" => { "price" => 4, "handle" => "alpha" } },
-      { "foo" => { "handle" => "beta" } },
-      { "foo" => { "handle" => "delta" } },
-    ]
-    assert_equal(expectation, @filters.sort(input, "foo.price", { "deep" => true }))
-  end
-
-  def test_sort_deep_custom_separator
-    input = [
-      { "foo" => { "price" => 4, "handle" => "alpha" } },
-      { "foo" => { "handle" => "beta" } },
-      { "foo" => { "price" => 1, "handle" => "gamma" } },
-      { "foo" => { "handle" => "delta" } },
-      { "foo" => { "price" => 2, "handle" => "epsilon" } },
-    ]
-    expectation = [
-      { "foo" => { "price" => 1, "handle" => "gamma" } },
-      { "foo" => { "price" => 2, "handle" => "epsilon" } },
-      { "foo" => { "price" => 4, "handle" => "alpha" } },
-      { "foo" => { "handle" => "beta" } },
-      { "foo" => { "handle" => "delta" } },
-    ]
-    assert_equal(expectation, @filters.sort(input, "foo_price", { "deep" => "_" }))
-  end
-
-  def test_sort_deep_off_by_default
-    input = [
-      { "foo.price" => 4, "handle" => "alpha" },
-      { "handle" => "beta" },
-      { "foo.price" => 1, "handle" => "gamma" },
-      { "handle" => "delta" },
-      { "foo.price" => 2, "handle" => "epsilon" },
-    ]
-    expectation = [
-      { "foo.price" => 1, "handle" => "gamma" },
-      { "foo.price" => 2, "handle" => "epsilon" },
-      { "foo.price" => 4, "handle" => "alpha" },
-      { "handle" => "beta" },
-      { "handle" => "delta" },
-    ]
-    assert_equal(expectation, @filters.sort(input, "foo.price"))
-  end
-
   def test_sort_with_nils
     assert_equal([1, 2, 3, 4, nil], @filters.sort([nil, 4, 3, 2, 1]))
     assert_equal([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }, {}], @filters.sort([{ "a" => 4 }, { "a" => 3 }, {}, { "a" => 1 }, { "a" => 2 }], "a"))
@@ -414,72 +360,6 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(["a", "b", "c", "X", "Y", "Z"], @filters.sort_natural(["X", "Y", "Z", "a", "b", "c"]))
   end
 
-  def test_sort_natural_deep_default_separator
-    input = [
-      { "foo" => { "key" => "X" } },
-      { "foo" => { "key" => "Y" } },
-      { "foo" => { "key" => "Z" } },
-      { "foo" => { "fake" => "t" } },
-      { "foo" => { "key" => "a" } },
-      { "foo" => { "key" => "b" } },
-      { "foo" => { "key" => "c" } },
-    ]
-    expectation = [
-      { "foo" => { "key" => "a" } },
-      { "foo" => { "key" => "b" } },
-      { "foo" => { "key" => "c" } },
-      { "foo" => { "key" => "X" } },
-      { "foo" => { "key" => "Y" } },
-      { "foo" => { "key" => "Z" } },
-      { "foo" => { "fake" => "t" } },
-    ]
-    assert_equal(expectation, @filters.sort_natural(input, "foo.key", { "deep" => true }))
-  end
-
-  def test_sort_natural_deep_custom_separator
-    input = [
-      { "foo" => { "key" => "X" } },
-      { "foo" => { "key" => "Y" } },
-      { "foo" => { "key" => "Z" } },
-      { "foo" => { "fake" => "t" } },
-      { "foo" => { "key" => "a" } },
-      { "foo" => { "key" => "b" } },
-      { "foo" => { "key" => "c" } },
-    ]
-    expectation = [
-      { "foo" => { "key" => "a" } },
-      { "foo" => { "key" => "b" } },
-      { "foo" => { "key" => "c" } },
-      { "foo" => { "key" => "X" } },
-      { "foo" => { "key" => "Y" } },
-      { "foo" => { "key" => "Z" } },
-      { "foo" => { "fake" => "t" } },
-    ]
-    assert_equal(expectation, @filters.sort_natural(input, "foo_key", { "deep" => "_" }))
-  end
-
-  def test_sort_natural_deep_off_by_default
-    input = [
-      { "foo.key" => "X" },
-      { "foo.key" => "Y" },
-      { "foo.key" => "Z" },
-      { "foo.fake" => "t" },
-      { "foo.key" => "a" },
-      { "foo.key" => "b" },
-      { "foo.key" => "c" },
-    ]
-    expectation = [
-      { "foo.key" => "a" },
-      { "foo.key" => "b" },
-      { "foo.key" => "c" },
-      { "foo.key" => "X" },
-      { "foo.key" => "Y" },
-      { "foo.key" => "Z" },
-      { "foo.fake" => "t" },
-    ]
-    assert_equal(expectation, @filters.sort_natural(input, "foo.key"))
-  end
-
   def test_sort_empty_array
     assert_equal([], @filters.sort([], "a"))
   end
@@ -548,45 +428,6 @@ class StandardFiltersTest < Minitest::Test
     end
   end
 
-  def test_uniq_deep_default_separator
-    input = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "bar" => "baz", "handle" => "beta" } },
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
-    ]
-    expectation = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
-    ]
-    assert_equal(expectation, @filters.uniq(input, "foo.bar", { "deep" => true }))
-  end
-
-  def test_uniq_deep_custom_separator
-    input = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "bar" => "baz", "handle" => "beta" } },
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
-    ]
-    expectation = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
-    ]
-    assert_equal(expectation, @filters.uniq(input, "foo_bar", { "deep" => "_" }))
-  end
-
-  def test_uniq_deep_off_by_default
-    input = [
-      { "foo.bar" => "baz", "handle" => "alpha" },
-      { "foo.bar" => "baz", "handle" => "beta" },
-      { "foo.bar" => "qux", "handle" => "charlie" },
-    ]
-    expectation = [
-      { "foo.bar" => "baz", "handle" => "alpha" },
-      { "foo.bar" => "qux", "handle" => "charlie" },
-    ]
-    assert_equal(expectation, @filters.uniq(input, "foo.bar"))
-  end
-
   def test_compact_empty_array
     assert_equal([], @filters.compact([], "a"))
   end
@@ -603,45 +444,6 @@ class StandardFiltersTest < Minitest::Test
     end
   end
 
-  def test_compact_deep_default_separator
-    input = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "handle" => "beta" } },
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
-    ]
-    expectation = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
-    ]
-    assert_equal(expectation, @filters.compact(input, "foo.bar", { "deep" => true }))
-  end
-
-  def test_compact_deep_custom_separator
-    input = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "handle" => "beta" } },
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
-    ]
-    expectation = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
-    ]
-    assert_equal(expectation, @filters.compact(input, "foo_bar", { "deep" => "_" }))
-  end
-
-  def test_compact_deep_off_by_default
-    input = [
-      { "foo.bar" => "baz", "handle" => "alpha" },
-      { "foo.handle" => "beta" },
-      { "foo.bar" => "qux", "handle" => "charlie" },
-    ]
-    expectation = [
-      { "foo.bar" => "baz", "handle" => "alpha" },
-      { "foo.bar" => "qux", "handle" => "charlie" },
-    ]
-    assert_equal(expectation, @filters.compact(input, "foo.bar"))
-  end
-
   def test_reverse
     assert_equal([4, 3, 2, 1], @filters.reverse([1, 2, 3, 4]))
   end
@@ -656,30 +458,6 @@ class StandardFiltersTest < Minitest::Test
       'abc',
       "{{ ary | map:'foo' | map:'bar' }}",
       { 'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }] },
-    )
-  end
-
-  def test_map_deep_default_separator
-    assert_template_result(
-      'abc',
-      "{{ ary | map: 'foo.bar', deep: true }}",
-      { 'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }] },
-    )
-  end
-
-  def test_map_deep_custom_separator
-    assert_template_result(
-      'abc',
-      "{{ ary | map: 'foo_bar', deep: '_' }}",
-      { 'ary' => [{ 'foo' => { 'bar' => 'a' } }, { 'foo' => { 'bar' => 'b' } }, { 'foo' => { 'bar' => 'c' } }] },
-    )
-  end
-
-  def test_map_deep_off_by_default
-    assert_template_result(
-      'abc',
-      "{{ ary | map: 'foo.bar' }}",
-      { 'ary' => [{ 'foo.bar' => 'a' }, { 'foo.bar' => 'b' }, { 'foo.bar' => 'c' }] },
     )
   end
 
@@ -825,38 +603,9 @@ class StandardFiltersTest < Minitest::Test
   def test_replace
     assert_equal('b b b b', @filters.replace('a a a a', 'a', 'b'))
     assert_equal('2 2 2 2', @filters.replace('1 1 1 1', 1, 2))
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     assert_equal('1 1 1 1', @filters.replace('1 1 1 1', 2, 3))
     assert_template_result('2 2 2 2', "{{ '1 1 1 1' | replace: '1', 2 }}")
 
-<<<<<<< HEAD
-    assert_equal('b a a a', @filters.replace_first('a a a a', 'a', 'b'))
-=======
->>>>>>> 38b7364f (Improve tests)
-    assert_equal('2 1 1 1', @filters.replace_first('1 1 1 1', 1, 2))
-    assert_equal('1 1 1 1', @filters.replace_first('1 1 1 1', 2, 3))
-    assert_template_result('2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}")
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    assert_equal('a a a b', @filters.replace_last('a a a a', 'a', 'b'))
-    assert_equal('1 1 1 2', @filters.replace_last('1 1 1 1', 1, 2))
-    assert_equal('1 1 1 1', @filters.replace_last('1 1 1 1', 2, 3))
-=======
-    assert_equal('1 1 1 2', @filters.replace_last('1 1 1 1', '1', 2))
-=======
->>>>>>> 38b7364f (Improve tests)
-    assert_equal('1 1 1 2', @filters.replace_last('1 1 1 1', 1, 2))
->>>>>>> 832516fb (Add replace_last and remove_last tests)
-    assert_template_result('1 1 1 2', "{{ '1 1 1 1' | replace_last: '1', 2 }}")
-=======
-=======
-    assert_equal('1 1 1 1', @filters.replace('1 1 1 1', 2, 3))
->>>>>>> d81f7f04 (Add tests to make sure it returns original string on no replacement)
-=======
->>>>>>> 63ae4cc2 (Remove redundant test assertions)
     assert_equal('b a a a', @filters.replace_first('a a a a', 'a', 'b'))
     assert_equal('2 1 1 1', @filters.replace_first('1 1 1 1', 1, 2))
     assert_equal('1 1 1 1', @filters.replace_first('1 1 1 1', 2, 3))
@@ -865,29 +614,11 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('a a a b', @filters.replace_last('a a a a', 'a', 'b'))
     assert_equal('1 1 1 2', @filters.replace_last('1 1 1 1', 1, 2))
     assert_equal('1 1 1 1', @filters.replace_last('1 1 1 1', 2, 3))
-<<<<<<< HEAD
-    assert_template_result('b b b b', "{{ 'a a a a' | replace: 'a', 'b' }}")
-    assert_template_result('2 2 2 2', "{{ '1 1 1 1' | replace: 1, 2 }}")
-    assert_template_result('1 1 1 1', "{{ '1 1 1 1' | replace: 2, 3 }}")
-    assert_template_result('b a a a', "{{ 'a a a a' | replace_first: 'a', 'b' }}")
-    assert_template_result('2 1 1 1', "{{ '1 1 1 1' | replace_first: 1, 2 }}")
-    assert_template_result('a a a a', "{{ 'a a a a' | replace_first: 'b', 'c' }}")
-    assert_template_result('a a a b', "{{ 'a a a a' | replace_last: 'a', 'b' }}")
-    assert_template_result('1 1 1 2', "{{ '1 1 1 1' | replace_last: 1, 2 }}")
-<<<<<<< HEAD
->>>>>>> b3d14e5b (Update tests)
-=======
-    assert_template_result('a a a a', "{{ 'a a a a' | replace_last: 'b', 'c' }}")
->>>>>>> d81f7f04 (Add tests to make sure it returns original string on no replacement)
-=======
     assert_template_result('1 1 1 2', "{{ '1 1 1 1' | replace_last: '1', 2 }}")
->>>>>>> 63ae4cc2 (Remove redundant test assertions)
   end
 
   def test_remove
     assert_equal('   ', @filters.remove("a a a a", 'a'))
-<<<<<<< HEAD
-<<<<<<< HEAD
     assert_template_result('   ', "{{ '1 1 1 1' | remove: 1 }}")
 
     assert_equal('b a a', @filters.remove_first("a b a a", 'a '))
@@ -895,31 +626,6 @@ class StandardFiltersTest < Minitest::Test
 
     assert_equal('a a b', @filters.remove_last("a a b a", ' a'))
     assert_template_result('1 1 1 ', "{{ '1 1 1 1' | remove_last: 1 }}")
-=======
-    assert_equal('   ', @filters.remove("1 1 1 1", 1))
-    assert_equal('b a a', @filters.remove_first("a b a a", 'a '))
-    assert_equal(' 1 1 1', @filters.remove_first("1 1 1 1", 1))
-    assert_equal('a a b', @filters.remove_last("a a b a", ' a'))
-    assert_equal('1 1 1 ', @filters.remove_last("1 1 1 1", 1))
-<<<<<<< HEAD
-<<<<<<< HEAD
-    assert_template_result('a a a', "{{ 'a a a a' | remove_last: ' a' }}")
->>>>>>> 832516fb (Add replace_last and remove_last tests)
-=======
-    assert_template_result('a a b', "{{ 'a a b a' | remove_last: ' a' }}")
->>>>>>> effee1ed (Update tests)
-=======
-    assert_template_result('   ', "{{ 'a a a a' | remove: 'a' }}")
-=======
->>>>>>> 63ae4cc2 (Remove redundant test assertions)
-    assert_template_result('   ', "{{ '1 1 1 1' | remove: 1 }}")
-
-    assert_equal('b a a', @filters.remove_first("a b a a", 'a '))
-    assert_template_result(' 1 1 1', "{{ '1 1 1 1' | remove_first: 1 }}")
-
-    assert_equal('a a b', @filters.remove_last("a a b a", ' a'))
-    assert_template_result('1 1 1 ', "{{ '1 1 1 1' | remove_last: 1 }}")
->>>>>>> b3d14e5b (Update tests)
   end
 
   def test_pipes_in_string_arguments
@@ -1194,121 +900,6 @@ class StandardFiltersTest < Minitest::Test
     assert_nil(@filters.where([nil], "ok"))
   end
 
-<<<<<<< HEAD
-  def test_reject
-    input = [
-      { "handle" => "alpha", "ok" => true },
-      { "handle" => "beta", "ok" => false },
-      { "handle" => "gamma", "ok" => false },
-      { "handle" => "delta", "ok" => true },
-    ]
-
-    expectation = [
-      { "handle" => "alpha", "ok" => true },
-      { "handle" => "delta", "ok" => true },
-    ]
-
-    assert_equal(expectation, @filters.reject(input, "ok", false))
-    assert_equal(expectation, @filters.reject(input, "ok"))
-  end
-
-  def test_reject_no_key_set
-    input = [
-      { "handle" => "alpha", "ok" => true },
-      { "handle" => "beta" },
-      { "handle" => "gamma" },
-      { "handle" => "delta", "ok" => true },
-    ]
-
-    expectation = [
-      { "handle" => "alpha", "ok" => true },
-      { "handle" => "delta", "ok" => true },
-    ]
-
-    assert_equal(expectation, @filters.reject(input, "ok"))
-  end
-
-  def test_reject_non_array_map_input
-    assert_equal([], @filters.reject({ "foo" => "bar" }, "foo", "bar"))
-    assert_equal([{ "foo" => "baz" }], @filters.reject({ "foo" => "baz" }, "foo", "bar"))
-  end
-
-  def test_reject_indexable_but_non_map_value
-    assert_equal([], @filters.reject(1, "ok", true))
-    assert_equal([], @filters.reject(1, "ok"))
-  end
-
-  def test_reject_non_boolean_value
-    input = [
-      { "message" => "Bonjour!", "language" => "French" },
-      { "message" => "Hello!", "language" => "English" },
-    ]
-
-    assert_equal([{ "message" => "Hello!", "language" => "English" }], @filters.reject(input, "language", "French"))
-    assert_equal([{ "message" => "Bonjour!", "language" => "French" }], @filters.reject(input, "language", "English"))
-  end
-
-  def test_reject_array_of_only_unindexable_values
-    assert_equal([], @filters.reject([nil, nil], "ok", true))
-    assert_equal([], @filters.reject([nil, nil], "ok"))
-  end
-
-  def test_reject_deep
-    input = [
-      { "item" => { "handle" => "alpha", "ok" => true } },
-      { "item" => { "handle" => "beta", "ok" => false } },
-      { "item" => { "handle" => "gamma", "ok" => false } },
-      { "item" => { "handle" => "delta", "ok" => true } },
-    ]
-
-    expectation = [
-      { "item" => { "handle" => "alpha", "ok" => true } },
-      { "item" => { "handle" => "delta", "ok" => true } },
-    ]
-
-    assert_equal(expectation, @filters.reject(input, "item.ok", false))
-    assert_equal(expectation, @filters.reject(input, "item.ok"))
-=======
-  def test_where_deep_default_separator
-    input = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "bar" => "baz", "handle" => "beta" } },
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
-    ]
-    expectation = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "bar" => "baz", "handle" => "beta" } },
-    ]
-    assert_equal(expectation, @filters.where(input, "foo.bar", "baz", { "deep" => true }))
-  end
-
-  def test_where_deep_custom_separator
-    input = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "bar" => "baz", "handle" => "beta" } },
-      { "foo" => { "bar" => "qux", "handle" => "charlie" } },
-    ]
-    expectation = [
-      { "foo" => { "bar" => "baz", "handle" => "alpha" } },
-      { "foo" => { "bar" => "baz", "handle" => "beta" } },
-    ]
-    assert_equal(expectation, @filters.where(input, "foo_bar", "baz", { "deep" => "_" }))
-  end
-
-  def test_where_deep_off_by_default
-    input = [
-      { "foo.bar" => "baz", "handle" => "alpha" },
-      { "foo.bar" => "baz", "handle" => "beta" },
-      { "foo.bar" => "qux", "handle" => "charlie" },
-    ]
-    expectation = [
-      { "foo.bar" => "baz", "handle" => "alpha" },
-      { "foo.bar" => "baz", "handle" => "beta" },
-    ]
-    assert_equal(expectation, @filters.where(input, "foo.bar", "baz"))
->>>>>>> 2800d8dc (Add missing tests)
-  end
-
   def test_all_filters_never_raise_non_liquid_exception
     test_drop = TestDrop.new(value: "test")
     test_drop.context = Context.new
@@ -1335,7 +926,6 @@ class StandardFiltersTest < Minitest::Test
       { 1 => "bar" },
       ["foo", 123, nil, true, false, Drop, ["foo"], { foo: "bar" }],
     ]
-<<<<<<< HEAD
     StandardFilters.public_instance_methods(false).each do |method|
       arg_count = @filters.method(method).arity
       arg_count *= -1 if arg_count < 0
@@ -1344,25 +934,6 @@ class StandardFiltersTest < Minitest::Test
         @filters.send(method, *args)
       rescue Liquid::Error
         nil
-=======
-    test_types.each do |first|
-      test_types.each do |second|
-        test_types.each do |third|
-          (@filters.methods - Object.methods).each do |method|
-            arg_count = @filters.method(method).arity
-            arg_count *= -1 if arg_count < 0
-            inputs = [first]
-            inputs << ([second] * (arg_count - 1)) if arg_count > 1
-            inputs << ([third] * (arg_count - 1)) if arg_count > 2
-
-            begin
-              @filters.send(method, *inputs)
-            rescue Liquid::ArgumentError, Liquid::ZeroDivisionError
-              nil
-            end
-          end
-        end
->>>>>>> f5e77b6d (Update test to support third argument)
       end
     end
   end
@@ -1444,7 +1015,6 @@ class StandardFiltersTest < Minitest::Test
     assert(t.foo > 0)
   end
 
-<<<<<<< HEAD
   def test_sum_of_floats
     input = [0.1, 0.2, 0.3]
     assert_equal(0.6, @filters.sum(input))
@@ -1479,36 +1049,6 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("1.2", "{{ input | sum: 'quantity' }}", { "input" => input })
     assert_template_result("0.1", "{{ input | sum: 'weight' }}", { "input" => input })
     assert_template_result("0", "{{ input | sum: 'subtotal' }}", { "input" => input })
-=======
-  def test_sum_deep_default_separator
-    input = [
-      { "foo" => { "quantity" => 1 } },
-      { "foo" => { "quantity" => 2 } },
-      { "foo" => { "quantity" => 3 } },
-      { "foo" => { "quantity" => 4 } },
-    ]
-    assert_equal(10, @filters.sum(input, "foo.quantity", { "deep" => true }))
-  end
-
-  def test_sum_deep_custom_separator
-    input = [
-      { "foo" => { "quantity" => 1 } },
-      { "foo" => { "quantity" => 2 } },
-      { "foo" => { "quantity" => 3 } },
-      { "foo" => { "quantity" => 4 } },
-    ]
-    assert_equal(10, @filters.sum(input, "foo_quantity", { "deep" => "_" }))
-  end
-
-  def test_sum_deep_off_by_default
-    input = [
-      { "foo.quantity" => 1 },
-      { "foo.quantity" => 2 },
-      { "foo.quantity" => 3 },
-      { "foo.quantity" => 4 },
-    ]
-    assert_equal(10, @filters.sum(input, "foo.quantity"))
->>>>>>> 858428f2 (Initial new tests)
   end
 
   private

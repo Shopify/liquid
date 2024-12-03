@@ -367,10 +367,7 @@ module Liquid
     #   Sorts the items in an array in case-sensitive alphabetical, or numerical, order.
     # @liquid_syntax array | sort
     # @liquid_return [array[untyped]]
-    # @liquid_optional_param deep [boolean | string] Whether to use dot notation to perform a deep search. A string can be passed to change separator.
-    def sort(input, property = nil, options = {})
-      options = {} unless options.is_a?(Hash)
-      deep = deep_search_properties(property, options)
+    def sort(input, property = nil)
       ary = InputIterator.new(input, context)
 
       return [] if ary.empty?
@@ -381,13 +378,7 @@ module Liquid
         end
       elsif ary.all? { |el| el.respond_to?(:[]) }
         begin
-          ary.sort do |a, b|
-            if deep[:enable]
-              nil_safe_compare(a.dig(*deep[:properties]), b.dig(*deep[:properties]))
-            else
-              nil_safe_compare(a[property], b[property])
-            end
-          end
+          ary.sort { |a, b| nil_safe_compare(a[property], b[property]) }
         rescue TypeError
           raise_property_error(property)
         end
@@ -405,10 +396,7 @@ module Liquid
     #   > string, so sorting on numerical values can lead to unexpected results.
     # @liquid_syntax array | sort_natural
     # @liquid_return [array[untyped]]
-    # @liquid_optional_param deep [boolean | string] Whether to use dot notation to perform a deep search. A string can be passed to change separator.
-    def sort_natural(input, property = nil, options = {})
-      options = {} unless options.is_a?(Hash)
-      deep = deep_search_properties(property, options)
+    def sort_natural(input, property = nil)
       ary = InputIterator.new(input, context)
 
       return [] if ary.empty?
@@ -419,13 +407,7 @@ module Liquid
         end
       elsif ary.all? { |el| el.respond_to?(:[]) }
         begin
-          ary.sort do |a, b|
-            if deep[:enable]
-              nil_safe_casecmp(a.dig(*deep[:properties]), b.dig(*deep[:properties]))
-            else
-              nil_safe_casecmp(a[property], b[property])
-            end
-          end
+          ary.sort { |a, b| nil_safe_casecmp(a[property], b[property]) }
         rescue TypeError
           raise_property_error(property)
         end
@@ -441,10 +423,7 @@ module Liquid
     #   This requires you to provide both the property name and the associated value.
     # @liquid_syntax array | where: string, string
     # @liquid_return [array[untyped]]
-    # @liquid_optional_param deep [boolean | string] Whether to use dot notation to perform a deep search. A string can be passed to change separator.
-    def where(input, property, target_value = nil, options = {})
-      options = {} unless options.is_a?(Hash)
-      deep = deep_search_properties(property, options)
+    def where(input, property, target_value = nil)
       ary = InputIterator.new(input, context)
 
       if ary.empty?
@@ -460,8 +439,7 @@ module Liquid
         end
       else
         ary.select do |item|
-          item_value = deep[:enable] ? item.dig(*deep[:properties]) : item[property]
-          item_value == target_value
+          item[property] == target_value
         rescue TypeError
           raise_property_error(property)
         rescue NoMethodError
@@ -471,7 +449,6 @@ module Liquid
       end
     end
 
-<<<<<<< HEAD
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
@@ -479,41 +456,7 @@ module Liquid
     #   Removes any duplicate items in an array.
     # @liquid_syntax array | uniq
     # @liquid_return [array[untyped]]
-<<<<<<< HEAD
-=======
-    # Reject the elements of an array to those with a certain property value.
-    # By default the target is any falsy value.
-    def reject(input, properties, target_value = nil)
-      raise_property_error(properties) unless properties.is_a?(String)
-
-      properties = properties.to_s.split('.')
-      ary = InputIterator.new(input, context)
-
-      ary.reject do |item|
-        if item.is_a?(Hash)
-          value = item.dig(*properties)
-
-          if target_value.nil?
-            !value
-          else
-            value == target_value
-          end
-        else
-          true
-        end
-      end
-    end
-
-    # Remove duplicate elements from an array
-    # provide optional property with which to determine uniqueness
->>>>>>> bfdcfcea (Add reject filter)
     def uniq(input, property = nil)
-=======
-    # @liquid_optional_param deep [boolean | string] Whether to use dot notation to perform a deep search. A string can be passed to change separator.
-    def uniq(input, property = nil, options = {})
-      options = {} unless options.is_a?(Hash)
-      deep = deep_search_properties(property, options)
->>>>>>> 58d7d1a8 (Add deep search for suitable filters)
       ary = InputIterator.new(input, context)
 
       if property.nil?
@@ -522,7 +465,7 @@ module Liquid
         []
       else
         ary.uniq do |item|
-          deep[:enable] ? item.dig(*deep[:properties]) : item[property]
+          item[property]
         rescue TypeError
           raise_property_error(property)
         rescue NoMethodError
@@ -551,19 +494,15 @@ module Liquid
     #   Creates an array of values from a specific property of the items in an array.
     # @liquid_syntax array | map: string
     # @liquid_return [array[untyped]]
-    # @liquid_optional_param deep [boolean | string] Whether to use dot notation to perform a deep search. A string can be passed to change separator.
-    def map(input, property, options = {})
-      options = {} unless options.is_a?(Hash)
-      deep = deep_search_properties(property, options)
-
-      InputIterator.new(input, context).map do |item|
-        item = item.call if item.is_a?(Proc)
+    def map(input, property)
+      InputIterator.new(input, context).map do |e|
+        e = e.call if e.is_a?(Proc)
 
         if property == "to_liquid"
-          item
-        elsif item.respond_to?(:[])
-          result = deep[:enable] ? item.dig(*deep[:properties]) : item[property]
-          result.is_a?(Proc) ? result.call : result
+          e
+        elsif e.respond_to?(:[])
+          r = e[property]
+          r.is_a?(Proc) ? r.call : r
         end
       end
     rescue TypeError
@@ -577,10 +516,7 @@ module Liquid
     #   Removes any `nil` items from an array.
     # @liquid_syntax array | compact
     # @liquid_return [array[untyped]]
-    # @liquid_optional_param deep [boolean | string] Whether to use dot notation to perform a deep search. A string can be passed to change separator.
-    def compact(input, property = nil, options = {})
-      options = {} unless options.is_a?(Hash)
-      deep = deep_search_properties(property, options)
+    def compact(input, property = nil)
       ary = InputIterator.new(input, context)
 
       if property.nil?
@@ -589,7 +525,7 @@ module Liquid
         []
       else
         ary.reject do |item|
-          deep[:enable] ? item.dig(*deep[:properties]).nil? : item[property].nil?
+          item[property].nil?
         rescue TypeError
           raise_property_error(property)
         rescue NoMethodError
@@ -621,7 +557,6 @@ module Liquid
       input.to_s.sub(string.to_s, replacement.to_s)
     end
 
-<<<<<<< HEAD
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
@@ -650,34 +585,8 @@ module Liquid
     #   Removes any instance of a substring inside a string.
     # @liquid_syntax string | remove: string
     # @liquid_return [string]
-=======
-    # Replace the last occurrences of a string with another
-    def replace_last(input, string, replacement)
-      input = input.to_s
-      string = string.to_s
-      replacement = replacement.to_s
-
-      start_index = input.rindex(string)
-
-      return input unless start_index
-
-      output = input.dup
-      output[start_index, string.length] = replacement
-      output
-    end
-
-    # remove a substring
->>>>>>> e575c1f1 (Add replace_last and remove_last filters)
     def remove(input, string)
-<<<<<<< HEAD
-<<<<<<< HEAD
       replace(input, string, '')
-=======
-      replace(input.to_s, string, '')
->>>>>>> f72cfb13 (Delegate functions to corresponding replace functions)
-=======
-      replace(input, string, '')
->>>>>>> 5187399f (Update lib/liquid/standardfilters.rb)
     end
 
     # @liquid_public_docs
@@ -688,18 +597,9 @@ module Liquid
     # @liquid_syntax string | remove_first: string
     # @liquid_return [string]
     def remove_first(input, string)
-<<<<<<< HEAD
-<<<<<<< HEAD
       replace_first(input, string, '')
-=======
-      replace_first(input.to_s, string, '')
->>>>>>> f72cfb13 (Delegate functions to corresponding replace functions)
-=======
-      replace_first(input, string, '')
->>>>>>> 45f186b4 (Remove string formatter)
     end
 
-<<<<<<< HEAD
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category string
@@ -718,14 +618,6 @@ module Liquid
     #   Adds a given string to the end of a string.
     # @liquid_syntax string | append: string
     # @liquid_return [string]
-=======
-    # remove the last occurences of a substring
-    def remove_last(input, string)
-      replace_last(input, string, '')
-    end
-
-    # add one string to another
->>>>>>> e575c1f1 (Add replace_last and remove_last filters)
     def append(input, string)
       input.to_s + string.to_s
     end
@@ -999,11 +891,7 @@ module Liquid
     #   Returns the sum of all elements in an array.
     # @liquid_syntax array | sum
     # @liquid_return [number]
-    # @liquid_optional_param deep [boolean | string] Whether to use dot notation to perform a deep search. A string can be passed to change separator.
-    def sum(input, property = nil, options = {})
-      options = {} unless options.is_a?(Hash)
-      deep = deep_search_properties(property, options)
-
+    def sum(input, property = nil)
       ary = InputIterator.new(input, context)
       return 0 if ary.empty?
 
@@ -1011,7 +899,7 @@ module Liquid
         if property.nil?
           item
         elsif item.respond_to?(:[])
-          deep[:enable] ? item.dig(*deep[:properties]) : item[property]
+          item[property]
         else
           0
         end
@@ -1061,20 +949,6 @@ module Liquid
       else
         a.nil? ? 1 : -1
       end
-    end
-
-    def deep_search_properties(key, options = {})
-      options = {} unless options.is_a?(Hash)
-
-      enable = options['deep'] ? true : false
-      separator = options['deep'].is_a?(String) ? options['deep'] : '.' if enable
-      properties = key.to_s.split(separator) if enable
-
-      {
-        enable: enable,
-        separator: separator,
-        properties: properties,
-      }
     end
 
     class InputIterator
