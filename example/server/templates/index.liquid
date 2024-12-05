@@ -1,6 +1,71 @@
-<p>Hello world!</p>
+{% # theme-check-disable UnknownFilter, UndefinedObject %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liquid filters playground</title>
+  <script>
+    setInterval(() => {
+      fetch(window.location.href)
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const newDoc = parser.parseFromString(html, 'text/html');
+          const newBody = newDoc.body;
+          document.body.innerHTML = newBody.innerHTML;
+        })
+        .catch(error => console.error('Error updating content:', error));
+    }, 1000);
+  </script>
+  <style>
+    body {
+      zoom: 2;
+      font-family: monospace
+    }
+  </style>
+</head>
+<body>
 
-<p>It is {{date}}</p>
+  <h1>
+    Liquid filters playground
+  </h1>
+
+  {{ products | map: "name" | json }}
+
+  <h2>
+    find
+  </h2>
+  <pre>
+    {% assign product = products | find: "name", "Mountain boots" %}
+    {{ product.name }} - {{ product.price.value }}
+
+    {% assign product = products | find: "price.unit", "USD" %}
+    {{ product.name }} - {{ product.price.value }}
+  </pre>
+
+  <h2>
+    find_index
+  </h2>
+  <pre>
+    {% assign index = products | find_index: "name", "Mountain boots" %}
+    {{ index }}
+  </pre>
+
+  <h2>
+    has
+  </h2>
+  <pre>
+    {{ products | has: "name", "Mountain boots" }}
+  </pre>
 
 
-<p>Check out the <a href="/products">Products</a> screen </p>
+  <h2>
+    reject
+  </h2>
+  <pre>
+    {{ products | map: "name" | join: ", " }}
+    {{ products | reject: "name", "Mountain boots" | map: "name" | join: ", " }}
+  </pre>
+
+</body>
+</html>

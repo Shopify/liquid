@@ -20,7 +20,7 @@ end
 
 class Servlet < LiquidServlet
   def index
-    { 'date' => Time.now }
+    { 'date' => Time.now, 'products' => products_list }
   end
 
   def products
@@ -29,11 +29,42 @@ class Servlet < LiquidServlet
 
   private
 
+  class Name < Liquid::Drop
+    attr_reader :raw, :origin
+
+    def initialize(raw, origin)
+      super()
+      @raw = raw
+      @origin = origin
+    end
+  end
+
+  class Price < Liquid::Drop
+    attr_reader :value, :unit
+
+    def initialize(value, unit = 'USD')
+      super()
+      @value = value
+      @unit = unit
+    end
+  end
+
+  class Product < Liquid::Drop
+    attr_reader :name, :price, :description
+
+    def initialize(name, origin, price, description)
+      super()
+      @name = Name.new(name, origin)
+      @price = Price.new(price)
+      @description = description
+    end
+  end
+
   def products_list
     [
-      { 'name' => 'Arbor Draft', 'price' => 39900, 'description' => 'the *arbor draft* is a excellent product' },
-      { 'name' => 'Arbor Element', 'price' => 40000, 'description' => 'the *arbor element* rocks for freestyling' },
-      { 'name' => 'Arbor Diamond', 'price' => 59900, 'description' => 'the *arbor diamond* is a made up product because im obsessed with arbor and have no creativity' }
+      { 'name' => 'Alpine jacket',  'price' => { 'value' => 30000, 'unit' => 'USD' }, 'description' => 'the *alpine jacket* is a excellent product' },
+      { 'name' => 'Mountain boots', 'price' => { 'value' => 40000, 'unit' => 'BRL' }, 'description' => 'the *mountain boots* are perfect for hiking' },
+      { 'name' => 'Safety helmet',  'price' => { 'value' => 10000, 'unit' => 'USD' }, 'description' => 'the *safety helmet* provides essential protection for winter sports' }
     ]
   end
 

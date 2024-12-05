@@ -8,6 +8,7 @@ end
 gemspec
 
 gem "base64"
+gem "webrick"
 
 group :benchmark, :test do
   gem 'benchmark-ips'
