@@ -97,7 +97,7 @@ module Liquid
       obj = render(context)
 
       if obj.is_a?(Array)
-        output << obj.join
+        obj.each { |o| output << o.to_s }
       elsif obj.nil?
       else
         output << obj.to_s
