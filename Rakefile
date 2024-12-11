@@ -43,8 +43,6 @@ task :test do
   Rake::Task['base_test'].invoke
 
   if RUBY_ENGINE == 'ruby' || RUBY_ENGINE == 'truffleruby'
-    ENV['LIQUID_C'] = '1'
-
     ENV['LIQUID_PARSER_MODE'] = 'lax'
     Rake::Task['integration_test'].reenable
     Rake::Task['integration_test'].invoke
