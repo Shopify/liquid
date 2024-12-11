@@ -15,11 +15,6 @@ if (env_mode = ENV['LIQUID_PARSER_MODE'])
 end
 Liquid::Environment.default.error_mode = mode
 
-if ENV['LIQUID_C'] == '1'
-  puts "-- LIQUID C"
-  require 'liquid/c'
-end
-
 if Minitest.const_defined?('Test')
   # We're on Minitest 5+. Nothing to do here.
 else
