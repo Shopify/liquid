@@ -95,15 +95,21 @@ module Liquid
 
     def render_to_output_buffer(context, output)
       obj = render(context)
+      render_obj_to_output(obj, output)
+      output
+    end
 
-      if obj.is_a?(Array)
-        output << obj.join
-      elsif obj.nil?
-      else
+    def render_obj_to_output(obj, output)
+      case obj
+      when NilClass
+        # Do nothing
+      when Array
+        obj.each do |o|
+          render_obj_to_output(o, output)
+        end
+      when
         output << obj.to_s
       end
-
-      output
     end
 
     def disabled?(_context)
