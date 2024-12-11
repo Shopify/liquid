@@ -31,10 +31,11 @@ module Liquid
       end
     end
 
-    def freeze
-      @nodelist.freeze
-      super
-    end
+    # TODO: Freeze the nodelist after optimization
+    # def freeze
+    #   @nodelist.freeze
+    #   super
+    # end
 
     private def parse_for_liquid_tag(tokenizer, parse_context)
       while (token = tokenizer.shift)
@@ -154,6 +155,12 @@ module Liquid
           end
           new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
           @blank &&= new_tag.blank?
+
+          if parse_context.eager_optimize
+            next if new_tag.nodelist&.all? { !_1.is_a?(String) && _1.nodelist.empty? } # this is an empty block
+            next if new_tag.is_a?(If) && new_tag.blocks.empty? # this is an empty If block
+          end
+
           @nodelist << new_tag
         when token.start_with?(VARSTART)
           whitespace_handler(token, parse_context)

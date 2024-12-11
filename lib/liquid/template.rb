@@ -82,7 +82,11 @@ module Liquid
       # See Liquid::Profiler for more information
       def parse(source, options = {})
         environment = options[:environment] || Environment.default
-        new(environment: environment).parse(source, options)
+        template = new(environment: environment).parse(source, options)
+
+        Loom.optimize(template) if options[:eager_optimize]
+
+        template
       end
     end
 

@@ -81,10 +81,21 @@ namespace :benchmark do
   end
 
   desc "Run unit benchmarks"
-  task :unit do
-    Dir["./performance/unit/*_benchmark.rb"].each do |file|
-      puts "🧪 Running #{file}"
-      ruby file
+  namespace :unit do
+    desc "Run all unit benchmarks"
+    task :all do
+      Dir["./performance/unit/*_benchmark.rb"].each do |file|
+        puts "🧪 Running #{file}"
+        ruby file
+      end
+    end
+
+    %w[lexer loom].each do |benchmark|
+      desc "Run the #{benchmark} benchmark"
+      task benchmark.to_sym do
+        puts "🧪 Running #{benchmark}"
+        ruby "./performance/unit/#{benchmark}_benchmark.rb"
+      end
     end
   end
 end

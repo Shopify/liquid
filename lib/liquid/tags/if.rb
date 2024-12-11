@@ -23,6 +23,7 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       @blocks = []
+      @has_else_block = false
       push_block('if', markup)
     end
 
@@ -33,10 +34,36 @@ module Liquid
     def parse(tokens)
       while parse_body(@blocks.last.attachment, tokens)
       end
-      @blocks.reverse_each do |block|
-        block.attachment.remove_blank_strings if blank?
-        block.attachment.freeze
+
+      if parse_context.eager_optimize && definitive_false_statement?
+        @blocks.clear
+      else
+        @blocks.reverse_each do |block|
+          block.attachment.remove_blank_strings if blank?
+          block.attachment.freeze
+        end
       end
+    end
+
+    def definitive_false_statement?
+      # check if any blocks have variable lookups
+      @blocks.each do |condition|
+        return false if condition.left.is_a?(VariableLookup) || condition.right&.is_a?(VariableLookup)
+
+        child_condition = condition.child_condition
+
+        while child_condition
+          return false if child_condition&.left.is_a?(VariableLookup) || child_condition&.right&.is_a?(VariableLookup)
+          child_condition = child_condition.child_condition
+        end
+      end
+
+      # check if all blocks are false
+      @blocks.each do |condition|
+        return false if condition.evaluate
+      end
+
+      true
     end
 
     ELSE_TAG_NAMES = ['elsif', 'else'].freeze
@@ -44,6 +71,7 @@ module Liquid
 
     def unknown_tag(tag, markup, tokens)
       if ELSE_TAG_NAMES.include?(tag)
+        @has_else_block = true
         push_block(tag, markup)
       else
         super
