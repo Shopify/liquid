@@ -36,8 +36,8 @@ module Liquid
   VariableEnd                 = /\}\}/
   VariableIncompleteEnd       = /\}\}?/
   QuotedString                = /"[^"]*"|'[^']*'/
-  QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
-  TagAttributes               = /(\w[\w-]*)\s*\:\s*(#{QuotedFragment})/o
+  QuotedFragment              = /#{QuotedString}|(?:[^[[:space:]],\|'"]|#{QuotedString})+/o
+  TagAttributes               = /(\w[\w-]*)[[:space:]]*\:[[:space:]]*(#{QuotedFragment})/o
   AnyStartingTag              = /#{TagStart}|#{VariableStart}/o
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om

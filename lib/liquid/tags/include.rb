@@ -20,7 +20,7 @@ module Liquid
   class Include < Tag
     prepend Tag::Disableable
 
-    SYNTAX = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
+    SYNTAX = /(#{QuotedFragment}+)([[:space:]]+(?:with|for)[[:space:]]+(#{QuotedFragment}+))?([[:space:]]+(?:as)[[:space:]]+(#{VariableSegment}+))?/o
     Syntax = SYNTAX
 
     attr_reader :template_name_expr, :variable_name_expr, :attributes

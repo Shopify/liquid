@@ -14,7 +14,7 @@ module Liquid
   # @liquid_syntax_keyword variable_name The name of the variable being created.
   # @liquid_syntax_keyword value The value you want to assign to the variable.
   class Assign < Tag
-    Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/om
+    Syntax = /(#{VariableSignature}+)[[:space:]]*=[[:space:]]*(.*)[[:space:]]*/om
 
     # @api private
     def self.raise_syntax_error(parse_context)
