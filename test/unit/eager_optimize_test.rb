@@ -63,7 +63,6 @@ class EagerOptimizeTest < Minitest::Test
   def test_merge_if_blocks
     # for now, work with consecutive if blocks without any String nodes in between
     source = <<~LIQUID.gsub(/\n/, '')
-      {% assign foo = 1 %}
       {% if foo == 1 %}
         foo: {{ foo }}
       {% endif %}
@@ -75,23 +74,96 @@ class EagerOptimizeTest < Minitest::Test
       {% endif %}
     LIQUID
 
-    original_template = Liquid::Template.parse(source, eager_optimize: false)
-    template = Template.parse(source, eager_optimize: true)
+    assert_optimization([Liquid::If], source, { "foo" => nil })
+    assert_optimization([Liquid::If], source, { "foo" => 1 })
+    assert_optimization([Liquid::If], source, { "foo" => 2 })
+    assert_optimization([Liquid::If], source, { "foo" => 5 })
 
-    assert_equal(
-      [Liquid::Assign, Liquid::If],
-      template.root.nodelist.map(&:class),
-    )
+    source = <<~LIQUID.gsub(/\n/, '')
+      {% assign bar = "application" %}
+      {% if foo == 1 %}
+        foo: {{ foo }}
+      {% endif %}
+      {% if foo == 2 and bar contains "app" %}
+        foo: {{ foo }}
+      {% endif %}
+      {% if 3 == foo and bar == "application" %}
+        foo: {{ foo }}
+      {% endif %}
+    LIQUID
 
-    [nil, 1, 2, 3, 4].each do |foo|
-      assert_equal(
-        original_template.render('foo' => foo),
-        template.render('foo' => foo),
-      )
-    end
+    assert_optimization([Liquid::Assign, Liquid::If], source)
+  end
+
+  def test_does_not_merge_if_blocks
+    assert_optimization([Liquid::If, Liquid::If], <<~LIQUID.gsub(/\n/, ''))
+      {% if foo == 1 %}
+        foo: {{ foo }}
+      {% endif %}
+      {% if k == 1 %}
+        foo: {{ foo }}
+      {% endif %}
+    LIQUID
+
+    assert_optimization([Liquid::If, Liquid::If], <<~LIQUID.gsub(/\n/, ''))
+      {% if foo == 1 %}
+        foo: {{ foo }}
+      {% endif %}
+      {% if foo == 1 %}
+        foo: {{ foo }}
+      {% endif %}
+    LIQUID
+
+    assert_optimization([Liquid::If, Liquid::If], <<~LIQUID.gsub(/\n/, ''))
+      {% if foo == 1 %}
+        foo: {{ foo }}
+      {% endif %}
+      {% if a == foo %}
+        foo: {{ foo }}
+      {% endif %}
+    LIQUID
+
+    assert_optimization([Liquid::If, Liquid::If], <<~LIQUID.gsub(/\n/, ''))
+      {% if foo %}
+        foo: {{ foo }}
+      {% endif %}
+      {% if foo %}
+        foo: {{ foo }}
+      {% endif %}
+    LIQUID
+
+    assert_optimization([Liquid::If, Liquid::If], <<~LIQUID.gsub(/\n/, ''))
+      {% if foo == 1 %}
+        foo: {{ foo }}
+      {% endif %}
+      {% if foo >= 1 %}
+        foo: {{ foo }}
+      {% endif %}
+    LIQUID
+
+    assert_optimization([Liquid::If, Liquid::If], <<~LIQUID.gsub(/\n/, ''))
+      {% if foo == 1 %}
+        foo: {{ foo }}
+      {% endif %}
+      {% if 1  %}
+        foo: {{ foo }}
+      {% endif %}
+    LIQUID
   end
 
   private
+
+  def assert_optimization(expected, source, context = { "foo" => 1 })
+    template = Template.parse(source, eager_optimize: true)
+    assert_equal(expected, template.root.nodelist.map(&:class),)
+
+    baseline_template = Template.parse(source, eager_optimize: false)
+
+    assert_equal(
+      baseline_template.render(context),
+      template.render(context),
+    )
+  end
 
   def total_node_count(template)
     root = template.root
