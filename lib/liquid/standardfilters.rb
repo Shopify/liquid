@@ -284,11 +284,13 @@ module Liquid
     # @liquid_type filter
     # @liquid_category string
     # @liquid_summary
-    #   Splits a string into an array of substrings based on a given separator.
-    # @liquid_syntax string | split: string
+    #   Splits a string into an array of substrings based on a given separator and an optional limit number
+    # @liquid_syntax string | split: string, integer
     # @liquid_return [array[string]]
-    def split(input, pattern)
-      input.to_s.split(pattern.to_s)
+    def split(input, pattern, limit = 0)
+      limit = Utils.to_integer(limit)
+
+      input.to_s.split(pattern.to_s, limit)
     end
 
     # @liquid_public_docs
