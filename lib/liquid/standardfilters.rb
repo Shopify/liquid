@@ -424,7 +424,7 @@ module Liquid
     # @liquid_syntax array | where: string, string
     # @liquid_return [array[untyped]]
     def where(input, property, target_value = nil)
-      filter_array(input, property, target_value, :select)
+      filter_array(input, property, target_value) { |ary, &block| ary.select(&block) }
     end
 
     # @liquid_public_docs
@@ -437,7 +437,7 @@ module Liquid
     # @liquid_syntax array | reject: string, string
     # @liquid_return [array[untyped]]
     def reject(input, property, target_value = nil)
-      filter_array(input, property, target_value, :reject)
+      filter_array(input, property, target_value) { |ary, &block| ary.reject(&block) }
     end
 
     # @liquid_public_docs
@@ -450,7 +450,7 @@ module Liquid
     # @liquid_syntax array | some: string, string
     # @liquid_return [boolean]
     def has(input, property, target_value = nil)
-      filter_array(input, property, target_value, :any?)
+      filter_array(input, property, target_value) { |ary, &block| ary.any?(&block) }
     end
 
     # @liquid_public_docs
@@ -463,7 +463,7 @@ module Liquid
     # @liquid_syntax array | find: string, string
     # @liquid_return [untyped]
     def find(input, property, target_value = nil)
-      filter_array(input, property, target_value, :find)
+      filter_array(input, property, target_value) { |ary, &block| ary.find(&block) }
     end
 
     # @liquid_public_docs
@@ -476,7 +476,7 @@ module Liquid
     # @liquid_syntax array | find_index: string, string
     # @liquid_return [number]
     def find_index(input, property, target_value = nil)
-      filter_array(input, property, target_value, :find_index)
+      filter_array(input, property, target_value) { |ary, &block| ary.find_index(&block) }
     end
 
     # @liquid_public_docs
@@ -948,12 +948,12 @@ module Liquid
 
     attr_reader :context
 
-    def filter_array(input, property, target_value, method)
+    def filter_array(input, property, target_value, &block)
       ary = InputIterator.new(input, context)
 
       return [] if ary.empty?
 
-      ary.public_send(method) do |item|
+      block.call(ary) do |item|
         if target_value.nil?
           fetch_property(item, property)
         else
