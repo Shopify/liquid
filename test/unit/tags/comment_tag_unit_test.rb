@@ -199,4 +199,26 @@ class CommentTagUnitTest < Minitest::Test
       World!
     LIQUID
   end
+
+  def test_comment_tag_node_is_not_in_nodelist
+    template = Liquid::Template.parse(<<~LIQUID.chomp)
+      {% comment %}
+        {% if true %}
+        {% endif %}
+      {% endcomment %}
+    LIQUID
+
+    assert_equal(0, template.root.nodelist.size)
+
+    template = Liquid::Template.parse(<<~LIQUID.chomp)
+      {% liquid
+        comment
+          if true
+          endif
+        endcomment
+      %}
+    LIQUID
+
+    assert_equal(0, template.root.nodelist.size)
+  end
 end
