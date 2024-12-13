@@ -58,6 +58,9 @@ module Liquid
             return yield tag_name, markup
           end
           new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
+
+          next if new_tag.is_a?(Comment)
+
           @blank &&= new_tag.blank?
           @nodelist << new_tag
         end
@@ -153,6 +156,9 @@ module Liquid
             return yield tag_name, markup
           end
           new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
+
+          next if new_tag.is_a?(Comment)
+
           @blank &&= new_tag.blank?
           @nodelist << new_tag
         when token.start_with?(VARSTART)
