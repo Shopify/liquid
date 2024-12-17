@@ -5,7 +5,7 @@ module Liquid
     attr_reader :line_number, :for_liquid_tag
 
     def initialize(source, line_numbers = false, line_number: nil, for_liquid_tag: false)
-      @source         = source.to_s
+      @source         = source.to_s.to_str
       @line_number    = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
       @offset         = 0
