@@ -30,6 +30,10 @@ class TokenizerTest < Minitest::Test
     assert_equal([1, 1, 3], tokenize_line_numbers(" {{\n funk \n}} "))
   end
 
+  def test_tokenize_with_nil_source_returns_empty_array
+    assert_equal([], tokenize(nil))
+  end
+
   private
 
   def new_tokenizer(source, parse_context: Liquid::ParseContext.new, start_line_number: nil)
