@@ -1,5 +1,12 @@
 # Liquid Change Log
 
+## 5.6.0 (unreleased)
+
+### Fixes
+
+* Fix Tokenizer to handle null source value (#1873) [Bahar Pourazar]
+
+
 ## 5.5.0 2024-03-21
 
 Please reference the GitHub release for more information.
