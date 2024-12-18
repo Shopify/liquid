@@ -449,6 +449,29 @@ module Liquid
       end
     end
 
+    # Reject the elements of an array to those with a certain property value.
+    # By default the target is any falsy value.
+    def reject(input, properties, target_value = nil)
+      raise_property_error(properties) unless properties.is_a?(String)
+
+      properties = properties.to_s.split('.')
+      ary = InputIterator.new(input, context)
+
+      ary.reject do |item|
+        if item.is_a?(Hash)
+          value = item.dig(*properties)
+
+          if target_value.nil?
+            !value
+          else
+            value == target_value
+          end
+        else
+          true
+        end
+      end
+    end
+
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
