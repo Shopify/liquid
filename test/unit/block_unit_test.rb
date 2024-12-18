@@ -49,8 +49,8 @@ class BlockUnitTest < Minitest::Test
 
   def test_with_block
     template = Liquid::Template.parse("  {% comment %} {% endcomment %} ")
-    assert_equal([String, Comment, String], block_types(template.root.nodelist))
-    assert_equal(3, template.root.nodelist.size)
+    assert_equal([String, String], block_types(template.root.nodelist))
+    assert_equal(2, template.root.nodelist.size)
   end
 
   private
