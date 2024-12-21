@@ -1,5 +1,10 @@
 # Liquid Change Log
 
+## 5.6.0 2024-12-19
+
+### Breaking Changes
+* Drop support `Liquid.cache_classes`. (#1847) [Ian Ker-Seymer]
+
 ## 5.4.0 2022-07-29
 
 ### Breaking Changes
