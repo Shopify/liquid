@@ -28,6 +28,8 @@ Gem::Specification.new do |s|
 
   s.metadata["allowed_push_host"] = "https://rubygems.org"
 
+  s.add_dependency("bigdecimal")
+
   s.add_development_dependency 'rake', '~> 13.0'
   s.add_development_dependency 'minitest'
 end
