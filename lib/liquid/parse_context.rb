@@ -3,7 +3,7 @@
 module Liquid
   class ParseContext
     attr_accessor :locale, :line_number, :trim_whitespace, :depth
-    attr_reader :partial, :warnings, :error_mode, :environment
+    attr_reader :partial, :warnings, :error_mode, :environment, :omit_blank_nodes
 
     def initialize(options = Const::EMPTY_HASH)
       @environment = options.fetch(:environment, Environment.default)
@@ -11,6 +11,10 @@ module Liquid
 
       @locale   = @template_options[:locale] ||= I18n.new
       @warnings = []
+
+      # remove blank nodes such as
+      # comment tags, empty if tags, etc from the AST
+      @omit_blank_nodes = options.fetch(:omit_blank_nodes, false)
 
       self.depth   = 0
       self.partial = false

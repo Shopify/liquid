@@ -59,7 +59,7 @@ module Liquid
           end
           new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
 
-          next if new_tag.is_a?(Comment)
+          next if parse_context.omit_blank_nodes && blank_node?(new_tag)
 
           @blank &&= new_tag.blank?
           @nodelist << new_tag
@@ -157,7 +157,7 @@ module Liquid
           end
           new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
 
-          next if new_tag.is_a?(Comment)
+          next if parse_context.omit_blank_nodes && blank_node?(new_tag)
 
           @blank &&= new_tag.blank?
           @nodelist << new_tag
@@ -274,6 +274,19 @@ module Liquid
     # @deprecated Use {.raise_missing_variable_terminator} instead
     def raise_missing_variable_terminator(token, parse_context)
       BlockBody.raise_missing_variable_terminator(token, parse_context)
+    end
+
+    def blank_node?(node)
+      case node
+      when Comment
+        true
+      when BlockBody
+        true if node.nodelist.empty?
+      when Tag
+        node.nodelist.all? { |n| blank_node?(n) }
+      else
+        false
+      end
     end
   end
 end
