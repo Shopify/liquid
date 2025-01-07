@@ -3,55 +3,7 @@
 require "strscan"
 
 module Liquid
-  class Tokenizer1
-    attr_reader :line_number, :for_liquid_tag
-
-    def initialize(
-      source:,
-      string_scanner:, # this is not used
-      line_numbers: false,
-      line_number: nil,
-      for_liquid_tag: false
-    )
-      @source         = source.to_s.to_str
-      @line_number    = line_number || (line_numbers ? 1 : nil)
-      @for_liquid_tag = for_liquid_tag
-      @offset         = 0
-      @tokens         = tokenize
-    end
-
-    def shift
-      token = @tokens[@offset]
-      return nil unless token
-
-      @offset += 1
-
-      if @line_number
-        @line_number += @for_liquid_tag ? 1 : token.count("\n")
-      end
-
-      token
-    end
-
-    private
-
-    def tokenize
-      return [] if @source.empty?
-
-      return @source.split("\n") if @for_liquid_tag
-
-      tokens = @source.split(TemplateParser)
-
-      # removes the rogue empty element at the beginning of the array
-      if tokens[0]&.empty?
-        @offset += 1
-      end
-
-      tokens
-    end
-  end
-
-  class Tokenizer2
+  class Tokenizer
     attr_reader :line_number, :for_liquid_tag
 
     TAG_END = /%\}/
@@ -71,14 +23,15 @@ module Liquid
     )
       @line_number = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
-      @source = source
+      @source = source.to_s.to_str
       @offset = 0
       @tokens = []
 
-      @ss = string_scanner
-      @ss.string = @source
-
-      tokenize
+      if @source
+        @ss = string_scanner
+        @ss.string = @source
+        tokenize
+      end
     end
 
     def shift
@@ -199,7 +152,4 @@ module Liquid
       @source.byteslice(start, @ss.pos - start)
     end
   end
-
-  # Remove this once we can depend on strscan >= 3.1.1
-  Tokenizer = StringScanner.instance_methods.include?(:scan_byte) ? Tokenizer2 : Tokenizer1
 end

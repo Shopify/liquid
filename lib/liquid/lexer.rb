@@ -1,62 +1,7 @@
 # frozen_string_literal: true
 
 module Liquid
-  class Lexer1
-    SPECIALS = {
-      '|' => :pipe,
-      '.' => :dot,
-      ':' => :colon,
-      ',' => :comma,
-      '[' => :open_square,
-      ']' => :close_square,
-      '(' => :open_round,
-      ')' => :close_round,
-      '?' => :question,
-      '-' => :dash,
-    }.freeze
-    IDENTIFIER            = /[a-zA-Z_][\w-]*\??/
-    SINGLE_STRING_LITERAL = /'[^\']*'/
-    DOUBLE_STRING_LITERAL = /"[^\"]*"/
-    STRING_LITERAL        = Regexp.union(SINGLE_STRING_LITERAL, DOUBLE_STRING_LITERAL)
-    NUMBER_LITERAL        = /-?\d+(\.\d+)?/
-    DOTDOT                = /\.\./
-    COMPARISON_OPERATOR   = /==|!=|<>|<=?|>=?|contains(?=\s)/
-    WHITESPACE_OR_NOTHING = /\s*/
-
-    class << self
-      def tokenize(ss)
-        output = []
-
-        until ss.eos?
-          ss.skip(WHITESPACE_OR_NOTHING)
-          break if ss.eos?
-          tok      = if (t = ss.scan(COMPARISON_OPERATOR))
-            [:comparison, t]
-          elsif (t = ss.scan(STRING_LITERAL))
-            [:string, t]
-          elsif (t = ss.scan(NUMBER_LITERAL))
-            [:number, t]
-          elsif (t = ss.scan(IDENTIFIER))
-            [:id, t]
-          elsif (t = ss.scan(DOTDOT))
-            [:dotdot, t]
-          else
-            c     = ss.getch
-            if (s = SPECIALS[c])
-              [s, c]
-            else
-              raise SyntaxError, "Unexpected character #{c}"
-            end
-          end
-          output << tok
-        end
-
-        output << [:end_of_string]
-      end
-    end
-  end
-
-  class Lexer2
+  class Lexer
     CLOSE_ROUND = [:close_round, ")"].freeze
     CLOSE_SQUARE = [:close_square, "]"].freeze
     COLON = [:colon, ":"].freeze
@@ -225,7 +170,4 @@ module Liquid
       end
     end
   end
-
-  # Remove this once we can depend on strscan >= 3.1.1
-  Lexer = HAS_STRING_SCANNER_SCAN_BYTE ? Lexer2 : Lexer1
 end
