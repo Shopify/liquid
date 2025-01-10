@@ -8,7 +8,6 @@ end
 gemspec
 
 gem "base64"
-gem "lru_redux"
 
 group :benchmark, :test do
   gem 'benchmark-ips'
