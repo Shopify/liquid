@@ -102,7 +102,7 @@ module Liquid
     end
 
     def strict_parse(markup)
-      p = Parser.new(markup)
+      p = @parse_context.new_parser(markup)
       condition = parse_binary_comparisons(p)
       p.consume(:end_of_string)
       condition
