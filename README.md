@@ -91,7 +91,7 @@ Liquid::Template.parse(<<~LIQUID, environment: email_environment)
 LIQUID
 ```
 
-By using Environments, you ensure that custom tags and filters are only available in the contexts where they are needed, making your Liquid templates more robust and easier to manage.
+By using Environments, you ensure that custom tags and filters are only available in the contexts where they are needed, making your Liquid templates more robust and easier to manage. For smaller projects, a global environment is available via `Liquid::Environment.default`.
 
 ### Error Modes
 
