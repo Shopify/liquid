@@ -75,109 +75,20 @@ MARKUPS = {
   "range" => RANGE_MARKUPS,
 }
 
-def compare_objects(object_1, object_2)
-  if object_1.is_a?(Liquid::VariableLookup) && object_2.is_a?(Liquid::VariableLookup)
-    return false if object_1.name != object_2.name
-  elsif object_1 != object_2
-    return false
-  end
-
-  true
-end
-
-def compare_range_lookup(expression_1_result, expression_2_result)
-  return false unless expression_1_result.is_a?(Liquid::RangeLookup) && expression_2_result.is_a?(Liquid::RangeLookup)
-
-  start_obj_1 = expression_1_result.start_obj
-  start_obj_2 = expression_2_result.start_obj
-
-  return false unless compare_objects(start_obj_1, start_obj_2)
-
-  end_obj_1 = expression_1_result.end_obj
-  end_obj_2 = expression_2_result.end_obj
-
-  return false unless compare_objects(end_obj_1, end_obj_2)
-
-  true
-end
-
-MARKUPS.values.flatten.each do |markup|
-  expression_1_result = Liquid::Expression1.parse(markup)
-  expression_2_result = Liquid::Expression2.parse(markup)
-
-  next if expression_1_result == expression_2_result
-
-  if expression_1_result.is_a?(Liquid::RangeLookup) && expression_2_result.is_a?(Liquid::RangeLookup)
-    next if compare_range_lookup(expression_1_result, expression_2_result)
-  end
-
-  warn "Expression1 and Expression2 results are different for markup: #{markup}"
-  warn "expected: #{expression_1_result}"
-  warn "got: #{expression_2_result}"
-  abort
-end
-
-warmed_up = false
-
-MARKUPS.each do |type, markups|
-  Benchmark.ips do |x|
-    if warmed_up
-      x.config(time: 10, warmup: 5)
-      warmed_up = true
-    else
-      x.config(time: 10)
-    end
-
-    x.report("Liquid::Expression1#parse: #{type}") do
-      if Liquid::Expression != Liquid::Expression1
-        Liquid.send(:remove_const, :Expression)
-        Liquid.const_set(:Expression, Liquid::Expression1)
-      end
-
-      markups.each do |markup|
-        Liquid::Expression1.parse(markup)
-      end
-    end
-
-    x.report("Liquid::Expression2#parse: #{type}") do
-      if Liquid::Expression != Liquid::Expression2
-        Liquid.send(:remove_const, :Expression)
-        Liquid.const_set(:Expression, Liquid::Expression2)
-      end
-
-      markups.each do |markup|
-        Liquid::Expression2.parse(markup)
-      end
-    end
-
-    x.compare!
-  end
-end
-
 Benchmark.ips do |x|
-  x.config(time: 10)
+  x.config(time: 5, warmup: 5)
 
-  x.report("Liquid::Expression1#parse: all") do
-    if Liquid::Expression != Liquid::Expression1
-      Liquid.send(:remove_const, :Expression)
-      Liquid.const_set(:Expression, Liquid::Expression1)
-    end
-
-    MARKUPS.values.flatten.each do |markup|
-      Liquid::Expression1.parse(markup)
+  MARKUPS.each do |type, markups|
+    x.report("Liquid::Expression#parse: #{type}") do
+      markups.each do |markup|
+        Liquid::Expression.parse(markup)
+      end
     end
   end
 
-  x.report("Liquid::Expression2#parse: all") do
-    if Liquid::Expression != Liquid::Expression2
-      Liquid.send(:remove_const, :Expression)
-      Liquid.const_set(:Expression, Liquid::Expression2)
-    end
-
+  x.report("Liquid::Expression#parse: all") do
     MARKUPS.values.flatten.each do |markup|
-      Liquid::Expression2.parse(markup)
+      Liquid::Expression.parse(markup)
     end
   end
-
-  x.compare!
 end
