@@ -16,8 +16,12 @@ module Liquid
       # This StringScanner will be shared by all of them
       @string_scanner = StringScanner.new("")
 
-      @expression_cache = if options[:expression_cache] != false
-        options[:expression_cache] || LruRedux::Cache.new(10_000)
+      @expression_cache = if options[:expression_cache].nil?
+        {}
+      elsif options[:expression_cache].respond_to?(:[]) && options[:expression_cache].respond_to?(:[]=)
+        options[:expression_cache]
+      elsif options[:expression_cache]
+        {}
       end
 
       self.depth   = 0

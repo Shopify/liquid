@@ -13,6 +13,7 @@ group :benchmark, :test do
   gem 'benchmark-ips'
   gem 'memory_profiler'
   gem 'terminal-table'
+  gem "lru_redux"
 
   install_if -> { RUBY_PLATFORM !~ /mingw|mswin|java/ && RUBY_ENGINE != 'truffleruby' } do
     gem 'stackprof'
