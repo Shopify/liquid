@@ -44,7 +44,9 @@ module Liquid
 
         # Cache only exists during parsing
         if cache
-          cache.getset(markup) { inner_parse(markup, ss, cache).freeze }
+          return cache[markup] if cache.key?(markup)
+
+          cache[markup] = inner_parse(markup, ss, cache).freeze
         else
           inner_parse(markup, ss, nil).freeze
         end
