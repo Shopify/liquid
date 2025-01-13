@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "lru_redux"
-
 module Liquid
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
@@ -41,7 +39,6 @@ module Liquid
       @filters             = []
       @global_filter       = nil
       @disabled_tags       = {}
-      @expression_cache    = LruRedux::ThreadSafeCache.new(1000)
 
       # Instead of constructing new StringScanner objects for each Expression parse,
       # we recycle the same one.
@@ -183,7 +180,7 @@ module Liquid
     # Example:
     #   products == empty #=> products.empty?
     def [](expression)
-      evaluate(Expression.parse(expression, @string_scanner, @expression_cache))
+      evaluate(Expression.parse(expression, @string_scanner))
     end
 
     def key?(key)
