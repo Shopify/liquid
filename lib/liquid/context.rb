@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "lru_redux"
-
 module Liquid
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
