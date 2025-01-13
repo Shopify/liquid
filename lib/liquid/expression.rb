@@ -79,10 +79,17 @@ module Liquid
         end
 
         ss.string = markup
-        # the first byte must be a digit, a period, or  a dash
+        # the first byte must be a digit or  a dash
         byte = ss.scan_byte
 
-        return false if byte != DASH && byte != DOT && (byte < ZERO || byte > NINE)
+        return false if byte != DASH && (byte < ZERO || byte > NINE)
+
+        if byte == DASH
+          peek_byte = ss.peek_byte
+
+          # if it starts with a dash, the next byte must be a digit
+          return false if peek_byte.nil? || !(peek_byte >= ZERO && peek_byte <= NINE)
+        end
 
         # The markup could be a float with multiple dots
         first_dot_pos = nil
