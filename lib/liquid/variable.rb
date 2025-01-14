@@ -107,8 +107,8 @@ module Liquid
         obj.each do |o|
           render_obj_to_output(o, output)
         end
-      when
-        output << obj.to_s
+      else
+        output << Liquid::Utils.to_s(obj)
       end
     end
 

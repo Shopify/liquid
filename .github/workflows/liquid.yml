@@ -14,7 +14,7 @@ jobs:
           - { ruby: 3.0, allowed-failure: false } # minimum supported
           - { ruby: 3.2, allowed-failure: false }
           - { ruby: 3.3, allowed-failure: false }
-          - { ruby: "3.4.0-rc1", allowed-failure: false } # latest
+          - { ruby: 3.4, allowed-failure: false } # latest
           - { ruby: ruby-head, allowed-failure: false }
     name: Test Ruby ${{ matrix.entry.ruby }}
     steps:
