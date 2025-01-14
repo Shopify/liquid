@@ -6,7 +6,7 @@ module Liquid
 
     attr_reader :name, :lookups
 
-    def self.parse(markup, string_scanner, cache = nil)
+    def self.parse(markup, string_scanner = StringScanner.new(""), cache = nil)
       new(markup, string_scanner, cache)
     end
 
