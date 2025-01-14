@@ -30,6 +30,5 @@
 ## Releasing
 
 * Bump the version in `lib/liquid/version.rb` and merge it on `main`
-* Run `rake release` to create the new version tag and deploy the new version to RubyGems
 * Create a new release using the [GitHub UI](https://github.com/Shopify/liquid/releases/new)
 
