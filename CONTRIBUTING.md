@@ -26,3 +26,9 @@
 * If it makes sense, add tests for your code and/or run a performance benchmark
 * Make sure all tests pass (`bundle exec rake`)
 * Create a pull request
+
+## Releasing
+
+* Bump the version in `lib/liquid/version.rb` and merge it on `main`
+* Create a new release using the [GitHub UI](https://github.com/Shopify/liquid/releases/new)
+
