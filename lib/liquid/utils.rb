@@ -91,3 +91,9 @@ module Liquid
     end
   end
 end
+
+class Hash
+  def to_s_legacy
+    return "LEGACY RUBY"
+  end
+end

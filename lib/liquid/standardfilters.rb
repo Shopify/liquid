@@ -40,6 +40,27 @@ module Liquid
         end
         input
       end
+
+      def stringify_object(object)
+        output = String.new
+        self.stringify_inner(object, output)
+        output
+      end
+
+      def stringify_inner(obj, output)
+        case obj
+        when NilClass
+          # Do nothing
+        when Array
+          obj.each do |o|
+            self.stringify_object(o, output)
+          end
+        when Hash
+          output << obj.to_s_legacy
+        when
+          output << obj.to_s
+        end
+      end
     end
 
     # @liquid_public_docs
@@ -64,7 +85,7 @@ module Liquid
     # @liquid_syntax string | downcase
     # @liquid_return [string]
     def downcase(input)
-      input.to_s.downcase
+      StandardFilters.stringify_object(input).downcase
     end
 
     # @liquid_public_docs
@@ -75,7 +96,7 @@ module Liquid
     # @liquid_syntax string | upcase
     # @liquid_return [string]
     def upcase(input)
-      input.to_s.upcase
+      StandardFilters.stringify_object(input).upcase
     end
 
     # @liquid_public_docs
@@ -86,7 +107,7 @@ module Liquid
     # @liquid_syntax string | capitalize
     # @liquid_return [string]
     def capitalize(input)
-      input.to_s.capitalize
+      StandardFilters.stringify_object(input).capitalize
     end
 
     # @liquid_public_docs
@@ -97,7 +118,7 @@ module Liquid
     # @liquid_syntax string | escape
     # @liquid_return [string]
     def escape(input)
-      CGI.escapeHTML(input.to_s) unless input.nil?
+      CGI.escapeHTML(StandardFilters.stringify_object(input)) unless input.nil?
     end
     alias_method :h, :escape
 
@@ -109,7 +130,7 @@ module Liquid
     # @liquid_syntax string | escape_once
     # @liquid_return [string]
     def escape_once(input)
-      input.to_s.gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
+      StandardFilters.stringify_object(input).gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
     end
 
     # @liquid_public_docs
@@ -124,7 +145,7 @@ module Liquid
     # @liquid_syntax string | url_encode
     # @liquid_return [string]
     def url_encode(input)
-      CGI.escape(input.to_s) unless input.nil?
+      CGI.escape(StandardFilters.stringify_object(input)) unless input.nil?
     end
 
     # @liquid_public_docs
@@ -138,7 +159,7 @@ module Liquid
     def url_decode(input)
       return if input.nil?
 
-      result = CGI.unescape(input.to_s)
+      result = CGI.unescape(StandardFilters.stringify_object(input))
       raise Liquid::ArgumentError, "invalid byte sequence in #{result.encoding}" unless result.valid_encoding?
 
       result
@@ -152,7 +173,7 @@ module Liquid
     # @liquid_syntax string | base64_encode
     # @liquid_return [string]
     def base64_encode(input)
-      Base64.strict_encode64(input.to_s)
+      Base64.strict_encode64(StandardFilters.stringify_object(input))
     end
 
     # @liquid_public_docs
@@ -163,7 +184,7 @@ module Liquid
     # @liquid_syntax string | base64_decode
     # @liquid_return [string]
     def base64_decode(input)
-      input = input.to_s
+      input = StandardFilters.stringify_object(input)
       StandardFilters.try_coerce_encoding(Base64.strict_decode64(input), encoding: input.encoding)
     rescue ::ArgumentError
       raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
@@ -177,7 +198,7 @@ module Liquid
     # @liquid_syntax string | base64_url_safe_encode
     # @liquid_return [string]
     def base64_url_safe_encode(input)
-      Base64.urlsafe_encode64(input.to_s)
+      Base64.urlsafe_encode64(StandardFilters.stringify_object(input))
     end
 
     # @liquid_public_docs
@@ -188,7 +209,7 @@ module Liquid
     # @liquid_syntax string | base64_url_safe_decode
     # @liquid_return [string]
     def base64_url_safe_decode(input)
-      input = input.to_s
+      input = StandardFilters.stringify_object(input)
       StandardFilters.try_coerce_encoding(Base64.urlsafe_decode64(input), encoding: input.encoding)
     rescue ::ArgumentError
       raise Liquid::ArgumentError, "invalid base64 provided to base64_url_safe_decode"
@@ -212,7 +233,7 @@ module Liquid
         if input.is_a?(Array)
           input.slice(offset, length) || []
         else
-          input.to_s.slice(offset, length) || ''
+          StandardFilters.stringify_object(input).slice(offset, length) || ''
         end
       rescue RangeError
         if I64_RANGE.cover?(length) && I64_RANGE.cover?(offset)
@@ -236,7 +257,7 @@ module Liquid
     # @liquid_return [string]
     def truncate(input, length = 50, truncate_string = "...")
       return if input.nil?
-      input_str = input.to_s
+      input_str = StandardFilters.stringify_object(input)
       length    = Utils.to_integer(length)
 
       truncate_string_str = truncate_string.to_s
@@ -263,7 +284,7 @@ module Liquid
     # @liquid_return [string]
     def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
-      input = input.to_s
+      input = StandardFilters.stringify_object(input)
       words = Utils.to_integer(words)
       words = 1 if words <= 0
 
@@ -288,7 +309,7 @@ module Liquid
     # @liquid_syntax string | split: string
     # @liquid_return [array[string]]
     def split(input, pattern)
-      input.to_s.split(pattern.to_s)
+      StandardFilters.stringify_object(input).split(pattern.to_s)
     end
 
     # @liquid_public_docs
@@ -299,7 +320,7 @@ module Liquid
     # @liquid_syntax string | strip
     # @liquid_return [string]
     def strip(input)
-      input.to_s.strip
+      StandardFilters.stringify_object(input).strip
     end
 
     # @liquid_public_docs
@@ -310,7 +331,7 @@ module Liquid
     # @liquid_syntax string | lstrip
     # @liquid_return [string]
     def lstrip(input)
-      input.to_s.lstrip
+      StandardFilters.stringify_object(input).lstrip
     end
 
     # @liquid_public_docs
@@ -321,7 +342,7 @@ module Liquid
     # @liquid_syntax string | rstrip
     # @liquid_return [string]
     def rstrip(input)
-      input.to_s.rstrip
+      StandardFilters.stringify_object(input).rstrip
     end
 
     # @liquid_public_docs
@@ -333,7 +354,7 @@ module Liquid
     # @liquid_return [string]
     def strip_html(input)
       empty  = ''
-      result = input.to_s.gsub(STRIP_HTML_BLOCKS, empty)
+      result = StandardFilters.stringify_object(input).gsub(STRIP_HTML_BLOCKS, empty)
       result.gsub!(STRIP_HTML_TAGS, empty)
       result
     end
@@ -346,7 +367,7 @@ module Liquid
     # @liquid_syntax string | strip_newlines
     # @liquid_return [string]
     def strip_newlines(input)
-      input.to_s.gsub(/\r?\n/, '')
+      StandardFilters.stringify_object(input).gsub(/\r?\n/, '')
     end
 
     # @liquid_public_docs
@@ -573,7 +594,7 @@ module Liquid
     # @liquid_syntax string | replace: string, string
     # @liquid_return [string]
     def replace(input, string, replacement = '')
-      input.to_s.gsub(string.to_s, replacement.to_s)
+      StandardFilters.stringify_object(input).gsub(string.to_s, replacement.to_s)
     end
 
     # @liquid_public_docs
@@ -584,7 +605,7 @@ module Liquid
     # @liquid_syntax string | replace_first: string, string
     # @liquid_return [string]
     def replace_first(input, string, replacement = '')
-      input.to_s.sub(string.to_s, replacement.to_s)
+      StandardFilters.stringify_object(input).sub(string.to_s, replacement.to_s)
     end
 
     # @liquid_public_docs
@@ -595,7 +616,7 @@ module Liquid
     # @liquid_syntax string | replace_last: string, string
     # @liquid_return [string]
     def replace_last(input, string, replacement)
-      input = input.to_s
+      input = StandardFilters.stringify_object(input)
       string = string.to_s
       replacement = replacement.to_s
 
@@ -649,7 +670,7 @@ module Liquid
     # @liquid_syntax string | append: string
     # @liquid_return [string]
     def append(input, string)
-      input.to_s + string.to_s
+      StandardFilters.stringify_object(input) + string.to_s
     end
 
     # @liquid_public_docs
@@ -678,7 +699,7 @@ module Liquid
     # @liquid_syntax string | prepend: string
     # @liquid_return [string]
     def prepend(input, string)
-      string.to_s + input.to_s
+      string.to_s + StandardFilters.stringify_object(input)
     end
 
     # @liquid_public_docs
@@ -689,7 +710,7 @@ module Liquid
     # @liquid_syntax string | newline_to_br
     # @liquid_return [string]
     def newline_to_br(input)
-      input.to_s.gsub(/\r?\n/, "<br />\n")
+      StandardFilters.stringify_object(input).gsub(/\r?\n/, "<br />\n")
     end
 
     # Reformat a date using Ruby's core Time#strftime( string ) -> string
