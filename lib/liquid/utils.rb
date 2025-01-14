@@ -89,11 +89,90 @@ module Liquid
       # Otherwise return the object itself
       obj
     end
-  end
-end
 
-class Hash
-  def to_s_legacy
-    return "LEGACY RUBY"
+    if RUBY_VERSION >= '3.4'
+      def self.to_s(obj, seen = {})
+        case obj
+        when Hash
+          hash_inspect(obj, seen)
+        when Array
+          array_inspect(obj, seen)
+        else
+          obj.to_s
+        end
+      end
+
+      def self.inspect(obj, seen = {})
+        case obj
+        when Hash
+          hash_inspect(obj, seen)
+        when Array
+          array_inspect(obj, seen)
+        else
+          obj.inspect
+        end
+      end
+    else
+      def self.to_s(obj, seen = nil)
+        obj.to_s
+      end
+
+      def self.inspect(obj, seen = nil)
+        obj.inspect
+      end
+    end
+
+    def self.array_inspect(arr, seen = {})
+      if seen[arr.object_id]
+        return "[...]"
+      end
+
+      seen[arr.object_id] = true
+      str = +"["
+      cursor = 0
+      len = arr.length
+
+      while cursor < len
+        if cursor > 0
+          str << ", "
+        end
+
+        item_str = inspect(arr[cursor], seen)
+        str << item_str
+      end
+
+      str << "]"
+      str
+    ensure
+      seen.delete(arr.object_id)
+    end
+
+    def self.hash_inspect(hash, seen = {})
+      if seen[hash.object_id]
+        return "{...}"
+      end
+      seen[hash.object_id] = true
+
+      str = +"{"
+      first = true
+      hash.each do |key, value|
+        if first
+          first = false
+        else
+          str << ", "
+        end
+
+        key_str = inspect(key, seen)
+        str << key_str
+        str << "=>"
+
+        value_str = inspect(value, seen)
+        str << value_str
+      end
+      str << "}"
+      str
+    ensure
+      seen.delete(hash.object_id)
+    end
   end
 end

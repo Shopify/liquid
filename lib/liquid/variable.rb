@@ -87,7 +87,6 @@ module Liquid
 
       @filters.each do |filter_name, filter_args, filter_kwargs|
         filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
-        binding.irb
         obj = context.invoke(filter_name, obj, *filter_args)
       end
 
@@ -108,10 +107,8 @@ module Liquid
         obj.each do |o|
           render_obj_to_output(o, output)
         end
-      when Hash
-        output << obj.to_s_legacy
-      when
-        output << obj.to_s
+      else
+        output << Liquid::Utils.to_s(obj)
       end
     end
 
