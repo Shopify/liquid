@@ -90,7 +90,7 @@ module Liquid
       obj
     end
 
-    if RUBY_VERSION >= '3.4'
+    # if RUBY_VERSION >= '3.4'
       def self.to_s(obj, seen = {})
         case obj
         when Hash
@@ -112,15 +112,15 @@ module Liquid
           obj.inspect
         end
       end
-    else
-      def self.to_s(obj, seen = nil)
-        obj.to_s
-      end
+    # else
+    #   def self.to_s(obj, seen = nil)
+    #     obj.to_s
+    #   end
 
-      def self.inspect(obj, seen = nil)
-        obj.inspect
-      end
-    end
+    #   def self.inspect(obj, seen = nil)
+    #     obj.inspect
+    #   end
+    # end
 
     def self.array_inspect(arr, seen = {})
       if seen[arr.object_id]
