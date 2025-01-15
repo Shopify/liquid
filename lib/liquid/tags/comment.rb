@@ -15,6 +15,8 @@ module Liquid
   #   {% endcomment %}
   # @liquid_syntax_keyword content The content of the comment.
   class Comment < Block
+    TAG_NAME = "comment"
+
     def render_to_output_buffer(_context, output)
       output
     end
@@ -34,7 +36,10 @@ module Liquid
       end
 
       parse_context.depth += 1
-      comment_tag_depth = 1
+      tag_depth = 1
+
+      begin_tag = self.class::TAG_NAME
+      end_tag = "end#{self.class::TAG_NAME}"
 
       begin
         # Consume tokens without creating child nodes.
@@ -57,13 +62,13 @@ module Liquid
           case tag_name
           when "raw"
             parse_raw_tag_body(tokenizer)
-          when "comment"
-            comment_tag_depth += 1
-          when "endcomment"
-            comment_tag_depth -= 1
+          when begin_tag
+            tag_depth += 1
+          when end_tag
+            tag_depth -= 1
           end
 
-          if comment_tag_depth.zero?
+          if tag_depth.zero?
             parse_context.trim_whitespace = (token[-3] == WhitespaceControl) unless tokenizer.for_liquid_tag
             return false
           end
