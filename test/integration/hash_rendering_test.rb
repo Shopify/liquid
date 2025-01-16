@@ -80,4 +80,21 @@ class HashRenderingTest < Minitest::Test
   def test_render_hash_with_hash_key
     assert_template_result("{{\"foo\"=>\"bar\"}=>42}", "{{ my_hash }}", { "my_hash" => { Hash["foo" => "bar"] => 42 } })
   end
+
+  def test_rendering_hash_with_custom_to_s_method_uses_custom_to_s
+    my_hash = Class.new(Hash) do
+      def to_s
+        "kewl"
+      end
+    end.new
+
+    assert_template_result("kewl", "{{ my_hash }}", { "my_hash" => my_hash })
+  end
+
+  def test_rendering_hash_without_custom_to_s_uses_default_inspect
+    my_hash = Class.new(Hash).new
+    my_hash[:foo] = :bar
+
+    assert_template_result("{:foo=>:bar}", "{{ my_hash }}", { "my_hash" => my_hash })
+  end
 end
