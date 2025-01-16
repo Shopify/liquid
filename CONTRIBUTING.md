@@ -30,5 +30,7 @@
 ## Releasing
 
 * Bump the version in `lib/liquid/version.rb` and merge it on `main`
+* Update the `History.md` file
+* Open a PR like [this one](https://github.com/Shopify/liquid/pull/1894) and merge it
 * Create a new release using the [GitHub UI](https://github.com/Shopify/liquid/releases/new)
 
