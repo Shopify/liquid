@@ -1065,7 +1065,7 @@ module Liquid
       def join(glue)
         first = true
         output = +""
-        @input.each do |item|
+        each do |item|
           if first
             first = false
           else
