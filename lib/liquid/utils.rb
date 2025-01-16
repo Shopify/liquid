@@ -90,34 +90,38 @@ module Liquid
       obj
     end
 
-    if RUBY_VERSION >= '3.4'
-      def self.to_s(obj, seen = {})
-        case obj
-        when Hash
+    def self.to_s(obj, seen = {})
+      case obj
+      when Hash
+        # If the custom hash implementation overrides `#to_s`, use their
+        # custom implementation. Otherwise we use Liquid's default
+        # implementation.
+        if obj.class.instance_method(:to_s) == HASH_TO_S_METHOD
           hash_inspect(obj, seen)
-        when Array
-          array_inspect(obj, seen)
         else
           obj.to_s
         end
+      when Array
+        array_inspect(obj, seen)
+      else
+        obj.to_s
       end
+    end
 
-      def self.inspect(obj, seen = {})
-        case obj
-        when Hash
+    def self.inspect(obj, seen = {})
+      case obj
+      when Hash
+        # If the custom hash implementation overrides `#inspect`, use their
+        # custom implementation. Otherwise we use Liquid's default
+        # implementation.
+        if obj.class.instance_method(:inspect) == HASH_INSPECT_METHOD
           hash_inspect(obj, seen)
-        when Array
-          array_inspect(obj, seen)
         else
           obj.inspect
         end
-      end
-    else
-      def self.to_s(obj, seen = nil)
-        obj.to_s
-      end
-
-      def self.inspect(obj, seen = nil)
+      when Array
+        array_inspect(obj, seen)
+      else
         obj.inspect
       end
     end
@@ -175,5 +179,11 @@ module Liquid
     ensure
       seen.delete(hash.object_id)
     end
+
+    HASH_TO_S_METHOD = Hash.instance_method(:to_s)
+    private_constant :HASH_TO_S_METHOD
+
+    HASH_INSPECT_METHOD = Hash.instance_method(:inspect)
+    private_constant :HASH_INSPECT_METHOD
   end
 end
