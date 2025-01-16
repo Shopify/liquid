@@ -1063,7 +1063,18 @@ module Liquid
       end
 
       def join(glue)
-        to_a.join(glue.to_s)
+        first = true
+        output = +""
+        @input.each do |item|
+          if first
+            first = false
+          else
+            output << glue
+          end
+
+          output << Liquid::Utils.to_s(item)
+        end
+        output
       end
 
       def concat(args)
