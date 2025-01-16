@@ -77,6 +77,12 @@ class HashRenderingTest < Minitest::Test
     assert_template_result("{\"numbers\"=>[{:foo=>42}]}", "{{ my_hash }}", { "my_hash" => { "numbers" => [{ foo: 42 }] } })
   end
 
+  def test_join_filter_with_hash
+    array = [{ "key1" => "value1" }, { "key2" => "value2" }]
+    glue = { "lol" => "wut" }
+    assert_template_result("{\"key1\"=>\"value1\"}{\"lol\"=>\"wut\"}{\"key2\"=>\"value2\"}", "{{ my_array | join: glue }}", { "my_array" => array, "glue" => glue })
+  end
+
   def test_render_hash_with_hash_key
     assert_template_result("{{\"foo\"=>\"bar\"}=>42}", "{{ my_hash }}", { "my_hash" => { Hash["foo" => "bar"] => 42 } })
   end
