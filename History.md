@@ -6,6 +6,7 @@
 
 ### Features
 * Add `find`, `find_index`, `has`, and `reject` filters to arrays
+* Compatibility with Ruby 3.4
 
 ## 5.6.4 2025-01-14
 
