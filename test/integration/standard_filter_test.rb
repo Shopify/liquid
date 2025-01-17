@@ -1337,6 +1337,30 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
   end
 
+  def test_access_arrays
+    template = <<~LIQUID
+      {{- products | map: 'colors[0]["name"]' | join: ", " -}}
+    LIQUID
+    expected_output = "red, red, blue"
+
+    assert_template_result(expected_output, template, {
+      "products" => [
+        { "title" => { "content" => "Pro goggles" },    "colors" => [{ "name" => "red",  "hex" => "#ff0000" }] },
+        { "title" => { "content" => "Thermal gloves" }, "colors" => [{ "name" => "red",  "hex" => "#ff0000" }] },
+        { "title" => { "content" => "Alpine jacket" },  "colors" => [{ "name" => "blue", "hex" => "#0000ff" }] },
+      ],
+    })
+  end
+
+  def test_access_lookup_with_brackets
+    template = <<~LIQUID
+      {{- products | map: 'title["content"]' | join: ', ' -}}
+    LIQUID
+    expected_output = "Pro goggles, Thermal gloves, Alpine jacket, Mountain boots, Safety helmet"
+
+    assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
+  end
+
   private
 
   def with_timezone(tz)

@@ -1007,10 +1007,10 @@ module Liquid
 
       return value if !value.nil? || !property_or_keys.is_a?(String)
 
-      keys = property_or_keys.split('.')
-      keys.reduce(drop) do |drop, key|
-        drop.respond_to?(:[]) ? drop[key] : drop
-      end
+      variable_lookup = Liquid::VariableLookup.parse("drop.#{property_or_keys}")
+      variable_lookup.evaluate(
+        Liquid::Context.new("drop" => drop),
+      )
     end
 
     def raise_property_error(property)
