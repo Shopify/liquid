@@ -11,6 +11,8 @@ Liquid objects can be one of six types:
 - [Nil](#nil)
 - [Array](#array)
 - [EmptyDrop](#emptydrop)
+- [Object](#object)
+- [Timestamp](#timestamp)
 
 You can initialize Liquid variables using [`assign`]({{ "/tags/variable/#assign" | prepend: site.baseurl }}) or [`capture`]({{ "/tags/variable/#capture" | prepend: site.baseurl }}) tags.
 
@@ -155,3 +157,67 @@ You can check to see if an object exists or not before you access any of its att
 ```
 
 Both empty strings and empty arrays will return `true` if checked for equivalence with `empty`.
+
+## Object
+
+Objects are key-value pairs that allow access to their attributes. They are commonly used to represent more complex data structures, such as user data.
+
+<p class="code-label">Example</p>
+
+liquid
+{%- raw -%}
+{% if user %}
+Hello, {{ user.name }}! Your email is {{ user.email }}.
+{% endif %}
+{% endraw %}
+
+In this example, `user` is an object with attributes such as `name` and `email`.
+
+<p class="code-label">Input</p>
+
+```liquid
+{%- raw -%}
+{% assign user = site.users[0] %}
+{% if user %}
+  Welcome, {{ user.name }}!
+{% endif %}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+
+```text
+Welcome, Tobi!
+```
+
+---
+
+## Timestamp
+
+A `Timestamp` represents date and time values. You can format timestamps using the `date` filter.
+
+<p class="code-label">Example</p>
+
+liquid
+{%- raw -%}
+{{ article.published_at | date: "%A, %B %d, %Y" }}
+{% endraw %}
+
+In this example, `article.published_at` is a timestamp that is formatted to display the day of the week, month, day, and year.
+
+<p class="code-label">Input</p>
+
+```liquid
+{%- raw -%}
+{% assign article = site.articles[0] %}
+Published on: {{ article.published_at | date: "%B %d, %Y" }}
+{% endraw %}
+```
+
+<p class="code-label">Output</p>
+
+```text
+Published on: January 15, 2025
+```
+
+Use the `date` filter to customize the format of your timestamp.
