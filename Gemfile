@@ -14,11 +14,14 @@ group :benchmark, :test do
   gem 'memory_profiler'
   gem 'terminal-table'
   gem "lru_redux"
-  gem "webrick"
 
   install_if -> { RUBY_PLATFORM !~ /mingw|mswin|java/ && RUBY_ENGINE != 'truffleruby' } do
     gem 'stackprof'
   end
+end
+
+group :development do
+  gem "webrick"
 end
 
 group :test do
