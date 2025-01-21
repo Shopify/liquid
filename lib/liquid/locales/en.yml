@@ -8,6 +8,7 @@
       case_invalid_when: "Syntax Error in tag 'case' - Valid when condition: {% when [condition] [or condition2...] %}"
       case_invalid_else: "Syntax Error in tag 'case' - Valid else condition: {% else %} (no parameters) "
       cycle: "Syntax Error in 'cycle' - Valid syntax: cycle [name :] var [, var2, var3 ...]"
+      doc_invalid_nested: "Syntax Error in 'doc' - Nested doc tags are not allowed"
       for: "Syntax Error in 'for loop' - Valid syntax: for [item] in [collection]"
       for_invalid_in: "For loops require an 'in' clause"
       for_invalid_attribute: "Invalid attribute in for loop. Valid attributes are limit and offset"
