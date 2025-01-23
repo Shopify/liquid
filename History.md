@@ -4,7 +4,8 @@
 
 ## 5.7.1 2025-01-23
 
-* Fix the `find` filter to return `nil` when filtering empty arrays
+* Fix the `find` and `find_index`filters to return `nil` when filtering empty arrays
+* Fix the `has` filter to return `false` when filtering empty arrays
 
 ## 5.7.0 2025-01-16
 
