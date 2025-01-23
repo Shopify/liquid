@@ -472,7 +472,7 @@ module Liquid
     # @liquid_syntax array | find: string, string
     # @liquid_return [untyped]
     def find(input, property, target_value = nil)
-      filter_array(input, property, target_value) { |ary, &block| ary.find(&block) }
+      filter_array(input, property, target_value, nil) { |ary, &block| ary.find(&block) }
     end
 
     # @liquid_public_docs
@@ -969,10 +969,10 @@ module Liquid
 
     attr_reader :context
 
-    def filter_array(input, property, target_value, &block)
+    def filter_array(input, property, target_value, default_value = [], &block)
       ary = InputIterator.new(input, context)
 
-      return [] if ary.empty?
+      return default_value if ary.empty?
 
       block.call(ary) do |item|
         if target_value.nil?
