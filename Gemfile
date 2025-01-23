@@ -20,6 +20,10 @@ group :benchmark, :test do
   end
 end
 
+group :development do
+  gem "webrick"
+end
+
 group :test do
   gem 'rubocop', '~> 1.61.0'
   gem 'rubocop-shopify', '~> 2.12.0', require: false
