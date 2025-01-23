@@ -161,6 +161,14 @@ class StandardFiltersTest < Minitest::Test
     assert_nil(@filters.find([], 'foo', 'bar'))
   end
 
+  def test_find_index_on_empty_array
+    assert_nil(@filters.find_index([], 'foo', 'bar'))
+  end
+
+  def test_has_on_empty_array
+    refute(@filters.has([], 'foo', 'bar'))
+  end
+
   def test_truncate
     assert_equal('1234...', @filters.truncate('1234567890', 7))
     assert_equal('1234567890', @filters.truncate('1234567890', 20))
@@ -980,6 +988,18 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result(expected_output, "{{ array | has: 'ok', true }}", { "array" => array })
   end
 
+  def test_has_with_empty_arrays
+    template = <<~LIQUID
+      {%- assign has_product = products | has: 'title.content', 'Not found' -%}
+      {%- unless has_product -%}
+        Product not found.
+      {%- endunless -%}
+    LIQUID
+    expected_output = "Product not found."
+
+    assert_template_result(expected_output, template, { "products" => [] })
+  end
+
   def test_has_with_false_value
     array = [
       { "handle" => "alpha", "ok" => true },
@@ -1084,6 +1104,18 @@ class StandardFiltersTest < Minitest::Test
     expected_output = "2"
 
     assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
+  end
+
+  def test_find_index_with_empty_arrays
+    template = <<~LIQUID
+      {%- assign index = products | find_index: 'title.content', 'Not found' -%}
+      {%- unless index -%}
+        Index not found.
+      {%- endunless -%}
+    LIQUID
+    expected_output = "Index not found."
+
+    assert_template_result(expected_output, template, { "products" => [] })
   end
 
   def test_where
