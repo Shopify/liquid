@@ -157,6 +157,10 @@ class StandardFiltersTest < Minitest::Test
     assert_equal([], @filters.slice(input, -(1 << 63), 6))
   end
 
+  def test_find_on_empty_array
+    assert_nil(@filters.find([], 'foo', 'bar'))
+  end
+
   def test_truncate
     assert_equal('1234...', @filters.truncate('1234567890', 7))
     assert_equal('1234567890', @filters.truncate('1234567890', 20))
@@ -1040,6 +1044,18 @@ class StandardFiltersTest < Minitest::Test
     expected_output = "Pro goggles"
 
     assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
+  end
+
+  def test_find_with_empty_arrays
+    template = <<~LIQUID
+      {%- assign product = products | find: 'title.content', 'Not found' -%}
+      {%- unless product -%}
+        Product not found.
+      {%- endunless -%}
+    LIQUID
+    expected_output = "Product not found."
+
+    assert_template_result(expected_output, template, { "products" => [] })
   end
 
   def test_find_index_with_value

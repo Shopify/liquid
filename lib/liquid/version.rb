@@ -2,5 +2,5 @@
 # frozen_string_literal: true
 
 module Liquid
-  VERSION = "5.7.0"
+  VERSION = "5.7.1"
 end

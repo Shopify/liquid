@@ -2,9 +2,14 @@
 
 ## 5.8.0 (unreleased)
 
+## 5.7.1 2025-01-23
+
+* Fix the `find` filter to return `nil` when filtering empty arrays
+
 ## 5.7.0 2025-01-16
 
 ### Features
+
 * Add `find`, `find_index`, `has`, and `reject` filters to arrays
 * Compatibility with Ruby 3.4
 
