@@ -387,7 +387,23 @@ module Liquid
         end
       elsif ary.all? { |el| el.respond_to?(:[]) }
         begin
-          ary.sort { |a, b| nil_safe_compare(fetch_property(a, property), fetch_property(b, property)) }
+          ary.sort do |a, b|
+            a = fetch_property(a, property)
+            b = fetch_property(b, property)
+
+            ##
+            # We handle nested properties gracefully to avoid breaking backward
+            # compatibility.
+            #
+            # However, we raise errors for incompatible types when no nested
+            # properties are used to maintain strict type checking in simple
+            # cases.
+            if has_nested_property?(property)
+              type_safe_compare(a, b) { |a, b| nil_safe_compare(a, b) }
+            else
+              nil_safe_compare(a, b)
+            end
+          end
         rescue TypeError
           raise_property_error(property)
         end
@@ -1005,12 +1021,16 @@ module Liquid
       # ```
       value = drop[property_or_keys]
 
-      return value if !value.nil? || !property_or_keys.is_a?(String)
+      return value if !value.nil? || !has_nested_property?(property_or_keys)
 
       keys = property_or_keys.split('.')
       keys.reduce(drop) do |drop, key|
         drop.respond_to?(:[]) ? drop[key] : drop
       end
+    end
+
+    def has_nested_property?(property)
+      property.is_a?(String) && property.include?('.')
     end
 
     def raise_property_error(property)
@@ -1034,6 +1054,16 @@ module Liquid
       else
         raise Liquid::ArgumentError, "cannot sort values of incompatible types"
       end
+    end
+
+    def type_safe_compare(a, b)
+      klass_a = a.class
+      klass_b = b.class
+
+      # Converting classes to string to have a deterministic comparison.
+      return nil_safe_casecmp(klass_a, klass_b) if klass_a != klass_b
+
+      yield(a, b)
     end
 
     def nil_safe_casecmp(a, b)

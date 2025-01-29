@@ -1385,6 +1385,94 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
   end
 
+  def test_sort_with_different_types
+    input = [
+      { "price" => 1000 },
+      { "price" => :none },
+      { "price" => 3000 }
+    ]
+
+    assert_raises(Liquid::ArgumentError) do
+      @filters.sort(input, "price")
+    end
+  end
+
+  def test_sort_with_nested_different_types
+    input = [
+      { "price" => { "value" => 1000, "unit" => "BRL" } },
+      { "price" => { "value" => 2000, "unit" => nil } },
+      { "price" => { "value" => 3000, "unit" => :none } }
+    ]
+    expected_output = "2000, 1000, 3000"
+    template = <<~LIQUID
+      {{- input | sort: 'price.unit' | map: 'price.value' | join: ', ' -}}
+    LIQUID
+
+    assert_template_result(expected_output, template, { "input" => input })
+  end
+
+  def test_sort_natural_with_nested_different_types
+    input = [
+      { "price" => { "value" => 1000, "unit" => "brl" } },
+      { "price" => { "value" => 2000, "unit" => "BRL" } },
+      { "price" => { "value" => 3000, "unit" => nil } },
+      { "price" => { "value" => 4000, "unit" => :brl } }
+    ]
+    expected_output = "1000, 2000, 4000, 3000"
+    template = <<~LIQUID
+      {{- input | sort_natural: 'price.unit' | map: 'price.value' | join: ', ' -}}
+    LIQUID
+
+    assert_template_result(expected_output, template, { "input" => input })
+  end
+
+  def test_uniq_with_nested_different_types
+    input = [
+      { "price" => { "value" => 1000, "unit" => "BRL" } },
+      { "price" => { "value" => 2000, "unit" => "BRL" } },
+      { "price" => { "value" => 3000, "unit" => :USD } },
+      { "price" => { "value" => 4000, "unit" => :BRL } },
+      { "price" => { "value" => 5000, "unit" => nil } }
+    ]
+
+    expected_output = "BRL, USD, BRL, " # Uniq handles different types uniqueness
+    template = <<~LIQUID
+      {{- input | uniq: 'price.unit' | map: 'price.unit' | join: ', ' -}}
+    LIQUID
+
+    assert_template_result(expected_output, template, { "input" => input })
+  end
+
+  def test_map_with_nested_different_types
+    input = [
+      { "price" => { "value" => 1000, "unit" => "brl" } },
+      { "price" => { "value" => 2000, "unit" => "BRL" } },
+      { "price" => { "value" => 3000, "unit" => nil } },
+      { "price" => { "value" => 4000, "unit" => :brl } }
+    ]
+    expected_output = "brl, BRL, , brl"
+    template = <<~LIQUID
+      {{- input | map: 'price.unit'| join: ', ' -}}
+    LIQUID
+
+    assert_template_result(expected_output, template, { "input" => input })
+  end
+
+  def test_sum_with_nested_different_types
+    input = [
+      { "price" => { "value" => 1000 } },
+      { "price" => { "value" => nil } },
+      { "price" => { "value" => :none } },
+      { "price" => { "value" => 3000 } }
+    ]
+    expected_output = "4000"
+    template = <<~LIQUID
+      {{- input | sum: 'price.value' -}}
+    LIQUID
+
+    assert_template_result(expected_output, template, { "input" => input })
+  end
+
   private
 
   def with_timezone(tz)
