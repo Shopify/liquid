@@ -161,6 +161,12 @@ module Liquid
         end
         # rubocop:enable Metrics/BlockNesting
         output << EOS
+      rescue ::ArgumentError => e
+        if e.message == "invalid byte sequence in #{ss.string.encoding}"
+          raise SyntaxError, "Invalid byte sequence in #{ss.string.encoding}"
+        else
+          raise
+        end
       end
 
       def raise_syntax_error(start_pos, ss)

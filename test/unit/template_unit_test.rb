@@ -35,4 +35,15 @@ class TemplateUnitTest < Minitest::Test
   def test_template_inheritance
     assert_equal("foo", TemplateSubclass.parse("foo").render)
   end
+
+  def test_invalid_utf8
+    input = "\xff\x00"
+    error = assert_raises(SyntaxError) do
+      Liquid::Tokenizer.new(source: input, string_scanner: StringScanner.new(input))
+    end
+    assert_equal(
+      'Liquid syntax error: Invalid byte sequence in UTF-8',
+      error.message,
+    )
+  end
 end

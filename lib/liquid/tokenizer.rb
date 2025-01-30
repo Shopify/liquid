@@ -103,6 +103,12 @@ module Liquid
 
       pos = @ss.pos -= 2
       @source.byteslice(start, pos - start)
+    rescue ::ArgumentError => e
+      if e.message == "invalid byte sequence in #{@ss.string.encoding}"
+        raise SyntaxError, "Invalid byte sequence in #{@ss.string.encoding}"
+      else
+        raise
+      end
     end
 
     def next_variable_token
