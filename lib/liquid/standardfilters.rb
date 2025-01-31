@@ -387,7 +387,7 @@ module Liquid
         end
       elsif ary.all? { |el| el.respond_to?(:[]) }
         begin
-          ary.sort { |a, b| nil_safe_compare(fetch_property(a, property), fetch_property(b, property)) }
+          ary.sort { |a, b| nil_safe_compare(a[property], b[property]) }
         rescue TypeError
           raise_property_error(property)
         end
@@ -416,7 +416,7 @@ module Liquid
         end
       elsif ary.all? { |el| el.respond_to?(:[]) }
         begin
-          ary.sort { |a, b| nil_safe_casecmp(fetch_property(a, property), fetch_property(b, property)) }
+          ary.sort { |a, b| nil_safe_casecmp(a[property], b[property]) }
         rescue TypeError
           raise_property_error(property)
         end
@@ -504,7 +504,7 @@ module Liquid
         []
       else
         ary.uniq do |item|
-          fetch_property(item, property)
+          item[property]
         rescue TypeError
           raise_property_error(property)
         rescue NoMethodError
@@ -540,7 +540,7 @@ module Liquid
         if property == "to_liquid"
           e
         elsif e.respond_to?(:[])
-          r = fetch_property(e, property)
+          r = e[property]
           r.is_a?(Proc) ? r.call : r
         end
       end
@@ -564,7 +564,7 @@ module Liquid
         []
       else
         ary.reject do |item|
-          fetch_property(item, property).nil?
+          item[property].nil?
         rescue TypeError
           raise_property_error(property)
         rescue NoMethodError
@@ -950,7 +950,7 @@ module Liquid
         if property.nil?
           item
         elsif item.respond_to?(:[])
-          fetch_property(item, property)
+          item[property]
         else
           0
         end
@@ -976,40 +976,15 @@ module Liquid
 
       block.call(ary) do |item|
         if target_value.nil?
-          fetch_property(item, property)
+          item[property]
         else
-          fetch_property(item, property) == target_value
+          item[property] == target_value
         end
       rescue TypeError
         raise_property_error(property)
       rescue NoMethodError
         return nil unless item.respond_to?(:[])
         raise
-      end
-    end
-
-    def fetch_property(drop, property_or_keys)
-      ##
-      # This keeps backward compatibility by supporting properties containing
-      # dots. This is valid in Liquid syntax and used in some runtimes, such as
-      # Shopify with metafields.
-      #
-      # Using this approach, properties like 'price.value' can be accessed in
-      # both of the following examples:
-      #
-      # ```
-      # [
-      #   { 'name' => 'Item 1', 'price.price' => 40000 },
-      #   { 'name' => 'Item 2', 'price' => { 'value' => 39900 } }
-      # ]
-      # ```
-      value = drop[property_or_keys]
-
-      return value if !value.nil? || !property_or_keys.is_a?(String)
-
-      keys = property_or_keys.split('.')
-      keys.reduce(drop) do |drop, key|
-        drop.respond_to?(:[]) ? drop[key] : drop
       end
     end
 

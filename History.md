@@ -2,6 +2,10 @@
 
 ## 5.8.0 (unreleased)
 
+## 5.7.2 2025-01-31
+
+* Fix array filters to not support nested properties
+
 ## 5.7.1 2025-01-24
 
 * Fix the `find` and `find_index`filters to return `nil` when filtering empty arrays

@@ -54,30 +54,6 @@ class TestEnumerable < Liquid::Drop
   end
 end
 
-class TestDeepEnumerable < Liquid::Drop
-  include Enumerable
-
-  class Product < Liquid::Drop
-    attr_reader :title, :price, :premium
-
-    def initialize(title:, price:, premium: nil)
-      @title = { "content" => title, "language" => "en" }
-      @price = { "value" => price, "unit" => "USD" }
-      @premium = { "category" => premium } if premium
-    end
-  end
-
-  def each(&block)
-    [
-      Product.new(title: "Pro goggles",    price: 1299),
-      Product.new(title: "Thermal gloves", price: 1299),
-      Product.new(title: "Alpine jacket",  price: 3999, premium: 'Basic'),
-      Product.new(title: "Mountain boots", price: 3899, premium: 'Pro'),
-      Product.new(title: "Safety helmet",  price: 1999)
-    ].each(&block)
-  end
-end
-
 class NumberLikeThing < Liquid::Drop
   def initialize(amount)
     @amount = amount
@@ -438,15 +414,6 @@ class StandardFiltersTest < Minitest::Test
     end
   end
 
-  def test_sort_natural_with_deep_enumerables
-    template = <<~LIQUID
-      {{- products | sort_natural: 'title.content' | map: 'title.content' | join: ', ' -}}
-    LIQUID
-    expected_output = "Alpine jacket, Mountain boots, Pro goggles, Safety helmet, Thermal gloves"
-
-    assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
-  end
-
   def test_legacy_sort_hash
     assert_equal([{ a: 1, b: 2 }], @filters.sort(a: 1, b: 2))
   end
@@ -483,15 +450,6 @@ class StandardFiltersTest < Minitest::Test
     end
   end
 
-  def test_uniq_with_deep_enumerables
-    template = <<~LIQUID
-      {{- products | uniq: 'price.value' | map: "title.content" | join: ', ' -}}
-    LIQUID
-    expected_output = "Pro goggles, Alpine jacket, Mountain boots, Safety helmet"
-
-    assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
-  end
-
   def test_compact_empty_array
     assert_equal([], @filters.compact([], "a"))
   end
@@ -506,15 +464,6 @@ class StandardFiltersTest < Minitest::Test
     assert_raises(Liquid::ArgumentError) do
       @filters.compact(foo, "bar")
     end
-  end
-
-  def test_compact_with_deep_enumerables
-    template = <<~LIQUID
-      {{- products | compact: 'premium.category' | map: 'title.content' | join: ', ' -}}
-    LIQUID
-    expected_output = "Alpine jacket, Mountain boots"
-
-    assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
   end
 
   def test_reverse
@@ -624,15 +573,6 @@ class StandardFiltersTest < Minitest::Test
 
   def test_sort_works_on_enumerables
     assert_template_result("213", '{{ foo | sort: "bar" | map: "foo" }}', { "foo" => TestEnumerable.new })
-  end
-
-  def test_sort_with_deep_enumerables
-    template = <<~LIQUID
-      {{- products | sort: 'price.value' | map: 'title.content' | join: ', ' -}}
-    LIQUID
-    expected_output = "Pro goggles, Thermal gloves, Safety helmet, Mountain boots, Alpine jacket"
-
-    assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
   end
 
   def test_first_and_last_call_to_liquid
@@ -951,15 +891,6 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result(expected_output, template, { "array" => array })
   end
 
-  def test_reject_with_deep_enumerables
-    template = <<~LIQUID
-      {{- products | reject: 'title.content', 'Pro goggles' | map: 'price.value' | join: ', ' -}}
-    LIQUID
-    expected_output = "1299, 3999, 3899, 1999"
-
-    assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
-  end
-
   def test_has
     array = [
       { "handle" => "alpha", "ok" => true },
@@ -1028,16 +959,6 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result(expected_output, template, { "array" => array })
   end
 
-  def test_has_with_deep_enumerables
-    template = <<~LIQUID
-      {{- products | has: 'title.content', 'Pro goggles' -}},
-      {{- products | has: 'title.content', 'foo' -}}
-    LIQUID
-    expected_output = "true,false"
-
-    assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
-  end
-
   def test_find_with_value
     products = [
       { "title" => "Pro goggles",    "price" => 1299 },
@@ -1054,16 +975,6 @@ class StandardFiltersTest < Minitest::Test
     expected_output = "Alpine jacket"
 
     assert_template_result(expected_output, template, { "products" => products })
-  end
-
-  def test_find_with_deep_enumerables
-    template = <<~LIQUID
-      {%- assign product = products | find: 'title.content', 'Pro goggles' -%}
-      {{- product.title.content -}}
-    LIQUID
-    expected_output = "Pro goggles"
-
-    assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
   end
 
   def test_find_with_empty_arrays
@@ -1094,16 +1005,6 @@ class StandardFiltersTest < Minitest::Test
     expected_output = "2"
 
     assert_template_result(expected_output, template, { "products" => products })
-  end
-
-  def test_find_index_with_deep_enumerables
-    template = <<~LIQUID
-      {%- assign index = products | find_index: 'title.content', 'Alpine jacket' -%}
-      {{- index -}}
-    LIQUID
-    expected_output = "2"
-
-    assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
   end
 
   def test_find_index_with_empty_arrays
@@ -1214,15 +1115,6 @@ class StandardFiltersTest < Minitest::Test
   def test_where_array_of_only_unindexable_values
     assert_nil(@filters.where([nil], "ok", true))
     assert_nil(@filters.where([nil], "ok"))
-  end
-
-  def test_where_with_deep_enumerables
-    template = <<~LIQUID
-      {{- products | where: 'title.content', 'Pro goggles' | map: 'price.value' -}}
-    LIQUID
-    expected_output = "1299"
-
-    assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
   end
 
   def test_all_filters_never_raise_non_liquid_exception
@@ -1374,15 +1266,6 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("1.2", "{{ input | sum: 'quantity' }}", { "input" => input })
     assert_template_result("0.1", "{{ input | sum: 'weight' }}", { "input" => input })
     assert_template_result("0", "{{ input | sum: 'subtotal' }}", { "input" => input })
-  end
-
-  def test_sum_with_deep_enumerables
-    template = <<~LIQUID
-      {{- products | sum: 'price.value' -}}
-    LIQUID
-    expected_output = "12495"
-
-    assert_template_result(expected_output, template, { "products" => TestDeepEnumerable.new })
   end
 
   private
