@@ -11,7 +11,8 @@
 
 ## Introduction
 
-Liquid is a template engine which was written with very specific requirements:
+Liquid is an open-source template language created by [Shopify](https://www.shopify.com/) and written in Ruby. It is
+the backbone of Shopify themes and is used to load dynamic content on storefronts.
 
 * It has to have beautiful and simple markup. Template engines which don't produce good looking markup are no fun to use.
 * It needs to be non evaling and secure. Liquid templates are made so that users can edit them. You don't want to run code on your server which your users wrote.
