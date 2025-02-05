@@ -27,6 +27,15 @@ class Servlet < LiquidServlet
     { 'products' => products_list, 'more_products' => more_products_list, 'description' => description, 'section' => 'Snowboards', 'cool_products' => true }
   end
 
+  def settings
+    {
+      'settings' => {
+        'text' => 'Liquid',
+        'font' => 'Arial'
+      }
+    }
+  end
+
   private
 
   def products_list
