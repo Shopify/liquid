@@ -456,7 +456,7 @@ module Liquid
     #   Tests if any item in an array has a specific property value.
     # @liquid_description
     #   This requires you to provide both the property name and the associated value.
-    # @liquid_syntax array | some: string, string
+    # @liquid_syntax array | has: string, string
     # @liquid_return [boolean]
     def has(input, property, target_value = nil)
       filter_array(input, property, target_value, false) { |ary, &block| ary.any?(&block) }
