@@ -2,6 +2,8 @@
 
 ## 5.7.3 (unreleased)
 
+* Raise Liquid::SyntaxError when parsing invalidly encoded strings
+
 ## 5.7.2 2025-01-31
 
 * Fix array filters to not support nested properties

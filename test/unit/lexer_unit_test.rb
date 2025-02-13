@@ -131,6 +131,16 @@ class LexerUnitTest < Minitest::Test
     assert_equal([[:id, "false"], [:number, "1"], [:end_of_string]], tokenize("false 1"))
   end
 
+  def test_error_with_invalid_utf8
+    error = assert_raises(SyntaxError) do
+      tokenize("\x00\xff")
+    end
+    assert_equal(
+      'Liquid syntax error: Invalid byte sequence in UTF-8',
+      error.message,
+    )
+  end
+
   private
 
   def tokenize(input)
