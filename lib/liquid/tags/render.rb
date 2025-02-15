@@ -97,6 +97,9 @@ module Liquid
       end
 
       output
+    rescue SyntaxError => e
+      e.template_name ||= template_name
+      raise
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
