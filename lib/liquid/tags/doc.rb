@@ -25,44 +25,43 @@ module Liquid
   #   {% enddoc %}
   #   {{ foo }}, {{ bar }}!
   class Doc < Block
-    def render_to_output_buffer(_context, output)
-      output
+    TAG_UNEXPECTED_ARGS = /\A\s*\z/
+
+    def initialize(tag_name, markup, parse_context)
+      super
+      ensure_valid_markup(tag_name, markup, parse_context)
     end
 
-    def unknown_tag(_tag, _markup, _tokens)
-    end
+    def parse(tokens)
+      while (token = tokens.shift)
+        tag_name = token =~ BlockBody::FullTokenPossiblyInvalid && Regexp.last_match(2)
 
-    def blank?
-      true
-    end
+        raise_nested_doc_error if tag_name == @tag_name
 
-    def parse_body(body, tokenizer)
-      while (token = tokenizer.send(:shift))
-        tag_name = if tokenizer.for_liquid_tag
-          next if token.empty? || token.match?(BlockBody::WhitespaceOrNothing)
-
-          tag_name_match = BlockBody::LiquidTagToken.match(token)
-
-          next if tag_name_match.nil?
-
-          tag_name_match[1]
-        else
-          token =~ BlockBody::FullToken
-          Regexp.last_match(2)
-        end
-
-        raise_nested_doc_error if tag_name == "doc"
-
-        if tag_name == "enddoc"
-          parse_context.trim_whitespace = (token[-3] == WhitespaceControl) unless tokenizer.for_liquid_tag
-          return false
+        if tag_name == block_delimiter
+          parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
+          return
         end
       end
 
       raise_tag_never_closed(block_name)
     end
 
+    def render_to_output_buffer(_context, output)
+      output
+    end
+
+    def blank?
+      true
+    end
+
     private
+
+    def ensure_valid_markup(tag_name, markup, parse_context)
+      unless TAG_UNEXPECTED_ARGS.match?(markup)
+        raise SyntaxError, parse_context.locale.t("errors.syntax.block_tag_unexpected_args", tag: tag_name)
+      end
+    end
 
     def raise_nested_doc_error
       raise SyntaxError, parse_context.locale.t("errors.syntax.doc_invalid_nested")

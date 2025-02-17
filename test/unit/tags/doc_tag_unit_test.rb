@@ -20,32 +20,26 @@ class DocTagUnitTest < Minitest::Test
     assert_template_result('', template)
   end
 
-  def test_doc_tag_inside_liquid_tag
-    template = <<~LIQUID.chomp
-      {% liquid
-        doc
-          Assigns foo to 1.
-        enddoc
-        assign foo = 1
-      %}
-    LIQUID
+  def test_doc_tag_does_not_support_extra_arguments
+    error = assert_raises(Liquid::SyntaxError) do
+      template = <<~LIQUID.chomp
+        {% doc extra %}
+        {% enddoc %}
+      LIQUID
 
-    assert_template_result('', template)
+      Liquid::Template.parse(template)
+    end
+
+    exp_error = "Liquid syntax error: Syntax Error in 'doc' - Valid syntax: {% doc %}{% enddoc %}"
+    act_error = error.message
+
+    assert_equal(exp_error, act_error)
   end
 
-  def test_doc_tag_inside_liquid_tag_with_control_flow_nodes
-    template = <<~LIQUID.chomp
-      {% liquid
-        if 1 != 1
-          doc
-            else
-            echo 123
-          enddoc
-        endif
-      %}
-    LIQUID
-
-    assert_template_result('', template)
+  def test_doc_tag_must_support_valid_tags
+    assert_match_syntax_error("Liquid syntax error (line 1): 'doc' tag was never closed", '{% doc %} foo')
+    assert_match_syntax_error("Liquid syntax error (line 1): Syntax Error in 'doc' - Valid syntax: {% doc %}{% enddoc %}", '{% doc } foo {% enddoc %}')
+    assert_match_syntax_error("Liquid syntax error (line 1): Syntax Error in 'doc' - Valid syntax: {% doc %}{% enddoc %}", '{% doc } foo %}{% enddoc %}')
   end
 
   def test_doc_tag_ignores_liquid_nodes
@@ -103,37 +97,23 @@ class DocTagUnitTest < Minitest::Test
     assert_template_result('', template)
   end
 
-  def test_doc_tag_raises_an_error_for_unclosed_assign
-    error = assert_raises(Liquid::SyntaxError) do
-      template = <<~LIQUID.chomp
-        {% doc %}
-          {% assign foo = "1"
-        {% enddoc %}
-      LIQUID
+  def test_doc_tag_ignores_unclosed_assign
+    template = <<~LIQUID.chomp
+      {% doc %}
+        {% assign foo = "1"
+      {% enddoc %}
+    LIQUID
 
-      Liquid::Template.parse(template)
-    end
-
-    exp_error = "Liquid syntax error: 'doc' tag was never closed"
-    act_error = error.message
-
-    assert_equal(exp_error, act_error)
+    assert_template_result('', template)
   end
 
-  def test_doc_tag_raises_an_error_for_malformed_syntax
-    error = assert_raises(Liquid::SyntaxError) do
-      template = <<~LIQUID.chomp
-        {% doc %}
-        {% {{ {%- enddoc %}
-      LIQUID
+  def test_doc_tag_ignores_malformed_syntax
+    template = <<~LIQUID.chomp
+      {% doc %}
+      {% {{ {%- enddoc %}
+    LIQUID
 
-      Liquid::Template.parse(template)
-    end
-
-    exp_error = "Liquid syntax error: 'doc' tag was never closed"
-    act_error = error.message
-
-    assert_equal(exp_error, act_error)
+    assert_template_result('', template)
   end
 
   def test_doc_tag_preserves_error_line_numbers
@@ -157,19 +137,6 @@ class DocTagUnitTest < Minitest::Test
     assert_template_result("Hello!", "      {%- doc -%}123{%- enddoc -%}Hello!")
     assert_template_result("Hello!", "{%- doc -%}123{%- enddoc -%}     Hello!")
     assert_template_result("Hello!", "      {%- doc -%}123{%- enddoc -%}     Hello!")
-
-    # Whitespace control within liquid tags
-    assert_template_result("Hello!World!", <<~LIQUID.chomp)
-      Hello!
-      {%- liquid
-        doc
-         this is inside a liquid tag
-        enddoc
-      -%}
-      World!
-    LIQUID
-
-    # Multiline whitespace control
     assert_template_result("Hello!", <<~LIQUID.chomp)
       {%- doc %}Whitespace control!{% enddoc -%}
       Hello!
@@ -189,6 +156,5 @@ class DocTagUnitTest < Minitest::Test
     assert_template_result('', "{% doc %}123{% enddoc\txyz %}")
     assert_template_result('', "{% doc %}123{% enddoc\nxyz %}")
     assert_template_result('', "{% doc %}123{% enddoc\n   xyz  enddoc %}")
-    assert_template_result('', "{%doc}{% assign a = 1 %}{%enddoc}{% endif %}")
   end
 end
