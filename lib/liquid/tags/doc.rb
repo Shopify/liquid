@@ -25,7 +25,7 @@ module Liquid
   #   {% enddoc %}
   #   {{ foo }}, {{ bar }}!
   class Doc < Block
-    TAG_UNEXPECTED_ARGS = /\A\s*\z/
+    NO_UNEXPECTED_ARGS = /\A\s*\z/
 
     def initialize(tag_name, markup, parse_context)
       super
@@ -58,7 +58,7 @@ module Liquid
     private
 
     def ensure_valid_markup(tag_name, markup, parse_context)
-      unless TAG_UNEXPECTED_ARGS.match?(markup)
+      unless NO_UNEXPECTED_ARGS.match?(markup)
         raise SyntaxError, parse_context.locale.t("errors.syntax.block_tag_unexpected_args", tag: tag_name)
       end
     end
