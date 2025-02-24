@@ -1,24 +1,30 @@
 # Liquid Change Log
 
-## 5.7.3 (unreleased)
+## 5.8.1 (unreleased)
 
-* Raise Liquid::SyntaxError when parsing invalidly encoded strings
+## 5.8.0
+
+* Introduce the new `{% doc %}` tag [Guilherme Carreiro]
+
+## 5.7.3
+
+* Raise Liquid::SyntaxError when parsing invalidly encoded strings [Chris AtLee]
 
 ## 5.7.2 2025-01-31
 
-* Fix array filters to not support nested properties
+* Fix array filters to not support nested properties [Guilherme Carreiro]
 
 ## 5.7.1 2025-01-24
 
-* Fix the `find` and `find_index`filters to return `nil` when filtering empty arrays
-* Fix the `has` filter to return `false` when filtering empty arrays
+* Fix the `find` and `find_index`filters to return `nil` when filtering empty arrays [Guilherme Carreiro]
+* Fix the `has` filter to return `false` when filtering empty arrays [Guilherme Carreiro]
 
 ## 5.7.0 2025-01-16
 
 ### Features
 
-* Add `find`, `find_index`, `has`, and `reject` filters to arrays
-* Compatibility with Ruby 3.4
+* Add `find`, `find_index`, `has`, and `reject` filters to arrays [Guilherme Carreiro]
+* Compatibility with Ruby 3.4 [Ian Ker-Seymer]
 
 ## 5.6.4 2025-01-14
 
