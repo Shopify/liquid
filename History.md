@@ -1,5 +1,76 @@
 # Liquid Change Log
 
+## 5.8.1 (unreleased)
+
+## 5.8.1
+
+* Fix `{% doc %}` tag to be visitable [Guilherme Carreiro]
+
+## 5.8.0
+
+* Introduce the new `{% doc %}` tag [Guilherme Carreiro]
+
+## 5.7.3
+
+* Raise Liquid::SyntaxError when parsing invalidly encoded strings [Chris AtLee]
+
+## 5.7.2 2025-01-31
+
+* Fix array filters to not support nested properties [Guilherme Carreiro]
+
+## 5.7.1 2025-01-24
+
+* Fix the `find` and `find_index`filters to return `nil` when filtering empty arrays [Guilherme Carreiro]
+* Fix the `has` filter to return `false` when filtering empty arrays [Guilherme Carreiro]
+
+## 5.7.0 2025-01-16
+
+### Features
+
+* Add `find`, `find_index`, `has`, and `reject` filters to arrays [Guilherme Carreiro]
+* Compatibility with Ruby 3.4 [Ian Ker-Seymer]
+
+## 5.6.4 2025-01-14
+
+### Fixes
+* Add a default `string_scanner` to avoid errors with `Liquid::VariableLookup.parse("foo.bar")` [Ian Ker-Seymer]
+
+## 5.6.3 2025-01-13
+* Remove `lru_redux` dependency [Michael Go]
+
+## 5.6.2 2025-01-13
+
+### Fixes
+* Preserve the old behavior of requiring floats to start with a digit [Michael Go]
+
+## 5.6.1 2025-01-13
+
+### Performance improvements
+* Faster Expression parser / Tokenizer with StringScanner [Michael Go]
+
+## 5.6.0 2024-12-19
+
+### Architectural changes
+* Added new `Environment` class to manage configuration and state that was previously stored in `Template` [Ian Ker-Seymer]
+* Moved tag registration from `Template` to `Environment` [Ian Ker-Seymer]
+* Removed `StrainerFactory` in favor of `Environment`-based strainer creation [Ian Ker-Seymer]
+* Consolidated standard tags into a new `Tags` module with `STANDARD_TAGS` constant [Ian Ker-Seymer]
+
+### Performance improvements
+* Optimized `Lexer` with a new `Lexer2` implementation using jump tables for faster tokenization, requires Ruby 3.4 [Ian Ker-Seymer]
+* Improved variable rendering with specialized handling for different types [Michael Go]
+* Reduced array allocations by using frozen empty constants [Michael Go]
+
+### API changes
+* Deprecated several `Template` class methods in favor of `Environment` methods [Ian Ker-Seymer]
+* Added deprecation warnings system [Ian Ker-Seymer]
+* Changed how filters and tags are registered to use Environment [Ian Ker-Seymer]
+
+### Fixes
+* Fixed table row handling of break interrupts [Alex Coco]
+* Improved variable output handling for arrays [Ian Ker-Seymer]
+* Fix Tokenizer to handle null source value (#1873) [Bahar Pourazar]
+
 ## 5.5.0 2024-03-21
 
 Please reference the GitHub release for more information.

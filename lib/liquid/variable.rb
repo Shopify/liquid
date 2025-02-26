@@ -61,7 +61,7 @@ module Liquid
 
     def strict_parse(markup)
       @filters = []
-      p = Parser.new(markup)
+      p = @parse_context.new_parser(markup)
 
       return if p.look(:end_of_string)
 
@@ -95,15 +95,21 @@ module Liquid
 
     def render_to_output_buffer(context, output)
       obj = render(context)
-
-      if obj.is_a?(Array)
-        output << obj.join
-      elsif obj.nil?
-      else
-        output << obj.to_s
-      end
-
+      render_obj_to_output(obj, output)
       output
+    end
+
+    def render_obj_to_output(obj, output)
+      case obj
+      when NilClass
+        # Do nothing
+      when Array
+        obj.each do |o|
+          render_obj_to_output(o, output)
+        end
+      else
+        output << Liquid::Utils.to_s(obj)
+      end
     end
 
     def disabled?(_context)

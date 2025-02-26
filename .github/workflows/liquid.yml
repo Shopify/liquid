@@ -13,13 +13,15 @@ jobs:
         entry:
           - { ruby: 3.0, allowed-failure: false } # minimum supported
           - { ruby: 3.2, allowed-failure: false }
-          - { ruby: 3.3, allowed-failure: false } # latest
+          - { ruby: 3.3, allowed-failure: false }
+          - { ruby: 3.3, allowed-failure: false }
+          - { ruby: 3.4, allowed-failure: false } # latest
           - {
-              ruby: 3.3,
+              ruby: 3.4,
               allowed-failure: false,
               rubyopt: "--enable-frozen-string-literal",
             }
-          - { ruby: 3.3, allowed-failure: false, rubyopt: "--yjit" }
+          - { ruby: 3.4, allowed-failure: false, rubyopt: "--yjit" }
           - { ruby: ruby-head, allowed-failure: false }
           - {
               ruby: ruby-head,

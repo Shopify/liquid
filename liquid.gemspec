@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.summary     = "A secure, non-evaling end user template engine with aesthetic markup."
   s.authors     = ["Tobias Lütke"]
   s.email       = ["tobi@leetsoft.com"]
-  s.homepage    = "http://www.liquidmarkup.org"
+  s.homepage    = "https://shopify.github.io/liquid/"
   s.license     = "MIT"
   # s.description = "A secure, non-evaling end user template engine with aesthetic markup."
 
@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
 
   s.require_path = "lib"
 
-  s.add_dependency("strscan")
+  s.add_dependency("strscan", ">= 3.1.1")
   s.add_dependency("bigdecimal")
 
   s.add_development_dependency('rake', '~> 13.0')
