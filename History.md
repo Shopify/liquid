@@ -2,6 +2,10 @@
 
 ## 5.8.1 (unreleased)
 
+## 5.8.1
+
+* Fix `{% doc %}` tag to be visitable [Guilherme Carreiro]
+
 ## 5.8.0
 
 * Introduce the new `{% doc %}` tag [Guilherme Carreiro]
