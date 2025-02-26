@@ -49,6 +49,7 @@ class BlockUnitTest < Minitest::Test
 
   def test_comment_tag_with_block
     template = Liquid::Template.parse("  {% comment %} {% endcomment %} ")
+
     assert_equal([String, Comment, String], block_types(template.root.nodelist))
     assert_equal(3, template.root.nodelist.size)
   end
@@ -59,9 +60,31 @@ class BlockUnitTest < Minitest::Test
     assert_equal(3, template.root.nodelist.size)
   end
 
+  def test_doc_tag_visitor
+    template_source = '{% doc %}{% enddoc %}'
+
+    assert_equal(
+      [Liquid::Doc],
+      visit(template_source),
+    )
+  end
+
   private
 
   def block_types(nodelist)
     nodelist.collect(&:class)
+  end
+
+  def traversal(template)
+    ParseTreeVisitor
+      .for(Template.parse(template).root)
+      .add_callback_for(Liquid::Doc) do |tag|
+        tag_class = tag.class
+        tag_class
+      end
+  end
+
+  def visit(template)
+    traversal(template).visit.flatten.compact
   end
 end

@@ -55,6 +55,10 @@ module Liquid
       true
     end
 
+    def nodelist
+      []
+    end
+
     private
 
     def ensure_valid_markup(tag_name, markup, parse_context)
