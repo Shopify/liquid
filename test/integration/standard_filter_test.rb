@@ -212,6 +212,7 @@ class StandardFiltersTest < Minitest::Test
       'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8',
       @filters.base64_url_safe_encode('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\|'),
     )
+    assert_equal('XyMvLg', @filters.base64_url_safe_encode('_#/.'))
     assert_equal('', @filters.base64_url_safe_encode(nil))
   end
 
