@@ -17,8 +17,8 @@ module Liquid
   #   {% doc %}
   #     Renders a message.
   #
-  #     @param {string} foo - A foo value.
-  #     @param {string} [bar] - An optional bar value.
+  #     @param {string} foo - A string value.
+  #     @param {string} [bar] - An optional string value.
   #
   #     @example
   #     {% render 'message', foo: 'Hello', bar: 'World' %}
