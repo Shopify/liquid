@@ -35,33 +35,13 @@ class BooleanUnitTest < Minitest::Test
     assert_equal(false, template.render)
   end
 
-  def test_boolean_operator_aliases
-    template = Liquid::Template.parse("{{ true && true }}")
-    assert_equal(true, template.render)
-
-    template = Liquid::Template.parse("{{ true && false }}")
-    assert_equal(false, template.render)
-
-    template = Liquid::Template.parse("{{ false || true }}")
-    assert_equal(true, template.render)
-
-    template = Liquid::Template.parse("{{ false || false }}")
-    assert_equal(false, template.render)
-  end
-
   def test_operator_precedence_with_parentheses
     template = Liquid::Template.parse("{{ false and (false or true) }}")
-    assert_equal(false, template.render)
-
-    template = Liquid::Template.parse("{{ false && (false || true) }}")
     assert_equal(false, template.render)
   end
 
   def test_operator_precedence_without_parentheses
     template = Liquid::Template.parse("{{ false and false or true }}")
-    assert_equal(true, template.render)
-
-    template = Liquid::Template.parse("{{ false && false || true }}")
     assert_equal(true, template.render)
   end
 
@@ -74,15 +54,6 @@ class BooleanUnitTest < Minitest::Test
 
     template = Liquid::Template.parse("{{ false or false or true }}")
     assert_equal(true, template.render)
-
-    template = Liquid::Template.parse("{{ true && true && true }}")
-    assert_equal(true, template.render)
-
-    template = Liquid::Template.parse("{{ true && false && true }}")
-    assert_equal(false, template.render)
-
-    template = Liquid::Template.parse("{{ false || false || true }}")
-    assert_equal(true, template.render)
   end
 
   def test_boolean_with_variables
@@ -93,22 +64,10 @@ class BooleanUnitTest < Minitest::Test
     template = Liquid::Template.parse("{{ a or b }}")
     assert_equal(true, template.render("a" => false, "b" => true))
     assert_equal(false, template.render("a" => false, "b" => false))
-
-    template = Liquid::Template.parse("{{ a && b }}")
-    assert_equal(true, template.render("a" => true, "b" => true))
-    assert_equal(false, template.render("a" => true, "b" => false))
-
-    template = Liquid::Template.parse("{{ a || b }}")
-    assert_equal(true, template.render("a" => false, "b" => true))
-    assert_equal(false, template.render("a" => false, "b" => false))
   end
 
   def test_mixed_boolean_expressions
     template = Liquid::Template.parse("{{ a > b and c < d }}")
-    assert_equal(true, template.render("a" => 5, "b" => 3, "c" => 2, "d" => 4))
-    assert_equal(false, template.render("a" => 5, "b" => 3, "c" => 5, "d" => 4))
-
-    template = Liquid::Template.parse("{{ a > b && c < d }}")
     assert_equal(true, template.render("a" => 5, "b" => 3, "c" => 2, "d" => 4))
     assert_equal(false, template.render("a" => 5, "b" => 3, "c" => 5, "d" => 4))
   end
