@@ -106,10 +106,10 @@ class BooleanUnitTest < Minitest::Test
   end
 
   def test_nil_comparison_with_blank
-    assert_parity_todo!("nil_value == blank", "false")
-    assert_parity_todo!("nil_value != blank", "true")
-    assert_parity_todo!("undefined != blank", "true")
-    assert_parity_todo!("undefined == blank", "false")
+    assert_parity("nil_value == blank", "false")
+    assert_parity("nil_value != blank", "true")
+    assert_parity("undefined != blank", "true")
+    assert_parity("undefined == blank", "false")
   end
 
   def test_if_with_variables
@@ -121,7 +121,13 @@ class BooleanUnitTest < Minitest::Test
   end
 
   def test_nil_variable_in_and_expression
-    assert_parity_todo!("x and true", "false", { "x" => nil })
+    assert_parity("x and true", "false", { "x" => nil })
+    assert_parity("true and x", "false", { "x" => nil })
+  end
+
+  def test_boolean_variable_in_and_expression
+    assert_parity("true and x", "false", { "x" => false })
+    assert_parity("x and true", "false", { "x" => false })
   end
 
   private
@@ -133,8 +139,16 @@ class BooleanUnitTest < Minitest::Test
   end
 
   def assert_parity(liquid_expression, expected_result, args = {})
-    assert_parity_scenario(:condition, "{% if #{liquid_expression} %}true{% else %}false{% endif %}", expected_result, args)
+    assert_condition(liquid_expression, expected_result, args)
+    assert_expression(liquid_expression, expected_result, args)
+  end
+
+  def assert_expression(liquid_expression, expected_result, args = {})
     assert_parity_scenario(:expression, "{{ #{liquid_expression} }}", expected_result, args)
+  end
+
+  def assert_condition(liquid_condition, expected_result, args = {})
+    assert_parity_scenario(:condition, "{% if #{liquid_condition} %}true{% else %}false{% endif %}", expected_result, args)
   end
 
   def assert_parity_scenario(kind, template, exp_output, args = {})
