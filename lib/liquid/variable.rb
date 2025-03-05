@@ -17,6 +17,7 @@ module Liquid
     FilterArgsRegex          = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o
     JustTagAttributes        = /\A#{TagAttributes}\z/o
     MarkupWithQuotedFragment = /(#{QuotedFragment})(.*)/om
+    ComparisonOperator       = /==|!=|<>|<=|>=|<|>|contains/o
 
     attr_accessor :filters, :name, :line_number
     attr_reader :parse_context
@@ -47,7 +48,14 @@ module Liquid
 
       name_markup   = Regexp.last_match(1)
       filter_markup = Regexp.last_match(2)
-      @name         = parse_context.parse_expression(name_markup)
+
+      # Check if name_markup contains a comparison operator
+      @name = if /\s*(#{ComparisonOperator})\s*/.match?(name_markup)
+        BooleanExpression.parse(name_markup)
+      else
+        parse_context.parse_expression(name_markup)
+      end
+
       if filter_markup =~ FilterMarkupRegex
         filters = Regexp.last_match(1).scan(FilterParser)
         filters.each do |f|
@@ -65,13 +73,18 @@ module Liquid
 
       return if p.look(:end_of_string)
 
-      @name = parse_context.parse_expression(p.expression)
-      while p.consume?(:pipe)
-        filtername = p.consume(:id)
-        filterargs = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
-        @filters << parse_filter_expressions(filtername, filterargs)
+      # Check if markup contains a comparison operator
+      if /\s*(#{ComparisonOperator})\s*/.match?(markup)
+        @name = BooleanExpression.parse(markup)
+      else
+        @name = parse_context.parse_expression(p.expression)
+        while p.consume?(:pipe)
+          filtername = p.consume(:id)
+          filterargs = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
+          @filters << parse_filter_expressions(filtername, filterargs)
+        end
+        p.consume(:end_of_string)
       end
-      p.consume(:end_of_string)
     end
 
     def parse_filterargs(p)
