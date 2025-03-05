@@ -51,6 +51,9 @@ module Liquid
       end
 
       def inner_parse(markup, ss, cache)
+        return LogicalExpression.parse(markup, ss, cache)    if LogicalExpression.logical?(markup)
+        return ComparisonExpression.parse(markup, ss, cache) if ComparisonExpression.comparison?(markup)
+
         if (markup.start_with?("(") && markup.end_with?(")")) && markup =~ RANGES_REGEX
           return RangeLookup.parse(
             Regexp.last_match(1),
