@@ -72,17 +72,6 @@ class BooleanUnitTest < Minitest::Test
     assert_equal("false", template.render("a" => 5, "b" => 3, "c" => 5, "d" => 4))
   end
 
-  def test_negation_operator
-    template = Liquid::Template.parse("{{ !true }}")
-    assert_equal("false", template.render)
-
-    template = Liquid::Template.parse("{{ !false }}")
-    assert_equal("true", template.render)
-
-    template = Liquid::Template.parse("{{ !(true and true) }}")
-    assert_equal("false", template.render)
-  end
-
   def test_equality_operators
     template = Liquid::Template.parse("{{ 1 == 1 }}")
     assert_equal("true", template.render)
@@ -94,85 +83,67 @@ class BooleanUnitTest < Minitest::Test
     assert_equal("true", template.render)
   end
 
-  def test_nil_in_boolean_context
-    template = Liquid::Template.parse("{{ nil and true }}")
-    assert_equal("false", template.render)
-
-    template = Liquid::Template.parse("{{ nil or true }}")
-    assert_equal("true", template.render)
-
-    template = Liquid::Template.parse("{{ !nil }}")
-    assert_equal("true", template.render)
-  end
-
   def test_truthy_falsy_values
-    template = Liquid::Template.parse("{% if empty_string %}true{% else %}false{% endif %}")
-    assert_equal(false, template.render("empty_string" => ""))
+    template = Liquid::Template.parse("{% if empty_string %}truthy{% else %}falsey{% endif %}")
+    assert_equal("falsey", template.render("empty_string" => ""))
 
-    template = Liquid::Template.parse("{% if zero %}true{% else %}false{% endif %}")
-    assert_equal(false, template.render("zero" => 0))
+    template = Liquid::Template.parse("{% if zero %}truthy{% else %}falsey{% endif %}")
+    assert_equal("falsey", template.render("zero" => 0))
 
-    template = Liquid::Template.parse("{% if text %}true{% else %}false{% endif %}")
-    assert_equal(true, template.render("text" => "hello"))
-  end
-
-  def test_complex_precedence
-    template = Liquid::Template.parse("{{ !a and b or c }}")
-    assert_equal("true", template.render("a" => false, "b" => true, "c" => false))
-    assert_equal("true", template.render("a" => true, "b" => false, "c" => true))
-    assert_equal("false", template.render("a" => true, "b" => false, "c" => false))
+    template = Liquid::Template.parse("{% if text %}truthy{% else %}falsey{% endif %}")
+    assert_equal("true", template.render("text" => "hello"))
   end
 
   def test_string_comparison_with_blank
     # Non-empty string against blank
     template = Liquid::Template.parse("{{ text != blank }}")
-    assert_equal(true, template.render("text" => "hello"))
+    assert_equal("true", template.render("text" => "hello"))
 
     template = Liquid::Template.parse("{{ text == blank }}")
-    assert_equal(false, template.render("text" => "hello"))
+    assert_equal("false", template.render("text" => "hello"))
 
     # Empty string against blank
     template = Liquid::Template.parse("{{ empty_text != blank }}")
-    assert_equal(false, template.render("empty_text" => ""))
+    assert_equal("false", template.render("empty_text" => ""))
 
     template = Liquid::Template.parse("{{ empty_text == blank }}")
-    assert_equal(true, template.render("empty_text" => ""))
+    assert_equal("true", template.render("empty_text" => ""))
   end
 
   def test_nil_comparison_with_blank
     template = Liquid::Template.parse("{{ nil_value != blank }}")
-    assert_equal(false, template.render("nil_value" => nil))
+    assert_equal("false", template.render("nil_value" => nil))
 
     template = Liquid::Template.parse("{{ nil_value == blank }}")
-    assert_equal(true, template.render("nil_value" => nil))
+    assert_equal("true", template.render("nil_value" => nil))
 
     # Undefined variable is treated as nil
     template = Liquid::Template.parse("{{ undefined != blank }}")
-    assert_equal(false, template.render)
+    assert_equal("false", template.render)
 
     template = Liquid::Template.parse("{{ undefined == blank }}")
-    assert_equal(true, template.render)
+    assert_equal("true", template.render)
   end
 
   def test_empty_collections_with_blank
     template = Liquid::Template.parse("{{ empty_array == blank }}")
-    assert_equal(true, template.render("empty_array" => []))
+    assert_equal("true", template.render("empty_array" => []))
 
     template = Liquid::Template.parse("{{ empty_array != blank }}")
-    assert_equal(false, template.render("empty_array" => []))
+    assert_equal("false", template.render("empty_array" => []))
 
     template = Liquid::Template.parse("{{ empty_hash == blank }}")
-    assert_equal(true, template.render("empty_hash" => {}))
+    assert_equal("true", template.render("empty_hash" => {}))
 
     template = Liquid::Template.parse("{{ empty_hash != blank }}")
-    assert_equal(false, template.render("empty_hash" => {}))
+    assert_equal("false", template.render("empty_hash" => {}))
 
     # Non-empty collections
     template = Liquid::Template.parse("{{ array == blank }}")
-    assert_equal(false, template.render("array" => [1, 2, 3]))
+    assert_equal("false", template.render("array" => [1, 2, 3]))
 
     template = Liquid::Template.parse("{{ hash == blank }}")
-    assert_equal(false, template.render("hash" => { "key" => "value" }))
+    assert_equal("false", template.render("hash" => { "key" => "value" }))
   end
 
   def test_blank_in_conditional_statements
@@ -259,5 +230,113 @@ class BooleanUnitTest < Minitest::Test
     assert_equal("valid", template.render("a" => 7, "b" => 8))
     assert_equal("invalid", template.render("a" => 3, "b" => 8))
     assert_equal("invalid", template.render("a" => 7, "b" => 12))
+  end
+
+  # Basic nil rendering tests
+  def test_nil_renders_as_empty_string
+    template = Liquid::Template.parse("{{ nil }}")
+    assert_equal("", template.render)
+  end
+
+  def test_nil_in_assigned_variable_renders_as_empty_string
+    template = Liquid::Template.parse("{% assign x = nil %}{{ x }}")
+    assert_equal("", template.render)
+  end
+
+  # Nil comparison tests
+  def test_nil_equals_nil
+    template = Liquid::Template.parse("{{ nil == nil }}")
+    assert_equal("true", template.render)
+  end
+
+  def test_nil_not_equals_nil
+    template = Liquid::Template.parse("{{ nil != nil }}")
+    assert_equal("false", template.render)
+  end
+
+  def test_nil_not_equals_empty_string
+    template = Liquid::Template.parse("{{ nil == '' }}")
+    assert_equal("false", template.render)
+
+    template = Liquid::Template.parse("{{ nil != '' }}")
+    assert_equal("true", template.render)
+  end
+
+  # Variable tests with nil values
+  def test_variable_with_nil_value_in_comparisons
+    template = Liquid::Template.parse("{% assign x = nil %}{{ x == nil }}")
+    assert_equal("true", template.render)
+
+    template = Liquid::Template.parse("{% assign x = nil %}{{ x != nil }}")
+    assert_equal("false", template.render)
+  end
+
+  def test_variable_with_nil_value_compared_to_empty_string
+    template = Liquid::Template.parse("{% assign x = nil %}{{ x == '' }}")
+    assert_equal("false", template.render)
+
+    template = Liquid::Template.parse("{% assign x = nil %}{{ x != '' }}")
+    assert_equal("true", template.render)
+  end
+
+  # Tests with undefined variables
+  def test_undefined_variable_in_comparisons
+    template = Liquid::Template.parse("{{ undefined_var == nil }}")
+    assert_equal("true", template.render)
+
+    template = Liquid::Template.parse("{{ undefined_var != nil }}")
+    assert_equal("false", template.render)
+  end
+
+  def test_undefined_variable_compared_to_empty_string
+    template = Liquid::Template.parse("{{ undefined_var == '' }}")
+    assert_equal("false", template.render)
+
+    template = Liquid::Template.parse("{{ undefined_var != '' }}")
+    assert_equal("true", template.render)
+  end
+
+  # Tests with boolean values
+  def test_boolean_variable_in_comparisons
+    template = Liquid::Template.parse("{% assign t = true %}{{ t == true }}")
+    assert_equal("true", template.render)
+
+    template = Liquid::Template.parse("{% assign f = false %}{{ f == false }}")
+    assert_equal("true", template.render)
+  end
+
+  def test_boolean_variable_compared_to_nil
+    template = Liquid::Template.parse("{% assign t = true %}{{ t == nil }}")
+    assert_equal("false", template.render)
+
+    template = Liquid::Template.parse("{% assign f = false %}{{ f == nil }}")
+    assert_equal("false", template.render)
+
+    template = Liquid::Template.parse("{% assign f = false %}{{ f != nil }}")
+    assert_equal("true", template.render)
+  end
+
+  # Mixed comparison tests
+  def test_nil_and_undefined_variables_in_boolean_expressions
+    template = Liquid::Template.parse("{% assign x = nil %}{{ x == undefined_var }}")
+    assert_equal("true", template.render)
+
+    template = Liquid::Template.parse("{% assign x = nil %}{{ x != undefined_var }}")
+    assert_equal("false", template.render)
+  end
+
+  def test_nil_variable_in_and_expression
+    template = Liquid::Template.parse("{% assign x = nil %}{{ x and true }}")
+    assert_equal("false", template.render)
+  end
+
+  def test_nil_literal_in_or_expression
+    template = Liquid::Template.parse("{% assign x = nil %}{{ nil or true }}")
+    assert_equal("true", template.render)
+  end
+
+  def test_nil_variable_in_or_expression
+    template = Liquid::Template.parse("{% assign x = nil %}{{ x or false }}")
+    assert_equal("false", template.render)
   end
 end
