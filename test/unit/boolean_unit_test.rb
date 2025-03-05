@@ -96,13 +96,17 @@ class BooleanUnitTest < Minitest::Test
   end
 
   def test_equality_operators
-    assert_parity_todo!("1 == 1", "true")
-    assert_parity_todo!("1 != 2", "true")
+    assert_parity("1 == 1", "true")
+    assert_parity("1 != 2", "true")
     assert_parity_todo!("'hello' == 'hello'", "true")
   end
 
   def test_nil_renders_as_empty_string
-    assert_parity_todo!("nil", "false")
+    # No parity needed here. This is to ensure expressions rendered with {{ }}
+    # will still render as an empty string to preserve pre-existing behavior.
+    assert_expression("nil", "")
+    assert_expression("x", "", { "x" => nil })
+    assert_parity_scenario(:expression, "hello {{ x }}", "hello ", { "x" => nil })
   end
 
   def test_nil_comparison_with_blank
@@ -113,11 +117,8 @@ class BooleanUnitTest < Minitest::Test
   end
 
   def test_if_with_variables
-    assert_parity_todo!("value", "true",  { "value" => true })
-    assert_parity_todo!("value", "false", { "value" => false })
-    assert_parity_todo!("value", "false", { "value" => nil })
-    assert_parity_todo!("value", "true",  { "value" => "text" })
-    assert_parity_todo!("value", "true", { "value" => "" })
+    assert_parity("value", "true",  { "value" => true })
+    assert_parity("value", "false", { "value" => false })
   end
 
   def test_nil_variable_in_and_expression
@@ -128,6 +129,16 @@ class BooleanUnitTest < Minitest::Test
   def test_boolean_variable_in_and_expression
     assert_parity("true and x", "false", { "x" => false })
     assert_parity("x and true", "false", { "x" => false })
+  end
+
+  def test_multi_variable_boolean_nil_and_expression
+    assert_parity("x and y", "false", { "x" => nil, "y" => true })
+    assert_parity("y and x", "false", { "x" => true, "y" => nil })
+  end
+
+  def test_multi_variable_boolean_nil_or_expression
+    assert_parity("x or y", "true", { "x" => nil, "y" => true })
+    assert_parity("y or x", "true", { "x" => true, "y" => nil })
   end
 
   private
