@@ -141,6 +141,78 @@ class LexerUnitTest < Minitest::Test
     )
   end
 
+  def test_boolean_and_operator
+    exp = [
+      [:id, "true"],
+      [:boolean_operator, "and"],
+      [:id, "false"],
+      [:end_of_string],
+    ]
+    act = tokenize("true and false")
+    assert_equal(exp, act)
+  end
+
+  def test_boolean_or_operator
+    exp = [
+      [:id, "false"],
+      [:boolean_operator, "or"],
+      [:id, "true"],
+      [:end_of_string],
+    ]
+    act = tokenize("false or true")
+    assert_equal(exp, act)
+  end
+
+  def test_boolean_operators_in_complex_expressions
+    exp = [
+      [:id, "a"],
+      [:boolean_operator, "and"],
+      [:id, "b"],
+      [:boolean_operator, "or"],
+      [:id, "c"],
+      [:end_of_string],
+    ]
+    act = tokenize("a and b or c")
+    assert_equal(exp, act)
+  end
+
+  def test_boolean_operators_with_comparisons
+    exp = [
+      [:id, "a"],
+      [:comparison, ">"],
+      [:number, "5"],
+      [:boolean_operator, "and"],
+      [:id, "b"],
+      [:comparison, "<"],
+      [:number, "10"],
+      [:end_of_string],
+    ]
+    act = tokenize("a > 5 and b < 10")
+    assert_equal(exp, act)
+  end
+
+  def test_boolean_operators_as_property_names
+    exp = [
+      [:id, "obj"],
+      [:dot, "."],
+      [:id, "and"],
+      [:dot, "."],
+      [:id, "property"],
+      [:end_of_string],
+    ]
+    act = tokenize("obj.and.property")
+    assert_equal(exp, act)
+
+    exp = [
+      [:id, "obj"],
+      [:dot, "."],
+      [:id, "or"],
+      [:end_of_string],
+    ]
+    act = tokenize("obj.or")
+    assert_equal(exp, act)
+  end
+
   private
 
   def tokenize(input)
