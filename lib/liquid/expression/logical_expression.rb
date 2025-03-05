@@ -26,7 +26,7 @@ module Liquid
           elsif logical?(last_expr)
             LogicalExpression.parse(last_expr, ss, cache)
           else
-            Condition.new(Expression.parse(last_expr, ss, cache), nil, nil)
+            Condition.new(Expression.parse(last_expr, ss, cache, true), nil, nil)
           end
 
           until expressions.empty?
@@ -40,7 +40,7 @@ module Liquid
             elsif logical?(expr)
               LogicalExpression.parse(expr, ss, cache)
             else
-              Condition.new(Expression.parse(expr, ss, cache), nil, nil)
+              Condition.new(Expression.parse(expr, ss, cache, true), nil, nil)
             end
 
             if operator == 'and'

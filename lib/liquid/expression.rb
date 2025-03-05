@@ -28,7 +28,7 @@ module Liquid
     FLOAT_REGEX = /\A(-?\d+)\.\d+\z/
 
     class << self
-      def parse(markup, ss = StringScanner.new(""), cache = nil)
+      def parse(markup, ss = StringScanner.new(""), cache = nil, logical_expression = false)
         return unless markup
 
         markup = markup.strip # markup can be a frozen string
@@ -44,13 +44,13 @@ module Liquid
         if cache
           return cache[markup] if cache.key?(markup)
 
-          cache[markup] = inner_parse(markup, ss, cache).freeze
+          cache[markup] = inner_parse(markup, ss, cache, logical_expression).freeze
         else
-          inner_parse(markup, ss, nil).freeze
+          inner_parse(markup, ss, nil, logical_expression).freeze
         end
       end
 
-      def inner_parse(markup, ss, cache)
+      def inner_parse(markup, ss, cache, logical_expression = false)
         return LogicalExpression.parse(markup, ss, cache)    if LogicalExpression.logical?(markup)
         return ComparisonExpression.parse(markup, ss, cache) if ComparisonExpression.comparison?(markup)
 
@@ -66,7 +66,7 @@ module Liquid
         if (num = parse_number(markup, ss))
           num
         else
-          VariableLookup.parse(markup, ss, cache)
+          VariableLookup.parse(markup, ss, cache, logical_expression)
         end
       end
 
