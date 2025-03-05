@@ -18,6 +18,7 @@ module Liquid
     JustTagAttributes        = /\A#{TagAttributes}\z/o
     MarkupWithQuotedFragment = /(#{QuotedFragment})(.*)/om
     ComparisonOperator       = /==|!=|<>|<=|>=|<|>|contains/o
+    LogicalOperator          = /\s+(and|or)\s+/i
 
     attr_accessor :filters, :name, :line_number
     attr_reader :parse_context
@@ -49,8 +50,8 @@ module Liquid
       name_markup   = Regexp.last_match(1)
       filter_markup = Regexp.last_match(2)
 
-      # Check if name_markup contains a comparison operator
-      @name = if /\s*(#{ComparisonOperator})\s*/.match?(name_markup)
+      # Check if name_markup contains a comparison operator or logical operator
+      @name = if name_markup =~ LogicalOperator || name_markup =~ ComparisonOperator
         BooleanExpression.parse(name_markup)
       else
         parse_context.parse_expression(name_markup)
@@ -73,8 +74,8 @@ module Liquid
 
       return if p.look(:end_of_string)
 
-      # Check if markup contains a comparison operator
-      if /\s*(#{ComparisonOperator})\s*/.match?(markup)
+      # Check if markup contains a comparison operator or logical operator
+      if markup =~ LogicalOperator || markup =~ ComparisonOperator
         @name = BooleanExpression.parse(markup)
       else
         @name = parse_context.parse_expression(p.expression)
