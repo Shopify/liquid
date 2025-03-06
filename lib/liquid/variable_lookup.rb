@@ -5,14 +5,12 @@ module Liquid
     COMMAND_METHODS = ['size', 'first', 'last'].freeze
 
     attr_reader :name, :lookups
-    attr_accessor :logical_expression
 
-    def self.parse(markup, string_scanner = StringScanner.new(""), cache = nil, logical_expression = false)
-      new(markup, string_scanner, cache, logical_expression)
+    def self.parse(markup, string_scanner = StringScanner.new(""), cache = nil)
+      new(markup, string_scanner, cache)
     end
 
-    def initialize(markup, string_scanner = StringScanner.new(""), cache = nil, logical_expression = false)
-      @logical_expression = logical_expression
+    def initialize(markup, string_scanner = StringScanner.new(""), cache = nil)
       lookups = markup.scan(VariableParser)
 
       name = lookups.shift
@@ -47,16 +45,8 @@ module Liquid
     end
 
     def evaluate(context)
-      puts "variable_lookup #evaluate #{@name} #{logical_expression?}"
       name   = context.evaluate(@name)
       object = context.find_variable(name)
-
-      # When evaluating a logical expression, this variable lookup is part of a chain of conditions
-      # If the variable lookup returns nil, we must use the falsey value of the variable lookup
-      # rather than nil which is reserved for the usecase of rendering nothing.
-      if logical_expression? && object.nil?
-        return false
-      end
 
       @lookups.each_index do |i|
         key = context.evaluate(@lookups[i])
@@ -97,10 +87,6 @@ module Liquid
 
     def ==(other)
       self.class == other.class && state == other.state
-    end
-
-    def logical_expression?
-      @logical_expression
     end
 
     protected
