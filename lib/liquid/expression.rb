@@ -26,31 +26,29 @@ module Liquid
     RANGES_REGEX = /\A\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\z/
     INTEGER_REGEX = /\A(-?\d+)\z/
     FLOAT_REGEX = /\A(-?\d+)\.\d+\z/
+    QUOTED_STRING = /\A#{QuotedString}\z/
 
     class << self
-      def parse(markup, ss = StringScanner.new(""), cache = nil, logical_expression = false)
+      def parse(markup, ss = StringScanner.new(""), cache = nil)
         return unless markup
 
         markup = markup.strip # markup can be a frozen string
 
-        if (markup.start_with?('"') && markup.end_with?('"')) ||
-          (markup.start_with?("'") && markup.end_with?("'"))
-          return markup[1..-2]
-        elsif LITERALS.key?(markup)
-          return LITERALS[markup]
-        end
+        return markup[1..-2] if QUOTED_STRING.match?(markup)
+
+        return LITERALS[markup] if LITERALS.key?(markup)
 
         # Cache only exists during parsing
         if cache
           return cache[markup] if cache.key?(markup)
 
-          cache[markup] = inner_parse(markup, ss, cache, logical_expression).freeze
+          cache[markup] = inner_parse(markup, ss, cache).freeze
         else
-          inner_parse(markup, ss, nil, logical_expression).freeze
+          inner_parse(markup, ss, nil).freeze
         end
       end
 
-      def inner_parse(markup, ss, cache, logical_expression = false)
+      def inner_parse(markup, ss, cache)
         return LogicalExpression.parse(markup, ss, cache)    if LogicalExpression.logical?(markup)
         return ComparisonExpression.parse(markup, ss, cache) if ComparisonExpression.comparison?(markup)
 
@@ -66,7 +64,7 @@ module Liquid
         if (num = parse_number(markup, ss))
           num
         else
-          VariableLookup.parse(markup, ss, cache, logical_expression)
+          VariableLookup.parse(markup, ss, cache)
         end
       end
 

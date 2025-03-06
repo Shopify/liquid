@@ -95,10 +95,58 @@ class BooleanUnitTest < Minitest::Test
     assert_equal("true",  template.render("media_position" => 2))
   end
 
-  def test_equality_operators
-    assert_parity("1 == 1", "true")
-    assert_parity("1 != 2", "true")
-    assert_parity_todo!("'hello' == 'hello'", "true")
+  def test_equality_operators_with_integer_literals
+    assert_expression("1", "1")
+    assert_expression("1 == 1", "true")
+    assert_expression("1 != 1", "false")
+    assert_expression("1 == 2", "false")
+    assert_expression("1 != 2", "true")
+  end
+
+  def test_equality_operators_with_stirng_literals
+    assert_expression("'hello'", "hello")
+    assert_expression("'hello' == 'hello'", "true")
+    assert_expression("'hello' != 'hello'", "false")
+    assert_expression("'hello' == 'world'", "false")
+    assert_expression("'hello' != 'world'", "true")
+  end
+
+  def test_equality_operators_with_float_literals
+    assert_expression("1.5", "1.5")
+    assert_expression("1.5 == 1.5", "true")
+    assert_expression("1.5 != 1.5", "false")
+    assert_expression("1.5 == 2.5", "false")
+    assert_expression("1.5 != 2.5", "true")
+  end
+
+  def test_equality_operators_with_nil_literals
+    assert_expression("nil", "")
+    assert_expression("nil == nil", "true")
+    assert_expression("nil != nil", "false")
+    assert_expression("null == nil", "true")
+    assert_expression("null != nil", "false")
+  end
+
+  def test_equality_operators_with_boolean_literals
+    assert_expression("true", "true")
+    assert_expression("false", "false")
+    assert_expression("true == true", "true")
+    assert_expression("true != true", "false")
+    assert_expression("false == false", "true")
+    assert_expression("false != false", "false")
+    assert_expression("true == false", "false")
+    assert_expression("true != false", "true")
+  end
+
+  def test_equality_operators_with_empty_literals
+    assert_expression("empty", "")
+    assert_expression("empty == ''", "true")
+    assert_expression("empty == empty", "true")
+    assert_expression("empty != empty", "false")
+    assert_expression("blank == blank", "true")
+    assert_expression("blank != blank", "false")
+    assert_expression("empty == blank", "true")
+    assert_expression("empty != blank", "false")
   end
 
   def test_nil_renders_as_empty_string
@@ -122,18 +170,41 @@ class BooleanUnitTest < Minitest::Test
   end
 
   def test_nil_variable_in_and_expression
-    assert_parity("x and true", "false", { "x" => nil })
-    assert_parity("true and x", "false", { "x" => nil })
+    assert_condition("x and true", "false", { "x" => nil })
+    assert_condition("true and x", "false", { "x" => nil })
+
+    assert_expression("x and true", "",     { "x" => nil })
+    assert_expression("true and x", "",     { "x" => nil })
   end
 
   def test_boolean_variable_in_and_expression
     assert_parity("true and x", "false", { "x" => false })
     assert_parity("x and true", "false", { "x" => false })
+
+    assert_parity("true and x", "true",  { "x" => true })
+    assert_parity("x and true", "true",  { "x" => true })
+
+    assert_parity("true or x", "true",   { "x" => false })
+    assert_parity("x or true", "true",   { "x" => false })
+
+    assert_parity("true or x", "true",   { "x" => true })
+    assert_parity("x or true", "true",   { "x" => true })
   end
 
   def test_multi_variable_boolean_nil_and_expression
-    assert_parity("x and y", "false", { "x" => nil, "y" => true })
-    assert_parity("y and x", "false", { "x" => true, "y" => nil })
+    assert_condition("x and y", "false", { "x" => nil, "y" => true })
+    assert_condition("y and x", "false", { "x" => true, "y" => nil })
+
+    assert_expression("x and y", "",     { "x" => nil, "y" => true })
+    assert_expression("y and x", "",     { "x" => true, "y" => nil })
+  end
+
+  def test_multi_truthy_variables_and_expressions
+    assert_condition("x or y", "true",   { "x" => nil, "y" => "hello" })
+    assert_condition("y or x", "true",   { "x" => "hello", "y" => nil })
+
+    assert_expression("x or y", "hello", { "x" => nil, "y" => "hello" })
+    assert_expression("y or x", "hello", { "x" => "hello", "y" => nil })
   end
 
   def test_multi_variable_boolean_nil_or_expression

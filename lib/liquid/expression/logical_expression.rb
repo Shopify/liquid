@@ -19,40 +19,39 @@ module Liquid
         def parse(markup, ss, cache)
           expressions = markup.scan(EXPRESSIONS_AND_OPERATORS)
 
-          last_expr = expressions.pop
-
-          condition = if ComparisonExpression.comparison?(last_expr)
-            ComparisonExpression.parse(last_expr, ss, cache)
-          elsif logical?(last_expr)
-            LogicalExpression.parse(last_expr, ss, cache)
-          else
-            Condition.new(Expression.parse(last_expr, ss, cache, true), nil, nil)
-          end
+          expression = expressions.pop
+          condition  = parse_condition(expression, ss, cache)
 
           until expressions.empty?
             operator = expressions.pop.to_s.strip
+
             next unless boolean_operator?(operator)
 
-            expr = expressions.pop.to_s.strip
+            expression    = expressions.pop.to_s.strip
+            new_condition = parse_condition(expression, ss, cache)
 
-            new_condition = if ComparisonExpression.comparison?(expr)
-              ComparisonExpression.parse(expr, ss, cache)
-            elsif logical?(expr)
-              LogicalExpression.parse(expr, ss, cache)
-            else
-              Condition.new(Expression.parse(expr, ss, cache, true), nil, nil)
-            end
-
-            if operator == 'and'
-              new_condition.and(condition)
-            else # operator == 'or'
-              new_condition.or(condition)
+            case operator
+            when 'and' then new_condition.and(condition)
+            when 'or'  then new_condition.or(condition)
             end
 
             condition = new_condition
           end
 
           condition
+        end
+
+        private
+
+        def parse_condition(expr, ss, cache)
+          return ComparisonExpression.parse(expr, ss, cache) if comparison?(expr)
+          return LogicalExpression.parse(expr, ss, cache)    if logical?(expr)
+
+          Condition.new(Expression.parse(expr, ss, cache), nil, nil)
+        end
+
+        def comparison?(...)
+          ComparisonExpression.comparison?(...)
         end
       end
     end
