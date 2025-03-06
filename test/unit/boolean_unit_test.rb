@@ -214,12 +214,6 @@ class BooleanUnitTest < Minitest::Test
 
   private
 
-  def assert_parity_todo!(liquid_expression, expected_result, args = {})
-    assert_parity_scenario(:condition, "{% if #{liquid_expression} %}true{% else %}false{% endif %}", expected_result, args)
-    test_name = caller_locations(1, 1)[0].label
-    puts "\e[33mTODO: parity for '#{test_name}'\e[0m"
-  end
-
   def assert_parity(liquid_expression, expected_result, args = {})
     assert_condition(liquid_expression, expected_result, args)
     assert_expression(liquid_expression, expected_result, args)
