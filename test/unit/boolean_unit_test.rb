@@ -212,6 +212,162 @@ class BooleanUnitTest < Minitest::Test
     assert_parity("y or x", "true", { "x" => true, "y" => nil })
   end
 
+  def test_links_not_blank_with_drop_returns_true_for_all_cases
+    link = LinkDrop.new(
+      levels: 0,
+      links: [
+        LinkDrop.new(levels: 1, links: [], title: "About", type: "page_link", url: "/pages/about"),
+        LinkDrop.new(levels: 1, links: [], title: "Contact", type: "page_link", url: "/pages/contact"),
+      ],
+      title: "Main Menu",
+      type: "menu",
+      url: nil,
+    )
+
+    template = <<~LIQUID
+      {%- if link.links != blank -%}
+        true
+      {%- else -%}
+        false
+      {%- endif -%}
+    LIQUID
+
+    act_output = Liquid::Template.parse(template).render({ "link" => link })
+    assert_equal("true", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => link.tap { |l| l.links = [] } })
+    assert_equal("true", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => link.tap { |l| l.links = nil } })
+    assert_equal("true", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => LinkDrop.new })
+    assert_equal("true", act_output)
+  end
+
+  def test_links_truthy_with_drop_returns_false_for_nil_and_empty_drop
+    link = LinkDrop.new(
+      levels: 0,
+      links: [
+        LinkDrop.new(levels: 1, links: [], title: "About", type: "page_link", url: "/pages/about"),
+        LinkDrop.new(levels: 1, links: [], title: "Contact", type: "page_link", url: "/pages/contact"),
+      ],
+      title: "Main Menu",
+      type: "menu",
+      url: nil,
+    )
+
+    template = <<~LIQUID
+      {%- if link.links -%}
+        true
+      {%- else -%}
+        false
+      {%- endif -%}
+    LIQUID
+
+    act_output = Liquid::Template.parse(template).render({ "link" => link })
+    assert_equal("true", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => link.tap { |l| l.links = [] } })
+    assert_equal("true", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => link.tap { |l| l.links = nil } })
+    assert_equal("false", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => {} })
+    assert_equal("false", act_output)
+  end
+
+  def test_links_not_blank_with_hash_returns_true_for_all_cases
+    link = {
+      "levels" => 0,
+      "links" => [
+        {
+          "levels" => 1,
+          "links" => [],
+          "title" => { "text" => "About" },
+          "type" => "page_link",
+          "url" => "/pages/about",
+        },
+        {
+          "levels" => 1,
+          "links" => [],
+          "title" => { "text" => "Contact" },
+          "type" => "page_link",
+          "url" => "/pages/contact",
+        },
+      ],
+      "title" => { "text" => "Main Menu" },
+      "type" => "menu",
+      "url" => nil,
+    }
+
+    template = <<~LIQUID
+      {%- if link.links != blank -%}
+        true
+      {%- else -%}
+        false
+      {%- endif -%}
+    LIQUID
+
+    act_output = Liquid::Template.parse(template).render({ "link" => link })
+    assert_equal("true", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => { **link, "links" => [] } })
+    assert_equal("true", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => { **link, "links" => nil } })
+    assert_equal("true", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => {} })
+    assert_equal("true", act_output)
+  end
+
+  def test_links_truthy_with_hash_returns_false_for_nil_and_empty_hash
+    link = {
+      "levels" => 0,
+      "links" => [
+        {
+          "levels" => 1,
+          "links" => [],
+          "title" => { "text" => "About" },
+          "type" => "page_link",
+          "url" => "/pages/about",
+        },
+        {
+          "levels" => 1,
+          "links" => [],
+          "title" => { "text" => "Contact" },
+          "type" => "page_link",
+          "url" => "/pages/contact",
+        },
+      ],
+      "title" => { "text" => "Main Menu" },
+      "type" => "menu",
+      "url" => nil,
+    }
+
+    template = <<~LIQUID
+      {%- if link.links -%}
+        true
+      {%- else -%}
+        false
+      {%- endif -%}
+    LIQUID
+
+    act_output = Liquid::Template.parse(template).render({ "link" => link })
+    assert_equal("true", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => { **link, "links" => [] } })
+    assert_equal("true", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => { **link, "links" => nil } })
+    assert_equal("false", act_output)
+
+    act_output = Liquid::Template.parse(template).render({ "link" => {} })
+    assert_equal("false", act_output)
+  end
+
   private
 
   def assert_parity(liquid_expression, expected_result, args = {})
@@ -237,5 +393,19 @@ class BooleanUnitTest < Minitest::Test
       ---
       args: #{args.inspect}
     ERROR_MESSAGE
+  end
+
+  class LinkDrop < Liquid::Drop
+    attr_accessor :levels, :links, :title, :type, :url
+
+    def initialize(levels: nil, links: nil, title: nil, type: nil, url: nil)
+      super()
+
+      @levels = levels
+      @links = links
+      @title = title
+      @type = type
+      @url = url
+    end
   end
 end
