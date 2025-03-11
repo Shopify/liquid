@@ -52,6 +52,10 @@ module Liquid
       @@method_literals[markup] || parse_context.parse_expression(markup)
     end
 
+    def self.parse(markup, ss, cache)
+      @@method_literals[markup] || Expression.parse(markup, ss, cache)
+    end
+
     attr_reader :attachment, :child_condition
     attr_accessor :left, :operator, :right
 
@@ -112,11 +116,15 @@ module Liquid
     private
 
     def equal_variables(left, right)
+      if left.is_a?(MethodLiteral) && right.is_a?(MethodLiteral)
+        return left.to_s == right.to_s
+      end
+
       if left.is_a?(MethodLiteral)
         if right.respond_to?(left.method_name)
           return right.send(left.method_name)
         else
-          return nil
+          return left.to_s == right
         end
       end
 
@@ -124,7 +132,7 @@ module Liquid
         if left.respond_to?(right.method_name)
           return left.send(right.method_name)
         else
-          return nil
+          return right.to_s == left
         end
       end
 

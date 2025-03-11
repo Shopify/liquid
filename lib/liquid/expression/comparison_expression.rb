@@ -14,10 +14,9 @@ module Liquid
           match = comparison?(markup)
 
           if match
-            left = Expression.parse(match[1].strip, ss, cache)
+            left = Condition.parse(match[1].strip, ss, cache)
             operator = match[2].strip
-            right = Expression.parse(match[3].strip, ss, cache)
-
+            right = Condition.parse(match[3].strip, ss, cache)
             return Condition.new(left, operator, right)
           end
 
