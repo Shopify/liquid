@@ -368,6 +368,43 @@ class BooleanUnitTest < Minitest::Test
     assert_equal("false", act_output)
   end
 
+  # Note for Guilherme:
+  # This test actually does not pass in `main` branch right now however it does pass correctly in our changes.
+  # I am keeping it because it shows we fixed a bug with existing liquid.
+  #
+  # The functionality in main is that this liquid evaluates to false `{% if current_variant.id==variant.id %}selected{%- endif -%}`
+  # because of the missing whitespace around the boolean operator.
+  #
+  # Question for project channel: Do we need to respect the existing behaviour or can we keep this new (-improved, imo) behaviour?
+  def test_variant_selected_attribute_when_ids_match
+    # Define the Liquid template focusing on the selected attribute
+    template = <<~LIQUID
+      <option variant_id="{{ variant.id }}" {% if current_variant.id==variant.id %}selected{%- endif -%}>{{ variant.title }}</option>
+    LIQUID
+
+    # Define the context for the template where the variant should be selected
+    context = {
+      "variant" => {
+        "id" => 420,
+        "title" => "Default Title",
+      },
+      "current_variant" => {
+        "id" => 420,
+      },
+    }
+
+    # Expected output
+    expected_output = <<~HTML
+      <option variant_id="420" selected>Default Title</option>
+    HTML
+
+    # Render the template with the context
+    actual_output = Liquid::Template.parse(template).render(context)
+
+    # Assert that the actual output matches the expected output
+    assert_equal(expected_output.delete("\n"), actual_output.delete("\n"))
+  end
+
   private
 
   def assert_parity(liquid_expression, expected_result, args = {})
