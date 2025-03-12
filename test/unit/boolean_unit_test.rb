@@ -368,15 +368,9 @@ class BooleanUnitTest < Minitest::Test
     assert_equal("false", act_output)
   end
 
-  # Note for Guilherme:
-  # This test actually does not pass in `main` branch right now however it does pass correctly in our changes.
-  # I am keeping it because it shows we fixed a bug with existing liquid.
-  #
-  # The functionality in main is that this liquid evaluates to false `{% if current_variant.id==variant.id %}selected{%- endif -%}`
-  # because of the missing whitespace around the boolean operator.
-  #
-  # Question for project channel: Do we need to respect the existing behaviour or can we keep this new (-improved, imo) behaviour?
-  def test_variant_selected_attribute_when_ids_match
+  # TESTING TECHNICALLY INCORRECT BEHAVIOUR OF LIQUID-RUBY
+  # If liquid-vm fails this test, we should change it.
+  def test_conditions_with_boolean_operators_without_whitespace_around_operator
     # Define the Liquid template focusing on the selected attribute
     template = <<~LIQUID
       <option variant_id="{{ variant.id }}" {% if current_variant.id==variant.id %}selected{%- endif -%}>{{ variant.title }}</option>
@@ -394,8 +388,14 @@ class BooleanUnitTest < Minitest::Test
     }
 
     # Expected output
+    # Note: Ideally we would like the whitespace around the boolean operator to be optional.
+    # So the more correct expected output would be:
+    #
+    # <option variant_id="420" selected>Default Title</option>
+    #
+    # However, the existing behaviour in liquid-ruby is that the whitespace is required around the boolean operator.
     expected_output = <<~HTML
-      <option variant_id="420" selected>Default Title</option>
+      <option variant_id="420" >Default Title</option>
     HTML
 
     # Render the template with the context

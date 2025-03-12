@@ -3,7 +3,7 @@
 module Liquid
   class Expression
     class ComparisonExpression
-      COMPARISON_REGEX = /\A\s*(.+?)\s*(==|!=|<>|<=|>=|<|>|contains)\s*(.+)\s*\z/
+      COMPARISON_REGEX = /\A\s*(.+?)\s+(==|!=|<>|<=|>=|<|>|contains)\s+(.+)\s*\z/
 
       class << self
         def comparison?(markup)
