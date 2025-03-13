@@ -3,6 +3,9 @@
 module Liquid
   class Expression
     class ComparisonExpression
+      # We can improve the resiliency of lax parsing by not expecting whitespace
+      # surrounding the operator (ie \s+ => \s*).
+      # However this is not in parity with existing lax parsing behavior.
       COMPARISON_REGEX = /\A\s*(.+?)\s+(==|!=|<>|<=|>=|<|>|contains)\s+(.+)\s*\z/
 
       class << self

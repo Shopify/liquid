@@ -4,7 +4,6 @@ require 'test_helper'
 
 class BooleanUnitTest < Minitest::Test
   include Liquid
-
   def test_simple_boolean_comparison
     assert_parity("1 > 0", "true")
     assert_parity("1 < 0", "false")
@@ -368,15 +367,11 @@ class BooleanUnitTest < Minitest::Test
     assert_equal("false", act_output)
   end
 
-  # TESTING TECHNICALLY INCORRECT BEHAVIOUR OF LIQUID-RUBY
-  # If liquid-vm fails this test, we should change it.
   def test_conditions_with_boolean_operators_without_whitespace_around_operator
-    # Define the Liquid template focusing on the selected attribute
     template = <<~LIQUID
       <option variant_id="{{ variant.id }}" {% if current_variant.id==variant.id %}selected{%- endif -%}>{{ variant.title }}</option>
     LIQUID
 
-    # Define the context for the template where the variant should be selected
     context = {
       "variant" => {
         "id" => 420,
@@ -394,15 +389,24 @@ class BooleanUnitTest < Minitest::Test
     # <option variant_id="420" selected>Default Title</option>
     #
     # However, the existing behaviour in liquid-ruby is that the whitespace is required around the boolean operator.
-    expected_output = <<~HTML
+    expected_lax_output = <<~HTML
       <option variant_id="420" >Default Title</option>
     HTML
 
-    # Render the template with the context
-    actual_output = Liquid::Template.parse(template).render(context)
+    expected_strict_output = <<~HTML
+      <option variant_id="420" selected>Default Title</option>
+    HTML
 
-    # Assert that the actual output matches the expected output
-    assert_equal(expected_output.delete("\n"), actual_output.delete("\n"))
+    # This bugged output only happens in lax mode.
+    prev_error_mode = Liquid::Environment.default.error_mode
+    Liquid::Environment.default.error_mode = :lax
+    actual_lax_output = Liquid::Template.parse(template).render(context)
+    Liquid::Environment.default.error_mode = prev_error_mode
+
+    actual_strict_output = Liquid::Template.parse(template).render(context)
+
+    assert_equal(expected_lax_output.delete("\n"), actual_lax_output.delete("\n"))
+    assert_equal(expected_strict_output.delete("\n"), actual_strict_output.delete("\n"))
   end
 
   # TESTING INCORRECT BEHAVIOUR OF LIQUID-RUBY
