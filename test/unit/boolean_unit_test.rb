@@ -398,14 +398,9 @@ class BooleanUnitTest < Minitest::Test
     HTML
 
     # This bugged output only happens in lax mode.
-    prev_error_mode = Liquid::Environment.default.error_mode
-    Liquid::Environment.default.error_mode = :lax
-    actual_lax_output = Liquid::Template.parse(template).render(context)
-    Liquid::Environment.default.error_mode = prev_error_mode
+    assert_with_lax_parsing(template, expected_lax_output, context)
 
-    actual_strict_output = Liquid::Template.parse(template).render(context)
-
-    assert_equal(expected_lax_output.delete("\n"), actual_lax_output.delete("\n"))
+    # Default test parsing mode (strict) works as properly expected
     assert_equal(expected_strict_output.delete("\n"), actual_strict_output.delete("\n"))
   end
 
@@ -469,6 +464,28 @@ class BooleanUnitTest < Minitest::Test
     }
     # NOTE: This is a bug that liquid-ruby `main` output returns the first value.
     assert_with_lax_parsing(template, "true", context_without_collection)
+  end
+
+  # TESTING INCORRECT BEHAVIOUR OF LIQUID-RUBY
+  # If liquid-vm fails this test, we should change it.
+  def test_assign_boolean_expression_to_variable
+    template = <<~LIQUID
+      {%- liquid
+        assign is_preview_mode = content_for_header contains "foo" or content_for_header contains "bar"
+        echo is_preview_mode
+      -%}
+    LIQUID
+
+    context = { "content_for_header" => "Some content" }
+
+    # Expected output
+    # This value should be "false" but it is the value of the variable from the failed expression.
+    assert_template_result("Some content", template, context)
+
+    # This following validation should only be supported with our changes. It is the short-hand for the above template.
+    # The validation for it is the expected correct output.
+    template = Liquid::Template.parse("{% assign is_preview_mode = content_for_header contains 'foo' or content_for_header contains 'bar' %}{{ is_preview_mode }}")
+    assert_equal("false", template.render(context))
   end
 
   private
