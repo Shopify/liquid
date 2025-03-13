@@ -405,6 +405,35 @@ class BooleanUnitTest < Minitest::Test
     assert_equal(expected_output.delete("\n"), actual_output.delete("\n"))
   end
 
+  # TESTING INCORRECT BEHAVIOUR OF LIQUID-RUBY
+  # If liquid-vm fails this test, we should change it.
+  def test_boolean_conditional_with_json_filter
+    # Define the Liquid template to test
+    template = <<~LIQUID
+      {{ template.name == 'index' | json }}
+    LIQUID
+
+    # Define the context for the template where the template name is 'index'
+    context = {
+      "template" => {
+        "name" => "product",
+      },
+    }
+
+    # Expected output
+    # Note: I dont know what is the correct output here but this is the liquid-ruby 'main' output.
+    #
+    # It feels incorrect but I dont know whats better
+    expected_output = "product"
+
+    # Render the template with the context
+    actual_parsed_template = Liquid::Template.parse(template)
+    actual_output = actual_parsed_template.render(context)
+
+    # Assert that the actual output matches the expected output
+    assert_equal(expected_output, actual_output.strip)
+  end
+
   private
 
   def assert_parity(liquid_expression, expected_result, args = {})
