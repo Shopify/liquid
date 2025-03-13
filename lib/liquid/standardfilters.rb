@@ -712,7 +712,16 @@ module Liquid
       input.gsub(/\r?\n/, "<br />\n")
     end
 
-    # Reformat a date using Ruby's core Time#strftime( string ) -> string
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category date
+    # @liquid_summary
+    #   Formats a date according to a specified format string.
+    # @liquid_description
+    #   This filter formats a date using various format specifiers. If the format string is empty,
+    #   the original input is returned. If the input cannot be converted to a date, the original input is returned.
+    #
+    #   The following format specifiers can be used:
     #
     #   %a - The abbreviated weekday name (``Sun'')
     #   %A - The  full  weekday  name (``Sunday'')
@@ -741,8 +750,8 @@ module Liquid
     #   %Y - Year with century
     #   %Z - Time zone name
     #   %% - Literal ``%'' character
-    #
-    #   See also: http://www.ruby-doc.org/core/Time.html#method-i-strftime
+    # @liquid_syntax date | date: string
+    # @liquid_return [string]
     def date(input, format)
       str_format = Utils.to_s(format)
       return input if str_format.empty?
