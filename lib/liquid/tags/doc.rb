@@ -15,7 +15,7 @@ module Liquid
   #   documentation.
   #
   #   For detailed documentation syntax and examples, see the
-  #   [`LiquidDoc` reference](/themes/tools/liquid-doc).
+  #   [`LiquidDoc` reference](/docs/storefronts/themes/tools/liquid-doc).
   #
   # @liquid_syntax
   #   {% doc %}
