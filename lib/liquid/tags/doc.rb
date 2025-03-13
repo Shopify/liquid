@@ -13,6 +13,10 @@ module Liquid
   #   Liquid code inside will be parsed but not executed. This facilitates
   #   tooling support for features like code completion, linting, and inline
   #   documentation.
+  #
+  #   For detailed documentation syntax and examples, see the
+  #   [`LiquidDoc` reference](/docs/storefronts/themes/tools/liquid-doc).
+  #
   # @liquid_syntax
   #   {% doc %}
   #     Renders a message.
