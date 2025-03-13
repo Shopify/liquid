@@ -438,7 +438,55 @@ class BooleanUnitTest < Minitest::Test
     assert_equal(expected_output, actual_output.strip)
   end
 
+  # TESTING INCORRECT BEHAVIOUR OF LIQUID-RUBY
+  # If liquid-vm fails this test, we should change it.
+  def test_chained_conditional_with_object_contains
+    # Define the Liquid template to test
+    template = <<~LIQUID
+      {{ settings.prefilter_status and template contains 'collection' }}
+    LIQUID
+
+    # Test with context containing 'collection'
+    context_with_collection = {
+      "template" => {
+        "name" => "collection",
+      },
+      "settings" => {
+        "prefilter_status" => true,
+      },
+    }
+    # NOTE: This is a bug that liquid-ruby `main` output returns the first value.
+    assert_with_lax_parsing(template, "true", context_with_collection)
+
+    # Test with context not containing 'collection'
+    context_without_collection = {
+      "template" => {
+        "name" => "not-collection",
+      },
+      "settings" => {
+        "prefilter_status" => true,
+      },
+    }
+    # NOTE: This is a bug that liquid-ruby `main` output returns the first value.
+    assert_with_lax_parsing(template, "true", context_without_collection)
+  end
+
   private
+
+  def assert_with_lax_parsing(template, expected_output, context = {})
+    prev_error_mode = Liquid::Environment.default.error_mode
+    Liquid::Environment.default.error_mode = :lax
+
+    begin
+      actual_output = Liquid::Template.parse(template).render(context)
+    rescue StandardError => e
+      actual_output = e.message
+    ensure
+      Liquid::Environment.default.error_mode = prev_error_mode
+    end
+
+    assert_equal(expected_output.strip, actual_output.strip)
+  end
 
   def assert_parity(liquid_expression, expected_result, args = {})
     assert_condition(liquid_expression, expected_result, args)
