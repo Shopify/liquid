@@ -27,11 +27,11 @@ module Liquid
       # :strict will enforce correct syntax.
       def error_mode=(mode)
         Deprecations.warn("Template.error_mode=", "Environment#error_mode=")
-        Environment.default.error_mode = mode
+        Environment.default.error_mode = :strict
       end
 
       def error_mode
-        Environment.default.error_mode
+        :strict
       end
 
       def default_exception_renderer=(renderer)
