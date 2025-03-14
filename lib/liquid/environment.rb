@@ -4,10 +4,6 @@ module Liquid
   # The Environment is the container for all configuration options of Liquid, such as
   # the registered tags, filters, and the default error mode.
   class Environment
-    # The default error mode for all templates. This can be overridden on a
-    # per-template basis.
-    attr_accessor :error_mode
-
     # The tags that are available to use in the template.
     attr_accessor :tags
 
@@ -75,7 +71,7 @@ module Liquid
     # @api private
     def initialize
       @tags = Tags::STANDARD_TAGS.dup
-      @error_mode = :lax
+      @error_mode = :strict
       @strainer_template = Class.new(StrainerTemplate).tap do |klass|
         klass.add_filter(StandardFilters)
       end
@@ -83,6 +79,14 @@ module Liquid
       @file_system = BlankFileSystem.new
       @default_resource_limits = Const::EMPTY_HASH
       @strainer_template_class_cache = {}
+    end
+
+    def error_mode
+      :strict
+    end
+
+    def error_mode=(mode)
+      :strict
     end
 
     # Registers a new tag with the environment.
