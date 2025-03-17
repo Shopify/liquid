@@ -60,12 +60,7 @@ module Liquid
       when :string, :number
         consume
       when :open_round
-        consume
-        first = expression
-        consume(:dotdot)
-        last = expression
-        consume(:close_round)
-        "(#{first}..#{last})"
+        consume_round_parentheses(token)
       else
         raise SyntaxError, "#{token} is not a valid expression"
       end
@@ -79,10 +74,29 @@ module Liquid
         operator = consume(:boolean_operator)
         left     = expr
         right    = expression
-
-        "#{left} #{operator} #{right}"
+        if look(:close_round)
+          "(#{left} #{operator} #{right})"
+        else
+          "#{left} #{operator} #{right}"
+        end
       else
         expr
+      end
+    end
+
+    def consume_round_parentheses(token)
+      consume
+      first = expression
+      dotdot_token = consume?(:dotdot)
+      if dotdot_token
+        last = expression
+        consume(:close_round)
+        "(#{first}..#{last})"
+      elsif look(:close_round)
+        consume(:close_round)
+        first
+      else
+        raise SyntaxError, "#{token} is not a valid expression"
       end
     end
 
