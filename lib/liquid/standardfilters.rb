@@ -952,11 +952,13 @@ module Liquid
     # @liquid_syntax array | sum
     # @liquid_return [number]
     def sum(input, property = nil)
+      property = Liquid::Utils.to_s(property)
+
       ary = InputIterator.new(input, context)
       return 0 if ary.empty?
 
       values_for_sum = ary.map do |item|
-        if property.nil?
+        if property.empty?
           item
         elsif item.respond_to?(:[])
           item[property]
