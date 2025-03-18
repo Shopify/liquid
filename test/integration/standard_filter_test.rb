@@ -1281,6 +1281,17 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("0", "{{ input | sum: 'subtotal' }}", { "input" => input })
   end
 
+  def test_sum_with_non_string_property
+    input = [{ "true" => 1 }, { "1.0" => 0.2, "1" => -0.3 }, { "1..5" => 0.4 }]
+
+    assert_equal(1, @filters.sum(input, true))
+    assert_equal(0.2, @filters.sum(input, 1.0))
+    assert_equal(-0.3, @filters.sum(input, 1))
+    assert_equal(0.4, @filters.sum(input, (1..5)))
+    assert_equal(0, @filters.sum(input, nil))
+    assert_equal(0, @filters.sum(input, ""))
+  end
+
   private
 
   def with_timezone(tz)
