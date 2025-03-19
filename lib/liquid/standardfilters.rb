@@ -957,7 +957,7 @@ module Liquid
     # @liquid_syntax array | sum
     # @liquid_return [number]
     def sum(input, property = nil)
-      property = Liquid::Utils.to_s(property) unless property.nil? else property
+      property = property.nil? ? nil : Utils.to_s(property)
 
       ary = InputIterator.new(input, context)
       return 0 if ary.empty?
