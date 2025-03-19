@@ -30,7 +30,7 @@ module Liquid
       @parse_context = parse_context
       @line_number   = parse_context.line_number
 
-      strict_parse_with_error_mode_fallback(markup)
+      strict_parse_with_error_context(markup)
     end
 
     def raw
@@ -41,22 +41,12 @@ module Liquid
       "in \"{{#{markup}}}\""
     end
 
-    def lax_parse(markup)
-      @filters = []
-      return unless markup =~ MarkupWithQuotedFragment
-
-      name_markup   = Regexp.last_match(1)
-      filter_markup = Regexp.last_match(2)
-      @name         = parse_context.parse_expression(name_markup)
-      if filter_markup =~ FilterMarkupRegex
-        filters = Regexp.last_match(1).scan(FilterParser)
-        filters.each do |f|
-          next unless f =~ /\w+/
-          filtername = Regexp.last_match(0)
-          filterargs = f.scan(FilterArgsRegex).flatten
-          @filters << parse_filter_expressions(filtername, filterargs)
-        end
-      end
+    def strict_parse_with_error_context(markup)
+      strict_parse(markup)
+    rescue SyntaxError => e
+      e.line_number    = line_number
+      e.markup_context = markup_context(markup)
+      raise e
     end
 
     def strict_parse(markup)
