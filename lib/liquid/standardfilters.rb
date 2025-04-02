@@ -979,6 +979,7 @@ module Liquid
 
     def filter_array(input, property, target_value, default_value = [], &block)
       ary = InputIterator.new(input, context)
+
       return default_value if ary.empty?
 
       property = Utils.to_s(property)
