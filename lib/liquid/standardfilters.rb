@@ -999,7 +999,7 @@ module Liquid
     end
 
     def raise_property_error(property)
-      raise Liquid::ArgumentError, "cannot select the property '#{property}'"
+      raise Liquid::ArgumentError, "cannot select the property '#{Utils.to_s(property)}'"
     end
 
     def apply_operation(input, operand, operation)
