@@ -3,7 +3,6 @@
 require 'cgi'
 require 'base64'
 require 'bigdecimal'
-
 module Liquid
   module StandardFilters
     MAX_I32 = (1 << 31) - 1
@@ -986,14 +985,14 @@ module Liquid
     attr_reader :context
 
     def filter_array(input, property, target_value, default_value = [], &block)
+      ary = InputIterator.new(input, context)
+      return default_value if ary.empty?
+
       if property.nil?
         raise_property_error(property)
       end
 
       property = Liquid::Utils.to_s(property)
-
-      ary = InputIterator.new(input, context)
-      return default_value if ary.empty?
 
       block.call(ary) do |item|
         if target_value.nil?
