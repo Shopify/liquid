@@ -986,8 +986,11 @@ module Liquid
     attr_reader :context
 
     def filter_array(input, property, target_value, default_value = [], &block)
+      if property.nil?
+        raise_property_error(property)
+      end
+
       property = Liquid::Utils.to_s(property)
-      return default_value if property.empty?
 
       ary = InputIterator.new(input, context)
       return default_value if ary.empty?
