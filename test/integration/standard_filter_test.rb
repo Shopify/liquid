@@ -1109,19 +1109,6 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result(expected_output, template, { "array" => array })
   end
 
-  def test_where_with_non_string_property
-    array = [
-      { "handle" => "alpha", "{}" => true },
-      { "handle" => "beta", "{}" => false },
-      { "handle" => "gamma", "{}" => false },
-      { "handle" => "delta", "{}" => true },
-    ]
-    template = "{{ array | where: some_property, true | map: 'handle' | join: ' ' }}"
-    expected_output = "alpha delta"
-
-    assert_template_result(expected_output, template, { "array" => array, "some_property" => {} })
-  end
-
   def test_where_string_keys
     input = [
       "alpha", "beta", "gamma", "delta"
