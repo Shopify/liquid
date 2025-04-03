@@ -536,11 +536,11 @@ module Liquid
     # @liquid_syntax array | map: string
     # @liquid_return [array[untyped]]
     def map(input, property)
-      if property.nil?
-        raise_property_error(property)
-      end
-
       property = Utils.to_s(property)
+
+      # Return the input array if property is empty (no-op)
+      return InputIterator.new(input, context).to_a if property.empty?
+
       InputIterator.new(input, context).map do |e|
         e = e.call if e.is_a?(Proc)
 
