@@ -1033,22 +1033,20 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result(expected_output, template, { "array" => array })
   end
 
-  def test_where_with_empty_string_and_nil
-    array = [
-      "alpha",
-      "beta",
-      "gamma",
-    ]
-    template = "{{ array | where: '' | join: ' ' }}"
+  def test_where_with_empty_string_is_a_no_op
+    environment = { "array" => ["alpha", "beta", "gamma"] }
     expected_output = "alpha beta gamma"
-    assert_template_result(expected_output, template, { "array" => array })
+    template = "{{ array | where: '' | join: ' ' }}"
 
+    assert_template_result(expected_output, template, environment)
+  end
+
+  def test_where_with_nil_is_a_no_op
+    environment = { "array" => ["alpha", "beta", "gamma"] }
+    expected_output = "alpha beta gamma"
     template = "{{ array | where: nil | join: ' ' }}"
-    exception = assert_raises(Liquid::ArgumentError) do
-      assert_template_result(expected_output, template, { "array" => array })
-    end
 
-    assert_equal("Liquid error (line 1): cannot select the property ''", exception.message)
+    assert_template_result(expected_output, template, environment)
   end
 
   def test_where_with_value

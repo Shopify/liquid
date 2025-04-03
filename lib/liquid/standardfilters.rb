@@ -992,11 +992,7 @@ module Liquid
       ary = InputIterator.new(input, context)
       return default_value if ary.empty?
 
-      if property.nil?
-        raise_property_error(property)
-      end
-
-      property = Liquid::Utils.to_s(property)
+      property = Utils.to_s(property)
 
       block.call(ary) do |item|
         if target_value.nil?
