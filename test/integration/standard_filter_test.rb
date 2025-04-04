@@ -560,15 +560,47 @@ class StandardFiltersTest < Minitest::Test
     end
   end
 
-  def test_map_returns_empty_with_no_property
-    foo = [
+  def test_map_with_nil_property
+    array = [
+      { "handle" => "alpha", "value" => "A" },
+      { "handle" => "beta", "value" => "B" },
+      { "handle" => "gamma", "value" => "C" }
+    ]
+
+    assert_template_result("alpha beta gamma", "{{ array | map: nil | map: 'handle' | join: ' ' }}", { "array" => array })
+  end
+
+  def test_map_with_empty_string_property
+    array = [
+      { "handle" => "alpha", "value" => "A" },
+      { "handle" => "beta", "value" => "B" },
+      { "handle" => "gamma", "value" => "C" }
+    ]
+
+    assert_template_result("alpha beta gamma", "{{ array | map: '' | map: 'handle' | join: ' ' }}", { "array" => array })
+  end
+
+  def test_map_with_value_property
+    array = [
+      { "handle" => "alpha", "value" => "A" },
+      { "handle" => "beta", "value" => "B" },
+      { "handle" => "gamma", "value" => "C" }
+    ]
+
+    assert_template_result("A B C", "{{ array | map: 'value' | join: ' ' }}", { "array" => array })
+  end
+
+  def test_map_returns_input_with_no_property
+    input = [
       [1],
       [2],
       [3],
     ]
-    assert_raises(Liquid::ArgumentError) do
-      @filters.map(foo, nil)
-    end
+    result = @filters.map(input, nil)
+    assert_equal(input.flatten, result)
+
+    result = @filters.map(input, '')
+    assert_equal(input.flatten, result)
   end
 
   def test_sort_works_on_enumerables
@@ -1031,6 +1063,22 @@ class StandardFiltersTest < Minitest::Test
     expected_output = "alpha delta"
 
     assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_where_with_empty_string_is_a_no_op
+    environment = { "array" => ["alpha", "beta", "gamma"] }
+    expected_output = "alpha beta gamma"
+    template = "{{ array | where: '' | join: ' ' }}"
+
+    assert_template_result(expected_output, template, environment)
+  end
+
+  def test_where_with_nil_is_a_no_op
+    environment = { "array" => ["alpha", "beta", "gamma"] }
+    expected_output = "alpha beta gamma"
+    template = "{{ array | where: nil | join: ' ' }}"
+
+    assert_template_result(expected_output, template, environment)
   end
 
   def test_where_with_value
