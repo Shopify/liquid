@@ -977,6 +977,12 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result(expected_output, template, { "array" => array })
   end
 
+  def test_has_with_boolean_input
+    template = "Result: {{a0 | has: a1, a2}}"
+
+    assert_template_result("Result: false", template, { "a0" => false })
+  end
+
   def test_has_with_false_value_when_does_not_have_it
     array = [
       { "handle" => "alpha", "ok" => true },

@@ -460,7 +460,7 @@ module Liquid
     # @liquid_syntax array | has: string, string
     # @liquid_return [boolean]
     def has(input, property, target_value = nil)
-      filter_array(input, property, target_value, false) { |ary, &block| ary.any?(&block) }
+      filter_array(input, property, target_value, false) { |ary, &block| ary.any?(&block) } || false
     end
 
     # @liquid_public_docs
