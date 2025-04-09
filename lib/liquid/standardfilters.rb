@@ -1081,7 +1081,10 @@ module Liquid
       end
 
       def uniq(&block)
-        to_a.uniq(&block)
+        to_a.uniq do |item|
+          item = Utils.to_liquid_value(item)
+          block ? yield(item) : item
+        end
       end
 
       def compact

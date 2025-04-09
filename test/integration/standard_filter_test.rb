@@ -1340,6 +1340,22 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(0, @filters.sum(input, ""))
   end
 
+  def test_uniq_with_to_liquid_value
+    input = [StringDrop.new("foo"), StringDrop.new("bar"), "foo"]
+    expected = [StringDrop.new("foo"), StringDrop.new("bar")]
+    result = @filters.uniq(input)
+
+    assert_equal(expected, result)
+  end
+
+  def test_uniq_with_to_liquid_value_pick_correct_classes
+    input = ["foo", StringDrop.new("foo"), StringDrop.new("bar")]
+    expected = [String, StringDrop]
+    result = @filters.uniq(input).map(&:class)
+
+    assert_equal(expected, result)
+  end
+
   private
 
   def with_timezone(tz)

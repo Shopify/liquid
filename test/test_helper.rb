@@ -146,6 +146,35 @@ class BooleanDrop < Liquid::Drop
   end
 end
 
+class StringDrop < Liquid::Drop
+  include Comparable
+
+  def initialize(value)
+    super()
+    @value = value
+  end
+
+  def to_liquid_value
+    @value
+  end
+
+  def to_s
+    @value
+  end
+
+  def to_str
+    @value
+  end
+
+  def inspect
+    "#<StringDrop @value=#{@value.inspect}>"
+  end
+
+  def <=>(other)
+    to_liquid_value <=> Liquid::Utils.to_liquid_value(other)
+  end
+end
+
 class ErrorDrop < Liquid::Drop
   def standard_error
     raise Liquid::StandardError, 'standard error'
