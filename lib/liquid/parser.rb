@@ -48,7 +48,7 @@ module Liquid
 
     def expression
       token = @tokens[@p]
-      case token[0]
+      expr = case token[0]
       when :id
         str = consume
         str << variable_lookups
@@ -68,6 +68,21 @@ module Liquid
         "(#{first}..#{last})"
       else
         raise SyntaxError, "#{token} is not a valid expression"
+      end
+      if look(:comparison)
+        operator = consume(:comparison)
+        left     = expr
+        right    = expression
+
+        "#{left} #{operator} #{right}"
+      elsif look(:boolean_operator)
+        operator = consume(:boolean_operator)
+        left     = expr
+        right    = expression
+
+        "#{left} #{operator} #{right}"
+      else
+        expr
       end
     end
 
