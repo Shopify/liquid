@@ -982,8 +982,6 @@ module Liquid
 
       return default_value if ary.empty?
 
-      property = Utils.to_s(property)
-
       block.call(ary) do |item|
         if target_value.nil?
           item[property]
