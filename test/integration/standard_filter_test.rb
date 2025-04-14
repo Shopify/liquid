@@ -560,26 +560,6 @@ class StandardFiltersTest < Minitest::Test
     end
   end
 
-  def test_map_with_nil_property
-    array = [
-      { "handle" => "alpha", "value" => "A" },
-      { "handle" => "beta", "value" => "B" },
-      { "handle" => "gamma", "value" => "C" }
-    ]
-
-    assert_template_result("alpha beta gamma", "{{ array | map: nil | map: 'handle' | join: ' ' }}", { "array" => array })
-  end
-
-  def test_map_with_empty_string_property
-    array = [
-      { "handle" => "alpha", "value" => "A" },
-      { "handle" => "beta", "value" => "B" },
-      { "handle" => "gamma", "value" => "C" }
-    ]
-
-    assert_template_result("alpha beta gamma", "{{ array | map: '' | map: 'handle' | join: ' ' }}", { "array" => array })
-  end
-
   def test_map_with_value_property
     array = [
       { "handle" => "alpha", "value" => "A" },
@@ -591,16 +571,15 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_map_returns_input_with_no_property
-    input = [
+    foo = [
       [1],
       [2],
       [3],
     ]
-    result = @filters.map(input, nil)
-    assert_equal(input.flatten, result)
 
-    result = @filters.map(input, '')
-    assert_equal(input.flatten, result)
+    assert_raises(Liquid::ArgumentError) do
+      @filters.map(foo, nil)
+    end
   end
 
   def test_sort_works_on_enumerables
@@ -1109,19 +1088,6 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result(expected_output, template, { "array" => array })
   end
 
-  def test_where_with_non_string_property
-    array = [
-      { "handle" => "alpha", "{}" => true },
-      { "handle" => "beta", "{}" => false },
-      { "handle" => "gamma", "{}" => false },
-      { "handle" => "delta", "{}" => true },
-    ]
-    template = "{{ array | where: some_property, true | map: 'handle' | join: ' ' }}"
-    expected_output = "alpha delta"
-
-    assert_template_result(expected_output, template, { "array" => array, "some_property" => {} })
-  end
-
   def test_where_string_keys
     input = [
       "alpha", "beta", "gamma", "delta"
@@ -1330,7 +1296,7 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_sum_with_non_string_property
-    input = [{ "true" => 1 }, { "1.0" => 0.2, "1" => -0.3 }, { "1..5" => 0.4 }]
+    input = [{ true => 1 }, { 1.0 => 0.2, 1 => -0.3 }, { 1..5 => 0.4 }]
 
     assert_equal(1, @filters.sum(input, true))
     assert_equal(0.2, @filters.sum(input, 1.0))
