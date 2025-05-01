@@ -20,6 +20,21 @@ class DocTagUnitTest < Minitest::Test
     assert_template_result('', template)
   end
 
+  def test_doc_tag_body_content
+    doc_content = "  Documentation content\n  @param {string} foo - test\n"
+    template_source = "{% doc %}#{doc_content}{% enddoc %}"
+
+    doc_tag = nil
+    ParseTreeVisitor
+      .for(Template.parse(template_source).root)
+      .add_callback_for(Liquid::Doc) do |tag|
+        doc_tag = tag
+      end
+      .visit
+
+    assert_equal(doc_content, doc_tag.body)
+  end
+
   def test_doc_tag_does_not_support_extra_arguments
     error = assert_raises(Liquid::SyntaxError) do
       template = <<~LIQUID.chomp

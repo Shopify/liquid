@@ -30,8 +30,11 @@ module Liquid
   class Doc < Block
     NO_UNEXPECTED_ARGS = /\A\s*\z/
 
+    attr_reader :body
+
     def initialize(tag_name, markup, parse_context)
       super
+      @body = +""
       ensure_valid_markup(tag_name, markup, parse_context)
     end
 
@@ -43,8 +46,10 @@ module Liquid
 
         if tag_name == block_delimiter
           parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
+          @body << Regexp.last_match(1) if Regexp.last_match(1) != ""
           return
         end
+        @body << token unless token.empty?
       end
 
       raise_tag_never_closed(block_name)
