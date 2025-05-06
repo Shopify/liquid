@@ -27,7 +27,6 @@ module Liquid
   #     @example
   #     {% render 'message', foo: 'Hello', bar: 'World' %}
   #   {% enddoc %}
-  #   {{ foo }}, {{ bar }}!
   class Doc < Block
     NO_UNEXPECTED_ARGS = /\A\s*\z/
 
