@@ -13,6 +13,9 @@ module Liquid
     I64_RANGE = MIN_I64..MAX_I64
     private_constant :MIN_I64, :MAX_I64, :I64_RANGE
 
+    INFINITY_ARRAY = [Float::INFINITY].freeze
+    private_constant :INFINITY_ARRAY
+
     HTML_ESCAPE = {
       '&' => '&amp;',
       '>' => '&gt;',
@@ -416,6 +419,31 @@ module Liquid
       elsif ary.all? { |el| el.respond_to?(:[]) }
         begin
           ary.sort { |a, b| nil_safe_casecmp(a[property], b[property]) }
+        rescue TypeError
+          raise_property_error(property)
+        end
+      end
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Sorts an array by numerical values extracted from runs of digits within the string representation of each item.
+    # @liquid_syntax array | sort_numeric
+    # @liquid_return [array[untyped]]
+    def sort_numeric(input, property = nil)
+      ary = InputIterator.new(input, context)
+
+      return [] if ary.empty?
+
+      if property.nil?
+        ary.sort do |a, b|
+          numeric_compare(a, b)
+        end
+      elsif ary.all? { |el| el.respond_to?(:[]) }
+        begin
+          ary.sort { |a, b| numeric_compare(a[property], b[property]) }
         rescue TypeError
           raise_property_error(property)
         end
@@ -1026,6 +1054,21 @@ module Liquid
         0
       else
         a.nil? ? 1 : -1
+      end
+    end
+
+    def numeric_compare(a, b)
+      numbers(a) <=> numbers(b)
+    end
+
+    def numbers(obj)
+      if obj.is_a?(Integer) || obj.is_a?(Float) || obj.is_a?(BigDecimal)
+        [obj]
+      else
+        numeric = obj.to_s.scan(/(?<=\.)0+|-?\d+/)
+        return INFINITY_ARRAY if numeric.empty?
+
+        numeric.map(&:to_i)
       end
     end
 
