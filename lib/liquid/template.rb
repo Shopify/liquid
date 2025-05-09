@@ -2,7 +2,7 @@
 
 module Liquid
   # Templates are central to liquid.
-  # Interpretating templates is a two step process. First you compile the
+  # Interpreting templates is a two step process. First you compile the
   # source code you got. During compile time some extensive error checking is performed.
   # your code should expect to get some SyntaxErrors.
   #
