@@ -429,7 +429,7 @@ module Liquid
     # @liquid_type filter
     # @liquid_category array
     # @liquid_summary
-    #   Sorts an array by numerical values extracted from runs of digits within the string representation of each item.
+    #   Sorts an array by numerical values extracted from runs of digits within each item.
     # @liquid_syntax array | sort_numeric
     # @liquid_return [array[untyped]]
     def sort_numeric(input, property = nil)
