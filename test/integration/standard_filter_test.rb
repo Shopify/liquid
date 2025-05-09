@@ -439,6 +439,7 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(["1", "2", "no numbers"], @filters.sort_numeric(["no numbers", "1", "2"]))
     assert_equal(["1", 2, 3, "10"], @filters.sort_numeric(["10", 3, "1", 2]))
     assert_equal([1, 2, 3], @filters.sort_numeric([[1], [3], [2]])) # nested arrays get flattened
+    assert_equal([1.1, 2, BigDecimal(3), 10], @filters.sort_numeric([10, BigDecimal(3), 1.1, 2]))
   end
 
   def test_sort_numeric_with_property
