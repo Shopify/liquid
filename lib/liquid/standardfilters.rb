@@ -1062,7 +1062,7 @@ module Liquid
     end
 
     def numbers(obj)
-      if obj.is_a?(Integer) || obj.is_a?(Float) || obj.is_a?(BigDecimal)
+      if obj.is_a?(Numeric)
         [obj]
       else
         numeric = obj.to_s.scan(/(?<=\.)0+|-?\d+/)
