@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Liquid
-  class ResourceLimits < Struct.new(:render_length_limit, :render_score_limit, :assign_score_limit, :render_score, :assign_score, :reached_limit, :last_capture_length, keyword_init: true)
+  class ResourceLimits < Struct.new(:render_length_limit, :render_score_limit, :assign_score_limit, :render_score, :assign_score, :last_capture_length, keyword_init: true)
     def increment_render_score(amount)
       self.render_score ||= 0
       self.render_score += amount
@@ -27,16 +27,15 @@ module Liquid
     end
 
     def raise_limits_reached
-      self.reached_limit = true
+      self.render_score = -1
       raise MemoryError, "Memory limits exceeded"
     end
 
     def reached?
-      reached_limit
+      self.render_score == -1
     end
 
     def reset
-      self.reached_limit = false
       self.last_capture_length = nil
       self.render_score = self.assign_score = 0
     end
