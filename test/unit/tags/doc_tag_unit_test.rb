@@ -131,6 +131,20 @@ class DocTagUnitTest < Minitest::Test
     assert_template_result('', template)
   end
 
+  def test_doc_tag_captures_token_before_enddoc
+      template_source = "{% doc %}{{ incomplete{% enddoc %}"
+
+    doc_tag = nil
+    ParseTreeVisitor
+      .for(Template.parse(template_source).root)
+      .add_callback_for(Liquid::Doc) do |tag|
+        doc_tag = tag
+      end
+      .visit
+
+    assert_equal("{{ incomplete", doc_tag.body)
+  end
+
   def test_doc_tag_preserves_error_line_numbers
     template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
       {% doc %}
