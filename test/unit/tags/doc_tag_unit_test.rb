@@ -32,7 +32,7 @@ class DocTagUnitTest < Minitest::Test
       end
       .visit
 
-    assert_equal(doc_content, doc_tag.body)
+    assert_equal(doc_content, doc_tag.nodelist.first.to_s)
   end
 
   def test_doc_tag_does_not_support_extra_arguments
@@ -132,7 +132,7 @@ class DocTagUnitTest < Minitest::Test
   end
 
   def test_doc_tag_captures_token_before_enddoc
-      template_source = "{% doc %}{{ incomplete{% enddoc %}"
+    template_source = "{% doc %}{{ incomplete{% enddoc %}"
 
     doc_tag = nil
     ParseTreeVisitor
@@ -142,7 +142,7 @@ class DocTagUnitTest < Minitest::Test
       end
       .visit
 
-    assert_equal("{{ incomplete", doc_tag.body)
+    assert_equal("{{ incomplete", doc_tag.nodelist.first.to_s)
   end
 
   def test_doc_tag_preserves_error_line_numbers

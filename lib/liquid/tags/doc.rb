@@ -30,15 +30,14 @@ module Liquid
   class Doc < Block
     NO_UNEXPECTED_ARGS = /\A\s*\z/
 
-    attr_reader :body
-
     def initialize(tag_name, markup, parse_context)
       super
-      @body = +""
       ensure_valid_markup(tag_name, markup, parse_context)
     end
 
     def parse(tokens)
+      @body = +""
+
       while (token = tokens.shift)
         tag_name = token =~ BlockBody::FullTokenPossiblyInvalid && Regexp.last_match(2)
 
@@ -64,7 +63,7 @@ module Liquid
     end
 
     def nodelist
-      []
+      [@body]
     end
 
     private
