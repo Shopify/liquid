@@ -174,11 +174,11 @@ class DocTagUnitTest < Minitest::Test
 
   def test_doc_tag_delimiter_handling
     assert_template_result('', <<~LIQUID.chomp)
-      {% if true %}
-        {% doc %}
-          {% docEXTRA %}wut{% enddocEXTRA %}xyz
-        {% enddoc %}
-      {% endif %}
+      {%- if true -%}
+        {%- doc -%}
+          {%- docEXTRA -%}wut{% enddocEXTRA -%}xyz
+        {%- enddoc -%}
+      {%- endif -%}
     LIQUID
 
     assert_template_result('', "{% doc %}123{% enddoc xyz %}")

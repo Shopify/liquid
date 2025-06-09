@@ -59,7 +59,7 @@ module Liquid
     end
 
     def blank?
-      true
+      @body.empty?
     end
 
     def nodelist
