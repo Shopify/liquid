@@ -36,6 +36,8 @@ module Liquid
     end
 
     def parse(tokens)
+      @body = +""
+
       while (token = tokens.shift)
         tag_name = token =~ BlockBody::FullTokenPossiblyInvalid && Regexp.last_match(2)
 
@@ -43,8 +45,10 @@ module Liquid
 
         if tag_name == block_delimiter
           parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
+          @body << Regexp.last_match(1) if Regexp.last_match(1) != ""
           return
         end
+        @body << token unless token.empty?
       end
 
       raise_tag_never_closed(block_name)
@@ -55,11 +59,11 @@ module Liquid
     end
 
     def blank?
-      true
+      @body.empty?
     end
 
     def nodelist
-      []
+      [@body]
     end
 
     private
