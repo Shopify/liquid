@@ -7,6 +7,10 @@ module Liquid
   # @liquid_name increment
   # @liquid_summary
   #   Creates a new variable, with a default value of 0, that's increased by 1 with each subsequent call.
+  #
+  #   > Caution:
+  #   > Predefined Liquid objects can be overridden by variables with the same name.
+  #   > To make sure that you can access all Liquid objects, make sure that your variable name doesn't match a predefined object's name.
   # @liquid_description
   #   Variables that are declared with `increment` are unique to the [layout](/themes/architecture/layouts), [template](/themes/architecture/templates),
   #   or [section](/themes/architecture/sections) file that they're created in. However, the variable is shared across
