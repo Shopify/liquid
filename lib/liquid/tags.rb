@@ -19,6 +19,7 @@ require_relative "tags/comment"
 require_relative "tags/raw"
 require_relative "tags/render"
 require_relative "tags/cycle"
+require_relative "tags/doc"
 
 module Liquid
   module Tags
@@ -42,6 +43,7 @@ module Liquid
       'if' => If,
       'echo' => Echo,
       'tablerow' => TableRow,
+      'doc' => Doc,
     }.freeze
   end
 end

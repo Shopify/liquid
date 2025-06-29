@@ -89,5 +89,101 @@ module Liquid
       # Otherwise return the object itself
       obj
     end
+
+    def self.to_s(obj, seen = {})
+      case obj
+      when Hash
+        # If the custom hash implementation overrides `#to_s`, use their
+        # custom implementation. Otherwise we use Liquid's default
+        # implementation.
+        if obj.class.instance_method(:to_s) == HASH_TO_S_METHOD
+          hash_inspect(obj, seen)
+        else
+          obj.to_s
+        end
+      when Array
+        array_inspect(obj, seen)
+      else
+        obj.to_s
+      end
+    end
+
+    def self.inspect(obj, seen = {})
+      case obj
+      when Hash
+        # If the custom hash implementation overrides `#inspect`, use their
+        # custom implementation. Otherwise we use Liquid's default
+        # implementation.
+        if obj.class.instance_method(:inspect) == HASH_INSPECT_METHOD
+          hash_inspect(obj, seen)
+        else
+          obj.inspect
+        end
+      when Array
+        array_inspect(obj, seen)
+      else
+        obj.inspect
+      end
+    end
+
+    def self.array_inspect(arr, seen = {})
+      if seen[arr.object_id]
+        return "[...]"
+      end
+
+      seen[arr.object_id] = true
+      str = +"["
+      cursor = 0
+      len = arr.length
+
+      while cursor < len
+        if cursor > 0
+          str << ", "
+        end
+
+        item_str = inspect(arr[cursor], seen)
+        str << item_str
+        cursor += 1
+      end
+
+      str << "]"
+      str
+    ensure
+      seen.delete(arr.object_id)
+    end
+
+    def self.hash_inspect(hash, seen = {})
+      if seen[hash.object_id]
+        return "{...}"
+      end
+      seen[hash.object_id] = true
+
+      str = +"{"
+      first = true
+      hash.each do |key, value|
+        if first
+          first = false
+        else
+          str << ", "
+        end
+
+        key_str = inspect(key, seen)
+        str << key_str
+        str << "=>"
+
+        value_str = inspect(value, seen)
+        str << value_str
+      end
+      str << "}"
+      str
+    ensure
+      seen.delete(hash.object_id)
+    end
+
+    HASH_TO_S_METHOD = Hash.instance_method(:to_s)
+    private_constant :HASH_TO_S_METHOD
+
+    HASH_INSPECT_METHOD = Hash.instance_method(:inspect)
+    private_constant :HASH_INSPECT_METHOD
   end
 end

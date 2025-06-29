@@ -15,11 +15,6 @@ if (env_mode = ENV['LIQUID_PARSER_MODE'])
 end
 Liquid::Environment.default.error_mode = mode
 
-if ENV['LIQUID_C'] == '1'
-  puts "-- LIQUID C"
-  require 'liquid/c'
-end
-
 if Minitest.const_defined?('Test')
   # We're on Minitest 5+. Nothing to do here.
 else
@@ -148,6 +143,35 @@ class BooleanDrop < Liquid::Drop
 
   def to_s
     @value ? "Yay" : "Nay"
+  end
+end
+
+class StringDrop < Liquid::Drop
+  include Comparable
+
+  def initialize(value)
+    super()
+    @value = value
+  end
+
+  def to_liquid_value
+    @value
+  end
+
+  def to_s
+    @value
+  end
+
+  def to_str
+    @value
+  end
+
+  def inspect
+    "#<StringDrop @value=#{@value.inspect}>"
+  end
+
+  def <=>(other)
+    to_liquid_value <=> Liquid::Utils.to_liquid_value(other)
   end
 end
 

@@ -10,7 +10,7 @@ module Liquid
   # @liquid_description
   #   Variables that are declared with `decrement` are unique to the [layout](/themes/architecture/layouts), [template](/themes/architecture/templates),
   #   or [section](/themes/architecture/sections) file that they're created in. However, the variable is shared across
-  #   [snippets](/themes/architecture#snippets) included in the file.
+  #   [snippets](/themes/architecture/snippets) included in the file.
   #
   #   Similarly, variables that are created with `decrement` are independent from those created with [`assign`](/docs/api/liquid/tags/assign)
   #   and [`capture`](/docs/api/liquid/tags/capture). However, `decrement` and [`increment`](/docs/api/liquid/tags/increment) share

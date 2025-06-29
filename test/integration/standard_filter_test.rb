@@ -133,6 +133,18 @@ class StandardFiltersTest < Minitest::Test
     assert_equal([], @filters.slice(input, -(1 << 63), 6))
   end
 
+  def test_find_on_empty_array
+    assert_nil(@filters.find([], 'foo', 'bar'))
+  end
+
+  def test_find_index_on_empty_array
+    assert_nil(@filters.find_index([], 'foo', 'bar'))
+  end
+
+  def test_has_on_empty_array
+    refute(@filters.has([], 'foo', 'bar'))
+  end
+
   def test_truncate
     assert_equal('1234...', @filters.truncate('1234567890', 7))
     assert_equal('1234567890', @filters.truncate('1234567890', 20))
@@ -285,6 +297,16 @@ class StandardFiltersTest < Minitest::Test
     assert_equal('1 2 3 4', @filters.join([1, 2, 3, 4]))
     assert_equal('1 - 2 - 3 - 4', @filters.join([1, 2, 3, 4], ' - '))
     assert_equal('1121314', @filters.join([1, 2, 3, 4], 1))
+  end
+
+  def test_join_calls_to_liquid_on_each_element
+    drop = Class.new(Liquid::Drop) do
+      def to_liquid
+        'i did it'
+      end
+    end
+
+    assert_equal('i did it, i did it', @filters.join([drop.new, drop.new], ", "))
   end
 
   def test_sort
@@ -544,12 +566,23 @@ class StandardFiltersTest < Minitest::Test
     end
   end
 
-  def test_map_returns_empty_with_no_property
+  def test_map_with_value_property
+    array = [
+      { "handle" => "alpha", "value" => "A" },
+      { "handle" => "beta", "value" => "B" },
+      { "handle" => "gamma", "value" => "C" }
+    ]
+
+    assert_template_result("A B C", "{{ array | map: 'value' | join: ' ' }}", { "array" => array })
+  end
+
+  def test_map_returns_input_with_no_property
     foo = [
       [1],
       [2],
       [3],
     ]
+
     assert_raises(Liquid::ArgumentError) do
       @filters.map(foo, nil)
     end
@@ -833,21 +866,233 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result('abc', "{{ 'abc' | date: '%D' }}")
   end
 
-  def test_where
-    input = [
+  def test_reject
+    array = [
       { "handle" => "alpha", "ok" => true },
       { "handle" => "beta", "ok" => false },
       { "handle" => "gamma", "ok" => false },
       { "handle" => "delta", "ok" => true },
     ]
 
-    expectation = [
+    template = "{{ array | reject: 'ok' | map: 'handle' | join: ' ' }}"
+    expected_output = "beta gamma"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_reject_with_value
+    array = [
       { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
       { "handle" => "delta", "ok" => true },
     ]
 
-    assert_equal(expectation, @filters.where(input, "ok", true))
-    assert_equal(expectation, @filters.where(input, "ok"))
+    template = "{{ array | reject: 'ok', true | map: 'handle' | join: ' ' }}"
+    expected_output = "beta gamma"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_reject_with_false_value
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | reject: 'ok', false | map: 'handle' | join: ' ' }}"
+    expected_output = "alpha delta"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_has
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => false },
+    ]
+
+    expected_output = "true"
+
+    assert_template_result(expected_output, "{{ array | has: 'ok' }}", { "array" => array })
+    assert_template_result(expected_output, "{{ array | has: 'ok', true }}", { "array" => array })
+  end
+
+  def test_has_when_does_not_have_it
+    array = [
+      { "handle" => "alpha", "ok" => false },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => false },
+    ]
+
+    expected_output = "false"
+
+    assert_template_result(expected_output, "{{ array | has: 'ok' }}", { "array" => array })
+    assert_template_result(expected_output, "{{ array | has: 'ok', true }}", { "array" => array })
+  end
+
+  def test_has_with_empty_arrays
+    template = <<~LIQUID
+      {%- assign has_product = products | has: 'title.content', 'Not found' -%}
+      {%- unless has_product -%}
+        Product not found.
+      {%- endunless -%}
+    LIQUID
+    expected_output = "Product not found."
+
+    assert_template_result(expected_output, template, { "products" => [] })
+  end
+
+  def test_has_with_false_value
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | has: 'ok', false }}"
+    expected_output = "true"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_has_with_false_value_when_does_not_have_it
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => true },
+      { "handle" => "gamma", "ok" => true },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | has: 'ok', false }}"
+    expected_output = "false"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_find_with_value
+    products = [
+      { "title" => "Pro goggles",    "price" => 1299 },
+      { "title" => "Thermal gloves", "price" => 1499 },
+      { "title" => "Alpine jacket",  "price" => 3999 },
+      { "title" => "Mountain boots", "price" => 3899 },
+      { "title" => "Safety helmet",  "price" => 1999 }
+    ]
+
+    template = <<~LIQUID
+      {%- assign product = products | find: 'price', 3999 -%}
+      {{- product.title -}}
+    LIQUID
+    expected_output = "Alpine jacket"
+
+    assert_template_result(expected_output, template, { "products" => products })
+  end
+
+  def test_find_with_empty_arrays
+    template = <<~LIQUID
+      {%- assign product = products | find: 'title.content', 'Not found' -%}
+      {%- unless product -%}
+        Product not found.
+      {%- endunless -%}
+    LIQUID
+    expected_output = "Product not found."
+
+    assert_template_result(expected_output, template, { "products" => [] })
+  end
+
+  def test_find_index_with_value
+    products = [
+      { "title" => "Pro goggles",    "price" => 1299 },
+      { "title" => "Thermal gloves", "price" => 1499 },
+      { "title" => "Alpine jacket",  "price" => 3999 },
+      { "title" => "Mountain boots", "price" => 3899 },
+      { "title" => "Safety helmet",  "price" => 1999 }
+    ]
+
+    template = <<~LIQUID
+      {%- assign index = products | find_index: 'price', 3999 -%}
+      {{- index -}}
+    LIQUID
+    expected_output = "2"
+
+    assert_template_result(expected_output, template, { "products" => products })
+  end
+
+  def test_find_index_with_empty_arrays
+    template = <<~LIQUID
+      {%- assign index = products | find_index: 'title.content', 'Not found' -%}
+      {%- unless index -%}
+        Index not found.
+      {%- endunless -%}
+    LIQUID
+    expected_output = "Index not found."
+
+    assert_template_result(expected_output, template, { "products" => [] })
+  end
+
+  def test_where
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | where: 'ok' | map: 'handle' | join: ' ' }}"
+    expected_output = "alpha delta"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_where_with_empty_string_is_a_no_op
+    environment = { "array" => ["alpha", "beta", "gamma"] }
+    expected_output = "alpha beta gamma"
+    template = "{{ array | where: '' | join: ' ' }}"
+
+    assert_template_result(expected_output, template, environment)
+  end
+
+  def test_where_with_nil_is_a_no_op
+    environment = { "array" => ["alpha", "beta", "gamma"] }
+    template = "{{ array | where: nil | join: ' ' }}"
+
+    assert_raises(Liquid::ArgumentError) do
+      assert_template_result("alpha beta gamma", template, environment)
+    end
+  end
+
+  def test_where_with_value
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | where: 'ok', true | map: 'handle' | join: ' ' }}"
+    expected_output = "alpha delta"
+
+    assert_template_result(expected_output, template, { "array" => array })
+  end
+
+  def test_where_with_false_value
+    array = [
+      { "handle" => "alpha", "ok" => true },
+      { "handle" => "beta", "ok" => false },
+      { "handle" => "gamma", "ok" => false },
+      { "handle" => "delta", "ok" => true },
+    ]
+
+    template = "{{ array | where: 'ok', false | map: 'handle' | join: ' ' }}"
+    expected_output = "beta gamma"
+
+    assert_template_result(expected_output, template, { "array" => array })
   end
 
   def test_where_string_keys
@@ -1055,6 +1300,33 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result("1.2", "{{ input | sum: 'quantity' }}", { "input" => input })
     assert_template_result("0.1", "{{ input | sum: 'weight' }}", { "input" => input })
     assert_template_result("0", "{{ input | sum: 'subtotal' }}", { "input" => input })
+  end
+
+  def test_sum_with_non_string_property
+    input = [{ true => 1 }, { 1.0 => 0.2, 1 => -0.3 }, { 1..5 => 0.4 }]
+
+    assert_equal(1, @filters.sum(input, true))
+    assert_equal(0.2, @filters.sum(input, 1.0))
+    assert_equal(-0.3, @filters.sum(input, 1))
+    assert_equal(0.4, @filters.sum(input, (1..5)))
+    assert_equal(0, @filters.sum(input, nil))
+    assert_equal(0, @filters.sum(input, ""))
+  end
+
+  def test_uniq_with_to_liquid_value
+    input = [StringDrop.new("foo"), StringDrop.new("bar"), "foo"]
+    expected = [StringDrop.new("foo"), StringDrop.new("bar")]
+    result = @filters.uniq(input)
+
+    assert_equal(expected, result)
+  end
+
+  def test_uniq_with_to_liquid_value_pick_correct_classes
+    input = ["foo", StringDrop.new("foo"), StringDrop.new("bar")]
+    expected = [String, StringDrop]
+    result = @filters.uniq(input).map(&:class)
+
+    assert_equal(expected, result)
   end
 
   private
