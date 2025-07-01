@@ -11,7 +11,7 @@ module Liquid
   #   The `tablerow` tag must be wrapped in HTML `<table>` and `</table>` tags.
   #
   #   > Tip:
-  #   > Every `tablerow` loop has an associated [`tablerowloop` object](/api/liquid/objects#tablerowloop) with information about the loop.
+  #   > Every `tablerow` loop has an associated [`tablerowloop` object](/docs/api/liquid/objects/tablerowloop) with information about the loop.
   # @liquid_syntax
   #   {% tablerow variable in array %}
   #     expression
@@ -45,13 +45,13 @@ module Liquid
     def render_to_output_buffer(context, output)
       (collection = context.evaluate(@collection_name)) || (return '')
 
-      from = @attributes.key?('offset') ? context.evaluate(@attributes['offset']).to_i : 0
-      to   = @attributes.key?('limit')  ? from + context.evaluate(@attributes['limit']).to_i : nil
+      from = @attributes.key?('offset') ? to_integer(context.evaluate(@attributes['offset'])) : 0
+      to = @attributes.key?('limit') ? from + to_integer(context.evaluate(@attributes['limit'])) : nil
 
       collection = Utils.slice_collection(collection, from, to)
       length     = collection.length
 
-      cols = @attributes['cols'].nil? ? length : context.evaluate(@attributes['cols']).to_i
+      cols = @attributes.key?('cols') ? to_integer(context.evaluate(@attributes['cols'])) : length
 
       output << "<tr class=\"row1\">\n"
       context.stack do
@@ -64,6 +64,12 @@ module Liquid
           output << "<td class=\"col#{tablerowloop.col}\">"
           super
           output << '</td>'
+
+          # Handle any interrupts if they exist.
+          if context.interrupt?
+            interrupt = context.pop_interrupt
+            break if interrupt.is_a?(BreakInterrupt)
+          end
 
           if tablerowloop.col_last && !tablerowloop.last
             output << "</tr>\n<tr class=\"row#{tablerowloop.row + 1}\">"
@@ -82,7 +88,13 @@ module Liquid
         super + @node.attributes.values + [@node.collection_name]
       end
     end
-  end
 
-  Template.register_tag('tablerow', TableRow)
+    private
+
+    def to_integer(value)
+      value.to_i
+    rescue NoMethodError
+      raise Liquid::ArgumentError, "invalid integer"
+    end
+  end
 end

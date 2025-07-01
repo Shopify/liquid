@@ -77,7 +77,7 @@ module Liquid
         end
 
         result = Liquid::Utils.to_liquid_value(
-          block.evaluate(context)
+          block.evaluate(context),
         )
 
         if result
@@ -123,6 +123,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('case', Case)
 end

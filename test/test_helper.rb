@@ -13,12 +13,7 @@ if (env_mode = ENV['LIQUID_PARSER_MODE'])
   puts "-- #{env_mode.upcase} ERROR MODE"
   mode = env_mode.to_sym
 end
-Liquid::Template.error_mode = mode
-
-if ENV['LIQUID_C'] == '1'
-  puts "-- LIQUID C"
-  require 'liquid/c'
-end
+Liquid::Environment.default.error_mode = mode
 
 if Minitest.const_defined?('Test')
   # We're on Minitest 5+. Nothing to do here.
@@ -39,12 +34,14 @@ module Minitest
 
     def assert_template_result(
       expected, template, assigns = {},
-      message: nil, partials: nil, error_mode: nil, render_errors: false
+      message: nil, partials: nil, error_mode: nil, render_errors: false,
+      template_factory: nil
     )
-      template = Liquid::Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym)
-      file_system = StubFileSystem.new(partials) if partials
-      registers = Liquid::Registers.new(file_system: file_system)
-      context = Liquid::Context.build(environments: assigns, rethrow_errors: !render_errors, registers: registers)
+      file_system = StubFileSystem.new(partials || {})
+      environment = Liquid::Environment.build(file_system: file_system)
+      template = Liquid::Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym, environment: environment)
+      registers = Liquid::Registers.new(file_system: file_system, template_factory: template_factory)
+      context = Liquid::Context.build(static_environments: assigns, rethrow_errors: !render_errors, registers: registers, environment: environment)
       output = template.render(context)
       assert_equal(expected, output, message)
     end
@@ -77,44 +74,27 @@ module Minitest
       assert_equal(times, calls, "Number of calls to Usage.increment with #{name.inspect}")
     end
 
-    def with_global_filter(*globals)
-      original_global_cache = Liquid::StrainerFactory::GlobalCache
-      Liquid::StrainerFactory.send(:remove_const, :GlobalCache)
-      Liquid::StrainerFactory.const_set(:GlobalCache, Class.new(Liquid::StrainerTemplate))
+    def with_global_filter(*globals, &blk)
+      environment = Liquid::Environment.build do |w|
+        w.register_filters(globals)
+      end
 
-      globals.each do |global|
-        Liquid::Template.register_filter(global)
-      end
-      Liquid::StrainerFactory.send(:strainer_class_cache).clear
-      begin
-        yield
-      ensure
-        Liquid::StrainerFactory.send(:remove_const, :GlobalCache)
-        Liquid::StrainerFactory.const_set(:GlobalCache, original_global_cache)
-        Liquid::StrainerFactory.send(:strainer_class_cache).clear
-      end
+      Environment.dangerously_override(environment, &blk)
     end
 
     def with_error_mode(mode)
-      old_mode = Liquid::Template.error_mode
-      Liquid::Template.error_mode = mode
+      old_mode = Liquid::Environment.default.error_mode
+      Liquid::Environment.default.error_mode = mode
       yield
     ensure
-      Liquid::Template.error_mode = old_mode
+      Liquid::Environment.default.error_mode = old_mode
     end
 
-    def with_custom_tag(tag_name, tag_class)
-      old_tag = Liquid::Template.tags[tag_name]
-      begin
-        Liquid::Template.register_tag(tag_name, tag_class)
-        yield
-      ensure
-        if old_tag
-          Liquid::Template.tags[tag_name] = old_tag
-        else
-          Liquid::Template.tags.delete(tag_name)
-        end
-      end
+    def with_custom_tag(tag_name, tag_class, &block)
+      environment = Liquid::Environment.default.dup
+      environment.register_tag(tag_name, tag_class)
+
+      Environment.dangerously_override(environment, &block)
     end
   end
 end
@@ -125,14 +105,21 @@ class ThingWithToLiquid
   end
 end
 
+class SettingsDrop < Liquid::Drop
+  def initialize(settings)
+    super()
+    @settings = settings
+  end
+
+  def liquid_method_missing(key)
+    @settings[key]
+  end
+end
+
 class IntegerDrop < Liquid::Drop
   def initialize(value)
     super()
     @value = value.to_i
-  end
-
-  def ==(other)
-    @value == other
   end
 
   def to_s
@@ -150,8 +137,21 @@ class BooleanDrop < Liquid::Drop
     @value = value
   end
 
-  def ==(other)
-    @value == other
+  def to_liquid_value
+    @value
+  end
+
+  def to_s
+    @value ? "Yay" : "Nay"
+  end
+end
+
+class StringDrop < Liquid::Drop
+  include Comparable
+
+  def initialize(value)
+    super()
+    @value = value
   end
 
   def to_liquid_value
@@ -159,7 +159,19 @@ class BooleanDrop < Liquid::Drop
   end
 
   def to_s
-    @value ? "Yay" : "Nay"
+    @value
+  end
+
+  def to_str
+    @value
+  end
+
+  def inspect
+    "#<StringDrop @value=#{@value.inspect}>"
+  end
+
+  def <=>(other)
+    to_liquid_value <=> Liquid::Utils.to_liquid_value(other)
   end
 end
 
@@ -206,8 +218,10 @@ class StubTemplateFactory
     @count = 0
   end
 
-  def for(_template_name)
+  def for(template_name)
     @count += 1
-    Liquid::Template.new
+    template = Liquid::Template.new
+    template.name = "some/path/" + template_name
+    template
   end
 end

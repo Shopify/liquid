@@ -68,22 +68,34 @@ class FiltersTest < Minitest::Test
 
   def test_sort
     assert_template_result("1 2 3 4", "{{numbers | sort | join}}", { "numbers" => [2, 1, 4, 3] })
-    assert_template_result("alphabetic as expected", "{{words | sort | join}}",
-      { "words" => ['expected', 'as', 'alphabetic'] })
+    assert_template_result(
+      "alphabetic as expected",
+      "{{words | sort | join}}",
+      { "words" => ['expected', 'as', 'alphabetic'] },
+    )
     assert_template_result("3", "{{value | sort}}", { "value" => 3 })
     assert_template_result('are flower', "{{arrays | sort | join}}", { 'arrays' => ['flower', 'are'] })
-    assert_template_result("Expected case sensitive", "{{case_sensitive | sort | join}}",
-      { "case_sensitive" => ["sensitive", "Expected", "case"] })
+    assert_template_result(
+      "Expected case sensitive",
+      "{{case_sensitive | sort | join}}",
+      { "case_sensitive" => ["sensitive", "Expected", "case"] },
+    )
   end
 
   def test_sort_natural
     # Test strings
-    assert_template_result("Assert case Insensitive", "{{words | sort_natural | join}}",
-      { "words" => ["case", "Assert", "Insensitive"] })
+    assert_template_result(
+      "Assert case Insensitive",
+      "{{words | sort_natural | join}}",
+      { "words" => ["case", "Assert", "Insensitive"] },
+    )
 
     # Test hashes
-    assert_template_result("A b C", "{{hashes | sort_natural: 'a' | map: 'a' | join}}",
-      { "hashes" => [{ "a" => "A" }, { "a" => "b" }, { "a" => "C" }] })
+    assert_template_result(
+      "A b C",
+      "{{hashes | sort_natural: 'a' | map: 'a' | join}}",
+      { "hashes" => [{ "a" => "A" }, { "a" => "b" }, { "a" => "C" }] },
+    )
 
     # Test objects
     @context['objects'] = [TestObject.new('A'), TestObject.new('b'), TestObject.new('C')]
@@ -92,12 +104,18 @@ class FiltersTest < Minitest::Test
 
   def test_compact
     # Test strings
-    assert_template_result("a b c", "{{words | compact | join}}",
-      { "words" => ['a', nil, 'b', nil, 'c'] })
+    assert_template_result(
+      "a b c",
+      "{{words | compact | join}}",
+      { "words" => ['a', nil, 'b', nil, 'c'] },
+    )
 
     # Test hashes
-    assert_template_result("A C", "{{hashes | compact: 'a' | map: 'a' | join}}",
-      { "hashes" => [{ "a" => "A" }, { "a" => nil }, { "a" => "C" }] })
+    assert_template_result(
+      "A C",
+      "{{hashes | compact: 'a' | map: 'a' | join}}",
+      { "hashes" => [{ "a" => "A" }, { "a" => nil }, { "a" => "C" }] },
+    )
 
     # Test objects
     @context['objects'] = [TestObject.new('A'), TestObject.new(nil), TestObject.new('C')]
@@ -109,8 +127,11 @@ class FiltersTest < Minitest::Test
   end
 
   def test_strip_html_ignore_comments_with_html
-    assert_template_result("bla blub", "{{ var | strip_html }}",
-      { "var" => "<!-- split and some <ul> tag --><b>bla blub</a>" })
+    assert_template_result(
+      "bla blub",
+      "{{ var | strip_html }}",
+      { "var" => "<!-- split and some <ul> tag --><b>bla blub</a>" },
+    )
   end
 
   def test_capitalize

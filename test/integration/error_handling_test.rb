@@ -105,7 +105,8 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_parsing_warn_with_line_numbers_adds_numbers_to_lexer_errors
-    template = Liquid::Template.parse('
+    template = Liquid::Template.parse(
+      '
         foobar
 
         {% if 1 =! 2 %}ok{% endif %}
@@ -113,15 +114,19 @@ class ErrorHandlingTest < Minitest::Test
         bla
             ',
       error_mode: :warn,
-      line_numbers: true)
+      line_numbers: true,
+    )
 
-    assert_equal(['Liquid syntax error (line 4): Unexpected character = in "1 =! 2"'],
-      template.warnings.map(&:message))
+    assert_equal(
+      ['Liquid syntax error (line 4): Unexpected character = in "1 =! 2"'],
+      template.warnings.map(&:message),
+    )
   end
 
   def test_parsing_strict_with_line_numbers_adds_numbers_to_lexer_errors
     err = assert_raises(SyntaxError) do
-      Liquid::Template.parse('
+      Liquid::Template.parse(
+        '
           foobar
 
           {% if 1 =! 2 %}ok{% endif %}
@@ -129,7 +134,8 @@ class ErrorHandlingTest < Minitest::Test
           bla
                 ',
         error_mode: :strict,
-        line_numbers: true)
+        line_numbers: true,
+      )
     end
 
     assert_equal('Liquid syntax error (line 4): Unexpected character = in "1 =! 2"', err.message)
@@ -197,20 +203,34 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_setting_default_exception_renderer
-    old_exception_renderer = Liquid::Template.default_exception_renderer
     exceptions = []
-    Liquid::Template.default_exception_renderer = ->(e) {
+    default_exception_renderer = ->(e) {
       exceptions << e
       ''
     }
-    template = Liquid::Template.parse('This is a runtime error: {{ errors.argument_error }}')
+
+    env = Liquid::Environment.build(exception_renderer: default_exception_renderer)
+    template = Liquid::Template.parse('This is a runtime error: {{ errors.argument_error }}', environment: env)
 
     output = template.render('errors' => ErrorDrop.new)
 
     assert_equal('This is a runtime error: ', output)
     assert_equal([Liquid::ArgumentError], template.errors.map(&:class))
-  ensure
-    Liquid::Template.default_exception_renderer = old_exception_renderer if old_exception_renderer
+  end
+
+  def test_setting_exception_renderer_on_environment
+    exceptions = []
+    exception_renderer = ->(e) do
+      exceptions << e
+      ''
+    end
+
+    environment = Liquid::Environment.build(exception_renderer: exception_renderer)
+    template = Liquid::Template.parse('This is a runtime error: {{ errors.argument_error }}', environment: environment)
+    output = template.render('errors' => ErrorDrop.new)
+
+    assert_equal('This is a runtime error: ', output)
+    assert_equal([Liquid::ArgumentError], template.errors.map(&:class))
   end
 
   def test_exception_renderer_exposing_non_liquid_error
@@ -236,16 +256,10 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_included_template_name_with_line_numbers
-    old_file_system = Liquid::Template.file_system
+    environment = Liquid::Environment.build(file_system: TestFileSystem.new)
+    template = Liquid::Template.parse("Argument error:\n{% include 'product' %}", line_numbers: true, environment: environment)
+    page     = template.render('errors' => ErrorDrop.new)
 
-    begin
-      Liquid::Template.file_system = TestFileSystem.new
-
-      template = Liquid::Template.parse("Argument error:\n{% include 'product' %}", line_numbers: true)
-      page     = template.render('errors' => ErrorDrop.new)
-    ensure
-      Liquid::Template.file_system = old_file_system
-    end
     assert_equal("Argument error:\nLiquid error (product line 1): argument error", page)
     assert_equal("product", template.errors.first.template_name)
   end
@@ -256,5 +270,82 @@ class ErrorHandlingTest < Minitest::Test
 
     output = Liquid::Template.parse("{% assign x = 0 %}{% if 1 < '2' %}{% assign x = 3 %}{% endif %}{{ x }}").render
     assert_equal("0", output)
+  end
+
+  def test_syntax_error_is_raised_with_template_name
+    file_system = StubFileSystem.new("snippet" => "1\n2\n{{ 1")
+
+    context = Liquid::Context.build(
+      registers: { file_system: file_system },
+    )
+
+    template = Template.parse(
+      '{% render "snippet" %}',
+      line_numbers: true,
+    )
+    template.name = "template/index"
+
+    assert_equal(
+      "Liquid syntax error (snippet line 3): Variable '{{' was not properly terminated with regexp: /\\}\\}/",
+      template.render(context),
+    )
+  end
+
+  def test_syntax_error_is_raised_with_template_name_from_template_factory
+    file_system = StubFileSystem.new("snippet" => "1\n2\n{{ 1")
+
+    context = Liquid::Context.build(
+      registers: {
+        file_system: file_system,
+        template_factory: StubTemplateFactory.new,
+      },
+    )
+
+    template = Template.parse(
+      '{% render "snippet" %}',
+      line_numbers: true,
+    )
+    template.name = "template/index"
+
+    assert_equal(
+      "Liquid syntax error (some/path/snippet line 3): Variable '{{' was not properly terminated with regexp: /\\}\\}/",
+      template.render(context),
+    )
+  end
+
+  def test_error_is_raised_during_parse_with_template_name
+    depth = Liquid::Block::MAX_DEPTH + 1
+    code = "{% if true %}" * depth + "rendered" + "{% endif %}" * depth
+
+    template = Template.parse("{% render 'snippet' %}", line_numbers: true)
+
+    context = Liquid::Context.build(
+      registers: {
+        file_system: StubFileSystem.new("snippet" => code),
+        template_factory: StubTemplateFactory.new,
+      },
+    )
+
+    assert_equal("Liquid error (some/path/snippet line 1): Nesting too deep", template.render(context))
+  end
+
+  def test_internal_error_is_raised_with_template_name
+    template = Template.new
+    template.parse(
+      "{% render 'snippet' %}",
+      line_numbers: true,
+    )
+    template.name = "template/index"
+
+    context = Liquid::Context.build(
+      registers: {
+        file_system: StubFileSystem.new({}),
+      },
+    )
+
+    assert_equal(
+      "Liquid error (template/index line 1): internal",
+      template.render(context),
+    )
   end
 end

@@ -113,4 +113,37 @@ class LiquidTagTest < Minitest::Test
       {% raw %}{% liquid echo 'test' %}{% endraw %}
     LIQUID
   end
+
+  def test_nested_liquid_tags
+    assert_template_result('good', <<~LIQUID)
+      {%- liquid
+        liquid
+          if true
+            echo "good"
+          endif
+      -%}
+    LIQUID
+  end
+
+  def test_nested_liquid_tags_on_same_line
+    assert_template_result('good', <<~LIQUID)
+      {%- liquid liquid liquid echo "good" -%}
+    LIQUID
+  end
+
+  def test_nested_liquid_liquid_is_not_skipped_if_used_in_non_tag_position
+    assert_template_result('liquid', <<~LIQUID, { 'liquid' => 'liquid' })
+      {%- liquid liquid liquid echo liquid -%}
+    LIQUID
+  end
+
+  def test_next_liquid_with_unclosed_if_tag
+    assert_match_syntax_error("Liquid syntax error (line 2): 'if' tag was never closed", <<~LIQUID)
+      {%- liquid
+        liquid if true
+          echo "good"
+        endif
+      -%}
+    LIQUID
+  end
 end

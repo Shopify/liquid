@@ -11,11 +11,12 @@ require_relative 'shop_filter'
 require_relative 'tag_filter'
 require_relative 'weight_filter'
 
-Liquid::Template.register_tag('paginate', Paginate)
-Liquid::Template.register_tag('form', CommentForm)
+default_environment = Liquid::Environment.default
+default_environment.register_tag('paginate', Paginate)
+default_environment.register_tag('form', CommentForm)
 
-Liquid::Template.register_filter(JsonFilter)
-Liquid::Template.register_filter(MoneyFilter)
-Liquid::Template.register_filter(WeightFilter)
-Liquid::Template.register_filter(ShopFilter)
-Liquid::Template.register_filter(TagFilter)
+default_environment.register_filter(JsonFilter)
+default_environment.register_filter(MoneyFilter)
+default_environment.register_filter(WeightFilter)
+default_environment.register_filter(ShopFilter)
+default_environment.register_filter(TagFilter)

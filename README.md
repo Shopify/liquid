@@ -1,11 +1,11 @@
-[![Build Status](https://api.travis-ci.org/Shopify/liquid.svg?branch=master)](http://travis-ci.org/Shopify/liquid)
+[![Build status](https://github.com/Shopify/liquid/actions/workflows/liquid.yml/badge.svg)](https://github.com/Shopify/liquid/actions/workflows/liquid.yml)
 [![Inline docs](http://inch-ci.org/github/Shopify/liquid.svg?branch=master)](http://inch-ci.org/github/Shopify/liquid)
 
 # Liquid template engine
 
 * [Contributing guidelines](CONTRIBUTING.md)
 * [Version history](History.md)
-* [Liquid documentation from Shopify](https://shopify.dev/api/liquid)
+* [Liquid documentation from Shopify](https://shopify.dev/docs/api/liquid)
 * [Liquid Wiki at GitHub](https://github.com/Shopify/liquid/wiki)
 * [Website](http://liquidmarkup.org/)
 
@@ -52,6 +52,47 @@ For standard use you can just pass it the content of a file and call render with
 @template.render('name' => 'tobi')                # => "hi tobi"
 ```
 
+### Concept of Environments
+
+In Liquid, a "Environment" is a scoped environment that encapsulates custom tags, filters, and other configurations. This allows you to define and isolate different sets of functionality for different contexts, avoiding global overrides that can lead to conflicts and unexpected behavior.
+
+By using environments, you can:
+
+1. **Encapsulate Logic**: Keep the logic for different parts of your application separate.
+2. **Avoid Conflicts**: Prevent custom tags and filters from clashing with each other.
+3. **Improve Maintainability**: Make it easier to manage and understand the scope of customizations.
+4. **Enhance Security**: Limit the availability of certain tags and filters to specific contexts.
+
+We encourage the use of Environments over globally overriding things because it promotes better software design principles such as modularity, encapsulation, and separation of concerns.
+
+Here's an example of how you can define and use Environments in Liquid:
+
+```ruby
+user_environment = Liquid::Environment.build do |environment|
+  environment.register_tag("renderobj", RenderObjTag)
+end
+
+Liquid::Template.parse(<<~LIQUID, environment: user_environment)
+  {% renderobj src: "path/to/model.obj" %}
+LIQUID
+```
+
+In this example, `RenderObjTag` is a custom tag that is only available within the `user_environment`.
+
+Similarly, you can define another environment for a different context, such as email templates:
+
+```ruby
+email_environment = Liquid::Environment.build do |environment|
+  environment.register_tag("unsubscribe_footer", UnsubscribeFooter)
+end
+
+Liquid::Template.parse(<<~LIQUID, environment: email_environment)
+  {% unsubscribe_footer %}
+LIQUID
+```
+
+By using Environments, you ensure that custom tags and filters are only available in the contexts where they are needed, making your Liquid templates more robust and easier to manage. For smaller projects, a global environment is available via `Liquid::Environment.default`.
+
 ### Error Modes
 
 Setting the error mode of Liquid lets you specify how strictly you want your templates to be interpreted.
@@ -62,9 +103,10 @@ Liquid also comes with a stricter parser that can be used when editing templates
 when templates are invalid. You can enable this new parser like this:
 
 ```ruby
-Liquid::Template.error_mode = :strict # Raises a SyntaxError when invalid syntax is used
-Liquid::Template.error_mode = :warn # Adds strict errors to template.errors but continues as normal
-Liquid::Template.error_mode = :lax # The default mode, accepts almost anything.
+Liquid::Environment.default.error_mode = :strict
+Liquid::Environment.default.error_mode = :strict # Raises a SyntaxError when invalid syntax is used
+Liquid::Environment.default.error_mode = :warn # Adds strict errors to template.errors but continues as normal
+Liquid::Environment.default.error_mode = :lax # The default mode, accepts almost anything.
 ```
 
 If you want to set the error mode only on specific templates you can pass `:error_mode` as an option to `parse`:

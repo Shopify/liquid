@@ -93,10 +93,12 @@ class TemplateTest < Minitest::Test
 
   def test_lambda_is_called_once_from_custom_assigns_over_multiple_parses_and_renders
     t = Template.new
-    assigns = { 'number' => -> {
-                              @global ||= 0
-                              @global  += 1
-                            } }
+    assigns = {
+      'number' => -> {
+        @global ||= 0
+        @global += 1
+      },
+    }
     assert_equal('1', t.parse("{{number}}").render!(assigns))
     assert_equal('1', t.parse("{{number}}").render!(assigns))
     assert_equal('1', t.render!(assigns))
@@ -334,5 +336,23 @@ class TemplateTest < Minitest::Test
     output = Template.parse(source).render!
     assert_equal("x=2", output)
     assert_instance_of(String, output)
+  end
+
+  def test_raises_error_with_invalid_utf8
+    e = assert_raises(TemplateEncodingError) do
+      Template.parse(<<~LIQUID)
+        {% comment %}
+          \xC0
+        {% endcomment %}
+      LIQUID
+    end
+
+    assert_equal('Liquid error: Invalid template encoding', e.message)
+  end
+
+  def test_allows_non_string_values_as_source
+    assert_equal('', Template.parse(nil).render)
+    assert_equal('1', Template.parse(1).render)
+    assert_equal('true', Template.parse(true).render)
   end
 end

@@ -15,7 +15,7 @@ module Liquid
   # @liquid_category iteration
   # @liquid_name break
   # @liquid_summary
-  #   Stops a [`for` loop](/api/liquid/tags#for) from iterating.
+  #   Stops a [`for` loop](/docs/api/liquid/tags/for) from iterating.
   # @liquid_syntax
   #   {% break %}
   class Break < Tag
@@ -26,6 +26,4 @@ module Liquid
       output
     end
   end
-
-  Template.register_tag('break', Break)
 end

@@ -18,52 +18,122 @@ class TableRowTest < Minitest::Test
   end
 
   def test_table_row
-    assert_template_result("<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
       '{% tablerow n in numbers cols:3%} {{n}} {% endtablerow %}',
-      { 'numbers' => [1, 2, 3, 4, 5, 6] })
+      { 'numbers' => [1, 2, 3, 4, 5, 6] },
+    )
 
-    assert_template_result("<tr class=\"row1\">\n</tr>\n",
+    assert_template_result(
+      "<tr class=\"row1\">\n</tr>\n",
       '{% tablerow n in numbers cols:3%} {{n}} {% endtablerow %}',
-      { 'numbers' => [] })
+      { 'numbers' => [] },
+    )
   end
 
   def test_table_row_with_different_cols
-    assert_template_result("<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td><td class=\"col4\"> 4 </td><td class=\"col5\"> 5 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 6 </td></tr>\n",
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td><td class=\"col4\"> 4 </td><td class=\"col5\"> 5 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 6 </td></tr>\n",
       '{% tablerow n in numbers cols:5%} {{n}} {% endtablerow %}',
-      { 'numbers' => [1, 2, 3, 4, 5, 6] })
+      { 'numbers' => [1, 2, 3, 4, 5, 6] },
+    )
   end
 
   def test_table_col_counter
-    assert_template_result("<tr class=\"row1\">\n<td class=\"col1\">1</td><td class=\"col2\">2</td></tr>\n<tr class=\"row2\"><td class=\"col1\">1</td><td class=\"col2\">2</td></tr>\n<tr class=\"row3\"><td class=\"col1\">1</td><td class=\"col2\">2</td></tr>\n",
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\">1</td><td class=\"col2\">2</td></tr>\n<tr class=\"row2\"><td class=\"col1\">1</td><td class=\"col2\">2</td></tr>\n<tr class=\"row3\"><td class=\"col1\">1</td><td class=\"col2\">2</td></tr>\n",
       '{% tablerow n in numbers cols:2%}{{tablerowloop.col}}{% endtablerow %}',
-      { 'numbers' => [1, 2, 3, 4, 5, 6] })
+      { 'numbers' => [1, 2, 3, 4, 5, 6] },
+    )
   end
 
   def test_quoted_fragment
-    assert_template_result("<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
       "{% tablerow n in collections.frontpage cols:3%} {{n}} {% endtablerow %}",
-      { 'collections' => { 'frontpage' => [1, 2, 3, 4, 5, 6] } })
-    assert_template_result("<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
+      { 'collections' => { 'frontpage' => [1, 2, 3, 4, 5, 6] } },
+    )
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
       "{% tablerow n in collections['frontpage'] cols:3%} {{n}} {% endtablerow %}",
-      { 'collections' => { 'frontpage' => [1, 2, 3, 4, 5, 6] } })
+      { 'collections' => { 'frontpage' => [1, 2, 3, 4, 5, 6] } },
+    )
   end
 
   def test_enumerable_drop
-    assert_template_result("<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
       '{% tablerow n in numbers cols:3%} {{n}} {% endtablerow %}',
-      { 'numbers' => ArrayDrop.new([1, 2, 3, 4, 5, 6]) })
+      { 'numbers' => ArrayDrop.new([1, 2, 3, 4, 5, 6]) },
+    )
   end
 
   def test_offset_and_limit
-    assert_template_result("<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td><td class=\"col3\"> 3 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 4 </td><td class=\"col2\"> 5 </td><td class=\"col3\"> 6 </td></tr>\n",
       '{% tablerow n in numbers cols:3 offset:1 limit:6%} {{n}} {% endtablerow %}',
-      { 'numbers' => [0, 1, 2, 3, 4, 5, 6, 7] })
+      { 'numbers' => [0, 1, 2, 3, 4, 5, 6, 7] },
+    )
   end
 
   def test_blank_string_not_iterable
-    assert_template_result("<tr class=\"row1\">\n</tr>\n",
+    assert_template_result(
+      "<tr class=\"row1\">\n</tr>\n",
       "{% tablerow char in characters cols:3 %}I WILL NOT BE OUTPUT{% endtablerow %}",
-      { 'characters' => '' })
+      { 'characters' => '' },
+    )
+  end
+
+  def test_cols_nil_constant_same_as_evaluated_nil_expression
+    expect = "<tr class=\"row1\">\n" \
+      "<td class=\"col1\">false</td>" \
+      "<td class=\"col2\">false</td>" \
+      "</tr>\n"
+
+    assert_template_result(
+      expect,
+      "{% tablerow i in (1..2) cols:nil %}{{ tablerowloop.col_last }}{% endtablerow %}",
+    )
+
+    assert_template_result(
+      expect,
+      "{% tablerow i in (1..2) cols:var %}{{ tablerowloop.col_last }}{% endtablerow %}",
+      { "var" => nil },
+    )
+  end
+
+  def test_nil_limit_is_treated_as_zero
+    expect = "<tr class=\"row1\">\n" \
+      "</tr>\n"
+
+    assert_template_result(
+      expect,
+      "{% tablerow i in (1..2) limit:nil %}{{ i }}{% endtablerow %}",
+    )
+
+    assert_template_result(
+      expect,
+      "{% tablerow i in (1..2) limit:var %}{{ i }}{% endtablerow %}",
+      { "var" => nil },
+    )
+  end
+
+  def test_nil_offset_is_treated_as_zero
+    expect = "<tr class=\"row1\">\n" \
+      "<td class=\"col1\">1:false</td>" \
+      "<td class=\"col2\">2:true</td>" \
+      "</tr>\n"
+
+    assert_template_result(
+      expect,
+      "{% tablerow i in (1..2) offset:nil %}{{ i }}:{{ tablerowloop.col_last }}{% endtablerow %}",
+    )
+
+    assert_template_result(
+      expect,
+      "{% tablerow i in (1..2) offset:var %}{{ i }}:{{ tablerowloop.col_last }}{% endtablerow %}",
+      { "var" => nil },
+    )
   end
 
   def test_tablerow_loop_drop_attributes
@@ -116,5 +186,73 @@ class TableRowTest < Minitest::Test
     OUTPUT
 
     assert_template_result(expected_output, template)
+  end
+
+  def test_table_row_renders_correct_error_message_for_invalid_parameters
+    assert_template_result(
+      "Liquid error (line 1): invalid integer",
+      '{% tablerow n in (1...10) limit:true %} {{n}} {% endtablerow %}',
+      render_errors: true,
+    )
+
+    assert_template_result(
+      "Liquid error (line 1): invalid integer",
+      '{% tablerow n in (1...10) offset:true %} {{n}} {% endtablerow %}',
+      render_errors: true,
+    )
+
+    assert_template_result(
+      "Liquid error (line 1): invalid integer",
+      '{% tablerow n in (1...10) cols:true %} {{n}} {% endtablerow %}',
+      render_errors: true,
+    )
+  end
+
+  def test_table_row_handles_interrupts
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td></tr>\n",
+      '{% tablerow n in (1...3) cols:2 %} {{n}} {% break %} {{n}} {% endtablerow %}',
+    )
+
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 3 </td></tr>\n",
+      '{% tablerow n in (1...3) cols:2 %} {{n}} {% continue %} {{n}} {% endtablerow %}',
+    )
+  end
+
+  def test_table_row_does_not_leak_interrupts
+    template = <<~LIQUID
+      {% for i in (1..2) -%}
+      {% for j in (1..2) -%}
+      {% tablerow k in (1..3) %}{% break %}{% endtablerow -%}
+      loop j={{ j }}
+      {% endfor -%}
+      loop i={{ i }}
+      {% endfor -%}
+      after loop
+    LIQUID
+
+    expected = <<~STR
+      <tr class="row1">
+      <td class="col1"></td></tr>
+      loop j=1
+      <tr class="row1">
+      <td class="col1"></td></tr>
+      loop j=2
+      loop i=1
+      <tr class="row1">
+      <td class="col1"></td></tr>
+      loop j=1
+      <tr class="row1">
+      <td class="col1"></td></tr>
+      loop j=2
+      loop i=2
+      after loop
+    STR
+
+    assert_template_result(
+      expected,
+      template,
+    )
   end
 end

@@ -1,39 +1,52 @@
 name: Liquid
 on: [push, pull_request]
+
+env:
+  BUNDLE_JOBS: 4
+  BUNDLE_RETRY: 3
+
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         entry:
-          - { ruby: 2.7, allowed-failure: false } # minimum supported
-          - { ruby: 3.1, allowed-failure: false } # latest
-          - { ruby: ruby-head, allowed-failure: true }
-    name: test (${{ matrix.entry.ruby }})
+          - { ruby: 3.0, allowed-failure: false } # minimum supported
+          - { ruby: 3.2, allowed-failure: false }
+          - { ruby: 3.3, allowed-failure: false }
+          - { ruby: 3.3, allowed-failure: false }
+          - { ruby: 3.4, allowed-failure: false } # latest
+          - {
+              ruby: 3.4,
+              allowed-failure: false,
+              rubyopt: "--enable-frozen-string-literal",
+            }
+          - { ruby: 3.4, allowed-failure: false, rubyopt: "--yjit" }
+          - { ruby: ruby-head, allowed-failure: false }
+          - {
+              ruby: ruby-head,
+              allowed-failure: false,
+              rubyopt: "--enable-frozen-string-literal",
+            }
+          - { ruby: ruby-head, allowed-failure: false, rubyopt: "--yjit" }
+    name: Test Ruby ${{ matrix.entry.ruby }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: ruby/setup-ruby@dffc446db9ba5a0c4446edb5bca1c5c473a806c5 # v1.235.0
         with:
           ruby-version: ${{ matrix.entry.ruby }}
-      - uses: actions/cache@v1
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('Gemfile') }}
-          restore-keys: ${{ runner.os }}-gems-
-      - run: bundle install --jobs=3 --retry=3 --path=vendor/bundle
+          bundler-cache: true
+          bundler: latest
       - run: bundle exec rake
         continue-on-error: ${{ matrix.entry.allowed-failure }}
+        env:
+          RUBYOPT: ${{ matrix.entry.rubyopt }}
+
   memory_profile:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: ruby/setup-ruby@dffc446db9ba5a0c4446edb5bca1c5c473a806c5 # v1.235.0
         with:
-          ruby-version: 2.7
-      - uses: actions/cache@v1
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('Gemfile') }}
-          restore-keys: ${{ runner.os }}-gems-
-      - run: bundle install --jobs=3 --retry=3 --path=vendor/bundle
+          bundler-cache: true
       - run: bundle exec rake memory_profile:run

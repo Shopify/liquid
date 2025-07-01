@@ -39,6 +39,4 @@ module Liquid
       true
     end
   end
-
-  Template.register_tag('capture', Capture)
 end
