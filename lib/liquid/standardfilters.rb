@@ -143,9 +143,9 @@ module Liquid
     def url_remove_param(input, key)
       begin
         uri = URI.parse(input)
-        
-        return uri.to_s if uri.query.empty?
-        
+
+        return uri.to_s if uri.query.nil?
+
         query = URI.decode_www_form(uri.query).to_h
         query.delete(key)
         uri.query = if query.empty?
