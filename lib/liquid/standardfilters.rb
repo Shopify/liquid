@@ -113,6 +113,13 @@ module Liquid
       Utils.to_s(input).gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_summary
+    #   Adds a parameter to a URL.
+    # @liquid_syntax string | url_add_param: string, string
+    # @liquid_return [string]
     def url_add_param(input, key, value)
       begin
         uri = URI.parse(input)
@@ -126,6 +133,13 @@ module Liquid
       end
     end
 
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_summary
+    #   Removes a parameter from a URL.
+    # @liquid_syntax string | url_remove_param: string, string
+    # @liquid_return [string]
     def url_remove_param(input, key)
       begin
         uri = URI.parse(input)
