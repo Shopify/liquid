@@ -250,12 +250,13 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_url_remove_param
+    assert_equal('https://shopify.com', @filters.url_remove_param('https://shopify.com', 'foo'))
+    assert_equal('https://shopify.com?', @filters.url_remove_param('https://shopify.com?', 'foo'))
     assert_equal('https://shopify.com?', @filters.url_remove_param('https://shopify.com?foo=bar', 'foo'))
     assert_equal('https://shopify.com?foo=bar', @filters.url_remove_param('https://shopify.com?foo=bar&baz=qux', 'baz'))
     assert_equal('https://shopify.com?#baz', @filters.url_remove_param('https://shopify.com?foo=bar#baz', 'foo'))
-    assert_equal('not-an-url?', @filters.url_remove_param('not-an-url', 'foo'))
     assert_equal('not-an-url?foo=bar', @filters.url_remove_param('not-an-url?foo=bar&baz=qux', 'baz'))
-    assert_equal('not-an-url?#baz', @filters.url_remove_param('not-an-url#baz', 'foo'))
+    assert_equal('not-an-url#baz', @filters.url_remove_param('not-an-url#baz', 'foo'))
     assert_equal('?', @filters.url_remove_param('?foo=bar', 'foo'))
     assert_equal('?foo=bar', @filters.url_remove_param('?foo=bar&baz=qux', 'baz'))
     assert_equal('?#baz', @filters.url_remove_param('?foo=bar#baz', 'foo'))
