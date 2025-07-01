@@ -129,7 +129,7 @@ module Liquid
 
         uri.to_s
       rescue URI::InvalidURIError
-        raise_property_error(input)
+        raise Liquid::ArgumentError, "invalid URL provided to url_add_param"
       end
     end
 
@@ -153,7 +153,7 @@ module Liquid
 
         uri.to_s
       rescue URI::InvalidURIError
-        raise_property_error(input)
+        raise Liquid::ArgumentError, "invalid URL provided to url_remove_param"
       end
     end
 
