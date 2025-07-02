@@ -121,16 +121,14 @@ module Liquid
     # @liquid_syntax string | url_add_param: string, string
     # @liquid_return [string]
     def url_add_param(input, key, value)
-      begin
-        uri = URI.parse(input)
-        uri.query = URI.encode_www_form(
-          URI.decode_www_form(uri.query || '') << [key, value]
-        )
+      uri = URI.parse(input)
+      uri.query = URI.encode_www_form(
+        URI.decode_www_form(uri.query || '') << [key, value],
+      )
 
-        uri.to_s
-      rescue URI::InvalidURIError
-        raise Liquid::ArgumentError, "invalid URL provided to url_add_param"
-      end
+      uri.to_s
+    rescue URI::InvalidURIError
+      raise Liquid::ArgumentError, "invalid URL provided to url_add_param"
     end
 
     # @liquid_public_docs
@@ -141,23 +139,21 @@ module Liquid
     # @liquid_syntax string | url_remove_param: string, string
     # @liquid_return [string]
     def url_remove_param(input, key)
-      begin
-        uri = URI.parse(input)
+      uri = URI.parse(input)
 
-        return uri.to_s if uri.query.nil?
+      return uri.to_s if uri.query.nil?
 
-        query = URI.decode_www_form(uri.query).to_h
-        query.delete(key)
-        uri.query = if query.empty?
-          ''
-        else
-          URI.encode_www_form(query)
-        end
-
-        uri.to_s
-      rescue URI::InvalidURIError
-        raise Liquid::ArgumentError, "invalid URL provided to url_remove_param"
+      query = URI.decode_www_form(uri.query).to_h
+      query.delete(key)
+      uri.query = if query.empty?
+        ''
+      else
+        URI.encode_www_form(query)
       end
+
+      uri.to_s
+    rescue URI::InvalidURIError
+      raise Liquid::ArgumentError, "invalid URL provided to url_remove_param"
     end
 
     # @liquid_public_docs
