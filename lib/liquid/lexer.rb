@@ -14,6 +14,8 @@ module Liquid
     COMPARISON_LESS_THAN = [:comparison, "<"].freeze
     COMPARISON_LESS_THAN_OR_EQUAL = [:comparison, "<="].freeze
     COMPARISON_NOT_EQUAL_ALT = [:comparison, "<>"].freeze
+    BOOLEAN_AND = [:boolean_operator, "and"].freeze
+    BOOLEAN_OR = [:boolean_operator, "or"].freeze
     DASH = [:dash, "-"].freeze
     DOT = [:dot, "."].freeze
     DOTDOT = [:dotdot, ".."].freeze
@@ -151,6 +153,10 @@ module Liquid
               # Special case for "contains"
               output << if type == :id && t == "contains" && output.last&.first != :dot
                 COMPARISON_CONTAINS
+              elsif type == :id && t == "and" && output.last&.first != :dot
+                BOOLEAN_AND
+              elsif type == :id && t == "or" && output.last&.first != :dot
+                BOOLEAN_OR
               else
                 [type, t]
               end
