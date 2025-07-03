@@ -9,6 +9,10 @@ module Liquid
   #   Creates a new variable with a string value.
   # @liquid_description
   #   You can create complex strings with Liquid logic and variables.
+  #
+  #   > Caution:
+  #   > Predefined Liquid objects can be overridden by variables with the same name.
+  #   > To make sure that you can access all Liquid objects, make sure that your variable name doesn't match a predefined object's name.
   # @liquid_syntax
   #   {% capture variable %}
   #     value
