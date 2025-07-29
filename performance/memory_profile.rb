@@ -57,7 +57,7 @@ Liquid::Template.error_mode = ARGV.first.to_sym if ARGV.first
 
 runner = ThemeRunner.new
 Profiler.run do |x|
-  x.profile('parse') { runner.compile }
-  x.profile('render') { runner.render }
+  x.profile('parse') { runner.compile_all }
+  x.profile('render') { runner.render_all }
   x.tabulate
 end
