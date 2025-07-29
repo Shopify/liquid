@@ -25,15 +25,17 @@ class ThemeRunner
 
   # Initialize a new liquid ThemeRunner instance
   # Will load all templates into memory, do this now so that we don't profile IO.
-  def initialize
+  def initialize(strictness: {})
+    @strictness = strictness
     @tests = []
     Dir[__dir__ + '/tests/**/*.liquid'].each do |test|
       next if File.basename(test) == 'theme.liquid'
 
-      test_name = File.basename(File.dirname(test)) + "/" + File.basename(test)
-      theme_name = File.basename(File.dirname(test))
-      template_name = File.basename(test)
-      layout_path = File.dirname(test) + '/theme.liquid'
+      theme_path = File.realpath(File.dirname(test))
+      theme_name = File.basename(theme_path)
+      test_name = theme_name + "/" + File.basename(test)
+      template_name = File.basename(test, '.liquid')
+      layout_path = theme_path + '/theme.liquid'
 
       test = {
         test_name: test_name,
@@ -41,7 +43,7 @@ class ThemeRunner
         layout: File.file?(layout_path) ? File.read(layout_path) : nil,
         template_name: template_name,
         theme_name: theme_name,
-        theme_path: File.realpath(File.dirname(test)),
+        theme_path: theme_path,
       }
 
       @tests << test
@@ -100,47 +102,50 @@ class ThemeRunner
   private
 
   def render_template(compiled_test)
-    tmpl, assigns, layout = compiled_test.values_at(:tmpl, :assigns, :layout)
+    tmpl, layout, assigns = compiled_test.values_at(:tmpl, :layout, :assigns)
     if layout
-      assigns['content_for_layout'] = tmpl.render!(assigns)
-      layout.render!(assigns)
+      assigns['content_for_layout'] = tmpl.render!(assigns, @strictness)
+      layout = layout.render!(assigns, @strictness)
+      layout
     else
-      tmpl.render!(assigns)
+      tmpl.render!(assigns, @strictness)
     end
   end
 
   def compile_and_render(test)
-    compiled_test = compile_test(test[:liquid], test[:layout], test[:template_name], test[:theme_path])
+    compiled_test = compile_test(test)
     render_template(compiled_test)
   end
 
   def compile_all_tests
     @compiled_tests = []
     @tests.each do |test_hash|
-      @compiled_tests << compile_test(
-        test_hash[:liquid],
-        test_hash[:layout],
-        test_hash[:template_name],
-        test_hash[:theme_path],
-      )
+      @compiled_tests << compile_test(test_hash)
     end
     @compiled_tests
   end
 
-  def compile_test(template, layout, template_name, theme_path)
-    tmpl = Liquid::Template.new
-    tmpl.assigns['page_title']   = 'Page title'
-    tmpl.assigns['template']     = template_name
-    tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(theme_path)
-
-    parsed_template = tmpl.parse(template)
+  def compile_test(test_hash)
+    theme_path, template_name, layout, liquid = test_hash.values_at(:theme_path, :template_name, :layout, :liquid)
 
     assigns = Database.tables.dup
+    assigns.merge!({
+      'title' => 'Page title',
+      'page_title' => 'Page title',
+      'content_for_header' => '',
+      'template' => template_name,
+    })
+
+    fs = ThemeRunner::FileSystem.new(theme_path)
+
+    result = {}
+    result[:assigns] = assigns
+    result[:tmpl] = Liquid::Template.parse(liquid, registers: { file_system: fs })
+
     if layout
-      parsed_layout = tmpl.parse(layout).dup
-      { tmpl: parsed_template, assigns: assigns, layout: parsed_layout }
-    else
-      { tmpl: parsed_template, assigns: assigns }
+      result[:layout] = Liquid::Template.parse(layout, registers: { file_system: fs })
     end
+
+    result
   end
 end
