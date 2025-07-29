@@ -26,22 +26,38 @@ class ThemeRunner
   # Initialize a new liquid ThemeRunner instance
   # Will load all templates into memory, do this now so that we don't profile IO.
   def initialize
-    @tests = Dir[__dir__ + '/tests/**/*.liquid'].collect do |test|
+    @tests = []
+    Dir[__dir__ + '/tests/**/*.liquid'].each do |test|
       next if File.basename(test) == 'theme.liquid'
 
-      theme_path = File.dirname(test) + '/theme.liquid'
-      {
-        liquid: File.read(test),
-        layout: (File.file?(theme_path) ? File.read(theme_path) : nil),
-        template_name: test,
-      }
-    end.compact
+      test_name = File.basename(File.dirname(test)) + "/" + File.basename(test)
+      theme_name = File.basename(File.dirname(test))
+      template_name = File.basename(test)
+      layout_path = File.dirname(test) + '/theme.liquid'
 
-    compile_all_tests
+      test = {
+        test_name: test_name,
+        liquid: File.read(test),
+        layout: File.file?(layout_path) ? File.read(layout_path) : nil,
+        template_name: template_name,
+        theme_name: theme_name,
+        theme_path: File.realpath(File.dirname(test)),
+      }
+
+      @tests << test
+    end
   end
 
+  def find_test(test_name)
+    @tests.find do |test_hash|
+      test_hash[:test_name] == test_name
+    end
+  end
+
+  attr_accessor :tests
+
   # `compile` will test just the compilation portion of liquid without any templates
-  def compile
+  def compile_all
     @tests.each do |test_hash|
       Liquid::Template.new.parse(test_hash[:liquid])
       Liquid::Template.new.parse(test_hash[:layout])
@@ -49,7 +65,7 @@ class ThemeRunner
   end
 
   # `tokenize` will just test the tokenizen portion of liquid without any templates
-  def tokenize
+  def tokenize_all
     ss = StringScanner.new("")
     @tests.each do |test_hash|
       tokenizer = Liquid::Tokenizer.new(
@@ -62,78 +78,69 @@ class ThemeRunner
   end
 
   # `run` is called to benchmark rendering and compiling at the same time
-  def run
-    each_test do |liquid, layout, assigns, page_template, template_name|
-      compile_and_render(liquid, layout, assigns, page_template, template_name)
+  def run_all
+    @tests.each do |test|
+      compile_and_render(test)
     end
   end
 
   # `render` is called to benchmark just the render portion of liquid
-  def render
+  def render_all
+    @compiled_tests ||= compile_all_tests
     @compiled_tests.each do |test|
-      tmpl    = test[:tmpl]
-      assigns = test[:assigns]
-      layout  = test[:layout]
-
-      if layout
-        assigns['content_for_layout'] = tmpl.render!(assigns)
-        layout.render!(assigns)
-      else
-        tmpl.render!(assigns)
-      end
+      render_template(test)
     end
+  end
+
+  def run_one_test(test_name)
+    test = find_test(test_name)
+    compile_and_render(test)
   end
 
   private
 
-  def render_layout(template, layout, assigns)
-    assigns['content_for_layout'] = template.render!(assigns)
-    layout&.render!(assigns)
+  def render_template(compiled_test)
+    tmpl, assigns, layout = compiled_test.values_at(:tmpl, :assigns, :layout)
+    if layout
+      assigns['content_for_layout'] = tmpl.render!(assigns)
+      layout.render!(assigns)
+    else
+      tmpl.render!(assigns)
+    end
   end
 
-  def compile_and_render(template, layout, assigns, page_template, template_file)
-    compiled_test = compile_test(template, layout, assigns, page_template, template_file)
-    render_layout(compiled_test[:tmpl], compiled_test[:layout], compiled_test[:assigns])
+  def compile_and_render(test)
+    compiled_test = compile_test(test[:liquid], test[:layout], test[:template_name], test[:theme_path])
+    render_template(compiled_test)
   end
 
   def compile_all_tests
     @compiled_tests = []
-    each_test do |liquid, layout, assigns, page_template, template_name|
-      @compiled_tests << compile_test(liquid, layout, assigns, page_template, template_name)
+    @tests.each do |test_hash|
+      @compiled_tests << compile_test(
+        test_hash[:liquid],
+        test_hash[:layout],
+        test_hash[:template_name],
+        test_hash[:theme_path],
+      )
     end
     @compiled_tests
   end
 
-  def compile_test(template, layout, assigns, page_template, template_file)
-    tmpl            = init_template(page_template, template_file)
-    parsed_template = tmpl.parse(template).dup
+  def compile_test(template, layout, template_name, theme_path)
+    tmpl = Liquid::Template.new
+    tmpl.assigns['page_title']   = 'Page title'
+    tmpl.assigns['template']     = template_name
+    tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(theme_path)
 
+    parsed_template = tmpl.parse(template)
+
+    assigns = Database.tables.dup
     if layout
-      parsed_layout = tmpl.parse(layout)
+      parsed_layout = tmpl.parse(layout).dup
       { tmpl: parsed_template, assigns: assigns, layout: parsed_layout }
     else
       { tmpl: parsed_template, assigns: assigns }
     end
-  end
-
-  # utility method with similar functionality needed in `compile_all_tests` and `run`
-  def each_test
-    # Dup assigns because will make some changes to them
-    assigns = Database.tables.dup
-
-    @tests.each do |test_hash|
-      # Compute page_template outside of profiler run, uninteresting to profiler
-      page_template = File.basename(test_hash[:template_name], File.extname(test_hash[:template_name]))
-      yield(test_hash[:liquid], test_hash[:layout], assigns, page_template, test_hash[:template_name])
-    end
-  end
-
-  # set up a new Liquid::Template object for use in `compile_and_render` and `compile_test`
-  def init_template(page_template, template_file)
-    tmpl                         = Liquid::Template.new
-    tmpl.assigns['page_title']   = 'Page title'
-    tmpl.assigns['template']     = page_template
-    tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(File.dirname(template_file))
-    tmpl
   end
 end
