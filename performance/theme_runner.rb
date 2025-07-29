@@ -56,7 +56,7 @@ class ThemeRunner
     end
   end
 
-  attr_accessor :tests
+  attr_reader :tests
 
   # `compile` will test just the compilation portion of liquid without any templates
   def compile_all
@@ -105,8 +105,8 @@ class ThemeRunner
     tmpl, layout, assigns = compiled_test.values_at(:tmpl, :layout, :assigns)
     if layout
       assigns['content_for_layout'] = tmpl.render!(assigns, @strictness)
-      layout = layout.render!(assigns, @strictness)
-      layout
+      rendered_layout = layout.render!(assigns, @strictness)
+      rendered_layout
     else
       tmpl.render!(assigns, @strictness)
     end
