@@ -79,11 +79,13 @@ module Liquid
       # @param assigns [Hash] Variable assignments
       # @param file_reads [Hash] File path to content mapping
       # @param filter_calls [Array] Filter call log
+      # @param filter_patterns [Hash] Semantic key to filter result mapping
       # @param output [String, nil] Final rendered output
       # @param entrypoint [String, nil] Template entrypoint path
       # @return [Hash] Complete recording data structure
-      def self.build_recording_data(template_source:, assigns:, file_reads:, filter_calls:, output: nil, entrypoint: nil)
-        {
+      def self.build_recording_data(template_source:, assigns:, file_reads:, filter_calls:, output: nil, entrypoint: nil, filter_patterns: {})
+        # Order sections for readability: important data first, large blobs at end
+        data = {
           'schema_version' => SCHEMA_VERSION,
           'engine' => {
             'liquid_version' => Liquid::VERSION,
@@ -94,22 +96,30 @@ module Liquid
               'error_mode' => 'lax'
             }
           },
-          'template' => {
-            'source' => template_source,
-            'entrypoint' => entrypoint,
-            'sha256' => calculate_template_hash(template_source)
-          },
           'data' => {
             'variables' => ensure_serializable(assigns)
           },
           'file_system' => file_reads,
           'filters' => filter_calls,
-          'output' => output ? { 'string' => output } : nil,
+          'filter_patterns' => ensure_serializable(filter_patterns),
           'metadata' => {
             'timestamp' => Time.now.utc.iso8601,
             'recorder_version' => RECORDER_VERSION
           }
-        }.compact
+        }
+        
+        # Add large sections at the end for better readability
+        data['template'] = {
+          'source' => template_source,
+          'entrypoint' => entrypoint,
+          'sha256' => calculate_template_hash(template_source)
+        }
+        
+        if output
+          data['output'] = { 'string' => output }
+        end
+        
+        data.compact
       end
 
       private
