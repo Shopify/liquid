@@ -23,13 +23,15 @@ module Liquid
       raise ArgumentError, "Block required for recording" unless block_given?
       
       recorder = create_recorder
-      old_thread_local = Thread.current[:liquid_recorder]
       
       begin
+        # Set up recording context globally for file systems and clean API wrapper
+        old_thread_local = Thread.current[:liquid_recorder]
         Thread.current[:liquid_recorder] = recorder
         
-        # Monkey patch Template#render methods to inject recorder
-        patch_template_rendering(recorder)
+        # Install clean recording wrapper
+        recording_wrapper = RecordingWrapper.new(recorder)
+        recording_wrapper.install
         
         # Execute the block with recording active
         result = block.call
@@ -49,7 +51,7 @@ module Liquid
         raise e
       ensure
         Thread.current[:liquid_recorder] = old_thread_local
-        unpatch_template_rendering
+        recording_wrapper&.uninstall
       end
     end
 
@@ -86,138 +88,141 @@ module Liquid
       Replayer.new(data, mode)
     end
 
-    private
-
-    # Patch Template rendering methods to inject recorder
-    #
-    # @param recorder [Recorder] Recorder instance to inject
-    def self.patch_template_rendering(recorder)
-      return if @patched
-      
-      @patched = true
-      @current_recorder = recorder
-      
-      # Store original methods if not already stored
-      unless defined?(@original_render_method)
-        @original_render_method = Liquid::Template.instance_method(:render)
-        @original_render_bang_method = Liquid::Template.instance_method(:render!)
-        @original_parse_method = Liquid::Template.instance_method(:parse)
+    # Clean recording wrapper that intercepts Template methods without monkey patching
+    class RecordingWrapper
+      def initialize(recorder)
+        @recorder = recorder
+        @original_template_parse = nil
+        @installed = false
       end
       
-      # Patch template methods
-      Liquid::Template.class_eval do
-        def parse(source, options = {})
-          recorder = TemplateRecorder.instance_variable_get(:@current_recorder)
-          
-          # Store source and registers for later use
-          if recorder
-            @recorded_source = source.to_s
-            @parse_registers = options[:registers] || {}
-          end
-          
-          # Call original parse method
-          result = TemplateRecorder.instance_variable_get(:@original_parse_method).bind(self).call(source, options)
+      def install
+        return if @installed
+        @installed = true
+        
+        # Store original class method
+        @original_template_parse = Liquid::Template.method(:parse)
+        
+        # Create wrapper for Template.parse that injects recording setup
+        recorder = @recorder
+        original_parse = @original_template_parse
+        Liquid::Template.define_singleton_method(:parse) do |source, options = {}|
+          # Parse template normally using original method
+          template = original_parse.call(source, options)
           
           # Capture template info
-          if recorder
-            recorder.set_template_info(@recorded_source, @name)
-          end
+          recorder.set_template_info(source.to_s, template.name)
           
-          result
+          # Wrap the template to inject recorder during render
+          TemplateRecorder::RecordingTemplate.new(template, recorder)
         end
+      end
+      
+      def uninstall
+        return unless @installed
+        @installed = false
         
-        def render(*args)
-          recorder = TemplateRecorder.instance_variable_get(:@current_recorder)
-          if recorder
-            # Set up context with recorder
-            assigns = args[0] || {}
-            options = args[1] || {}
-            
-            # Bind root variables BEFORE rendering
-            assigns.each do |key, value|
-              if value.respond_to?(:invoke_drop)
-                recorder.binding_tracker.bind_root_object(value, key.to_s)
-              end
-            end
-            
-            # Inject recorder into registers, preserving both parse and render registers
-            parse_registers = @parse_registers || {}
-            render_registers = options[:registers] || {}
-            # Merge parse registers first, then render registers, then recorder (highest priority)
-            all_registers = parse_registers.merge(render_registers).merge(recorder: recorder)
-            options = options.merge(registers: all_registers)
-            
-            # Call original render method
-            result = TemplateRecorder.instance_variable_get(:@original_render_method).bind(self).call(assigns, options)
-            
-            # Set context info and bind root variables
-            if @context
-              recorder.set_context_info(@context)
-            end
-            
-            # Capture output
-            recorder.set_output(result)
-            
-            result
+        if @original_template_parse
+          Liquid::Template.define_singleton_method(:parse, @original_template_parse)
+        end
+      end
+    end
+    
+    # Template wrapper that maintains API compatibility while injecting recording
+    class RecordingTemplate
+      def initialize(template, recorder)
+        @template = template
+        @recorder = recorder
+      end
+      
+      # Delegate all methods to wrapped template except render methods
+      def method_missing(method, *args, &block)
+        @template.send(method, *args, &block)
+      end
+      
+      def respond_to_missing?(method, include_private = false)
+        @template.respond_to?(method, include_private)
+      end
+      
+      # Override render to inject recorder into context
+      def render(*args)
+        assigns = args[0] || {}
+        options = args[1] || {}
+        
+        # Store and wrap original assigns for recording
+        @recorder.store_original_assigns(assigns)
+        
+        # Use the wrapped assigns for rendering so we can track access
+        wrapped_assigns = @recorder.instance_variable_get(:@original_assigns)
+        
+        # Bind root variables BEFORE rendering
+        wrapped_assigns.each do |key, value|
+          if value.respond_to?(:invoke_drop)
+            @recorder.binding_tracker.bind_root_object(value, key.to_s)
           else
-            TemplateRecorder.instance_variable_get(:@original_render_method).bind(self).call(*args)
+            # Also bind regular hash/array variables for semantic key generation
+            @recorder.binding_tracker.bind_root_object(value, key.to_s)
           end
         end
         
-        def render!(*args)
-          recorder = TemplateRecorder.instance_variable_get(:@current_recorder)
-          if recorder
-            # Set up context with recorder
-            assigns = args[0] || {}
-            options = args[1] || {}
-            
-            # Bind root variables BEFORE rendering
-            assigns.each do |key, value|
-              if value.respond_to?(:invoke_drop)
-                recorder.binding_tracker.bind_root_object(value, key.to_s)
-              end
-            end
-            
-            # Inject recorder into registers, preserving both parse and render registers
-            parse_registers = @parse_registers || {}
-            render_registers = options[:registers] || {}
-            # Merge parse registers first, then render registers, then recorder (highest priority)
-            all_registers = parse_registers.merge(render_registers).merge(recorder: recorder)
-            options = options.merge(registers: all_registers)
-            
-            # Call original render method
-            result = TemplateRecorder.instance_variable_get(:@original_render_bang_method).bind(self).call(assigns, options)
-            
-            # Set context info and bind root variables
-            if @context
-              recorder.set_context_info(@context)
-            end
-            
-            # Capture output
-            recorder.set_output(result)
-            
-            result
-          else
-            TemplateRecorder.instance_variable_get(:@original_render_bang_method).bind(self).call(*args)
+        # Merge registers from parse, render, and recorder
+        parse_registers = @template.instance_variable_get(:@options)&.[](:registers) || {}
+        render_registers = options[:registers] || {}
+        all_registers = parse_registers.merge(render_registers).merge(recorder: @recorder)
+        options = options.merge(registers: all_registers)
+        
+        # Render template with wrapped assigns
+        result = @template.render(wrapped_assigns, options)
+        
+        # Set context info from template's context after rendering
+        if @template.instance_variable_get(:@context)
+          @recorder.set_context_info(@template.instance_variable_get(:@context))
+        end
+        
+        # Capture output
+        @recorder.set_output(result)
+        
+        result
+      end
+      
+      def render!(*args)
+        assigns = args[0] || {}
+        options = args[1] || {}
+        
+        # Store and wrap original assigns for recording  
+        @recorder.store_original_assigns(assigns)
+        
+        # Use the wrapped assigns for rendering so we can track access
+        wrapped_assigns = @recorder.instance_variable_get(:@original_assigns)
+        
+        # Bind root variables BEFORE rendering
+        wrapped_assigns.each do |key, value|
+          if value.respond_to?(:invoke_drop)
+            @recorder.binding_tracker.bind_root_object(value, key.to_s)
           end
         end
+        
+        # Merge registers from parse, render, and recorder
+        parse_registers = @template.instance_variable_get(:@options)&.[](:registers) || {}
+        render_registers = options[:registers] || {}
+        all_registers = parse_registers.merge(render_registers).merge(recorder: @recorder)
+        options = options.merge(registers: all_registers)
+        
+        # Render template with wrapped assigns
+        result = @template.render!(wrapped_assigns, options)
+        
+        # Set context info from template's context after rendering
+        if @template.instance_variable_get(:@context)
+          @recorder.set_context_info(@template.instance_variable_get(:@context))
+        end
+        
+        # Capture output
+        @recorder.set_output(result)
+        
+        result
       end
     end
 
-    # Remove Template rendering patches
-    def self.unpatch_template_rendering
-      return unless @patched
-      
-      @patched = false
-      @current_recorder = nil
-      
-      if defined?(@original_render_method) && @original_render_method && @original_render_bang_method && @original_parse_method
-        Liquid::Template.class_eval do
-          define_method(:parse, TemplateRecorder.instance_variable_get(:@original_parse_method))
-          define_method(:render, TemplateRecorder.instance_variable_get(:@original_render_method))
-          define_method(:render!, TemplateRecorder.instance_variable_get(:@original_render_bang_method))
-        end
-      end
-    end
+    private
   end
 end
