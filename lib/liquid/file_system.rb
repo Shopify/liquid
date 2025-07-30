@@ -55,7 +55,14 @@ module Liquid
       full_path = full_path(template_path)
       raise FileSystemError, "No such template '#{template_path}'" unless File.exist?(full_path)
 
-      File.read(full_path)
+      content = File.read(full_path)
+      
+      # Recording hook via thread-local
+      if (recorder = Thread.current[:liquid_recorder])
+        recorder.emit_file_read(template_path, content)
+      end
+      
+      content
     end
 
     def full_path(template_path)
