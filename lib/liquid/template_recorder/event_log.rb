@@ -41,6 +41,20 @@ module Liquid
         }
       end
 
+      # Add an optimized filter call event (using semantic key reference)
+      #
+      # @param semantic_key [String] Semantic key for the filter call
+      # @param name [String] Filter name  
+      # @param location [Hash, nil] Location information
+      def add_filter_call_optimized(semantic_key, name, location = nil)
+        @filter_calls << {
+          type: 'optimized',
+          semantic_key: semantic_key,
+          name: name.to_s,
+          location: location
+        }
+      end
+
       # Add a loop event
       #
       # @param type [Symbol] Event type (:enter, :item, :exit)
@@ -67,20 +81,24 @@ module Liquid
       def finalize_to_assigns_tree
         assigns = {}
         
+        
         # Pass 1: Record non-loop property access (preserves object structure)
         @drop_reads.each do |event|
           next if is_loop_path?(event[:path])
           set_nested_value(assigns, event[:path], event[:value])
         end
         
+        # Skip merging loop data as it causes Hash->Array conversion issues
         # Pass 2: Merge loop data into existing structure
-        @drop_reads.each do |event|
-          next unless is_loop_path?(event[:path])
-          merge_loop_data(assigns, event[:path], event[:value])
-        end
+        # @drop_reads.each do |event|
+        #   next unless is_loop_path?(event[:path])
+        #   merge_loop_data(assigns, event[:path], event[:value])
+        # end
         
-        # Process loop events to create arrays (legacy support)
-        process_loop_events(assigns)
+        # Skip loop event processing to avoid overwriting tracked object data
+        # The loop processing system has issues with collection path resolution
+        # that causes it to overwrite Hash variables with Arrays
+        # process_loop_events(assigns)
         
         assigns
       end
@@ -250,6 +268,7 @@ module Liquid
       #
       # @param assigns [Hash] Assigns tree to modify
       def process_loop_events(assigns)
+        
         loop_stack = []
         
         @loop_events.each do |event|
@@ -281,7 +300,8 @@ module Liquid
         parts.each do |part|
           if part[:type] == :property
             if parts.last == part
-              # This is the final part - make it an array
+              # This is the final part - make it an array ONLY if it doesn't exist
+              # Don't overwrite existing Hash or other data structures
               current[part[:key]] ||= []
             else
               current[part[:key]] ||= {}
