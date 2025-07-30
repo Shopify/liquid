@@ -12,7 +12,7 @@ module Liquid
       # @param template_path [String] Path to template file
       # @return [String] Template content
       # @raise [FileSystemError] If file not found
-      def read_template_file(template_path)
+      def read_template_file(template_path, context: nil)
         content = @files[template_path]
         
         if content.nil?

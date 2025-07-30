@@ -16,7 +16,7 @@ module Liquid
   # This will parse the template with a LocalFileSystem implementation rooted at 'template_path'.
   class BlankFileSystem
     # Called by Liquid to retrieve a template file
-    def read_template_file(_template_path)
+    def read_template_file(_template_path, context: nil)
       raise FileSystemError, "This liquid context does not allow includes."
     end
   end
@@ -51,14 +51,21 @@ module Liquid
       @pattern = pattern
     end
 
-    def read_template_file(template_path)
+    def read_template_file(template_path, context: nil)
       full_path = full_path(template_path)
       raise FileSystemError, "No such template '#{template_path}'" unless File.exist?(full_path)
 
       content = File.read(full_path)
       
-      # Recording hook via thread-local
-      if (recorder = Thread.current[:liquid_recorder])
+      # Recording hook - try context registers first, fall back to thread-local
+      recorder = nil
+      if context&.registers
+        recorder = context.registers[:recorder]
+      else
+        recorder = Thread.current[:liquid_recorder]
+      end
+      
+      if recorder
         recorder.emit_file_read(template_path, content)
       end
       

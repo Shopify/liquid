@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'binding_tracker'
+
 module Liquid
   class TemplateRecorder
     class Replayer
@@ -8,9 +10,15 @@ module Liquid
         @mode = mode.to_sym
         @memory_fs = MemoryFileSystem.new(@data['file_system'])
         @filter_index = 0
+        @filter_call_counter = 0  # For semantic key generation
+        @binding_tracker = BindingTracker.new  # For semantic path resolution
+        
+        # Determine replay format
+        @use_filter_patterns = @data['filter_patterns'] && !@data['filter_patterns'].empty?
         
         validate_mode!
         validate_engine_compatibility
+        setup_variable_bindings if @use_filter_patterns
       end
 
       # Render the recorded template
@@ -20,12 +28,12 @@ module Liquid
       def render(to: nil)
         assigns = deep_copy(@data['data']['variables'])
         
-        # Parse template
-        template = Liquid::Template.parse(@data['template']['source'], 
-          registers: build_registers)
+        # Parse template (registers are passed during render, not parse)
+        template = Liquid::Template.parse(@data['template']['source'])
         
         # Configure context for replay mode
         context_options = build_context_options
+        context_options[:registers] = build_registers
         
         # Render template
         output = template.render!(assigns, context_options)
@@ -61,6 +69,16 @@ module Liquid
           entrypoint: @data['template']['entrypoint'],
           sha256: @data['template']['sha256']
         }
+      end
+
+      # Set up variable bindings for semantic key generation
+      def setup_variable_bindings
+        return unless @data['data'] && @data['data']['variables']
+        
+        # Bind root-level variables
+        @data['data']['variables'].each do |key, value|
+          @binding_tracker.bind_root_object(value, key)
+        end
       end
 
       private
@@ -149,6 +167,34 @@ module Liquid
       # @param args [Array] Filter arguments
       # @return [Object] Recorded filter output
       def replay_next_filter(method, input, args)
+        if @use_filter_patterns
+          replay_filter_with_semantic_key(method, input, args)
+        else
+          replay_filter_with_sequential_index(method, input, args)
+        end
+      end
+
+      # Replay filter using the new semantic key approach
+      def replay_filter_with_semantic_key(method, input, args)
+        semantic_key = generate_filter_key(method.to_s, input, args)
+        
+        unless @data['filter_patterns'][semantic_key]
+          raise ReplayError, "No recorded filter pattern found for key: #{semantic_key}"
+        end
+        
+        pattern = @data['filter_patterns'][semantic_key]
+        
+        # Verify filter method matches
+        if pattern['filter_name'] != method.to_s
+          raise ReplayError, "Filter mismatch for key #{semantic_key}: expected #{pattern['filter_name']}, got #{method}"
+        end
+        
+        # Return the stored output (which may be compressed)
+        pattern['output']
+      end
+
+      # Replay filter using the old sequential index approach
+      def replay_filter_with_sequential_index(method, input, args)
         filters = @data['filters'] || []
         
         if @filter_index >= filters.length
@@ -177,6 +223,57 @@ module Liquid
         end
         
         recorded_call['output']
+      end
+
+      # Generate semantic key for filter call (same logic as Recorder)
+      def generate_filter_key(filter_name, input, args)
+        # Try to get semantic path for the input object
+        input_path = nil
+        
+        if input.respond_to?(:object_id)
+          # For Drop objects, try to resolve their binding path
+          if input.respond_to?(:invoke_drop)
+            input_path = @binding_tracker.resolve_binding_path(input)
+          elsif input.is_a?(String) || input.is_a?(Numeric) || input.is_a?(TrueClass) || input.is_a?(FalseClass) || input.nil?
+            # For simple values, use the value itself (truncated if long)
+            input_path = input.nil? ? "nil" : input.to_s.length > 50 ? "#{input.to_s[0..47]}..." : input.to_s
+          else
+            # For other objects, try to resolve binding path
+            input_path = @binding_tracker.resolve_binding_path(input)
+          end
+        end
+        
+        # Fallback to execution order if we can't resolve a semantic path
+        unless input_path
+          input_path = "input_#{@filter_call_counter}"
+        end
+        
+        # Create the base semantic key
+        key_parts = [input_path, filter_name]
+        
+        # Add arguments if present
+        if args && !args.empty?
+          arg_str = args.map { |arg| 
+            case arg
+            when String, Numeric, TrueClass, FalseClass, NilClass
+              arg.inspect
+            else
+              arg.to_s.length > 20 ? "#{arg.to_s[0..17]}..." : arg.to_s
+            end
+          }.join(',')
+          key_parts << "(#{arg_str})"
+        end
+        
+        # Add loop context if we're in a loop
+        if @binding_tracker.loop_depth > 0
+          key_parts << "loop_depth_#{@binding_tracker.loop_depth}"
+        end
+        
+        # Add execution counter to ensure uniqueness
+        semantic_key = "#{key_parts.join('|')}[#{@filter_call_counter}]"
+        
+        @filter_call_counter += 1
+        semantic_key
       end
 
       # Verify output matches recorded output
