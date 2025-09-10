@@ -1,0 +1,129 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/liquid'
+require_relative '../performance/theme_runner'
+
+def usage
+  puts <<~USAGE
+    Usage: liquid-record [options] <output_file> <theme_name> [template_name]
+    
+    Records liquid template execution to a JSON file for hermetic replay.
+    
+    Arguments:
+      output_file   - Path to save the recording JSON file
+      theme_name    - Name of theme in performance/tests/ (e.g., vogue, tribble)
+      template_name - Specific template to record (optional, defaults to 'index')
+    
+    Options:
+      --verify      - After recording, replay and verify output matches (shows diff if different)
+    
+    Examples:
+      liquid-record recording.json vogue
+      liquid-record product.json vogue product
+      liquid-record --verify product.json vogue product
+  USAGE
+end
+
+def main
+  # Parse options
+  verify_mode = false
+  args = ARGV.dup
+  
+  if args.include?('--verify')
+    verify_mode = true
+    args.delete('--verify')
+  end
+  
+  if args.length < 2 || args.length > 3
+    usage
+    exit 1
+  end
+
+  output_file = args[0]
+  theme_name = args[1]
+  template_name = args[2] || 'index'
+
+  test_name = "#{theme_name}/#{template_name}.liquid"
+  
+  puts "Recording template execution: #{test_name}"
+  puts "Output file: #{output_file}"
+  STDOUT.flush
+
+  begin
+    original_output = nil
+    Liquid::TemplateRecorder.record(output_file) do
+      # Use ThemeRunner to get realistic data, but parse template during recording
+      theme_runner = ThemeRunner.new
+      test = theme_runner.find_test(test_name)
+      compiled = theme_runner.send(:compile_test, test)
+      
+      # Parse the template within the recording context so our wrapper can capture it
+      template = Liquid::Template.parse(test[:liquid])
+      original_output = template.render(compiled[:assigns])
+      original_output
+    end
+    
+    puts "Recording completed successfully!"
+    puts "File size: #{File.size(output_file)} bytes"
+    STDOUT.flush
+    
+    # Run verification if requested
+    if verify_mode
+      puts
+      puts "Running verification..."
+      STDOUT.flush
+      verify_recording(output_file, original_output)
+    end
+  rescue => e
+    puts "Error during recording: #{e.message}"
+    puts e.backtrace.first(5)
+    exit 1
+  end
+end
+
+def verify_recording(recording_file, expected_output)
+  begin
+    # Load and create replayer
+    require_relative '../lib/liquid/template_recorder/replayer'
+    replayer = Liquid::TemplateRecorder.replay_from(recording_file, mode: :compute)
+    
+    # Get replayed output
+    replayed_output = replayer.render
+    
+    if expected_output == replayed_output
+      puts "✅ Verification PASSED - outputs match perfectly!"
+      puts "Output length: #{expected_output.length} characters"
+    else
+      puts "❌ Verification FAILED - outputs differ"
+      puts "Expected length: #{expected_output.length}"
+      puts "Actual length: #{replayed_output.length}"
+      
+      # Write outputs to temp files for diff
+      require 'tempfile'
+      expected_file = Tempfile.new(['expected', '.txt'])
+      actual_file = Tempfile.new(['actual', '.txt'])
+      
+      expected_file.write(expected_output)
+      expected_file.flush
+      
+      actual_file.write(replayed_output)
+      actual_file.flush
+      
+      puts
+      puts "Showing diff (expected vs actual):"
+      puts "=" * 50
+      system("diff -u #{expected_file.path} #{actual_file.path}")
+      
+      expected_file.close
+      actual_file.close
+      
+      exit 1
+    end
+  rescue => e
+    puts "❌ Verification ERROR: #{e.message}"
+    puts e.backtrace.first(3)
+    exit 1
+  end
+end
+
+main if __FILE__ == $0
