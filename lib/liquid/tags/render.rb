@@ -54,15 +54,15 @@ module Liquid
       # Inline snippets take precedence over external snippets
       if (inline_snippet = context.registers[:inline_snippet][template_name])
         inner_context = context.new_isolated_subcontext
-
         snippet_body = inline_snippet[:body]
-        snippet_args = inline_snippet[:args]
-        # Validate and set the arguments in the inner context
-        @attributes.each do |key, value|
-          unless snippet_args.include?(key)
-            raise Liquid::ArgumentError, "Invalid argument `#{key}` for snippet `#{template_name}`"
-          end
 
+        context.scopes.each do |scope|
+          scope.each do |key, value|
+            inner_context[key] = value
+          end
+        end
+
+        @attributes.each do |key, value|
           inner_context[key] = context.evaluate(value)
         end
 
