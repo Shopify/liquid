@@ -10,8 +10,9 @@ module Liquid
         raise
       when :warn
         parse_context.warnings << e
+        raise  # Force strict behavior even in warn mode
       end
-      lax_parse(markup)
+      raise  # Force strict behavior even in lax mode
     end
 
     def parse_with_selected_parser(markup)
