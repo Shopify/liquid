@@ -229,71 +229,63 @@ class SnippetTest < Minitest::Test
     assert_template_result(expected, template)
   end
 
-  def test_render_parent_context_variable
+  def test_render_inline_snippet_without_outside_context
     template = <<~LIQUID.strip
       {% assign color_scheme = 'dark' %}
 
       {% snippet header %}
-      {% doc %}
-        @param {string} message - Message.
-      {% enddoc %}
-
       <div class="header header--{{ color_scheme }}">
         {{ message }}
       </div>
       {% endsnippet %}
 
-      {%- render "header", message: "Welcome to my site" -%}
+
+      {% render "header", message: 'Welcome!' %}
     LIQUID
     expected = <<~OUTPUT
+
+
+
+
+
+
+      <div class="header header--">
+        Welcome!
+      </div>
+    OUTPUT
+
+    assert_template_result(expected, template)
+  end
+
+  def test_render_inline_snippet_with_outside_context
+    template = <<~LIQUID.strip
+      {% assign color_scheme = 'dark' %}
+
+      {% snippet header %}
+      <div class="header header--{{ color_scheme }}">
+        {{ message }}
+      </div>
+      {% endsnippet %}
+
+
+      {% render "header", ..., message: 'Welcome!' %}
+    LIQUID
+    expected = <<~OUTPUT
+
 
 
 
 
 
       <div class="header header--dark">
-        Welcome to my site
+        Welcome!
       </div>
     OUTPUT
 
     assert_template_result(expected, template)
   end
 
-  def test_deeply_nested_snippets
-    template = <<~LIQUID.strip
-      {% assign color_scheme = 'first-color' %}
-      {% snippet first %}
-      {% assign color_scheme = 'second-color' %}
-      {% snippet second %}
-      {% assign color_scheme = 'third-color' %}
-      {% snippet third %}
-      <div class="header header--{{ color_scheme }}">
-        This is a header
-      </div>
-      {% endsnippet %}
-      {%- render "third" -%}
-      {% endsnippet %}
-      {%- render "second" -%}
-      {% endsnippet %}
-
-      {%- render "first" -%}
-    LIQUID
-    expected = <<~OUTPUT
-
-
-
-
-
-
-      <div class="header header--third-color">
-        This is a header
-      </div>
-    OUTPUT
-
-    assert_template_result(expected, template)
-  end
-
-  def test_render_snippet_with_variables_in_both_scopes
+  def test_inline_snippet_local_scope_takes_precedence
     template = <<~LIQUID.strip
       {% assign color_scheme = 'dark' %}
 
@@ -306,7 +298,9 @@ class SnippetTest < Minitest::Test
 
       {{ color_scheme }}
 
-      {%- render "header", message: 'Welcome to my site' -%}
+      {% render "header", ..., message: 'Welcome!' %}
+
+      {{ color_scheme }}
     LIQUID
     expected = <<~OUTPUT
 
@@ -315,39 +309,126 @@ class SnippetTest < Minitest::Test
 
       dark
 
+
+
       <div class="header header--light">
-        Welcome to my site
+        Welcome!
+      </div>
+
+
+      dark
+    OUTPUT
+
+    assert_template_result(expected, template)
+  end
+
+  def test_render_captured_snippet
+    template = <<~LIQUID.strip
+      {% assign color_scheme = 'dark' %}
+
+      {% snippet header %}
+        <div class="header header--{{ color_scheme }}">
+          {{ message }}
+        </div>
+      {% endsnippet %}
+
+      {% capture up_header %}
+        {% render "header", ..., message: 'Welcome!' %}
+      {% endcapture %}
+
+      {{ up_header | upcase }}
+
+      {{ header | upcase }}
+
+      {{ header }}
+    LIQUID
+    expected = <<~OUTPUT
+
+
+
+
+
+
+
+
+
+        <DIV CLASS="HEADER HEADER--DARK">
+          WELCOME!
+        </DIV>
+
+
+
+      SNIPPETDROP
+
+      SnippetDrop
+    OUTPUT
+
+    assert_template_result(expected, template)
+  end
+
+  def test_render_snippets_as_arguments
+    template = <<~LIQUID.strip
+      {% assign color_scheme = 'dark' %}
+
+      {% snippet header %}
+        <div class="header header--{{ color_scheme }}">
+          {{ message }}
+        </div>
+      {% endsnippet %}
+
+      {% snippet main %}
+      {% assign color_scheme = 'auto' %}
+
+      <div class="main main--{{ color_scheme }}">
+        {% render "header", ..., message: 'Welcome!' %}
+      </div>
+      {% endsnippet %}
+
+      {% render "main", header: header %}
+    LIQUID
+
+    expected = <<~OUTPUT
+
+
+
+
+
+
+
+
+
+
+      <div class="main main--auto">
+
+        <div class="header header--auto">
+          Welcome!
+        </div>
+
       </div>
     OUTPUT
 
     assert_template_result(expected, template)
   end
 
-  # def test_render_snippets_as_arguments
+  # def test_render_inline_snippet_inside_loop
   #   template = <<~LIQUID.strip
   #     {% assign color_scheme = 'dark' %}
+  #     {% assign array = '1,2,3' | split: ',' %}
 
-  #     {% snippet main_header %}
-  #       {% assign color_scheme = 'auto' %}
-
-  #       <div class="main main--{{ color_scheme }}">
-  #         {%- render "header", message: 'Welcome to my site' -%}
-  #       </div>
-  #     {% endsnippet %}
-
+  #     {% for i in array %}
   #     {% snippet header %}
-  #       <div class="header header--{{ color_scheme }}">
-  #         {{ message }}
-  #       </div>
+  #     <div class="header header--{{ color_scheme }}">
+  #       {{ message }} {{ i }}
+  #     </div>
   #     {% endsnippet %}
+  #     {% endfor %}
 
-  #     {%- render "main_header", header: header -%}
+  #     {% render "header", ..., message: '👉' %}
   #   LIQUID
   #   expected = <<~OUTPUT
-  #       <div class="main main--auto">
-  #       <div class="header header--auto">
-  #         Welcome to my site
-  #       </div>
+
+  #     <div class="header header--dark">
+  #       👉 3
   #     </div>
   #   OUTPUT
 
