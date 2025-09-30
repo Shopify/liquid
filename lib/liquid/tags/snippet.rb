@@ -25,12 +25,14 @@ module Liquid
       end
     end
 
-    def render(context)
-      context.registers[:inline_snippet] ||= {}
-      context.registers[:inline_snippet][@to] = {
-        body: @body,
-      }
-      ''
+    def render_to_output_buffer(context, output)
+      snippet_drop = SnippetDrop.new(@body)
+      context.scopes.last[@to] = snippet_drop
+      output
+    end
+
+    def blank?
+      true
     end
   end
 end
