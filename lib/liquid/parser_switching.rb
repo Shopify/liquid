@@ -2,10 +2,17 @@
 
 module Liquid
   module ParserSwitching
+    # We want "rigid" which is like strict but more strict only in some cases.
+    # We want to make it so strict behaves as is
+    # We want "rigid" to be stricter (prob beta flag)
+    # It shouldn't be slower to run rigid than strict, it's not rigid -> strict -> lax
+    # It's rigid -> lax or it's strict -> lax
     def strict_parse_with_error_mode_fallback(markup)
-      strict_parse_with_error_context(markup)
+      rigid_parse_with_error_context(markup)
     rescue SyntaxError => e
       case parse_context.error_mode
+      when :rigid
+        raise
       when :strict
         raise
       when :warn
@@ -16,6 +23,7 @@ module Liquid
 
     def parse_with_selected_parser(markup)
       case parse_context.error_mode
+      when :rigid  then rigid_parse_with_error_context(markup)
       when :strict then strict_parse_with_error_context(markup)
       when :lax    then lax_parse(markup)
       when :warn
@@ -29,6 +37,14 @@ module Liquid
     end
 
     private
+
+    def rigid_parse_with_error_context(markup)
+      respond_to?(:rigid_parse) ? rigid_parse(markup) : strict_parse(markup)
+    rescue SyntaxError => e
+      e.line_number    = line_number
+      e.markup_context = markup_context(markup)
+      raise e
+    end
 
     def strict_parse_with_error_context(markup)
       strict_parse(markup)
