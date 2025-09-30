@@ -42,6 +42,10 @@ module Liquid
       @is_for_loop
     end
 
+    def inherit_context?
+      @inherit_context
+    end
+
     def render_to_output_buffer(context, output)
       render_tag(context, output)
     end
@@ -51,14 +55,15 @@ module Liquid
       template_name = @template_name_expr
       raise ::ArgumentError unless template_name.is_a?(String)
 
-      # Inline snippets take precedence over external snippets
-      if (inline_snippet = context.registers[:inline_snippet][template_name])
+      if context[template_name].is_a?(Liquid::SnippetDrop)
+        snippet_drop = context[template_name]
         inner_context = context.new_isolated_subcontext
-        snippet_body = inline_snippet[:body]
 
-        context.scopes.each do |scope|
-          scope.each do |key, value|
-            inner_context[key] = value
+        if inherit_context?
+          context.scopes.each do |scope|
+            scope.each do |key, value|
+              inner_context[key] = value
+            end
           end
         end
 
@@ -66,7 +71,7 @@ module Liquid
           inner_context[key] = context.evaluate(value)
         end
 
-        return output << snippet_body.render(inner_context)
+        return output << snippet_drop.body.render(inner_context)
       end
 
       partial = PartialCache.load(
