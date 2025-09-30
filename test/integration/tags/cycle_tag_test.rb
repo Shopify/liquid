@@ -45,4 +45,19 @@ class CycleTagTest < Minitest::Test
 
     assert_template_result("11", template)
   end
+
+  def test_cycle_tag_with_error_mode
+    # QuotedFragment is more permissive than what Parser#expression allows.
+    [:lax, :strict].each do |mode|
+      with_error_mode(mode) do
+        assert_template_result("a", "{% cycle .5: 'a', 'b' %}")
+        assert_template_result("b", "{% assign 5 = 'b' %}{% cycle .5, .4 %}")
+      end
+    end
+
+    with_error_mode(:rigid) do
+      assert_raises(Liquid::SyntaxError) { Template.parse("{% cycle .5: 'a', 'b' %}") }
+      assert_raises(Liquid::SyntaxError) { Template.parse("{% cycle .5, .4 %}") }
+    end
+  end
 end
