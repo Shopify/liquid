@@ -8,6 +8,8 @@ module Liquid
       case parse_context.error_mode
       when :strict
         raise
+      when :rigid
+        raise
       when :warn
         parse_context.warnings << e
       end
@@ -17,6 +19,7 @@ module Liquid
     def parse_with_selected_parser(markup)
       case parse_context.error_mode
       when :strict then strict_parse_with_error_context(markup)
+      when :rigid  then strict_parse_with_error_context(markup)
       when :lax    then lax_parse(markup)
       when :warn
         begin

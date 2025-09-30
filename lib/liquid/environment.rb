@@ -34,7 +34,7 @@ module Liquid
       # @param file_system The default file system that is used
       #  to load templates from.
       # @param error_mode [Symbol] The default error mode for all templates
-      #  (either :strict, :warn, or :lax).
+      #  (either :strict, :warn, :lax, or :rigid).
       # @param exception_renderer [Proc] The exception renderer that is used to
       #   render exceptions.
       # @yieldparam environment [Environment] The environment instance that is being built.

@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'liquid'
+
+class VirtualFileSystem
+  def initialize
+    snippet_1 = '<h1>{{ greating | default: "Hello" }}, {{ name | default: "world" }}!</h1>'
+    snippet_2 = '{% for i in (1..5) %} > {{ i }}{% endfor %}'
+
+    @templates = {
+      'snippet_1' => snippet_1,
+      'snippet_2' => snippet_2,
+    }
+  end
+
+  def read_template_file(key)
+    @templates[key] || raise(Liquid::FileSystemError, "No such template '#{key}'")
+  end
+end
+
+error_mode = :strict
+# error_mode = :rigid
+file       = File.read(ARGV[0])
+template   = Liquid::Template.parse(file, error_mode: error_mode)
+
+template.registers[:file_system] = VirtualFileSystem.new
+
+puts template.render
