@@ -107,6 +107,7 @@ Liquid::Environment.default.error_mode = :strict
 Liquid::Environment.default.error_mode = :strict # Raises a SyntaxError when invalid syntax is used
 Liquid::Environment.default.error_mode = :warn # Adds strict errors to template.errors but continues as normal
 Liquid::Environment.default.error_mode = :lax # The default mode, accepts almost anything.
+Liquid::Environment.default.error_mode = :rigid # Uses Parser.new instead of Expression.parse for stricter parsing
 ```
 
 If you want to set the error mode only on specific templates you can pass `:error_mode` as an option to `parse`:

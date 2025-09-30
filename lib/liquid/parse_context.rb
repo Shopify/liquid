@@ -51,6 +51,26 @@ module Liquid
     end
 
     def parse_expression(markup)
+      if @error_mode == :rigid
+        parser = new_parser(markup)
+
+        # Return nil immediately if the markup is empty or contains only
+        # whitespaces
+        return if parser.look(:end_of_string)
+
+        expression_string = parser.expression
+
+        # In rigid mode, verify that all tokens have been consumed
+        #
+        # Extra tokens remaining after the expression indicate invalid syntaxes,
+        # such as: "product title" (instead of "product.title")
+        parser.consume(:end_of_string) unless parser.look(:end_of_string)
+
+        # Use Parser for strict token validation, but still return
+        # Expression objects for compatibility with the rendering pipeline.
+        markup = expression_string
+      end
+
       Expression.parse(markup, @string_scanner, @expression_cache)
     end
 
