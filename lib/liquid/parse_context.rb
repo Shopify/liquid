@@ -52,26 +52,21 @@ module Liquid
 
     def parse_expression(markup)
       if @error_mode == :rigid
-        parser = new_parser(markup)
-
-        # Return nil immediately if the markup is empty or contains only
-        # whitespaces
-        return if parser.look(:end_of_string)
-
-        expression_string = parser.expression
-
-        # In rigid mode, verify that all tokens have been consumed
+        # ExpressionParser doesn't use @expression_cache because rigid mode
+        # must run Lexer and Parser validation on every call to ensure all
+        # tokens are valid and properly consumed.
         #
-        # Extra tokens remaining after the expression indicate invalid syntaxes,
-        # such as: "product title" (instead of "product.title")
-        parser.consume(:end_of_string) unless parser.look(:end_of_string)
-
-        # Use Parser for strict token validation, but still return
-        # Expression objects for compatibility with the rendering pipeline.
-        markup = expression_string
+        # The expensive operations (tokenization and validation) cannot be
+        # cached, while the cheap operation (building Expression objects from
+        # validated tokens) provides minimal benefit from caching.
+        #
+        # Most importantly, caching would skip the validation step entirely,
+        # which defeats the core purpose of rigid mode: strict validation of
+        # every expression to catch syntax errors like "product title".
+        ExpressionParser.parse(markup, self)
+      else
+        Expression.parse(markup, @string_scanner, @expression_cache)
       end
-
-      Expression.parse(markup, @string_scanner, @expression_cache)
     end
 
     def partial=(value)

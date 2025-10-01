@@ -42,14 +42,25 @@ class ExpressionTest < Minitest::Test
     assert_template_result("3..4", "{{ ( 3 .. 4 ) }}")
     assert_expression_result(1..2, "(1..2)")
 
-    assert_match_syntax_error(
-      "Liquid syntax error (line 1): Invalid expression type 'false' in range expression",
-      "{{ (false..true) }}",
-    )
-    assert_match_syntax_error(
-      "Liquid syntax error (line 1): Invalid expression type '(1..2)' in range expression",
-      "{{ ((1..2)..3) }}",
-    )
+    if Liquid::Environment.default.error_mode == :rigid
+      assert_match_syntax_error(
+        'Invalid expression type in range expression in "{{ (false..true) }}"',
+        "{{ (false..true) }}",
+      )
+      assert_match_syntax_error(
+        'Liquid syntax error (line 1): Invalid expression type in range expression in "{{ ((1..2)..3) }}"',
+        "{{ ((1..2)..3) }}",
+      )
+    else
+      assert_match_syntax_error(
+        "Liquid syntax error (line 1): Invalid expression type 'false' in range expression",
+        "{{ (false..true) }}",
+      )
+      assert_match_syntax_error(
+        "Liquid syntax error (line 1): Invalid expression type '(1..2)' in range expression",
+        "{{ ((1..2)..3) }}",
+      )
+    end
   end
 
   def test_quirky_negative_sign_expression_markup
@@ -66,6 +77,7 @@ class ExpressionTest < Minitest::Test
 
   def test_expression_cache
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     cache = {}
     template = <<~LIQUID
@@ -87,6 +99,7 @@ class ExpressionTest < Minitest::Test
 
   def test_expression_cache_with_true_boolean
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     template = <<~LIQUID
       {% assign x = 1 %}
@@ -111,6 +124,7 @@ class ExpressionTest < Minitest::Test
 
   def test_expression_cache_with_lru_redux
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     cache = LruRedux::Cache.new(10)
     template = <<~LIQUID
@@ -132,6 +146,7 @@ class ExpressionTest < Minitest::Test
 
   def test_disable_expression_cache
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     template = <<~LIQUID
       {% assign x = 1 %}
