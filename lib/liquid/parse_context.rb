@@ -50,23 +50,16 @@ module Liquid
       )
     end
 
+    def safe_parse_expression(parser)
+      Expression.safe_parse(parser)
+    end
+
     def parse_expression(markup)
-      if @error_mode == :rigid
-        # ExpressionParser doesn't use @expression_cache because rigid mode
-        # must run Lexer and Parser validation on every call to ensure all
-        # tokens are valid and properly consumed.
-        #
-        # The expensive operations (tokenization and validation) cannot be
-        # cached, while the cheap operation (building Expression objects from
-        # validated tokens) provides minimal benefit from caching.
-        #
-        # Most importantly, caching would skip the validation step entirely,
-        # which defeats the core purpose of rigid mode: strict validation of
-        # every expression to catch syntax errors like "product title".
-        ExpressionParser.parse(markup, self)
-      else
-        Expression.parse(markup, @string_scanner, @expression_cache)
-      end
+      # todo(guilherme): remove this once rigid mode is fully using safe_parse_expression
+      # raise Liquid::InternalError, "parse_expression is not supported in rigid mode" if @error_mode == :rigid
+      puts("🚨 parse_expression used in rigid mode") if @error_mode == :rigid
+
+      Expression.parse(markup, @string_scanner, @expression_cache)
     end
 
     def partial=(value)

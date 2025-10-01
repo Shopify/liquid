@@ -2,8 +2,6 @@
 
 module Liquid
   class Parser
-    attr_reader :tokens
-
     def initialize(input)
       ss = input.is_a?(StringScanner) ? input : StringScanner.new(input)
       @tokens = Lexer.tokenize(ss)
@@ -82,10 +80,6 @@ module Liquid
 
       str << expression
       str
-    end
-
-    def point
-      @p
     end
 
     def variable_lookups

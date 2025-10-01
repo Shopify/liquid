@@ -28,6 +28,10 @@ module Liquid
     FLOAT_REGEX = /\A(-?\d+)\.\d+\z/
 
     class << self
+      def safe_parse(parser, ss = StringScanner.new(""), cache = nil)
+        parse(parser.expression, ss, cache)
+      end
+
       def parse(markup, ss = StringScanner.new(""), cache = nil)
         return unless markup
 
