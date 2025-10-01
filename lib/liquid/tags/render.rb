@@ -35,22 +35,7 @@ module Liquid
 
     def initialize(tag_name, markup, options)
       super
-
-      raise SyntaxError, options[:locale].t("errors.syntax.render") unless markup =~ SYNTAX
-
-      template_name = Regexp.last_match(1)
-      with_or_for = Regexp.last_match(3)
-      variable_name = Regexp.last_match(4)
-
-      @alias_name = Regexp.last_match(6)
-      @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
-      @template_name_expr = parse_expression(template_name)
-      @is_for_loop = (with_or_for == FOR)
-
-      @attributes = {}
-      markup.scan(TagAttributes) do |key, value|
-        @attributes[key] = parse_expression(value)
-      end
+      parse_with_selected_parser(markup)
     end
 
     def for_loop?
@@ -97,6 +82,64 @@ module Liquid
       end
 
       output
+    end
+
+    # render (string) (with|for expression)? (as id)? (key: value)*
+    def rigid_parse(markup)
+      p = @parse_context.new_parser(markup)
+
+      template_name = rigid_template_name(p)
+      with_or_for = p.id?("for") || p.id?("with") || nil
+      if with_or_for
+        variable_name = p.expression
+      end
+
+      alias_name = nil
+      if p.consume?(:as)
+        alias_name = p.consume(:id)
+      end
+
+      @template_name_expr = parse_expression(template_name)
+      @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
+      @alias_name = alias_name
+      @is_for_loop = (with_or_for == FOR)
+
+      # optional comma
+      p.consume?(:comma)
+
+      @attributes = {}
+      while p.look(:id)
+        key = p.consume
+        p.consume(:colon)
+        @attributes[key] = parse_expression(p.expression)
+        p.consume?(:comma) # optional comma
+      end
+    end
+
+    def rigid_template_name(p)
+      p.consume(:string)
+    end
+
+    def strict_parse(markup)
+      lax_parse(markup)
+    end
+
+    def lax_parse(markup)
+      raise SyntaxError, options[:locale].t("errors.syntax.render") unless markup =~ SYNTAX
+
+      template_name = Regexp.last_match(1)
+      with_or_for = Regexp.last_match(3)
+      variable_name = Regexp.last_match(4)
+
+      @alias_name = Regexp.last_match(6)
+      @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
+      @template_name_expr = parse_expression(template_name)
+      @is_for_loop = (with_or_for == FOR)
+
+      @attributes = {}
+      markup.scan(TagAttributes) do |key, value|
+        @attributes[key] = parse_expression(value)
+      end
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
