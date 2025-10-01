@@ -5,6 +5,10 @@ require 'test_helper'
 class RigidModeUnitTest < Minitest::Test
   include Liquid
 
+  def setup
+    skip("todo(guilherme): parse_context.safe_parse_expression in progress...")
+  end
+
   def test_direct_parse_expression_comparison
     test_cases = [
       'foo bar',

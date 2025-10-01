@@ -56,7 +56,6 @@ module Liquid
 
     # cycle [name:] expression(, expression)*
     def rigid_parse(markup)
-      $stderr.puts "using rigid"
       p = @parse_context.new_parser(markup)
 
       if p.look(:id) && p.peek(1) == :colon
