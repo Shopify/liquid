@@ -37,6 +37,10 @@ module Liquid
       end
     end
 
+    def rigid_mode?
+      parse_context.error_mode == :rigid
+    end
+
     private
 
     def rigid_parse_with_error_context(markup)
