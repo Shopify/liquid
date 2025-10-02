@@ -5,11 +5,9 @@ require 'test_helper'
 class RigidModeUnitTest < Minitest::Test
   include Liquid
 
-  def setup
-    skip("todo(guilherme): parse_context.safe_parse_expression in progress...")
-  end
-
   def test_direct_parse_expression_comparison
+    skip("todo(guilherme): parse_context.safe_parse_expression in progress...")
+
     test_cases = [
       'foo bar',
       'user.name first',
@@ -32,6 +30,8 @@ class RigidModeUnitTest < Minitest::Test
   end
 
   def test_comparison_strict_vs_rigid_with_space_separated_lookups
+    skip("todo(guilherme): parse_context.safe_parse_expression in progress...")
+
     expr = 'product title'
 
     ctx_lax = ParseContext.new(environment: lax_env)
@@ -51,6 +51,8 @@ class RigidModeUnitTest < Minitest::Test
   end
 
   def test_tablerow_limit_with_invalid_expression
+    skip("todo(guilherme): parse_context.safe_parse_expression in progress...")
+
     template = <<~LIQUID
       {% tablerow i in (1..10) limit: foo=>bar %}{{ i }}{% endtablerow %}
     LIQUID
@@ -64,6 +66,8 @@ class RigidModeUnitTest < Minitest::Test
   end
 
   def test_tablerow_offset_with_invalid_expression
+    skip("todo(guilherme): parse_context.safe_parse_expression in progress...")
+
     template = <<~LIQUID
       {% tablerow i in (1..10) offset: foo=>bar %}{{ i }}{% endtablerow %}
     LIQUID
