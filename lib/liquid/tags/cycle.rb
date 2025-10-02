@@ -74,6 +74,8 @@ module Liquid
         break unless p.consume?(:comma)
       end
 
+      p.consume(:end_of_string)
+
       unless @is_named
         @name = @variables.to_s
         @is_named = !@name.match?(/\w+:0x\h{8}/)
