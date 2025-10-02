@@ -68,8 +68,7 @@ module Liquid
 
       raise SyntaxError, options[:locale].t("errors.syntax.cycle") if p.look(:end_of_string)
 
-      while (var = p.expression)
-        var = parse_expression(var)
+      while (var = safe_parse_expression(p))
         @variables << var
         break unless p.consume?(:comma)
       end
