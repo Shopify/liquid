@@ -52,8 +52,6 @@ module Liquid
       output
     end
 
-    private
-
     # cycle [name:] expression(, expression)*
     def rigid_parse(markup)
       p = @parse_context.new_parser(markup)
@@ -72,6 +70,8 @@ module Liquid
 
       raise_syntax_error(options) if @variables.empty?
     end
+
+    private
 
     # Temporarily until we migrate
     def strict_parse(markup)
