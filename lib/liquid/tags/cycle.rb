@@ -52,26 +52,33 @@ module Liquid
       output
     end
 
+    private
+
     # cycle [name:] expression(, expression)*
     def rigid_parse(markup)
       p = @parse_context.new_parser(markup)
 
-      if p.look(:id) && p.peek(1) == :colon
+      if p.look(:id) && p.look(:colon, 1)
         @name = p.consume(:id)
         @is_named = true
         p.consume(:colon)
       end
 
       @variables = []
+
+      raise SyntaxError, options[:locale].t("errors.syntax.cycle") if p.look(:end_of_string)
+
       while (var = p.expression)
+        var = parse_expression(var)
         @variables << var
         break unless p.consume?(:comma)
       end
 
-      raise_syntax_error(options) if @variables.empty?
+      unless @is_named
+        @name = @variables.to_s
+        @is_named = !@name.match?(/\w+:0x\h{8}/)
+      end
     end
-
-    private
 
     # Temporarily until we migrate
     def strict_parse(markup)

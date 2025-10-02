@@ -2,9 +2,12 @@
 
 module Liquid
   module ParserSwitching
-    # Do not use this. Use parse_with_selected_parser instead.
-    # It's basically doing the same thing, except this will use strict_parse regardless
-    # of the error mode and fallback only if strict throws.
+    # Do not use this.
+    #
+    # It's basically doing the same thing the {#parse_with_selected_parser},
+    # except this will use the strict parser, instead of the rigid parser.
+    #
+    # @deprecated Use {#parse_with_selected_parser} instead.
     def strict_parse_with_error_mode_fallback(markup)
       strict_parse_with_error_context(markup)
     rescue SyntaxError => e
@@ -26,7 +29,7 @@ module Liquid
       when :lax    then lax_parse(markup)
       when :warn
         begin
-          strict_parse_with_error_context(markup)
+          rigid_parse_with_error_context(markup)
         rescue SyntaxError => e
           parse_context.warnings << e
           lax_parse(markup)
@@ -37,7 +40,7 @@ module Liquid
     private
 
     def rigid_parse_with_error_context(markup)
-      respond_to?(:rigid_parse) ? rigid_parse(markup) : strict_parse(markup)
+      rigid_parse(markup)
     rescue SyntaxError => e
       e.line_number    = line_number
       e.markup_context = markup_context(markup)
