@@ -55,10 +55,9 @@ class CycleTagTest < Minitest::Test
       end
     end
 
-    skip("todo(guilherme): parse_context.safe_parse_expression in progress...")
-    # with_error_mode(:rigid) do
-    #   assert_raises(Liquid::SyntaxError) { Template.parse("{% cycle .5: 'a', 'b' %}") }
-    #   assert_raises(Liquid::SyntaxError) { Template.parse("{% cycle .5, .4 %}") }
-    # end
+    with_error_mode(:rigid) do
+      assert_raises(Liquid::SyntaxError) { Template.parse("{% cycle .5: 'a', 'b' %}") }
+      assert_raises(Liquid::SyntaxError) { Template.parse("{% cycle .5, .4 %}") }
+    end
   end
 end
