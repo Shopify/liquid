@@ -68,6 +68,10 @@ module Liquid
 
     private
 
+    def safe_parse_expression(parser)
+      parse_context.safe_parse_expression(parser)
+    end
+
     def parse_expression(markup)
       parse_context.parse_expression(markup)
     end

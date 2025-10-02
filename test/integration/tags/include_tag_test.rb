@@ -204,6 +204,32 @@ class IncludeTagTest < Minitest::Test
     )
   end
 
+  def test_rigid_parsing_errors
+    [:lax, :strict].each do |mode|
+      with_error_mode(mode) do
+        assert_template_result(
+          'hello value1 value2',
+          '{% include "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
+          partials: { 'snippet' => 'hello {{ arg1 }} {{ arg2 }}' },
+        )
+      end
+    end
+
+    [:rigid].each do |mode|
+      assert_syntax_error(
+        '{% include "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
+        error_mode: mode,
+      )
+    end
+  end
+
+  def test_optional_commas
+    partials = { 'snippet' => 'hello {{ arg1 }} {{ arg2 }}' }
+    assert_template_result('hello value1 value2', '{% include "snippet", arg1: "value1", arg2: "value2" %}', partials: partials)
+    assert_template_result('hello value1 value2', '{% include "snippet"  arg1: "value1", arg2: "value2" %}', partials: partials)
+    assert_template_result('hello value1 value2', '{% include "snippet"  arg1: "value1"  arg2: "value2" %}', partials: partials)
+  end
+
   def test_include_tag_caches_second_read_of_same_partial
     file_system = CountingFileSystem.new
     environment = Liquid::Environment.build(file_system: file_system)

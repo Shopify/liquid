@@ -111,6 +111,10 @@ module Liquid
 
     private
 
+    def rigid_parse(markup)
+      strict_parse(markup)
+    end
+
     def collection_segment(context)
       offsets = context.registers[:for] ||= {}
 

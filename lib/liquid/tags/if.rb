@@ -66,6 +66,10 @@ module Liquid
 
     private
 
+    def rigid_parse(markup)
+      strict_parse(markup)
+    end
+
     def push_block(tag, markup)
       block = if tag == 'else'
         ElseCondition.new

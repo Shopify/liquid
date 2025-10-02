@@ -105,6 +105,32 @@ class RenderTagTest < Minitest::Test
     assert_syntax_error("{% assign name = 'snippet' %}{% render name %}")
   end
 
+  def test_rigid_parsing_errors
+    [:lax, :strict].each do |mode|
+      with_error_mode(mode) do
+        assert_template_result(
+          'hello value1 value2',
+          '{% render "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
+          partials: { 'snippet' => 'hello {{ arg1 }} {{ arg2 }}' },
+        )
+      end
+    end
+
+    [:rigid].each do |mode|
+      assert_syntax_error(
+        '{% render "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
+        error_mode: mode,
+      )
+    end
+  end
+
+  def test_optional_commas
+    partials = { 'snippet' => 'hello {{ arg1 }} {{ arg2 }}' }
+    assert_template_result('hello value1 value2', '{% render "snippet", arg1: "value1", arg2: "value2" %}', partials: partials)
+    assert_template_result('hello value1 value2', '{% render "snippet"  arg1: "value1", arg2: "value2" %}', partials: partials)
+    assert_template_result('hello value1 value2', '{% render "snippet"  arg1: "value1"  arg2: "value2" %}', partials: partials)
+  end
+
   def test_include_tag_caches_second_read_of_same_partial
     file_system = StubFileSystem.new('snippet' => 'echo')
     assert_equal(
