@@ -466,84 +466,95 @@ class SnippetTest < Minitest::Test
 
     assert_template_result(expected, template)
   end
+  
+  def test_render_inline_snippet_forloop
+    template = <<~LIQUID.strip
+      {% snippet item %}
+      <li>{{ forloop.index }}: {{ item }}</li>
+      {% endsnippet %}
 
-  # def test_render_inline_snippet_inside_loop
-  #   template = <<~LIQUID.strip
-  #     {% assign color_scheme = 'dark' %}
-  #     {% assign array = '1,2,3' | split: ',' %}
+      {% assign items = "A,B,C" | split: "," %}
+      {%- render item for items -%}
+    LIQUID
+    expected = <<~OUTPUT
 
-  #     {% for i in array %}
-  #     {% snippet header %}
-  #     <div class="header header--{{ color_scheme }}">
-  #       {{ message }} {{ i }}
-  #     </div>
-  #     {% endsnippet %}
-  #     {% endfor %}
 
-  #     {% render header, ..., message: '👉' %}
-  #   LIQUID
-  #   expected = <<~OUTPUT
 
-  #     <div class="header header--dark">
-  #       👉 3
-  #     </div>
-  #   OUTPUT
+      <li>1: A</li>
 
-  #   assert_template_result(expected, template)
-  # end
+      <li>2: B</li>
 
-  # def test_render_inline_snippet_forloop
-  #   template = <<~LIQUID.strip
-  #     {% snippet item %}
-  #     <li>{{ forloop.index }}: {{ item }}</li>
-  #     {% endsnippet %}
+      <li>3: C</li>
+    OUTPUT
 
-  #     {% assign items = "A,B,C" | split: "," %}
-  #     {%- render item for items -%}
-  #   LIQUID
-  #   expected = <<~OUTPUT
+    assert_template_result(expected, template)
+  end
 
-  #     <li>1: A</li>
+  def test_render_inline_snippet_with
+    template = <<~LIQUID.strip
+      {% snippet header %}
+      <div>{{ header }}</div>
+      {% endsnippet %}
 
-  #     <li>2: B</li>
+      {% assign product = "Apple" %}
+      {%- render header with product -%}
+    LIQUID
+    expected = <<~OUTPUT
 
-  #     <li>3: C</li>
-  #   OUTPUT
 
-  #   assert_template_result(expected, template)
-  # end
 
-  # def test_render_inline_snippet_with
-  #   template = <<~LIQUID.strip
-  #     {% snippet header %}
-  #     <div>{{ header }}</div>
-  #     {% endsnippet %}
+      <div>Apple</div>
+    OUTPUT
 
-  #     {% assign product = "Apple" %}
-  #     {%- render header with product -%}
-  #   LIQUID
-  #   expected = <<~OUTPUT
+    assert_template_result(expected, template)
+  end
 
-  #     <div>Apple</div>
-  #   OUTPUT
+  def test_render_inline_snippet_alias
+    template = <<~LIQUID.strip
+      {% snippet product_card %}
+      <div class="product">{{ item }}</div>
+      {% endsnippet %}
 
-  #   assert_template_result(expected, template)
-  # end
+      {% assign featured = "Apple" %}
+      {%- render product_card with featured as item -%}
+    LIQUID
+    expected = <<~OUTPUT
 
-  # def test_render_inline_snippet_alias
-  #   template = <<~LIQUID.strip
-  #     {% snippet product_card %}
-  #     <div class="product">{{ item }}</div>
-  #     {% endsnippet %}
 
-  #     {% assign featured = "Apple" %}
-  #     {%- render product_card with featured as item -%}
-  #   LIQUID
-  #   expected = <<~OUTPUT
 
-  #     <div class="product">Apple</div>
-  #   OUTPUT
+      <div class="product">Apple</div>
+    OUTPUT
 
-  #   assert_template_result(expected, template)
-  # end
+    assert_template_result(expected, template)
+  end
+
+  def test_render_inline_snippet_inside_loop
+    template = <<~LIQUID.strip
+      {% assign color_scheme = 'dark' %}
+      {% assign array = '1,2,3' | split: ',' %}
+
+      {% for i in array %}
+      {% snippet header %}
+      <div class="header header--{{ color_scheme }}">
+        {{ message }} {{ i }}
+      </div>
+      {% endsnippet %}
+      {% endfor %}
+
+      {% render header, ..., message: '👉' %}
+    LIQUID
+    expected = <<~OUTPUT
+
+
+
+
+
+
+      <div class="header header--dark">
+        👉 
+      </div>
+    OUTPUT
+
+    assert_template_result(expected, template)
+  end
 end

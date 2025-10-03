@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inline Snippets</title>
 
-
   <body>
     <div class="liquid" style="font-size: 56px;">
+
       {% assign foo = true %}
-      {% assign link = "variable" %}
-      
+      {% assign linktext = "variable" %}
+
       {% snippet main %}
         {% assign foo = false %}
         <p>Hi {{ arg | upcase }}!!!</p>
@@ -18,7 +18,7 @@
         <p>This is an inline snippet</p>
 
         <ul>
-          <li><a href="/wow-a-link">wow a {{ link }}</a></li>
+          <li><a href="/wow-a-link">wow a {{ linktext }}</a></li>
           <li>1 + 1 = {{ 1 | plus: 1 }}</li>
           <li>{% if true %}Yes!{% endif %}</li>
           <li>foo = {% if foo %}true{%else%}false{% endif %}</li>
@@ -29,6 +29,15 @@
       {% render main, arg: 'lsf', ... %}
       {{ foo }}
 
+      {% snippet listitem %}
+        <li>{{ forloop.index }}: {{ emoji }}</li>
+      {% endsnippet %}
+    
+      {% assign emojis = "🌼,🌳,🌸" | split: "," %}
+      <ul style="list-style-type: none; display: flex; gap: 1em;">
+        {%- render listitem for emojis as emoji -%}
+      </ul>
+      
     </div>
   </body>
 </html>
