@@ -8,7 +8,8 @@
 
   <body>
     <div class="liquid" style="font-size: 56px;">
-
+      {% assign foo = true %}
+      {% assign link = "variable" %}
       
       {% snippet main %}
         {% assign foo = false %}
@@ -17,15 +18,16 @@
         <p>This is an inline snippet</p>
 
         <ul>
-          <li><a href="/wow-a-link">wow a link</a></li>
+          <li><a href="/wow-a-link">wow a {{ link }}</a></li>
           <li>1 + 1 = {{ 1 | plus: 1 }}</li>
           <li>{% if true %}Yes!{% endif %}</li>
-          <li>{% if foo %}NO{% endif %}</li>
+          <li>foo = {% if foo %}true{%else%}false{% endif %}</li>
           <li>{{ missing_var | default: 'fallback' }}</li>
         </ul>
       {% endsnippet %}
 
-      {% render main, arg: 'lsf' %}
+      {% render main, arg: 'lsf', ... %}
+      {{ foo }}
 
     </div>
   </body>
