@@ -62,7 +62,13 @@ module Liquid
 
         inner_context = context.new_isolated_subcontext
 
-        if inherit_context?
+        if is_file
+          inner_context.template_name = partial.name
+          inner_context.partial = true
+        end
+
+        if is_inline && inherit_context?
+
           context.scopes.each do |scope|
             scope.each do |key, value|
               inner_context[key] = value
@@ -125,6 +131,14 @@ module Liquid
 
       p.consume?(:comma)
 
+      @inherit_context = false
+      # ... inline snippets syntax
+      if p.consume?(:dotdotdot)
+        p.consume?(:comma)
+
+        @inherit_context = true
+      end
+
       @attributes = {}
       while p.look(:id)
         key = p.consume
@@ -137,7 +151,12 @@ module Liquid
     end
 
     def rigid_template_name(p)
-      p.consume(:string)
+      if p.look(:string)
+        p.consume(:string)
+      # inline snippets use variable identifiers
+      elsif p.look(:id)
+        p.consume(:id)
+      end
     end
 
     def strict_parse(markup)
@@ -155,6 +174,7 @@ module Liquid
       @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
       @template_name_expr = parse_expression(template_name)
       @is_for_loop = (with_or_for == FOR)
+      @inherit_context = markup.include?('...')
 
       @attributes = {}
       markup.scan(TagAttributes) do |key, value|
