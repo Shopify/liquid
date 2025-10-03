@@ -102,7 +102,9 @@ class RenderTagTest < Minitest::Test
   end
 
   def test_dynamically_choosen_templates_are_not_allowed
-    assert_syntax_error("{% assign name = 'snippet' %}{% render name %}")
+    assert_raises(::ArgumentError) do
+      Template.parse('{% assign name = "snippet" %}{% render name %}').render!
+    end
   end
 
   def test_rigid_parsing_errors

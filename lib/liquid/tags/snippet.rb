@@ -18,8 +18,9 @@ module Liquid
 
     def initialize(tag_name, markup, options)
       super
-      if markup =~ SYNTAX
-        @to = Regexp.last_match(1)
+      p = @parse_context.new_parser(markup)
+      if p.look(:id)
+        @to = p.consume(:id)
       else
         raise SyntaxError, options[:locale].t("errors.syntax.snippet")
       end

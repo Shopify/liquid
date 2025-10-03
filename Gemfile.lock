@@ -1,15 +1,9 @@
-GIT
-  remote: https://github.com/Shopify/liquid-c.git
-  revision: 5a786af7284df55e013ea20551c4b688d02e8326
-  ref: main
-  specs:
-    liquid-c (4.2.0)
-      liquid (>= 5.0.1)
-
 PATH
   remote: .
   specs:
-    liquid (5.6.0.alpha)
+    liquid (5.8.7)
+      bigdecimal
+      strscan (>= 3.1.1)
 
 GEM
   remote: https://rubygems.org/
@@ -17,8 +11,10 @@ GEM
     ast (2.4.2)
     base64 (0.2.0)
     benchmark-ips (2.13.0)
+    bigdecimal (3.2.3)
     json (2.7.2)
     language_server-protocol (3.17.0.3)
+    lru_redux (1.1.0)
     memory_profiler (1.0.1)
     minitest (5.22.3)
     parallel (1.24.0)
@@ -50,6 +46,7 @@ GEM
       rubocop (~> 1.44)
     ruby-progressbar (1.13.0)
     stackprof (0.2.26)
+    strscan (3.1.5)
     terminal-table (3.0.2)
       unicode-display_width (>= 1.1.1, < 3)
     unicode-display_width (2.5.0)
@@ -62,7 +59,7 @@ DEPENDENCIES
   base64
   benchmark-ips
   liquid!
-  liquid-c!
+  lru_redux
   memory_profiler
   minitest
   rake (~> 13.0)
