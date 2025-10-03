@@ -27,7 +27,7 @@ module Liquid
   # @liquid_syntax_keyword filename The name of the snippet to render, without the `.liquid` extension.
   class Render < Tag
     FOR = 'for'
-    SYNTAX = /(#{QuotedString}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
+    SYNTAX = /(#{QuotedString}+|#{VariableSegment}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
 
     disable_tags "include"
 
@@ -51,12 +51,15 @@ module Liquid
     end
 
     def render_tag(context, output)
-      # The expression should be a String literal, which parses to a String object
       template_name = @template_name_expr
-      raise ::ArgumentError unless template_name.is_a?(String)
 
-      if context[template_name].is_a?(Liquid::SnippetDrop)
-        snippet_drop = context[template_name]
+      # For inline snippets, @template_name_expr is a VariableLookup
+      if template_name.is_a?(VariableLookup)
+
+        snippet_drop = context[template_name.name]
+
+        raise ::ArgumentError unless snippet_drop.is_a?(Liquid::SnippetDrop)
+
         inner_context = context.new_isolated_subcontext
 
         if inherit_context?
@@ -73,6 +76,9 @@ module Liquid
 
         return output << snippet_drop.body.render(inner_context)
       end
+
+      # Otherwise, the expression should be a String literal, which parses to a String object
+      raise ::ArgumentError unless template_name.is_a?(String)
 
       partial = PartialCache.load(
         template_name,
