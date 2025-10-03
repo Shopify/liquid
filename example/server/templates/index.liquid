@@ -1,71 +1,32 @@
-<!DOCTYPE html>
-  <html lang="en">
-
+<!doctype html>
+<html lang="en">
   <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Simple Code Editor</title>
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/xml/xml.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/htmlmixed/htmlmixed.min.js"></script>
-      <style>
-        .liquid, .CodeMirror {
-          position: fixed;
-          height: 100vh;
-          width: 50vw;
-          top: 0;
-          font-size: 24px;
-        }
-        .liquid {
-          left: 0;
-        }
-        .CodeMirror {
-          left: 50%;
-        }
-        .CodeMirror-hscrollbar {
-          overflow: hidden;
-        }
-      </style>
-  </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inline Snippets</title>
+
 
   <body>
-    <div class="liquid">
-      {% snippet "main" %}
+    <div class="liquid" style="font-size: 56px;">
 
-        {% # Snippet input %}
-        {% snippet "input" |type, name| %}
-          <div>
-            <label>{{ type | capitalize }}</label>
-            <input type={{ type }}>
-          </div>
-        {% endsnippet %}
+      
+      {% snippet main %}
+        {% assign foo = false %}
+        <p>Hi {{ arg | upcase }}!!!</p>
 
-        {% snippet "league" %}
-        <h1>Welcome to the league of super evil</h1>
-        {% endsnippet %}
+        <p>This is an inline snippet</p>
 
-        {% render "league" %}
-        {% render "input", type: "text" %}
-        {% render "input", type: "password" %}
-
+        <ul>
+          <li><a href="/wow-a-link">wow a link</a></li>
+          <li>1 + 1 = {{ 1 | plus: 1 }}</li>
+          <li>{% if true %}Yes!{% endif %}</li>
+          <li>{% if foo %}NO{% endif %}</li>
+          <li>{{ missing_var | default: 'fallback' }}</li>
+        </ul>
       {% endsnippet %}
-      {% render 'main' %}
+
+      {% render main, arg: 'lsf' %}
+
     </div>
-
-    <textarea id="code">
-      {% capture html %}{% render 'main' %}{% endcapture %}
-      {{ html | escape }}
-    </textarea>
-
-    <script>
-      const editorElement = document.querySelector('#code')
-      const editor = CodeMirror.fromTextArea(editorElement, {
-          lineNumbers: true,
-          mode: "htmlmixed",
-          theme: "dracula"
-      });
-    </script>
   </body>
 </html>
