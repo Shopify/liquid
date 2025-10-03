@@ -466,6 +466,67 @@ class SnippetTest < Minitest::Test
 
     assert_template_result(expected, template)
   end
+  
+  def test_render_inline_snippet_forloop
+    template = <<~LIQUID.strip
+      {% snippet item %}
+      <li>{{ forloop.index }}: {{ item }}</li>
+      {% endsnippet %}
+
+      {% assign items = "A,B,C" | split: "," %}
+      {%- render item for items -%}
+    LIQUID
+    expected = <<~OUTPUT
+
+
+
+      <li>1: A</li>
+
+      <li>2: B</li>
+
+      <li>3: C</li>
+    OUTPUT
+
+    assert_template_result(expected, template)
+  end
+
+  def test_render_inline_snippet_with
+    template = <<~LIQUID.strip
+      {% snippet header %}
+      <div>{{ header }}</div>
+      {% endsnippet %}
+
+      {% assign product = "Apple" %}
+      {%- render header with product -%}
+    LIQUID
+    expected = <<~OUTPUT
+
+
+
+      <div>Apple</div>
+    OUTPUT
+
+    assert_template_result(expected, template)
+  end
+
+  def test_render_inline_snippet_alias
+    template = <<~LIQUID.strip
+      {% snippet product_card %}
+      <div class="product">{{ item }}</div>
+      {% endsnippet %}
+
+      {% assign featured = "Apple" %}
+      {%- render product_card with featured as item -%}
+    LIQUID
+    expected = <<~OUTPUT
+
+
+
+      <div class="product">Apple</div>
+    OUTPUT
+
+    assert_template_result(expected, template)
+  end
 
   # def test_render_inline_snippet_inside_loop
   #   template = <<~LIQUID.strip
@@ -487,61 +548,6 @@ class SnippetTest < Minitest::Test
   #     <div class="header header--dark">
   #       👉 3
   #     </div>
-  #   OUTPUT
-
-  #   assert_template_result(expected, template)
-  # end
-
-  # def test_render_inline_snippet_forloop
-  #   template = <<~LIQUID.strip
-  #     {% snippet item %}
-  #     <li>{{ forloop.index }}: {{ item }}</li>
-  #     {% endsnippet %}
-
-  #     {% assign items = "A,B,C" | split: "," %}
-  #     {%- render item for items -%}
-  #   LIQUID
-  #   expected = <<~OUTPUT
-
-  #     <li>1: A</li>
-
-  #     <li>2: B</li>
-
-  #     <li>3: C</li>
-  #   OUTPUT
-
-  #   assert_template_result(expected, template)
-  # end
-
-  # def test_render_inline_snippet_with
-  #   template = <<~LIQUID.strip
-  #     {% snippet header %}
-  #     <div>{{ header }}</div>
-  #     {% endsnippet %}
-
-  #     {% assign product = "Apple" %}
-  #     {%- render header with product -%}
-  #   LIQUID
-  #   expected = <<~OUTPUT
-
-  #     <div>Apple</div>
-  #   OUTPUT
-
-  #   assert_template_result(expected, template)
-  # end
-
-  # def test_render_inline_snippet_alias
-  #   template = <<~LIQUID.strip
-  #     {% snippet product_card %}
-  #     <div class="product">{{ item }}</div>
-  #     {% endsnippet %}
-
-  #     {% assign featured = "Apple" %}
-  #     {%- render product_card with featured as item -%}
-  #   LIQUID
-  #   expected = <<~OUTPUT
-
-  #     <div class="product">Apple</div>
   #   OUTPUT
 
   #   assert_template_result(expected, template)
