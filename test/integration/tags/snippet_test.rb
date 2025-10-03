@@ -22,11 +22,27 @@ class SnippetTest < Minitest::Test
       Hey
       {% endsnippet %}
 
-      {%- render "hey" -%}
+      {%- render hey -%}
     LIQUID
     expected = <<~OUTPUT
 
       Hey
+    OUTPUT
+
+    assert_template_result(expected, template)
+  end
+
+  def test_render_inline_snippet_with_variable
+    template = <<~LIQUID.strip
+      {% snippet hey %}
+      <p>Today is {{ "hello" | capitalize }}</p>
+      {% endsnippet %}
+
+      {%- render hey -%}
+    LIQUID
+    expected = <<~OUTPUT
+
+      <p>Today is Hello</p>
     OUTPUT
 
     assert_template_result(expected, template)
@@ -44,8 +60,8 @@ class SnippetTest < Minitest::Test
       </marquee>
       {% endsnippet %}
 
-      {%- render "input" -%}
-      {%- render "banner" -%}
+      {%- render input -%}
+      {%- render banner -%}
     LIQUID
     expected = <<~OUTPUT
 
@@ -67,7 +83,7 @@ class SnippetTest < Minitest::Test
       <input type="{{ type }}" />
       {% endsnippet %}
 
-      {%- render "input", type: "text" -%}
+      {%- render input, type: "text" -%}
     LIQUID
     expected = <<~OUTPUT
 
@@ -87,7 +103,7 @@ class SnippetTest < Minitest::Test
       <input type="{{ type }}" />
       {% endsnippet %}
 
-      {%- render "input", type: "text" -%}
+      {%- render input, type: "text" -%}
     LIQUID
     expected = <<~OUTPUT
 
@@ -110,7 +126,7 @@ class SnippetTest < Minitest::Test
       <input type="{{ type }}" value="{{ value }}" />
       {% endsnippet %}
 
-      {%- render "input", type: "text", value: "Hello" -%}
+      {%- render input, type: "text", value: "Hello" -%}
     LIQUID
     expected = <<~OUTPUT
 
@@ -132,8 +148,8 @@ class SnippetTest < Minitest::Test
       <input type="{{ type }}" value="{{ value }}" />
       {% endsnippet %}
 
-      {%- render "input", type: "text" -%}
-      {%- render "inputs", type: "password", value: "pass" -%}
+      {%- render input, type: "text" -%}
+      {%- render inputs, type: "password", value: "pass" -%}
     LIQUID
 
     expected = <<~OUTPUT
@@ -159,7 +175,7 @@ class SnippetTest < Minitest::Test
       <input type="{{ type }}" value="{{ value }}" />
       {% endsnippet %}
 
-      {%- render "input", type: "text" -%}
+      {%- render input, type: "text" -%}
     LIQUID
     expected = <<~OUTPUT
 
@@ -182,7 +198,7 @@ class SnippetTest < Minitest::Test
       <input type="{{ type }}" value="{{ value }}" />
       {% endsnippet %}
 
-      {%- render "input", type: "text", value: "Hello" -%}
+      {%- render input, type: "text", value: "Hello" -%}
 
       {{ type }}
       {{ value }}
@@ -212,8 +228,8 @@ class SnippetTest < Minitest::Test
       <input type="{{ type }}" />
       {% endsnippet %}
 
-      {%- render "input", type: "text" -%}
-      {%- render "no_leak" -%}
+      {%- render input, type: "text" -%}
+      {%- render no_leak -%}
     LIQUID
     expected = <<~OUTPUT
 
@@ -240,7 +256,7 @@ class SnippetTest < Minitest::Test
       {% endsnippet %}
 
 
-      {% render "header", message: 'Welcome!' %}
+      {% render header, message: 'Welcome!' %}
     LIQUID
     expected = <<~OUTPUT
 
@@ -268,7 +284,7 @@ class SnippetTest < Minitest::Test
       {% endsnippet %}
 
 
-      {% render "header", ..., message: 'Welcome!' %}
+      {% render header, ..., message: 'Welcome!' %}
     LIQUID
     expected = <<~OUTPUT
 
@@ -298,7 +314,7 @@ class SnippetTest < Minitest::Test
 
       {{ color_scheme }}
 
-      {% render "header", ..., message: 'Welcome!' %}
+      {% render header, ..., message: 'Welcome!' %}
 
       {{ color_scheme }}
     LIQUID
@@ -333,7 +349,7 @@ class SnippetTest < Minitest::Test
       {% endsnippet %}
 
       {% capture up_header %}
-        {% render "header", ..., message: 'Welcome!' %}
+        {% render header, ..., message: 'Welcome!' %}
       {% endcapture %}
 
       {{ up_header | upcase }}
@@ -343,7 +359,6 @@ class SnippetTest < Minitest::Test
       {{ header }}
     LIQUID
     expected = <<~OUTPUT
-
 
 
 
@@ -380,15 +395,14 @@ class SnippetTest < Minitest::Test
       {% assign color_scheme = 'auto' %}
 
       <div class="main main--{{ color_scheme }}">
-        {% render "header", ..., message: 'Welcome!' %}
+        {% render header, ..., message: 'Welcome!' %}
       </div>
       {% endsnippet %}
 
-      {% render "main", header: header %}
+      {% render main, header: header %}
     LIQUID
 
     expected = <<~OUTPUT
-
 
 
 
@@ -423,7 +437,7 @@ class SnippetTest < Minitest::Test
   #     {% endsnippet %}
   #     {% endfor %}
 
-  #     {% render "header", ..., message: '👉' %}
+  #     {% render header, ..., message: '👉' %}
   #   LIQUID
   #   expected = <<~OUTPUT
 
