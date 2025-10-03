@@ -136,6 +136,16 @@ module Liquid
       # optional comma
       p.consume?(:comma)
 
+      @inherit_context = false
+      # ... syntax for inline snippets
+      if p.look(:dotdot)
+        p.consume(:dotdot)
+        p.consume(:dot)
+        p.consume?(:comma)
+
+        @inherit_context = true
+      end
+
       @attributes = {}
       while p.look(:id)
         key = p.consume
@@ -146,7 +156,12 @@ module Liquid
     end
 
     def rigid_template_name(p)
-      p.consume(:string)
+      if p.look(:string)
+        p.consume(:string)
+      # inline snippets use variable identifiers
+      elsif p.look(:id)
+        p.consume(:id)
+      end
     end
 
     def strict_parse(markup)
@@ -164,6 +179,7 @@ module Liquid
       @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
       @template_name_expr = parse_expression(template_name)
       @is_for_loop = (with_or_for == FOR)
+      @inherit_context = markup.include?('...')
 
       @attributes = {}
       markup.scan(TagAttributes) do |key, value|

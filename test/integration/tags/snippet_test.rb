@@ -115,6 +115,23 @@ class SnippetTest < Minitest::Test
     assert_template_result(expected, template)
   end
 
+  def test_render_inline_snippet_with_evaluated_assign
+    template = <<~LIQUID.strip
+      {% snippet input %}
+      <h1>{{ greeting }}</h1>
+      {% endsnippet %}
+
+      {%- assign greeting = "hello" | upcase -%}
+      {%- render input, greeting: greeting  -%}
+    LIQUID
+    expected = <<~OUTPUT
+
+      <h1>HELLO</h1>
+    OUTPUT
+
+    assert_template_result(expected, template)
+  end
+
   def test_render_inline_snippet_with_multiple_arguments
     template = <<~LIQUID.strip
       {% snippet input %}
@@ -301,8 +318,36 @@ class SnippetTest < Minitest::Test
     assert_template_result(expected, template)
   end
 
+  def test_render_inline_snippet_with_outside_context_rigid
+      template = <<~LIQUID.strip
+        {% assign color_scheme = 'dark' %}
+
+        {% snippet header %}
+        <div class="header header--{{ color_scheme }}">
+          {{ message }}
+        </div>
+        {% endsnippet %}
+
+
+        {% render header, ..., message: 'Welcome!' %}
+      LIQUID
+      expected = <<~OUTPUT
+
+
+
+
+
+
+        <div class="header header--dark">
+          Welcome!
+        </div>
+      OUTPUT
+
+      assert_template_result(expected, template, error_mode: :rigid)
+  end
+
   def test_inline_snippet_local_scope_takes_precedence
-    template = <<~LIQUID.strip
+    template = <<~LIQUID
       {% assign color_scheme = 'dark' %}
 
       {% snippet header %}
@@ -339,17 +384,17 @@ class SnippetTest < Minitest::Test
   end
 
   def test_render_captured_snippet
-    template = <<~LIQUID.strip
+    template = <<~LIQUID
       {% assign color_scheme = 'dark' %}
 
       {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }}
-        </div>
+      <div class="header header--{{ color_scheme }}">
+        {{ message }}
+      </div>
       {% endsnippet %}
 
       {% capture up_header %}
-        {% render header, ..., message: 'Welcome!' %}
+      {%- render header, ..., message: 'Welcome!' -%}
       {% endcapture %}
 
       {{ up_header | upcase }}
@@ -366,11 +411,9 @@ class SnippetTest < Minitest::Test
 
 
 
-
-        <DIV CLASS="HEADER HEADER--DARK">
-          WELCOME!
-        </DIV>
-
+      <DIV CLASS="HEADER HEADER--DARK">
+        WELCOME!
+      </DIV>
 
 
       SNIPPETDROP
@@ -395,7 +438,7 @@ class SnippetTest < Minitest::Test
       {% assign color_scheme = 'auto' %}
 
       <div class="main main--{{ color_scheme }}">
-        {% render header, ..., message: 'Welcome!' %}
+      {% render header, ..., message: 'Welcome!' %}
       </div>
       {% endsnippet %}
 
@@ -444,6 +487,61 @@ class SnippetTest < Minitest::Test
   #     <div class="header header--dark">
   #       👉 3
   #     </div>
+  #   OUTPUT
+
+  #   assert_template_result(expected, template)
+  # end
+
+  # def test_render_inline_snippet_forloop
+  #   template = <<~LIQUID.strip
+  #     {% snippet item %}
+  #     <li>{{ forloop.index }}: {{ item }}</li>
+  #     {% endsnippet %}
+
+  #     {% assign items = "A,B,C" | split: "," %}
+  #     {%- render item for items -%}
+  #   LIQUID
+  #   expected = <<~OUTPUT
+
+  #     <li>1: A</li>
+
+  #     <li>2: B</li>
+
+  #     <li>3: C</li>
+  #   OUTPUT
+
+  #   assert_template_result(expected, template)
+  # end
+
+  # def test_render_inline_snippet_with
+  #   template = <<~LIQUID.strip
+  #     {% snippet header %}
+  #     <div>{{ header }}</div>
+  #     {% endsnippet %}
+
+  #     {% assign product = "Apple" %}
+  #     {%- render header with product -%}
+  #   LIQUID
+  #   expected = <<~OUTPUT
+
+  #     <div>Apple</div>
+  #   OUTPUT
+
+  #   assert_template_result(expected, template)
+  # end
+
+  # def test_render_inline_snippet_alias
+  #   template = <<~LIQUID.strip
+  #     {% snippet product_card %}
+  #     <div class="product">{{ item }}</div>
+  #     {% endsnippet %}
+
+  #     {% assign featured = "Apple" %}
+  #     {%- render product_card with featured as item -%}
+  #   LIQUID
+  #   expected = <<~OUTPUT
+
+  #     <div class="product">Apple</div>
   #   OUTPUT
 
   #   assert_template_result(expected, template)
