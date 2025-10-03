@@ -52,14 +52,24 @@ module Liquid
 
     def render_tag(context, output)
       template_name = @template_name_expr
+      is_inline = template_name.is_a?(VariableLookup)
+      is_file = template_name.is_a?(String)
 
-      # For inline snippets, @template_name_expr is a VariableLookup
-      if template_name.is_a?(VariableLookup)
-
-        snippet_drop = context[template_name.name]
-
+      if is_inline
+        template_name = template_name.name
+        snippet_drop = context[template_name]
         raise ::ArgumentError unless snippet_drop.is_a?(Liquid::SnippetDrop)
 
+        partial = snippet_drop.body
+      else
+        raise ::ArgumentError unless is_file
+
+        partial = PartialCache.load(template_name, context: context, parse_context: parse_context)
+      end
+
+      context_variable_name = @alias_name || template_name.split('/').last
+
+      render_partial_func = ->(var, forloop) {
         inner_context = context.new_isolated_subcontext
 
         if is_file
@@ -68,7 +78,6 @@ module Liquid
         end
 
         if is_inline && inherit_context?
-
           context.scopes.each do |scope|
             scope.each do |key, value|
               inner_context[key] = value
@@ -80,30 +89,9 @@ module Liquid
           inner_context[key] = context.evaluate(value)
         end
 
-        return output << snippet_drop.body.render(inner_context)
-      end
-
-      # Otherwise, the expression should be a String literal, which parses to a String object
-      raise ::ArgumentError unless template_name.is_a?(String)
-
-      partial = PartialCache.load(
-        template_name,
-        context: context,
-        parse_context: parse_context,
-      )
-
-      context_variable_name = @alias_name || template_name.split('/').last
-
-      render_partial_func = ->(var, forloop) {
-        inner_context               = context.new_isolated_subcontext
-        inner_context.template_name = partial.name
-        inner_context.partial       = true
-        inner_context['forloop']    = forloop if forloop
-
-        @attributes.each do |key, value|
-          inner_context[key] = context.evaluate(value)
-        end
         inner_context[context_variable_name] = var unless var.nil?
+        inner_context['forloop'] = forloop if forloop
+
         partial.render_to_output_buffer(inner_context, output)
         forloop&.send(:increment!)
       }
