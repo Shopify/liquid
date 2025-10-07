@@ -87,10 +87,11 @@ module Liquid
     def rigid_parse(markup)
       p = @parse_context.new_parser(markup)
 
-      template_name = p.expression
+      @template_name_expr = safe_parse_expression(p)
       with_or_for = p.id?("for") || p.id?("with") || nil
+      @variable_name_expr = nil
       if with_or_for
-        variable_name = p.expression
+        @variable_name_expr = parse_expression(p.consume(:id), safe: true)
       end
 
       alias_name = nil
@@ -98,8 +99,6 @@ module Liquid
         alias_name = p.consume(:id)
       end
 
-      @template_name_expr = parse_expression(template_name)
-      @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
       @alias_name = alias_name
 
       # optional comma
@@ -109,7 +108,7 @@ module Liquid
       while p.look(:id)
         key = p.consume
         p.consume(:colon)
-        @attributes[key] = parse_expression(p.expression)
+        @attributes[key] = safe_parse_expression(p)
         p.consume?(:comma) # optional comma
       end
     end

@@ -65,11 +65,11 @@ module Liquid
 
       return if p.look(:end_of_string)
 
-      @name = parse_context.parse_expression(p.expression)
+      @name = parse_context.safe_parse_expression(p)
       while p.consume?(:pipe)
         filtername = p.consume(:id)
         filterargs = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
-        @filters << parse_filter_expressions(filtername, filterargs)
+        @filters << parse_filter_expressions(filtername, filterargs, safe: true)
       end
       p.consume(:end_of_string)
     end
@@ -122,15 +122,15 @@ module Liquid
 
     private
 
-    def parse_filter_expressions(filter_name, unparsed_args)
+    def parse_filter_expressions(filter_name, unparsed_args, safe: false)
       filter_args  = []
       keyword_args = nil
       unparsed_args.each do |a|
-        if (matches = a.match(JustTagAttributes))
+        if (matches = a.match(JustTagAttributes)) # we'll need to fix this
           keyword_args           ||= {}
-          keyword_args[matches[1]] = parse_context.parse_expression(matches[2])
+          keyword_args[matches[1]] = parse_context.parse_expression(matches[2], safe: false)
         else
-          filter_args << parse_context.parse_expression(a)
+          filter_args << parse_context.parse_expression(a, safe: safe)
         end
       end
       result = [filter_name, filter_args]
