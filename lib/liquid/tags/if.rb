@@ -81,8 +81,8 @@ module Liquid
       block.attach(new_body)
     end
 
-    def parse_expression(markup)
-      Condition.parse_expression(parse_context, markup)
+    def parse_expression(markup, safe: false)
+      Condition.parse_expression(parse_context, markup, safe: safe)
     end
 
     def lax_parse(markup)
@@ -124,9 +124,9 @@ module Liquid
     end
 
     def parse_comparison(p)
-      a = parse_expression(p.expression)
+      a = parse_expression(p.expression, safe: true)
       if (op = p.consume?(:comparison))
-        b = parse_expression(p.expression)
+        b = parse_expression(p.expression, safe: true)
         Condition.new(a, op, b)
       else
         Condition.new(a)

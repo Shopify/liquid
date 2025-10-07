@@ -72,8 +72,8 @@ module Liquid
       parse_context.safe_parse_expression(parser)
     end
 
-    def parse_expression(markup)
-      parse_context.parse_expression(markup)
+    def parse_expression(markup, safe: false)
+      parse_context.parse_expression(markup, safe: safe)
     end
   end
 end

@@ -93,7 +93,7 @@ module Liquid
       raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in") unless p.id?('in')
 
       collection_name  = p.expression
-      @collection_name = parse_expression(collection_name)
+      @collection_name = parse_expression(collection_name, safe: true)
 
       @name     = "#{@variable_name}-#{collection_name}"
       @reversed = p.id?('reversed')
