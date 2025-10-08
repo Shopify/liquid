@@ -54,7 +54,7 @@ module Liquid
           next unless f =~ /\w+/
           filtername = Regexp.last_match(0)
           filterargs = f.scan(FilterArgsRegex).flatten
-          @filters << parse_filter_expressions(filtername, filterargs)
+          @filters << lax_parse_filter_expressions(filtername, filterargs)
         end
       end
     end
@@ -66,12 +66,12 @@ module Liquid
       return if p.look(:end_of_string)
 
       @name = parse_context.safe_parse_expression(p)
-      while p.consume?(:pipe)
-        filtername = p.consume(:id)
-        filterargs = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
-        @filters << parse_filter_expressions(filtername, filterargs, safe: true)
-      end
+      @filters << strict_parse_filter_expressions(p) while p.consume?(:pipe)
       p.consume(:end_of_string)
+    end
+
+    def rigid_parse(markup)
+      strict_parse(markup)
     end
 
     def parse_filterargs(p)
@@ -122,20 +122,60 @@ module Liquid
 
     private
 
-    def parse_filter_expressions(filter_name, unparsed_args, safe: false)
+    def lax_parse_filter_expressions(filter_name, unparsed_args)
       filter_args  = []
       keyword_args = nil
       unparsed_args.each do |a|
-        if (matches = a.match(JustTagAttributes)) # we'll need to fix this
+        if (matches = a.match(JustTagAttributes))
           keyword_args           ||= {}
-          keyword_args[matches[1]] = parse_context.parse_expression(matches[2], safe: false)
+          keyword_args[matches[1]] = parse_context.parse_expression(matches[2])
         else
-          filter_args << parse_context.parse_expression(a, safe: safe)
+          filter_args << parse_context.parse_expression(a)
         end
       end
       result = [filter_name, filter_args]
       result << keyword_args if keyword_args
       result
+    end
+
+    # Surprisingly, positional and keyword arguments can be mixed.
+    #
+    # filter = filtername [":" filterargs?]
+    # filterargs = argument ("," argument)*
+    # argument = (positional_argument | keyword_argument)
+    # positional_argument = expression
+    # keyword_argument = id ":" expression
+    def strict_parse_filter_expressions(p)
+      filtername = p.consume(:id)
+      filter_args = []
+      keyword_args = {}
+
+      if p.consume?(:colon)
+        # Parse first argument (no leading comma)
+        argument(p, filter_args, keyword_args) unless end_of_arguments?(p)
+
+        # Parse remaining arguments (with leading commas) and optional trailing comma
+        argument(p, filter_args, keyword_args) while p.consume?(:comma) && !end_of_arguments?(p)
+      end
+
+      result = [filtername, filter_args]
+      result << keyword_args unless keyword_args.empty?
+      result
+    end
+
+    def argument(p, positional_arguments, keyword_arguments)
+      if p.look(:id) && p.look(:colon, 1)
+        key = p.consume(:id)
+        p.consume(:colon)
+        value = parse_context.safe_parse_expression(p)
+        keyword_arguments[key] = value
+      else
+        positional_arguments << parse_context.safe_parse_expression(p)
+      end
+    end
+
+    def end_of_arguments?(p)
+      p.look(:pipe) || p.look(:end_of_string)
     end
 
     def evaluate_filter_expressions(context, filter_args, filter_kwargs)

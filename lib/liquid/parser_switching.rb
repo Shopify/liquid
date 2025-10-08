@@ -5,11 +5,17 @@ module Liquid
     # Do not use this.
     #
     # It's basically doing the same thing the {#parse_with_selected_parser},
-    # except this will use the strict parser, instead of the rigid parser.
+    # except this will try the strict parser regardless of the error mode,
+    # and fall back to the lax parser if the error mode is lax or warn.
     #
     # @deprecated Use {#parse_with_selected_parser} instead.
     def strict_parse_with_error_mode_fallback(markup)
-      strict_parse_with_error_context(markup)
+      case parse_context.error_mode
+      when :rigid
+        rigid_parse_with_error_context(markup)
+      else
+        strict_parse_with_error_context(markup)
+      end
     rescue SyntaxError => e
       case parse_context.error_mode
       when :rigid
