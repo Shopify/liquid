@@ -20,6 +20,7 @@
       invalid_template_encoding: "Invalid template encoding"
       render: "Syntax error in tag 'render' - Template name must be a quoted string"
       table_row: "Syntax Error in 'table_row loop' - Valid syntax: table_row [item] in [collection] cols=3"
+      table_row_invalid_attribute: "Invalid attribute '%{attribute}' in tablerow loop. Valid attributes are cols, limit, offset, and range"
       tag_never_closed: "'%{block_name}' tag was never closed"
       tag_termination: "Tag '%{token}' was not properly terminated with regexp: %{tag_end}"
       unexpected_else: "%{block_name} tag does not expect 'else' tag"

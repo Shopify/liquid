@@ -6,10 +6,10 @@ class RigidModeUnitTest < Minitest::Test
   include Liquid
 
   def test_tablerow_limit_with_invalid_expression
-    skip
-
     template = <<~LIQUID
-      {% tablerow i in (1..10) limit: foo=>bar %}{{ i }}{% endtablerow %}
+      {% tablerow i in (1..10) limit: foo=>bar %}
+        {{ i }}
+      {% endtablerow %}
     LIQUID
 
     refute_nil(lax_parse(template))
@@ -22,10 +22,10 @@ class RigidModeUnitTest < Minitest::Test
   end
 
   def test_tablerow_offset_with_invalid_expression
-    skip
-
     template = <<~LIQUID
-      {% tablerow i in (1..10) offset: foo=>bar %}{{ i }}{% endtablerow %}
+      {% tablerow i in (1..10) offset: foo=>bar %}
+        {{ i }}
+      {% endtablerow %}
     LIQUID
 
     refute_nil(lax_parse(template))
@@ -35,6 +35,24 @@ class RigidModeUnitTest < Minitest::Test
       rigid_parse(template)
     end
     assert_match(/Unexpected character =/, error.message)
+  end
+
+  def test_tablerow_with_invalid_attribute
+    template = <<~LIQUID
+      {% tablerow i in (1..10) invalid_attr: 5 %}
+        {{ i }}
+      {% endtablerow %}
+    LIQUID
+
+    refute_nil(lax_parse(template))
+    refute_nil(strict_parse(template))
+
+    error = assert_raises(SyntaxError) do
+      rigid_parse(template)
+    end
+
+    assert_match(/Invalid attribute 'invalid_attr'/, error.message)
+    assert_match(/Valid attributes are cols, limit, offset, and range/, error.message)
   end
 
   def test_cycle_name_with_invalid_expression
