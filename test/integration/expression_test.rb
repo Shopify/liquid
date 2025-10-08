@@ -66,6 +66,7 @@ class ExpressionTest < Minitest::Test
 
   def test_expression_cache
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     cache = {}
     template = <<~LIQUID
@@ -87,6 +88,7 @@ class ExpressionTest < Minitest::Test
 
   def test_expression_cache_with_true_boolean
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     template = <<~LIQUID
       {% assign x = 1 %}
@@ -111,6 +113,7 @@ class ExpressionTest < Minitest::Test
 
   def test_expression_cache_with_lru_redux
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     cache = LruRedux::Cache.new(10)
     template = <<~LIQUID
@@ -132,6 +135,7 @@ class ExpressionTest < Minitest::Test
 
   def test_disable_expression_cache
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
+    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     template = <<~LIQUID
       {% assign x = 1 %}

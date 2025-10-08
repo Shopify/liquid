@@ -31,12 +31,7 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       @blocks = []
-
-      if markup =~ Syntax
-        @left = parse_expression(Regexp.last_match(1))
-      else
-        raise SyntaxError, options[:locale].t("errors.syntax.case")
-      end
+      parse_with_selected_parser(markup)
     end
 
     def parse(tokens)
@@ -91,9 +86,51 @@ module Liquid
 
     private
 
+    def rigid_parse(markup)
+      parser = @parse_context.new_parser(markup)
+      @left = safe_parse_expression(parser)
+      parser.consume(:end_of_string)
+    end
+
+    def strict_parse(markup)
+      lax_parse(markup)
+    end
+
+    def lax_parse(markup)
+      if markup =~ Syntax
+        @left = parse_expression(Regexp.last_match(1))
+      else
+        raise SyntaxError, options[:locale].t("errors.syntax.case")
+      end
+    end
+
     def record_when_condition(markup)
       body = new_body
 
+      if rigid_mode?
+        parse_rigid_when(markup, body)
+      else
+        parse_lax_when(markup, body)
+      end
+    end
+
+    def parse_rigid_when(markup, body)
+      parser = @parse_context.new_parser(markup)
+
+      loop do
+        expr = safe_parse_expression(parser)
+        block = Condition.new(@left, '==', expr)
+        block.attach(body)
+        @blocks << block
+
+        # Temporarily until support :or lexeme.
+        break unless parser.id?('or') || parser.consume?(:comma)
+      end
+
+      parser.consume(:end_of_string)
+    end
+
+    def parse_lax_when(markup, body)
       while markup
         unless markup =~ WhenSyntax
           raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_when")

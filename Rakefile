@@ -33,12 +33,16 @@ task :rubocop do
   end
 end
 
-desc('runs test suite with both strict and lax parsers')
+desc('runs test suite with all parsers (lax, strict, and rigid)')
 task :test do
   ENV['LIQUID_PARSER_MODE'] = 'lax'
   Rake::Task['base_test'].invoke
 
   ENV['LIQUID_PARSER_MODE'] = 'strict'
+  Rake::Task['base_test'].reenable
+  Rake::Task['base_test'].invoke
+
+  ENV['LIQUID_PARSER_MODE'] = 'rigid'
   Rake::Task['base_test'].reenable
   Rake::Task['base_test'].invoke
 
@@ -48,6 +52,10 @@ task :test do
     Rake::Task['integration_test'].invoke
 
     ENV['LIQUID_PARSER_MODE'] = 'strict'
+    Rake::Task['integration_test'].reenable
+    Rake::Task['integration_test'].invoke
+
+    ENV['LIQUID_PARSER_MODE'] = 'rigid'
     Rake::Task['integration_test'].reenable
     Rake::Task['integration_test'].invoke
   end
