@@ -104,7 +104,7 @@ module Liquid
           raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_attribute")
         end
         p.consume(:colon)
-        set_attribute(attribute, p.expression)
+        set_attribute(attribute, p.expression, safe: true)
       end
       p.consume(:end_of_string)
     end
@@ -178,16 +178,16 @@ module Liquid
       output
     end
 
-    def set_attribute(key, expr)
+    def set_attribute(key, expr, safe: false)
       case key
       when 'offset'
         @from = if expr == 'continue'
           :continue
         else
-          parse_expression(expr)
+          parse_expression(expr, safe: safe)
         end
       when 'limit'
-        @limit = parse_expression(expr)
+        @limit = parse_expression(expr, safe: safe)
       end
     end
 
