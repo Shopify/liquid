@@ -3,8 +3,8 @@
 module Liquid
   class Parser
     def initialize(input)
-      l       = Lexer.new(input)
-      @tokens = l.tokenize
+      ss = input.is_a?(StringScanner) ? input : StringScanner.new(input)
+      @tokens = Lexer.tokenize(ss)
       @p      = 0 # pointer to current location
     end
 
@@ -53,7 +53,7 @@ module Liquid
         str = consume
         str << variable_lookups
       when :open_square
-        str = consume
+        str = consume.dup
         str << expression
         str << consume(:close_square)
         str << variable_lookups

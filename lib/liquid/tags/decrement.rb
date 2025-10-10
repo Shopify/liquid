@@ -7,10 +7,14 @@ module Liquid
   # @liquid_name decrement
   # @liquid_summary
   #   Creates a new variable, with a default value of -1, that's decreased by 1 with each subsequent call.
+  #
+  #   > Caution:
+  #   > Predefined Liquid objects can be overridden by variables with the same name.
+  #   > To make sure that you can access all Liquid objects, make sure that your variable name doesn't match a predefined object's name.
   # @liquid_description
   #   Variables that are declared with `decrement` are unique to the [layout](/themes/architecture/layouts), [template](/themes/architecture/templates),
   #   or [section](/themes/architecture/sections) file that they're created in. However, the variable is shared across
-  #   [snippets](/themes/architecture#snippets) included in the file.
+  #   [snippets](/themes/architecture/snippets) included in the file.
   #
   #   Similarly, variables that are created with `decrement` are independent from those created with [`assign`](/docs/api/liquid/tags/assign)
   #   and [`capture`](/docs/api/liquid/tags/capture). However, `decrement` and [`increment`](/docs/api/liquid/tags/increment) share
@@ -35,6 +39,4 @@ module Liquid
       output
     end
   end
-
-  Template.register_tag('decrement', Decrement)
 end

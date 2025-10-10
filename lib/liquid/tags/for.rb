@@ -20,8 +20,8 @@ module Liquid
   # @liquid_syntax_keyword variable The current item in the array.
   # @liquid_syntax_keyword array The array to iterate over.
   # @liquid_syntax_keyword expression The expression to render for each iteration.
-  # @liquid_optional_param limit [number] The number of iterations to perform.
-  # @liquid_optional_param offset [number] The 1-based index to start iterating at.
+  # @liquid_optional_param limit: [number] The number of iterations to perform.
+  # @liquid_optional_param offset: [number] The 1-based index to start iterating at.
   # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   # @liquid_optional_param reversed [untyped] Iterate in reverse order.
   class For < Block
@@ -88,7 +88,7 @@ module Liquid
     end
 
     def strict_parse(markup)
-      p = Parser.new(markup)
+      p = @parse_context.new_parser(markup)
       @variable_name = p.consume(:id)
       raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in") unless p.id?('in')
 
@@ -201,6 +201,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('for', For)
 end

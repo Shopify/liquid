@@ -19,9 +19,9 @@ module Liquid
   # @liquid_syntax_keyword variable The current item in the array.
   # @liquid_syntax_keyword array The array to iterate over.
   # @liquid_syntax_keyword expression The expression to render.
-  # @liquid_optional_param cols [number] The number of columns that the table should have.
-  # @liquid_optional_param limit [number] The number of iterations to perform.
-  # @liquid_optional_param offset [number] The 1-based index to start iterating at.
+  # @liquid_optional_param cols: [number] The number of columns that the table should have.
+  # @liquid_optional_param limit: [number] The number of iterations to perform.
+  # @liquid_optional_param offset: [number] The 1-based index to start iterating at.
   # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   class TableRow < Block
     Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
@@ -65,6 +65,12 @@ module Liquid
           super
           output << '</td>'
 
+          # Handle any interrupts if they exist.
+          if context.interrupt?
+            interrupt = context.pop_interrupt
+            break if interrupt.is_a?(BreakInterrupt)
+          end
+
           if tablerowloop.col_last && !tablerowloop.last
             output << "</tr>\n<tr class=\"row#{tablerowloop.row + 1}\">"
           end
@@ -91,6 +97,4 @@ module Liquid
       raise Liquid::ArgumentError, "invalid integer"
     end
   end
-
-  Template.register_tag('tablerow', TableRow)
 end

@@ -3,7 +3,6 @@
 require 'cgi'
 require 'base64'
 require 'bigdecimal'
-
 module Liquid
   module StandardFilters
     MAX_I32 = (1 << 31) - 1
@@ -29,6 +28,19 @@ module Liquid
     )
     STRIP_HTML_TAGS = /<.*?>/m
 
+    class << self
+      def try_coerce_encoding(input, encoding:)
+        original_encoding = input.encoding
+        if input.encoding != encoding
+          input.force_encoding(encoding)
+          unless input.valid_encoding?
+            input.force_encoding(original_encoding)
+          end
+        end
+        input
+      end
+    end
+
     # @liquid_public_docs
     # @liquid_type filter
     # @liquid_category array
@@ -51,7 +63,7 @@ module Liquid
     # @liquid_syntax string | downcase
     # @liquid_return [string]
     def downcase(input)
-      input.to_s.downcase
+      Utils.to_s(input).downcase
     end
 
     # @liquid_public_docs
@@ -62,7 +74,7 @@ module Liquid
     # @liquid_syntax string | upcase
     # @liquid_return [string]
     def upcase(input)
-      input.to_s.upcase
+      Utils.to_s(input).upcase
     end
 
     # @liquid_public_docs
@@ -73,7 +85,7 @@ module Liquid
     # @liquid_syntax string | capitalize
     # @liquid_return [string]
     def capitalize(input)
-      input.to_s.capitalize
+      Utils.to_s(input).capitalize
     end
 
     # @liquid_public_docs
@@ -84,7 +96,7 @@ module Liquid
     # @liquid_syntax string | escape
     # @liquid_return [string]
     def escape(input)
-      CGI.escapeHTML(input.to_s) unless input.nil?
+      CGI.escapeHTML(Utils.to_s(input)) unless input.nil?
     end
     alias_method :h, :escape
 
@@ -96,7 +108,7 @@ module Liquid
     # @liquid_syntax string | escape_once
     # @liquid_return [string]
     def escape_once(input)
-      input.to_s.gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
+      Utils.to_s(input).gsub(HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE)
     end
 
     # @liquid_public_docs
@@ -111,7 +123,7 @@ module Liquid
     # @liquid_syntax string | url_encode
     # @liquid_return [string]
     def url_encode(input)
-      CGI.escape(input.to_s) unless input.nil?
+      CGI.escape(Utils.to_s(input)) unless input.nil?
     end
 
     # @liquid_public_docs
@@ -125,7 +137,7 @@ module Liquid
     def url_decode(input)
       return if input.nil?
 
-      result = CGI.unescape(input.to_s)
+      result = CGI.unescape(Utils.to_s(input))
       raise Liquid::ArgumentError, "invalid byte sequence in #{result.encoding}" unless result.valid_encoding?
 
       result
@@ -139,7 +151,7 @@ module Liquid
     # @liquid_syntax string | base64_encode
     # @liquid_return [string]
     def base64_encode(input)
-      Base64.strict_encode64(input.to_s)
+      Base64.strict_encode64(Utils.to_s(input))
     end
 
     # @liquid_public_docs
@@ -150,7 +162,8 @@ module Liquid
     # @liquid_syntax string | base64_decode
     # @liquid_return [string]
     def base64_decode(input)
-      Base64.strict_decode64(input.to_s)
+      input = Utils.to_s(input)
+      StandardFilters.try_coerce_encoding(Base64.strict_decode64(input), encoding: input.encoding)
     rescue ::ArgumentError
       raise Liquid::ArgumentError, "invalid base64 provided to base64_decode"
     end
@@ -163,7 +176,7 @@ module Liquid
     # @liquid_syntax string | base64_url_safe_encode
     # @liquid_return [string]
     def base64_url_safe_encode(input)
-      Base64.urlsafe_encode64(input.to_s)
+      Base64.urlsafe_encode64(Utils.to_s(input))
     end
 
     # @liquid_public_docs
@@ -174,7 +187,8 @@ module Liquid
     # @liquid_syntax string | base64_url_safe_decode
     # @liquid_return [string]
     def base64_url_safe_decode(input)
-      Base64.urlsafe_decode64(input.to_s)
+      input = Utils.to_s(input)
+      StandardFilters.try_coerce_encoding(Base64.urlsafe_decode64(input), encoding: input.encoding)
     rescue ::ArgumentError
       raise Liquid::ArgumentError, "invalid base64 provided to base64_url_safe_decode"
     end
@@ -197,7 +211,7 @@ module Liquid
         if input.is_a?(Array)
           input.slice(offset, length) || []
         else
-          input.to_s.slice(offset, length) || ''
+          Utils.to_s(input).slice(offset, length) || ''
         end
       rescue RangeError
         if I64_RANGE.cover?(length) && I64_RANGE.cover?(offset)
@@ -221,10 +235,10 @@ module Liquid
     # @liquid_return [string]
     def truncate(input, length = 50, truncate_string = "...")
       return if input.nil?
-      input_str = input.to_s
+      input_str = Utils.to_s(input)
       length    = Utils.to_integer(length)
 
-      truncate_string_str = truncate_string.to_s
+      truncate_string_str = Utils.to_s(truncate_string)
 
       l = length - truncate_string_str.length
       l = 0 if l < 0
@@ -248,7 +262,7 @@ module Liquid
     # @liquid_return [string]
     def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
-      input = input.to_s
+      input = Utils.to_s(input)
       words = Utils.to_integer(words)
       words = 1 if words <= 0
 
@@ -262,7 +276,8 @@ module Liquid
       return input if wordlist.length <= words
 
       wordlist.pop
-      wordlist.join(" ").concat(truncate_string.to_s)
+      truncate_string = Utils.to_s(truncate_string)
+      wordlist.join(" ").concat(truncate_string)
     end
 
     # @liquid_public_docs
@@ -273,7 +288,9 @@ module Liquid
     # @liquid_syntax string | split: string
     # @liquid_return [array[string]]
     def split(input, pattern)
-      input.to_s.split(pattern.to_s)
+      pattern = Utils.to_s(pattern)
+      input = Utils.to_s(input)
+      input.split(pattern)
     end
 
     # @liquid_public_docs
@@ -284,7 +301,8 @@ module Liquid
     # @liquid_syntax string | strip
     # @liquid_return [string]
     def strip(input)
-      input.to_s.strip
+      input = Utils.to_s(input)
+      input.strip
     end
 
     # @liquid_public_docs
@@ -295,7 +313,8 @@ module Liquid
     # @liquid_syntax string | lstrip
     # @liquid_return [string]
     def lstrip(input)
-      input.to_s.lstrip
+      input = Utils.to_s(input)
+      input.lstrip
     end
 
     # @liquid_public_docs
@@ -306,7 +325,8 @@ module Liquid
     # @liquid_syntax string | rstrip
     # @liquid_return [string]
     def rstrip(input)
-      input.to_s.rstrip
+      input = Utils.to_s(input)
+      input.rstrip
     end
 
     # @liquid_public_docs
@@ -317,8 +337,9 @@ module Liquid
     # @liquid_syntax string | strip_html
     # @liquid_return [string]
     def strip_html(input)
+      input = Utils.to_s(input)
       empty  = ''
-      result = input.to_s.gsub(STRIP_HTML_BLOCKS, empty)
+      result = input.gsub(STRIP_HTML_BLOCKS, empty)
       result.gsub!(STRIP_HTML_TAGS, empty)
       result
     end
@@ -331,7 +352,8 @@ module Liquid
     # @liquid_syntax string | strip_newlines
     # @liquid_return [string]
     def strip_newlines(input)
-      input.to_s.gsub(/\r?\n/, '')
+      input = Utils.to_s(input)
+      input.gsub(/\r?\n/, '')
     end
 
     # @liquid_public_docs
@@ -342,6 +364,7 @@ module Liquid
     # @liquid_syntax array | join
     # @liquid_return [string]
     def join(input, glue = ' ')
+      glue = Utils.to_s(glue)
       InputIterator.new(input, context).join(glue)
     end
 
@@ -409,29 +432,59 @@ module Liquid
     # @liquid_syntax array | where: string, string
     # @liquid_return [array[untyped]]
     def where(input, property, target_value = nil)
-      ary = InputIterator.new(input, context)
+      filter_array(input, property, target_value) { |ary, &block| ary.select(&block) }
+    end
 
-      if ary.empty?
-        []
-      elsif target_value.nil?
-        ary.select do |item|
-          item[property]
-        rescue TypeError
-          raise_property_error(property)
-        rescue NoMethodError
-          return nil unless item.respond_to?(:[])
-          raise
-        end
-      else
-        ary.select do |item|
-          item[property] == target_value
-        rescue TypeError
-          raise_property_error(property)
-        rescue NoMethodError
-          return nil unless item.respond_to?(:[])
-          raise
-        end
-      end
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Filters an array to exclude items with a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | reject: string, string
+    # @liquid_return [array[untyped]]
+    def reject(input, property, target_value = nil)
+      filter_array(input, property, target_value) { |ary, &block| ary.reject(&block) }
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Tests if any item in an array has a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | has: string, string
+    # @liquid_return [boolean]
+    def has(input, property, target_value = nil)
+      filter_array(input, property, target_value, false) { |ary, &block| ary.any?(&block) }
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Returns the first item in an array with a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | find: string, string
+    # @liquid_return [untyped]
+    def find(input, property, target_value = nil)
+      filter_array(input, property, target_value, nil) { |ary, &block| ary.find(&block) }
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Returns the index of the first item in an array with a specific property value.
+    # @liquid_description
+    #   This requires you to provide both the property name and the associated value.
+    # @liquid_syntax array | find_index: string, string
+    # @liquid_return [number]
+    def find_index(input, property, target_value = nil)
+      filter_array(input, property, target_value, nil) { |ary, &block| ary.find_index(&block) }
     end
 
     # @liquid_public_docs
@@ -528,7 +581,10 @@ module Liquid
     # @liquid_syntax string | replace: string, string
     # @liquid_return [string]
     def replace(input, string, replacement = '')
-      input.to_s.gsub(string.to_s, replacement.to_s)
+      string = Utils.to_s(string)
+      replacement = Utils.to_s(replacement)
+      input = Utils.to_s(input)
+      input.gsub(string, replacement)
     end
 
     # @liquid_public_docs
@@ -539,7 +595,10 @@ module Liquid
     # @liquid_syntax string | replace_first: string, string
     # @liquid_return [string]
     def replace_first(input, string, replacement = '')
-      input.to_s.sub(string.to_s, replacement.to_s)
+      string = Utils.to_s(string)
+      replacement = Utils.to_s(replacement)
+      input = Utils.to_s(input)
+      input.sub(string, replacement)
     end
 
     # @liquid_public_docs
@@ -550,9 +609,9 @@ module Liquid
     # @liquid_syntax string | replace_last: string, string
     # @liquid_return [string]
     def replace_last(input, string, replacement)
-      input = input.to_s
-      string = string.to_s
-      replacement = replacement.to_s
+      input = Utils.to_s(input)
+      string = Utils.to_s(string)
+      replacement = Utils.to_s(replacement)
 
       start_index = input.rindex(string)
 
@@ -604,7 +663,9 @@ module Liquid
     # @liquid_syntax string | append: string
     # @liquid_return [string]
     def append(input, string)
-      input.to_s + string.to_s
+      input = Utils.to_s(input)
+      string = Utils.to_s(string)
+      input + string
     end
 
     # @liquid_public_docs
@@ -633,7 +694,9 @@ module Liquid
     # @liquid_syntax string | prepend: string
     # @liquid_return [string]
     def prepend(input, string)
-      string.to_s + input.to_s
+      input = Utils.to_s(input)
+      string = Utils.to_s(string)
+      string + input
     end
 
     # @liquid_public_docs
@@ -644,10 +707,20 @@ module Liquid
     # @liquid_syntax string | newline_to_br
     # @liquid_return [string]
     def newline_to_br(input)
-      input.to_s.gsub(/\r?\n/, "<br />\n")
+      input = Utils.to_s(input)
+      input.gsub(/\r?\n/, "<br />\n")
     end
 
-    # Reformat a date using Ruby's core Time#strftime( string ) -> string
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category date
+    # @liquid_summary
+    #   Formats a date according to a specified format string.
+    # @liquid_description
+    #   This filter formats a date using various format specifiers. If the format string is empty,
+    #   the original input is returned. If the input cannot be converted to a date, the original input is returned.
+    #
+    #   The following format specifiers can be used:
     #
     #   %a - The abbreviated weekday name (``Sun'')
     #   %A - The  full  weekday  name (``Sunday'')
@@ -676,14 +749,15 @@ module Liquid
     #   %Y - Year with century
     #   %Z - Time zone name
     #   %% - Literal ``%'' character
-    #
-    #   See also: http://www.ruby-doc.org/core/Time.html#method-i-strftime
+    # @liquid_syntax date | date: string
+    # @liquid_return [string]
     def date(input, format)
-      return input if format.to_s.empty?
+      str_format = Utils.to_s(format)
+      return input if str_format.empty?
 
       return input unless (date = Utils.to_date(input))
 
-      date.strftime(format.to_s)
+      date.strftime(str_format)
     end
 
     # @liquid_public_docs
@@ -862,7 +936,7 @@ module Liquid
     #   - [`nil`](/docs/api/liquid/basics#nil)
     # @liquid_syntax variable | default: variable
     # @liquid_return [untyped]
-    # @liquid_optional_param allow_false [boolean] Whether to use false values instead of the default.
+    # @liquid_optional_param allow_false: [boolean] Whether to use false values instead of the default.
     def default(input, default_value = '', options = {})
       options = {} unless options.is_a?(Hash)
       false_check = options['allow_false'] ? input.nil? : !Liquid::Utils.to_liquid_value(input)
@@ -892,17 +966,38 @@ module Liquid
         raise_property_error(property)
       end
 
-      InputIterator.new(values_for_sum, context).sum do |item|
+      result = InputIterator.new(values_for_sum, context).sum do |item|
         Utils.to_number(item)
       end
+
+      result.is_a?(BigDecimal) ? result.to_f : result
     end
 
     private
 
     attr_reader :context
 
+    def filter_array(input, property, target_value, default_value = [], &block)
+      ary = InputIterator.new(input, context)
+
+      return default_value if ary.empty?
+
+      block.call(ary) do |item|
+        if target_value.nil?
+          item[property]
+        else
+          item[property] == target_value
+        end
+      rescue TypeError
+        raise_property_error(property)
+      rescue NoMethodError
+        return nil unless item.respond_to?(:[])
+        raise
+      end
+    end
+
     def raise_property_error(property)
-      raise Liquid::ArgumentError, "cannot select the property '#{property}'"
+      raise Liquid::ArgumentError, "cannot select the property '#{Utils.to_s(property)}'"
     end
 
     def apply_operation(input, operand, operation)
@@ -930,6 +1025,8 @@ module Liquid
     def nil_safe_casecmp(a, b)
       if !a.nil? && !b.nil?
         a.to_s.casecmp(b.to_s)
+      elsif a.nil? && b.nil?
+        0
       else
         a.nil? ? 1 : -1
       end
@@ -956,7 +1053,18 @@ module Liquid
       end
 
       def join(glue)
-        to_a.join(glue.to_s)
+        first = true
+        output = +""
+        each do |item|
+          if first
+            first = false
+          else
+            output << glue
+          end
+
+          output << Liquid::Utils.to_s(item)
+        end
+        output
       end
 
       def concat(args)
@@ -968,7 +1076,10 @@ module Liquid
       end
 
       def uniq(&block)
-        to_a.uniq(&block)
+        to_a.uniq do |item|
+          item = Utils.to_liquid_value(item)
+          block ? yield(item) : item
+        end
       end
 
       def compact
@@ -989,6 +1100,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_filter(StandardFilters)
 end

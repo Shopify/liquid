@@ -102,7 +102,7 @@ module Liquid
     end
 
     def strict_parse(markup)
-      p = Parser.new(markup)
+      p = @parse_context.new_parser(markup)
       condition = parse_binary_comparisons(p)
       p.consume(:end_of_string)
       condition
@@ -111,7 +111,7 @@ module Liquid
     def parse_binary_comparisons(p)
       condition = parse_comparison(p)
       first_condition = condition
-      while (op = (p.id?('and') || p.id?('or')))
+      while (op = p.id?('and') || p.id?('or'))
         child_condition = parse_comparison(p)
         condition.send(op, child_condition)
         condition = child_condition
@@ -135,6 +135,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('if', If)
 end

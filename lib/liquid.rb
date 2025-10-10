@@ -21,6 +21,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+require "strscan"
+
 module Liquid
   FilterSeparator             = /\|/
   ArgumentSeparator           = ','
@@ -44,13 +46,21 @@ module Liquid
   VariableParser              = /\[(?>[^\[\]]+|\g<0>)*\]|#{VariableSegment}+\??/o
 
   RAISE_EXCEPTION_LAMBDA = ->(_e) { raise }
-
-  singleton_class.send(:attr_accessor, :cache_classes)
-  self.cache_classes = true
+  HAS_STRING_SCANNER_SCAN_BYTE = StringScanner.instance_methods.include?(:scan_byte)
 end
 
 require "liquid/version"
+require "liquid/deprecations"
+require "liquid/const"
+require 'liquid/standardfilters'
+require 'liquid/file_system'
+require 'liquid/parser_switching'
+require 'liquid/tag'
+require 'liquid/block'
 require 'liquid/parse_tree_visitor'
+require 'liquid/interrupts'
+require 'liquid/tags'
+require "liquid/environment"
 require 'liquid/lexer'
 require 'liquid/parser'
 require 'liquid/i18n'
@@ -61,23 +71,16 @@ require 'liquid/extensions'
 require 'liquid/errors'
 require 'liquid/interrupts'
 require 'liquid/strainer_template'
-require 'liquid/strainer_factory'
-require 'liquid/expression'
 require 'liquid/context'
-require 'liquid/parser_switching'
 require 'liquid/tag'
-require 'liquid/tag/disabler'
-require 'liquid/tag/disableable'
-require 'liquid/block'
 require 'liquid/block_body'
 require 'liquid/document'
 require 'liquid/variable'
 require 'liquid/variable_lookup'
 require 'liquid/range_lookup'
-require 'liquid/file_system'
 require 'liquid/resource_limits'
+require 'liquid/expression'
 require 'liquid/template'
-require 'liquid/standardfilters'
 require 'liquid/condition'
 require 'liquid/utils'
 require 'liquid/tokenizer'
@@ -86,7 +89,3 @@ require 'liquid/partial_cache'
 require 'liquid/usage'
 require 'liquid/registers'
 require 'liquid/template_factory'
-
-# Load all the tags of the standard library
-#
-Dir["#{__dir__}/liquid/tags/*.rb"].each { |f| require f }

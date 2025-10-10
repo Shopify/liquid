@@ -36,6 +36,24 @@ class Category
   end
 end
 
+class ProductsDrop < Liquid::Drop
+  def initialize(products)
+    @products = products
+  end
+
+  def size
+    @products.size
+  end
+
+  def to_liquid
+    if @context["forloop"]
+      @products.first(@context["forloop"].length)
+    else
+      @products
+    end
+  end
+end
+
 class CategoryDrop < Liquid::Drop
   attr_accessor :category, :context
 
@@ -633,6 +651,40 @@ class ContextTest < Minitest::Test
     c = Context.new({}, {}, r)
     assert_instance_of(Registers, c.registers)
     assert_equal(:my_value, c.registers[:my_register])
+  end
+
+  def test_variable_to_liquid_returns_contextual_drop
+    context = {
+      "products" => ProductsDrop.new(["A", "B", "C", "D", "E"]),
+    }
+
+    template = Liquid::Template.parse(<<~LIQUID)
+      {%- for i in (1..3) -%}
+        for_loop_products_count: {{ products | size }}
+      {% endfor %}
+
+      unscoped_products_count: {{ products | size }}
+    LIQUID
+
+    result = template.render(context)
+
+    assert_includes(result, "for_loop_products_count: 3")
+    assert_includes(result, "unscoped_products_count: 5")
+  end
+
+  def test_new_isolated_context_inherits_parent_environment
+    global_environment = Liquid::Environment.build(tags: {})
+    context = Context.build(environment: global_environment)
+
+    subcontext = context.new_isolated_subcontext
+    assert_equal(global_environment, subcontext.environment)
+  end
+
+  def test_newly_built_context_inherits_parent_environment
+    global_environment = Liquid::Environment.build(tags: {})
+    context = Context.build(environment: global_environment)
+    assert_equal(global_environment, context.environment)
+    assert(context.environment.tags.each.to_a.empty?)
   end
 
   private

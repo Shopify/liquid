@@ -24,6 +24,9 @@ module Liquid
         else
           false
         end
+      rescue Encoding::CompatibilityError
+        # "✅".b.include?("✅") raises Encoding::CompatibilityError despite being materially equal
+        left.b.include?(right.b)
       end,
     }
 

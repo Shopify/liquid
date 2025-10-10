@@ -6,7 +6,7 @@ module Liquid
   # @liquid_category theme
   # @liquid_name render
   # @liquid_summary
-  #   Renders a [snippet](/themes/architecture#snippets) or [app block](/themes/architecture/sections/section-schema#render-app-blocks).
+  #   Renders a [snippet](/themes/architecture/snippets) or [app block](/themes/architecture/sections/section-schema#render-app-blocks).
   # @liquid_description
   #   Inside snippets and app blocks, you can't directly access variables that are [created](/docs/api/liquid/tags/variable-tags) outside
   #   of the snippet or app block. However, you can [specify variables as parameters](/docs/api/liquid/tags/render#render-passing-variables-to-a-snippet)
@@ -108,6 +108,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('render', Render)
 end

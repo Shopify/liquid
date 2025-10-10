@@ -6,6 +6,7 @@ module Liquid
   class BlockBody
     LiquidTagToken      = /\A\s*(#{TagName})\s*(.*?)\z/o
     FullToken           = /\A#{TagStart}#{WhitespaceControl}?(\s*)(#{TagName})(\s*)(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
+    FullTokenPossiblyInvalid = /\A(.*)#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*)?#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable   = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
     TAGSTART            = "{%"
@@ -51,7 +52,7 @@ module Liquid
             next parse_liquid_tag(markup, parse_context)
           end
 
-          unless (tag = registered_tags[tag_name])
+          unless (tag = parse_context.environment.tag_for_name(tag_name))
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
             return yield tag_name, markup
@@ -146,7 +147,7 @@ module Liquid
             next
           end
 
-          unless (tag = registered_tags[tag_name])
+          unless (tag = parse_context.environment.tag_for_name(tag_name))
             # end parsing if we reach an unknown tag and let the caller decide
             # determine how to proceed
             return yield tag_name, markup
@@ -245,10 +246,17 @@ module Liquid
     end
 
     def create_variable(token, parse_context)
-      if token =~ ContentOfVariable
-        markup = Regexp.last_match(1)
+      if token.end_with?("}}")
+        i = 2
+        i = 3 if token[i] == "-"
+        parse_end = token.length - 3
+        parse_end -= 1 if token[parse_end] == "-"
+        markup_end = parse_end - i + 1
+        markup = markup_end <= 0 ? "" : token.slice(i, markup_end)
+
         return Variable.new(markup, parse_context)
       end
+
       BlockBody.raise_missing_variable_terminator(token, parse_context)
     end
 
@@ -260,10 +268,6 @@ module Liquid
     # @deprecated Use {.raise_missing_variable_terminator} instead
     def raise_missing_variable_terminator(token, parse_context)
       BlockBody.raise_missing_variable_terminator(token, parse_context)
-    end
-
-    def registered_tags
-      Template.tags
     end
   end
 end

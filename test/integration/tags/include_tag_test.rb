@@ -49,14 +49,6 @@ end
 class IncludeTagTest < Minitest::Test
   include Liquid
 
-  def setup
-    @default_file_system = Liquid::Template.file_system
-  end
-
-  def teardown
-    Liquid::Template.file_system = @default_file_system
-  end
-
   def test_include_tag_looks_for_file_system_in_registers_first
     assert_equal(
       'from OtherFileSystem',
@@ -182,10 +174,10 @@ class IncludeTagTest < Minitest::Test
       end
     end
 
-    Liquid::Template.file_system = infinite_file_system.new
+    env = Liquid::Environment.build(file_system: infinite_file_system.new)
 
     assert_raises(Liquid::StackLevelError) do
-      Template.parse("{% include 'loop' %}").render!
+      Template.parse("{% include 'loop' %}", environment: env).render!
     end
   end
 
@@ -214,9 +206,10 @@ class IncludeTagTest < Minitest::Test
 
   def test_include_tag_caches_second_read_of_same_partial
     file_system = CountingFileSystem.new
+    environment = Liquid::Environment.build(file_system: file_system)
     assert_equal(
       'from CountingFileSystemfrom CountingFileSystem',
-      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render!({}, registers: { file_system: file_system }),
+      Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}", environment: environment).render!({}, registers: { file_system: file_system }),
     )
     assert_equal(1, file_system.count)
   end
@@ -271,26 +264,27 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_does_not_add_error_in_strict_mode_for_missing_variable
-    Liquid::Template.file_system = TestFileSystem.new
+    env = Liquid::Environment.build(file_system: TestFileSystem.new)
 
-    a = Liquid::Template.parse(' {% include "nested_template" %}')
+    a = Liquid::Template.parse(' {% include "nested_template" %}', environment: env)
     a.render!
     assert_empty(a.errors)
   end
 
   def test_passing_options_to_included_templates
-    Liquid::Template.file_system = TestFileSystem.new
+    env = Liquid::Environment.build(file_system: TestFileSystem.new)
+
     assert_raises(Liquid::SyntaxError) do
-      Template.parse("{% include template %}", error_mode: :strict).render!("template" => '{{ "X" || downcase }}')
+      Template.parse("{% include template %}", error_mode: :strict, environment: env).render!("template" => '{{ "X" || downcase }}')
     end
     with_error_mode(:lax) do
-      assert_equal('x', Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: true).render!("template" => '{{ "X" || downcase }}'))
+      assert_equal('x', Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: true, environment: env).render!("template" => '{{ "X" || downcase }}'))
     end
     assert_raises(Liquid::SyntaxError) do
-      Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: [:locale]).render!("template" => '{{ "X" || downcase }}')
+      Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: [:locale], environment: env).render!("template" => '{{ "X" || downcase }}')
     end
     with_error_mode(:lax) do
-      assert_equal('x', Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: [:error_mode]).render!("template" => '{{ "X" || downcase }}'))
+      assert_equal('x', Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: [:error_mode], environment: env).render!("template" => '{{ "X" || downcase }}'))
     end
   end
 
@@ -341,8 +335,11 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_including_with_strict_variables
-    Liquid::Template.file_system = StubFileSystem.new({ "simple" => "simple" })
-    template = Liquid::Template.parse("{% include 'simple' %}", error_mode: :warn)
+    env = Liquid::Environment.build(
+      file_system: StubFileSystem.new('simple' => 'simple'),
+    )
+
+    template = Liquid::Template.parse("{% include 'simple' %}", error_mode: :warn, environment: env)
     template.render(nil, strict_variables: true)
 
     assert_equal([], template.errors)

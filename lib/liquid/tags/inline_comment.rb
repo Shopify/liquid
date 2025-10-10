@@ -25,6 +25,4 @@ module Liquid
       true
     end
   end
-
-  Template.register_tag('#', InlineComment)
 end

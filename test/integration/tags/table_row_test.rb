@@ -207,4 +207,52 @@ class TableRowTest < Minitest::Test
       render_errors: true,
     )
   end
+
+  def test_table_row_handles_interrupts
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td></tr>\n",
+      '{% tablerow n in (1...3) cols:2 %} {{n}} {% break %} {{n}} {% endtablerow %}',
+    )
+
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 3 </td></tr>\n",
+      '{% tablerow n in (1...3) cols:2 %} {{n}} {% continue %} {{n}} {% endtablerow %}',
+    )
+  end
+
+  def test_table_row_does_not_leak_interrupts
+    template = <<~LIQUID
+      {% for i in (1..2) -%}
+      {% for j in (1..2) -%}
+      {% tablerow k in (1..3) %}{% break %}{% endtablerow -%}
+      loop j={{ j }}
+      {% endfor -%}
+      loop i={{ i }}
+      {% endfor -%}
+      after loop
+    LIQUID
+
+    expected = <<~STR
+      <tr class="row1">
+      <td class="col1"></td></tr>
+      loop j=1
+      <tr class="row1">
+      <td class="col1"></td></tr>
+      loop j=2
+      loop i=1
+      <tr class="row1">
+      <td class="col1"></td></tr>
+      loop j=1
+      <tr class="row1">
+      <td class="col1"></td></tr>
+      loop j=2
+      loop i=2
+      after loop
+    STR
+
+    assert_template_result(
+      expected,
+      template,
+    )
+  end
 end

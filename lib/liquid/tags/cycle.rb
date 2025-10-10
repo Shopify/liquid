@@ -26,12 +26,18 @@ module Liquid
       when NamedSyntax
         @variables = variables_from_string(Regexp.last_match(2))
         @name      = parse_expression(Regexp.last_match(1))
+        @is_named = true
       when SimpleSyntax
         @variables = variables_from_string(markup)
         @name      = @variables.to_s
+        @is_named = !@name.match?(/\w+:0x\h{8}/)
       else
         raise SyntaxError, options[:locale].t("errors.syntax.cycle")
       end
+    end
+
+    def named?
+      @is_named
     end
 
     def render_to_output_buffer(context, output)
@@ -62,7 +68,13 @@ module Liquid
     def variables_from_string(markup)
       markup.split(',').collect do |var|
         var =~ /\s*(#{QuotedFragment})\s*/o
-        Regexp.last_match(1) ? parse_expression(Regexp.last_match(1)) : nil
+        next unless Regexp.last_match(1)
+
+        # Expression Parser returns cached objects, and we need to dup them to
+        # start the cycle over for each new cycle call.
+        # Liquid-C does not have a cache, so we don't need to dup the object.
+        var = parse_expression(Regexp.last_match(1))
+        var.is_a?(VariableLookup) ? var.dup : var
       end.compact
     end
 
@@ -72,6 +84,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('cycle', Cycle)
 end

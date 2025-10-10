@@ -6,7 +6,7 @@ module Liquid
   # @liquid_category theme
   # @liquid_name include
   # @liquid_summary
-  #   Renders a [snippet](/themes/architecture#snippets).
+  #   Renders a [snippet](/themes/architecture/snippets).
   # @liquid_description
   #   Inside the snippet, you can access and alter variables that are [created](/docs/api/liquid/tags/variable-tags) outside of the
   #   snippet.
@@ -110,6 +110,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('include', Include)
 end

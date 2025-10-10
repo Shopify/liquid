@@ -130,6 +130,10 @@ class VariableTest < Minitest::Test
     assert_template_result('bar', '{{ foo }}', { 'foo' => :bar })
   end
 
+  def test_nested_array
+    assert_template_result('', '{{ foo }}', { 'foo' => [[nil]] })
+  end
+
   def test_dynamic_find_var
     assert_template_result('bar', '{{ [key] }}', { 'key' => 'foo', 'foo' => 'bar' })
   end
