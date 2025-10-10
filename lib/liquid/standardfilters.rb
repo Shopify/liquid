@@ -1006,8 +1006,8 @@ module Liquid
     end
 
     def nil_safe_compare(a, b)
-      a = a ? 0 : 1 if boolean?(a) 
-      b = b ? 0 : 1 if boolean?(b) 
+      a = a ? 0 : 1 if boolean?(a)
+      b = b ? 0 : 1 if boolean?(b)
 
       result = a <=> b
 
