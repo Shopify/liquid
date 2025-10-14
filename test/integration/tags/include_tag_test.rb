@@ -220,6 +220,10 @@ class IncludeTagTest < Minitest::Test
         '{% include "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
         error_mode: mode,
       )
+      assert_syntax_error(
+        '{% include "snippet" | filter %}',
+        error_mode: mode,
+      )
     end
   end
 
