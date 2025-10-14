@@ -113,6 +113,8 @@ module Liquid
         @attributes[key] = safe_parse_expression(p)
         p.consume?(:comma) # optional comma
       end
+
+      p.consume(:end_of_string)
     end
 
     def rigid_template_name(p)

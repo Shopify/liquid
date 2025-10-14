@@ -121,6 +121,10 @@ class RenderTagTest < Minitest::Test
         '{% render "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
         error_mode: mode,
       )
+      assert_syntax_error(
+        '{% render "snippet" | filter %}',
+        error_mode: mode,
+      )
     end
   end
 
