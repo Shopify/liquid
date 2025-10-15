@@ -313,6 +313,15 @@ class StandardFiltersTest < Minitest::Test
     assert_equal([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }, {}], @filters.sort([{ "a" => 4 }, { "a" => 3 }, {}, { "a" => 1 }, { "a" => 2 }], "a"))
   end
 
+  def test_sort_with_order
+    assert_equal([4, 3, 2, 1], @filters.sort([4, 3, 2, 1], nil, "order" => "desc"))
+    assert_equal([{ "a" => 4 }, { "a" => 3 }, { "a" => 2 }, { "a" => 1 }], @filters.sort([{ "a" => 4 }, { "a" => 3 }, { "a" => 2 }, { "a" => 1 }], "a", "order" => "desc"))
+
+    assert_raises(Liquid::ArgumentError) do
+      @filters.sort([1, 2], nil, "order" => "invalid")
+    end
+  end
+
   def test_sort_when_property_is_sometimes_missing_puts_nils_last
     input       = [
       { "price" => 4, "handle" => "alpha" },
@@ -339,6 +348,15 @@ class StandardFiltersTest < Minitest::Test
   def test_sort_natural_with_nils
     assert_equal(["a", "B", "c", "D", nil], @filters.sort_natural([nil, "c", "D", "a", "B"]))
     assert_equal([{ "a" => "a" }, { "a" => "B" }, { "a" => "c" }, { "a" => "D" }, {}], @filters.sort_natural([{ "a" => "D" }, { "a" => "c" }, {}, { "a" => "a" }, { "a" => "B" }], "a"))
+  end
+
+  def test_sort_natural_with_order
+    assert_equal(["D", "c", "B", "a"], @filters.sort_natural(["c", "D", "a", "B"], nil, "order" => "desc"))
+    assert_equal([{ "a" => "D" }, { "a" => "c" }, { "a" => "B" }, { "a" => "a" }], @filters.sort_natural([{ "a" => "D" }, { "a" => "c" }, { "a" => "a" }, { "a" => "B" }], "a", "order" => "desc"))
+
+    assert_raises(Liquid::ArgumentError) do
+      @filters.sort_natural(["a", "b"], nil, "order" => "invalid")
+    end
   end
 
   def test_sort_natural_when_property_is_sometimes_missing_puts_nils_last
