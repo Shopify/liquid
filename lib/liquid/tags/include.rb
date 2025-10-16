@@ -91,11 +91,11 @@ module Liquid
       with_or_for = p.id?("for") || p.id?("with") || nil
       @variable_name_expr = nil
       if with_or_for
-        @variable_name_expr = parse_expression(p.consume(:id), safe: true)
+        @variable_name_expr = safe_parse_expression(p)
       end
 
       alias_name = nil
-      if p.consume?(:as)
+      if p.id?("as")
         alias_name = p.consume(:id)
       end
 
