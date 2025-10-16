@@ -96,7 +96,7 @@ module Liquid
       end
 
       alias_name = nil
-      if p.consume?(:as)
+      if p.id?("as")
         alias_name = p.consume(:id)
       end
 
