@@ -22,18 +22,7 @@ module Liquid
 
     def initialize(tag_name, markup, options)
       super
-      case markup
-      when NamedSyntax
-        @variables = variables_from_string(Regexp.last_match(2))
-        @name      = parse_expression(Regexp.last_match(1))
-        @is_named = true
-      when SimpleSyntax
-        @variables = variables_from_string(markup)
-        @name      = @variables.to_s
-        @is_named = !@name.match?(/\w+:0x\h{8}/)
-      else
-        raise SyntaxError, options[:locale].t("errors.syntax.cycle")
-      end
+      parse_with_selected_parser(markup)
     end
 
     def named?
@@ -64,6 +53,53 @@ module Liquid
     end
 
     private
+
+    # cycle [name:] expression(, expression)*
+    def rigid_parse(markup)
+      p = @parse_context.new_parser(markup)
+
+      if p.look(:id) && p.look(:colon, 1)
+        @name = p.consume(:id)
+        @is_named = true
+        p.consume(:colon)
+      end
+
+      @variables = []
+
+      raise SyntaxError, options[:locale].t("errors.syntax.cycle") if p.look(:end_of_string)
+
+      while (var = safe_parse_expression(p))
+        @variables << var
+        break unless p.consume?(:comma)
+      end
+
+      p.consume(:end_of_string)
+
+      unless @is_named
+        @name = @variables.to_s
+        @is_named = !@name.match?(/\w+:0x\h{8}/)
+      end
+    end
+
+    # Temporarily until we migrate
+    def strict_parse(markup)
+      lax_parse(markup)
+    end
+
+    def lax_parse(markup)
+      case markup
+      when NamedSyntax
+        @variables = variables_from_string(Regexp.last_match(2))
+        @name      = parse_expression(Regexp.last_match(1))
+        @is_named = true
+      when SimpleSyntax
+        @variables = variables_from_string(markup)
+        @name      = @variables.to_s
+        @is_named = !@name.match?(/\w+:0x\h{8}/)
+      else
+        raise SyntaxError, options[:locale].t("errors.syntax.cycle")
+      end
+    end
 
     def variables_from_string(markup)
       markup.split(',').collect do |var|

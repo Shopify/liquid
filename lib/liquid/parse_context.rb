@@ -50,7 +50,17 @@ module Liquid
       )
     end
 
-    def parse_expression(markup)
+    def safe_parse_expression(parser)
+      Expression.safe_parse(parser, @string_scanner, @expression_cache)
+    end
+
+    def parse_expression(markup, safe: false)
+      # todo(guilherme): remove this once rigid mode is fully using safe_parse_expression
+      if !safe && @error_mode == :rigid
+        # raise Liquid::InternalError, "parse_expression is not supported in rigid mode"
+        puts("🚨 parse_expression used in rigid mode")
+      end
+
       Expression.parse(markup, @string_scanner, @expression_cache)
     end
 

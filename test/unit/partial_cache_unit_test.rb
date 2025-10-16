@@ -184,7 +184,7 @@ class PartialCacheUnitTest < Minitest::Test
       },
     )
 
-    [:lax, :warn, :strict].each do |error_mode|
+    [:lax, :warn, :strict, :rigid].each do |error_mode|
       Liquid::PartialCache.load(
         'my_partial',
         context: context,
@@ -193,7 +193,7 @@ class PartialCacheUnitTest < Minitest::Test
     end
 
     assert_equal(
-      ["my_partial:lax", "my_partial:warn", "my_partial:strict"],
+      ["my_partial:lax", "my_partial:warn", "my_partial:strict", "my_partial:rigid"],
       context.registers[:cached_partials].keys,
     )
   end
