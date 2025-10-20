@@ -138,7 +138,7 @@ class TableRowTest < Minitest::Test
 
   def test_tablerow_loop_drop_attributes
     template = <<~LIQUID.chomp
-      {% tablerow i in (1...2) %}
+      {% tablerow i in (1..2) %}
       col: {{ tablerowloop.col }}
       col0: {{ tablerowloop.col0 }}
       col_first: {{ tablerowloop.col_first }}
@@ -192,12 +192,14 @@ class TableRowTest < Minitest::Test
     assert_template_result(
       "Liquid error (line 1): invalid integer",
       '{% tablerow n in (1...10) limit:true %} {{n}} {% endtablerow %}',
+      error_mode: :warn,
       render_errors: true,
     )
 
     assert_template_result(
       "Liquid error (line 1): invalid integer",
       '{% tablerow n in (1...10) offset:true %} {{n}} {% endtablerow %}',
+      error_mode: :warn,
       render_errors: true,
     )
 
@@ -205,18 +207,19 @@ class TableRowTest < Minitest::Test
       "Liquid error (line 1): invalid integer",
       '{% tablerow n in (1...10) cols:true %} {{n}} {% endtablerow %}',
       render_errors: true,
+      error_mode: :warn,
     )
   end
 
   def test_table_row_handles_interrupts
     assert_template_result(
       "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td></tr>\n",
-      '{% tablerow n in (1...3) cols:2 %} {{n}} {% break %} {{n}} {% endtablerow %}',
+      '{% tablerow n in (1..3) cols:2 %} {{n}} {% break %} {{n}} {% endtablerow %}',
     )
 
     assert_template_result(
       "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td><td class=\"col2\"> 2 </td></tr>\n<tr class=\"row2\"><td class=\"col1\"> 3 </td></tr>\n",
-      '{% tablerow n in (1...3) cols:2 %} {{n}} {% continue %} {{n}} {% endtablerow %}',
+      '{% tablerow n in (1..3) cols:2 %} {{n}} {% continue %} {{n}} {% endtablerow %}',
     )
   end
 

@@ -26,8 +26,12 @@ class ExpressionTest < Minitest::Test
   def test_float
     assert_template_result("-17.42", "{{ -17.42 }}")
     assert_template_result("2.5", "{{ 2.5 }}")
-    assert_expression_result(0.0, "0.....5")
-    assert_expression_result(0.0, "-0..1")
+
+    with_error_mode(:lax) do
+      assert_expression_result(0.0, "0.....5")
+      assert_expression_result(0.0, "-0..1")
+    end
+
     assert_expression_result(1.5, "1.5")
 
     # this is a unfortunate quirky behavior of Liquid
@@ -61,6 +65,7 @@ class ExpressionTest < Minitest::Test
     assert_template_result(
       "",
       "{{ - 'theme.css' - }}",
+      error_mode: :lax,
     )
   end
 
