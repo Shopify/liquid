@@ -34,7 +34,7 @@ module Minitest
 
     def assert_template_result(
       expected, template, assigns = {},
-      message: nil, partials: nil, error_mode: nil, render_errors: false,
+      message: nil, partials: nil, error_mode: Liquid::Environment.default.error_mode, render_errors: false,
       template_factory: nil
     )
       file_system = StubFileSystem.new(partials || {})

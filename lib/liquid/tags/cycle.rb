@@ -78,6 +78,7 @@ module Liquid
       # Parse remaining comma-separated expressions
       while p.consume?(:comma)
         break if p.look(:end_of_string)
+
         @variables << maybe_dup_lookup(safe_parse_expression(p))
       end
 

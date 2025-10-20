@@ -3,7 +3,6 @@
 require 'test_helper'
 
 class CycleTagTest < Minitest::Test
-
   def test_simple_cycle_inside_for_loop
     template = <<~LIQUID
       {%- for i in (1..3) -%}
