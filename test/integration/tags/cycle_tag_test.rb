@@ -3,20 +3,11 @@
 require 'test_helper'
 
 class CycleTagTest < Minitest::Test
-  def test_simple_cycle
-    template = <<~LIQUID
-      {%- cycle '1', '2', '3' -%}
-      {%- cycle '1', '2', '3' -%}
-      {%- cycle '1', '2', '3' -%}
-    LIQUID
-
-    assert_template_result("123", template)
-  end
 
   def test_simple_cycle_inside_for_loop
     template = <<~LIQUID
       {%- for i in (1..3) -%}
-        {% cycle '1', '2', '3' %}
+        {%- cycle '1', '2', '3' -%}
       {%- endfor -%}
     LIQUID
 
@@ -36,14 +27,61 @@ class CycleTagTest < Minitest::Test
     assert_template_result("123", template)
   end
 
-  def test_cycle_tag_always_resets_cycle
+  def test_cycle_named_groups_string
     template = <<~LIQUID
-      {%- assign a = "1" -%}
-      {%- cycle a, "2" -%}
-      {%- cycle a, "2" -%}
+      {%- for i in (1..3) -%}
+        {%- cycle 'placeholder1': 1, 2, 3 -%}
+        {%- cycle 'placeholder2': 1, 2, 3 -%}
+      {%- endfor -%}
     LIQUID
 
-    assert_template_result("11", template)
+    assert_template_result("112233", template)
+  end
+
+  def test_cycle_named_groups_vlookup
+    template = <<~LIQUID
+      {%- assign placeholder1 = 'placeholder1' -%}
+      {%- assign placeholder2 = 'placeholder2' -%}
+      {%- for i in (1..3) -%}
+        {%- cycle placeholder1: 1, 2, 3 -%}
+        {%- cycle placeholder2: 1, 2, 3 -%}
+      {%- endfor -%}
+    LIQUID
+
+    assert_template_result("112233", template)
+  end
+
+  def test_unnamed_cycle_have_independent_counters_when_used_with_lookups
+    template = <<~LIQUID
+      {%- assign a = "1" -%}
+      {%- for i in (1..3) -%}
+        {%- cycle a, "2" -%}
+        {%- cycle a, "2" -%}
+      {%- endfor -%}
+    LIQUID
+
+    assert_template_result("112211", template)
+  end
+
+  def test_unnamed_cycle_dependent_counter_when_used_with_literal_values
+    template = <<~LIQUID
+      {%- cycle "1", "2" -%}
+      {%- cycle "1", "2" -%}
+      {%- cycle "1", "2" -%}
+    LIQUID
+
+    assert_template_result("121", template)
+  end
+
+  def test_optional_trailing_comma
+    template = <<~LIQUID
+      {%- cycle "1", "2", -%}
+      {%- cycle "1", "2", -%}
+      {%- cycle "1", "2", -%}
+      {%- cycle "1", -%}
+    LIQUID
+
+    assert_template_result("1211", template)
   end
 
   def test_cycle_tag_without_arguments
@@ -56,19 +94,19 @@ class CycleTagTest < Minitest::Test
 
   def test_cycle_tag_with_error_mode
     # QuotedFragment is more permissive than what Parser#expression allows.
-    temlate1 = "{% assign 5 = 'b' %}{% cycle .5, .4 %}"
-    temlate2 = "{% cycle .5: 'a', 'b' %}"
+    template1 = "{% assign 5 = 'b' %}{% cycle .5, .4 %}"
+    template2 = "{% cycle .5: 'a', 'b' %}"
 
     [:lax, :strict].each do |mode|
       with_error_mode(mode) do
-        assert_template_result("b", temlate1)
-        assert_template_result("a", temlate2)
+        assert_template_result("b", template1)
+        assert_template_result("a", template2)
       end
     end
 
     with_error_mode(:rigid) do
-      error1 = assert_raises(Liquid::SyntaxError) { Template.parse(temlate1) }
-      error2 = assert_raises(Liquid::SyntaxError) { Template.parse(temlate2) }
+      error1 = assert_raises(Liquid::SyntaxError) { Template.parse(template1) }
+      error2 = assert_raises(Liquid::SyntaxError) { Template.parse(template2) }
 
       expected_error = /Liquid syntax error: \[:dot, "."\] is not a valid expression/
 
