@@ -446,6 +446,154 @@ class SnippetTest < Minitest::Test
       assert_template_result(expected, template)
     end
 
+    def test_render_inline_snippet_with_spread_hash
+      template = <<~LIQUID.strip
+        {% snippet header %}
+        <div>
+          {{ word }} {{ number }}
+        </div>
+        {% endsnippet %}
+
+        {% render header, ...details %}
+      LIQUID
+
+      expected = <<~OUTPUT
+
+
+
+        <div>
+          potato 5
+        </div>
+      OUTPUT
+
+      assert_template_result(expected, template, { 'details' => { 'word' => 'potato', 'number' => 5 } })
+    end
+
+    def test_render_inline_snippet_with_spread_drop
+      product_drop = Class.new(Liquid::Drop) do
+        def title
+          'Cool Product'
+        end
+
+        def price
+          99
+        end
+
+        def vendor
+          'Acme'
+        end
+      end
+
+      template = <<~LIQUID.strip
+        {% snippet card %}
+        <div>
+          {{ title }} - ${{ price }} by {{ vendor }}
+        </div>
+        {% endsnippet %}
+
+        {% render card, ...product %}
+      LIQUID
+
+      expected = <<~OUTPUT
+
+
+
+        <div>
+          Cool Product - $99 by Acme
+        </div>
+      OUTPUT
+
+      assert_template_result(expected, template, { 'product' => product_drop.new })
+    end
+
+    def test_render_inline_snippet_with_overwritten_spread_drop
+      product_drop = Class.new(Liquid::Drop) do
+        def title
+          'Cool Product'
+        end
+
+        def price
+          99
+        end
+
+        def vendor
+          'Acme'
+        end
+      end
+
+      template = <<~LIQUID.strip
+        {% snippet card %}
+        <div>
+          {{ title }} - ${{ price }} by {{ vendor }}
+        </div>
+        {% endsnippet %}
+
+        {% render card, ...product, price: 10 %}
+      LIQUID
+
+      expected = <<~OUTPUT
+
+
+
+        <div>
+          Cool Product - $10 by Acme
+        </div>
+      OUTPUT
+
+      assert_template_result(expected, template, { 'product' => product_drop.new })
+    end
+
+    def test_render_inline_snippet_spread_before_explicit_args
+      template = <<~LIQUID.strip
+        {% snippet card %}
+        <div>{{ price }}</div>
+        {% endsnippet %}
+
+        {% render card, ...details, price: 10 %}
+      LIQUID
+
+      expected = <<~OUTPUT
+
+
+
+        <div>10</div>
+      OUTPUT
+
+      assert_template_result(expected, template, { 'details' => { 'price' => 99 } })
+    end
+
+    def test_render_inline_snippet_multiple_spreads
+      product_drop = Class.new(Liquid::Drop) do
+        def title
+          'Cool Product'
+        end
+      end
+
+      template = <<~LIQUID.strip
+        {% snippet card %}
+        <div>{{ title }} - {{ price }} {{ color }}</div>
+        {% endsnippet %}
+
+        {% render card, ...defaults, ...product %}
+      LIQUID
+
+      expected = <<~OUTPUT
+
+
+
+        <div>Cool Product - 10 </div>
+      OUTPUT
+
+      assert_template_result(
+        expected,
+        template,
+        {
+          'defaults' => { 'title' => 'Default', 'price' => 10 },
+          'product' => product_drop.new,
+        },
+      )
+    end
+
     def test_render_captured_snippet
       template = <<~LIQUID
         {% assign color_scheme = 'dark' %}
@@ -1061,6 +1209,132 @@ class SnippetTest < Minitest::Test
       OUTPUT
 
       assert_template_result(expected, template, error_mode: :rigid)
+    end
+
+    def test_render_inline_snippet_with_spread_drop
+      product_drop = Class.new(Liquid::Drop) do
+        def title
+          'Cool Product'
+        end
+
+        def price
+          99
+        end
+
+        def vendor
+          'Acme'
+        end
+      end
+
+      template = <<~LIQUID.strip
+        {% snippet card %}
+        <div>
+          {{ title }} - ${{ price }} by {{ vendor }}
+        </div>
+        {% endsnippet %}
+
+        {% render card, ...product %}
+      LIQUID
+
+      expected = <<~OUTPUT
+
+
+
+        <div>
+          Cool Product - $99 by Acme
+        </div>
+      OUTPUT
+
+      assert_template_result(expected, template, { 'product' => product_drop.new }, error_mode: :rigid)
+    end
+
+    def test_render_inline_snippet_with_overwritten_spread_drop
+      product_drop = Class.new(Liquid::Drop) do
+        def title
+          'Cool Product'
+        end
+
+        def price
+          99
+        end
+
+        def vendor
+          'Acme'
+        end
+      end
+
+      template = <<~LIQUID.strip
+        {% snippet card %}
+        <div>
+          {{ title }} - ${{ price }} by {{ vendor }}
+        </div>
+        {% endsnippet %}
+
+        {% render card, ...product, price: 10 %}
+      LIQUID
+
+      expected = <<~OUTPUT
+
+
+
+        <div>
+          Cool Product - $10 by Acme
+        </div>
+      OUTPUT
+
+      assert_template_result(expected, template, { 'product' => product_drop.new }, error_mode: :rigid)
+    end
+
+    def test_render_inline_snippet_spread_before_explicit_args
+      template = <<~LIQUID.strip
+        {% snippet card %}
+        <div>{{ price }}</div>
+        {% endsnippet %}
+
+        {% render card, ...details, price: 10 %}
+      LIQUID
+
+      expected = <<~OUTPUT
+
+
+
+        <div>10</div>
+      OUTPUT
+
+      assert_template_result(expected, template, { 'details' => { 'price' => 99 } }, error_mode: :rigid)
+    end
+
+    def test_render_inline_snippet_multiple_spreads
+      product_drop = Class.new(Liquid::Drop) do
+        def title
+          'Cool Product'
+        end
+      end
+
+      template = <<~LIQUID.strip
+        {% snippet card %}
+        <div>{{ title }} - {{ price }} {{ color }}</div>
+        {% endsnippet %}
+
+        {% render card, ...defaults, ...product %}
+      LIQUID
+
+      expected = <<~OUTPUT
+
+
+
+        <div>Cool Product - 10 </div>
+      OUTPUT
+
+      assert_template_result(
+        expected,
+        template,
+        {
+          'defaults' => { 'title' => 'Default', 'price' => 10 },
+          'product' => product_drop.new,
+        },
+        error_mode: :rigid,
+      )
     end
 
     def test_render_captured_snippet
