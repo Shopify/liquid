@@ -2,7 +2,7 @@
 
 module Liquid
   # @liquid_type tag
-  # @liquid_category theme
+  # @liquid_category variable
   # @liquid_name snippet
   # @liquid_summary
   #   Creates a new inline snippet.
@@ -14,8 +14,6 @@ module Liquid
   #   {% endsnippet %}
 
   class Snippet < Block
-    SYNTAX = /(#{VariableSignature}+)/o
-
     def initialize(tag_name, markup, options)
       super
       p = @parse_context.new_parser(markup)
@@ -29,6 +27,10 @@ module Liquid
     def render_to_output_buffer(context, output)
       snippet_drop = SnippetDrop.new(@body)
       context.scopes.last[@to] = snippet_drop
+
+      snippet_size = @body.nodelist.sum { |node| node.to_s.bytesize }
+      context.resource_limits.increment_assign_score(snippet_size)
+
       output
     end
 

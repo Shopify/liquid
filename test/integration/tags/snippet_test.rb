@@ -1238,4 +1238,12 @@ class SnippetTest < Minitest::Test
       assert_template_result(expected, template, error_mode: :rigid)
     end
   end
+
+  class ResourceLimits < SnippetTest
+    def test_increment_assign_score_by_bytes_not_characters
+      t = Template.parse("{% snippet foo %}すごい{% endsnippet %}")
+      t.render!
+      assert_equal(9, t.resource_limits.assign_score)
+    end
+  end
 end

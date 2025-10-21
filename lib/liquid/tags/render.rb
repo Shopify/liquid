@@ -128,12 +128,9 @@ module Liquid
     end
 
     def rigid_template_name(p)
-      if p.look(:string)
-        p.consume(:string)
-      # inline snippets use variable identifiers
-      elsif p.look(:id)
-        p.consume(:id)
-      end
+      return p.consume(:string) if p.look(:string)
+
+      p.consume(:id) if p.look(:id)
     end
 
     def strict_parse(markup)
@@ -153,7 +150,7 @@ module Liquid
       @is_for_loop = (with_or_for == FOR)
 
       @attributes = {}
-      markup.scan(/(#{ContextInheritance})|#{TagAttributes.source}/) do |context_marker, key, value|
+      markup.scan(/(\.\.\.)(?=\s|,|$)|#{TagAttributes.source}/) do |context_marker, key, value|
         if context_marker
           @attributes.delete("...")
           @attributes["..."] = true
