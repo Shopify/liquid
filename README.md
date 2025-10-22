@@ -99,15 +99,14 @@ Setting the error mode of Liquid lets you specify how strictly you want your tem
 Normally the parser is very lax and will accept almost anything without error. Unfortunately this can make
 it very hard to debug and can lead to unexpected behaviour.
 
-Liquid also comes with a stricter parser that can be used when editing templates to give better error messages
+Liquid also comes with a parser that can be used when editing templates to give better error messages
 when templates are invalid. You can enable this new parser like this:
 
 ```ruby
-Liquid::Environment.default.error_mode = :strict
-Liquid::Environment.default.error_mode = :strict # Raises a SyntaxError when invalid syntax is used
-Liquid::Environment.default.error_mode = :warn # Adds strict errors to template.errors but continues as normal
-Liquid::Environment.default.error_mode = :lax # The default mode, accepts almost anything.
-Liquid::Environment.default.error_mode = :rigid # Uses Parser.new instead of Expression.parse for stricter parsing
+Liquid::Environment.default.error_mode = :rigid  # Raises a SyntaxError when invalid syntax is used in all tags
+Liquid::Environment.default.error_mode = :strict # Raises a SyntaxError when invalid syntax is used in some tags
+Liquid::Environment.default.error_mode = :warn   # Adds strict errors to template.errors but continues as normal
+Liquid::Environment.default.error_mode = :lax    # The default mode, accepts almost anything.
 ```
 
 If you want to set the error mode only on specific templates you can pass `:error_mode` as an option to `parse`:
