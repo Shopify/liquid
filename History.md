@@ -1,5 +1,8 @@
 # Liquid Change Log
 
+## 5.8.8
+* Introduce `:rigid` error mode for stricter, safer parsing of all tags [CP Clermont, Guilherme Carreiro]
+
 ## 5.8.7
 * Expose body content in the `Doc` tag [James Meng]
 
