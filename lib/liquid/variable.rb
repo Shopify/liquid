@@ -66,12 +66,23 @@ module Liquid
       return if p.look(:end_of_string)
 
       @name = parse_context.safe_parse_expression(p)
-      @filters << strict_parse_filter_expressions(p) while p.consume?(:pipe)
+      while p.consume?(:pipe)
+        filtername = p.consume(:id)
+        filterargs = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
+        @filters << lax_parse_filter_expressions(filtername, filterargs)
+      end
       p.consume(:end_of_string)
     end
 
     def rigid_parse(markup)
-      strict_parse(markup)
+      @filters = []
+      p = @parse_context.new_parser(markup)
+
+      return if p.look(:end_of_string)
+
+      @name = parse_context.safe_parse_expression(p)
+      @filters << rigid_parse_filter_expressions(p) while p.consume?(:pipe)
+      p.consume(:end_of_string)
     end
 
     def parse_filterargs(p)
@@ -145,7 +156,7 @@ module Liquid
     # argument = (positional_argument | keyword_argument)
     # positional_argument = expression
     # keyword_argument = id ":" expression
-    def strict_parse_filter_expressions(p)
+    def rigid_parse_filter_expressions(p)
       filtername = p.consume(:id)
       filter_args = []
       keyword_args = {}
