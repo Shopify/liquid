@@ -1,6 +1,6 @@
 # Liquid Change Log
 
-## 5.8.8
+## 5.9.0
 * Introduce `:rigid` error mode for stricter, safer parsing of all tags [CP Clermont, Guilherme Carreiro]
 
 ## 5.8.7
