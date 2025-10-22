@@ -76,30 +76,7 @@ module Liquid
         inner_context['forloop'] = forloop if forloop
 
         @attributes.each do |key, value|
-          if key.start_with?("...") && is_inline
-            if key == "..."
-              context.scopes.each do |scope|
-                scope.each do |k, v|
-                  inner_context[k] = v
-                end
-              end
-            else
-              obj = context.evaluate(value)
-              if obj.is_a?(Liquid::Drop)
-                (obj.class.invokable_methods - ['to_liquid']).each do |method_name|
-                  inner_context[method_name] = obj.invoke_drop(method_name)
-                end
-              elsif obj.is_a?(Hash)
-                obj.each do |k, v|
-                  inner_context[k] = v
-                end
-              else
-                raise ::ArgumentError
-              end
-            end
-          else
-            inner_context[key] = context.evaluate(value)
-          end
+          inner_context[key] = context.evaluate(value)
         end
 
         inner_context[context_variable_name] = var unless var.nil?
@@ -132,23 +109,11 @@ module Liquid
       p.consume?(:comma)
 
       @attributes = {}
-      while p.look(:dotdotdot) || p.look(:id)
-        if p.consume?(:dotdotdot)
-          if p.look(:id)
-            identifier = p.read(:id)
-            key = "...#{identifier}"
-            @attributes.delete(key)
-            @attributes[key] = safe_parse_expression(p)
-          else
-            @attributes.delete("...")
-            @attributes["..."] = true
-          end
-        else
-          key = p.consume
-          p.consume(:colon)
-          @attributes.delete(key)
-          @attributes[key] = safe_parse_expression(p)
-        end
+      while p.look(:id)
+        key = p.consume
+        p.consume(:colon)
+        @attributes[key] = safe_parse_expression(p)
+
         p.consume?(:comma) # optional comma
       end
 
@@ -180,20 +145,8 @@ module Liquid
       @is_for_loop = (with_or_for == FOR)
 
       @attributes = {}
-      markup.scan(/(\.\.\.)(\w+)?(?=\s|,|$)|#{TagAttributes.source}/) do |spread, identifier, key, value|
-        if spread
-          if identifier
-            spread_key = "...#{identifier}"
-            @attributes.delete(spread_key)
-            @attributes[spread_key] = parse_expression(identifier)
-          else
-            @attributes.delete("...")
-            @attributes["..."] = true
-          end
-        elsif key && value
-          @attributes.delete(key)
-          @attributes[key] = parse_expression(value)
-        end
+      markup.scan(TagAttributes) do |key, value|
+        @attributes[key] = parse_expression(value)
       end
     end
 

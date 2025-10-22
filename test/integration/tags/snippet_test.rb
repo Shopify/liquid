@@ -205,6 +205,49 @@ class SnippetTest < Minitest::Test
       assert_template_result(expected, template)
     end
 
+    def test_render_snippets_as_arguments
+      template = <<~LIQUID.strip
+        {% assign color_scheme = 'dark' %}
+
+        {% snippet header %}
+          <div class="header">
+            {{ message }}
+          </div>
+        {% endsnippet %}
+
+        {% snippet main %}
+        {% assign color_scheme = 'auto' %}
+
+        <div class="main main--{{ color_scheme }}">
+        {% render header, message: 'Welcome!' %}
+        </div>
+        {% endsnippet %}
+
+        {% render main, header: header %}
+      LIQUID
+
+      expected = <<~OUTPUT
+
+
+
+
+
+
+
+
+
+        <div class="main main--auto">
+
+          <div class="header">
+            Welcome!
+          </div>
+
+        </div>
+      OUTPUT
+
+      assert_template_result(expected, template)
+    end
+
     def test_render_inline_snippet_shouldnt_leak_context
       template = <<~LIQUID.strip
         {% snippet input %}
@@ -263,7 +306,7 @@ class SnippetTest < Minitest::Test
       assert_template_result(expected, template)
     end
 
-    def test_render_inline_snippet_without_outside_context
+    def test_render_inline_snippet_ignores_outside_context
       template = <<~LIQUID.strip
         {% assign color_scheme = 'dark' %}
 
@@ -291,18 +334,23 @@ class SnippetTest < Minitest::Test
       assert_template_result(expected, template)
     end
 
-    def test_render_inline_snippet_with_outside_context
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-
+    def test_render_captured_snippet
+      template = <<~LIQUID
         {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
+        <div class="header">
           {{ message }}
         </div>
         {% endsnippet %}
 
+        {% capture up_header %}
+        {%- render header, message: 'Welcome!' -%}
+        {% endcapture %}
 
-        {% render header, ..., message: 'Welcome!' %}
+        {{ up_header | upcase }}
+
+        {{ header | upcase }}
+
+        {{ header }}
       LIQUID
       expected = <<~OUTPUT
 
@@ -310,10 +358,14 @@ class SnippetTest < Minitest::Test
 
 
 
+        <DIV CLASS="HEADER">
+          WELCOME!
+        </DIV>
 
-        <div class="header header--dark">
-          Welcome!
-        </div>
+
+        SNIPPETDROP
+
+        SnippetDrop
       OUTPUT
 
       assert_template_result(expected, template)
@@ -332,7 +384,7 @@ class SnippetTest < Minitest::Test
 
         {{ color_scheme }}
 
-        {% render header, ..., message: 'Welcome!' %}
+        {% render header,  message: 'Welcome!', color_scheme: color_scheme %}
 
         {{ color_scheme }}
       LIQUID
@@ -351,328 +403,6 @@ class SnippetTest < Minitest::Test
 
 
         dark
-      OUTPUT
-
-      assert_template_result(expected, template)
-    end
-
-    def test_render_inline_snippet_with_correct_argument_precedence
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-        {% assign message = 'Goodbye!' %}
-
-        {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }}
-        </div>
-        {% endsnippet %}
-
-
-        {% render header, message: 'Welcome!', ... %}
-      LIQUID
-      expected = <<~OUTPUT
-
-
-
-
-
-
-
-        <div class="header header--dark">
-          Goodbye!
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template)
-    end
-
-    def test_render_inline_snippet_with_correct_argument_order
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-        {% assign message = 'Goodbye!' %}
-
-        {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }}
-        </div>
-        {% endsnippet %}
-
-
-        {% render header,  ..., message: 'Welcome!' %}
-      LIQUID
-      expected = <<~OUTPUT
-
-
-
-
-
-
-
-        <div class="header header--dark">
-          Welcome!
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template)
-    end
-
-    def test_render_inline_snippet_with_correct_duplicate_argument_precedence
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-        {% assign message = 'Goodbye!' %}
-
-        {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }}
-        </div>
-        {% endsnippet %}
-
-
-        {% render header, message: 'Welcome!', ..., message: 'Hi!' %}
-      LIQUID
-      expected = <<~OUTPUT
-
-
-
-
-
-
-
-        <div class="header header--dark">
-          Hi!
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template)
-    end
-
-    def test_render_inline_snippet_with_spread_hash
-      template = <<~LIQUID.strip
-        {% snippet header %}
-        <div>
-          {{ word }} {{ number }}
-        </div>
-        {% endsnippet %}
-
-        {% render header, ...details %}
-      LIQUID
-
-      expected = <<~OUTPUT
-
-
-
-        <div>
-          potato 5
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template, { 'details' => { 'word' => 'potato', 'number' => 5 } })
-    end
-
-    def test_render_inline_snippet_with_spread_drop
-      product_drop = Class.new(Liquid::Drop) do
-        def title
-          'Cool Product'
-        end
-
-        def price
-          99
-        end
-
-        def vendor
-          'Acme'
-        end
-      end
-
-      template = <<~LIQUID.strip
-        {% snippet card %}
-        <div>
-          {{ title }} - ${{ price }} by {{ vendor }}
-        </div>
-        {% endsnippet %}
-
-        {% render card, ...product %}
-      LIQUID
-
-      expected = <<~OUTPUT
-
-
-
-        <div>
-          Cool Product - $99 by Acme
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template, { 'product' => product_drop.new })
-    end
-
-    def test_render_inline_snippet_with_overwritten_spread_drop
-      product_drop = Class.new(Liquid::Drop) do
-        def title
-          'Cool Product'
-        end
-
-        def price
-          99
-        end
-
-        def vendor
-          'Acme'
-        end
-      end
-
-      template = <<~LIQUID.strip
-        {% snippet card %}
-        <div>
-          {{ title }} - ${{ price }} by {{ vendor }}
-        </div>
-        {% endsnippet %}
-
-        {% render card, ...product, price: 10 %}
-      LIQUID
-
-      expected = <<~OUTPUT
-
-
-
-        <div>
-          Cool Product - $10 by Acme
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template, { 'product' => product_drop.new })
-    end
-
-    def test_render_inline_snippet_spread_before_explicit_args
-      template = <<~LIQUID.strip
-        {% snippet card %}
-        <div>{{ price }}</div>
-        {% endsnippet %}
-
-        {% render card, ...details, price: 10 %}
-      LIQUID
-
-      expected = <<~OUTPUT
-
-
-
-        <div>10</div>
-      OUTPUT
-
-      assert_template_result(expected, template, { 'details' => { 'price' => 99 } })
-    end
-
-    def test_render_inline_snippet_multiple_spreads
-      product_drop = Class.new(Liquid::Drop) do
-        def title
-          'Cool Product'
-        end
-      end
-
-      template = <<~LIQUID.strip
-        {% snippet card %}
-        <div>{{ title }} - {{ price }} {{ color }}</div>
-        {% endsnippet %}
-
-        {% render card, ...defaults, ...product %}
-      LIQUID
-
-      expected = <<~OUTPUT
-
-
-
-        <div>Cool Product - 10 </div>
-      OUTPUT
-
-      assert_template_result(
-        expected,
-        template,
-        {
-          'defaults' => { 'title' => 'Default', 'price' => 10 },
-          'product' => product_drop.new,
-        },
-      )
-    end
-
-    def test_render_captured_snippet
-      template = <<~LIQUID
-        {% assign color_scheme = 'dark' %}
-
-        {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }}
-        </div>
-        {% endsnippet %}
-
-        {% capture up_header %}
-        {%- render header, ..., message: 'Welcome!' -%}
-        {% endcapture %}
-
-        {{ up_header | upcase }}
-
-        {{ header | upcase }}
-
-        {{ header }}
-      LIQUID
-      expected = <<~OUTPUT
-
-
-
-
-
-
-
-        <DIV CLASS="HEADER HEADER--DARK">
-          WELCOME!
-        </DIV>
-
-
-        SNIPPETDROP
-
-        SnippetDrop
-      OUTPUT
-
-      assert_template_result(expected, template)
-    end
-
-    def test_render_snippets_as_arguments
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-
-        {% snippet header %}
-          <div class="header header--{{ color_scheme }}">
-            {{ message }}
-          </div>
-        {% endsnippet %}
-
-        {% snippet main %}
-        {% assign color_scheme = 'auto' %}
-
-        <div class="main main--{{ color_scheme }}">
-        {% render header, ..., message: 'Welcome!' %}
-        </div>
-        {% endsnippet %}
-
-        {% render main, header: header %}
-      LIQUID
-
-      expected = <<~OUTPUT
-
-
-
-
-
-
-
-
-
-        <div class="main main--auto">
-
-          <div class="header header--auto">
-            Welcome!
-          </div>
-
-        </div>
       OUTPUT
 
       assert_template_result(expected, template)
@@ -734,36 +464,6 @@ class SnippetTest < Minitest::Test
 
 
         <div class="product">Apple</div>
-      OUTPUT
-
-      assert_template_result(expected, template)
-    end
-
-    def test_render_inline_snippet_inside_loop
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-        {% assign array = '1,2,3' | split: ',' %}
-
-        {% for i in array %}
-        {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }} {{ i }}
-        </div>
-        {% endsnippet %}
-        {% endfor %}
-
-        {% render header, ..., message: '👉' %}
-      LIQUID
-      expected = <<~OUTPUT
-
-
-
-
-
-
-        <div class="header header--dark">
-          👉#{" "}
-        </div>
       OUTPUT
 
       assert_template_result(expected, template)
@@ -970,6 +670,49 @@ class SnippetTest < Minitest::Test
       assert_template_result(expected, template, error_mode: :rigid)
     end
 
+    def test_render_snippets_as_arguments
+      template = <<~LIQUID.strip
+        {% assign color_scheme = 'dark' %}
+
+        {% snippet header %}
+          <div class="header">
+            {{ message }}
+          </div>
+        {% endsnippet %}
+
+        {% snippet main %}
+        {% assign color_scheme = 'auto' %}
+
+        <div class="main main--{{ color_scheme }}">
+        {% render header, message: 'Welcome!' %}
+        </div>
+        {% endsnippet %}
+
+        {% render main, header: header %}
+      LIQUID
+
+      expected = <<~OUTPUT
+
+
+
+
+
+
+
+
+
+        <div class="main main--auto">
+
+          <div class="header">
+            Welcome!
+          </div>
+
+        </div>
+      OUTPUT
+
+      assert_template_result(expected, template, error_mode: :rigid)
+    end
+
     def test_render_inline_snippet_shouldnt_leak_context
       template = <<~LIQUID.strip
         {% snippet input %}
@@ -1028,7 +771,7 @@ class SnippetTest < Minitest::Test
       assert_template_result(expected, template, error_mode: :rigid)
     end
 
-    def test_render_inline_snippet_without_outside_context
+    def test_render_inline_snippet_ignores_outside_context
       template = <<~LIQUID.strip
         {% assign color_scheme = 'dark' %}
 
@@ -1056,34 +799,6 @@ class SnippetTest < Minitest::Test
       assert_template_result(expected, template, error_mode: :rigid)
     end
 
-    def test_render_inline_snippet_with_outside_context
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-
-        {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }}
-        </div>
-        {% endsnippet %}
-
-
-        {% render header, ..., message: 'Welcome!' %}
-      LIQUID
-      expected = <<~OUTPUT
-
-
-
-
-
-
-        <div class="header header--dark">
-          Welcome!
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template, error_mode: :rigid)
-    end
-
     def test_inline_snippet_local_scope_takes_precedence
       template = <<~LIQUID
         {% assign color_scheme = 'dark' %}
@@ -1097,7 +812,7 @@ class SnippetTest < Minitest::Test
 
         {{ color_scheme }}
 
-        {% render header, ..., message: 'Welcome!' %}
+        {% render header,  message: 'Welcome!', color_scheme: color_scheme %}
 
         {{ color_scheme }}
       LIQUID
@@ -1116,306 +831,6 @@ class SnippetTest < Minitest::Test
 
 
         dark
-      OUTPUT
-
-      assert_template_result(expected, template, error_mode: :rigid)
-    end
-
-    def test_render_inline_snippet_with_correct_argument_precedence
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-        {% assign message = 'Goodbye!' %}
-
-        {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }}
-        </div>
-        {% endsnippet %}
-
-
-        {% render header, message: 'Welcome!', ... %}
-      LIQUID
-      expected = <<~OUTPUT
-
-
-
-
-
-
-
-        <div class="header header--dark">
-          Goodbye!
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template, error_mode: :rigid)
-    end
-
-    def test_render_inline_snippet_with_correct_argument_order
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-        {% assign message = 'Goodbye!' %}
-
-        {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }}
-        </div>
-        {% endsnippet %}
-
-
-        {% render header, ..., message: 'Welcome!' %}
-      LIQUID
-      expected = <<~OUTPUT
-
-
-
-
-
-
-
-        <div class="header header--dark">
-          Welcome!
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template, error_mode: :rigid)
-    end
-
-    def test_render_inline_snippet_with_correct_duplicate_argument_precedence
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-        {% assign message = 'Goodbye!' %}
-
-        {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }}
-        </div>
-        {% endsnippet %}
-
-
-        {% render header, message: 'Welcome!', ..., message: 'Hi!' %}
-      LIQUID
-      expected = <<~OUTPUT
-
-
-
-
-
-
-
-        <div class="header header--dark">
-          Hi!
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template, error_mode: :rigid)
-    end
-
-    def test_render_inline_snippet_with_spread_drop
-      product_drop = Class.new(Liquid::Drop) do
-        def title
-          'Cool Product'
-        end
-
-        def price
-          99
-        end
-
-        def vendor
-          'Acme'
-        end
-      end
-
-      template = <<~LIQUID.strip
-        {% snippet card %}
-        <div>
-          {{ title }} - ${{ price }} by {{ vendor }}
-        </div>
-        {% endsnippet %}
-
-        {% render card, ...product %}
-      LIQUID
-
-      expected = <<~OUTPUT
-
-
-
-        <div>
-          Cool Product - $99 by Acme
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template, { 'product' => product_drop.new }, error_mode: :rigid)
-    end
-
-    def test_render_inline_snippet_with_overwritten_spread_drop
-      product_drop = Class.new(Liquid::Drop) do
-        def title
-          'Cool Product'
-        end
-
-        def price
-          99
-        end
-
-        def vendor
-          'Acme'
-        end
-      end
-
-      template = <<~LIQUID.strip
-        {% snippet card %}
-        <div>
-          {{ title }} - ${{ price }} by {{ vendor }}
-        </div>
-        {% endsnippet %}
-
-        {% render card, ...product, price: 10 %}
-      LIQUID
-
-      expected = <<~OUTPUT
-
-
-
-        <div>
-          Cool Product - $10 by Acme
-        </div>
-      OUTPUT
-
-      assert_template_result(expected, template, { 'product' => product_drop.new }, error_mode: :rigid)
-    end
-
-    def test_render_inline_snippet_spread_before_explicit_args
-      template = <<~LIQUID.strip
-        {% snippet card %}
-        <div>{{ price }}</div>
-        {% endsnippet %}
-
-        {% render card, ...details, price: 10 %}
-      LIQUID
-
-      expected = <<~OUTPUT
-
-
-
-        <div>10</div>
-      OUTPUT
-
-      assert_template_result(expected, template, { 'details' => { 'price' => 99 } }, error_mode: :rigid)
-    end
-
-    def test_render_inline_snippet_multiple_spreads
-      product_drop = Class.new(Liquid::Drop) do
-        def title
-          'Cool Product'
-        end
-      end
-
-      template = <<~LIQUID.strip
-        {% snippet card %}
-        <div>{{ title }} - {{ price }} {{ color }}</div>
-        {% endsnippet %}
-
-        {% render card, ...defaults, ...product %}
-      LIQUID
-
-      expected = <<~OUTPUT
-
-
-
-        <div>Cool Product - 10 </div>
-      OUTPUT
-
-      assert_template_result(
-        expected,
-        template,
-        {
-          'defaults' => { 'title' => 'Default', 'price' => 10 },
-          'product' => product_drop.new,
-        },
-        error_mode: :rigid,
-      )
-    end
-
-    def test_render_captured_snippet
-      template = <<~LIQUID
-        {% assign color_scheme = 'dark' %}
-
-        {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }}
-        </div>
-        {% endsnippet %}
-
-        {% capture up_header %}
-        {%- render header, ..., message: 'Welcome!' -%}
-        {% endcapture %}
-
-        {{ up_header | upcase }}
-
-        {{ header | upcase }}
-
-        {{ header }}
-      LIQUID
-      expected = <<~OUTPUT
-
-
-
-
-
-
-
-        <DIV CLASS="HEADER HEADER--DARK">
-          WELCOME!
-        </DIV>
-
-
-        SNIPPETDROP
-
-        SnippetDrop
-      OUTPUT
-
-      assert_template_result(expected, template, error_mode: :rigid)
-    end
-
-    def test_render_snippets_as_arguments
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-
-        {% snippet header %}
-          <div class="header header--{{ color_scheme }}">
-            {{ message }}
-          </div>
-        {% endsnippet %}
-
-        {% snippet main %}
-        {% assign color_scheme = 'auto' %}
-
-        <div class="main main--{{ color_scheme }}">
-        {% render header, ..., message: 'Welcome!' %}
-        </div>
-        {% endsnippet %}
-
-        {% render main, header: header %}
-      LIQUID
-
-      expected = <<~OUTPUT
-
-
-
-
-
-
-
-
-
-        <div class="main main--auto">
-
-          <div class="header header--auto">
-            Welcome!
-          </div>
-
-        </div>
       OUTPUT
 
       assert_template_result(expected, template, error_mode: :rigid)
@@ -1482,20 +897,23 @@ class SnippetTest < Minitest::Test
       assert_template_result(expected, template, error_mode: :rigid)
     end
 
-    def test_render_inline_snippet_inside_loop
-      template = <<~LIQUID.strip
-        {% assign color_scheme = 'dark' %}
-        {% assign array = '1,2,3' | split: ',' %}
-
-        {% for i in array %}
+    def test_render_captured_snippet
+      template = <<~LIQUID
         {% snippet header %}
-        <div class="header header--{{ color_scheme }}">
-          {{ message }} {{ i }}
+        <div class="header">
+          {{ message }}
         </div>
         {% endsnippet %}
-        {% endfor %}
 
-        {% render header, ..., message: '👉' %}
+        {% capture up_header %}
+        {%- render header, message: 'Welcome!' -%}
+        {% endcapture %}
+
+        {{ up_header | upcase }}
+
+        {{ header | upcase }}
+
+        {{ header }}
       LIQUID
       expected = <<~OUTPUT
 
@@ -1503,10 +921,14 @@ class SnippetTest < Minitest::Test
 
 
 
+        <DIV CLASS="HEADER">
+          WELCOME!
+        </DIV>
 
-        <div class="header header--dark">
-          👉#{" "}
-        </div>
+
+        SNIPPETDROP
+
+        SnippetDrop
       OUTPUT
 
       assert_template_result(expected, template, error_mode: :rigid)
