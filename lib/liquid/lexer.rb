@@ -17,7 +17,6 @@ module Liquid
     DASH = [:dash, "-"].freeze
     DOT = [:dot, "."].freeze
     DOTDOT = [:dotdot, ".."].freeze
-    DOTDOTDOT = [:dotdotdot, "..."].freeze
     DOT_ORD = ".".ord
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
     EOS = [:end_of_string].freeze
@@ -114,15 +113,10 @@ module Liquid
 
           if (special = SPECIAL_TABLE[peeked])
             ss.scan_byte
-            # Special case for ".." and "..."
+            # Special case for ".."
             if special == DOT && ss.peek_byte == DOT_ORD
               ss.scan_byte
-              if ss.peek_byte == DOT_ORD
-                ss.scan_byte
-                output << DOTDOTDOT
-              else
-                output << DOTDOT
-              end
+              output << DOTDOT
             elsif special == DASH
               # Special case for negative numbers
               if (peeked_byte = ss.peek_byte) && NUMBER_TABLE[peeked_byte]
