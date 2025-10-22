@@ -90,7 +90,6 @@ module Liquid
       end
     end
 
-    # Temporarily until we migrate
     def strict_parse(markup)
       lax_parse(markup)
     end

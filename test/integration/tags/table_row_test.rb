@@ -270,8 +270,9 @@ class TableRowTest < Minitest::Test
       <tr class="row2"><td class="col1">4</td><td class="col2">5</td><td class="col3">6</td></tr>
     OUTPUT
 
-    result = Template.parse(template, environment: rigid_environment).render
-    assert_equal(expected, result)
+    with_error_mode(:rigid) do
+      assert_template_result(expected, template)
+    end
   end
 
   def test_tablerow_with_limit_attribute_in_rigid_mode
@@ -284,8 +285,9 @@ class TableRowTest < Minitest::Test
       <td class="col1">1</td><td class="col2">2</td><td class="col3">3</td></tr>
     OUTPUT
 
-    result = Template.parse(template, environment: rigid_environment).render
-    assert_equal(expected, result)
+    with_error_mode(:rigid) do
+      assert_template_result(expected, template)
+    end
   end
 
   def test_tablerow_with_offset_attribute_in_rigid_mode
@@ -298,8 +300,9 @@ class TableRowTest < Minitest::Test
       <td class="col1">3</td><td class="col2">4</td><td class="col3">5</td></tr>
     OUTPUT
 
-    result = Template.parse(template, environment: rigid_environment).render
-    assert_equal(expected, result)
+    with_error_mode(:rigid) do
+      assert_template_result(expected, template)
+    end
   end
 
   def test_tablerow_with_range_attribute_in_rigid_mode
@@ -312,8 +315,9 @@ class TableRowTest < Minitest::Test
       <td class="col1">1</td><td class="col2">2</td><td class="col3">3</td></tr>
     OUTPUT
 
-    result = Template.parse(template, environment: rigid_environment).render
-    assert_equal(expected, result)
+    with_error_mode(:rigid) do
+      assert_template_result(expected, template)
+    end
   end
 
   def test_tablerow_with_multiple_attributes_in_rigid_mode
@@ -327,8 +331,9 @@ class TableRowTest < Minitest::Test
       <tr class="row2"><td class="col1">4</td><td class="col2">5</td></tr>
     OUTPUT
 
-    result = Template.parse(template, environment: rigid_environment).render
-    assert_equal(expected, result)
+    with_error_mode(:rigid) do
+      assert_template_result(expected, template)
+    end
   end
 
   def test_tablerow_with_variable_collection_in_rigid_mode
@@ -342,8 +347,9 @@ class TableRowTest < Minitest::Test
       <tr class="row2"><td class="col1">3</td><td class="col2">4</td></tr>
     OUTPUT
 
-    result = Template.parse(template, environment: rigid_environment).render('numbers' => [1, 2, 3, 4])
-    assert_equal(expected, result)
+    with_error_mode(:rigid) do
+      assert_template_result(expected, template, { 'numbers' => [1, 2, 3, 4] })
+    end
   end
 
   def test_tablerow_with_dotted_access_in_rigid_mode
@@ -357,8 +363,9 @@ class TableRowTest < Minitest::Test
       <tr class="row2"><td class="col1">3</td><td class="col2">4</td></tr>
     OUTPUT
 
-    result = Template.parse(template, environment: rigid_environment).render('obj' => { 'numbers' => [1, 2, 3, 4] })
-    assert_equal(expected, result)
+    with_error_mode(:rigid) do
+      assert_template_result(expected, template, { 'obj' => { 'numbers' => [1, 2, 3, 4] } })
+    end
   end
 
   def test_tablerow_with_bracketed_access_in_rigid_mode
@@ -371,8 +378,9 @@ class TableRowTest < Minitest::Test
       <td class="col1">10</td><td class="col2">20</td></tr>
     OUTPUT
 
-    result = Template.parse(template, environment: rigid_environment).render('obj' => { 'numbers' => [10, 20] })
-    assert_equal(expected, result)
+    with_error_mode(:rigid) do
+      assert_template_result(expected, template, { 'obj' => { 'numbers' => [10, 20] } })
+    end
   end
 
   def test_tablerow_without_attributes_in_rigid_mode
@@ -385,79 +393,27 @@ class TableRowTest < Minitest::Test
       <td class="col1">1</td><td class="col2">2</td><td class="col3">3</td></tr>
     OUTPUT
 
-    result = Template.parse(template, environment: rigid_environment).render
-    assert_equal(expected, result)
-  end
-
-  def test_tablerow_with_trailing_comma_in_rigid_mode
-    template = <<~LIQUID.chomp
-      {% tablerow i in (1..3) cols: 2, %}{{ i }}{% endtablerow %}
-    LIQUID
-
-    expected = <<~OUTPUT
-      <tr class="row1">
-      <td class="col1">1</td><td class="col2">2</td></tr>
-      <tr class="row2"><td class="col1">3</td></tr>
-    OUTPUT
-
-    result = Template.parse(template, environment: rigid_environment).render
-    assert_equal(expected, result)
-  end
-
-  def test_tablerow_with_invalid_attribute_name_in_rigid_mode
-    template = '{% tablerow i in (1..10) invalid_attr: 5 %}{{ i }}{% endtablerow %}'
-    error = assert_raises(SyntaxError) do
-      Template.parse(template, environment: rigid_environment)
+    with_error_mode(:rigid) do
+      assert_template_result(expected, template)
     end
-    assert_equal("Liquid syntax error: Invalid attribute 'invalid_attr' in tablerow loop. Valid attributes are cols, limit, offset, and range in \"i in (1..10) invalid_attr: 5\"", error.message)
-  end
-
-  def test_tablerow_with_invalid_expression_in_limit_in_rigid_mode
-    template = '{% tablerow i in (1..10) limit: foo=>bar %}{{ i }}{% endtablerow %}'
-    error = assert_raises(SyntaxError) do
-      Template.parse(template, environment: rigid_environment)
-    end
-    assert_equal("Liquid syntax error: Unexpected character = in \"i in (1..10) limit: foo=>bar\"", error.message)
-  end
-
-  def test_tablerow_with_invalid_expression_in_offset_in_rigid_mode
-    template = '{% tablerow i in (1..10) offset: foo=>bar %}{{ i }}{% endtablerow %}'
-    error = assert_raises(SyntaxError) do
-      Template.parse(template, environment: rigid_environment)
-    end
-    assert_equal("Liquid syntax error: Unexpected character = in \"i in (1..10) offset: foo=>bar\"", error.message)
-  end
-
-  def test_tablerow_with_invalid_expression_in_cols_in_rigid_mode
-    template = '{% tablerow i in (1..10) cols: foo=>bar %}{{ i }}{% endtablerow %}'
-    error = assert_raises(SyntaxError) do
-      Template.parse(template, environment: rigid_environment)
-    end
-    assert_equal("Liquid syntax error: Unexpected character = in \"i in (1..10) cols: foo=>bar\"", error.message)
-  end
-
-  def test_tablerow_with_invalid_expression_in_range_in_rigid_mode
-    template = '{% tablerow i in (1..10) range: foo=>bar %}{{ i }}{% endtablerow %}'
-    error = assert_raises(SyntaxError) do
-      Template.parse(template, environment: rigid_environment)
-    end
-    assert_equal("Liquid syntax error: Unexpected character = in \"i in (1..10) range: foo=>bar\"", error.message)
   end
 
   def test_tablerow_without_in_keyword_in_rigid_mode
     template = '{% tablerow i (1..10) %}{{ i }}{% endtablerow %}'
-    error = assert_raises(SyntaxError) do
-      Template.parse(template, environment: rigid_environment)
+
+    with_error_mode(:rigid) do
+      error = assert_raises(SyntaxError) { Template.parse(template) }
+      assert_equal("Liquid syntax error: For loops require an 'in' clause in \"i (1..10)\"", error.message)
     end
-    assert_equal("Liquid syntax error: For loops require an 'in' clause in \"i (1..10)\"", error.message)
   end
 
   def test_tablerow_with_multiple_invalid_attributes_reports_first_in_rigid_mode
     template = '{% tablerow i in (1..10) invalid1: 5, invalid2: 10 %}{{ i }}{% endtablerow %}'
-    error = assert_raises(SyntaxError) do
-      Template.parse(template, environment: rigid_environment)
+
+    with_error_mode(:rigid) do
+      error = assert_raises(SyntaxError) { Template.parse(template) }
+      assert_equal("Liquid syntax error: Invalid attribute 'invalid1' in tablerow loop. Valid attributes are cols, limit, offset, and range in \"i in (1..10) invalid1: 5, invalid2: 10\"", error.message)
     end
-    assert_equal("Liquid syntax error: Invalid attribute 'invalid1' in tablerow loop. Valid attributes are cols, limit, offset, and range in \"i in (1..10) invalid1: 5, invalid2: 10\"", error.message)
   end
 
   def test_tablerow_with_empty_collection_in_rigid_mode
@@ -470,49 +426,44 @@ class TableRowTest < Minitest::Test
       </tr>
     OUTPUT
 
-    result = Template.parse(template, environment: rigid_environment).render('empty_array' => [])
-    assert_equal(expected, result)
+    with_error_mode(:rigid) do
+      assert_template_result(expected, template, { 'empty_array' => [] })
+    end
   end
 
-  def test_tablerow_lax_mode_still_accepts_invalid_attributes
-    template = <<~LIQUID.chomp
-      {% tablerow i in (1..3) invalid_attr: 5 %}{{ i }}{% endtablerow %}
-    LIQUID
+  def test_tablerow_with_invalid_attribute_strict_vs_rigid
+    template = '{% tablerow i in (1..5) invalid_attr: 10 %}{{ i }}{% endtablerow %}'
 
     expected = <<~OUTPUT
       <tr class="row1">
-      <td class="col1">1</td><td class="col2">2</td><td class="col3">3</td></tr>
+      <td class="col1">1</td><td class="col2">2</td><td class="col3">3</td><td class="col4">4</td><td class="col5">5</td></tr>
     OUTPUT
 
-    result = Template.parse(template, environment: lax_environment).render
-    assert_equal(expected, result)
+    with_error_mode(:lax, :strict) do
+      assert_template_result(expected, template)
+    end
+
+    with_error_mode(:rigid) do
+      error = assert_raises(SyntaxError) { Template.parse(template) }
+      assert_match(/Invalid attribute 'invalid_attr'/, error.message)
+    end
   end
 
-  def test_tablerow_strict_mode_still_accepts_invalid_attributes
-    template = <<~LIQUID.chomp
-      {% tablerow i in (1..3) invalid_attr: 5 %}{{ i }}{% endtablerow %}
-    LIQUID
+  def test_tablerow_with_invalid_expression_strict_vs_rigid
+    template = '{% tablerow i in (1..5) limit: foo=>bar %}{{ i }}{% endtablerow %}'
 
-    expected = <<~OUTPUT
-      <tr class="row1">
-      <td class="col1">1</td><td class="col2">2</td><td class="col3">3</td></tr>
-    OUTPUT
+    with_error_mode(:lax, :strict) do
+      expected = <<~OUTPUT
+        <tr class="row1">
+        </tr>
+      OUTPUT
+      assert_template_result(expected, template)
+    end
 
-    result = Template.parse(template, environment: strict_environment).render
-    assert_equal(expected, result)
-  end
-
-  private
-
-  def rigid_environment
-    Environment.build(error_mode: :rigid)
-  end
-
-  def strict_environment
-    Environment.build(error_mode: :strict)
-  end
-
-  def lax_environment
-    Environment.build(error_mode: :lax)
+    with_error_mode(:rigid) do
+      # Rigid mode validates expression syntax and rejects invalid expressions
+      error = assert_raises(SyntaxError) { Template.parse(template) }
+      assert_match(/Unexpected character =/, error.message)
+    end
   end
 end

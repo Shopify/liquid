@@ -123,7 +123,6 @@ module Liquid
         block.attach(body)
         @blocks << block
 
-        # Temporarily until support :or lexeme.
         break unless parser.id?('or') || parser.consume?(:comma)
       end
 

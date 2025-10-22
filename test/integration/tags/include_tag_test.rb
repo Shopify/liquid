@@ -205,24 +205,20 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_rigid_parsing_errors
-    [:lax, :strict].each do |mode|
-      with_error_mode(mode) do
-        assert_template_result(
-          'hello value1 value2',
-          '{% include "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
-          partials: { 'snippet' => 'hello {{ arg1 }} {{ arg2 }}' },
-        )
-      end
+    with_error_mode(:lax, :strict) do
+      assert_template_result(
+        'hello value1 value2',
+        '{% include "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
+        partials: { 'snippet' => 'hello {{ arg1 }} {{ arg2 }}' },
+      )
     end
 
-    [:rigid].each do |mode|
+    with_error_mode(:rigid) do
       assert_syntax_error(
         '{% include "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
-        error_mode: mode,
       )
       assert_syntax_error(
         '{% include "snippet" | filter %}',
-        error_mode: mode,
       )
     end
   end
@@ -403,5 +399,44 @@ class IncludeTagTest < Minitest::Test
       template_factory: StubTemplateFactory.new,
       render_errors: true,
     )
+  end
+
+  def test_include_template_with_invalid_expression
+    template = "{% include foo=>bar %}"
+
+    with_error_mode(:lax, :strict) do
+      refute_nil(Template.parse(template))
+    end
+
+    with_error_mode(:rigid) do
+      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+      assert_match(/Unexpected character =/, error.message)
+    end
+  end
+
+  def test_include_with_invalid_expression
+    template = '{% include "snippet" with foo=>bar %}'
+
+    with_error_mode(:lax, :strict) do
+      refute_nil(Template.parse(template))
+    end
+
+    with_error_mode(:rigid) do
+      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+      assert_match(/Unexpected character =/, error.message)
+    end
+  end
+
+  def test_include_attribute_with_invalid_expression
+    template = '{% include "snippet", key: foo=>bar %}'
+
+    with_error_mode(:lax, :strict) do
+      refute_nil(Template.parse(template))
+    end
+
+    with_error_mode(:rigid) do
+      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+      assert_match(/Unexpected character =/, error.message)
+    end
   end
 end # IncludeTagTest

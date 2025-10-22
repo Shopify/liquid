@@ -20,8 +20,8 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    [:lax, :strict].each do |mode|
-      with_error_mode(mode) { assert_template_result("one", template) }
+    with_error_mode(:lax, :strict) do
+      assert_template_result("one", template)
     end
 
     with_error_mode(:rigid) do
@@ -41,8 +41,8 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    [:lax, :strict].each do |mode|
-      with_error_mode(mode) { assert_template_result("one", template) }
+    with_error_mode(:lax, :strict) do
+      assert_template_result("one", template)
     end
 
     with_error_mode(:rigid) do
@@ -62,8 +62,8 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    [:lax, :strict, :rigid].each do |mode|
-      with_error_mode(mode) { assert_template_result("one", template) }
+    with_error_mode(:lax, :strict, :rigid) do
+      assert_template_result("one", template)
     end
   end
 
@@ -77,8 +77,8 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    [:lax, :strict, :rigid].each do |mode|
-      with_error_mode(mode) { assert_template_result("one", template) }
+    with_error_mode(:lax, :strict, :rigid) do
+      assert_template_result("one", template)
     end
   end
 
@@ -93,10 +93,8 @@ class CaseTagUnitTest < Minitest::Test
     LIQUID
     assigns = { 'foo' => { 'bar' => 'baz' } }
 
-    [:lax, :strict].each do |mode|
-      with_error_mode(mode) do
-        assert_template_result("one", template, assigns)
-      end
+    with_error_mode(:lax, :strict) do
+      assert_template_result("one", template, assigns)
     end
 
     with_error_mode(:rigid) do
@@ -117,10 +115,8 @@ class CaseTagUnitTest < Minitest::Test
     LIQUID
     assigns = { 'foo' => { 'bar' => 'baz' } }
 
-    [:lax, :strict].each do |mode|
-      with_error_mode(mode) do
-        assert_template_result("one", template, assigns)
-      end
+    with_error_mode(:lax, :strict) do
+      assert_template_result("one", template, assigns)
     end
 
     with_error_mode(:rigid) do
