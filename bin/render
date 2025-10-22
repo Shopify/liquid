@@ -6,12 +6,20 @@ require 'liquid'
 
 class VirtualFileSystem
   def initialize
-    snippet_1 = '<h1>{{ greating | default: "Hello" }}, {{ name | default: "world" }}!</h1>'
-    snippet_2 = '{% for i in (1..5) %} > {{ i }}{% endfor %}'
+    snippet_1 = <<~LIQUID
+      <h1>
+        {{- greating | default: 'Hello' }}, {{ name | default: 'world' -}}!
+      </h1>
+    LIQUID
+    snippet_2 = <<~LIQUID
+      {%- for i in (1..5) -%}
+        > {{ i }}
+      {%- endfor -%}
+    LIQUID
 
     @templates = {
-      'snippet_1' => snippet_1,
-      'snippet_2' => snippet_2,
+      'snippet-1' => snippet_1,
+      'snippet-2' => snippet_2,
     }
   end
 
@@ -20,11 +28,19 @@ class VirtualFileSystem
   end
 end
 
-error_mode = :strict
-# error_mode = :rigid
-file       = File.read(ARGV[0])
-template   = Liquid::Template.parse(file, error_mode: error_mode)
+def source
+  File.read(ARGV[0])
+rescue StandardError
+  'Usage: bin/render example/server/templates/index.liquid'
+end
 
-template.registers[:file_system] = VirtualFileSystem.new
+def assigns
+  {
+    'date' => Time.now,
+  }
+end
 
-puts template.render
+puts Liquid::Template
+  .parse(source, error_mode: :rigid)
+  .tap { |t| t.registers[:file_system] = VirtualFileSystem.new }
+  .render(assigns)
