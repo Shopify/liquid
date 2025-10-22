@@ -71,7 +71,6 @@ class ExpressionTest < Minitest::Test
 
   def test_expression_cache
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
-    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     cache = {}
     template = <<~LIQUID
@@ -93,7 +92,6 @@ class ExpressionTest < Minitest::Test
 
   def test_expression_cache_with_true_boolean
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
-    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     template = <<~LIQUID
       {% assign x = 1 %}
@@ -118,7 +116,6 @@ class ExpressionTest < Minitest::Test
 
   def test_expression_cache_with_lru_redux
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
-    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     cache = LruRedux::Cache.new(10)
     template = <<~LIQUID
@@ -140,7 +137,6 @@ class ExpressionTest < Minitest::Test
 
   def test_disable_expression_cache
     skip("Liquid-C does not support Expression caching") if defined?(Liquid::C) && Liquid::C.enabled
-    skip("Rigid mode does not use Expression caching") if Liquid::Environment.default.error_mode == :rigid
 
     template = <<~LIQUID
       {% assign x = 1 %}
@@ -154,6 +150,35 @@ class ExpressionTest < Minitest::Test
     parse_context = Liquid::ParseContext.new(expression_cache: false)
     Liquid::Template.parse(template, parse_context).render
     assert(parse_context.instance_variable_get(:@expression_cache).nil?)
+  end
+
+  def test_safe_parse_with_variable_lookup
+    parse_context = Liquid::ParseContext.new
+    parser = parse_context.new_parser('product.title')
+    result = Liquid::Expression.safe_parse(parser)
+
+    assert_instance_of(Liquid::VariableLookup, result)
+    assert_equal('product', result.name)
+    assert_equal(['title'], result.lookups)
+  end
+
+  def test_safe_parse_with_number
+    parse_context = Liquid::ParseContext.new
+    parser = parse_context.new_parser('42')
+    result = Liquid::Expression.safe_parse(parser)
+
+    assert_equal(42, result)
+  end
+
+  def test_safe_parse_raises_syntax_error_for_invalid_expression
+    parse_context = Liquid::ParseContext.new
+    parser = parse_context.new_parser('')
+
+    error = assert_raises(Liquid::SyntaxError) do
+      Liquid::Expression.safe_parse(parser)
+    end
+
+    assert_match(/is not a valid expression/, error.message)
   end
 
   private
