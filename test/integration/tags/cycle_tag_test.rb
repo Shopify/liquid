@@ -96,11 +96,9 @@ class CycleTagTest < Minitest::Test
     template1 = "{% assign 5 = 'b' %}{% cycle .5, .4 %}"
     template2 = "{% cycle .5: 'a', 'b' %}"
 
-    [:lax, :strict].each do |mode|
-      with_error_mode(mode) do
-        assert_template_result("b", template1)
-        assert_template_result("a", template2)
-      end
+    with_error_mode(:lax, :strict) do
+      assert_template_result("b", template1)
+      assert_template_result("a", template2)
     end
 
     with_error_mode(:rigid) do
@@ -123,14 +121,12 @@ class CycleTagTest < Minitest::Test
     template4 = "#{assignments}{% cycle n  e: 'a', 'b', 'c' %}"
     template5 = "#{assignments}{% cycle n  e  'a', 'b', 'c' %}"
 
-    [:lax, :strict].each do |mode|
-      with_error_mode(mode) do
-        assert_template_result("a", template1)
-        assert_template_result("a", template2)
-        assert_template_result("a", template3)
-        assert_template_result("N", template4)
-        assert_template_result("N", template5)
-      end
+    with_error_mode(:lax, :strict) do
+      assert_template_result("a", template1)
+      assert_template_result("a", template2)
+      assert_template_result("a", template3)
+      assert_template_result("N", template4)
+      assert_template_result("N", template5)
     end
 
     with_error_mode(:rigid) do
@@ -147,6 +143,40 @@ class CycleTagTest < Minitest::Test
       assert_match(expected_error, error3.message)
       assert_match(expected_error, error4.message)
       assert_match(expected_error, error5.message)
+    end
+  end
+
+  def test_cycle_name_with_invalid_expression
+    template = <<~LIQUID
+      {% for i in (1..3) %}
+        {% cycle foo=>bar: "a", "b" %}
+      {% endfor %}
+    LIQUID
+
+    with_error_mode(:lax, :strict) do
+      refute_nil(Template.parse(template))
+    end
+
+    with_error_mode(:rigid) do
+      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+      assert_match(/Unexpected character =/, error.message)
+    end
+  end
+
+  def test_cycle_variable_with_invalid_expression
+    template = <<~LIQUID
+      {% for i in (1..3) %}
+        {% cycle foo=>bar, "a", "b" %}
+      {% endfor %}
+    LIQUID
+
+    with_error_mode(:lax, :strict) do
+      refute_nil(Template.parse(template))
+    end
+
+    with_error_mode(:rigid) do
+      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+      assert_match(/Unexpected character =/, error.message)
     end
   end
 end

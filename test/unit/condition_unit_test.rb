@@ -166,6 +166,37 @@ class ConditionUnitTest < Minitest::Test
     assert_includes(err.lines.map(&:strip), expected)
   end
 
+  def test_parse_expression_in_strict_mode
+    environment = Environment.build(error_mode: :strict)
+    parse_context = ParseContext.new(environment: environment)
+    result = Condition.parse_expression(parse_context, 'product.title')
+
+    assert_instance_of(VariableLookup, result)
+    assert_equal('product', result.name)
+    assert_equal(['title'], result.lookups)
+  end
+
+  def test_parse_expression_in_rigid_mode_raises_internal_error
+    environment = Environment.build(error_mode: :rigid)
+    parse_context = ParseContext.new(environment: environment)
+
+    error = assert_raises(Liquid::InternalError) do
+      Condition.parse_expression(parse_context, 'product.title')
+    end
+
+    assert_match(/unsafe parse_expression cannot be used in rigid mode/, error.message)
+  end
+
+  def test_parse_expression_with_safe_true_in_rigid_mode
+    environment = Environment.build(error_mode: :rigid)
+    parse_context = ParseContext.new(environment: environment)
+    result = Condition.parse_expression(parse_context, 'product.title', safe: true)
+
+    assert_instance_of(VariableLookup, result)
+    assert_equal('product', result.name)
+    assert_equal(['title'], result.lookups)
+  end
+
   private
 
   def assert_evaluates_true(left, op, right)
