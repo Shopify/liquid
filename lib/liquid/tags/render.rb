@@ -157,8 +157,10 @@ module Liquid
 
     def rigid_template_name(p)
       return p.consume(:string) if p.look(:string)
+      return p.consume(:id) if p.look(:id)
 
-      p.consume(:id) if p.look(:id)
+      found = p.look(:end_of_string) ? "nothing" : p.read
+      raise SyntaxError, options[:locale].t("errors.syntax.render_invalid_template_name", found: found)
     end
 
     def strict_parse(markup)

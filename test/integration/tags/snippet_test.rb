@@ -1511,6 +1511,26 @@ class SnippetTest < Minitest::Test
 
       assert_template_result(expected, template, error_mode: :rigid)
     end
+
+    def test_render_with_invalid_identifier_type
+      template = "{% render 123 %}"
+
+      exception = assert_raises(SyntaxError) do
+        Liquid::Template.parse(template, error_mode: :rigid)
+      end
+
+      assert_match("Expected a string or identifier, found 123", exception.message)
+    end
+
+    def test_render_with_no_identifier
+      template = "{% render %}"
+
+      exception = assert_raises(SyntaxError) do
+        Liquid::Template.parse(template, error_mode: :rigid)
+      end
+
+      assert_match("Expected a string or identifier, found nothing", exception.message)
+    end
   end
 
   class ResourceLimits < SnippetTest

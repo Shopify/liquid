@@ -20,6 +20,7 @@
       invalid_delimiter: "'%{tag}' is not a valid delimiter for %{block_name} tags. use %{block_delimiter}"
       invalid_template_encoding: "Invalid template encoding"
       render: "Syntax error in tag 'render' - Template name must be a quoted string"
+      render_invalid_template_name: "Syntax error in tag 'render' - Expected a string or identifier, found %{found}"
       table_row: "Syntax Error in 'table_row loop' - Valid syntax: table_row [item] in [collection] cols=3"
       table_row_invalid_attribute: "Invalid attribute '%{attribute}' in tablerow loop. Valid attributes are cols, limit, offset, and range"
       tag_never_closed: "'%{block_name}' tag was never closed"
