@@ -31,7 +31,7 @@ class CaseTagUnitTest < Minitest::Test
     end
   end
 
-  def test_case_when_trailing_element
+  def test_case_when_with_trailing_element
     template = <<~LIQUID
       {%- case 1 -%}
         {%- when 1 bar -%}
