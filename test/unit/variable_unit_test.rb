@@ -108,7 +108,7 @@ class VariableUnitTest < Minitest::Test
     assert_equal(VariableLookup.new('foo-bar'), create_variable('foo-bar').name)
     assert_equal(VariableLookup.new('foo-bar-2'), create_variable('foo-bar-2').name)
 
-    with_error_mode(:strict) do
+    with_error_modes(:strict) do
       assert_raises(Liquid::SyntaxError) { create_variable('foo - bar') }
       assert_raises(Liquid::SyntaxError) { create_variable('-foo') }
       assert_raises(Liquid::SyntaxError) { create_variable('2foo') }
@@ -154,7 +154,7 @@ class VariableUnitTest < Minitest::Test
   end
 
   def test_strict_filter_argument_parsing
-    with_error_mode(:strict) do
+    with_error_modes(:strict) do
       assert_raises(SyntaxError) do
         create_variable(%( number_of_comments | pluralize: 'comment': 'comments' ))
       end
@@ -162,7 +162,7 @@ class VariableUnitTest < Minitest::Test
   end
 
   def test_rigid_filter_argument_parsing
-    with_error_mode(:rigid) do
+    with_error_modes(:rigid) do
       # optional colon
       var = create_variable(%(n | f1 | f2:))
       assert_equal([['f1', []], ['f2', []]], var.filters)

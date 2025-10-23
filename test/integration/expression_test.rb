@@ -27,7 +27,7 @@ class ExpressionTest < Minitest::Test
     assert_template_result("-17.42", "{{ -17.42 }}")
     assert_template_result("2.5", "{{ 2.5 }}")
 
-    with_error_mode(:lax) do
+    with_error_modes(:lax) do
       assert_expression_result(0.0, "0.....5")
       assert_expression_result(0.0, "-0..1")
     end

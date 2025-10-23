@@ -67,7 +67,7 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_unrecognized_operator
-    with_error_mode(:strict) do
+    with_error_modes(:strict) do
       assert_raises(SyntaxError) do
         Liquid::Template.parse(' {% if 1 =! 2 %}ok{% endif %} ')
       end
