@@ -47,40 +47,30 @@ module Liquid
     end
 
     def render_tag(context, output)
-      template_name = @template_name_expr
-      is_inline = template_name.is_a?(VariableLookup)
-      is_file = template_name.is_a?(String)
+      template = context.evaluate(@template_name_expr)
 
-      if is_inline
-        template_name = template_name.name
-        snippet_drop = context[template_name]
-        raise ::ArgumentError unless snippet_drop.is_a?(Liquid::SnippetDrop)
-
-        partial = snippet_drop.body
+      if template.respond_to?(:to_partial)
+        partial = template.to_partial
+        template_name = template.name
+      elsif @template_name_expr.is_a?(String)
+        partial = PartialCache.load(template, context: context, parse_context: parse_context)
+        template_name = partial.name
       else
-        raise ::ArgumentError unless is_file
-
-        partial = PartialCache.load(template_name, context: context, parse_context: parse_context)
+        raise ::ArgumentError, parse_context.locale.t("errors.argument.render")
       end
 
       context_variable_name = @alias_name || template_name.split('/').last
 
       render_partial_func = ->(var, forloop) {
-        inner_context = context.new_isolated_subcontext
-
-        if is_file
-          inner_context.template_name = partial.name
-          inner_context.partial = true
-        end
-
-        inner_context['forloop'] = forloop if forloop
+        inner_context               = context.new_isolated_subcontext
+        inner_context.template_name = template_name
+        inner_context.partial       = true
+        inner_context['forloop']    = forloop if forloop
 
         @attributes.each do |key, value|
           inner_context[key] = context.evaluate(value)
         end
-
         inner_context[context_variable_name] = var unless var.nil?
-
         partial.render_to_output_buffer(inner_context, output)
         forloop&.send(:increment!)
       }
@@ -113,7 +103,6 @@ module Liquid
         key = p.consume
         p.consume(:colon)
         @attributes[key] = safe_parse_expression(p)
-
         p.consume?(:comma) # optional comma
       end
 

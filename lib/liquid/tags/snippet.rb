@@ -25,7 +25,7 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      snippet_drop = SnippetDrop.new(@body)
+      snippet_drop = SnippetDrop.new(@body, @to)
       context.scopes.last[@to] = snippet_drop
 
       snippet_size = @body.nodelist.sum { |node| node.to_s.bytesize }
