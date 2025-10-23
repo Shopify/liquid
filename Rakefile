@@ -33,7 +33,7 @@ task :rubocop do
   end
 end
 
-desc('runs test suite with all parsers (lax, strict, and rigid)')
+desc('runs test suite with lax, strict, and rigid parsers')
 task :test do
   ENV['LIQUID_PARSER_MODE'] = 'lax'
   Rake::Task['base_test'].invoke
