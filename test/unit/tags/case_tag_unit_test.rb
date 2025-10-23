@@ -20,11 +20,11 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_mode(:lax, :strict) do
+    with_error_modes(:lax, :strict) do
       assert_template_result("one", template)
     end
 
-    with_error_mode(:rigid) do
+    with_error_modes(:rigid) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
 
       assert_match(/Expected end_of_string but found/, error.message)
@@ -41,11 +41,11 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_mode(:lax, :strict) do
+    with_error_modes(:lax, :strict) do
       assert_template_result("one", template)
     end
 
-    with_error_mode(:rigid) do
+    with_error_modes(:rigid) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
 
       assert_match(/Expected end_of_string but found/, error.message)
@@ -62,7 +62,7 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_mode(:lax, :strict, :rigid) do
+    with_error_modes(:lax, :strict, :rigid) do
       assert_template_result("one", template)
     end
   end
@@ -77,7 +77,7 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_mode(:lax, :strict, :rigid) do
+    with_error_modes(:lax, :strict, :rigid) do
       assert_template_result("one", template)
     end
   end
@@ -93,11 +93,11 @@ class CaseTagUnitTest < Minitest::Test
     LIQUID
     assigns = { 'foo' => { 'bar' => 'baz' } }
 
-    with_error_mode(:lax, :strict) do
+    with_error_modes(:lax, :strict) do
       assert_template_result("one", template, assigns)
     end
 
-    with_error_mode(:rigid) do
+    with_error_modes(:rigid) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
 
       assert_match(/Unexpected character =/, error.message)
@@ -115,11 +115,11 @@ class CaseTagUnitTest < Minitest::Test
     LIQUID
     assigns = { 'foo' => { 'bar' => 'baz' } }
 
-    with_error_mode(:lax, :strict) do
+    with_error_modes(:lax, :strict) do
       assert_template_result("one", template, assigns)
     end
 
-    with_error_mode(:rigid) do
+    with_error_modes(:rigid) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
 
       assert_match(/Unexpected character =/, error.message)

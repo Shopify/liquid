@@ -82,7 +82,7 @@ module Minitest
       Environment.dangerously_override(environment, &blk)
     end
 
-    def with_error_mode(*modes)
+    def with_error_modes(*modes)
       old_mode = Liquid::Environment.default.error_mode
       modes.each do |mode|
         Liquid::Environment.default.error_mode = mode
