@@ -27,15 +27,18 @@ module Liquid
     def render_to_output_buffer(context, output)
       snippet_drop = SnippetDrop.new(@body, @to)
       context.scopes.last[@to] = snippet_drop
-
-      snippet_size = @body.nodelist.sum { |node| node.to_s.bytesize }
-      context.resource_limits.increment_assign_score(snippet_size)
-
+      context.resource_limits.increment_assign_score(assign_score_of(snippet_drop))
       output
     end
 
     def blank?
       true
+    end
+
+    private
+
+    def assign_score_of(snippet_drop)
+      snippet_drop.body.nodelist.sum { |node| node.to_s.bytesize }
     end
   end
 end
