@@ -2,11 +2,16 @@
 
 module Liquid
   class SnippetDrop < Drop
-    attr_reader :body
+    attr_reader :body, :name
 
-    def initialize(body)
+    def initialize(body, name)
       super()
       @body = body
+      @name = name
+    end
+
+    def to_partial
+      @body
     end
 
     def to_s

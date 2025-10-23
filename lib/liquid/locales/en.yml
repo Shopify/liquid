@@ -31,5 +31,6 @@
       variable_termination: "Variable '%{token}' was not properly terminated with regexp: %{tag_end}"
     argument:
       include: "Argument error in tag 'include' - Illegal template name"
+      render: "Argument error in tag 'render' - Dynamically chosen templates are not allowed"
     disabled:
       tag: "usage is not allowed in this context"
