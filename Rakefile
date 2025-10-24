@@ -88,8 +88,13 @@ namespace :benchmark do
     ruby "./performance/benchmark.rb strict"
   end
 
-  desc "Run the liquid benchmark with both lax and strict parsing"
-  task run: [:lax, :strict]
+  desc "Run the liquid benchmark with rigid parsing"
+  task :rigid do
+    ruby "./performance/benchmark.rb rigid"
+  end
+
+  desc "Run the liquid benchmark with lax, strict, and rigid parsing"
+  task run: [:lax, :strict, :rigid]
 
   desc "Run unit benchmarks"
   namespace :unit do
