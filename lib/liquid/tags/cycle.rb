@@ -17,6 +17,7 @@ module Liquid
   class Cycle < Tag
     SimpleSyntax = /\A#{QuotedFragment}+/o
     NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om
+    UNNAMED_CYCLE_PATTERN = /\w+:0x\h{8}/
 
     attr_reader :variables
 
@@ -86,7 +87,7 @@ module Liquid
 
       unless @is_named
         @name = @variables.to_s
-        @is_named = !@name.match?(/\w+:0x\h{8}/)
+        @is_named = !@name.match?(UNNAMED_CYCLE_PATTERN)
       end
     end
 
@@ -103,7 +104,7 @@ module Liquid
       when SimpleSyntax
         @variables = variables_from_string(markup)
         @name      = @variables.to_s
-        @is_named = !@name.match?(/\w+:0x\h{8}/)
+        @is_named = !@name.match?(UNNAMED_CYCLE_PATTERN)
       else
         raise SyntaxError, options[:locale].t("errors.syntax.cycle")
       end
