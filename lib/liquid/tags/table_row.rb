@@ -45,7 +45,6 @@ module Liquid
 
       @collection_name = safe_parse_expression(p)
 
-      # optional comma
       p.consume?(:comma)
 
       @attributes = {}
@@ -57,7 +56,7 @@ module Liquid
 
         p.consume(:colon)
         @attributes[key] = safe_parse_expression(p)
-        p.consume?(:comma) # optional comma
+        p.consume?(:comma)
       end
 
       p.consume(:end_of_string)
