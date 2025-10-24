@@ -88,20 +88,9 @@ module Liquid
       p = @parse_context.new_parser(markup)
 
       @template_name_expr = safe_parse_expression(p)
-      with_or_for = p.id?("for") || p.id?("with") || nil
-      @variable_name_expr = nil
-      if with_or_for
-        @variable_name_expr = safe_parse_expression(p)
-      end
+      @variable_name_expr = safe_parse_expression(p) if p.id?("for") || p.id?("with")
+      @alias_name         = p.consume(:id) if p.id?("as")
 
-      alias_name = nil
-      if p.id?("as")
-        alias_name = p.consume(:id)
-      end
-
-      @alias_name = alias_name
-
-      # optional comma
       p.consume?(:comma)
 
       @attributes = {}
@@ -109,7 +98,7 @@ module Liquid
         key = p.consume
         p.consume(:colon)
         @attributes[key] = safe_parse_expression(p)
-        p.consume?(:comma) # optional comma
+        p.consume?(:comma)
       end
 
       p.consume(:end_of_string)
@@ -121,7 +110,6 @@ module Liquid
 
     def lax_parse(markup)
       if markup =~ SYNTAX
-
         template_name = Regexp.last_match(1)
         variable_name = Regexp.last_match(3)
 
