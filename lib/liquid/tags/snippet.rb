@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Liquid
+  # @liquid_public_docs
   # @liquid_type tag
   # @liquid_category variable
   # @liquid_name snippet
@@ -12,7 +13,6 @@ module Liquid
   #   {% snippet input %}
   #     value
   #   {% endsnippet %}
-
   class Snippet < Block
     def initialize(tag_name, markup, options)
       super
