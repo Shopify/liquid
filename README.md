@@ -99,7 +99,7 @@ Setting the error mode of Liquid lets you specify how strictly you want your tem
 Normally the parser is very lax and will accept almost anything without error. Unfortunately this can make
 it very hard to debug and can lead to unexpected behaviour.
 
-Liquid also comes with a parser that can be used when editing templates to give better error messages
+Liquid also comes with different parsers that can be used when editing templates to give better error messages
 when templates are invalid. You can enable this new parser like this:
 
 ```ruby
