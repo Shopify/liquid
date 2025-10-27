@@ -461,7 +461,6 @@ class TableRowTest < Minitest::Test
     end
 
     with_error_modes(:rigid) do
-      # Rigid mode validates expression syntax and rejects invalid expressions
       error = assert_raises(SyntaxError) { Template.parse(template) }
       assert_match(/Unexpected character =/, error.message)
     end
