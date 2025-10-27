@@ -12,14 +12,6 @@ module Liquid
       @p = point
     end
 
-    def read(type = nil)
-      token = @tokens[@p]
-      if type && token[0] != type
-        raise SyntaxError, "Expected #{type} but found #{@tokens[@p].first}"
-      end
-      token[1]
-    end
-
     def consume(type = nil)
       token = @tokens[@p]
       if type && token[0] != type
