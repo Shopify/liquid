@@ -184,6 +184,10 @@ class VariableUnitTest < Minitest::Test
       var = create_variable(%(n | filter: 1, 2, 3 | filter2: k1: 1, k2: 2))
       assert_equal([['filter', [1, 2, 3]], ['filter2', [], { "k1" => 1, "k2" => 2 }]], var.filters)
 
+      # positional and kwargs mixed
+      var = create_variable(%(n | filter: 'a', 'b', key1: 1, key2: 2, 'c'))
+      assert_equal([["filter", ["a", "b", "c"], { "key1" => 1, "key2" => 2 }]], var.filters)
+
       # positional and kwargs intermixed (pos1, key1: val1, pos2)
       var = create_variable(%(n | link_to: class: "black", "https://example.com", title: "title"))
       assert_equal([['link_to', ["https://example.com"], { "class" => "black", "title" => "title" }]], var.filters)
