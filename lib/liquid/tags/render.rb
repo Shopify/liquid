@@ -113,7 +113,7 @@ module Liquid
       return p.consume(:string) if p.look(:string)
       return p.consume(:id) if p.look(:id)
 
-      found = p.look(:end_of_string) ? "nothing" : p.read
+      found = p.consume || "nothing"
       raise SyntaxError, options[:locale].t("errors.syntax.render_invalid_template_name", found: found)
     end
 
