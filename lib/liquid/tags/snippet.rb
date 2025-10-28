@@ -10,7 +10,7 @@ module Liquid
   # @liquid_description
   #   You can create inline snippets to make your Liquid code more modular.
   # @liquid_syntax
-  #   {% snippet input %}
+  #   {% snippet snippet_name %}
   #     value
   #   {% endsnippet %}
   class Snippet < Block
@@ -19,6 +19,7 @@ module Liquid
       p = @parse_context.new_parser(markup)
       if p.look(:id)
         @to = p.consume(:id)
+        p.consume(:end_of_string)
       else
         raise SyntaxError, options[:locale].t("errors.syntax.snippet")
       end
