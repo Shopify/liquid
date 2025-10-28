@@ -468,6 +468,18 @@ class SnippetTest < Minitest::Test
 
       assert_template_result(expected, template)
     end
+
+    def test_snippet_with_invalid_identifier
+      template = <<~LIQUID
+        {% snippet header foo bar %}
+          Invalid
+        {% endsnippet %}
+      LIQUID
+
+      exception = assert_raises(SyntaxError) { Liquid::Template.parse(template) }
+
+      assert_match("Expected end_of_string but found id", exception.message)
+    end
   end
 
   class RigidMode < SnippetTest
@@ -934,7 +946,7 @@ class SnippetTest < Minitest::Test
       assert_template_result(expected, template, error_mode: :rigid)
     end
 
-    def test_render_with_invalid_identifier_type
+    def test_render_with_invalid_identifier
       template = "{% render 123 %}"
 
       exception = assert_raises(SyntaxError) do
@@ -954,14 +966,18 @@ class SnippetTest < Minitest::Test
       assert_match("Expected a string or identifier, found nothing", exception.message)
     end
 
-    def test_render_with_invalid_identifier
-      template = "{% render 123 %}"
+    def test_snippet_with_invalid_identifier
+      template = <<~LIQUID
+        {% snippet header foo bar %}
+          Invalid
+        {% endsnippet %}
+      LIQUID
 
       exception = assert_raises(SyntaxError) do
         Liquid::Template.parse(template, error_mode: :rigid)
       end
 
-      assert_match("Expected a string or identifier, found 123", exception.message)
+      assert_match("Expected end_of_string but found id", exception.message)
     end
   end
 
