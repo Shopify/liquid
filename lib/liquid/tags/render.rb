@@ -55,6 +55,9 @@ module Liquid
       elsif @template_name_expr.is_a?(String)
         partial = PartialCache.load(template, context: context, parse_context: parse_context)
         template_name = partial.name
+      elsif template.nil?
+        template_name = @template_name_expr.respond_to?(:name) ? @template_name_expr.name : @template_name_expr
+        raise FileSystemError, "No such template '#{template_name}'"
       else
         raise ::ArgumentError, parse_context.locale.t("errors.argument.render")
       end

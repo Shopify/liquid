@@ -480,6 +480,25 @@ class SnippetTest < Minitest::Test
 
       assert_match("Expected end_of_string but found id", exception.message)
     end
+
+    def test_render_with_non_existent_tag
+      template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
+        {% snippet foo %}
+        {% render non_existent %}
+        {% endsnippet %}
+
+        {% render foo %}
+      LIQUID
+
+      expected = <<~TEXT
+
+
+
+        Liquid error (foo line 2): No such template 'non_existent'
+      TEXT
+
+      assert_equal(expected, template.render('errors' => ErrorDrop.new))
+    end
   end
 
   class RigidMode < SnippetTest
@@ -954,6 +973,25 @@ class SnippetTest < Minitest::Test
       end
 
       assert_match("Expected a string or identifier, found 123", exception.message)
+    end
+
+    def test_render_with_non_existent_tag
+      template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true, error_mode: :rigid)
+        {% snippet foo %}
+        {% render non_existent %}
+        {% endsnippet %}
+
+        {% render foo %}
+      LIQUID
+
+      expected = <<~TEXT
+
+
+
+        Liquid error (foo line 2): No such template 'non_existent'
+      TEXT
+
+      assert_equal(expected, template.render('errors' => ErrorDrop.new))
     end
 
     def test_render_with_no_identifier
