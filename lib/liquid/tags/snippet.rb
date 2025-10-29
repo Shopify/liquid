@@ -26,7 +26,7 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      snippet_drop = SnippetDrop.new(@body, @to)
+      snippet_drop = SnippetDrop.new(@body, @to, context.template_name)
       context.scopes.last[@to] = snippet_drop
       context.resource_limits.increment_assign_score(assign_score_of(snippet_drop))
       output

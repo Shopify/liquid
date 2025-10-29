@@ -480,6 +480,54 @@ class SnippetTest < Minitest::Test
 
       assert_match("Expected end_of_string but found id", exception.message)
     end
+
+    def test_render_with_non_existent_tag
+      template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
+        {% snippet foo %}
+        {% render non_existent %}
+        {% endsnippet %}
+
+        {% render foo %}
+      LIQUID
+
+      expected = <<~TEXT
+
+
+
+        Liquid error (index line 2): This liquid context does not allow includes
+      TEXT
+      template.name = "index"
+
+      assert_equal(expected, template.render('errors' => ErrorDrop.new))
+    end
+
+    def test_render_handles_errors
+      template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
+        {% snippet foo %}
+        {% render non_existent %} will raise an error.
+
+        Bla bla test.
+
+        This is an argument error: {{ 'test' | slice: 'not a number' }}
+        {% endsnippet %}
+
+        {% render foo %}
+      LIQUID
+
+      expected = <<~TEXT
+
+
+
+        Liquid error (index line 2): This liquid context does not allow includes will raise an error.
+
+        Bla bla test.
+
+        This is an argument error: Liquid error (index line 6): invalid integer
+      TEXT
+      template.name = "index"
+
+      assert_equal(expected, template.render('errors' => ErrorDrop.new))
+    end
   end
 
   class RigidMode < SnippetTest
@@ -954,6 +1002,54 @@ class SnippetTest < Minitest::Test
       end
 
       assert_match("Expected a string or identifier, found 123", exception.message)
+    end
+
+    def test_render_with_non_existent_tag
+      template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true, error_mode: :rigid)
+        {% snippet foo %}
+        {% render non_existent %}
+        {% endsnippet %}
+
+        {% render foo %}
+      LIQUID
+
+      expected = <<~TEXT
+
+
+
+        Liquid error (index line 2): This liquid context does not allow includes
+      TEXT
+      template.name = "index"
+
+      assert_equal(expected, template.render('errors' => ErrorDrop.new))
+    end
+
+    def test_render_handles_errors
+      template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true, error_mode: :rigid)
+        {% snippet foo %}
+        {% render non_existent %} will raise an error.
+
+        Bla bla test.
+
+        This is an argument error: {{ 'test' | slice: 'not a number' }}
+        {% endsnippet %}
+
+        {% render foo %}
+      LIQUID
+
+      expected = <<~TEXT
+
+
+
+        Liquid error (index line 2): This liquid context does not allow includes will raise an error.
+
+        Bla bla test.
+
+        This is an argument error: Liquid error (index line 6): invalid integer
+      TEXT
+      template.name = "index"
+
+      assert_equal(expected, template.render('errors' => ErrorDrop.new))
     end
 
     def test_render_with_no_identifier

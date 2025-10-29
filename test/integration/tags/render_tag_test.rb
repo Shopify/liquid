@@ -101,13 +101,6 @@ class RenderTagTest < Minitest::Test
     end
   end
 
-  def test_dynamically_chosen_templates_are_not_allowed
-    error = assert_raises(::ArgumentError) do
-      Template.parse('{% assign name = "snippet" %}{% render name %}').render!
-    end
-    assert_equal("Argument error in tag 'render' - Dynamically chosen templates are not allowed", error.message)
-  end
-
   def test_rigid_parsing_errors
     with_error_modes(:lax, :strict) do
       assert_template_result(
