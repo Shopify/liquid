@@ -51,18 +51,17 @@ module Liquid
 
       if template.respond_to?(:to_partial)
         partial = template.to_partial
-        template_name = template.name
+        template_name = template.parent_name
+        context_variable_name = @alias_name || template.name.split('/').last
+
       elsif @template_name_expr.is_a?(String)
         partial = PartialCache.load(template, context: context, parse_context: parse_context)
         template_name = partial.name
-      elsif template.nil?
-        template_name = @template_name_expr.respond_to?(:name) ? @template_name_expr.name : @template_name_expr
-        raise FileSystemError, "No such template '#{template_name}'"
+        context_variable_name = @alias_name || template_name.split('/').last
+
       else
         raise ::ArgumentError, parse_context.locale.t("errors.argument.render")
       end
-
-      context_variable_name = @alias_name || template_name.split('/').last
 
       render_partial_func = ->(var, forloop) {
         inner_context               = context.new_isolated_subcontext

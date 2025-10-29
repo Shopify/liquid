@@ -482,22 +482,39 @@ class SnippetTest < Minitest::Test
     end
 
     def test_render_with_non_existent_tag
-      template = Liquid::Template.parse(<<~LIQUID.chomp, line_numbers: true)
+      template = <<-LIQUID
         {% snippet foo %}
-        {% render non_existent %}
-        {% endsnippet %}
+          Hello,
 
-        {% render foo %}
+          {{ errors.standard_error }} will raise a standard error.
+
+          Bla bla test.
+
+          {{ errors.syntax_error }} will raise a syntax error.
+
+          This is an argument error: {{ errors.argument_error }}
+
+          Bla.
+        {% endsnippet %}
+        {%- render foo -%}
       LIQUID
 
-      expected = <<~TEXT
+      expected = <<-TEXT
+        Hello,
 
+        Liquid error (line 3): standard error will raise a standard error.
 
+        Bla bla test.
 
-        Liquid error (foo line 2): No such template 'non_existent'
+        Liquid syntax error (line 7): syntax error will raise a syntax error.
+
+        This is an argument error: Liquid error (line 9): argument error
+
+        Bla.
       TEXT
 
-      assert_equal(expected, template.render('errors' => ErrorDrop.new))
+      output = Liquid::Template.parse(template, line_numbers: true).render('errors' => ErrorDrop.new)
+      assert_equal(expected, output)
     end
   end
 
