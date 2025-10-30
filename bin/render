@@ -7,9 +7,11 @@ require 'liquid'
 class VirtualFileSystem
   def initialize
     snippet_1 = <<~LIQUID
-      <h1>
-        {{- greating | default: 'Hello' }}, {{ name | default: 'world' -}}!
-      </h1>
+
+      {%- liquid
+        echo "hello world"
+      -%}
+
     LIQUID
     snippet_2 = <<~LIQUID
       {%- for i in (1..5) -%}
