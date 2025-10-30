@@ -58,7 +58,7 @@ module Liquid
         template_name = partial.name
         context_variable_name = @alias_name || template_name.split('/').last
       else
-        raise Liquid::ArgumentError, parse_context.locale.t("errors.file_system.includes")
+        raise ::ArgumentError
       end
 
       render_partial_func = ->(var, forloop) {

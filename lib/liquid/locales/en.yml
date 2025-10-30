@@ -34,5 +34,3 @@
       render: "Argument error in tag 'render' - Dynamically chosen templates are not allowed"
     disabled:
       tag: "usage is not allowed in this context"
-    file_system:
-      includes: "This liquid context does not allow includes"
