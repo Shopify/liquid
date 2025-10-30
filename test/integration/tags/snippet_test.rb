@@ -494,7 +494,7 @@ class SnippetTest < Minitest::Test
 
 
 
-        Liquid error (index line 2): This liquid context does not allow includes
+        Liquid error (index line 2): internal
       TEXT
       template.name = "index"
 
@@ -518,7 +518,7 @@ class SnippetTest < Minitest::Test
 
 
 
-        Liquid error (index line 2): This liquid context does not allow includes will raise an error.
+        Liquid error (index line 2): internal will raise an error.
 
         Bla bla test.
 
@@ -1017,7 +1017,7 @@ class SnippetTest < Minitest::Test
 
 
 
-        Liquid error (index line 2): This liquid context does not allow includes
+        Liquid error (index line 2): internal
       TEXT
       template.name = "index"
 
@@ -1041,7 +1041,7 @@ class SnippetTest < Minitest::Test
 
 
 
-        Liquid error (index line 2): This liquid context does not allow includes will raise an error.
+        Liquid error (index line 2): internal will raise an error.
 
         Bla bla test.
 
