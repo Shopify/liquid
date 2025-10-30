@@ -184,7 +184,7 @@ module Liquid
     end
 
     def key?(key)
-      self[key] != nil
+      find_variable(key, raise_on_not_found: false) != nil
     end
 
     def evaluate(object)
