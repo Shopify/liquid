@@ -1,5 +1,14 @@
 # Liquid Change Log
 
+## 5.10.0
+* Introduce support for Inline Snippets [Julia Boutin]
+  ```
+  {%- snippet snowdevil -%}
+    Snowdevil
+  {%- endsnippet -%}
+  {% render snowdevil %}
+  ```
+
 ## 5.9.0
 * Introduce `:rigid` error mode for stricter, safer parsing of all tags [CP Clermont, Guilherme Carreiro]
 
