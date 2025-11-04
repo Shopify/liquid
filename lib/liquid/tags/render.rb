@@ -49,14 +49,14 @@ module Liquid
     def render_tag(context, output)
       template = context.evaluate(@template_name_expr)
 
-      if template.respond_to?(:to_partial)
-        partial = template.to_partial
-        template_name = template.filename
-        context_variable_name = @alias_name || template.name
-      elsif @template_name_expr.is_a?(String)
+      if @template_name_expr.is_a?(String)
         partial = PartialCache.load(template, context: context, parse_context: parse_context)
         template_name = partial.name
         context_variable_name = @alias_name || template_name.split('/').last
+      elsif template.respond_to?(:to_partial) && template.respond_to?(:name)
+        partial = template.to_partial
+        template_name = template.filename
+        context_variable_name = @alias_name || template.name
       else
         raise ::ArgumentError
       end
