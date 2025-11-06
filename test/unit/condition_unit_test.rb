@@ -167,9 +167,9 @@ class ConditionUnitTest < Minitest::Test
   end
 
   def test_parse_expression_in_strict_mode
-    environment = Environment.build(error_mode: :strict)
+    environment = Environment.build(error_mode: :rigid)
     parse_context = ParseContext.new(environment: environment)
-    result = Condition.parse_expression(parse_context, 'product.title')
+    result = Condition.parse_expression(parse_context, 'product.title', safe: true)
 
     assert_instance_of(VariableLookup, result)
     assert_equal('product', result.name)

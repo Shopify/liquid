@@ -34,7 +34,7 @@ module Liquid
       # @param file_system The default file system that is used
       #  to load templates from.
       # @param error_mode [Symbol] The default error mode for all templates
-      #  (either :strict2, :strict, :warn, or :lax).
+      #  (:strict2).
       # @param exception_renderer [Proc] The exception renderer that is used to
       #   render exceptions.
       # @yieldparam environment [Environment] The environment instance that is being built.
@@ -75,7 +75,7 @@ module Liquid
     # @api private
     def initialize
       @tags = Tags::STANDARD_TAGS.dup
-      @error_mode = :lax
+      @error_mode = :strict2
       @strainer_template = Class.new(StrainerTemplate).tap do |klass|
         klass.add_filter(StandardFilters)
       end

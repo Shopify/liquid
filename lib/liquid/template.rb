@@ -22,9 +22,6 @@ module Liquid
 
     class << self
       # Sets how strict the parser should be.
-      # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
-      # :warn is the default and will give deprecation warnings when invalid syntax is used.
-      # :strict enforces correct syntax for most tags
       # :strict2 enforces correct syntax for all tags
       def error_mode=(mode)
         Deprecations.warn("Template.error_mode=", "Environment#error_mode=")

@@ -41,11 +41,10 @@ class AssignTest < Minitest::Test
 
   def test_assign_uses_error_mode
     assert_match_syntax_error(
-      "Expected dotdot but found pipe in ",
+      "Expected dotdot but found pipe",
       "{% assign foo = ('X' | downcase) %}",
-      error_mode: :strict,
+      error_mode: :rigid,
     )
-    assert_template_result("", "{% assign foo = ('X' | downcase) %}", error_mode: :lax)
   end
 
   def test_expression_with_whitespace_in_square_brackets

@@ -106,14 +106,6 @@ class RenderTagTest < Minitest::Test
   end
 
   def test_strict2_parsing_errors
-    with_error_modes(:lax, :strict) do
-      assert_template_result(
-        'hello value1 value2',
-        '{% render "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
-        partials: { 'snippet' => 'hello {{ arg1 }} {{ arg2 }}' },
-      )
-    end
-
     with_error_modes(:strict2) do
       assert_syntax_error(
         '{% render "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
@@ -318,10 +310,6 @@ class RenderTagTest < Minitest::Test
   def test_render_with_invalid_expression
     template = '{% render "snippet" with foo=>bar %}'
 
-    with_error_modes(:lax, :strict) do
-      refute_nil(Template.parse(template))
-    end
-
     with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
       assert_match(/Unexpected character =/, error.message)
@@ -330,10 +318,6 @@ class RenderTagTest < Minitest::Test
 
   def test_render_attribute_with_invalid_expression
     template = '{% render "snippet", key: foo=>bar %}'
-
-    with_error_modes(:lax, :strict) do
-      refute_nil(Template.parse(template))
-    end
 
     with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }

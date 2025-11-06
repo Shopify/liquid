@@ -38,12 +38,6 @@ class ParseContextUnitTest < Minitest::Test
   end
 
   def test_parse_expression_with_variable_lookup
-    result_strict = strict_parse_context.parse_expression('product.title')
-
-    assert_instance_of(VariableLookup, result_strict)
-    assert_equal('product', result_strict.name)
-    assert_equal(['title'], result_strict.lookups)
-
     error = assert_raises(Liquid::InternalError) do
       strict2_parse_context.parse_expression('product.title')
     end
@@ -66,9 +60,6 @@ class ParseContextUnitTest < Minitest::Test
   end
 
   def test_parse_expression_with_empty_string
-    result_strict = strict_parse_context.parse_expression('')
-    assert_nil(result_strict)
-
     error = assert_raises(Liquid::InternalError) do
       strict2_parse_context.parse_expression('')
     end
@@ -77,9 +68,6 @@ class ParseContextUnitTest < Minitest::Test
   end
 
   def test_parse_expression_with_empty_string_and_safe_true
-    result_strict = strict_parse_context.parse_expression('', safe: true)
-    assert_nil(result_strict)
-
     result_strict2 = strict2_parse_context.parse_expression('', safe: true)
     assert_nil(result_strict2)
   end
@@ -108,12 +96,6 @@ class ParseContextUnitTest < Minitest::Test
   end
 
   private
-
-  def strict_parse_context
-    @strict_parse_context ||= ParseContext.new(
-      environment: Environment.build(error_mode: :strict),
-    )
-  end
 
   def strict2_parse_context
     @strict2_parse_context ||= ParseContext.new(
