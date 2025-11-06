@@ -72,12 +72,6 @@ class VariableUnitTest < Minitest::Test
     assert_equal([['replace', ['foo', 'bar']], ['textileze', []]], var.filters)
   end
 
-  def test_symbol
-    var = create_variable("http://disney.com/logo.gif | image: 'med' ", error_mode: :lax)
-    assert_equal(VariableLookup.new('http://disney.com/logo.gif'), var.name)
-    assert_equal([['image', ['med']]], var.filters)
-  end
-
   def test_string_to_filter
     var = create_variable("'http://disney.com/logo.gif' | image: 'med' ")
     assert_equal('http://disney.com/logo.gif', var.name)
@@ -108,7 +102,7 @@ class VariableUnitTest < Minitest::Test
     assert_equal(VariableLookup.new('foo-bar'), create_variable('foo-bar').name)
     assert_equal(VariableLookup.new('foo-bar-2'), create_variable('foo-bar-2').name)
 
-    with_error_modes(:strict) do
+    with_error_modes(:strict2) do
       assert_raises(Liquid::SyntaxError) { create_variable('foo - bar') }
       assert_raises(Liquid::SyntaxError) { create_variable('-foo') }
       assert_raises(Liquid::SyntaxError) { create_variable('2foo') }
@@ -129,36 +123,6 @@ class VariableUnitTest < Minitest::Test
     var = create_variable(%( hello | things: greeting: "world", farewell: 'goodbye'))
     assert_equal(VariableLookup.new('hello'), var.name)
     assert_equal([['things', [], { 'greeting' => 'world', 'farewell' => 'goodbye' }]], var.filters)
-  end
-
-  def test_lax_filter_argument_parsing
-    var = create_variable(%( number_of_comments | pluralize: 'comment': 'comments' ), error_mode: :lax)
-    assert_equal(VariableLookup.new('number_of_comments'), var.name)
-    assert_equal([['pluralize', ['comment', 'comments']]], var.filters)
-
-    # missing does not throws error
-    create_variable(%(n | f1: ,), error_mode: :lax)
-    create_variable(%(n | f1: ,| f2), error_mode: :lax)
-
-    # arg does not require colon, but ignores args :O, also ignores first kwarg since it splits on ':'
-    var = create_variable(%(n | f1 1 | f2 k1: v1), error_mode: :lax)
-    assert_equal([['f1', []], ['f2', [VariableLookup.new('v1')]]], var.filters)
-
-    # positional and kwargs parsing
-    var = create_variable(%(n | filter: 1, 2, 3 | filter2: k1: 1, k2: 2), error_mode: :lax)
-    assert_equal([['filter', [1, 2, 3]], ['filter2', [], { "k1" => 1, "k2" => 2 }]], var.filters)
-
-    # positional and kwargs intermixed (pos1, key1: val1, pos2)
-    var = create_variable(%(n | link_to: class: "black", "https://example.com", title: "title"), error_mode: :lax)
-    assert_equal([['link_to', ["https://example.com"], { "class" => "black", "title" => "title" }]], var.filters)
-  end
-
-  def test_strict_filter_argument_parsing
-    with_error_modes(:strict) do
-      assert_raises(SyntaxError) do
-        create_variable(%( number_of_comments | pluralize: 'comment': 'comments' ))
-      end
-    end
   end
 
   def test_strict2_filter_argument_parsing

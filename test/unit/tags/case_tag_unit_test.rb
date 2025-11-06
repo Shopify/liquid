@@ -20,10 +20,6 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_modes(:lax, :strict) do
-      assert_template_result("one", template)
-    end
-
     with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
 
@@ -40,10 +36,6 @@ class CaseTagUnitTest < Minitest::Test
           two
       {%- endcase -%}
     LIQUID
-
-    with_error_modes(:lax, :strict) do
-      assert_template_result("one", template)
-    end
 
     with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
@@ -62,7 +54,7 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_modes(:lax, :strict, :strict2) do
+    with_error_modes(:strict2) do
       assert_template_result("one", template)
     end
   end
@@ -77,7 +69,7 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_modes(:lax, :strict, :strict2) do
+    with_error_modes(:strict2) do
       assert_template_result("one", template)
     end
   end
@@ -92,10 +84,6 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
     assigns = { 'foo' => { 'bar' => 'baz' } }
-
-    with_error_modes(:lax, :strict) do
-      assert_template_result("one", template, assigns)
-    end
 
     with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
@@ -114,10 +102,6 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
     assigns = { 'foo' => { 'bar' => 'baz' } }
-
-    with_error_modes(:lax, :strict) do
-      assert_template_result("one", template, assigns)
-    end
 
     with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
