@@ -34,7 +34,7 @@ module Liquid
       parse_with_selected_parser(markup)
     end
 
-    def strict2_parse(markup)
+    def parse_markup(markup)
       unless markup =~ Syntax
         self.class.raise_syntax_error(parse_context)
       end

@@ -77,7 +77,7 @@ module Liquid
       Condition.parse_expression(parse_context, markup, safe: safe)
     end
 
-    def strict2_parse(markup)
+    def parse_markup(markup)
       p = @parse_context.new_parser(markup)
       condition = parse_binary_comparisons(p)
       p.consume(:end_of_string)

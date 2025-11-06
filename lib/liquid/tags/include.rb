@@ -87,7 +87,7 @@ module Liquid
       @is_for_loop
     end
 
-    def strict2_parse(markup)
+    def parse_markup(markup)
       p = @parse_context.new_parser(markup)
 
       @template_name_expr = safe_parse_expression(p)

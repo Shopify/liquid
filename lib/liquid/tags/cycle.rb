@@ -54,7 +54,7 @@ module Liquid
     private
 
     # cycle [name:] expression(, expression)*
-    def strict2_parse(markup)
+    def parse_markup(markup)
       p = @parse_context.new_parser(markup)
 
       @variables = []
