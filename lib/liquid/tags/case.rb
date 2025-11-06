@@ -83,7 +83,7 @@ module Liquid
 
     private
 
-    def strict2_parse(markup)
+    def parse_markup(markup)
       parser = @parse_context.new_parser(markup)
       @left = safe_parse_expression(parser)
       parser.consume(:end_of_string)
@@ -92,14 +92,10 @@ module Liquid
     def record_when_condition(markup)
       body = new_body
 
-      if strict2_mode?
-        parse_strict2_when(markup, body)
-      else
-        parse_lax_when(markup, body)
-      end
+      parse_when(markup, body)
     end
 
-    def parse_strict2_when(markup, body)
+    def parse_when(markup, body)
       parser = @parse_context.new_parser(markup)
 
       loop do

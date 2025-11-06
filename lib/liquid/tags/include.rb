@@ -81,7 +81,7 @@ module Liquid
     alias_method :parse_context, :options
     private :parse_context
 
-    def strict2_parse(markup)
+    def parse_markup(markup)
       p = @parse_context.new_parser(markup)
 
       @template_name_expr = safe_parse_expression(p)
