@@ -8,7 +8,7 @@ $LOAD_PATH.unshift(File.join(File.expand_path(__dir__), '..', 'lib'))
 require 'liquid.rb'
 require 'liquid/profiler'
 
-mode = :strict
+mode = :rigid
 if (env_mode = ENV['LIQUID_PARSER_MODE'])
   puts "-- #{env_mode.upcase} ERROR MODE"
   mode = env_mode.to_sym

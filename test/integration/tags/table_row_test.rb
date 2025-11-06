@@ -188,29 +188,6 @@ class TableRowTest < Minitest::Test
     assert_template_result(expected_output, template)
   end
 
-  def test_table_row_renders_correct_error_message_for_invalid_parameters
-    assert_template_result(
-      "Liquid error (line 1): invalid integer",
-      '{% tablerow n in (1...10) limit:true %} {{n}} {% endtablerow %}',
-      error_mode: :warn,
-      render_errors: true,
-    )
-
-    assert_template_result(
-      "Liquid error (line 1): invalid integer",
-      '{% tablerow n in (1...10) offset:true %} {{n}} {% endtablerow %}',
-      error_mode: :warn,
-      render_errors: true,
-    )
-
-    assert_template_result(
-      "Liquid error (line 1): invalid integer",
-      '{% tablerow n in (1...10) cols:true %} {{n}} {% endtablerow %}',
-      render_errors: true,
-      error_mode: :warn,
-    )
-  end
-
   def test_table_row_handles_interrupts
     assert_template_result(
       "<tr class=\"row1\">\n<td class=\"col1\"> 1 </td></tr>\n",
@@ -439,10 +416,6 @@ class TableRowTest < Minitest::Test
       <td class="col1">1</td><td class="col2">2</td><td class="col3">3</td><td class="col4">4</td><td class="col5">5</td></tr>
     OUTPUT
 
-    with_error_modes(:lax, :strict) do
-      assert_template_result(expected, template)
-    end
-
     with_error_modes(:strict2) do
       error = assert_raises(SyntaxError) { Template.parse(template) }
       assert_match(/Invalid attribute 'invalid_attr'/, error.message)
@@ -451,14 +424,6 @@ class TableRowTest < Minitest::Test
 
   def test_tablerow_with_invalid_expression_strict_vs_strict2
     template = '{% tablerow i in (1..5) limit: foo=>bar %}{{ i }}{% endtablerow %}'
-
-    with_error_modes(:lax, :strict) do
-      expected = <<~OUTPUT
-        <tr class="row1">
-        </tr>
-      OUTPUT
-      assert_template_result(expected, template)
-    end
 
     with_error_modes(:strict2) do
       error = assert_raises(SyntaxError) { Template.parse(template) }

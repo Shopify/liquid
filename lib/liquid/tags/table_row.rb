@@ -24,7 +24,6 @@ module Liquid
   # @liquid_optional_param offset: [number] The 1-based index to start iterating at.
   # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   class TableRow < Block
-    Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
     ALLOWED_ATTRIBUTES = ['cols', 'limit', 'offset', 'range'].freeze
 
     attr_reader :variable_name, :collection_name, :attributes
@@ -60,23 +59,6 @@ module Liquid
       end
 
       p.consume(:end_of_string)
-    end
-
-    def strict_parse(markup)
-      lax_parse(markup)
-    end
-
-    def lax_parse(markup)
-      if markup =~ Syntax
-        @variable_name   = Regexp.last_match(1)
-        @collection_name = parse_expression(Regexp.last_match(2))
-        @attributes      = {}
-        markup.scan(TagAttributes) do |key, value|
-          @attributes[key] = parse_expression(value)
-        end
-      else
-        raise SyntaxError, options[:locale].t("errors.syntax.table_row")
-      end
     end
 
     def render_to_output_buffer(context, output)

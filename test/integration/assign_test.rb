@@ -41,11 +41,10 @@ class AssignTest < Minitest::Test
 
   def test_assign_uses_error_mode
     assert_match_syntax_error(
-      "Expected dotdot but found pipe in ",
+      "Expected dotdot but found pipe",
       "{% assign foo = ('X' | downcase) %}",
-      error_mode: :strict,
+      error_mode: :rigid,
     )
-    assert_template_result("", "{% assign foo = ('X' | downcase) %}", error_mode: :lax)
   end
 
   def test_expression_with_whitespace_in_square_brackets
@@ -127,10 +126,6 @@ class AssignTest < Minitest::Test
     assert_raises(Liquid::SyntaxError) do
       Liquid::Template.parse("{% assign 1abc = 'hello' %}", error_mode: :strict2)
     end
-  end
-
-  def test_assign_allows_invalid_names_in_lax
-    assert_template_result("1234", "{% assign (a(b(c) = 1234 %}{{ self['(a(b(c)'] }}", error_mode: :lax)
   end
 
   def test_assign_with_filter_in_strict2

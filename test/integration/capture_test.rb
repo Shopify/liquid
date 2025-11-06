@@ -9,10 +9,6 @@ class CaptureTest < Minitest::Test
     assert_template_result("test string", "{% capture var %}test string{% endcapture %}{{var}}", {})
   end
 
-  def test_captures_block_content_in_quoted_variable_in_lax
-    assert_template_result("test string", "{% capture 'var' %}test string{% endcapture %}{{var}}", {}, error_mode: :lax)
-  end
-
   def test_capture_with_hyphen_in_variable_name
     template_source = <<~END_TEMPLATE
       {% capture this-thing %}Print this-thing{% endcapture -%}
@@ -78,10 +74,5 @@ class CaptureTest < Minitest::Test
     assert_raises(Liquid::SyntaxError) do
       Liquid::Template.parse("{% capture 1abc %}hello{% endcapture %}", error_mode: :strict2)
     end
-  end
-
-  def test_capture_allows_invalid_names_in_lax
-    t = Liquid::Template.parse("{% capture (x[y %}hello{% endcapture %}", error_mode: :lax)
-    assert_equal("(x[y", t.root.nodelist.first.to)
   end
 end

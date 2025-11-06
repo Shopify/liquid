@@ -205,14 +205,6 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_strict2_parsing_errors
-    with_error_modes(:lax, :strict) do
-      assert_template_result(
-        'hello value1 value2',
-        '{% include "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
-        partials: { 'snippet' => 'hello {{ arg1 }} {{ arg2 }}' },
-      )
-    end
-
     with_error_modes(:strict2) do
       assert_syntax_error(
         '{% include "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
@@ -301,16 +293,10 @@ class IncludeTagTest < Minitest::Test
     env = Liquid::Environment.build(file_system: TestFileSystem.new)
 
     assert_raises(Liquid::SyntaxError) do
-      Template.parse("{% include template %}", error_mode: :strict, environment: env).render!("template" => '{{ "X" || downcase }}')
-    end
-    with_error_modes(:lax) do
-      assert_equal('x', Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: true, environment: env).render!("template" => '{{ "X" || downcase }}'))
+      Template.parse("{% include template %}", error_mode: :rigid, environment: env).render!("template" => '{{ "X" || downcase }}')
     end
     assert_raises(Liquid::SyntaxError) do
-      Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: [:locale], environment: env).render!("template" => '{{ "X" || downcase }}')
-    end
-    with_error_modes(:lax) do
-      assert_equal('x', Template.parse("{% include template %}", error_mode: :strict, include_options_blacklist: [:error_mode], environment: env).render!("template" => '{{ "X" || downcase }}'))
+      Template.parse("{% include template %}", error_mode: :rigid, include_options_blacklist: [:locale], environment: env).render!("template" => '{{ "X" || downcase }}')
     end
   end
 
@@ -404,10 +390,6 @@ class IncludeTagTest < Minitest::Test
   def test_include_template_with_invalid_expression
     template = "{% include foo=>bar %}"
 
-    with_error_modes(:lax, :strict) do
-      refute_nil(Template.parse(template))
-    end
-
     with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
       assert_match(/Unexpected character =/, error.message)
@@ -416,10 +398,6 @@ class IncludeTagTest < Minitest::Test
 
   def test_include_with_invalid_expression
     template = '{% include "snippet" with foo=>bar %}'
-
-    with_error_modes(:lax, :strict) do
-      refute_nil(Template.parse(template))
-    end
 
     with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
@@ -430,10 +408,6 @@ class IncludeTagTest < Minitest::Test
   def test_include_attribute_with_invalid_expression
     template = '{% include "snippet", key: foo=>bar %}'
 
-    with_error_modes(:lax, :strict) do
-      refute_nil(Template.parse(template))
-    end
-
     with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
       assert_match(/Unexpected character =/, error.message)
@@ -441,7 +415,7 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_include_for_loop_true_with_for_keyword
-    with_error_modes(:lax, :strict, :strict2) do
+    with_error_modes(:strict2) do
       template = Template.parse("{% include 'product' for products %}")
       include_node = template.root.nodelist.first
 
@@ -450,7 +424,7 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_include_for_loop_false_with_with_keyword
-    with_error_modes(:lax, :strict, :strict2) do
+    with_error_modes(:strict2) do
       template = Template.parse("{% include 'product' with product %}")
       include_node = template.root.nodelist.first
 
@@ -459,7 +433,7 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_include_for_loop_false_without_keyword
-    with_error_modes(:lax, :strict, :strict2) do
+    with_error_modes(:strict2) do
       template = Template.parse("{% include 'header' %}")
       include_node = template.root.nodelist.first
 
@@ -468,7 +442,7 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_include_for_loop_with_alias
-    with_error_modes(:lax, :strict, :strict2) do
+    with_error_modes(:strict2) do
       template = Template.parse("{% include 'product' for products as item %}")
       include_node = template.root.nodelist.first
 
@@ -477,7 +451,7 @@ class IncludeTagTest < Minitest::Test
   end
 
   def test_include_with_keyword_and_alias
-    with_error_modes(:lax, :strict, :strict2) do
+    with_error_modes(:strict2) do
       template = Template.parse("{% include 'product' with products[0] as item %}")
       include_node = template.root.nodelist.first
 
