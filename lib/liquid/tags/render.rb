@@ -84,10 +84,10 @@ module Liquid
     end
 
     # render (string) (with|for expression)? (as id)? (key: value)*
-    def strict2_parse(markup)
+    def parse_markup(markup)
       p = @parse_context.new_parser(markup)
 
-      @template_name_expr = parse_expression(strict2_template_name(p), safe: true)
+      @template_name_expr = parse_expression(template_name(p), safe: true)
       with_or_for         = p.id?("for") || p.id?("with")
       @variable_name_expr = safe_parse_expression(p) if with_or_for
       @alias_name         = p.consume(:id) if p.id?("as")
@@ -106,7 +106,7 @@ module Liquid
       p.consume(:end_of_string)
     end
 
-    def strict2_template_name(p)
+    def template_name(p)
       p.consume(:string)
     end
 
