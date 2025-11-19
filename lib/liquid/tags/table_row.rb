@@ -34,7 +34,7 @@ module Liquid
       parse_with_selected_parser(markup)
     end
 
-    def rigid_parse(markup)
+    def strict2_parse(markup)
       p = @parse_context.new_parser(markup)
 
       @variable_name = p.consume(:id)

@@ -55,15 +55,15 @@ module Liquid
     end
 
     def parse_expression(markup, safe: false)
-      if !safe && @error_mode == :rigid
+      if !safe && @error_mode == :strict2
         # parse_expression is a widely used API. To maintain backward
-        # compatibility while raising awareness about rigid parser standards,
+        # compatibility while raising awareness about strict2 parser standards,
         # the safe flag supports API users make a deliberate decision.
         #
-        # In rigid mode, markup MUST come from a string returned by the parser
+        # In strict2 mode, markup MUST come from a string returned by the parser
         # (e.g., parser.expression). We're not calling the parser here to
         # prevent redundant parser overhead.
-        raise Liquid::InternalError, "unsafe parse_expression cannot be used in rigid mode"
+        raise Liquid::InternalError, "unsafe parse_expression cannot be used in strict2 mode"
       end
 
       Expression.parse(markup, @string_scanner, @expression_cache)

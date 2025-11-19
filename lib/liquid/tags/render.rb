@@ -27,7 +27,7 @@ module Liquid
   # @liquid_syntax_keyword filename The name of the snippet to render, without the `.liquid` extension.
   class Render < Tag
     FOR = 'for'
-    SYNTAX = /(#{QuotedString}+|#{VariableSegment}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
+    SYNTAX = /(#{QuotedString}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
 
     disable_tags "include"
 
@@ -47,23 +47,21 @@ module Liquid
     end
 
     def render_tag(context, output)
-      template = context.evaluate(@template_name_expr)
+      # The expression should be a String literal, which parses to a String object
+      template_name = @template_name_expr
+      raise ::ArgumentError unless template_name.is_a?(String)
 
-      if template.respond_to?(:to_partial)
-        partial = template.to_partial
-        template_name = template.filename
-        context_variable_name = @alias_name || template.name
-      elsif @template_name_expr.is_a?(String)
-        partial = PartialCache.load(template, context: context, parse_context: parse_context)
-        template_name = partial.name
-        context_variable_name = @alias_name || template_name.split('/').last
-      else
-        raise ::ArgumentError
-      end
+      partial = PartialCache.load(
+        template_name,
+        context: context,
+        parse_context: parse_context,
+      )
+
+      context_variable_name = @alias_name || template_name.split('/').last
 
       render_partial_func = ->(var, forloop) {
         inner_context               = context.new_isolated_subcontext
-        inner_context.template_name = template_name
+        inner_context.template_name = partial.name
         inner_context.partial       = true
         inner_context['forloop']    = forloop if forloop
 
@@ -87,10 +85,10 @@ module Liquid
     end
 
     # render (string) (with|for expression)? (as id)? (key: value)*
-    def rigid_parse(markup)
+    def strict2_parse(markup)
       p = @parse_context.new_parser(markup)
 
-      @template_name_expr = parse_expression(rigid_template_name(p), safe: true)
+      @template_name_expr = parse_expression(strict2_template_name(p), safe: true)
       with_or_for         = p.id?("for") || p.id?("with")
       @variable_name_expr = safe_parse_expression(p) if with_or_for
       @alias_name         = p.consume(:id) if p.id?("as")
@@ -103,18 +101,14 @@ module Liquid
         key = p.consume
         p.consume(:colon)
         @attributes[key] = safe_parse_expression(p)
-        p.consume?(:comma) # optional comma
+        p.consume?(:comma)
       end
 
       p.consume(:end_of_string)
     end
 
-    def rigid_template_name(p)
-      return p.consume(:string) if p.look(:string)
-      return p.consume(:id) if p.look(:id)
-
-      found = p.consume || "nothing"
-      raise SyntaxError, options[:locale].t("errors.syntax.render_invalid_template_name", found: found)
+    def strict2_template_name(p)
+      p.consume(:string)
     end
 
     def strict_parse(markup)

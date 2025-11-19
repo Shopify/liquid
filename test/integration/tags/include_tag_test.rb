@@ -204,7 +204,7 @@ class IncludeTagTest < Minitest::Test
     )
   end
 
-  def test_rigid_parsing_errors
+  def test_strict2_parsing_errors
     with_error_modes(:lax, :strict) do
       assert_template_result(
         'hello value1 value2',
@@ -213,7 +213,7 @@ class IncludeTagTest < Minitest::Test
       )
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       assert_syntax_error(
         '{% include "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
       )
@@ -408,7 +408,7 @@ class IncludeTagTest < Minitest::Test
       refute_nil(Template.parse(template))
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
       assert_match(/Unexpected character =/, error.message)
     end
@@ -421,7 +421,7 @@ class IncludeTagTest < Minitest::Test
       refute_nil(Template.parse(template))
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
       assert_match(/Unexpected character =/, error.message)
     end
@@ -434,7 +434,7 @@ class IncludeTagTest < Minitest::Test
       refute_nil(Template.parse(template))
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
       assert_match(/Unexpected character =/, error.message)
     end

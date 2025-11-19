@@ -103,10 +103,10 @@ Liquid also comes with different parsers that can be used when editing templates
 when templates are invalid. You can enable this new parser like this:
 
 ```ruby
-Liquid::Environment.default.error_mode = :rigid  # Raises a SyntaxError when invalid syntax is used in all tags
-Liquid::Environment.default.error_mode = :strict # Raises a SyntaxError when invalid syntax is used in some tags
-Liquid::Environment.default.error_mode = :warn   # Adds strict errors to template.errors but continues as normal
-Liquid::Environment.default.error_mode = :lax    # The default mode, accepts almost anything.
+Liquid::Environment.default.error_mode = :strict2 # Raises a SyntaxError when invalid syntax is used in all tags
+Liquid::Environment.default.error_mode = :strict  # Raises a SyntaxError when invalid syntax is used in some tags
+Liquid::Environment.default.error_mode = :warn    # Adds strict errors to template.errors but continues as normal
+Liquid::Environment.default.error_mode = :lax     # The default mode, accepts almost anything.
 ```
 
 If you want to set the error mode only on specific templates you can pass `:error_mode` as an option to `parse`:

@@ -24,7 +24,7 @@ class CaseTagUnitTest < Minitest::Test
       assert_template_result("one", template)
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
 
       assert_match(/Expected end_of_string but found/, error.message)
@@ -45,7 +45,7 @@ class CaseTagUnitTest < Minitest::Test
       assert_template_result("one", template)
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
 
       assert_match(/Expected end_of_string but found/, error.message)
@@ -62,7 +62,7 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_modes(:lax, :strict, :rigid) do
+    with_error_modes(:lax, :strict, :strict2) do
       assert_template_result("one", template)
     end
   end
@@ -77,7 +77,7 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_modes(:lax, :strict, :rigid) do
+    with_error_modes(:lax, :strict, :strict2) do
       assert_template_result("one", template)
     end
   end
@@ -97,7 +97,7 @@ class CaseTagUnitTest < Minitest::Test
       assert_template_result("one", template, assigns)
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
 
       assert_match(/Unexpected character =/, error.message)
@@ -119,7 +119,7 @@ class CaseTagUnitTest < Minitest::Test
       assert_template_result("one", template, assigns)
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
 
       assert_match(/Unexpected character =/, error.message)

@@ -74,14 +74,14 @@ module Liquid
       p.consume(:end_of_string)
     end
 
-    def rigid_parse(markup)
+    def strict2_parse(markup)
       @filters = []
       p = @parse_context.new_parser(markup)
 
       return if p.look(:end_of_string)
 
       @name = parse_context.safe_parse_expression(p)
-      @filters << rigid_parse_filter_expressions(p) while p.consume?(:pipe)
+      @filters << strict2_parse_filter_expressions(p) while p.consume?(:pipe)
       p.consume(:end_of_string)
     end
 
@@ -156,7 +156,7 @@ module Liquid
     # argument = (positional_argument | keyword_argument)
     # positional_argument = expression
     # keyword_argument = id ":" expression
-    def rigid_parse_filter_expressions(p)
+    def strict2_parse_filter_expressions(p)
       filtername = p.consume(:id)
       filter_args = []
       keyword_args = {}

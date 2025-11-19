@@ -5,7 +5,6 @@
       block_tag_unexpected_args: "Syntax Error in '%{tag}' - Valid syntax: {% %{tag} %}{% end%{tag} %}"
       assign: "Syntax Error in 'assign' - Valid syntax: assign [var] = [source]"
       capture: "Syntax Error in 'capture' - Valid syntax: capture [var]"
-      snippet: "Syntax Error in 'snippet' - Valid syntax: snippet [var]"
       case: "Syntax Error in 'case' - Valid syntax: case [condition]"
       case_invalid_when: "Syntax Error in tag 'case' - Valid when condition: {% when [condition] [or condition2...] %}"
       case_invalid_else: "Syntax Error in tag 'case' - Valid else condition: {% else %} (no parameters) "
@@ -20,7 +19,6 @@
       invalid_delimiter: "'%{tag}' is not a valid delimiter for %{block_name} tags. use %{block_delimiter}"
       invalid_template_encoding: "Invalid template encoding"
       render: "Syntax error in tag 'render' - Template name must be a quoted string"
-      render_invalid_template_name: "Syntax error in tag 'render' - Expected a string or identifier, found %{found}"
       table_row: "Syntax Error in 'table_row loop' - Valid syntax: table_row [item] in [collection] cols=3"
       table_row_invalid_attribute: "Invalid attribute '%{attribute}' in tablerow loop. Valid attributes are cols, limit, offset, and range"
       tag_never_closed: "'%{block_name}' tag was never closed"
@@ -31,6 +29,5 @@
       variable_termination: "Variable '%{token}' was not properly terminated with regexp: %{tag_end}"
     argument:
       include: "Argument error in tag 'include' - Illegal template name"
-      render: "Argument error in tag 'render' - Dynamically chosen templates are not allowed"
     disabled:
       tag: "usage is not allowed in this context"

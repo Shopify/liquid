@@ -101,7 +101,7 @@ class CycleTagTest < Minitest::Test
       assert_template_result("a", template2)
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error1 = assert_raises(Liquid::SyntaxError) { Template.parse(template1) }
       error2 = assert_raises(Liquid::SyntaxError) { Template.parse(template2) }
 
@@ -129,7 +129,7 @@ class CycleTagTest < Minitest::Test
       assert_template_result("N", template5)
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error1 = assert_raises(Liquid::SyntaxError) { Template.parse(template1) }
       error2 = assert_raises(Liquid::SyntaxError) { Template.parse(template2) }
       error3 = assert_raises(Liquid::SyntaxError) { Template.parse(template3) }
@@ -157,7 +157,7 @@ class CycleTagTest < Minitest::Test
       refute_nil(Template.parse(template))
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
       assert_match(/Unexpected character =/, error.message)
     end
@@ -174,7 +174,7 @@ class CycleTagTest < Minitest::Test
       refute_nil(Template.parse(template))
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
       assert_match(/Unexpected character =/, error.message)
     end

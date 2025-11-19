@@ -33,7 +33,7 @@ task :rubocop do
   end
 end
 
-desc('runs test suite with lax, strict, and rigid parsers')
+desc('runs test suite with lax, strict, and strict2 parsers')
 task :test do
   ENV['LIQUID_PARSER_MODE'] = 'lax'
   Rake::Task['base_test'].invoke
@@ -42,7 +42,7 @@ task :test do
   Rake::Task['base_test'].reenable
   Rake::Task['base_test'].invoke
 
-  ENV['LIQUID_PARSER_MODE'] = 'rigid'
+  ENV['LIQUID_PARSER_MODE'] = 'strict2'
   Rake::Task['base_test'].reenable
   Rake::Task['base_test'].invoke
 
@@ -55,7 +55,7 @@ task :test do
     Rake::Task['integration_test'].reenable
     Rake::Task['integration_test'].invoke
 
-    ENV['LIQUID_PARSER_MODE'] = 'rigid'
+    ENV['LIQUID_PARSER_MODE'] = 'strict2'
     Rake::Task['integration_test'].reenable
     Rake::Task['integration_test'].invoke
   end
@@ -88,13 +88,13 @@ namespace :benchmark do
     ruby "./performance/benchmark.rb strict"
   end
 
-  desc "Run the liquid benchmark with rigid parsing"
-  task :rigid do
-    ruby "./performance/benchmark.rb rigid"
+  desc "Run the liquid benchmark with strict2 parsing"
+  task :strict2 do
+    ruby "./performance/benchmark.rb strict2"
   end
 
-  desc "Run the liquid benchmark with lax, strict, and rigid parsing"
-  task run: [:lax, :strict, :rigid]
+  desc "Run the liquid benchmark with lax, strict, and strict2 parsing"
+  task run: [:lax, :strict, :strict2]
 
   desc "Run unit benchmarks"
   namespace :unit do
