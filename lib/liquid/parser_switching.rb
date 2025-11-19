@@ -7,16 +7,19 @@ module Liquid
     # It's basically doing the same thing the {#parse_with_selected_parser},
     # except this will try the strict parser regardless of the error mode,
     # and fall back to the lax parser if the error mode is lax or warn,
-    # except when in rigid mode where it uses the rigid parser.
+    # except when in strict2 mode where it uses the strict2 parser.
     #
     # @deprecated Use {#parse_with_selected_parser} instead.
     def strict_parse_with_error_mode_fallback(markup)
-      return rigid_parse_with_error_context(markup) if rigid_mode?
+      return strict2_parse_with_error_context(markup) if strict2_mode?
 
       strict_parse_with_error_context(markup)
     rescue SyntaxError => e
       case parse_context.error_mode
       when :rigid
+        rigid_warn
+        raise
+      when :strict2
         raise
       when :strict
         raise
@@ -28,12 +31,13 @@ module Liquid
 
     def parse_with_selected_parser(markup)
       case parse_context.error_mode
-      when :rigid  then rigid_parse_with_error_context(markup)
-      when :strict then strict_parse_with_error_context(markup)
-      when :lax    then lax_parse(markup)
+      when :rigid   then rigid_warn && strict2_parse_with_error_context(markup)
+      when :strict2 then strict2_parse_with_error_context(markup)
+      when :strict  then strict_parse_with_error_context(markup)
+      when :lax     then lax_parse(markup)
       when :warn
         begin
-          rigid_parse_with_error_context(markup)
+          strict2_parse_with_error_context(markup)
         rescue SyntaxError => e
           parse_context.warnings << e
           lax_parse(markup)
@@ -41,14 +45,18 @@ module Liquid
       end
     end
 
-    def rigid_mode?
-      parse_context.error_mode == :rigid
+    def strict2_mode?
+      parse_context.error_mode == :strict2 || parse_context.error_mode == :rigid
     end
 
     private
 
-    def rigid_parse_with_error_context(markup)
-      rigid_parse(markup)
+    def rigid_warn
+      Deprecations.warn(':rigid', ':strict2')
+    end
+
+    def strict2_parse_with_error_context(markup)
+      strict2_parse(markup)
     rescue SyntaxError => e
       e.line_number    = line_number
       e.markup_context = markup_context(markup)

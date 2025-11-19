@@ -105,7 +105,7 @@ class RenderTagTest < Minitest::Test
     assert_syntax_error("{% assign name = 'snippet' %}{% render name %}")
   end
 
-  def test_rigid_parsing_errors
+  def test_strict2_parsing_errors
     with_error_modes(:lax, :strict) do
       assert_template_result(
         'hello value1 value2',
@@ -114,7 +114,7 @@ class RenderTagTest < Minitest::Test
       )
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       assert_syntax_error(
         '{% render "snippet" !!! arg1: "value1" ~~~ arg2: "value2" %}',
       )
@@ -322,7 +322,7 @@ class RenderTagTest < Minitest::Test
       refute_nil(Template.parse(template))
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
       assert_match(/Unexpected character =/, error.message)
     end
@@ -335,7 +335,7 @@ class RenderTagTest < Minitest::Test
       refute_nil(Template.parse(template))
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
       assert_match(/Unexpected character =/, error.message)
     end

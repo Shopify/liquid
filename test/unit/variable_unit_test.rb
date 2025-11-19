@@ -161,8 +161,8 @@ class VariableUnitTest < Minitest::Test
     end
   end
 
-  def test_rigid_filter_argument_parsing
-    with_error_modes(:rigid) do
+  def test_strict2_filter_argument_parsing
+    with_error_modes(:strict2) do
       # optional colon
       var = create_variable(%(n | f1 | f2:))
       assert_equal([['f1', []], ['f2', []]], var.filters)

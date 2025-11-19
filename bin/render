@@ -41,6 +41,6 @@ def assigns
 end
 
 puts Liquid::Template
-  .parse(source, error_mode: :rigid)
+  .parse(source, error_mode: :strict2)
   .tap { |t| t.registers[:file_system] = VirtualFileSystem.new }
   .render(assigns)

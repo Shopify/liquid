@@ -218,7 +218,7 @@ class VariableTest < Minitest::Test
       assert_match(/is not a valid expression/, error.message)
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       assert_template_result('helloworld', template)
     end
   end
@@ -231,7 +231,7 @@ class VariableTest < Minitest::Test
       assert_match(/is not a valid expression/, error.message)
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       assert_template_result('hello12', template)
     end
   end
@@ -244,7 +244,7 @@ class VariableTest < Minitest::Test
       assert_match(/is not a valid expression/, error.message)
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       assert_template_result('TEST', template)
     end
   end
@@ -257,7 +257,7 @@ class VariableTest < Minitest::Test
       assert_match(/is not a valid expression/, error.message)
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       assert_template_result('TESTX', template)
     end
   end
@@ -270,7 +270,7 @@ class VariableTest < Minitest::Test
       assert_match(/is not a valid expression/, error.message)
     end
 
-    with_error_modes(:rigid) do
+    with_error_modes(:strict2) do
       assert_template_result('TESTX', template)
     end
   end

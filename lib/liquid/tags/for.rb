@@ -111,7 +111,7 @@ module Liquid
 
     private
 
-    def rigid_parse(markup)
+    def strict2_parse(markup)
       strict_parse(markup)
     end
 
