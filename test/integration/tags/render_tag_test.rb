@@ -101,6 +101,10 @@ class RenderTagTest < Minitest::Test
     end
   end
 
+  def test_dynamically_choosen_templates_are_not_allowed
+    assert_syntax_error("{% assign name = 'snippet' %}{% render name %}")
+  end
+
   def test_rigid_parsing_errors
     with_error_modes(:lax, :strict) do
       assert_template_result(
@@ -287,13 +291,6 @@ class RenderTagTest < Minitest::Test
       partials: {
         'loop' => "{{ value }}",
       },
-    )
-  end
-
-  def test_render_tag_with_snippet_drop
-    assert_template_result(
-      "Hello from snippet",
-      "{% snippet my_snippet %}Hello from snippet{% endsnippet %}{% render my_snippet %}",
     )
   end
 
