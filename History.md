@@ -1,13 +1,11 @@
 # Liquid Change Log
 
+## 5.11.0
+* Revert the Inline Snippets tag (#2001), treats its inclusion in the latest Liquid release as a bug, and aims to allow feedback on RFC#1916 for better support Liquid developers [Guilherme Carreiro]
+* Rename `:rigid` error mode to `:strict2` and display a warning when users use the `:rigid` mode [Guilherme Carreiro]
+
 ## 5.10.0
 * Introduce support for Inline Snippets [Julia Boutin]
-  ```
-  {%- snippet snowdevil -%}
-    Snowdevil
-  {%- endsnippet -%}
-  {% render snowdevil %}
-  ```
 
 ## 5.9.0
 * Introduce `:rigid` error mode for stricter, safer parsing of all tags [CP Clermont, Guilherme Carreiro]
