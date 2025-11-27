@@ -237,10 +237,11 @@ Please reference the GitHub release for more information.
 * Add strict_variables and strict_filters options to detect undefined references (#691)
 * Improve loop performance (#681) [Florian Weingarten]
 * Rename Drop method `before_method` to `liquid_method_missing` (#661) [Thierry Joyal]
+* liquid_method_missing does not support methods starting with a number like before_method did.
 * Add url_decode filter to invert url_encode (#645) [Larry Archer]
 * Add global_filter to apply a filter to all output (#610) [Loren Hale]
 * Add compact filter (#600) [Carson Reinke]
-* Rename deprecated "has_key?" and "has_interrupt?" methods (#593) [Florian Weingarten]
+* Rename deprecated "has_key?" and "has_interrupt?" methods to "key?" and "interrupt?" (#593) [Florian Weingarten]
 * Include template name with line numbers in render errors (574) [Dylan Thacker-Smith]
 * Add sort_natural filter (#554) [Martin Hanzel]
 * Add forloop.parentloop as a reference to the parent loop (#520) [Justin Li]
@@ -250,6 +251,7 @@ Please reference the GitHub release for more information.
 * Liquid::Template.file_system's read_template_file method is no longer passed the context. (#441) [James Reid-Smith]
 * Remove `liquid_methods` (See https://github.com/Shopify/liquid/pull/568 for replacement)
 * Liquid::Template.register_filter raises when the module overrides registered public methods as private or protected (#705) [Gaurav Chande]
+* Overriding to_str on a drop doesn't do anything anymore, override to_s instead
 
 ### Fixed
 
