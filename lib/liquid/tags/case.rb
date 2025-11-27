@@ -118,7 +118,7 @@ module Liquid
       parser = @parse_context.new_parser(markup)
 
       loop do
-        expr = safe_parse_expression(parser)
+        expr = Condition.parse_expression(parse_context, parser.expression, safe: true)
         block = Condition.new(@left, '==', expr)
         block.attach(body)
         @blocks << block
