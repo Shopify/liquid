@@ -82,6 +82,26 @@ class CaseTagUnitTest < Minitest::Test
     end
   end
 
+  def test_case_when_empty
+    template = <<~LIQUID
+      {%- case x -%}
+        {%- when 2 or empty -%}
+          2 or empty
+        {%- else -%}
+          not 2 or empty
+      {%- endcase -%}
+    LIQUID
+
+    with_error_modes(:lax, :strict, :strict2) do
+      assert_template_result("2 or empty", template, { 'x' => 2 })
+      assert_template_result("2 or empty", template, { 'x' => {} })
+      assert_template_result("2 or empty", template, { 'x' => [] })
+      assert_template_result("not 2 or empty", template, { 'x' => { 'a' => 'b' } })
+      assert_template_result("not 2 or empty", template, { 'x' => ['a'] })
+      assert_template_result("not 2 or empty", template, { 'x' => 4 })
+    end
+  end
+
   def test_case_with_invalid_expression
     template = <<~LIQUID
       {%- case foo=>bar -%}
