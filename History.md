@@ -1,5 +1,37 @@
 # Liquid Change Log
 
+## 6.0.0
+
+### Architectural changes
+
+### Features
+* (TODO) Add support for boolean expressions everywhere
+  * As variable output `{{ a or b }}`
+  * As filter argument `{{ collection | where: 'prop', a or b }}`
+  * As tag argument `{% render 'snip', enabled: a or b %}`
+  * As conditional tag argument `{% if cond %}` (extending previous behaviour)
+* (TODO) Add support for subexpression prioritization and associativity
+  * In ascending order of priority:
+    * Logical: `and`, `or` (right to left)
+    * Equality: `==`, `!=`, `<>` (left to right)
+    * Comparison: `>`, `>=`, `<`, `<=`, `contains` (left to right)
+  - For example, this is now supported
+    * `{{ a > b == c < d or e == f }}` which is equivalent to
+    * `{{ ((a > b) == (c < d)) or (e == f) }}`
+- (TODO) Add support for parenthesized expressions
+  * e.g. `(a or b) and c`
+
+### Breaking changes
+* We are removing the Environment's `error_mode` option.
+  * `:warn` is no longer supported
+  * `:lax` and `lax_parse` is no longer supported
+  * `:strict` and `strict_parse` is no longer supported
+  * `strict2_parse` is renamed to `parse_markup`
+
+### Migrating from `^5.11.0`
+- In custom tags that include `ParserSwitching`, rename `strict2_parse` to `parse_markup`
+- Remove code depending on `:error_mode`
+
 ## 5.11.0
 * Revert the Inline Snippets tag (#2001), treat its inclusion in the latest Liquid release as a bug, and allow for feedback on RFC#1916 to better support Liquid developers [Guilherme Carreiro]
 * Rename the `:rigid` error mode to `:strict2` and display a warning when users attempt to use the `:rigid` mode [Guilherme Carreiro]
