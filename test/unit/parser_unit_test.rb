@@ -58,6 +58,14 @@ class ParserUnitTest < Minitest::Test
     assert_equal('"wut"', p.expression_string)
   end
 
+  def test_number
+    p = new_parser('-1 0 1 2.0')
+    assert_equal(-1, p.number)
+    assert_equal(0, p.number)
+    assert_equal(1, p.number)
+    assert_equal(2.0, p.number)
+  end
+
   def test_string
     p = new_parser("'s1' \"s2\" 'this \"s3\"' \"that 's4'\"")
     assert_equal('s1', p.string)

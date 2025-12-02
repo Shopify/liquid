@@ -52,9 +52,16 @@ module Liquid
       case token[0]
       when :string
         string
+      when :number
+        number
       else
         parse_expression(expression_string)
       end
+    end
+
+    def number
+      num = consume(:number)
+      Expression.parse_number(num)
     end
 
     def string
