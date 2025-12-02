@@ -58,6 +58,14 @@ class ParserUnitTest < Minitest::Test
     assert_equal('"wut"', p.expression_string)
   end
 
+  def test_string
+    p = new_parser("'s1' \"s2\" 'this \"s3\"' \"that 's4'\"")
+    assert_equal('s1', p.string)
+    assert_equal('s2', p.string)
+    assert_equal('this "s3"', p.string)
+    assert_equal("that 's4'", p.string)
+  end
+
   def test_ranges
     p = new_parser("(5..7) (1.5..9.6) (young..old) (hi[5].wat..old)")
     assert_equal('(5..7)', p.expression_string)
