@@ -26,7 +26,7 @@ module Liquid
 
     class << self
       def safe_parse(parser, ss = StringScanner.new(""), cache = nil)
-        parse(parser.expression, ss, cache)
+        parse(parser.expression_string, ss, cache)
       end
 
       def parse(markup, ss = StringScanner.new(""), cache = nil)

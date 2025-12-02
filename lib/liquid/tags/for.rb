@@ -75,7 +75,7 @@ module Liquid
       @variable_name = p.consume(:id)
       raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in") unless p.id?('in')
 
-      collection_name  = p.expression
+      collection_name  = p.expression_string
       @collection_name = p.unsafe_parse_expression(collection_name)
 
       @name     = "#{@variable_name}-#{collection_name}"
@@ -158,7 +158,7 @@ module Liquid
     end
 
     def set_attribute(key, p)
-      expr = p.expression
+      expr = p.expression_string
       case key
       when 'offset'
         @from = if expr == 'continue'
