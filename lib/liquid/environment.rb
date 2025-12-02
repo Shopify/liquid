@@ -4,10 +4,6 @@ module Liquid
   # The Environment is the container for all configuration options of Liquid, such as
   # the registered tags, filters, and the default error mode.
   class Environment
-    # The default error mode for all templates. This can be overridden on a
-    # per-template basis.
-    attr_accessor :error_mode
-
     # The tags that are available to use in the template.
     attr_accessor :tags
 
@@ -33,17 +29,14 @@ module Liquid
       #  the template.
       # @param file_system The default file system that is used
       #  to load templates from.
-      # @param error_mode [Symbol] The default error mode for all templates
-      #  (:strict2).
       # @param exception_renderer [Proc] The exception renderer that is used to
       #   render exceptions.
       # @yieldparam environment [Environment] The environment instance that is being built.
       # @return [Environment] The new environment instance.
-      def build(tags: nil, file_system: nil, error_mode: nil, exception_renderer: nil)
+      def build(tags: nil, file_system: nil, exception_renderer: nil)
         ret = new
         ret.tags = tags if tags
         ret.file_system = file_system if file_system
-        ret.error_mode = error_mode if error_mode
         ret.exception_renderer = exception_renderer if exception_renderer
         yield ret if block_given?
         ret.freeze
@@ -75,7 +68,6 @@ module Liquid
     # @api private
     def initialize
       @tags = Tags::STANDARD_TAGS.dup
-      @error_mode = :strict2
       @strainer_template = Class.new(StrainerTemplate).tap do |klass|
         klass.add_filter(StandardFilters)
       end

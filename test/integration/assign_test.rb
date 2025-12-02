@@ -39,11 +39,10 @@ class AssignTest < Minitest::Test
     assert_match_syntax_error(/assign/, '{% assign foo not values %}.')
   end
 
-  def test_assign_uses_error_mode
+  def test_assign_throws_on_unsupported_syntax
     assert_match_syntax_error(
       "Expected dotdot but found pipe",
       "{% assign foo = ('X' | downcase) %}",
-      error_mode: :rigid,
     )
   end
 
@@ -96,40 +95,40 @@ class AssignTest < Minitest::Test
     assert_equal(12, assign_score_of('int' => 123, 'str' => 'abcd'))
   end
 
-  def test_assign_with_valid_identifier_in_strict2
-    assert_template_result("hello", "{% assign my_var = 'hello' %}{{ my_var }}", error_mode: :strict2)
+  def test_assign_with_valid_identifier
+    assert_template_result("hello", "{% assign my_var = 'hello' %}{{ my_var }}")
   end
 
-  def test_assign_with_hyphen_in_strict2
-    assert_template_result("hello", "{% assign my-var = 'hello' %}{{ my-var }}", error_mode: :strict2)
+  def test_assign_with_hyphen
+    assert_template_result("hello", "{% assign my-var = 'hello' %}{{ my-var }}")
   end
 
-  def test_assign_rejects_parentheses_in_variable_name_in_strict2
+  def test_assign_rejects_parentheses_in_variable_name
     assert_raises(Liquid::SyntaxError) do
-      Liquid::Template.parse("{% assign (a(b(c) = 1234 %}", error_mode: :strict2)
+      Liquid::Template.parse("{% assign (a(b(c) = 1234 %}")
     end
   end
 
-  def test_assign_rejects_brackets_in_variable_name_in_strict2
+  def test_assign_rejects_brackets_in_variable_name
     assert_raises(Liquid::SyntaxError) do
-      Liquid::Template.parse("{% assign [x.y] = 'hello' %}", error_mode: :strict2)
+      Liquid::Template.parse("{% assign [x.y] = 'hello' %}")
     end
   end
 
-  def test_assign_rejects_dot_in_variable_name_in_strict2
+  def test_assign_rejects_dot_in_variable_name
     assert_raises(Liquid::SyntaxError) do
-      Liquid::Template.parse("{% assign a.b = 'hello' %}", error_mode: :strict2)
+      Liquid::Template.parse("{% assign a.b = 'hello' %}")
     end
   end
 
-  def test_assign_rejects_numeric_variable_name_in_strict2
+  def test_assign_rejects_numeric_variable_name
     assert_raises(Liquid::SyntaxError) do
-      Liquid::Template.parse("{% assign 1abc = 'hello' %}", error_mode: :strict2)
+      Liquid::Template.parse("{% assign 1abc = 'hello' %}")
     end
   end
 
-  def test_assign_with_filter_in_strict2
-    assert_template_result("HELLO", "{% assign my_var = 'hello' | upcase %}{{ my_var }}", error_mode: :strict2)
+  def test_assign_with_filter_to_valid_identifier
+    assert_template_result("HELLO", "{% assign my_var = 'hello' | upcase %}{{ my_var }}")
   end
 
   private

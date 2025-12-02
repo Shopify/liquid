@@ -20,11 +20,9 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_modes(:strict2) do
-      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+    error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
 
-      assert_match(/Expected end_of_string but found/, error.message)
-    end
+    assert_match(/Expected end_of_string but found/, error.message)
   end
 
   def test_case_when_with_trailing_element
@@ -37,11 +35,9 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_modes(:strict2) do
-      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+    error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
 
-      assert_match(/Expected end_of_string but found/, error.message)
-    end
+    assert_match(/Expected end_of_string but found/, error.message)
   end
 
   def test_case_when_with_comma
@@ -54,9 +50,7 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_modes(:strict2) do
-      assert_template_result("one", template)
-    end
+    assert_template_result("one", template)
   end
 
   def test_case_when_with_or
@@ -69,9 +63,7 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_modes(:strict2) do
-      assert_template_result("one", template)
-    end
+    assert_template_result("one", template)
   end
 
   def test_case_when_empty
@@ -84,14 +76,12 @@ class CaseTagUnitTest < Minitest::Test
       {%- endcase -%}
     LIQUID
 
-    with_error_modes(:lax, :strict, :strict2) do
-      assert_template_result("2 or empty", template, { 'x' => 2 })
-      assert_template_result("2 or empty", template, { 'x' => {} })
-      assert_template_result("2 or empty", template, { 'x' => [] })
-      assert_template_result("not 2 or empty", template, { 'x' => { 'a' => 'b' } })
-      assert_template_result("not 2 or empty", template, { 'x' => ['a'] })
-      assert_template_result("not 2 or empty", template, { 'x' => 4 })
-    end
+    assert_template_result("2 or empty", template, { 'x' => 2 })
+    assert_template_result("2 or empty", template, { 'x' => {} })
+    assert_template_result("2 or empty", template, { 'x' => [] })
+    assert_template_result("not 2 or empty", template, { 'x' => { 'a' => 'b' } })
+    assert_template_result("not 2 or empty", template, { 'x' => ['a'] })
+    assert_template_result("not 2 or empty", template, { 'x' => 4 })
   end
 
   def test_case_with_invalid_expression
@@ -105,11 +95,9 @@ class CaseTagUnitTest < Minitest::Test
     LIQUID
     assigns = { 'foo' => { 'bar' => 'baz' } }
 
-    with_error_modes(:strict2) do
-      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+    error = assert_raises(Liquid::SyntaxError) { Template.parse(template, assigns) }
 
-      assert_match(/Unexpected character =/, error.message)
-    end
+    assert_match(/Unexpected character =/, error.message)
   end
 
   def test_case_when_with_invalid_expression
@@ -123,10 +111,8 @@ class CaseTagUnitTest < Minitest::Test
     LIQUID
     assigns = { 'foo' => { 'bar' => 'baz' } }
 
-    with_error_modes(:strict2) do
-      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+    error = assert_raises(Liquid::SyntaxError) { Template.parse(template, assigns) }
 
-      assert_match(/Unexpected character =/, error.message)
-    end
+    assert_match(/Unexpected character =/, error.message)
   end
 end

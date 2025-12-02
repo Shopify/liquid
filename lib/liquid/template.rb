@@ -21,17 +21,6 @@ module Liquid
     attr_reader :profiler
 
     class << self
-      # Sets how strict the parser should be.
-      # :strict2 enforces correct syntax for all tags
-      def error_mode=(mode)
-        Deprecations.warn("Template.error_mode=", "Environment#error_mode=")
-        Environment.default.error_mode = mode
-      end
-
-      def error_mode
-        Environment.default.error_mode
-      end
-
       def default_exception_renderer=(renderer)
         Deprecations.warn("Template.default_exception_renderer=", "Environment#exception_renderer=")
         Environment.default.exception_renderer = renderer
@@ -186,20 +175,12 @@ module Liquid
 
       context.template_name ||= name
 
-      previous_error_mode = context.registers.static[:template_error_mode]
-      context.registers.static[:template_error_mode] = @error_mode
-
       begin
         # render the nodelist.
         @root.render_to_output_buffer(context, output || +'')
       rescue Liquid::MemoryError => e
         context.handle_error(e)
       ensure
-        if previous_error_mode
-          context.registers.static[:template_error_mode] = previous_error_mode
-        else
-          context.registers.static.delete(:template_error_mode)
-        end
         @errors = context.errors
       end
     end
@@ -231,7 +212,6 @@ module Liquid
       end
 
       @warnings = parse_context.warnings
-      @error_mode = parse_context.error_mode
       parse_context
     end
 
