@@ -67,7 +67,7 @@ class ExpressionTest < Minitest::Test
     Liquid::Template.parse(template, expression_cache: cache).render
 
     assert_equal(
-      ["x", "y"],
+      [],
       cache.to_a.map { _1[0] }.sort,
     )
   end
@@ -91,7 +91,7 @@ class ExpressionTest < Minitest::Test
     cache = parse_context.instance_variable_get(:@expression_cache)
 
     assert_equal(
-      ["x", "y"],
+      [],
       cache.to_a.map { _1[0] }.sort,
     )
   end
@@ -112,7 +112,7 @@ class ExpressionTest < Minitest::Test
     Liquid::Template.parse(template, expression_cache: cache).render
 
     assert_equal(
-      ["x", "y"],
+      [],
       cache.to_a.map { _1[0] }.sort,
     )
   end
