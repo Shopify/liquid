@@ -48,7 +48,17 @@ module Liquid
     end
 
     def expression
-      parse_expression(expression_string)
+      token = @tokens[@p]
+      case token[0]
+      when :string
+        string
+      else
+        parse_expression(expression_string)
+      end
+    end
+
+    def string
+      consume(:string)[1..-2]
     end
 
     def argument_string
