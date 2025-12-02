@@ -5,7 +5,7 @@ require 'test_helper'
 class ParseContextUnitTest < Minitest::Test
   include Liquid
 
-  def test_safe_parse_expression_with_variable_lookup
+  def test_parser_expression_node_with_variable_lookup
     parser = parse_context.new_parser('product.title')
     result = parser.expression_node
 
@@ -14,7 +14,7 @@ class ParseContextUnitTest < Minitest::Test
     assert_equal(['title'], result.lookups)
   end
 
-  def test_safe_parse_expression_raises_syntax_error_for_invalid_expression
+  def test_parser_expression_node_raises_syntax_error_for_invalid_expression
     parser = parse_context.new_parser('')
 
     error = assert_raises(Liquid::SyntaxError) do
@@ -25,35 +25,14 @@ class ParseContextUnitTest < Minitest::Test
   end
 
   def test_parse_expression_with_variable_lookup
-    error = assert_raises(Liquid::InternalError) do
-      parse_context.parse_expression('product.title')
-    end
-
-    assert_match(/unsafe parse_expression cannot be used/, error.message)
-  end
-
-  def test_parse_expression_with_safe_true
-    result = parse_context.parse_expression('product.title', safe: true)
+    result = parse_context.new_parser('product.title').expression_node
 
     assert_instance_of(VariableLookup, result)
     assert_equal('product', result.name)
     assert_equal(['title'], result.lookups)
   end
 
-  def test_parse_expression_with_empty_string
-    error = assert_raises(Liquid::InternalError) do
-      parse_context.parse_expression('')
-    end
-
-    assert_match(/unsafe parse_expression cannot be used/, error.message)
-  end
-
-  def test_parse_expression_with_empty_string_and_safe_true
-    result = parse_context.parse_expression('', safe: true)
-    assert_nil(result)
-  end
-
-  def test_safe_parse_expression_advances_parser_pointer
+  def test_parser_expression_node_advances_parser_pointer
     parser = parse_context.new_parser('foo, bar')
 
     # parser.expression_node consumes "foo"
@@ -69,11 +48,6 @@ class ParseContextUnitTest < Minitest::Test
     assert_equal('bar', second_result.name)
 
     parser.consume(:end_of_string)
-  end
-
-  def test_parse_expression_with_whitespace
-    result = parse_context.parse_expression('   ', safe: true)
-    assert_nil(result)
   end
 
   private

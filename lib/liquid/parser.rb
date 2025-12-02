@@ -76,9 +76,9 @@ module Liquid
       end
     end
 
+
     def expression_node
-      expr = expression
-      Expression.parse(expr, @ss, @cache)
+      parse_expression(expression)
     end
 
     def argument
@@ -107,6 +107,18 @@ module Liquid
         end
       end
       str
+    end
+
+    # Assumes safe input. For cases where you need the string.
+    # Don't use this unless you're sure about what you're doing.
+    def unsafe_parse_expression(markup)
+      parse_expression(markup)
+    end
+
+    private
+
+    def parse_expression(markup)
+      Expression.parse(markup, @ss, @cache)
     end
   end
 end

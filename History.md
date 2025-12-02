@@ -29,6 +29,8 @@
   * `strict2_parse` is renamed to `parse_markup`
 * The `warnings` system has been removed.
 * `safe_parse_expression` has been moved to `Parser.expression_node`
+* `parse_expression` methods have been moved to `Parser#unsafe_parse_expression`
+  * Use `Parser#expression_node`, `Parser#string`, etc. instead
 
 ### Migrating from `^5.11.0`
 - In custom tags that include `ParserSwitching`, rename `strict2_parse` to `parse_markup`
