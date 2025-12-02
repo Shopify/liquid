@@ -47,23 +47,23 @@ class ParserUnitTest < Minitest::Test
 
   def test_expressions
     p = new_parser("hi.there hi?[5].there? hi.there.bob")
-    assert_equal('hi.there', p.expression)
-    assert_equal('hi?[5].there?', p.expression)
-    assert_equal('hi.there.bob', p.expression)
+    assert_equal('hi.there', p.expression_string)
+    assert_equal('hi?[5].there?', p.expression_string)
+    assert_equal('hi.there.bob', p.expression_string)
 
     p = new_parser("567 6.0 'lol' \"wut\"")
-    assert_equal('567', p.expression)
-    assert_equal('6.0', p.expression)
-    assert_equal("'lol'", p.expression)
-    assert_equal('"wut"', p.expression)
+    assert_equal('567', p.expression_string)
+    assert_equal('6.0', p.expression_string)
+    assert_equal("'lol'", p.expression_string)
+    assert_equal('"wut"', p.expression_string)
   end
 
   def test_ranges
     p = new_parser("(5..7) (1.5..9.6) (young..old) (hi[5].wat..old)")
-    assert_equal('(5..7)', p.expression)
-    assert_equal('(1.5..9.6)', p.expression)
-    assert_equal('(young..old)', p.expression)
-    assert_equal('(hi[5].wat..old)', p.expression)
+    assert_equal('(5..7)', p.expression_string)
+    assert_equal('(1.5..9.6)', p.expression_string)
+    assert_equal('(young..old)', p.expression_string)
+    assert_equal('(hi[5].wat..old)', p.expression_string)
   end
 
   def test_arguments
@@ -78,7 +78,7 @@ class ParserUnitTest < Minitest::Test
   def test_invalid_expression
     assert_raises(SyntaxError) do
       p = new_parser("==")
-      p.expression
+      p.expression_string
     end
   end
 

@@ -48,7 +48,39 @@ module Liquid
       tok[0] == type
     end
 
-    def expression
+    def expression_node
+      parse_expression(expression_string)
+    end
+
+    def argument
+      str = +""
+      # might be a keyword argument (identifier: expression)
+      if look(:id) && look(:colon, 1)
+        str << consume << consume << ' '
+      end
+
+      str << expression_string
+      str
+    end
+
+    def variable_lookups
+      str = +""
+      loop do
+        if look(:open_square)
+          str << consume
+          str << expression_string
+          str << consume(:close_square)
+        elsif look(:dot)
+          str << consume
+          str << consume(:id)
+        else
+          break
+        end
+      end
+      str
+    end
+
+    def expression_string
       token = @tokens[@p]
       case token[0]
       when :id
@@ -59,54 +91,21 @@ module Liquid
           raise SyntaxError, "Bare bracket access is not allowed. Use #{Expression::SELF}['...'] instead"
         end
         str = consume.dup
-        str << expression
+        str << expression_string
         str << consume(:close_square)
         str << variable_lookups
       when :string, :number
         consume
       when :open_round
         consume
-        first = expression
+        first = expression_string
         consume(:dotdot)
-        last = expression
+        last = expression_string
         consume(:close_round)
         "(#{first}..#{last})"
       else
         raise SyntaxError, "#{token} is not a valid expression"
       end
-    end
-
-
-    def expression_node
-      parse_expression(expression)
-    end
-
-    def argument
-      str = +""
-      # might be a keyword argument (identifier: expression)
-      if look(:id) && look(:colon, 1)
-        str << consume << consume << ' '
-      end
-
-      str << expression
-      str
-    end
-
-    def variable_lookups
-      str = +""
-      loop do
-        if look(:open_square)
-          str << consume
-          str << expression
-          str << consume(:close_square)
-        elsif look(:dot)
-          str << consume
-          str << consume(:id)
-        else
-          break
-        end
-      end
-      str
     end
 
     # Assumes safe input. For cases where you need the string.

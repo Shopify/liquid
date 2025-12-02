@@ -49,7 +49,7 @@ module Liquid
     end
 
     def self.parse_expression(parser)
-      markup = parser.expression
+      markup = parser.expression_string
       @@method_literals[markup] || parser.unsafe_parse_expression(markup)
     end
 
