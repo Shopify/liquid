@@ -4,7 +4,6 @@ require 'benchmark/ips'
 require_relative 'theme_runner'
 
 RubyVM::YJIT.enable if defined?(RubyVM::YJIT)
-Liquid::Environment.default.error_mode = ARGV.first.to_sym if ARGV.first
 
 profiler = ThemeRunner.new
 

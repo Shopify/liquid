@@ -236,7 +236,7 @@ class TableRowTest < Minitest::Test
     )
   end
 
-  def test_tablerow_with_cols_attribute_in_strict2_mode
+  def test_tablerow_with_cols_attribute
     template = <<~LIQUID.chomp
       {% tablerow i in (1..6) cols: 3 %}{{ i }}{% endtablerow %}
     LIQUID
@@ -247,12 +247,10 @@ class TableRowTest < Minitest::Test
       <tr class="row2"><td class="col1">4</td><td class="col2">5</td><td class="col3">6</td></tr>
     OUTPUT
 
-    with_error_modes(:strict2) do
-      assert_template_result(expected, template)
-    end
+    assert_template_result(expected, template)
   end
 
-  def test_tablerow_with_limit_attribute_in_strict2_mode
+  def test_tablerow_with_limit_attribute
     template = <<~LIQUID.chomp
       {% tablerow i in (1..10) limit: 3 %}{{ i }}{% endtablerow %}
     LIQUID
@@ -262,12 +260,10 @@ class TableRowTest < Minitest::Test
       <td class="col1">1</td><td class="col2">2</td><td class="col3">3</td></tr>
     OUTPUT
 
-    with_error_modes(:strict2) do
-      assert_template_result(expected, template)
-    end
+    assert_template_result(expected, template)
   end
 
-  def test_tablerow_with_offset_attribute_in_strict2_mode
+  def test_tablerow_with_offset_attribute
     template = <<~LIQUID.chomp
       {% tablerow i in (1..5) offset: 2 %}{{ i }}{% endtablerow %}
     LIQUID
@@ -277,12 +273,10 @@ class TableRowTest < Minitest::Test
       <td class="col1">3</td><td class="col2">4</td><td class="col3">5</td></tr>
     OUTPUT
 
-    with_error_modes(:strict2) do
-      assert_template_result(expected, template)
-    end
+    assert_template_result(expected, template)
   end
 
-  def test_tablerow_with_range_attribute_in_strict2_mode
+  def test_tablerow_with_range_attribute
     template = <<~LIQUID.chomp
       {% tablerow i in (1..3) range: (1..10) %}{{ i }}{% endtablerow %}
     LIQUID
@@ -292,12 +286,10 @@ class TableRowTest < Minitest::Test
       <td class="col1">1</td><td class="col2">2</td><td class="col3">3</td></tr>
     OUTPUT
 
-    with_error_modes(:strict2) do
-      assert_template_result(expected, template)
-    end
+    assert_template_result(expected, template)
   end
 
-  def test_tablerow_with_multiple_attributes_in_strict2_mode
+  def test_tablerow_with_multiple_attributes
     template = <<~LIQUID.chomp
       {% tablerow i in (1..10) cols: 2, limit: 4, offset: 1 %}{{ i }}{% endtablerow %}
     LIQUID
@@ -308,12 +300,10 @@ class TableRowTest < Minitest::Test
       <tr class="row2"><td class="col1">4</td><td class="col2">5</td></tr>
     OUTPUT
 
-    with_error_modes(:strict2) do
-      assert_template_result(expected, template)
-    end
+    assert_template_result(expected, template)
   end
 
-  def test_tablerow_with_variable_collection_in_strict2_mode
+  def test_tablerow_with_variable_collection
     template = <<~LIQUID.chomp
       {% tablerow n in numbers cols: 2 %}{{ n }}{% endtablerow %}
     LIQUID
@@ -324,12 +314,10 @@ class TableRowTest < Minitest::Test
       <tr class="row2"><td class="col1">3</td><td class="col2">4</td></tr>
     OUTPUT
 
-    with_error_modes(:strict2) do
-      assert_template_result(expected, template, { 'numbers' => [1, 2, 3, 4] })
-    end
+    assert_template_result(expected, template, { 'numbers' => [1, 2, 3, 4] })
   end
 
-  def test_tablerow_with_dotted_access_in_strict2_mode
+  def test_tablerow_with_dotted_access
     template = <<~LIQUID.chomp
       {% tablerow n in obj.numbers cols: 2 %}{{ n }}{% endtablerow %}
     LIQUID
@@ -340,12 +328,10 @@ class TableRowTest < Minitest::Test
       <tr class="row2"><td class="col1">3</td><td class="col2">4</td></tr>
     OUTPUT
 
-    with_error_modes(:strict2) do
-      assert_template_result(expected, template, { 'obj' => { 'numbers' => [1, 2, 3, 4] } })
-    end
+    assert_template_result(expected, template, { 'obj' => { 'numbers' => [1, 2, 3, 4] } })
   end
 
-  def test_tablerow_with_bracketed_access_in_strict2_mode
+  def test_tablerow_with_bracketed_access
     template = <<~LIQUID.chomp
       {% tablerow n in obj["numbers"] cols: 2 %}{{ n }}{% endtablerow %}
     LIQUID
@@ -355,12 +341,10 @@ class TableRowTest < Minitest::Test
       <td class="col1">10</td><td class="col2">20</td></tr>
     OUTPUT
 
-    with_error_modes(:strict2) do
-      assert_template_result(expected, template, { 'obj' => { 'numbers' => [10, 20] } })
-    end
+    assert_template_result(expected, template, { 'obj' => { 'numbers' => [10, 20] } })
   end
 
-  def test_tablerow_without_attributes_in_strict2_mode
+  def test_tablerow_without_attributes
     template = <<~LIQUID.chomp
       {% tablerow i in (1..3) %}{{ i }}{% endtablerow %}
     LIQUID
@@ -370,30 +354,24 @@ class TableRowTest < Minitest::Test
       <td class="col1">1</td><td class="col2">2</td><td class="col3">3</td></tr>
     OUTPUT
 
-    with_error_modes(:strict2) do
-      assert_template_result(expected, template)
-    end
+    assert_template_result(expected, template)
   end
 
-  def test_tablerow_without_in_keyword_in_strict2_mode
+  def test_tablerow_without_in_keyword
     template = '{% tablerow i (1..10) %}{{ i }}{% endtablerow %}'
 
-    with_error_modes(:strict2) do
-      error = assert_raises(SyntaxError) { Template.parse(template) }
-      assert_equal("Liquid syntax error: For loops require an 'in' clause in \"i (1..10)\"", error.message)
-    end
+    error = assert_raises(SyntaxError) { Template.parse(template) }
+    assert_equal("Liquid syntax error: For loops require an 'in' clause in \"i (1..10)\"", error.message)
   end
 
-  def test_tablerow_with_multiple_invalid_attributes_reports_first_in_strict2_mode
+  def test_tablerow_with_multiple_invalid_attributes_reports_first
     template = '{% tablerow i in (1..10) invalid1: 5, invalid2: 10 %}{{ i }}{% endtablerow %}'
 
-    with_error_modes(:strict2) do
-      error = assert_raises(SyntaxError) { Template.parse(template) }
-      assert_equal("Liquid syntax error: Invalid attribute 'invalid1' in tablerow loop. Valid attributes are cols, limit, offset, and range in \"i in (1..10) invalid1: 5, invalid2: 10\"", error.message)
-    end
+    error = assert_raises(SyntaxError) { Template.parse(template) }
+    assert_equal("Liquid syntax error: Invalid attribute 'invalid1' in tablerow loop. Valid attributes are cols, limit, offset, and range in \"i in (1..10) invalid1: 5, invalid2: 10\"", error.message)
   end
 
-  def test_tablerow_with_empty_collection_in_strict2_mode
+  def test_tablerow_with_empty_collection
     template = <<~LIQUID.chomp
       {% tablerow i in empty_array cols: 2 %}{{ i }}{% endtablerow %}
     LIQUID
@@ -403,31 +381,18 @@ class TableRowTest < Minitest::Test
       </tr>
     OUTPUT
 
-    with_error_modes(:strict2) do
-      assert_template_result(expected, template, { 'empty_array' => [] })
-    end
+    assert_template_result(expected, template, { 'empty_array' => [] })
   end
 
-  def test_tablerow_with_invalid_attribute_strict_vs_strict2
+  def test_tablerow_with_invalid_attribute
     template = '{% tablerow i in (1..5) invalid_attr: 10 %}{{ i }}{% endtablerow %}'
-
-    expected = <<~OUTPUT
-      <tr class="row1">
-      <td class="col1">1</td><td class="col2">2</td><td class="col3">3</td><td class="col4">4</td><td class="col5">5</td></tr>
-    OUTPUT
-
-    with_error_modes(:strict2) do
-      error = assert_raises(SyntaxError) { Template.parse(template) }
-      assert_match(/Invalid attribute 'invalid_attr'/, error.message)
-    end
+    error = assert_raises(SyntaxError) { Template.parse(template) }
+    assert_match(/Invalid attribute 'invalid_attr'/, error.message)
   end
 
-  def test_tablerow_with_invalid_expression_strict_vs_strict2
+  def test_tablerow_with_invalid_expression
     template = '{% tablerow i in (1..5) limit: foo=>bar %}{{ i }}{% endtablerow %}'
-
-    with_error_modes(:strict2) do
-      error = assert_raises(SyntaxError) { Template.parse(template) }
-      assert_match(/Unexpected character =/, error.message)
-    end
+    error = assert_raises(SyntaxError) { Template.parse(template) }
+    assert_match(/Unexpected character =/, error.message)
   end
 end
