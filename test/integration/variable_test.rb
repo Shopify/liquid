@@ -179,40 +179,30 @@ class VariableTest < Minitest::Test
   def test_filter_with_single_trailing_comma
     template = '{{ "hello" | append: "world", }}'
 
-    with_error_modes(:strict2) do
-      assert_template_result('helloworld', template)
-    end
+    assert_template_result('helloworld', template)
   end
 
   def test_multiple_filters_with_trailing_commas
     template = '{{ "hello" | append: "1", | append: "2", }}'
 
-    with_error_modes(:strict2) do
-      assert_template_result('hello12', template)
-    end
+    assert_template_result('hello12', template)
   end
 
   def test_filter_with_colon_but_no_arguments
     template = '{{ "test" | upcase: }}'
 
-    with_error_modes(:strict2) do
-      assert_template_result('TEST', template)
-    end
+    assert_template_result('TEST', template)
   end
 
   def test_filter_chain_with_colon_no_args
     template = '{{ "test" | append: "x" | upcase: }}'
 
-    with_error_modes(:strict2) do
-      assert_template_result('TESTX', template)
-    end
+    assert_template_result('TESTX', template)
   end
 
   def test_combining_trailing_comma_and_empty_args
     template = '{{ "test" | append: "x", | upcase: }}'
 
-    with_error_modes(:strict2) do
-      assert_template_result('TESTX', template)
-    end
+    assert_template_result('TESTX', template)
   end
 end

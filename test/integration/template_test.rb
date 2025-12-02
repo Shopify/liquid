@@ -259,7 +259,7 @@ class TemplateTest < Minitest::Test
   end
 
   def test_nil_value_does_not_raise
-    t      = Template.parse("some{{x}}thing", error_mode: :rigid)
+    t      = Template.parse("some{{x}}thing")
     result = t.render!({ 'x' => nil }, strict_variables: true)
 
     assert_equal(0, t.errors.count)

@@ -21,17 +21,6 @@ module Liquid
     attr_reader :profiler
 
     class << self
-      # Sets how strict the parser should be.
-      # :strict2 enforces correct syntax for all tags
-      def error_mode=(mode)
-        Deprecations.warn("Template.error_mode=", "Environment#error_mode=")
-        Environment.default.error_mode = mode
-      end
-
-      def error_mode
-        Environment.default.error_mode
-      end
-
       def default_exception_renderer=(renderer)
         Deprecations.warn("Template.default_exception_renderer=", "Environment#exception_renderer=")
         Environment.default.exception_renderer = renderer

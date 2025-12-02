@@ -91,23 +91,21 @@ class CycleTagTest < Minitest::Test
     assert_match(/Syntax Error in 'cycle' - Valid syntax: cycle \[name :\] var/, error.message)
   end
 
-  def test_cycle_tag_with_error_mode
+  def test_cycle_tag_unsupported_legacy_quirk
     # QuotedFragment is more permissive than what Parser#expression allows.
     template1 = "{% assign 5 = 'b' %}{% cycle .5, .4 %}"
     template2 = "{% cycle .5: 'a', 'b' %}"
 
-    with_error_modes(:strict2) do
-      error1 = assert_raises(Liquid::SyntaxError) { Template.parse(template1) }
-      error2 = assert_raises(Liquid::SyntaxError) { Template.parse(template2) }
+    error1 = assert_raises(Liquid::SyntaxError) { Template.parse(template1) }
+    error2 = assert_raises(Liquid::SyntaxError) { Template.parse(template2) }
 
-      expected_error = /Liquid syntax error: \[:dot, "."\] is not a valid expression/
+    expected_error = /Liquid syntax error: \[:dot, "."\] is not a valid expression/
 
-      assert_match(expected_error, error1.message)
-      assert_match(expected_error, error2.message)
-    end
+    assert_match(expected_error, error1.message)
+    assert_match(expected_error, error2.message)
   end
 
-  def test_cycle_with_trailing_elements
+  def test_cycle_with_trailing_elements_legacy_syntax
     assignments = "{% assign a = 'A' %}{% assign n = 'N' %}"
 
     template1 = "#{assignments}{% cycle       'a'  'b', 'c' %}"
@@ -116,21 +114,19 @@ class CycleTagTest < Minitest::Test
     template4 = "#{assignments}{% cycle n  e: 'a', 'b', 'c' %}"
     template5 = "#{assignments}{% cycle n  e  'a', 'b', 'c' %}"
 
-    with_error_modes(:strict2) do
-      error1 = assert_raises(Liquid::SyntaxError) { Template.parse(template1) }
-      error2 = assert_raises(Liquid::SyntaxError) { Template.parse(template2) }
-      error3 = assert_raises(Liquid::SyntaxError) { Template.parse(template3) }
-      error4 = assert_raises(Liquid::SyntaxError) { Template.parse(template4) }
-      error5 = assert_raises(Liquid::SyntaxError) { Template.parse(template5) }
+    error1 = assert_raises(Liquid::SyntaxError) { Template.parse(template1) }
+    error2 = assert_raises(Liquid::SyntaxError) { Template.parse(template2) }
+    error3 = assert_raises(Liquid::SyntaxError) { Template.parse(template3) }
+    error4 = assert_raises(Liquid::SyntaxError) { Template.parse(template4) }
+    error5 = assert_raises(Liquid::SyntaxError) { Template.parse(template5) }
 
-      expected_error = /Expected end_of_string but found/
+    expected_error = /Expected end_of_string but found/
 
-      assert_match(expected_error, error1.message)
-      assert_match(expected_error, error2.message)
-      assert_match(expected_error, error3.message)
-      assert_match(expected_error, error4.message)
-      assert_match(expected_error, error5.message)
-    end
+    assert_match(expected_error, error1.message)
+    assert_match(expected_error, error2.message)
+    assert_match(expected_error, error3.message)
+    assert_match(expected_error, error4.message)
+    assert_match(expected_error, error5.message)
   end
 
   def test_cycle_name_with_invalid_expression
@@ -140,10 +136,8 @@ class CycleTagTest < Minitest::Test
       {% endfor %}
     LIQUID
 
-    with_error_modes(:strict2) do
-      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
-      assert_match(/Unexpected character =/, error.message)
-    end
+    error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+    assert_match(/Unexpected character =/, error.message)
   end
 
   def test_cycle_variable_with_invalid_expression
@@ -153,9 +147,7 @@ class CycleTagTest < Minitest::Test
       {% endfor %}
     LIQUID
 
-    with_error_modes(:strict2) do
-      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
-      assert_match(/Unexpected character =/, error.message)
-    end
+    error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+    assert_match(/Unexpected character =/, error.message)
   end
 end

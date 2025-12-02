@@ -102,11 +102,9 @@ class VariableUnitTest < Minitest::Test
     assert_equal(VariableLookup.new('foo-bar'), create_variable('foo-bar').name)
     assert_equal(VariableLookup.new('foo-bar-2'), create_variable('foo-bar-2').name)
 
-    with_error_modes(:strict2) do
-      assert_raises(Liquid::SyntaxError) { create_variable('foo - bar') }
-      assert_raises(Liquid::SyntaxError) { create_variable('-foo') }
-      assert_raises(Liquid::SyntaxError) { create_variable('2foo') }
-    end
+    assert_raises(Liquid::SyntaxError) { create_variable('foo - bar') }
+    assert_raises(Liquid::SyntaxError) { create_variable('-foo') }
+    assert_raises(Liquid::SyntaxError) { create_variable('2foo') }
   end
 
   def test_string_with_special_chars
@@ -125,40 +123,38 @@ class VariableUnitTest < Minitest::Test
     assert_equal([['things', [], { 'greeting' => 'world', 'farewell' => 'goodbye' }]], var.filters)
   end
 
-  def test_strict2_filter_argument_parsing
-    with_error_modes(:strict2) do
-      # optional colon
-      var = create_variable(%(n | f1 | f2:))
-      assert_equal([['f1', []], ['f2', []]], var.filters)
+  def test_filter_argument_parsing
+    # optional colon
+    var = create_variable(%(n | f1 | f2:))
+    assert_equal([['f1', []], ['f2', []]], var.filters)
 
-      # missing argument throws error
-      assert_raises(SyntaxError) { create_variable(%(n | f1: ,)) }
-      assert_raises(SyntaxError) { create_variable(%(n | f1: ,| f2)) }
+    # missing argument throws error
+    assert_raises(SyntaxError) { create_variable(%(n | f1: ,)) }
+    assert_raises(SyntaxError) { create_variable(%(n | f1: ,| f2)) }
 
-      # arg requires colon
-      assert_raises(SyntaxError) { create_variable(%(n | f1 1)) }
+    # arg requires colon
+    assert_raises(SyntaxError) { create_variable(%(n | f1 1)) }
 
-      # trailing comma doesn't throw
-      create_variable(%(n | f1: 1, 2, 3, | f2:))
+    # trailing comma doesn't throw
+    create_variable(%(n | f1: 1, 2, 3, | f2:))
 
-      # missing comma throws error
-      assert_raises(SyntaxError) { create_variable(%(n | filter: 1 2, 3)) }
+    # missing comma throws error
+    assert_raises(SyntaxError) { create_variable(%(n | filter: 1 2, 3)) }
 
-      # positional and kwargs parsing
-      var = create_variable(%(n | filter: 1, 2, 3 | filter2: k1: 1, k2: 2))
-      assert_equal([['filter', [1, 2, 3]], ['filter2', [], { "k1" => 1, "k2" => 2 }]], var.filters)
+    # positional and kwargs parsing
+    var = create_variable(%(n | filter: 1, 2, 3 | filter2: k1: 1, k2: 2))
+    assert_equal([['filter', [1, 2, 3]], ['filter2', [], { "k1" => 1, "k2" => 2 }]], var.filters)
 
-      # positional and kwargs mixed
-      var = create_variable(%(n | filter: 'a', 'b', key1: 1, key2: 2, 'c'))
-      assert_equal([["filter", ["a", "b", "c"], { "key1" => 1, "key2" => 2 }]], var.filters)
+    # positional and kwargs mixed
+    var = create_variable(%(n | filter: 'a', 'b', key1: 1, key2: 2, 'c'))
+    assert_equal([["filter", ["a", "b", "c"], { "key1" => 1, "key2" => 2 }]], var.filters)
 
-      # positional and kwargs intermixed (pos1, key1: val1, pos2)
-      var = create_variable(%(n | link_to: class: "black", "https://example.com", title: "title"))
-      assert_equal([['link_to', ["https://example.com"], { "class" => "black", "title" => "title" }]], var.filters)
+    # positional and kwargs intermixed (pos1, key1: val1, pos2)
+    var = create_variable(%(n | link_to: class: "black", "https://example.com", title: "title"))
+    assert_equal([['link_to', ["https://example.com"], { "class" => "black", "title" => "title" }]], var.filters)
 
-      # string key throws
-      assert_raises(SyntaxError) { create_variable(%(n | pluralize: 'comment': 'comments')) }
-    end
+    # string key throws
+    assert_raises(SyntaxError) { create_variable(%(n | pluralize: 'comment': 'comments')) }
   end
 
   def test_output_raw_source_of_variable

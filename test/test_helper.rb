@@ -8,13 +8,6 @@ $LOAD_PATH.unshift(File.join(File.expand_path(__dir__), '..', 'lib'))
 require 'liquid.rb'
 require 'liquid/profiler'
 
-mode = :rigid
-if (env_mode = ENV['LIQUID_PARSER_MODE'])
-  puts "-- #{env_mode.upcase} ERROR MODE"
-  mode = env_mode.to_sym
-end
-Liquid::Environment.default.error_mode = mode
-
 if Minitest.const_defined?('Test')
   # We're on Minitest 5+. Nothing to do here.
 else
@@ -34,27 +27,27 @@ module Minitest
 
     def assert_template_result(
       expected, template, assigns = {},
-      message: nil, partials: nil, error_mode: Liquid::Environment.default.error_mode, render_errors: false,
+      message: nil, partials: nil, render_errors: false,
       template_factory: nil
     )
       file_system = StubFileSystem.new(partials || {})
       environment = Liquid::Environment.build(file_system: file_system)
-      template = Liquid::Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym, environment: environment)
+      template = Liquid::Template.parse(template, line_numbers: true, environment: environment)
       registers = Liquid::Registers.new(file_system: file_system, template_factory: template_factory)
       context = Liquid::Context.build(static_environments: assigns, rethrow_errors: !render_errors, registers: registers, environment: environment)
       output = template.render(context)
       assert_equal(expected, output, message)
     end
 
-    def assert_match_syntax_error(match, template, error_mode: nil)
+    def assert_match_syntax_error(match, template)
       exception = assert_raises(Liquid::SyntaxError) do
-        Template.parse(template, line_numbers: true, error_mode: error_mode&.to_sym).render
+        Template.parse(template, line_numbers: true).render
       end
       assert_match(match, exception.message)
     end
 
-    def assert_syntax_error(template, error_mode: nil)
-      assert_match_syntax_error("", template, error_mode: error_mode)
+    def assert_syntax_error(template)
+      assert_match_syntax_error("", template)
     end
 
     def assert_usage_increment(name, times: 1)
@@ -80,16 +73,6 @@ module Minitest
       end
 
       Environment.dangerously_override(environment, &blk)
-    end
-
-    def with_error_modes(*modes)
-      old_mode = Liquid::Environment.default.error_mode
-      modes.each do |mode|
-        Liquid::Environment.default.error_mode = mode
-        yield
-      end
-    ensure
-      Liquid::Environment.default.error_mode = old_mode
     end
 
     def with_custom_tag(tag_name, tag_class, &block)
