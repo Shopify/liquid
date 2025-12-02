@@ -47,7 +47,7 @@ module Liquid
       tok[0] == type
     end
 
-    def expression_node
+    def expression
       parse_expression(expression_string)
     end
 

@@ -84,8 +84,8 @@ module Liquid
     def parse_markup(markup)
       p = @parse_context.new_parser(markup)
 
-      @template_name_expr = p.expression_node
-      @variable_name_expr = p.expression_node if p.id?("for") || p.id?("with")
+      @template_name_expr = p.expression
+      @variable_name_expr = p.expression if p.id?("for") || p.id?("with")
       @alias_name         = p.consume(:id) if p.id?("as")
 
       p.consume?(:comma)
@@ -94,7 +94,7 @@ module Liquid
       while p.look(:id)
         key = p.consume
         p.consume(:colon)
-        @attributes[key] = p.expression_node
+        @attributes[key] = p.expression
         p.consume?(:comma)
       end
 
