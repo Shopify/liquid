@@ -87,7 +87,7 @@ module Liquid
     def parse_markup(markup)
       p = @parse_context.new_parser(markup)
 
-      @template_name_expr = parse_expression(template_name(p), safe: true)
+      @template_name_expr = template_name(p)
       with_or_for         = p.id?("for") || p.id?("with")
       @variable_name_expr = p.expression_node if with_or_for
       @alias_name         = p.consume(:id) if p.id?("as")
@@ -107,7 +107,7 @@ module Liquid
     end
 
     def template_name(p)
-      p.consume(:string)
+      p.string
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor

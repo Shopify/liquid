@@ -72,12 +72,29 @@ module Liquid
       end
     end
 
+    def string
+      parse_expression(consume(:string))
+    end
 
     def expression_node
       parse_expression(expression)
     end
 
+<<<<<<< HEAD
+    # Assumes safe input. For cases where you need the string.
+    # Don't use this unless you're sure about what you're doing.
+    def unsafe_parse_expression(markup)
+      parse_expression(markup)
+    end
+
     def argument
+=======
+    def string
+      consume(:string)[1..-2]
+    end
+
+    def argument_string
+>>>>>>> 68476f39 (Move unsafe_parse_expression to the end)
       str = +""
       # might be a keyword argument (identifier: expression)
       if look(:id) && look(:colon, 1)
@@ -105,12 +122,40 @@ module Liquid
       str
     end
 
+<<<<<<< HEAD
+=======
+    def variable_lookup
+      name = consume(:id)
+      lookups, command_flags = variable_lookups
+      if Expression::LITERALS.key?(name) && lookups.empty?
+        Expression::LITERALS[name]
+      else
+        VariableLookup.new(name, lookups, command_flags)
+      end
+    end
+
+    def unnamed_variable_lookup
+      name = indexed_lookup
+      lookups, command_flags = variable_lookups
+      VariableLookup.new(name, lookups, command_flags)
+    end
+
+    def range_lookup
+      consume(:open_round)
+      first = expression
+      consume(:dotdot)
+      last = expression
+      consume(:close_round)
+      RangeLookup.create(first, last)
+    end
+
     # Assumes safe input. For cases where you need the string.
     # Don't use this unless you're sure about what you're doing.
     def unsafe_parse_expression(markup)
       parse_expression(markup)
     end
 
+>>>>>>> 68476f39 (Move unsafe_parse_expression to the end)
     private
 
     def parse_expression(markup)
