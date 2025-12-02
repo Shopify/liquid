@@ -47,34 +47,8 @@ module Liquid
       tok[0] == type
     end
 
-    def expression
-      token = @tokens[@p]
-      case token[0]
-      when :id
-        str = consume
-        str << variable_lookups
-      when :open_square
-        str = consume.dup
-        str << expression
-        str << consume(:close_square)
-        str << variable_lookups
-      when :string, :number
-        consume
-      when :open_round
-        consume
-        first = expression
-        consume(:dotdot)
-        last = expression
-        consume(:close_round)
-        "(#{first}..#{last})"
-      else
-        raise SyntaxError, "#{token} is not a valid expression"
-      end
-    end
-
-
     def expression_node
-      parse_expression(expression)
+      parse_expression(expression_string)
     end
 
     def argument
@@ -84,7 +58,7 @@ module Liquid
         str << consume << consume << ' '
       end
 
-      str << expression
+      str << expression_string
       str
     end
 
@@ -93,7 +67,7 @@ module Liquid
       loop do
         if look(:open_square)
           str << consume
-          str << expression
+          str << expression_string
           str << consume(:close_square)
         elsif look(:dot)
           str << consume
@@ -103,6 +77,31 @@ module Liquid
         end
       end
       str
+    end
+
+    def expression_string
+      token = @tokens[@p]
+      case token[0]
+      when :id
+        str = consume
+        str << variable_lookups
+      when :open_square
+        str = consume.dup
+        str << expression_string
+        str << consume(:close_square)
+        str << variable_lookups
+      when :string, :number
+        consume
+      when :open_round
+        consume
+        first = expression_string
+        consume(:dotdot)
+        last = expression_string
+        consume(:close_round)
+        "(#{first}..#{last})"
+      else
+        raise SyntaxError, "#{token} is not a valid expression"
+      end
     end
 
     # Assumes safe input. For cases where you need the string.
