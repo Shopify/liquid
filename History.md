@@ -28,10 +28,12 @@
   * `:strict` and `strict_parse` is no longer supported
   * `strict2_parse` is renamed to `parse_markup`
 * The `warnings` system has been removed.
+* `safe_parse_expression` has been moved to `Parser.expression_node`
 
 ### Migrating from `^5.11.0`
 - In custom tags that include `ParserSwitching`, rename `strict2_parse` to `parse_markup`
 - Remove code depending on `:error_mode`
+- Replace `safe_parse_expression` calls with `Parser.expression_node`
 
 ## 5.14.0
 
