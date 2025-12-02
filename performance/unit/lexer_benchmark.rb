@@ -6,7 +6,7 @@ require "benchmark/ips"
 
 require 'liquid'
 
-RubyVM::YJIT.enable
+RubyVM::YJIT.enable if defined?(RubyVM::YJIT)
 
 EXPRESSIONS = [
   "foo[1..2].baz",
@@ -31,11 +31,12 @@ EXPRESSIONS = [
 
 Benchmark.ips do |x|
   x.config(time: 10, warmup: 5)
+  ss = StringScanner.new('')
 
   x.report("Liquid::Lexer#tokenize") do
     EXPRESSIONS.each do |expr|
-      l = Liquid::Lexer.new(expr)
-      l.tokenize
+      ss.string = expr
+      Liquid::Lexer.tokenize(ss)
     end
   end
 

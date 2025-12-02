@@ -6,7 +6,7 @@ require "benchmark/ips"
 
 require 'liquid'
 
-RubyVM::YJIT.enable
+RubyVM::YJIT.enable if defined?(RubyVM::YJIT)
 
 STRING_MARKUPS = [
   "\"foo\"",
@@ -45,22 +45,14 @@ NUMBER_MARKUPS = [
 
 RANGE_MARKUPS = [
   "(1..30)",
-  "(1...30)",
-  "(1..30..5)",
-  "(1.0...30.0)",
-  "(1.........30)",
   "(1..foo)",
   "(foo..30)",
   "(foo..bar)",
-  "(foo...bar...100)",
-  "(foo...bar...100.0)",
 ]
 
 LITERAL_MARKUPS = [
-  nil,
   'nil',
   'null',
-  '',
   'true',
   'false',
   'blank',
@@ -75,20 +67,39 @@ MARKUPS = {
   "range" => RANGE_MARKUPS,
 }
 
-Benchmark.ips do |x|
-  x.config(time: 5, warmup: 5)
+module Liquid
+  Benchmark.ips do |x|
+    x.config(time: 5, warmup: 5)
 
-  MARKUPS.each do |type, markups|
-    x.report("Liquid::Expression#parse: #{type}") do
-      markups.each do |markup|
-        Liquid::Expression.parse(markup)
+    ss = StringScanner.new('')
+
+    MARKUPS.each do |type, markups|
+      x.report("#{type} - Liquid::Expression#parse") do
+        markups.each do |markup|
+          ss.string = markup
+          Expression.parse(markup, ss)
+        end
+      end
+
+      x.report("#{type} - Liquid::Parser#expression") do
+        markups.each do |markup|
+          ss.string = markup
+          Parser.new(ss).expression
+        end
+      end
+
+      x.report("#{type} - Liquid::Expression.parse(Parser#expression_string)") do
+        markups.each do |markup|
+          ss.string = markup
+          Expression.parse(Parser.new(ss).expression_string, ss)
+        end
       end
     end
-  end
 
-  x.report("Liquid::Expression#parse: all") do
-    MARKUPS.values.flatten.each do |markup|
-      Liquid::Expression.parse(markup)
+    x.report("Liquid::Expression#parse: all") do
+      MARKUPS.values.flatten.each do |markup|
+        Expression.parse(markup)
+      end
     end
   end
 end
