@@ -134,30 +134,30 @@ class ExpressionTest < Minitest::Test
     assert(parse_context.instance_variable_get(:@expression_cache).nil?)
   end
 
-  def test_safe_parse_with_variable_lookup
+  def test_parser_expression_with_variable_lookup
     parse_context = Liquid::ParseContext.new
     parser = parse_context.new_parser('product.title')
-    result = Liquid::Expression.safe_parse(parser)
+    result = parser.expression
 
     assert_instance_of(Liquid::VariableLookup, result)
     assert_equal('product', result.name)
     assert_equal(['title'], result.lookups)
   end
 
-  def test_safe_parse_with_number
+  def test_parser_expression_with_number
     parse_context = Liquid::ParseContext.new
     parser = parse_context.new_parser('42')
-    result = Liquid::Expression.safe_parse(parser)
+    result = parser.expression
 
     assert_equal(42, result)
   end
 
-  def test_safe_parse_raises_syntax_error_for_invalid_expression
+  def test_parser_expression_raises_syntax_error_for_invalid_expression
     parse_context = Liquid::ParseContext.new
     parser = parse_context.new_parser('')
 
     error = assert_raises(Liquid::SyntaxError) do
-      Liquid::Expression.safe_parse(parser)
+      parser.expression
     end
 
     assert_match(/is not a valid expression/, error.message)
