@@ -42,7 +42,7 @@ module Liquid
         raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in")
       end
 
-      @collection_name = p.expression_node
+      @collection_name = p.expression
 
       p.consume?(:comma)
 
@@ -54,7 +54,7 @@ module Liquid
         end
 
         p.consume(:colon)
-        @attributes[key] = p.expression_node
+        @attributes[key] = p.expression
         p.consume?(:comma)
       end
 
