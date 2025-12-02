@@ -2,9 +2,10 @@
 
 module Liquid
   class Parser
-    def initialize(input)
-      ss = input.is_a?(StringScanner) ? input : StringScanner.new(input)
-      @tokens = Lexer.tokenize(ss)
+    def initialize(input, expression_cache = nil)
+      @ss = input.is_a?(StringScanner) ? input : StringScanner.new(input)
+      @cache = expression_cache
+      @tokens = Lexer.tokenize(@ss)
       @p      = 0 # pointer to current location
     end
 
@@ -69,6 +70,11 @@ module Liquid
       else
         raise SyntaxError, "#{token} is not a valid expression"
       end
+    end
+
+    def expression_node
+      expr = expression
+      Expression.parse(expr, @ss, @cache)
     end
 
     def argument
