@@ -37,7 +37,7 @@ module Liquid
 
     def new_parser(input)
       @string_scanner.string = input
-      Parser.new(@string_scanner)
+      Parser.new(@string_scanner, @expression_cache)
     end
 
     def new_tokenizer(source, start_line_number: nil, for_liquid_tag: false)
@@ -47,10 +47,6 @@ module Liquid
         line_number: start_line_number,
         for_liquid_tag: for_liquid_tag,
       )
-    end
-
-    def safe_parse_expression(parser)
-      Expression.safe_parse(parser, @string_scanner, @expression_cache)
     end
 
     def parse_expression(markup, safe: false)

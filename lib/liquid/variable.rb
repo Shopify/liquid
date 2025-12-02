@@ -47,7 +47,7 @@ module Liquid
 
       return if p.look(:end_of_string)
 
-      @name = parse_context.safe_parse_expression(p)
+      @name = p.expression_node
       @filters << parse_filter_expressions(p) while p.consume?(:pipe)
       p.consume(:end_of_string)
     end
@@ -121,10 +121,10 @@ module Liquid
       if p.look(:id) && p.look(:colon, 1)
         key = p.consume(:id)
         p.consume(:colon)
-        value = parse_context.safe_parse_expression(p)
+        value = p.expression_node
         keyword_arguments[key] = value
       else
-        positional_arguments << parse_context.safe_parse_expression(p)
+        positional_arguments << p.expression_node
       end
     end
 

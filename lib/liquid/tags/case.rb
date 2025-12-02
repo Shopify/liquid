@@ -85,7 +85,7 @@ module Liquid
 
     def parse_markup(markup)
       parser = @parse_context.new_parser(markup)
-      @left = safe_parse_expression(parser)
+      @left = parser.expression_node
       parser.consume(:end_of_string)
     end
 
@@ -99,7 +99,7 @@ module Liquid
       parser = @parse_context.new_parser(markup)
 
       loop do
-        expr = safe_parse_expression(parser)
+        expr = parser.expression_node
         block = Condition.new(@left, '==', expr)
         block.attach(body)
         @blocks << block

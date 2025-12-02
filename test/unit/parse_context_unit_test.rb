@@ -7,7 +7,7 @@ class ParseContextUnitTest < Minitest::Test
 
   def test_safe_parse_expression_with_variable_lookup
     parser = parse_context.new_parser('product.title')
-    result = parse_context.safe_parse_expression(parser)
+    result = parser.expression_node
 
     assert_instance_of(VariableLookup, result)
     assert_equal('product', result.name)
@@ -18,7 +18,7 @@ class ParseContextUnitTest < Minitest::Test
     parser = parse_context.new_parser('')
 
     error = assert_raises(Liquid::SyntaxError) do
-      parse_context.safe_parse_expression(parser)
+      parser.expression_node
     end
 
     assert_match(/is not a valid expression/, error.message)
@@ -56,15 +56,15 @@ class ParseContextUnitTest < Minitest::Test
   def test_safe_parse_expression_advances_parser_pointer
     parser = parse_context.new_parser('foo, bar')
 
-    # safe_parse_expression consumes "foo"
-    first_result = parse_context.safe_parse_expression(parser)
+    # parser.expression_node consumes "foo"
+    first_result = parser.expression_node
     assert_instance_of(VariableLookup, first_result)
     assert_equal('foo', first_result.name)
 
     parser.consume(:comma)
 
-    # safe_parse_expression consumes "bar"
-    second_result = parse_context.safe_parse_expression(parser)
+    # parser.expression_node consumes "bar"
+    second_result = parser.expression_node
     assert_instance_of(VariableLookup, second_result)
     assert_equal('bar', second_result.name)
 
