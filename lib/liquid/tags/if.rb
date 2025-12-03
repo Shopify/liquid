@@ -97,7 +97,7 @@ module Liquid
 
     def parse_comparison(p)
       a = parse_expression(p)
-      if (op = p.consume?(:comparison))
+      if (op = p.consume?(:comparison) || p.consume?(:equality))
         b = parse_expression(p)
         Condition.new(a, op, b)
       else
