@@ -66,13 +66,13 @@ class ParserUnitTest < Minitest::Test
     assert_equal('(hi[5].wat..old)', p.expression_string)
   end
 
-  def test_arguments
+  def test_argument_string
     p = new_parser("filter: hi.there[5], keyarg: 7")
     assert_equal('filter', p.consume(:id))
     assert_equal(':', p.consume(:colon))
-    assert_equal('hi.there[5]', p.argument)
+    assert_equal('hi.there[5]', p.argument_string)
     assert_equal(',', p.consume(:comma))
-    assert_equal('keyarg: 7', p.argument)
+    assert_equal('keyarg: 7', p.argument_string)
   end
 
   def test_invalid_expression
