@@ -22,11 +22,12 @@
   * e.g. `(a or b) and c`
 
 ### Breaking changes
-* We are removing the Environment's `error_mode` option.
+* The Environment's `error_mode` option has been removed.
   * `:warn` is no longer supported
   * `:lax` and `lax_parse` is no longer supported
   * `:strict` and `strict_parse` is no longer supported
   * `strict2_parse` is renamed to `parse_markup`
+* The `warnings` system has been removed.
 
 ### Migrating from `^5.11.0`
 - In custom tags that include `ParserSwitching`, rename `strict2_parse` to `parse_markup`
