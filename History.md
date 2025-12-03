@@ -2,8 +2,6 @@
 
 ## 6.0.0
 
-### Architectural changes
-
 ### Features
 * (TODO) Add support for boolean expressions everywhere
   * As variable output `{{ a or b }}`
@@ -21,6 +19,13 @@
 - (TODO) Add support for parenthesized expressions
   * e.g. `(a or b) and c`
 
+### Architectural changes
+* `parse_expression` and `safe_parse_expression` have been removed from `Tag` and `ParseContext`
+* `Parser` methods now produce AST nodes instead of strings
+  * `Parser#expression` produces a value,
+  * `Parser#string` produces a string,
+  * etc.
+
 ### Breaking changes
 * The Environment's `error_mode` option has been removed.
   * `:warn` is no longer supported
@@ -28,10 +33,14 @@
   * `:strict` and `strict_parse` is no longer supported
   * `strict2_parse` is renamed to `parse_markup`
 * The `warnings` system has been removed.
+* `Parser#expression` is renamed to `Parser#expression_string`
+* `safe_parse_expression` methods are replaced by `Parser#expression`
+* `parse_expression` methods are replaced by `Parser#unsafe_parse_expression`
 
 ### Migrating from `^5.11.0`
 - In custom tags that include `ParserSwitching`, rename `strict2_parse` to `parse_markup`
 - Remove code depending on `:error_mode`
+- Replace `safe_parse_expression` calls with `Parser#expression`
 
 ## 5.11.0
 * Revert the Inline Snippets tag (#2001), treat its inclusion in the latest Liquid release as a bug, and allow for feedback on RFC#1916 to better support Liquid developers [Guilherme Carreiro]

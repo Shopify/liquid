@@ -25,10 +25,6 @@ module Liquid
     FLOAT_REGEX = /\A(-?\d+)\.\d+\z/
 
     class << self
-      def safe_parse(parser, ss = StringScanner.new(""), cache = nil)
-        parse(parser.expression, ss, cache)
-      end
-
       def parse(markup, ss = StringScanner.new(""), cache = nil)
         return unless markup
 
@@ -53,71 +49,34 @@ module Liquid
 
       def inner_parse(markup, ss, cache)
         if (markup.start_with?("(") && markup.end_with?(")")) && markup =~ RANGES_REGEX
-          return RangeLookup.parse(
-            Regexp.last_match(1),
-            Regexp.last_match(2),
-            ss,
-            cache,
+          start_markup = Regexp.last_match(1)
+          end_markup = Regexp.last_match(2)
+          start_obj = parse(start_markup, ss, cache)
+          end_obj = parse(end_markup, ss, cache)
+          return RangeLookup.create(
+            start_obj,
+            end_obj,
+            start_markup,
+            end_markup,
           )
         end
 
-        if (num = parse_number(markup, ss))
+        if (num = parse_number(markup))
           num
         else
           VariableLookup.parse(markup, ss, cache)
         end
       end
 
-      def parse_number(markup, ss)
+      def parse_number(markup)
         # check if the markup is simple integer or float
         case markup
         when INTEGER_REGEX
-          return Integer(markup, 10)
+          Integer(markup, 10)
         when FLOAT_REGEX
-          return markup.to_f
-        end
-
-        ss.string = markup
-        # the first byte must be a digit or  a dash
-        byte = ss.scan_byte
-
-        return false if byte != DASH && (byte < ZERO || byte > NINE)
-
-        if byte == DASH
-          peek_byte = ss.peek_byte
-
-          # if it starts with a dash, the next byte must be a digit
-          return false if peek_byte.nil? || !(peek_byte >= ZERO && peek_byte <= NINE)
-        end
-
-        # The markup could be a float with multiple dots
-        first_dot_pos = nil
-        num_end_pos = nil
-
-        while (byte = ss.scan_byte)
-          return false if byte != DOT && (byte < ZERO || byte > NINE)
-
-          # we found our number and now we are just scanning the rest of the string
-          next if num_end_pos
-
-          if byte == DOT
-            if first_dot_pos.nil?
-              first_dot_pos = ss.pos
-            else
-              # we found another dot, so we know that the number ends here
-              num_end_pos = ss.pos - 1
-            end
-          end
-        end
-
-        num_end_pos = markup.length if ss.eos?
-
-        if num_end_pos
-          # number ends with a number "123.123"
-          markup.byteslice(0, num_end_pos).to_f
+          markup.to_f
         else
-          # number ends with a dot "123."
-          markup.byteslice(0, first_dot_pos).to_f
+          false
         end
       end
     end

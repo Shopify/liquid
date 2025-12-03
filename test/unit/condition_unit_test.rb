@@ -82,7 +82,7 @@ class ConditionUnitTest < Minitest::Test
   def test_contains_works_on_arrays
     @context          = Liquid::Context.new
     @context['array'] = [1, 2, 3, 4, 5]
-    array_expr        = VariableLookup.new("array")
+    array_expr        = VariableLookup.parse("array")
 
     assert_evaluates_false(array_expr, 'contains', 0)
     assert_evaluates_true(array_expr, 'contains', 1)
@@ -96,8 +96,8 @@ class ConditionUnitTest < Minitest::Test
 
   def test_contains_returns_false_for_nil_operands
     @context = Liquid::Context.new
-    assert_evaluates_false(VariableLookup.new('not_assigned'), 'contains', '0')
-    assert_evaluates_false(0, 'contains', VariableLookup.new('not_assigned'))
+    assert_evaluates_false(VariableLookup.parse('not_assigned'), 'contains', '0')
+    assert_evaluates_false(0, 'contains', VariableLookup.parse('not_assigned'))
   end
 
   def test_contains_return_false_on_wrong_data_type
@@ -149,7 +149,7 @@ class ConditionUnitTest < Minitest::Test
     @context        = Liquid::Context.new
     @context['one'] = @context['another'] = "gnomeslab-and-or-liquid"
 
-    assert_evaluates_true(VariableLookup.new("one"), '==', VariableLookup.new("another"))
+    assert_evaluates_true(VariableLookup.parse("one"), '==', VariableLookup.parse("another"))
   end
 
   def test_default_context_is_deprecated
@@ -166,25 +166,24 @@ class ConditionUnitTest < Minitest::Test
     assert_includes(err.lines.map(&:strip), expected)
   end
 
-  def test_parse_expression_with_safe_true
+  def test_parse_expression
     environment = Environment.build
     parse_context = ParseContext.new(environment: environment)
-    result = Condition.parse_expression(parse_context, 'product.title', safe: true)
+    parser = parse_context.new_parser('product.title')
+    result = Condition.parse_expression(parser)
 
     assert_instance_of(VariableLookup, result)
     assert_equal('product', result.name)
     assert_equal(['title'], result.lookups)
   end
 
-  def test_parse_expression_raises_internal_error_if_not_safe
+  def test_parse_expression_returns_method_literal_for_blank_and_empty
     environment = Environment.build
     parse_context = ParseContext.new(environment: environment)
+    parser = parse_context.new_parser('blank')
+    result = Condition.parse_expression(parser)
 
-    error = assert_raises(Liquid::InternalError) do
-      Condition.parse_expression(parse_context, 'product.title')
-    end
-
-    assert_match(/unsafe parse_expression cannot be used/, error.message)
+    assert_instance_of(Condition::MethodLiteral, result)
   end
 
   private

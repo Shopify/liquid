@@ -37,7 +37,7 @@ module Liquid
 
     def new_parser(input)
       @string_scanner.string = input
-      Parser.new(@string_scanner)
+      Parser.new(@string_scanner, @expression_cache)
     end
 
     def new_tokenizer(source, start_line_number: nil, for_liquid_tag: false)
@@ -47,21 +47,6 @@ module Liquid
         line_number: start_line_number,
         for_liquid_tag: for_liquid_tag,
       )
-    end
-
-    def safe_parse_expression(parser)
-      Expression.safe_parse(parser, @string_scanner, @expression_cache)
-    end
-
-    def parse_expression(markup, safe: false)
-      # markup MUST come from a string returned by the parser
-      # (e.g., parser.expression). We're not calling the parser here to
-      # prevent redundant parser overhead. The `safe` opt-in
-      # exists to ensure it is not accidentally still called with
-      # the result of a regex.
-      raise Liquid::InternalError, "unsafe parse_expression cannot be used" unless safe
-
-      Expression.parse(markup, @string_scanner, @expression_cache)
     end
 
     def partial=(value)
