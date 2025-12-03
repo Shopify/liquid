@@ -47,7 +47,24 @@ module Liquid
       tok[0] == type
     end
 
+    # expression := comparison
+    # comparison := primary ((">=" | ">" | "<" | "<=" | ... ) primary)*
+    # primary    := string | number | variable_lookup | range | boolean
     def expression
+      comparison
+    end
+
+    # comparison := primary ((">=" | ">" | "<" | "<=" | ... ) primary)*
+    def comparison
+      expr = primary
+      while look(:comparison)
+        operator = consume
+        expr = BinaryExpression.new(expr, operator, primary)
+      end
+      expr
+    end
+
+    def primary
       token = @tokens[@p]
       case token[0]
       when :id

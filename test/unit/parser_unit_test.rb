@@ -77,6 +77,30 @@ class ParserUnitTest < Minitest::Test
     assert_equal((0..5), p.expression)
   end
 
+  def test_comparison
+    p = new_parser("a > b")
+    expr = p.expression
+    assert(expr.is_a?(BinaryExpression))
+    assert_equal('>', expr.operator)
+    assert(expr.left.is_a?(VariableLookup))
+    assert_equal('a', expr.left.name)
+    assert(expr.right.is_a?(VariableLookup))
+    assert_equal('b', expr.right.name)
+
+    # BinaryExpression(>=)
+    #   left: BinaryExpression(>)
+    #     left: 10
+    #     right: 5
+    #   right: 4
+    p = new_parser("10 > 5 >= 4")
+    expr = p.expression
+    assert(expr.is_a?(BinaryExpression))
+    assert_equal('>=', expr.operator)
+    assert_equal(10, expr.left.left)
+    assert_equal(5, expr.left.right)
+    assert_equal(4, expr.right)
+  end
+
   def test_number
     p = new_parser('-1 0 1 2.0')
     assert_equal(-1, p.number)
