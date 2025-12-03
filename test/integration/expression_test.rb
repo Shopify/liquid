@@ -46,7 +46,7 @@ class ExpressionTest < Minitest::Test
       "{{ (false..true) }}",
     )
     assert_match_syntax_error(
-      "Liquid syntax error (line 1): Invalid expression type '(1..2)' in range expression",
+      "Liquid syntax error (line 1): Invalid expression type '1..2' in range expression",
       "{{ ((1..2)..3) }}",
     )
   end
