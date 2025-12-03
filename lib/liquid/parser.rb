@@ -59,8 +59,10 @@ module Liquid
         string
       when :number
         number
+      when :open_round
+        range_lookup
       else
-        parse_expression(expression_string)
+        raise SyntaxError, "#{token} is not a valid expression"
       end
     end
 
@@ -88,6 +90,15 @@ module Liquid
       name = indexed_lookup
       lookups, command_flags = variable_lookups
       VariableLookup.new(name, lookups, command_flags)
+    end
+
+    def range_lookup
+      consume(:open_round)
+      first = expression
+      consume(:dotdot)
+      last = expression
+      consume(:close_round)
+      RangeLookup.create(first, last)
     end
 
     def expression_string
