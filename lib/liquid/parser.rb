@@ -47,11 +47,21 @@ module Liquid
       tok[0] == type
     end
 
-    # expression := comparison
+    # expression := equality
+    # equality   := comparison (("==" | "!=" | "<>") comparison)*
     # comparison := primary ((">=" | ">" | "<" | "<=" | ... ) primary)*
     # primary    := string | number | variable_lookup | range | boolean
     def expression
-      comparison
+      equality
+    end
+
+    def equality
+      expr = comparison
+      while look(:equality)
+        operator = consume
+        expr = BinaryExpression.new(expr, operator, comparison)
+      end
+      expr
     end
 
     # comparison := primary ((">=" | ">" | "<" | "<=" | ... ) primary)*

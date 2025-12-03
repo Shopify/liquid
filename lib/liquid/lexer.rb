@@ -6,14 +6,14 @@ module Liquid
     CLOSE_SQUARE = [:close_square, "]"].freeze
     COLON = [:colon, ":"].freeze
     COMMA = [:comma, ","].freeze
-    COMPARISION_NOT_EQUAL = [:comparison, "!="].freeze
+    COMPARISION_NOT_EQUAL = [:equality, "!="].freeze
     COMPARISON_CONTAINS = [:comparison, "contains"].freeze
-    COMPARISON_EQUAL = [:comparison, "=="].freeze
+    COMPARISON_EQUAL = [:equality, "=="].freeze
     COMPARISON_GREATER_THAN = [:comparison, ">"].freeze
     COMPARISON_GREATER_THAN_OR_EQUAL = [:comparison, ">="].freeze
     COMPARISON_LESS_THAN = [:comparison, "<"].freeze
     COMPARISON_LESS_THAN_OR_EQUAL = [:comparison, "<="].freeze
-    COMPARISON_NOT_EQUAL_ALT = [:comparison, "<>"].freeze
+    COMPARISON_NOT_EQUAL_ALT = [:equality, "<>"].freeze
     DASH = [:dash, "-"].freeze
     DOT = [:dot, "."].freeze
     DOTDOT = [:dotdot, ".."].freeze
