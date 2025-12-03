@@ -29,16 +29,6 @@ module Liquid
         left.b.include?(right.b)
       end,
     }
-
-    class MethodLiteral
-      attr_reader :method_name, :to_s
-
-      def initialize(method_name, to_s)
-        @method_name = method_name
-        @to_s = to_s
-      end
-    end
-
     @@method_literals = {
       'blank' => MethodLiteral.new(:blank?, '').freeze,
       'empty' => MethodLiteral.new(:empty?, '').freeze,

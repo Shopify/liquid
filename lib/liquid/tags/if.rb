@@ -96,13 +96,7 @@ module Liquid
     end
 
     def parse_comparison(p)
-      a = parse_expression(p)
-      if (op = p.consume?(:comparison) || p.consume?(:equality))
-        b = parse_expression(p)
-        Condition.new(a, op, b)
-      else
-        Condition.new(a)
-      end
+      Condition.new(p.expression)
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
