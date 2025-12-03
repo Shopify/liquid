@@ -102,6 +102,15 @@ class ParserUnitTest < Minitest::Test
     assert_equal('title', v.lookups[0])
   end
 
+  def test_range_lookup
+    p = new_parser('(0..5) (a..b)')
+    assert_equal((0..5), p.expression)
+
+    r2 = p.expression
+    assert(r2.is_a?(RangeLookup))
+    assert_equal((1..4), r2.evaluate(Context.new({ 'a' => 1, 'b' => 4 })))
+  end
+
   def test_ranges
     p = new_parser("(5..7) (1.5..9.6) (young..old) (hi[5].wat..old)")
     assert_equal('(5..7)', p.expression_string)
