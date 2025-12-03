@@ -16,25 +16,11 @@ module Liquid
   #
   class Template
     attr_accessor :root, :name
-    attr_reader :resource_limits, :warnings
+    attr_reader :resource_limits
 
     attr_reader :profiler
 
     class << self
-      # Sets how strict the parser should be.
-      # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
-      # :warn is the default and will give deprecation warnings when invalid syntax is used.
-      # :strict enforces correct syntax for most tags
-      # :strict2 enforces correct syntax for all tags
-      def error_mode=(mode)
-        Deprecations.warn("Template.error_mode=", "Environment#error_mode=")
-        Environment.default.error_mode = mode
-      end
-
-      def error_mode
-        Environment.default.error_mode
-      end
-
       def default_exception_renderer=(renderer)
         Deprecations.warn("Template.default_exception_renderer=", "Environment#exception_renderer=")
         Environment.default.exception_renderer = renderer
@@ -223,7 +209,6 @@ module Liquid
         ParseContext.new(opts)
       end
 
-      @warnings = parse_context.warnings
       parse_context
     end
 

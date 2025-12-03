@@ -93,31 +93,6 @@ LIQUID
 
 By using Environments, you ensure that custom tags and filters are only available in the contexts where they are needed, making your Liquid templates more robust and easier to manage. For smaller projects, a global environment is available via `Liquid::Environment.default`.
 
-### Error Modes
-
-Setting the error mode of Liquid lets you specify how strictly you want your templates to be interpreted.
-Normally the parser is very lax and will accept almost anything without error. Unfortunately this can make
-it very hard to debug and can lead to unexpected behaviour.
-
-Liquid also comes with different parsers that can be used when editing templates to give better error messages
-when templates are invalid. You can enable this new parser like this:
-
-```ruby
-Liquid::Environment.default.error_mode = :strict2 # Raises a SyntaxError when invalid syntax is used in all tags
-Liquid::Environment.default.error_mode = :strict  # Raises a SyntaxError when invalid syntax is used in some tags
-Liquid::Environment.default.error_mode = :warn    # Adds strict errors to template.errors but continues as normal
-Liquid::Environment.default.error_mode = :lax     # The default mode, accepts almost anything.
-```
-
-If you want to set the error mode only on specific templates you can pass `:error_mode` as an option to `parse`:
-```ruby
-Liquid::Template.parse(source, error_mode: :strict)
-```
-This is useful for doing things like enabling strict mode only in the theme editor.
-
-It is recommended that you enable `:strict` or `:warn` mode on new apps to stop invalid templates from being created.
-It is also recommended that you use it in the template editors of existing apps to give editors better error messages.
-
 ### Undefined variables and filters
 
 By default, the renderer doesn't raise or in any other way notify you if some variables or filters are missing, i.e. not passed to the `render` method.

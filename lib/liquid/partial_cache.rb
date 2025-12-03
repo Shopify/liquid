@@ -4,7 +4,7 @@ module Liquid
   class PartialCache
     def self.load(template_name, context:, parse_context:)
       cached_partials = context.registers[:cached_partials]
-      cache_key = "#{template_name}:#{parse_context.error_mode}"
+      cache_key = template_name.to_s
       cached = cached_partials[cache_key]
       return cached if cached
 
