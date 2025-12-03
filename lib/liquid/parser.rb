@@ -51,7 +51,7 @@ module Liquid
       parse_expression(expression_string)
     end
 
-    def argument
+    def argument_string
       str = +""
       # might be a keyword argument (identifier: expression)
       if look(:id) && look(:colon, 1)
