@@ -9,8 +9,8 @@ module Liquid
       '' => nil,
       'true' => true,
       'false' => false,
-      'blank' => '',
-      'empty' => '',
+      'blank' => MethodLiteral.new(:blank?, '').freeze,
+      'empty' => MethodLiteral.new(:empty?, '').freeze,
     }.freeze
 
     DOT = ".".ord

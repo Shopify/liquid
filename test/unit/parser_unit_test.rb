@@ -82,24 +82,24 @@ class ParserUnitTest < Minitest::Test
     expr = p.expression
     assert(expr.is_a?(BinaryExpression))
     assert_equal('==', expr.operator)
-    assert_equal('a', expr.left.name)
-    assert_equal('b', expr.right.name)
+    assert_equal('a', expr.left_node.name)
+    assert_equal('b', expr.right_node.name)
 
     # BinaryExpression(==)
-    #   left: BinaryExpression(<)
-    #     left: 0
-    #     right: 5
-    #   right: BinaryExpression(>)
-    #     left: 6
-    #     right: 1
+    #   left_node: BinaryExpression(<)
+    #     left_node: 0
+    #     right_node: 5
+    #   right_node: BinaryExpression(>)
+    #     left_node: 6
+    #     right_node: 1
     p = new_parser("0 < 5 == 6 > 1")
     expr = p.expression
     assert(expr.is_a?(BinaryExpression))
     assert_equal('==', expr.operator)
-    assert_equal(0, expr.left.left)
-    assert_equal(5, expr.left.right)
-    assert_equal(6, expr.right.left)
-    assert_equal(1, expr.right.right)
+    assert_equal(0, expr.left_node.left_node)
+    assert_equal(5, expr.left_node.right_node)
+    assert_equal(6, expr.right_node.left_node)
+    assert_equal(1, expr.right_node.right_node)
   end
 
   def test_comparison
@@ -107,23 +107,23 @@ class ParserUnitTest < Minitest::Test
     expr = p.expression
     assert(expr.is_a?(BinaryExpression))
     assert_equal('>', expr.operator)
-    assert(expr.left.is_a?(VariableLookup))
-    assert_equal('a', expr.left.name)
-    assert(expr.right.is_a?(VariableLookup))
-    assert_equal('b', expr.right.name)
+    assert(expr.left_node.is_a?(VariableLookup))
+    assert_equal('a', expr.left_node.name)
+    assert(expr.right_node.is_a?(VariableLookup))
+    assert_equal('b', expr.right_node.name)
 
     # BinaryExpression(>=)
-    #   left: BinaryExpression(>)
-    #     left: 10
-    #     right: 5
-    #   right: 4
+    #   left_node: BinaryExpression(>)
+    #     left_node: 10
+    #     right_node: 5
+    #   right_node: 4
     p = new_parser("10 > 5 >= 4")
     expr = p.expression
     assert(expr.is_a?(BinaryExpression))
     assert_equal('>=', expr.operator)
-    assert_equal(10, expr.left.left)
-    assert_equal(5, expr.left.right)
-    assert_equal(4, expr.right)
+    assert_equal(10, expr.left_node.left_node)
+    assert_equal(5, expr.left_node.right_node)
+    assert_equal(4, expr.right_node)
   end
 
   def test_number

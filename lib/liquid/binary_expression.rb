@@ -2,45 +2,83 @@
 
 module Liquid
   class BinaryExpression
-    attr_reader :left, :operator, :right
+    attr_reader :operator
+    attr_accessor :left_node, :right_node
 
     def initialize(left, operator, right)
-      @left = left
+      @left_node = left
       @operator = operator
-      @right = right
+      @right_node = right
     end
 
     def evaluate(context)
-      left_value = value(left, context)
-      right_value = value(@right, context)
+      left = value(left_node, context)
+      right = value(right_node, context)
 
       case operator
       when '>'
-        left_value > right_value
+        left > right if can_compare?(left, right)
       when '>='
-        left_value >= right_value
+        left >= right if can_compare?(left, right)
       when '<'
-        left_value < right_value
+        left < right if can_compare?(left, right)
       when '<='
-        left_value <= right_value
+        left <= right if can_compare?(left, right)
       when '=='
-        left_value == right_value
+        equal_variables(left, right)
       when '!=', '<>'
-        left_value != right_value
+        !equal_variables(left, right)
       when 'contains'
-        if left_value && right_value && left_value.respond_to?(:include?)
-          right_value = right_value.to_s if left_value.is_a?(String)
-          left_value.include?(right_value)
-        else
-          false
-        end
+        contains(left, right)
       end
+    rescue ::ArgumentError => e
+      raise Liquid::ArgumentError, e.message
+    end
+
+    def to_s
+      "(#{left_node} #{operator} #{right_node})"
     end
 
     private
 
     def value(expr, context)
       Utils.to_liquid_value(context.evaluate(expr))
+    end
+
+    def can_compare?(left, right)
+      left.respond_to?(operator) && right.respond_to?(operator) && !left.is_a?(Hash) && !right.is_a?(Hash)
+    end
+
+    def contains(left, right)
+      if left && right && left.respond_to?(:include?)
+        right = right.to_s if left.is_a?(String)
+        left.include?(right)
+      else
+        false
+      end
+    rescue Encoding::CompatibilityError
+      # "✅".b.include?("✅") raises Encoding::CompatibilityError despite being materially equal
+      left.b.include?(right.b)
+    end
+
+    def apply_method_literal(node, other)
+      other.send(node.method_name) if other.respond_to?(node.method_name)
+    end
+
+    def equal_variables(left, right)
+      return apply_method_literal(left, right) if left.is_a?(MethodLiteral)
+      return apply_method_literal(right, left) if right.is_a?(MethodLiteral)
+
+      left == right
+    end
+
+    class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children
+        [
+          @node.left_node,
+          @node.right_node,
+        ]
+      end
     end
   end
 end

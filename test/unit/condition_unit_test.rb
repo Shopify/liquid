@@ -183,7 +183,7 @@ class ConditionUnitTest < Minitest::Test
     parser = parse_context.new_parser('blank')
     result = Condition.parse_expression(parser)
 
-    assert_instance_of(Condition::MethodLiteral, result)
+    assert_instance_of(MethodLiteral, result)
   end
 
   private
