@@ -60,10 +60,6 @@ module Liquid
     end
     # rubocop:enable Metrics/ParameterLists
 
-    def warnings
-      @warnings ||= []
-    end
-
     def strainer
       @strainer ||= @environment.create_strainer(self, @filters)
     end
@@ -157,7 +153,6 @@ module Liquid
         subcontext.filters  = @filters
         subcontext.strainer = nil
         subcontext.errors   = errors
-        subcontext.warnings = warnings
         subcontext.disabled_tags = @disabled_tags
       end
     end
@@ -244,7 +239,7 @@ module Liquid
 
     protected
 
-    attr_writer :base_scope_depth, :warnings, :errors, :strainer, :filters, :disabled_tags
+    attr_writer :base_scope_depth, :errors, :strainer, :filters, :disabled_tags
 
     private
 
