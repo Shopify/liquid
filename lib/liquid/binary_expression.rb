@@ -13,6 +13,14 @@ module Liquid
 
     def evaluate(context)
       left = value(left_node, context)
+
+      # logical relation short circuiting
+      if operator == 'and'
+        return left && value(right_node, context)
+      elsif operator == 'or'
+        return left || value(right_node, context)
+      end
+
       right = value(right_node, context)
 
       case operator
@@ -38,7 +46,7 @@ module Liquid
     end
 
     def to_s
-      "(#{left_node} #{operator} #{right_node})"
+      "(#{left_node.inspect} #{operator} #{right_node.inspect})"
     end
 
     private
