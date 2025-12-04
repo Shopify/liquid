@@ -170,18 +170,18 @@ class ConditionUnitTest < Minitest::Test
     environment = Environment.build
     parse_context = ParseContext.new(environment: environment)
     parser = parse_context.new_parser('product.title')
-    result = Condition.parse_expression(parser)
+    result = parser.expression
 
     assert_instance_of(VariableLookup, result)
     assert_equal('product', result.name)
     assert_equal(['title'], result.lookups)
   end
 
-  def test_parse_expression_returns_method_literal_for_blank_and_empty
+  def test_parser_expression_returns_method_literal_for_blank_and_empty
     environment = Environment.build
     parse_context = ParseContext.new(environment: environment)
     parser = parse_context.new_parser('blank')
-    result = Condition.parse_expression(parser)
+    result = parser.expression
 
     assert_instance_of(MethodLiteral, result)
   end
@@ -189,22 +189,25 @@ class ConditionUnitTest < Minitest::Test
   private
 
   def assert_evaluates_true(left, op, right)
+    expr = BinaryExpression.new(left, op, right)
     assert(
-      Condition.new(left, op, right).evaluate(@context),
+      Condition.new(expr).evaluate(@context),
       "Evaluated false: #{left.inspect} #{op} #{right.inspect}",
     )
   end
 
   def assert_evaluates_false(left, op, right)
+    expr = BinaryExpression.new(left, op, right)
     assert(
-      !Condition.new(left, op, right).evaluate(@context),
+      !Condition.new(expr).evaluate(@context),
       "Evaluated true: #{left.inspect} #{op} #{right.inspect}",
     )
   end
 
   def assert_evaluates_argument_error(left, op, right)
     assert_raises(Liquid::ArgumentError) do
-      Condition.new(left, op, right).evaluate(@context)
+      expr = BinaryExpression.new(left, op, right)
+      Condition.new(expr).evaluate(@context)
     end
   end
 end # ConditionTest
