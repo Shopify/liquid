@@ -9,11 +9,6 @@ class ConditionUnitTest < Minitest::Test
     @context = Liquid::Context.new
   end
 
-  def test_basic_condition
-    assert_equal(false, Condition.new(1, '==', 2).evaluate(Context.new))
-    assert_equal(true,  Condition.new(1, '==', 1).evaluate(Context.new))
-  end
-
   def test_default_operators_evalute_true
     assert_evaluates_true(1, '==', 1)
     assert_evaluates_true(1, '!=', 2)
@@ -72,11 +67,11 @@ class ConditionUnitTest < Minitest::Test
   end
 
   def test_hash_compare_backwards_compatibility
-    assert_nil(Condition.new({}, '>', 2).evaluate(Context.new))
-    assert_nil(Condition.new(2, '>', {}).evaluate(Context.new))
-    assert_equal(false, Condition.new({}, '==', 2).evaluate(Context.new))
-    assert_equal(true, Condition.new({ 'a' => 1 }, '==', 'a' => 1).evaluate(Context.new))
-    assert_equal(true, Condition.new({ 'a' => 2 }, 'contains', 'a').evaluate(Context.new))
+    assert_evaluates_nil({}, '>', 2)
+    assert_evaluates_nil(2, '>', {})
+    assert_evaluates_false({}, '==', 2)
+    assert_evaluates_true({ 'a' => 1 }, '==', 'a' => 1)
+    assert_evaluates_true({ 'a' => 2 }, 'contains', 'a')
   end
 
   def test_contains_works_on_arrays
@@ -110,29 +105,30 @@ class ConditionUnitTest < Minitest::Test
   end
 
   def test_or_condition
-    condition = Condition.new(1, '==', 2)
+    false_expr = Parser.new('1 == 2').expression
+    true_expr = Parser.new('1 == 1').expression
+
+    condition = Condition.new(false_expr)
     assert_equal(false, condition.evaluate(Context.new))
 
-    condition.or(Condition.new(2, '==', 1))
-
+    condition.or(Condition.new(false_expr))
     assert_equal(false, condition.evaluate(Context.new))
 
-    condition.or(Condition.new(1, '==', 1))
-
+    condition.or(Condition.new(true_expr))
     assert_equal(true, condition.evaluate(Context.new))
   end
 
   def test_and_condition
-    condition = Condition.new(1, '==', 1)
+    false_expr = Parser.new('1 == 2').expression
+    true_expr = Parser.new('1 == 1').expression
 
+    condition = Condition.new(true_expr)
     assert_equal(true, condition.evaluate(Context.new))
 
-    condition.and(Condition.new(2, '==', 2))
-
+    condition.and(Condition.new(true_expr))
     assert_equal(true, condition.evaluate(Context.new))
 
-    condition.and(Condition.new(2, '==', 1))
-
+    condition.and(Condition.new(false_expr))
     assert_equal(false, condition.evaluate(Context.new))
   end
 
@@ -149,7 +145,8 @@ class ConditionUnitTest < Minitest::Test
     end
 
     _out, err = capture_io do
-      assert_equal(true, Condition.new(1, '==', 1).evaluate)
+      expr = Parser.new('1 == 1').expression
+      assert_equal(true, Condition.new(expr).evaluate)
     end
 
     expected = "DEPRECATION WARNING: Condition#evaluate without a context argument is deprecated" \
@@ -178,6 +175,14 @@ class ConditionUnitTest < Minitest::Test
   end
 
   private
+
+  def assert_evaluates_nil(left, op, right)
+    expr = BinaryExpression.new(left, op, right)
+    assert_nil(
+      Condition.new(expr).evaluate(@context),
+      "Evaluated not nil: #{left.inspect} #{op} #{right.inspect}",
+    )
+  end
 
   def assert_evaluates_true(left, op, right)
     expr = BinaryExpression.new(left, op, right)

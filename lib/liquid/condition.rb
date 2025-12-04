@@ -5,51 +5,15 @@ module Liquid
   #
   # Example:
   #
-  #   c = Condition.new(1, '==', 1)
+  #   c = Condition.new(expr)
   #   c.evaluate #=> true
   #
   class Condition # :nodoc:
-    @@operators = {
-      '==' => ->(cond, left, right) {  cond.send(:equal_variables, left, right) },
-      '!=' => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
-      '<>' => ->(cond, left, right) { !cond.send(:equal_variables, left, right) },
-      '<' => :<,
-      '>' => :>,
-      '>=' => :>=,
-      '<=' => :<=,
-      'contains' => lambda do |_cond, left, right|
-        if left && right && left.respond_to?(:include?)
-          right = right.to_s if left.is_a?(String)
-          left.include?(right)
-        else
-          false
-        end
-      rescue Encoding::CompatibilityError
-        # "✅".b.include?("✅") raises Encoding::CompatibilityError despite being materially equal
-        left.b.include?(right.b)
-      end,
-    }
-    @@method_literals = {
-      'blank' => MethodLiteral.new(:blank?, '').freeze,
-      'empty' => MethodLiteral.new(:empty?, '').freeze,
-    }
-
-    def self.operators
-      @@operators
-    end
-
-    def self.parse_expression(parser)
-      markup = parser.expression_string
-      @@method_literals[markup] || parser.unsafe_parse_expression(markup)
-    end
-
     attr_reader :attachment, :child_condition
-    attr_accessor :left, :operator, :right
+    attr_accessor :left
 
-    def initialize(left = nil, operator = nil, right = nil)
-      @left     = left
-      @operator = operator
-      @right    = right
+    def initialize(left = nil)
+      @left = left
 
       @child_relation  = nil
       @child_condition = nil
@@ -59,7 +23,7 @@ module Liquid
       condition = self
       result = nil
       loop do
-        result = interpret_condition(condition.left, condition.right, condition.operator, context)
+        result = context.evaluate(condition.left)
 
         case condition.child_relation
         when :or
@@ -102,48 +66,6 @@ module Liquid
 
     private
 
-    def equal_variables(left, right)
-      if left.is_a?(MethodLiteral)
-        if right.respond_to?(left.method_name)
-          return right.send(left.method_name)
-        else
-          return nil
-        end
-      end
-
-      if right.is_a?(MethodLiteral)
-        if left.respond_to?(right.method_name)
-          return left.send(right.method_name)
-        else
-          return nil
-        end
-      end
-
-      left == right
-    end
-
-    def interpret_condition(left, right, op, context)
-      # If the operator is empty this means that the decision statement is just
-      # a single variable. We can just poll this variable from the context and
-      # return this as the result.
-      return context.evaluate(left) if op.nil?
-
-      left  = Liquid::Utils.to_liquid_value(context.evaluate(left))
-      right = Liquid::Utils.to_liquid_value(context.evaluate(right))
-
-      operation = self.class.operators[op] || raise(Liquid::ArgumentError, "Unknown operator #{op}")
-
-      if operation.respond_to?(:call)
-        operation.call(self, left, right)
-      elsif left.respond_to?(operation) && right.respond_to?(operation) && !left.is_a?(Hash) && !right.is_a?(Hash)
-        begin
-          left.send(operation, right)
-        rescue ::ArgumentError => e
-          raise Liquid::ArgumentError, e.message
-        end
-      end
-    end
-
     def deprecated_default_context
       warn("DEPRECATION WARNING: Condition#evaluate without a context argument is deprecated" \
         " and will be removed from Liquid 6.0.0.")
@@ -154,7 +76,6 @@ module Liquid
       def children
         [
           @node.left,
-          @node.right,
           @node.child_condition,
           @node.attachment
         ].compact

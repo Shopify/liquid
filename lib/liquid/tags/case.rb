@@ -99,8 +99,8 @@ module Liquid
       parser = @parse_context.new_parser(markup)
 
       loop do
-        expr = parser.expression
-        block = Condition.new(@left, '==', expr)
+        expr = BinaryExpression.new(@left, '==', parser.expression)
+        block = Condition.new(expr)
         block.attach(body)
         @blocks << block
 
