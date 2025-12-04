@@ -9,43 +9,15 @@ module Liquid
   #   c.evaluate #=> true
   #
   class Condition # :nodoc:
-    attr_reader :attachment, :child_condition
+    attr_reader :attachment
     attr_accessor :left
 
     def initialize(left = nil)
       @left = left
-
-      @child_relation  = nil
-      @child_condition = nil
     end
 
     def evaluate(context = deprecated_default_context)
-      condition = self
-      result = nil
-      loop do
-        result = context.evaluate(condition.left)
-
-        case condition.child_relation
-        when :or
-          break if Liquid::Utils.to_liquid_value(result)
-        when :and
-          break unless Liquid::Utils.to_liquid_value(result)
-        else
-          break
-        end
-        condition = condition.child_condition
-      end
-      result
-    end
-
-    def or(condition)
-      @child_relation  = :or
-      @child_condition = condition
-    end
-
-    def and(condition)
-      @child_relation  = :and
-      @child_condition = condition
+      context.evaluate(left)
     end
 
     def attach(attachment)
@@ -76,7 +48,6 @@ module Liquid
       def children
         [
           @node.left,
-          @node.child_condition,
           @node.attachment
         ].compact
       end

@@ -105,31 +105,37 @@ class ConditionUnitTest < Minitest::Test
   end
 
   def test_or_condition
-    false_expr = Parser.new('1 == 2').expression
-    true_expr = Parser.new('1 == 1').expression
+    false_expr = '1 == 2'
+    true_expr = '1 == 1'
 
-    condition = Condition.new(false_expr)
+    condition = Condition.new(expression(false_expr))
     assert_equal(false, condition.evaluate(Context.new))
 
-    condition.or(Condition.new(false_expr))
+    condition = Condition.new(expression("#{false_expr} or #{false_expr}"))
     assert_equal(false, condition.evaluate(Context.new))
 
-    condition.or(Condition.new(true_expr))
+    condition = Condition.new(expression("#{false_expr} or #{true_expr}"))
+    assert_equal(true, condition.evaluate(Context.new))
+
+    condition = Condition.new(expression("#{true_expr} or #{false_expr}"))
     assert_equal(true, condition.evaluate(Context.new))
   end
 
   def test_and_condition
-    false_expr = Parser.new('1 == 2').expression
-    true_expr = Parser.new('1 == 1').expression
+    false_expr = '1 == 2'
+    true_expr = '1 == 1'
 
-    condition = Condition.new(true_expr)
+    condition = Condition.new(expression(true_expr))
     assert_equal(true, condition.evaluate(Context.new))
 
-    condition.and(Condition.new(true_expr))
-    assert_equal(true, condition.evaluate(Context.new))
-
-    condition.and(Condition.new(false_expr))
+    condition = Condition.new(expression("#{true_expr} and #{false_expr}"))
     assert_equal(false, condition.evaluate(Context.new))
+
+    condition = Condition.new(expression("#{false_expr} and #{true_expr}"))
+    assert_equal(false, condition.evaluate(Context.new))
+
+    condition = Condition.new(expression("#{true_expr} and #{true_expr}"))
+    assert_equal(true, condition.evaluate(Context.new))
   end
 
   def test_left_or_right_may_contain_operators
@@ -205,5 +211,9 @@ class ConditionUnitTest < Minitest::Test
       expr = BinaryExpression.new(left, op, right)
       Condition.new(expr).evaluate(@context)
     end
+  end
+
+  def expression(markup)
+    Parser.new(markup).expression
   end
 end # ConditionTest
