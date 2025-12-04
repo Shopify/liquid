@@ -75,24 +75,9 @@ module Liquid
 
     def parse_markup(markup)
       p = @parse_context.new_parser(markup)
-      condition = parse_binary_comparisons(p)
+      condition = Condition.new(p.expression)
       p.consume(:end_of_string)
       condition
-    end
-
-    def parse_binary_comparisons(p)
-      condition = parse_comparison(p)
-      first_condition = condition
-      while (op = p.id?('and') || p.id?('or'))
-        child_condition = parse_comparison(p)
-        condition.send(op, child_condition)
-        condition = child_condition
-      end
-      first_condition
-    end
-
-    def parse_comparison(p)
-      Condition.new(p.expression)
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
