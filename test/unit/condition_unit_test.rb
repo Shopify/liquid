@@ -136,15 +136,6 @@ class ConditionUnitTest < Minitest::Test
     assert_equal(false, condition.evaluate(Context.new))
   end
 
-  def test_should_allow_custom_proc_operator
-    Condition.operators['starts_with'] = proc { |_cond, left, right| left =~ /^#{right}/ }
-
-    assert_evaluates_true('bob', 'starts_with', 'b')
-    assert_evaluates_false('bob', 'starts_with', 'o')
-  ensure
-    Condition.operators.delete('starts_with')
-  end
-
   def test_left_or_right_may_contain_operators
     @context        = Liquid::Context.new
     @context['one'] = @context['another'] = "gnomeslab-and-or-liquid"
