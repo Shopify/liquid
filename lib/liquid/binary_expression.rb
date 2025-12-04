@@ -30,6 +30,8 @@ module Liquid
         !equal_variables(left, right)
       when 'contains'
         contains(left, right)
+      else
+        raise(Liquid::ArgumentError, "Unknown operator #{operator}")
       end
     rescue ::ArgumentError => e
       raise Liquid::ArgumentError, e.message
