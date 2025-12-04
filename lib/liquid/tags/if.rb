@@ -73,10 +73,6 @@ module Liquid
       block.attach(new_body)
     end
 
-    def parse_expression(parser)
-      Condition.parse_expression(parser)
-    end
-
     def parse_markup(markup)
       p = @parse_context.new_parser(markup)
       condition = parse_binary_comparisons(p)
