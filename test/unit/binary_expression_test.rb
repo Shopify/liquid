@@ -2,6 +2,25 @@
 
 require 'test_helper'
 
+class ExecutionSpy
+  attr_reader :called
+  attr_accessor :value
+
+  def initialize(value)
+    @called = false
+    @value = value
+  end
+
+  def to_liquid_value
+    @called = true
+    @value
+  end
+
+  def reset
+    @called = false
+  end
+end
+
 class BinaryExpressionTest < Minitest::Test
   include Liquid
 
@@ -11,6 +30,32 @@ class BinaryExpressionTest < Minitest::Test
     assert_eval(false, BinaryExpression.new(5, "<", 5))
     assert_eval(true, BinaryExpression.new(5, "<=", 5))
     assert_eval(true, BinaryExpression.new("abcd", "contains", "a"))
+  end
+
+  def test_logical_expression_short_circuiting
+    spy = ExecutionSpy.new(true)
+
+    # false or spy should try spy
+    assert_eval(true, BinaryExpression.new(false, 'or', spy))
+    assert_equal(true, spy.called)
+
+    spy.reset
+
+    # true or spy should not call spy
+    assert_eval(true, BinaryExpression.new(true, 'or', spy))
+    assert_equal(false, spy.called)
+
+    spy.reset
+
+    # true and spy should try spy
+    assert_eval(true, BinaryExpression.new(true, 'and', spy))
+    assert_equal(true, spy.called)
+
+    spy.reset
+
+    # false and spy should not try spy
+    assert_eval(false, BinaryExpression.new(false, 'and', spy))
+    assert_equal(false, spy.called)
   end
 
   def test_complex_evaluation

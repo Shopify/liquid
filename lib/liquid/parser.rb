@@ -47,12 +47,30 @@ module Liquid
       tok[0] == type
     end
 
-    # expression := equality
+    # expression := logical
+    # logical    := equality (("and" | "or") equality)*
     # equality   := comparison (("==" | "!=" | "<>") comparison)*
     # comparison := primary ((">=" | ">" | "<" | "<=" | ... ) primary)*
     # primary    := string | number | variable_lookup | range | boolean
     def expression
-      equality
+      logical
+    end
+
+    # Logical relations in Liquid, unlike other languages, are right-to-left
+    # associative. This creates a right-leaning tree and is why the method
+    # looks a bit more complicated
+    #
+    # `a == b and b or c` is evaluated like (a and (b or c))
+    def logical
+      expr = equality
+      while (operator = id?('and') || id?('or'))
+        if expr.is_a?(BinaryExpression) && (expr.operator == 'and' || expr.operator == 'or')
+          expr.right_node = BinaryExpression.new(expr.right_node, operator, equality)
+        else
+          expr = BinaryExpression.new(expr, operator, equality)
+        end
+      end
+      expr
     end
 
     def equality
