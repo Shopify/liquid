@@ -62,14 +62,10 @@ module Liquid
     #
     # `a == b and b or c` is evaluated like (a and (b or c))
     def logical
+      operator = nil
       expr = equality
-      while (operator = id?('and') || id?('or'))
-        if expr.is_a?(BinaryExpression) && (expr.operator == 'and' || expr.operator == 'or')
-          expr.right_node = BinaryExpression.new(expr.right_node, operator, equality)
-        else
-          expr = BinaryExpression.new(expr, operator, equality)
-        end
-      end
+      expr = BinaryExpression.new(expr, operator, equality) if (operator = consume?(:logical))
+      expr.right_node = BinaryExpression.new(expr.right_node, operator, equality) while (operator = consume?(:logical))
       expr
     end
 

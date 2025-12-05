@@ -104,7 +104,7 @@ module Liquid
         block.attach(body)
         @blocks << block
 
-        break unless parser.id?('or') || parser.consume?(:comma)
+        break unless parser.consume?(:logical) == 'or' || parser.consume?(:comma)
       end
 
       parser.consume(:end_of_string)
