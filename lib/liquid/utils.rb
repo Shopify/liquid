@@ -95,6 +95,8 @@ module Liquid
 
     def self.to_s(obj, seen = {})
       case obj
+      when BigDecimal
+        obj.to_s("F")
       when Hash
         # If the custom hash implementation overrides `#to_s`, use their
         # custom implementation. Otherwise we use Liquid's default
