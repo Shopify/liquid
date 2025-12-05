@@ -11,6 +11,24 @@ class VariableTest < Minitest::Test
     assert_template_result('worked wonderfully', "{{test}}", { 'test' => 'worked wonderfully' })
   end
 
+  def test_equality
+    assert_template_result('true', "{{ 5 == 5 }}")
+    assert_template_result('false', "{{ 5 == 3 }}")
+  end
+
+  def test_comparison
+    assert_template_result('true', "{{ 5 > 3 }}")
+    assert_template_result('false', "{{ 5 < 3 }}")
+  end
+
+  def test_expression_piped_into_filter
+    assert_template_result('TRUE', "{{ 5 == 5 | upcase }}")
+  end
+
+  def test_expression_used_as_filter_argument
+    assert_template_result('A: TRUE', "{{ 'a: $a' | replace: '$a', 5 == 5 | upcase }}")
+  end
+
   def test_variable_render_calls_to_liquid
     assert_template_result('foobar', '{{ foo }}', { 'foo' => ThingWithToLiquid.new })
   end

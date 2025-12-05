@@ -99,12 +99,12 @@ module Liquid
       parser = @parse_context.new_parser(markup)
 
       loop do
-        expr = parser.expression
-        block = Condition.new(@left, '==', expr)
+        expr = BinaryExpression.new(@left, '==', parser.equality)
+        block = Condition.new(expr)
         block.attach(body)
         @blocks << block
 
-        break unless parser.id?('or') || parser.consume?(:comma)
+        break unless parser.consume?(:logical) == 'or' || parser.consume?(:comma)
       end
 
       parser.consume(:end_of_string)

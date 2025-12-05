@@ -26,10 +26,17 @@ class LexerUnitTest < Minitest::Test
     )
   end
 
+  def test_equality
+    assert_equal(
+      [[:equality, '=='], [:equality, '<>'], [:equality, '!='], [:end_of_string]],
+      tokenize('== <> != '),
+    )
+  end
+
   def test_comparison
     assert_equal(
-      [[:comparison, '=='], [:comparison, '<>'], [:comparison, 'contains'], [:end_of_string]],
-      tokenize('== <> contains '),
+      [[:comparison, '>'], [:comparison, '>='], [:comparison, '<'], [:comparison, '<='], [:comparison, 'contains'], [:end_of_string]],
+      tokenize('> >= < <= contains'),
     )
   end
 
@@ -81,7 +88,7 @@ class LexerUnitTest < Minitest::Test
 
   def test_whitespace
     assert_equal(
-      [[:id, 'five'], [:pipe, '|'], [:comparison, '=='], [:end_of_string]],
+      [[:id, 'five'], [:pipe, '|'], [:equality, '=='], [:end_of_string]],
       tokenize("five|\n\t =="),
     )
   end

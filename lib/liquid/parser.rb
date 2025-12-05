@@ -13,6 +13,8 @@ module Liquid
       @p = point
     end
 
+    # Consumes a token of specific type.
+    # Throws SyntaxError if token doesn't match type expectation.
     def consume(type = nil)
       token = @tokens[@p]
       if type && token[0] != type
@@ -41,17 +43,62 @@ module Liquid
       token[1]
     end
 
+    # Peeks the ahead token, returning true if matching expectation
     def look(type, ahead = 0)
       tok = @tokens[@p + ahead]
       return false unless tok
       tok[0] == type
     end
 
+    # expression := logical
+    # logical    := equality (("and" | "or") equality)*
+    # equality   := comparison (("==" | "!=" | "<>") comparison)*
+    # comparison := primary ((">=" | ">" | "<" | "<=" | ... ) primary)*
+    # primary    := string | number | variable_lookup | range | boolean | grouping
     def expression
+      logical
+    end
+
+    # Logical relations in Liquid, unlike other languages, are right-to-left
+    # associative. This creates a right-leaning tree and is why the method
+    # looks a bit more complicated
+    #
+    # `a and b or c` is evaluated like (a and (b or c))
+    # logical := equality (("and" | "or") equality)*
+    def logical
+      operator = nil
+      expr = equality
+      expr = BinaryExpression.new(expr, operator, equality) if (operator = consume?(:logical))
+      expr.right_node = BinaryExpression.new(expr.right_node, operator, equality) while (operator = consume?(:logical))
+      expr
+    end
+
+    # equality := comparison (("==" | "!=" | "<>") comparison)*
+    def equality
+      expr = comparison
+      while look(:equality)
+        operator = consume
+        expr = BinaryExpression.new(expr, operator, comparison)
+      end
+      expr
+    end
+
+    # comparison := primary ((">=" | ">" | "<" | "<=" | ... ) primary)*
+    def comparison
+      expr = primary
+      while look(:comparison)
+        operator = consume
+        expr = BinaryExpression.new(expr, operator, primary)
+      end
+      expr
+    end
+
+    # primary := string | number | variable_lookup | range | boolean | grouping
+    def primary
       token = @tokens[@p]
       case token[0]
       when :id
-        variable_lookup
+        variable_lookup_or_literal
       when :open_square
         unnamed_variable_lookup
       when :string
@@ -59,7 +106,7 @@ module Liquid
       when :number
         number
       when :open_round
-        range_lookup
+        grouping_or_range_lookup
       else
         raise SyntaxError, "#{token} is not a valid expression"
       end
@@ -74,7 +121,18 @@ module Liquid
       consume(:string)[1..-2]
     end
 
+    # variable_lookup := id (lookup)*
+    # lookup          := indexed_lookup | dot_lookup
+    # indexed_lookup  := "[" expression "]"
+    # dot_lookup      := "." id
     def variable_lookup
+      name = consume(:id)
+      lookups, command_flags = variable_lookups
+      VariableLookup.new(name, lookups, command_flags)
+    end
+
+    # a variable_lookup without lookups could be a literal
+    def variable_lookup_or_literal
       name = consume(:id)
       lookups, command_flags = variable_lookups
       if Expression::LITERALS.key?(name) && lookups.empty?
@@ -84,12 +142,28 @@ module Liquid
       end
     end
 
+    # unnamed_variable_lookup := indexed_lookup (lookup)*
     def unnamed_variable_lookup
       name = indexed_lookup
       lookups, command_flags = variable_lookups
       VariableLookup.new(name, lookups, command_flags)
     end
 
+    # Parenthesized expressions are recursive
+    # grouping     := "(" expression ")"
+    def grouping_or_range_lookup
+      consume(:open_round)
+      expr = expression
+      if consume?(:dotdot)
+        RangeLookup.create(expr, expression)
+      else
+        expr
+      end
+    ensure
+      consume(:close_round)
+    end
+
+    # range_lookup := "(" expression ".." expression ")"
     def range_lookup
       consume(:open_round)
       first = expression

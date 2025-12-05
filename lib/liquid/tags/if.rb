@@ -73,36 +73,11 @@ module Liquid
       block.attach(new_body)
     end
 
-    def parse_expression(parser)
-      Condition.parse_expression(parser)
-    end
-
     def parse_markup(markup)
       p = @parse_context.new_parser(markup)
-      condition = parse_binary_comparisons(p)
+      condition = Condition.new(p.expression)
       p.consume(:end_of_string)
       condition
-    end
-
-    def parse_binary_comparisons(p)
-      condition = parse_comparison(p)
-      first_condition = condition
-      while (op = p.id?('and') || p.id?('or'))
-        child_condition = parse_comparison(p)
-        condition.send(op, child_condition)
-        condition = child_condition
-      end
-      first_condition
-    end
-
-    def parse_comparison(p)
-      a = parse_expression(p)
-      if (op = p.consume?(:comparison))
-        b = parse_expression(p)
-        Condition.new(a, op, b)
-      else
-        Condition.new(a)
-      end
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor

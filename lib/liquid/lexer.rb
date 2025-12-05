@@ -6,22 +6,24 @@ module Liquid
     CLOSE_SQUARE = [:close_square, "]"].freeze
     COLON = [:colon, ":"].freeze
     COMMA = [:comma, ","].freeze
-    COMPARISION_NOT_EQUAL = [:comparison, "!="].freeze
     COMPARISON_CONTAINS = [:comparison, "contains"].freeze
-    COMPARISON_EQUAL = [:comparison, "=="].freeze
     COMPARISON_GREATER_THAN = [:comparison, ">"].freeze
     COMPARISON_GREATER_THAN_OR_EQUAL = [:comparison, ">="].freeze
     COMPARISON_LESS_THAN = [:comparison, "<"].freeze
     COMPARISON_LESS_THAN_OR_EQUAL = [:comparison, "<="].freeze
-    COMPARISON_NOT_EQUAL_ALT = [:comparison, "<>"].freeze
+    EQUALITY_EQUAL_EQUAL = [:equality, "=="].freeze
+    EQUALITY_NOT_EQUAL = [:equality, "!="].freeze
+    EQUALITY_NOT_EQUAL_ALT = [:equality, "<>"].freeze
     DASH = [:dash, "-"].freeze
     DOT = [:dot, "."].freeze
     DOTDOT = [:dotdot, ".."].freeze
     DOT_ORD = ".".ord
     DOUBLE_STRING_LITERAL = /"[^\"]*"/
     EOS = [:end_of_string].freeze
-    IDENTIFIER            = /[a-zA-Z_][\w-]*\??/
-    NUMBER_LITERAL        = /-?\d+(\.\d+)?/
+    IDENTIFIER = /[a-zA-Z_][\w-]*\??/
+    LOGICAL_AND = [:logical, 'and'].freeze
+    LOGICAL_OR = [:logical, 'or'].freeze
+    NUMBER_LITERAL = /-?\d+(\.\d+)?/
     OPEN_ROUND = [:open_round, "("].freeze
     OPEN_SQUARE = [:open_square, "["].freeze
     PIPE = [:pipe, "|"].freeze
@@ -38,11 +40,11 @@ module Liquid
 
     TWO_CHARS_COMPARISON_JUMP_TABLE = [].tap do |table|
       table["=".ord] = [].tap do |sub_table|
-        sub_table["=".ord] = COMPARISON_EQUAL
+        sub_table["=".ord] = EQUALITY_EQUAL_EQUAL
         sub_table.freeze
       end
       table["!".ord] = [].tap do |sub_table|
-        sub_table["=".ord] = COMPARISION_NOT_EQUAL
+        sub_table["=".ord] = EQUALITY_NOT_EQUAL
         sub_table.freeze
       end
       table.freeze
@@ -51,7 +53,7 @@ module Liquid
     COMPARISON_JUMP_TABLE = [].tap do |table|
       table["<".ord] = [].tap do |sub_table|
         sub_table["=".ord] = COMPARISON_LESS_THAN_OR_EQUAL
-        sub_table[">".ord] = COMPARISON_NOT_EQUAL_ALT
+        sub_table[">".ord] = EQUALITY_NOT_EQUAL_ALT
         sub_table.freeze
       end
       table[">".ord] = [].tap do |sub_table|
@@ -151,6 +153,10 @@ module Liquid
               # Special case for "contains"
               output << if type == :id && t == "contains" && output.last&.first != :dot
                 COMPARISON_CONTAINS
+              elsif type == :id && t == "and" && output.last&.first != :dot
+                LOGICAL_AND
+              elsif type == :id && t == "or" && output.last&.first != :dot
+                LOGICAL_OR
               else
                 [type, t]
               end
