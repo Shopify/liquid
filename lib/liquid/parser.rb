@@ -100,7 +100,7 @@ module Liquid
       when :number
         number
       when :open_round
-        range_lookup
+        grouping_or_range_lookup
       else
         raise SyntaxError, "#{token} is not a valid expression"
       end
@@ -129,6 +129,19 @@ module Liquid
       name = indexed_lookup
       lookups, command_flags = variable_lookups
       VariableLookup.new(name, lookups, command_flags)
+    end
+
+    # Parenthesized expressions are recursive
+    def grouping_or_range_lookup
+      consume(:open_round)
+      expr = expression
+      if consume?(:dotdot)
+        RangeLookup.create(expr, expression)
+      else
+        expr
+      end
+    ensure
+      consume(:close_round)
     end
 
     def range_lookup

@@ -98,12 +98,12 @@ class ParserUnitTest < Minitest::Test
     expr = p.expression
     assert(expr.is_a?(BinaryExpression))
     assert_equal('and', expr.operator)
-    assert_equal('==', expr.left_node.operator)
-    assert_equal('a', expr.left_node.left_node.name)
-    assert_equal('b', expr.left_node.right_node.name)
-    assert_equal('or', expr.right_node.operator)
-    assert_equal('c', expr.right_node.left_node.name)
-    assert_equal('d', expr.right_node.right_node.name)
+    assert_equal('==',  expr.left_node.operator)
+    assert_equal('a',   expr.left_node.left_node.name)
+    assert_equal('b',   expr.left_node.right_node.name)
+    assert_equal('or',  expr.right_node.operator)
+    assert_equal('c',   expr.right_node.left_node.name)
+    assert_equal('d',   expr.right_node.right_node.name)
   end
 
   def test_equality
@@ -195,6 +195,28 @@ class ParserUnitTest < Minitest::Test
     assert_equal('(1.5..9.6)', p.expression_string)
     assert_equal('(young..old)', p.expression_string)
     assert_equal('(hi[5].wat..old)', p.expression_string)
+  end
+
+  def test_groupings_aka_parenthesized_expressions
+    # without the parens, this would be evaled as a and (b or c)
+    p = new_parser("(a and b) or c")
+    expr = p.expression
+    assert_equal('or', expr.operator)
+    assert_equal('and', expr.left_node.operator)
+    assert_equal('a', expr.left_node.left_node.name)
+    assert_equal('b', expr.left_node.right_node.name)
+    assert_equal('c', expr.right_node.name)
+  end
+
+  def test_groupings_can_be_used_to_hijack_operation_priority
+    # without parens would be parsed as `a and (b == c)`
+    p = new_parser("(a and b) == c")
+    expr = p.expression
+    assert_equal('==', expr.operator)
+    assert_equal('and', expr.left_node.operator)
+    assert_equal('a', expr.left_node.left_node.name)
+    assert_equal('b', expr.left_node.right_node.name)
+    assert_equal('c', expr.right_node.name)
   end
 
   def test_argument_string
