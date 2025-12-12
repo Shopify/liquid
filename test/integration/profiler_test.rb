@@ -27,7 +27,7 @@ class ProfilerTest < Minitest::Test
   include Liquid
 
   class ProfilingFileSystem
-    def read_template_file(template_path)
+    def read_template_file(template_path, context: nil)
       "Rendering template {% assign template_name = '#{template_path}'%}\n{{ template_name }}"
     end
   end
