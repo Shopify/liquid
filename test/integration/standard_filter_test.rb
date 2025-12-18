@@ -294,13 +294,7 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_join_calls_to_liquid_on_each_element
-    drop = Class.new(Liquid::Drop) do
-      def to_liquid
-        'i did it'
-      end
-    end
-
-    assert_equal('i did it, i did it', @filters.join([drop.new, drop.new], ", "))
+    assert_equal('i did it, i did it', @filters.join([CustomToLiquidDrop.new('i did it'), CustomToLiquidDrop.new('i did it')], ", "))
   end
 
   def test_sort

@@ -199,6 +199,26 @@ class ErrorDrop < Liquid::Drop
   end
 end
 
+class CustomToLiquidDrop < Liquid::Drop
+  def initialize(value)
+    @value = value
+    super()
+  end
+
+  def to_liquid
+    @value
+  end
+end
+
+class HashWithCustomToS < Hash
+  def to_s
+    "kewl"
+  end
+end
+
+class HashWithoutCustomToS < Hash
+end
+
 class StubFileSystem
   attr_reader :file_read_count
 
