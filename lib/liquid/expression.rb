@@ -26,6 +26,7 @@ module Liquid
     RANGES_REGEX = /\A\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\z/
     INTEGER_REGEX = /\A(-?\d+)\z/
     FLOAT_REGEX = /\A(-?\d+)\.\d+\z/
+    QUOTED_STRING = /\A#{QuotedString}\z/
 
     class << self
       def safe_parse(parser, ss = StringScanner.new(""), cache = nil)
@@ -37,12 +38,9 @@ module Liquid
 
         markup = markup.strip # markup can be a frozen string
 
-        if (markup.start_with?('"') && markup.end_with?('"')) ||
-          (markup.start_with?("'") && markup.end_with?("'"))
-          return markup[1..-2]
-        elsif LITERALS.key?(markup)
-          return LITERALS[markup]
-        end
+        return markup[1..-2] if QUOTED_STRING.match?(markup)
+
+        return LITERALS[markup] if LITERALS.key?(markup)
 
         # Cache only exists during parsing
         if cache
@@ -55,6 +53,9 @@ module Liquid
       end
 
       def inner_parse(markup, ss, cache)
+        return LogicalExpression.parse(markup, ss, cache)    if LogicalExpression.logical?(markup)
+        return ComparisonExpression.parse(markup, ss, cache) if ComparisonExpression.comparison?(markup)
+
         if (markup.start_with?("(") && markup.end_with?(")")) && markup =~ RANGES_REGEX
           return RangeLookup.parse(
             Regexp.last_match(1),

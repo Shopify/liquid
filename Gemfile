@@ -25,6 +25,8 @@ group :development do
 end
 
 group :test do
+  gem 'ruby-lsp'
+  gem 'debug'
   gem 'rubocop', '~> 1.61.0'
   gem 'rubocop-shopify', '~> 2.12.0', require: false
   gem 'rubocop-performance', require: false
