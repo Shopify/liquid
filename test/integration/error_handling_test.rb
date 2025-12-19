@@ -250,7 +250,7 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   class TestFileSystem
-    def read_template_file(_template_path)
+    def read_template_file(_template_path, context: nil)
       "{{ errors.argument_error }}"
     end
   end
