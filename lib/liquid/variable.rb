@@ -202,8 +202,14 @@ module Liquid
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
+      def children_filter(filter)
+        nodes = [filter[0], *filter[1]]
+        nodes.concat(filter[2].values) if filter[2]
+        nodes
+      end
+
       def children
-        [@node.name] + @node.filters.flatten
+        [@node.name] + @node.filters.flat_map { |filter| children_filter(filter) }
       end
     end
   end
