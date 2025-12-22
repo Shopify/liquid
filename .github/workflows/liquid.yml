@@ -32,7 +32,7 @@ jobs:
     name: Test Ruby ${{ matrix.entry.ruby }}
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-      - uses: ruby/setup-ruby@a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a # v1.273.0
+      - uses: ruby/setup-ruby@d354de180d0c9e813cfddfcbdc079945d4be589b # v1.275.0
         with:
           ruby-version: ${{ matrix.entry.ruby }}
           bundler-cache: true
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-      - uses: ruby/setup-ruby@a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a # v1.273.0
+      - uses: ruby/setup-ruby@d354de180d0c9e813cfddfcbdc079945d4be589b # v1.275.0
         with:
           bundler-cache: true
       - run: bundle exec rake memory_profile:run
