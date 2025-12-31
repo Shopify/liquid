@@ -48,6 +48,7 @@
 #
 module Liquid
   module Compile
+    autoload :CompiledTemplate, 'liquid/compile/compiled_template'
     autoload :CodeGenerator, 'liquid/compile/code_generator'
     autoload :RubyCompiler, 'liquid/compile/ruby_compiler'
     autoload :ExpressionCompiler, 'liquid/compile/expression_compiler'

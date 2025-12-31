@@ -206,7 +206,11 @@ module Liquid
       end
 
       # Compile a filter that's not built-in
+      # Uses __call_filter__ helper which must be provided by the runtime
       def self.compile_generic_filter(input, name, args, kwargs, compiler)
+        # Mark that we're using external filters
+        compiler.register_external_filter
+
         compiled_args = args.map { |arg| compile_arg(arg, compiler) }
 
         if kwargs && !kwargs.empty?
@@ -214,11 +218,10 @@ module Liquid
           compiled_args << "{ #{kwargs_hash} }"
         end
 
-        args_str = compiled_args.empty? ? "" : ", #{compiled_args.join(', ')}"
+        args_str = compiled_args.empty? ? "[]" : "[#{compiled_args.join(', ')}]"
 
-        # Generate a method call - this assumes the filter is available as a method
-        # In practice, custom filters would need to be defined in the compiled code
-        "(respond_to?(:#{name}) ? #{name}(#{input}#{args_str}) : #{input})"
+        # Call through the filter helper which delegates to registered filters
+        "__call_filter__.call(#{name.inspect}, #{input}, #{args_str})"
       end
 
       # Compile a filter argument

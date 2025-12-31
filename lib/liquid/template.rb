@@ -242,12 +242,24 @@ module Liquid
     # * Custom tags need explicit compiler implementations
     # * Custom filters must be available at runtime
     #
+    # Returns a CompiledTemplate object with the Ruby code and any external tags
+    # that need to be passed to the generated lambda.
+    #
+    # Usage:
+    #   compiled = template.compile_to_ruby
+    #   result = compiled.call({ "name" => "World" })  # Handles external tags automatically
+    #
+    # Or manually:
+    #   proc = eval(compiled.code)
+    #   result = proc.call(assigns, compiled.external_tags)
+    #
     def compile_to_ruby(options = {})
       return nil if @root.nil?
 
       require 'liquid/compile'
       compiler = Compile::RubyCompiler.new(self, options)
-      compiler.compile
+      code = compiler.compile
+      Compile::CompiledTemplate.new(code, compiler.external_tags, compiler.has_external_filters?)
     end
 
     private

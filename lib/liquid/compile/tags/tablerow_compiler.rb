@@ -10,6 +10,7 @@ module Liquid
         def self.compile(tag, compiler, code)
           var_name = tag.variable_name
           collection_expr = ExpressionCompiler.compile(tag.collection_name, compiler)
+          attributes = tag.attributes
 
           # Generate unique variable names
           coll_var = compiler.generate_var_name("coll")
@@ -19,17 +20,17 @@ module Liquid
           row_var = compiler.generate_var_name("row")
           col_var = compiler.generate_var_name("col")
 
-          # Get the columns parameter
-          cols = tag.instance_variable_get(:@cols)
+          # Get parameters from attributes hash
+          cols = attributes['cols']
           cols_expr = cols ? ExpressionCompiler.compile(cols, compiler) : "nil"
 
           # Evaluate the collection
           code.line "#{coll_var} = #{collection_expr}"
           code.line "#{coll_var} = #{coll_var}.to_a if #{coll_var}.is_a?(Range)"
 
-          # Handle limit and offset
-          limit = tag.instance_variable_get(:@limit)
-          offset = tag.instance_variable_get(:@offset)
+          # Handle limit and offset from attributes
+          offset = attributes['offset']
+          limit = attributes['limit']
           if offset || limit
             if offset
               offset_expr = ExpressionCompiler.compile(offset, compiler)
@@ -54,15 +55,12 @@ module Liquid
 
           body = tag.instance_variable_get(:@body)
 
+          # Output initial row (matches interpreter behavior: outputs before loop)
+          code.line "__output__ << \"<tr class=\\\"row1\\\">\\n\""
+
           # The loop
           code.line "(#{coll_var}.respond_to?(:each) ? #{coll_var} : []).each do |__item__|"
           code.indent do
-            # Start new row if needed
-            code.line "if #{col_var} == 0"
-            code.indent do
-              code.line "__output__ << \"<tr class=\\\"row\#{#{row_var}}\\\">\""
-            end
-            code.line "end"
             code.line "#{col_var} += 1"
 
             # Output cell start
@@ -93,10 +91,10 @@ module Liquid
             # Output cell end
             code.line "__output__ << '</td>'"
 
-            # End row if needed
-            code.line "if #{col_var} == #{cols_var}"
+            # End row and start new row if needed (but not on last item)
+            code.line "if #{col_var} == #{cols_var} && #{idx_var} != #{len_var} - 1"
             code.indent do
-              code.line "__output__ << '</tr>'"
+              code.line "__output__ << \"</tr>\\n<tr class=\\\"row\#{#{row_var} + 1}\\\">\""
               code.line "#{col_var} = 0"
               code.line "#{row_var} += 1"
             end
@@ -106,12 +104,8 @@ module Liquid
           end
           code.line "end"
 
-          # Close any open row
-          code.line "if #{col_var} > 0"
-          code.indent do
-            code.line "__output__ << '</tr>'"
-          end
-          code.line "end"
+          # Close the final row
+          code.line "__output__ << \"</tr>\\n\""
 
           # Clean up
           code.line "assigns.delete(#{var_name.inspect})"

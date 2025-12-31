@@ -15,11 +15,10 @@ module Liquid
           code.line "#{capture_var} = __output__"
           code.line "__output__ = +''"
 
-          # Compile the body
-          code.indent do
-            tag.nodelist.each do |body|
-              BlockBodyCompiler.compile(body, compiler, code)
-            end
+          # Compile the body - access the @body BlockBody directly
+          body = tag.instance_variable_get(:@body)
+          if body
+            BlockBodyCompiler.compile(body, compiler, code)
           end
 
           # Save captured content and restore output buffer

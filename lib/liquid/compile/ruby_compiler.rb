@@ -72,6 +72,35 @@ module Liquid
         @partials = {}        # Registered partials: name => method_name
         @partial_sources = {} # Partial sources: name => source code
         @partial_counter = 0
+        @external_tags = {}   # External tags: var_name => tag object
+        @external_tag_counter = 0
+        @has_external_filters = false  # Whether we need the filter helper
+      end
+
+      # Mark that we have external filters
+      def register_external_filter
+        @has_external_filters = true
+      end
+
+      # Check if external filters are used
+      def has_external_filters?
+        @has_external_filters
+      end
+
+      # Register an external tag that will be called at runtime
+      # @param tag [Liquid::Tag] The tag to register
+      # @return [String] The variable name for this tag
+      def register_external_tag(tag)
+        @external_tag_counter += 1
+        var_name = "__ext_tag_#{@external_tag_counter}__"
+        @external_tags[var_name] = tag
+        var_name
+      end
+
+      # Get all registered external tags
+      # @return [Hash] Map of variable names to tag objects
+      def external_tags
+        @external_tags
       end
 
       # Get the file system for loading partials
@@ -158,6 +187,7 @@ module Liquid
 
       # Compile the template to a Ruby code string
       # @return [String] Ruby code that can be eval'd to create a render proc
+      # @return [Hash] If external tags are used, returns { code: String, external_tags: Hash }
       def compile
         code = CodeGenerator.new
 
@@ -169,8 +199,17 @@ module Liquid
           code.blank_line
         end
 
-        # Generate the lambda header
-        code.line "->(assigns = {}) do"
+        # First pass: compile the document body to discover partials and external tags
+        main_code = CodeGenerator.new
+        compile_node(@template.root, main_code)
+
+        # Determine lambda parameters based on external dependencies
+        params = ["assigns = {}"]
+        params << "__external_tags__ = {}" unless @external_tags.empty?
+        params << "__filter_handler__ = nil" if @has_external_filters
+
+        code.line "->(#{params.join(', ')}) do"
+
         code.indent do
           # Initialize the output buffer
           code.line '__output__ = +""'
@@ -182,9 +221,17 @@ module Liquid
             code.blank_line
           end
 
-          # First pass: compile the document body to discover partials
-          main_code = CodeGenerator.new
-          compile_node(@template.root, main_code)
+          # Add external tag runtime helper if needed
+          unless @external_tags.empty?
+            compile_external_tag_helper(code)
+            code.blank_line
+          end
+
+          # Add external filter helper if needed
+          if @has_external_filters
+            compile_filter_helper(code)
+            code.blank_line
+          end
 
           # Compile partial methods (before main body so they're available)
           compile_partials(code)
@@ -198,6 +245,41 @@ module Liquid
         code.line "end"
 
         code.to_s
+      end
+
+      # Compile helper for calling external tags at runtime
+      def compile_external_tag_helper(code)
+        code.line "# Helper for calling external (unknown) tags at runtime"
+        code.line "__call_external_tag__ = ->(tag_var, tag_assigns) {"
+        code.indent do
+          code.line "tag = __external_tags__[tag_var]"
+          code.line "next '' unless tag"
+          code.line "# Create a context using the default environment (which has filters registered)"
+          code.line "ctx = Liquid::Context.new([tag_assigns], {}, {}, false, nil, {}, Liquid::Environment.default)"
+          code.line "output = +''"
+          code.line "# Use render_to_output_buffer to ensure block tags work correctly"
+          code.line "tag.render_to_output_buffer(ctx, output)"
+          code.line "output"
+        end
+        code.line "}"
+      end
+
+      # Compile helper for calling external filters at runtime
+      def compile_filter_helper(code)
+        code.line "# Helper for calling external (unknown) filters at runtime"
+        code.line "__call_filter__ = ->(name, input, args) {"
+        code.indent do
+          code.line "if __filter_handler__&.respond_to?(name)"
+          code.indent do
+            code.line "__filter_handler__.send(name, input, *args)"
+          end
+          code.line "else"
+          code.indent do
+            code.line "input # Return input unchanged if filter not found"
+          end
+          code.line "end"
+        end
+        code.line "}"
       end
 
       # Compile all registered partials as inner methods
@@ -293,16 +375,27 @@ module Liquid
         if compiler_class
           compiler_class.compile(tag, self, code)
         else
-          raise CompileError, "No compiler for tag: #{tag.class}"
+          # Unknown tag - delegate to the original tag's render method at runtime
+          compile_external_tag(tag, code)
         end
+      end
+
+      def compile_external_tag(tag, code)
+        tag_var = register_external_tag(tag)
+        tag_name = tag.class.name.split('::').last
+        if debug?
+          code.line "# External tag: #{tag_name} (delegated to runtime)"
+          code.line "$stderr.puts '* WARN: Liquid external tag call - #{tag_name} (not compiled, delegated to runtime)' if $VERBOSE"
+        end
+        code.line "__output__ << __call_external_tag__.call(#{tag_var.inspect}, assigns)"
       end
 
       def find_tag_compiler(tag)
         case tag
+        when Liquid::Unless  # Check Unless before If since Unless < If
+          Tags::UnlessCompiler
         when Liquid::If
           Tags::IfCompiler
-        when Liquid::Unless
-          Tags::UnlessCompiler
         when Liquid::Case
           Tags::CaseCompiler
         when Liquid::For

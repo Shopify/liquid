@@ -38,6 +38,10 @@ module Liquid
           partial_source = compiler.load_partial(template_name)
 
           if partial_source
+            if compiler.debug?
+              code.line "# Inlined partial '#{template_name}' at compile time"
+              code.line "$stderr.puts '* WARN: Liquid file system access - inlined partial \\\"#{template_name}\\\" at compile time' if $VERBOSE"
+            end
             # Generate a unique method name for this partial
             method_name = compiler.register_partial(template_name, partial_source)
             context_var_name = alias_name || template_name.split('/').last
@@ -145,6 +149,11 @@ module Liquid
           attributes = tag.attributes
           alias_name = tag.alias_name
           is_for_loop = tag.for_loop?
+
+          if compiler.debug?
+            code.line "# Dynamic render (template name from variable)"
+            code.line "$stderr.puts '* WARN: Liquid runtime file system access - dynamic render (template name from variable)' if $VERBOSE"
+          end
 
           name_expr = ExpressionCompiler.compile(template_name_expr, compiler)
 

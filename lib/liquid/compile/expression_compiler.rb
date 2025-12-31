@@ -68,14 +68,9 @@ module Liquid
             # Numeric index like foo[0]
             base = "__lookup__(#{base}, #{key})"
           elsif key.is_a?(String)
-            # Check if this is a command method (size, first, last)
-            if lookup.lookup_command?(index)
-              # Call as method
-              base = "(#{base}.respond_to?(:#{key}) ? #{base}.#{key} : nil)"
-            else
-              # Access as hash/array key
-              base = "__lookup__(#{base}, #{key.inspect})"
-            end
+            # Always use __lookup__ which tries key access first,
+            # then falls back to method call for command methods (first, last, size)
+            base = "__lookup__(#{base}, #{key.inspect})"
           else
             base = "__lookup__(#{base}, #{compile(key, compiler)})"
           end
