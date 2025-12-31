@@ -173,6 +173,11 @@ module Liquid
               input  # Return unchanged if filter not found
             end
 
+          when :include, :render
+            # Dynamic include/render - not supported without a custom handler
+            template_name, _var, _attrs, _alias_name, *_rest = args
+            raise Liquid::FileSystemError, "Could not find asset #{template_name}"
+
           else
             raise ArgumentError, "Unknown external call type: #{call_type}"
           end

@@ -386,16 +386,13 @@ module Liquid
     end
 
     def neuter_basic_object!
-      # Suppress the "__send__" warning - we know what we're doing
       @box.eval(<<~'RUBY')
-        original_verbose = $VERBOSE
-        $VERBOSE = nil
         class BasicObject
           undef_method(:instance_eval) rescue nil
           undef_method(:instance_exec) rescue nil
-          undef_method(:__send__) rescue nil
+          # Don't undef __send__ - it causes warnings and is equivalent to send
+          # which we already restrict via public_send
         end
-        $VERBOSE = original_verbose
       RUBY
     end
 

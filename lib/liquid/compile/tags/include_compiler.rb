@@ -95,7 +95,6 @@ module Liquid
 
           if compiler.debug?
             code.line "# Dynamic include (template name from variable)"
-            code.line "$stderr.puts '* WARN: Liquid runtime file system access - dynamic include (template name from variable)' if $VERBOSE"
           end
 
           name_expr = ExpressionCompiler.compile(template_name_expr, compiler)
@@ -111,16 +110,8 @@ module Liquid
           var_expr = variable_name_expr ? ExpressionCompiler.compile(variable_name_expr, compiler) : "nil"
           alias_expr = alias_name ? alias_name.inspect : "nil"
 
-          # Call the runtime dynamic include method
-          code.line "if defined?(__include_dynamic__)"
-          code.indent do
-            code.line "__output__ << __include_dynamic__(#{name_expr}, #{var_expr}, #{attrs_var}, #{alias_expr}, assigns)"
-          end
-          code.line "else"
-          code.indent do
-            code.line "raise RuntimeError, 'Dynamic include requires __include_dynamic__ method: ' + #{name_expr}.inspect"
-          end
-          code.line "end"
+          # Call the external handler for dynamic includes
+          code.line "__output__ << __external__.call(:include, #{name_expr}, #{var_expr}, #{attrs_var}, #{alias_expr}, assigns, __context__)"
         end
       end
     end
