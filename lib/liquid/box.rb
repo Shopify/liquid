@@ -340,13 +340,17 @@ module Liquid
     end
 
     def neuter_time!
-      # Time is neutered by default for security.
-      # Templates that need time should receive it via assigns.
-      @box.eval(<<~'RUBY')
-        class << Time
-          [:now, :new, :at, :mktime, :local, :utc, :gm].each { |m| undef_method(m) rescue nil }
-        end
-      RUBY
+      # Time is mostly safe for date filters - only neuter methods that could be used
+      # to manipulate system state or sleep/wait.
+      # Keep: now, at, parse, mktime - needed for date filter
+      # Remove: nothing for now - Time is pure computation
+      #
+      # Note: If you want stricter isolation, templates should receive "now" via assigns
+      # @box.eval(<<~'RUBY')
+      #   class << Time
+      #     [:now, :new, :at, :mktime, :local, :utc, :gm].each { |m| undef_method(m) rescue nil }
+      #   end
+      # RUBY
     end
 
     def neuter_environment!

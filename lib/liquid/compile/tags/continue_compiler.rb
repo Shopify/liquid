@@ -5,11 +5,18 @@ module Liquid
     module Tags
       # Compiles {% continue %} tags
       #
-      # Skips to the next iteration of a for loop
+      # Continue is implemented with Ruby's native `next` statement.
+      # Since we use a while loop (not each), `next` correctly skips
+      # to the next iteration, but we must increment the index first.
       class ContinueCompiler
-        def self.compile(_tag, _compiler, code)
-          # We use throw/catch in the for loop to handle continue
-          code.line "throw :__loop__continue__"
+        def self.compile(_tag, compiler, code)
+          # Get the index variable from the loop context
+          loop_ctx = compiler.current_loop_context
+          if loop_ctx && loop_ctx[:idx_var]
+            # Increment index before next, otherwise we'd infinite loop
+            code.line "#{loop_ctx[:idx_var]} += 1"
+          end
+          code.line "next"
         end
       end
     end

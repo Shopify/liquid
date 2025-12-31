@@ -196,12 +196,27 @@ module LR
 
   # === Collection Helpers ===
 
+  # Convert to array for iteration - returns Array or empty Array
+  # This guarantees the result supports [], .length, .empty? without respond_to? checks
+  def self.to_array(collection)
+    case collection
+    when Array then collection
+    when Range then collection.to_a
+    when nil then EMPTY_ARRAY
+    else
+      collection.respond_to?(:to_a) ? collection.to_a : EMPTY_ARRAY
+    end
+  end
+
+  # Frozen empty array to avoid allocations
+  EMPTY_ARRAY = [].freeze
+
   # Iterate safely, handling ranges and non-iterables
   def self.iterate(collection)
     case collection
     when Range then collection.to_a
-    when nil then []
-    else collection.respond_to?(:each) ? collection : []
+    when nil then EMPTY_ARRAY
+    else collection.respond_to?(:each) ? collection : EMPTY_ARRAY
     end
   end
 

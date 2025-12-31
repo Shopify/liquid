@@ -223,6 +223,9 @@ module Liquid
           warn_once_insecure
         end
 
+        # Ensure LR runtime is loaded for polyfill mode
+        require_relative 'runtime' unless defined?(::LR)
+
         # rubocop:disable Security/Eval
         eval(@source)
         # rubocop:enable Security/Eval

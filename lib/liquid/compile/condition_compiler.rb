@@ -64,9 +64,16 @@ module Liquid
         right = condition.right
 
         # If no operator, just check truthiness
+        # Inline: Liquid truthiness is "not nil and not false"
         if op.nil?
           left_expr = ExpressionCompiler.compile(left, compiler)
-          return "LR.truthy?(#{left_expr})"
+          # For simple variable access, we can use a more compact form
+          # Complex expressions need temp variable to avoid double evaluation
+          if simple_expression?(left)
+            return "(#{left_expr} != nil && #{left_expr} != false)"
+          else
+            return "((__v__ = #{left_expr}) != nil && __v__ != false)"
+          end
         end
 
         # Compile left and right expressions
@@ -119,6 +126,19 @@ module Liquid
           "right = right.to_s if left.is_a?(String); " \
           "left.include?(right) rescue false " \
           "}.call(#{left_expr}, #{right_expr}))"
+      end
+
+      # Check if an expression is simple (doesn't need temp variable to avoid double evaluation)
+      def self.simple_expression?(expr)
+        case expr
+        when nil, true, false, Integer, Float, String
+          true
+        when VariableLookup
+          # Simple variable or property access is safe to evaluate twice
+          true
+        else
+          false
+        end
       end
     end
   end

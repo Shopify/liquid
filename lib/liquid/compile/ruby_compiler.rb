@@ -75,6 +75,32 @@ module Liquid
         @external_tags = {}   # External tags: var_name => tag object
         @external_tag_counter = 0
         @has_external_filters = false  # Whether we need the filter helper
+        @loop_context_stack = []       # Stack of loop contexts for break/continue
+      end
+
+      # Push a loop context onto the stack (for nested loops)
+      # @param break_var [String, nil] Variable name for break flag, or nil if no break
+      # @param idx_var [String, nil] Variable name for loop index
+      # @param len_var [String, nil] Variable name for collection length
+      # @param loop_name [String, nil] Name of the loop (for forloop.name)
+      def push_loop_context(break_var: nil, idx_var: nil, len_var: nil, loop_name: nil)
+        @loop_context_stack.push({
+          break_var: break_var,
+          idx_var: idx_var,
+          len_var: len_var,
+          loop_name: loop_name
+        })
+      end
+
+      # Pop the current loop context
+      def pop_loop_context
+        @loop_context_stack.pop
+      end
+
+      # Get the current loop context (for break/continue compilation)
+      # @return [Hash, nil] Current loop context or nil if not in a loop
+      def current_loop_context
+        @loop_context_stack.last
       end
 
       # Mark that we have external filters
