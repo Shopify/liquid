@@ -203,38 +203,16 @@ module Liquid
         main_code = CodeGenerator.new
         compile_node(@template.root, main_code)
 
-        # Determine lambda parameters based on external dependencies
-        params = ["assigns = {}"]
-        params << "__external_tags__ = {}" unless @external_tags.empty?
-        params << "__filter_handler__ = nil" if @has_external_filters
-        params << "__context__ = nil"
-
-        code.line "->(#{params.join(', ')}) do"
+        # Lambda signature: (assigns, context, external_handler)
+        # - assigns: Hash of template variables
+        # - context: CompiledContext for Drop support
+        # - external_handler: Proc that handles [:tag, ...] and [:filter, ...] calls
+        code.line "->(assigns, __context__, __external__) do"
 
         code.indent do
           # Initialize the output buffer
           code.line '__output__ = +""'
           code.blank_line
-
-          # Create a compiled context if not provided (for Drop support)
-          code.line "# Create context for Drop support"
-          code.line "__context__ ||= Liquid::Compile::CompiledContext.new(assigns)"
-          code.blank_line
-
-          # Note: All helper methods are provided by the LR module (pre-loaded runtime)
-          # Templates use LR.to_s(), LR.lookup(), LR.output(), etc.
-
-          # Add external tag runtime helper if needed
-          unless @external_tags.empty?
-            compile_external_tag_helper(code)
-            code.blank_line
-          end
-
-          # Add external filter helper if needed
-          if @has_external_filters
-            compile_filter_helper(code)
-            code.blank_line
-          end
 
           # Compile partial methods (before main body so they're available)
           compile_partials(code)
@@ -248,41 +226,6 @@ module Liquid
         code.line "end"
 
         code.to_s
-      end
-
-      # Compile helper for calling external tags at runtime
-      def compile_external_tag_helper(code)
-        code.line "# Helper for calling external (unknown) tags at runtime"
-        code.line "__call_external_tag__ = ->(tag_var, tag_assigns) {"
-        code.indent do
-          code.line "tag = __external_tags__[tag_var]"
-          code.line "next '' unless tag"
-          code.line "# Create a context using the default environment (which has filters registered)"
-          code.line "ctx = Liquid::Context.new([tag_assigns], {}, {}, false, nil, {}, Liquid::Environment.default)"
-          code.line "output = +''"
-          code.line "# Use render_to_output_buffer to ensure block tags work correctly"
-          code.line "tag.render_to_output_buffer(ctx, output)"
-          code.line "output"
-        end
-        code.line "}"
-      end
-
-      # Compile helper for calling external filters at runtime
-      def compile_filter_helper(code)
-        code.line "# Helper for calling external (unknown) filters at runtime"
-        code.line "__call_filter__ = ->(name, input, args) {"
-        code.indent do
-          code.line "if __filter_handler__&.respond_to?(name)"
-          code.indent do
-            code.line "__filter_handler__.send(name, input, *args)"
-          end
-          code.line "else"
-          code.indent do
-            code.line "input # Return input unchanged if filter not found"
-          end
-          code.line "end"
-        end
-        code.line "}"
       end
 
       # Compile all registered partials as inner methods
@@ -387,10 +330,10 @@ module Liquid
         tag_var = register_external_tag(tag)
         tag_name = tag.class.name.split('::').last
         if debug?
-          code.line "# External tag: #{tag_name} (delegated to runtime)"
-          code.line "$stderr.puts '* WARN: Liquid external tag call - #{tag_name} (not compiled, delegated to runtime)' if $VERBOSE"
+          code.line "# External tag: #{tag_name} (yields to caller)"
         end
-        code.line "__output__ << __call_external_tag__.call(#{tag_var.inspect}, assigns)"
+        # Yield [:tag, tag_var, assigns] to the external handler
+        code.line "__output__ << __external__.call(:tag, #{tag_var.inspect}, assigns)"
       end
 
       def find_tag_compiler(tag)

@@ -125,6 +125,8 @@ module Liquid
         @box.require('base64')
         @box.require('bigdecimal')
         @box.require('bigdecimal/util')  # For String#to_d etc.
+        @box.require('date')  # For date filter
+        @box.require('time')  # For Time.parse
 
         # Now load the runtime which captures method references from these
         @box.require(RUNTIME_PATH)
@@ -134,6 +136,8 @@ module Liquid
         require 'base64'
         require 'bigdecimal'
         require 'bigdecimal/util'
+        require 'date'
+        require 'time'
         require RUNTIME_PATH
       end
 
@@ -143,6 +147,10 @@ module Liquid
       @user_constants << "CGI"
       @user_constants << "Base64"
       @user_constants << "BigDecimal"
+      @user_constants << "Date"
+      @user_constants << "DateTime"
+      @user_constants << "Time"
+      @user_constants << "Liquid"  # For Liquid::Compile::CompiledContext
     end
 
     # Add gem paths to the box's load_path so require works for gems
@@ -374,22 +382,27 @@ module Liquid
     end
 
     def neuter_basic_object!
+      # Suppress the "__send__" warning - we know what we're doing
       @box.eval(<<~'RUBY')
+        original_verbose = $VERBOSE
+        $VERBOSE = nil
         class BasicObject
           undef_method(:instance_eval) rescue nil
           undef_method(:instance_exec) rescue nil
           undef_method(:__send__) rescue nil
         end
+        $VERBOSE = original_verbose
       RUBY
     end
 
     def neuter_object!
       @box.eval(<<~'RUBY')
         class Object
+          # Keep public_send - it's safe (only calls public methods) and useful
           [:gem, :gem_original_require, :require, :require_relative, :load,
            :display, :define_singleton_method,
            :instance_variable_set, :remove_instance_variable,
-           :extend, :send, :public_send,
+           :extend, :send,
           ].each { |m| undef_method(m) rescue nil }
         end
       RUBY

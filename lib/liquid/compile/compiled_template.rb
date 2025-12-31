@@ -23,6 +23,22 @@ module Liquid
     #   # Check security status
     #   compiled.secure?  # => true on Ruby 4.0+, false otherwise
     #
+    # == External Calls (Tags and Filters)
+    #
+    # When the sandbox encounters an external tag or filter it can't handle,
+    # it yields back to the caller. You can provide a block to handle these:
+    #
+    #   compiled.render(assigns) do |call_type, *args|
+    #     case call_type
+    #     when :tag
+    #       tag_name, tag_obj, tag_context = args
+    #       tag_obj.render(tag_context)
+    #     when :filter
+    #       filter_name, input, filter_args = args
+    #       my_filter_handler.send(filter_name, input, *filter_args)
+    #     end
+    #   end
+    #
     class CompiledTemplate
       attr_reader :source, :external_tags
       attr_accessor :filter_handler
@@ -60,21 +76,31 @@ module Liquid
       # execution happens in a secure sandbox. On earlier versions, a warning
       # is printed to STDERR.
       #
+      # When the template needs to call an external tag or filter, it yields
+      # back to the caller with [:tag, ...] or [:filter, ...] args. If no block
+      # is given, a default handler is used.
+      #
       # @param assigns [Hash] Variables to make available in the template
       # @param registers [Hash] Registers for custom tags (accessible via context.registers)
       # @param filter_handler [Object] Optional filter handler module
       # @param strict_variables [Boolean] Raise on undefined variables
       # @param strict_filters [Boolean] Raise on undefined filters
+      # @yield [call_type, *args] Called for external tags/filters
       # @return [String] The rendered output
       #
       # @example Basic usage
       #   compiled.render({ "name" => "World" })
       #
-      # @example With registers
-      #   compiled.render({ "product" => product }, registers: { shop: current_shop })
+      # @example With block for external calls
+      #   compiled.render(assigns) do |type, *args|
+      #     case type
+      #     when :tag then handle_tag(*args)
+      #     when :filter then handle_filter(*args)
+      #     end
+      #   end
       #
-      def render(assigns = {}, registers: {}, filter_handler: nil, strict_variables: false, strict_filters: false)
-        proc = to_proc
+      def render(assigns = {}, registers: {}, filter_handler: nil, strict_variables: false, strict_filters: false, &block)
+        compiled_proc = to_proc
         handler = filter_handler || @filter_handler
 
         # Create a context for Drop support
@@ -85,13 +111,11 @@ module Liquid
           strict_filters: strict_filters
         )
 
-        # Build arguments based on what the lambda expects
-        args = [assigns]
-        args << @external_tags if has_external_tags?
-        args << handler if has_external_filters?
-        args << context  # Always pass context as last arg
+        # Create the external call handler
+        external_handler = block || default_external_handler(handler)
 
-        proc.call(*args)
+        # Build arguments: assigns, context, external_handler
+        compiled_proc.call(assigns, context, external_handler)
       end
 
       # Alias for backwards compatibility
@@ -119,6 +143,42 @@ module Liquid
 
       private
 
+      # Default handler for external calls when no block is provided
+      def default_external_handler(filter_handler)
+        external_tags = @external_tags
+
+        ->(call_type, *args) do
+          case call_type
+          when :tag
+            tag_var, tag_assigns = args
+            tag = external_tags[tag_var]
+            return '' unless tag
+
+            # Create a context and render the tag
+            ctx = Liquid::Context.new(
+              [tag_assigns], {}, {},
+              false, nil, {},
+              Liquid::Environment.default
+            )
+            output = +''
+            tag.render_to_output_buffer(ctx, output)
+            output
+
+          when :filter
+            filter_name, input, filter_args = args
+            if filter_handler&.respond_to?(filter_name)
+              m = filter_handler.method(filter_name)
+              m.call(input, *filter_args)
+            else
+              input  # Return unchanged if filter not found
+            end
+
+          else
+            raise ArgumentError, "Unknown external call type: #{call_type}"
+          end
+        end
+      end
+
       def compile_to_proc
         if Liquid::Box.secure?
           compile_in_sandbox
@@ -142,8 +202,8 @@ module Liquid
           class #{template_class_name}
             TEMPLATE_PROC = #{@source}
 
-            def self.render(*args)
-              TEMPLATE_PROC.call(*args)
+            def self.render(*args, &block)
+              TEMPLATE_PROC.call(*args, &block)
             end
           end
         RUBY
@@ -152,7 +212,9 @@ module Liquid
         template_class = @box[template_class_name]
 
         # Return a proc that delegates to the sandboxed class
-        ->(assigns, *rest) { template_class.render(assigns, *rest) }
+        ->(assigns, context, external_handler) do
+          template_class.render(assigns, context, external_handler)
+        end
       end
 
       # Compile without sandbox (Ruby < 4.0) - shows warning

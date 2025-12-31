@@ -203,7 +203,7 @@ module Liquid
       end
 
       # Compile a filter that's not built-in
-      # Uses __call_filter__ helper which must be provided by the runtime
+      # Yields [:filter, name, input, args] to the external handler
       def self.compile_generic_filter(input, name, args, kwargs, compiler)
         # Mark that we're using external filters
         compiler.register_external_filter
@@ -217,8 +217,8 @@ module Liquid
 
         args_str = compiled_args.empty? ? "[]" : "[#{compiled_args.join(', ')}]"
 
-        # Call through the filter helper which delegates to registered filters
-        "__call_filter__.call(#{name.inspect}, #{input}, #{args_str})"
+        # Yield to the external handler
+        "__external__.call(:filter, #{name.inspect}, #{input}, #{args_str})"
       end
 
       # Compile a filter argument
