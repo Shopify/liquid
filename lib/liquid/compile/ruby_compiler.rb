@@ -207,12 +207,18 @@ module Liquid
         params = ["assigns = {}"]
         params << "__external_tags__ = {}" unless @external_tags.empty?
         params << "__filter_handler__ = nil" if @has_external_filters
+        params << "__context__ = nil"
 
         code.line "->(#{params.join(', ')}) do"
 
         code.indent do
           # Initialize the output buffer
           code.line '__output__ = +""'
+          code.blank_line
+
+          # Create a compiled context if not provided (for Drop support)
+          code.line "# Create context for Drop support"
+          code.line "__context__ ||= Liquid::Compile::CompiledContext.new(assigns)"
           code.blank_line
 
           # Compile helper methods if needed
@@ -480,11 +486,15 @@ module Liquid
         code.line "end"
         code.blank_line
 
-        # Variable lookup helper
-        code.line "def __lookup__(obj, key)"
+        # Variable lookup helper - handles hash/array access, method calls, to_liquid, and drop context
+        code.line "__lookup__ = ->(obj, key) {"
         code.indent do
           code.line "return nil if obj.nil?"
-          code.line "if obj.respond_to?(:[]) && (obj.respond_to?(:key?) && obj.key?(key) || obj.respond_to?(:fetch) && key.is_a?(Integer))"
+          code.line "# Set context on Drops BEFORE accessing their methods"
+          code.line "obj = obj.to_liquid if obj.respond_to?(:to_liquid)"
+          code.line "obj.context = __context__ if obj.respond_to?(:context=)"
+          code.line "# Now perform the lookup"
+          code.line "result = if obj.respond_to?(:[]) && (obj.respond_to?(:key?) && obj.key?(key) || obj.respond_to?(:fetch) && key.is_a?(Integer))"
           code.indent do
             code.line "obj[key]"
           end
@@ -497,8 +507,12 @@ module Liquid
             code.line "nil"
           end
           code.line "end"
+          code.line "# Convert result to liquid and set context for nested Drops"
+          code.line "result = result.to_liquid if result.respond_to?(:to_liquid)"
+          code.line "result.context = __context__ if result.respond_to?(:context=)"
+          code.line "result"
         end
-        code.line "end"
+        code.line "}"
         code.blank_line
 
         # Output helper that handles nil and arrays

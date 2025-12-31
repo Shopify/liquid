@@ -438,4 +438,119 @@ class CompileTest < Minitest::Test
     result = compiled.call({ "x" => "test" })
     assert_equal "custom:test", result
   end
+
+  # Test Drop support
+  def test_compile_with_drop
+    # Create a simple Drop class
+    product_drop = Class.new(Liquid::Drop) do
+      def initialize(name, price)
+        super()
+        @name = name
+        @price = price
+      end
+
+      def name
+        @name
+      end
+
+      def price
+        @price
+      end
+
+      def discounted_price
+        @price * 0.9
+      end
+    end
+
+    template = Template.parse("Product: {{ product.name }} costs ${{ product.price }}")
+    compiled = template.compile_to_ruby
+
+    drop = product_drop.new("Widget", 100)
+    result = compiled.call({ "product" => drop })
+    assert_equal "Product: Widget costs $100", result
+  end
+
+  def test_compile_with_drop_context_access
+    # Create a Drop that uses context
+    context_aware_drop = Class.new(Liquid::Drop) do
+      def initialize(multiplier)
+        super()
+        @multiplier = multiplier
+      end
+
+      def computed_value
+        # Access another variable via context
+        base = @context["base_value"] || 0
+        base * @multiplier
+      end
+    end
+
+    template = Template.parse("Result: {{ calc.computed_value }}")
+    compiled = template.compile_to_ruby
+
+    drop = context_aware_drop.new(3)
+    result = compiled.call({ "calc" => drop, "base_value" => 10 })
+    assert_equal "Result: 30", result
+  end
+
+  def test_compile_with_nested_drops
+    inner_drop = Class.new(Liquid::Drop) do
+      def initialize(value)
+        super()
+        @value = value
+      end
+
+      def value
+        @value
+      end
+    end
+
+    outer_drop = Class.new(Liquid::Drop) do
+      def initialize(inner)
+        super()
+        @inner = inner
+      end
+
+      def inner
+        @inner
+      end
+    end
+
+    template = Template.parse("{{ outer.inner.value }}")
+    compiled = template.compile_to_ruby
+
+    inner = inner_drop.new("nested!")
+    outer = outer_drop.new(inner)
+    result = compiled.call({ "outer" => outer })
+    assert_equal "nested!", result
+  end
+
+  def test_compile_with_forloop_drop
+    # ForloopDrop is a built-in Drop - ensure it works
+    template = Template.parse("{% for item in items %}{{ forloop.index }}:{{ item }} {% endfor %}")
+    compiled = template.compile_to_ruby
+
+    # Note: Compiled code uses a hash for forloop, not the actual ForloopDrop
+    # This test verifies the hash-based forloop still works
+    result = compiled.call({ "items" => ["a", "b", "c"] })
+    assert_equal "1:a 2:b 3:c ", result
+  end
+
+  def test_compile_with_registers
+    template = Template.parse("{{ product.name }}")
+    compiled = template.compile_to_ruby
+
+    # Create a Drop that checks registers
+    product_drop = Class.new(Liquid::Drop) do
+      def name
+        # Access registers through context
+        store = @context.registers[:store] || "Unknown Store"
+        "Product from #{store}"
+      end
+    end
+
+    drop = product_drop.new
+    result = compiled.call({ "product" => drop }, registers: { store: "Acme Corp" })
+    assert_equal "Product from Acme Corp", result
+  end
 end

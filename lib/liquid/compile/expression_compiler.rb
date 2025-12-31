@@ -63,16 +63,16 @@ module Liquid
         lookup.lookups.each_with_index do |key, index|
           if key.is_a?(VariableLookup) || key.is_a?(RangeLookup)
             # Dynamic key like foo[expr]
-            base = "__lookup__(#{base}, #{compile(key, compiler)})"
+            base = "__lookup__.call(#{base}, #{compile(key, compiler)})"
           elsif key.is_a?(Integer)
             # Numeric index like foo[0]
-            base = "__lookup__(#{base}, #{key})"
+            base = "__lookup__.call(#{base}, #{key})"
           elsif key.is_a?(String)
             # Always use __lookup__ which tries key access first,
             # then falls back to method call for command methods (first, last, size)
-            base = "__lookup__(#{base}, #{key.inspect})"
+            base = "__lookup__.call(#{base}, #{key.inspect})"
           else
-            base = "__lookup__(#{base}, #{compile(key, compiler)})"
+            base = "__lookup__.call(#{base}, #{compile(key, compiler)})"
           end
         end
 

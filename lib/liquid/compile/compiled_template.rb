@@ -48,15 +48,27 @@ module Liquid
       # Execute the compiled template with the given assigns
       # @param assigns [Hash] The variable assignments
       # @param filter_handler [Object] Optional filter handler to override the default
+      # @param registers [Hash] Optional registers for context
+      # @param strict_variables [Boolean] Raise on undefined variables
+      # @param strict_filters [Boolean] Raise on undefined filters
       # @return [String] The rendered output
-      def call(assigns = {}, filter_handler: nil)
+      def call(assigns = {}, filter_handler: nil, registers: {}, strict_variables: false, strict_filters: false)
         proc = to_proc
         handler = filter_handler || @filter_handler
+
+        # Create a context for Drop support
+        context = CompiledContext.new(
+          assigns,
+          registers: registers,
+          strict_variables: strict_variables,
+          strict_filters: strict_filters
+        )
 
         # Build arguments based on what the lambda expects
         args = [assigns]
         args << @external_tags if has_external_tags?
         args << handler if has_external_filters?
+        args << context  # Always pass context as last arg
 
         proc.call(*args)
       end
