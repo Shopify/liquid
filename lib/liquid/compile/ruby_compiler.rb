@@ -221,11 +221,8 @@ module Liquid
           code.line "__context__ ||= Liquid::Compile::CompiledContext.new(assigns)"
           code.blank_line
 
-          # Compile helper methods if needed
-          if @options[:include_filters]
-            compile_helper_methods(code)
-            code.blank_line
-          end
+          # Note: All helper methods are provided by the LR module (pre-loaded runtime)
+          # Templates use LR.to_s(), LR.lookup(), LR.output(), etc.
 
           # Add external tag runtime helper if needed
           unless @external_tags.empty?
@@ -439,93 +436,8 @@ module Liquid
         end
       end
 
-      def compile_helper_methods(code)
-        code.line "# Helper methods for filters and utilities"
-
-        # to_s helper that handles arrays and hashes like Liquid does
-        code.line "def __to_s__(obj)"
-        code.indent do
-          code.line "case obj"
-          code.line "when NilClass then ''"
-          code.line "when Array then obj.join"
-          code.line "else obj.to_s"
-          code.line "end"
-        end
-        code.line "end"
-        code.blank_line
-
-        # to_number helper
-        code.line "def __to_number__(obj)"
-        code.indent do
-          code.line "case obj"
-          code.line "when Numeric then obj"
-          code.line "when String"
-          code.indent do
-            code.line "obj.strip =~ /\\A-?\\d+\\.\\d+\\z/ ? BigDecimal(obj) : obj.to_i"
-          end
-          code.line "else 0"
-          code.line "end"
-        end
-        code.line "end"
-        code.blank_line
-
-        # to_integer helper
-        code.line "def __to_integer__(obj)"
-        code.indent do
-          code.line "return obj if obj.is_a?(Integer)"
-          code.line "Integer(obj.to_s)"
-        end
-        code.line "end"
-        code.blank_line
-
-        # Liquid truthiness helper
-        code.line "def __truthy__(obj)"
-        code.indent do
-          code.line "obj != nil && obj != false"
-        end
-        code.line "end"
-        code.blank_line
-
-        # Variable lookup helper - handles hash/array access, method calls, to_liquid, and drop context
-        code.line "__lookup__ = ->(obj, key) {"
-        code.indent do
-          code.line "return nil if obj.nil?"
-          code.line "# Set context on Drops BEFORE accessing their methods"
-          code.line "obj = obj.to_liquid if obj.respond_to?(:to_liquid)"
-          code.line "obj.context = __context__ if obj.respond_to?(:context=)"
-          code.line "# Now perform the lookup"
-          code.line "result = if obj.respond_to?(:[]) && (obj.respond_to?(:key?) && obj.key?(key) || obj.respond_to?(:fetch) && key.is_a?(Integer))"
-          code.indent do
-            code.line "obj[key]"
-          end
-          code.line "elsif obj.respond_to?(key)"
-          code.indent do
-            code.line "obj.send(key)"
-          end
-          code.line "else"
-          code.indent do
-            code.line "nil"
-          end
-          code.line "end"
-          code.line "# Convert result to liquid and set context for nested Drops"
-          code.line "result = result.to_liquid if result.respond_to?(:to_liquid)"
-          code.line "result.context = __context__ if result.respond_to?(:context=)"
-          code.line "result"
-        end
-        code.line "}"
-        code.blank_line
-
-        # Output helper that handles nil and arrays
-        code.line "def __output_value__(obj)"
-        code.indent do
-          code.line "case obj"
-          code.line "when NilClass then ''"
-          code.line "when Array then obj.map { |o| __output_value__(o) }.join"
-          code.line "else obj.to_s"
-          code.line "end"
-        end
-        code.line "end"
-      end
+      # NOTE: compile_helper_methods was removed - helpers are now provided by the
+      # pre-loaded LR module (compile/runtime.rb). Templates call LR.to_s(), LR.lookup(), etc.
     end
 
     # Custom error for compilation issues
