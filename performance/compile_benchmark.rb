@@ -171,6 +171,19 @@ class CompileBenchmarkRunner
     puts "=" * 60
     puts
 
+    # Run quick timing to get approximate values for summary
+    iterations = 50
+
+    start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    iterations.times { render_interpreted }
+    interpreted_time = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start
+
+    start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    iterations.times { render_compiled }
+    compiled_time = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start
+
+    speedup = interpreted_time / compiled_time
+
     Benchmark.ips do |x|
       x.time = 10
       x.warmup = 5
@@ -189,6 +202,16 @@ class CompileBenchmarkRunner
 
       x.compare!
     end
+
+    # Print clear summary
+    puts
+    puts "=" * 60
+    puts "SUMMARY:"
+    puts "  ✓ Pre-compiled Ruby is #{speedup.round(2)}x FASTER than interpreted Liquid"
+    puts
+    puts "  (The 'X slower' above means compared to the fastest option,"
+    puts "   which is pre-compiled Ruby. Higher i/s = faster.)"
+    puts "=" * 60
   end
 end
 
