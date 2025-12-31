@@ -303,7 +303,7 @@ module Liquid
               compile_partial_source(source, code)
             rescue => e
               code.line "# Error compiling partial: #{e.message.inspect}"
-              code.line "__partial_output__ << '[PARTIAL ERROR: #{name}]'"
+              code.line "__partial_output__ << '[PARTIAL ERROR: ' + #{name.inspect} + ']'"
             end
 
             code.blank_line

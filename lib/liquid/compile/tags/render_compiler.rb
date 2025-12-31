@@ -39,8 +39,8 @@ module Liquid
 
           if partial_source
             if compiler.debug?
-              code.line "# Inlined partial '#{template_name}' at compile time"
-              code.line "$stderr.puts '* WARN: Liquid file system access - inlined partial \\\"#{template_name}\\\" at compile time' if $VERBOSE"
+              code.line "# Inlined partial #{template_name.inspect} at compile time"
+              code.line "$stderr.puts '* WARN: Liquid file system access - inlined partial ' + #{template_name.inspect} + ' at compile time' if $VERBOSE"
             end
             # Generate a unique method name for this partial
             method_name = compiler.register_partial(template_name, partial_source)
