@@ -69,9 +69,9 @@ module Liquid
 
           if tag.limit
             limit_expr = ExpressionCompiler.compile(tag.limit, compiler)
-            code.line "#{coll_var} = (#{coll_var}.respond_to?(:slice) ? #{coll_var}.slice(__to_integer__(#{from_expr}), __to_integer__(#{limit_expr})) : #{coll_var}) || []"
+            code.line "#{coll_var} = (#{coll_var}.respond_to?(:slice) ? #{coll_var}.slice(LR.to_integer(#{from_expr}), LR.to_integer(#{limit_expr})) : #{coll_var}) || []"
           else
-            code.line "#{coll_var} = (#{coll_var}.respond_to?(:drop) ? #{coll_var}.drop(__to_integer__(#{from_expr})) : #{coll_var}) || []"
+            code.line "#{coll_var} = (#{coll_var}.respond_to?(:drop) ? #{coll_var}.drop(LR.to_integer(#{from_expr})) : #{coll_var}) || []"
           end
         end
 

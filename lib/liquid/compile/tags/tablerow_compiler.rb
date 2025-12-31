@@ -36,13 +36,13 @@ module Liquid
               offset_expr = ExpressionCompiler.compile(offset, compiler)
               if limit
                 limit_expr = ExpressionCompiler.compile(limit, compiler)
-                code.line "#{coll_var} = #{coll_var}.slice(__to_integer__(#{offset_expr}), __to_integer__(#{limit_expr})) || []"
+                code.line "#{coll_var} = #{coll_var}.slice(LR.to_integer(#{offset_expr}), LR.to_integer(#{limit_expr})) || []"
               else
-                code.line "#{coll_var} = #{coll_var}.drop(__to_integer__(#{offset_expr}))"
+                code.line "#{coll_var} = #{coll_var}.drop(LR.to_integer(#{offset_expr}))"
               end
             elsif limit
               limit_expr = ExpressionCompiler.compile(limit, compiler)
-              code.line "#{coll_var} = #{coll_var}.first(__to_integer__(#{limit_expr}))"
+              code.line "#{coll_var} = #{coll_var}.first(LR.to_integer(#{limit_expr}))"
             end
           end
 

@@ -66,7 +66,7 @@ module Liquid
         # If no operator, just check truthiness
         if op.nil?
           left_expr = ExpressionCompiler.compile(left, compiler)
-          return "__truthy__(#{left_expr})"
+          return "LR.truthy?(#{left_expr})"
         end
 
         # Compile left and right expressions

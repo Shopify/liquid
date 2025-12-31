@@ -63,16 +63,16 @@ module Liquid
         lookup.lookups.each_with_index do |key, index|
           if key.is_a?(VariableLookup) || key.is_a?(RangeLookup)
             # Dynamic key like foo[expr]
-            base = "__lookup__.call(#{base}, #{compile(key, compiler)})"
+            base = "LR.lookup(#{base}, #{compile(key, compiler)}, __context__)"
           elsif key.is_a?(Integer)
             # Numeric index like foo[0]
-            base = "__lookup__.call(#{base}, #{key})"
+            base = "LR.lookup(#{base}, #{key}, __context__)"
           elsif key.is_a?(String)
-            # Always use __lookup__ which tries key access first,
+            # Always use LR.lookup which tries key access first,
             # then falls back to method call for command methods (first, last, size)
-            base = "__lookup__.call(#{base}, #{key.inspect})"
+            base = "LR.lookup(#{base}, #{key.inspect}, __context__)"
           else
-            base = "__lookup__.call(#{base}, #{compile(key, compiler)})"
+            base = "LR.lookup(#{base}, #{compile(key, compiler)}, __context__)"
           end
         end
 
@@ -88,7 +88,7 @@ module Liquid
         end_expr = compile(range.end_obj, compiler)
 
         # Convert to integers and create range
-        "(__to_integer__(#{start_expr})...__to_integer__(#{end_expr})).to_a"
+        "(LR.to_integer(#{start_expr})...LR.to_integer(#{end_expr})).to_a"
       end
 
       # Compile a method literal (blank/empty)

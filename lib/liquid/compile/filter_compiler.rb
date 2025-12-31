@@ -10,129 +10,127 @@ module Liquid
       # Standard filters that map directly to Ruby methods or simple expressions
       SIMPLE_FILTERS = {
         'size' => ->(input, _args, _kwargs, _compiler) { "(#{input}.respond_to?(:size) ? #{input}.size : 0)" },
-        'downcase' => ->(input, _args, _kwargs, _compiler) { "__to_s__(#{input}).downcase" },
-        'upcase' => ->(input, _args, _kwargs, _compiler) { "__to_s__(#{input}).upcase" },
-        'capitalize' => ->(input, _args, _kwargs, _compiler) { "__to_s__(#{input}).capitalize" },
-        'strip' => ->(input, _args, _kwargs, _compiler) { "__to_s__(#{input}).strip" },
-        'lstrip' => ->(input, _args, _kwargs, _compiler) { "__to_s__(#{input}).lstrip" },
-        'rstrip' => ->(input, _args, _kwargs, _compiler) { "__to_s__(#{input}).rstrip" },
-        'reverse' => ->(input, _args, _kwargs, _compiler) { "(#{input}.is_a?(Array) ? #{input}.reverse : __to_s__(#{input}).reverse)" },
+        'downcase' => ->(input, _args, _kwargs, _compiler) { "LR.to_s(#{input}).downcase" },
+        'upcase' => ->(input, _args, _kwargs, _compiler) { "LR.to_s(#{input}).upcase" },
+        'capitalize' => ->(input, _args, _kwargs, _compiler) { "LR.to_s(#{input}).capitalize" },
+        'strip' => ->(input, _args, _kwargs, _compiler) { "LR.to_s(#{input}).strip" },
+        'lstrip' => ->(input, _args, _kwargs, _compiler) { "LR.to_s(#{input}).lstrip" },
+        'rstrip' => ->(input, _args, _kwargs, _compiler) { "LR.to_s(#{input}).rstrip" },
+        'reverse' => ->(input, _args, _kwargs, _compiler) { "(#{input}.is_a?(Array) ? #{input}.reverse : LR.to_s(#{input}).reverse)" },
         'first' => ->(input, _args, _kwargs, _compiler) { "(#{input}.respond_to?(:first) ? #{input}.first : nil)" },
         'last' => ->(input, _args, _kwargs, _compiler) { "(#{input}.respond_to?(:last) ? #{input}.last : nil)" },
         'uniq' => ->(input, _args, _kwargs, _compiler) { "(#{input}.respond_to?(:uniq) ? #{input}.uniq : #{input})" },
         'compact' => ->(input, _args, _kwargs, _compiler) { "(#{input}.respond_to?(:compact) ? #{input}.compact : #{input})" },
         'flatten' => ->(input, _args, _kwargs, _compiler) { "(#{input}.respond_to?(:flatten) ? #{input}.flatten : #{input})" },
         'sort' => ->(input, _args, _kwargs, _compiler) { "(#{input}.respond_to?(:sort) ? #{input}.sort : #{input})" },
-        'abs' => ->(input, _args, _kwargs, _compiler) { "__to_number__(#{input}).abs" },
-        'ceil' => ->(input, _args, _kwargs, _compiler) { "__to_number__(#{input}).ceil.to_i" },
-        'floor' => ->(input, _args, _kwargs, _compiler) { "__to_number__(#{input}).floor.to_i" },
-        'escape' => ->(input, _args, _kwargs, _compiler) { "(#{input}.nil? ? nil : CGI.escapeHTML(__to_s__(#{input})))" },
-        'h' => ->(input, _args, _kwargs, _compiler) { "(#{input}.nil? ? nil : CGI.escapeHTML(__to_s__(#{input})))" },
-        'url_encode' => ->(input, _args, _kwargs, _compiler) { "(#{input}.nil? ? nil : CGI.escape(__to_s__(#{input})))" },
-        'url_decode' => ->(input, _args, _kwargs, _compiler) { "(#{input}.nil? ? nil : CGI.unescape(__to_s__(#{input})))" },
-        'base64_encode' => ->(input, _args, _kwargs, _compiler) { "Base64.strict_encode64(__to_s__(#{input}))" },
-        'base64_decode' => ->(input, _args, _kwargs, _compiler) { "Base64.strict_decode64(__to_s__(#{input}))" },
-        'base64_url_safe_encode' => ->(input, _args, _kwargs, _compiler) { "Base64.urlsafe_encode64(__to_s__(#{input}))" },
-        'base64_url_safe_decode' => ->(input, _args, _kwargs, _compiler) { "Base64.urlsafe_decode64(__to_s__(#{input}))" },
-        'strip_html' => ->(input, _args, _kwargs, _compiler) {
-          "__to_s__(#{input}).gsub(%r{<script.*?</script>|<!--.*?-->|<style.*?</style>}m, '').gsub(/<.*?>/m, '')"
-        },
-        'strip_newlines' => ->(input, _args, _kwargs, _compiler) { "__to_s__(#{input}).gsub(/\\r?\\n/, '')" },
-        'newline_to_br' => ->(input, _args, _kwargs, _compiler) { "__to_s__(#{input}).gsub(/\\r?\\n/, \"<br />\\n\")" },
+        'abs' => ->(input, _args, _kwargs, _compiler) { "LR.to_number(#{input}).abs" },
+        'ceil' => ->(input, _args, _kwargs, _compiler) { "LR.to_number(#{input}).ceil.to_i" },
+        'floor' => ->(input, _args, _kwargs, _compiler) { "LR.to_number(#{input}).floor.to_i" },
+        'escape' => ->(input, _args, _kwargs, _compiler) { "(#{input}.nil? ? nil : LR.escape_html(#{input}))" },
+        'h' => ->(input, _args, _kwargs, _compiler) { "(#{input}.nil? ? nil : LR.escape_html(#{input}))" },
+        'url_encode' => ->(input, _args, _kwargs, _compiler) { "(#{input}.nil? ? nil : LR.url_encode(#{input}))" },
+        'url_decode' => ->(input, _args, _kwargs, _compiler) { "(#{input}.nil? ? nil : LR.url_decode(#{input}))" },
+        'base64_encode' => ->(input, _args, _kwargs, _compiler) { "LR.base64_encode(#{input})" },
+        'base64_decode' => ->(input, _args, _kwargs, _compiler) { "LR.base64_decode(#{input})" },
+        'base64_url_safe_encode' => ->(input, _args, _kwargs, _compiler) { "LR.base64_url_safe_encode(#{input})" },
+        'base64_url_safe_decode' => ->(input, _args, _kwargs, _compiler) { "LR.base64_url_safe_decode(#{input})" },
+        'strip_html' => ->(input, _args, _kwargs, _compiler) { "LR.strip_html(#{input})" },
+        'strip_newlines' => ->(input, _args, _kwargs, _compiler) { "LR.to_s(#{input}).gsub(/\\r?\\n/, '')" },
+        'newline_to_br' => ->(input, _args, _kwargs, _compiler) { "LR.to_s(#{input}).gsub(/\\r?\\n/, \"<br />\\n\")" },
       }.freeze
 
       # Filters with arguments that need special handling
+      # All use LR.method() calls to pre-loaded runtime
       PARAMETERIZED_FILTERS = {
         'append' => ->(input, args, _kwargs, compiler) {
           arg = compile_arg(args[0], compiler)
-          "__to_s__(#{input}) + __to_s__(#{arg})"
+          "LR.to_s(#{input}) + LR.to_s(#{arg})"
         },
         'prepend' => ->(input, args, _kwargs, compiler) {
           arg = compile_arg(args[0], compiler)
-          "__to_s__(#{arg}) + __to_s__(#{input})"
+          "LR.to_s(#{arg}) + LR.to_s(#{input})"
         },
         'plus' => ->(input, args, _kwargs, compiler) {
           arg = compile_arg(args[0], compiler)
-          "(__to_number__(#{input}) + __to_number__(#{arg}))"
+          "(LR.to_number(#{input}) + LR.to_number(#{arg}))"
         },
         'minus' => ->(input, args, _kwargs, compiler) {
           arg = compile_arg(args[0], compiler)
-          "(__to_number__(#{input}) - __to_number__(#{arg}))"
+          "(LR.to_number(#{input}) - LR.to_number(#{arg}))"
         },
         'times' => ->(input, args, _kwargs, compiler) {
           arg = compile_arg(args[0], compiler)
-          "(__to_number__(#{input}) * __to_number__(#{arg}))"
+          "(LR.to_number(#{input}) * LR.to_number(#{arg}))"
         },
         'divided_by' => ->(input, args, _kwargs, compiler) {
           arg = compile_arg(args[0], compiler)
-          "(__to_number__(#{input}) / __to_number__(#{arg}))"
+          "(LR.to_number(#{input}) / LR.to_number(#{arg}))"
         },
         'modulo' => ->(input, args, _kwargs, compiler) {
           arg = compile_arg(args[0], compiler)
-          "(__to_number__(#{input}) % __to_number__(#{arg}))"
+          "(LR.to_number(#{input}) % LR.to_number(#{arg}))"
         },
         'round' => ->(input, args, _kwargs, compiler) {
           if args.empty?
-            "__to_number__(#{input}).round.to_i"
+            "LR.to_number(#{input}).round.to_i"
           else
             arg = compile_arg(args[0], compiler)
-            "__to_number__(#{input}).round(__to_number__(#{arg}))"
+            "LR.to_number(#{input}).round(LR.to_number(#{arg}))"
           end
         },
         'at_least' => ->(input, args, _kwargs, compiler) {
           arg = compile_arg(args[0], compiler)
-          "[__to_number__(#{input}), __to_number__(#{arg})].max"
+          "[LR.to_number(#{input}), LR.to_number(#{arg})].max"
         },
         'at_most' => ->(input, args, _kwargs, compiler) {
           arg = compile_arg(args[0], compiler)
-          "[__to_number__(#{input}), __to_number__(#{arg})].min"
+          "[LR.to_number(#{input}), LR.to_number(#{arg})].min"
         },
         'default' => ->(input, args, kwargs, compiler) {
           default_val = args.empty? ? "''" : compile_arg(args[0], compiler)
-          allow_false = kwargs && kwargs['allow_false'] ? compile_arg(kwargs['allow_false'], compiler) : 'false'
-          "(if #{allow_false} then (#{input}.nil? || (#{input}.respond_to?(:empty?) && #{input}.empty?)) else (!__truthy__(#{input}) || (#{input}.respond_to?(:empty?) && #{input}.empty?)) end) ? #{default_val} : #{input}"
+          allow_false = kwargs && kwargs['allow_false'] ? "allow_false: #{compile_arg(kwargs['allow_false'], compiler)}" : ''
+          "LR.default(#{input}, #{default_val}#{allow_false.empty? ? '' : ', ' + allow_false})"
         },
         'split' => ->(input, args, _kwargs, compiler) {
           pattern = args.empty? ? "' '" : compile_arg(args[0], compiler)
-          "__to_s__(#{input}).split(__to_s__(#{pattern}))"
+          "LR.to_s(#{input}).split(LR.to_s(#{pattern}))"
         },
         'join' => ->(input, args, _kwargs, compiler) {
           glue = args.empty? ? "' '" : compile_arg(args[0], compiler)
-          "(#{input}.is_a?(Array) ? #{input}.map { |i| __to_s__(i) }.join(__to_s__(#{glue})) : __to_s__(#{input}))"
+          "(#{input}.is_a?(Array) ? #{input}.map { |i| LR.to_s(i) }.join(LR.to_s(#{glue})) : LR.to_s(#{input}))"
         },
         'replace' => ->(input, args, _kwargs, compiler) {
           string = compile_arg(args[0], compiler)
           replacement = args.length > 1 ? compile_arg(args[1], compiler) : "''"
-          "__to_s__(#{input}).gsub(__to_s__(#{string}), __to_s__(#{replacement}))"
+          "LR.to_s(#{input}).gsub(LR.to_s(#{string}), LR.to_s(#{replacement}))"
         },
         'replace_first' => ->(input, args, _kwargs, compiler) {
           string = compile_arg(args[0], compiler)
           replacement = args.length > 1 ? compile_arg(args[1], compiler) : "''"
-          "__to_s__(#{input}).sub(__to_s__(#{string}), __to_s__(#{replacement}))"
+          "LR.to_s(#{input}).sub(LR.to_s(#{string}), LR.to_s(#{replacement}))"
         },
         'remove' => ->(input, args, _kwargs, compiler) {
           string = compile_arg(args[0], compiler)
-          "__to_s__(#{input}).gsub(__to_s__(#{string}), '')"
+          "LR.to_s(#{input}).gsub(LR.to_s(#{string}), '')"
         },
         'remove_first' => ->(input, args, _kwargs, compiler) {
           string = compile_arg(args[0], compiler)
-          "__to_s__(#{input}).sub(__to_s__(#{string}), '')"
+          "LR.to_s(#{input}).sub(LR.to_s(#{string}), '')"
         },
         'truncate' => ->(input, args, _kwargs, compiler) {
           length = args.empty? ? "50" : compile_arg(args[0], compiler)
           ellipsis = args.length > 1 ? compile_arg(args[1], compiler) : "'...'"
-          var = compiler.generate_var_name("trunc")
-          "(lambda { |#{var}_input, #{var}_len, #{var}_ell| #{var}_str = __to_s__(#{var}_input); #{var}_ell_str = __to_s__(#{var}_ell); #{var}_l = [#{var}_len.to_i - #{var}_ell_str.length, 0].max; #{var}_str.length > #{var}_len.to_i ? #{var}_str[0, #{var}_l] + #{var}_ell_str : #{var}_str }).call(#{input}, #{length}, #{ellipsis})"
+          "LR.truncate(#{input}, #{length}, #{ellipsis})"
         },
         'truncatewords' => ->(input, args, _kwargs, compiler) {
           words = args.empty? ? "15" : compile_arg(args[0], compiler)
           ellipsis = args.length > 1 ? compile_arg(args[1], compiler) : "'...'"
-          "(lambda { |input, num_words, ell| words = __to_s__(input).split(' ', [num_words.to_i, 1].max + 1); words.length > [num_words.to_i, 1].max ? words[0, [num_words.to_i, 1].max].join(' ') + __to_s__(ell) : input.to_s }).call(#{input}, #{words}, #{ellipsis})"
+          "LR.truncatewords(#{input}, #{words}, #{ellipsis})"
         },
         'slice' => ->(input, args, _kwargs, compiler) {
           offset = compile_arg(args[0], compiler)
           length = args.length > 1 ? compile_arg(args[1], compiler) : "1"
-          "(#{input}.is_a?(Array) ? (#{input}.slice(__to_integer__(#{offset}), __to_integer__(#{length})) || []) : (__to_s__(#{input}).slice(__to_integer__(#{offset}), __to_integer__(#{length})) || ''))"
+          "LR.slice(#{input}, #{offset}, #{length})"
         },
         'map' => ->(input, args, _kwargs, compiler) {
           property = compile_arg(args[0], compiler)
@@ -144,7 +142,7 @@ module Liquid
             target = compile_arg(args[1], compiler)
             "(#{input}.is_a?(Array) ? #{input}.select { |item| item.respond_to?(:[]) && item[#{property}] == #{target} } : [])"
           else
-            "(#{input}.is_a?(Array) ? #{input}.select { |item| item.respond_to?(:[]) && __truthy__(item[#{property}]) } : [])"
+            "(#{input}.is_a?(Array) ? #{input}.select { |item| item.respond_to?(:[]) && LR.truthy?(item[#{property}]) } : [])"
           end
         },
         'reject' => ->(input, args, _kwargs, compiler) {
@@ -153,7 +151,7 @@ module Liquid
             target = compile_arg(args[1], compiler)
             "(#{input}.is_a?(Array) ? #{input}.reject { |item| item.respond_to?(:[]) && item[#{property}] == #{target} } : [])"
           else
-            "(#{input}.is_a?(Array) ? #{input}.reject { |item| item.respond_to?(:[]) && __truthy__(item[#{property}]) } : [])"
+            "(#{input}.is_a?(Array) ? #{input}.reject { |item| item.respond_to?(:[]) && LR.truthy?(item[#{property}]) } : [])"
           end
         },
         'concat' => ->(input, args, _kwargs, compiler) {
@@ -170,11 +168,10 @@ module Liquid
         },
         'date' => ->(input, args, _kwargs, compiler) {
           format = compile_arg(args[0], compiler)
-          # This is a simplified version - full date parsing is complex
-          "(lambda { |input, fmt| return input if fmt.to_s.empty?; d = case input; when Time, Date, DateTime then input; when 'now', 'today' then Time.now; when /\\A\\d+\\z/, Integer then Time.at(input.to_i); when String then (Time.parse(input) rescue input); else input; end; d.respond_to?(:strftime) ? d.strftime(fmt.to_s) : input }.call(#{input}, #{format}))"
+          "LR.date(#{input}, #{format})"
         },
         'escape_once' => ->(input, _args, _kwargs, _compiler) {
-          "__to_s__(#{input}).gsub(/[\"><']|&(?!([a-zA-Z]+|(#\\d+));)/) { |c| {'&'=>'&amp;', '>'=>'&gt;', '<'=>'&lt;', '\"'=>'&quot;', \"'\"=>'&#39;'}[c] || c }"
+          "LR.escape_once(#{input})"
         },
       }.freeze
 
