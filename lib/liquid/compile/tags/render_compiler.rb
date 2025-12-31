@@ -152,7 +152,6 @@ module Liquid
 
           if compiler.debug?
             code.line "# Dynamic render (template name from variable)"
-            code.line "$stderr.puts '* WARN: Liquid runtime file system access - dynamic render (template name from variable)' if $VERBOSE"
           end
 
           name_expr = ExpressionCompiler.compile(template_name_expr, compiler)
@@ -168,16 +167,8 @@ module Liquid
           var_expr = variable_name_expr ? ExpressionCompiler.compile(variable_name_expr, compiler) : "nil"
           alias_expr = alias_name ? alias_name.inspect : "nil"
 
-          # Call the runtime dynamic render method
-          code.line "if defined?(__render_dynamic__)"
-          code.indent do
-            code.line "__output__ << __render_dynamic__(#{name_expr}, #{var_expr}, #{attrs_var}, #{alias_expr}, #{is_for_loop})"
-          end
-          code.line "else"
-          code.indent do
-            code.line "raise RuntimeError, 'Dynamic render requires __render_dynamic__ method: ' + #{name_expr}.inspect"
-          end
-          code.line "end"
+          # Call the external handler for dynamic renders
+          code.line "__output__ << __external__.call(:render, #{name_expr}, #{var_expr}, #{attrs_var}, #{alias_expr}, #{is_for_loop}, __context__)"
         end
       end
     end

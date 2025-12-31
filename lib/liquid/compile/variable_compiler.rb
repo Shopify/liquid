@@ -14,7 +14,7 @@ module Liquid
       # @param code [CodeGenerator] The code generator
       def self.compile(variable, compiler, code)
         value_expr = compile_to_expression(variable, compiler)
-        code.line "__output__ << __output_value__(#{value_expr})"
+        code.line "__output__ << LR.output(#{value_expr})"
       end
 
       # Compile a Variable node to a Ruby expression (without output)

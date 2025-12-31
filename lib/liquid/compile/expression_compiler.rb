@@ -47,6 +47,15 @@ module Liquid
         # Start with the base variable
         name = lookup.name
 
+        # Check for forloop property inlining
+        if name == 'forloop' && lookup.lookups.length == 1
+          loop_ctx = compiler.current_loop_context
+          if loop_ctx && loop_ctx[:idx_var]
+            inlined = compile_forloop_property(lookup.lookups.first, loop_ctx)
+            return inlined if inlined
+          end
+        end
+
         # Handle dynamic name (expression in brackets)
         base = if name.is_a?(VariableLookup) || name.is_a?(RangeLookup)
           # Dynamic name like [expr].foo
@@ -63,20 +72,51 @@ module Liquid
         lookup.lookups.each_with_index do |key, index|
           if key.is_a?(VariableLookup) || key.is_a?(RangeLookup)
             # Dynamic key like foo[expr]
-            base = "__lookup__.call(#{base}, #{compile(key, compiler)})"
+            base = "LR.lookup(#{base}, #{compile(key, compiler)}, __context__)"
           elsif key.is_a?(Integer)
             # Numeric index like foo[0]
-            base = "__lookup__.call(#{base}, #{key})"
+            base = "LR.lookup(#{base}, #{key}, __context__)"
           elsif key.is_a?(String)
-            # Always use __lookup__ which tries key access first,
+            # Always use LR.lookup which tries key access first,
             # then falls back to method call for command methods (first, last, size)
-            base = "__lookup__.call(#{base}, #{key.inspect})"
+            base = "LR.lookup(#{base}, #{key.inspect}, __context__)"
           else
-            base = "__lookup__.call(#{base}, #{compile(key, compiler)})"
+            base = "LR.lookup(#{base}, #{compile(key, compiler)}, __context__)"
           end
         end
 
         base
+      end
+
+      # Inline forloop property access to avoid hash allocation
+      # @param prop [String] Property name (index, index0, first, last, etc.)
+      # @param loop_ctx [Hash] Loop context with idx_var, len_var, loop_name
+      # @return [String, nil] Inlined Ruby code or nil if can't inline
+      def self.compile_forloop_property(prop, loop_ctx)
+        idx = loop_ctx[:idx_var]
+        len = loop_ctx[:len_var]
+        name = loop_ctx[:loop_name]
+
+        case prop
+        when 'index'
+          "(#{idx} + 1)"
+        when 'index0'
+          idx
+        when 'rindex'
+          "(#{len} - #{idx})"
+        when 'rindex0'
+          "(#{len} - #{idx} - 1)"
+        when 'first'
+          "(#{idx} == 0)"
+        when 'last'
+          "(#{idx} == #{len} - 1)"
+        when 'length'
+          len
+        when 'name'
+          name ? name.inspect : "nil"
+        else
+          nil # Unknown property, fall back to hash lookup
+        end
       end
 
       # Compile a range lookup expression
@@ -88,7 +128,7 @@ module Liquid
         end_expr = compile(range.end_obj, compiler)
 
         # Convert to integers and create range
-        "(__to_integer__(#{start_expr})...__to_integer__(#{end_expr})).to_a"
+        "(LR.to_integer(#{start_expr})...LR.to_integer(#{end_expr})).to_a"
       end
 
       # Compile a method literal (blank/empty)

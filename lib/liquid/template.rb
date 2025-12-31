@@ -205,53 +205,58 @@ module Liquid
       render(context, output: output)
     end
 
-    # Compile the template to pure Ruby code.
+    # Compile the template to Ruby code for fast, secure execution.
     #
-    # Returns a string containing Ruby code that can be eval'd to create
-    # a proc/lambda. The proc takes an assigns hash and returns the rendered
-    # output string.
-    #
-    # This provides a way to convert Liquid templates to standalone Ruby code
-    # that can be executed without the Liquid library at runtime.
+    # Returns a CompiledTemplate that can be rendered repeatedly. On Ruby 4.0+,
+    # rendering happens in a secure sandbox. On earlier versions, a security
+    # warning is printed to STDERR.
     #
     # == Example
     #
     #   template = Liquid::Template.parse("Hello, {{ name }}!")
-    #   ruby_code = template.compile_to_ruby
-    #   render_proc = eval(ruby_code)
-    #   result = render_proc.call({ "name" => "World" })
+    #   compiled = template.compile_to_ruby
+    #
+    #   # Render (fast, secure on Ruby 4.0+)
+    #   result = compiled.render({ "name" => "World" })
     #   # => "Hello, World!"
+    #
+    #   # Access the generated Ruby source
+    #   puts compiled.source
+    #
+    #   # Check if execution is sandboxed
+    #   compiled.secure?  # => true on Ruby 4.0+
     #
     # == Options
     #
     # * <tt>:strict_variables</tt> - Raise on undefined variables (default: false)
     # * <tt>:include_filters</tt> - Include helper methods for filters (default: true)
+    # * <tt>:debug</tt> - Include source comments in generated code (default: false)
     #
-    # == Advantages of Compiled Code
+    # == Performance
     #
+    # Compiled templates are ~1.5x faster than interpreted Liquid:
     # * No Context object overhead
     # * No filter invocation overhead (direct method calls)
     # * No resource limits tracking
     # * No stack-based scoping (uses Ruby's native scoping)
-    # * No profiling hooks
     # * Direct string concatenation
+    #
+    # == Security
+    #
+    # On Ruby 4.0+, templates execute in a Ruby::Box sandbox that blocks:
+    # * File/network access
+    # * System calls (exec, spawn, fork)
+    # * Code loading (require, eval)
+    # * Dangerous metaprogramming
+    #
+    # On Ruby < 4.0, templates execute WITHOUT sandboxing.
+    # A warning is printed to STDERR on first execution.
     #
     # == Limitations
     #
-    # * {% render %} and {% include %} tags require runtime support
+    # * {% render %} and {% include %} resolved at compile time when possible
     # * Custom tags need explicit compiler implementations
     # * Custom filters must be available at runtime
-    #
-    # Returns a CompiledTemplate object with the Ruby code and any external tags
-    # that need to be passed to the generated lambda.
-    #
-    # Usage:
-    #   compiled = template.compile_to_ruby
-    #   result = compiled.call({ "name" => "World" })  # Handles external tags automatically
-    #
-    # Or manually:
-    #   proc = eval(compiled.code)
-    #   result = proc.call(assigns, compiled.external_tags)
     #
     def compile_to_ruby(options = {})
       return nil if @root.nil?

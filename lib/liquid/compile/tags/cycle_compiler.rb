@@ -32,7 +32,7 @@ module Liquid
           code.line "case #{cycle_var} % #{variables.size}"
           variables.each_with_index do |var, idx|
             var_expr = ExpressionCompiler.compile(var, compiler)
-            code.line "when #{idx} then __output__ << __to_s__(#{var_expr})"
+            code.line "when #{idx} then __output__ << LR.to_s(#{var_expr})"
           end
           code.line "end"
 

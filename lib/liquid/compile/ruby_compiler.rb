@@ -75,6 +75,32 @@ module Liquid
         @external_tags = {}   # External tags: var_name => tag object
         @external_tag_counter = 0
         @has_external_filters = false  # Whether we need the filter helper
+        @loop_context_stack = []       # Stack of loop contexts for break/continue
+      end
+
+      # Push a loop context onto the stack (for nested loops)
+      # @param break_var [String, nil] Variable name for break flag, or nil if no break
+      # @param idx_var [String, nil] Variable name for loop index
+      # @param len_var [String, nil] Variable name for collection length
+      # @param loop_name [String, nil] Name of the loop (for forloop.name)
+      def push_loop_context(break_var: nil, idx_var: nil, len_var: nil, loop_name: nil)
+        @loop_context_stack.push({
+          break_var: break_var,
+          idx_var: idx_var,
+          len_var: len_var,
+          loop_name: loop_name
+        })
+      end
+
+      # Pop the current loop context
+      def pop_loop_context
+        @loop_context_stack.pop
+      end
+
+      # Get the current loop context (for break/continue compilation)
+      # @return [Hash, nil] Current loop context or nil if not in a loop
+      def current_loop_context
+        @loop_context_stack.last
       end
 
       # Mark that we have external filters
@@ -203,41 +229,16 @@ module Liquid
         main_code = CodeGenerator.new
         compile_node(@template.root, main_code)
 
-        # Determine lambda parameters based on external dependencies
-        params = ["assigns = {}"]
-        params << "__external_tags__ = {}" unless @external_tags.empty?
-        params << "__filter_handler__ = nil" if @has_external_filters
-        params << "__context__ = nil"
-
-        code.line "->(#{params.join(', ')}) do"
+        # Lambda signature: (assigns, context, external_handler)
+        # - assigns: Hash of template variables
+        # - context: CompiledContext for Drop support
+        # - external_handler: Proc that handles [:tag, ...] and [:filter, ...] calls
+        code.line "->(assigns, __context__, __external__) do"
 
         code.indent do
           # Initialize the output buffer
           code.line '__output__ = +""'
           code.blank_line
-
-          # Create a compiled context if not provided (for Drop support)
-          code.line "# Create context for Drop support"
-          code.line "__context__ ||= Liquid::Compile::CompiledContext.new(assigns)"
-          code.blank_line
-
-          # Compile helper methods if needed
-          if @options[:include_filters]
-            compile_helper_methods(code)
-            code.blank_line
-          end
-
-          # Add external tag runtime helper if needed
-          unless @external_tags.empty?
-            compile_external_tag_helper(code)
-            code.blank_line
-          end
-
-          # Add external filter helper if needed
-          if @has_external_filters
-            compile_filter_helper(code)
-            code.blank_line
-          end
 
           # Compile partial methods (before main body so they're available)
           compile_partials(code)
@@ -251,41 +252,6 @@ module Liquid
         code.line "end"
 
         code.to_s
-      end
-
-      # Compile helper for calling external tags at runtime
-      def compile_external_tag_helper(code)
-        code.line "# Helper for calling external (unknown) tags at runtime"
-        code.line "__call_external_tag__ = ->(tag_var, tag_assigns) {"
-        code.indent do
-          code.line "tag = __external_tags__[tag_var]"
-          code.line "next '' unless tag"
-          code.line "# Create a context using the default environment (which has filters registered)"
-          code.line "ctx = Liquid::Context.new([tag_assigns], {}, {}, false, nil, {}, Liquid::Environment.default)"
-          code.line "output = +''"
-          code.line "# Use render_to_output_buffer to ensure block tags work correctly"
-          code.line "tag.render_to_output_buffer(ctx, output)"
-          code.line "output"
-        end
-        code.line "}"
-      end
-
-      # Compile helper for calling external filters at runtime
-      def compile_filter_helper(code)
-        code.line "# Helper for calling external (unknown) filters at runtime"
-        code.line "__call_filter__ = ->(name, input, args) {"
-        code.indent do
-          code.line "if __filter_handler__&.respond_to?(name)"
-          code.indent do
-            code.line "__filter_handler__.send(name, input, *args)"
-          end
-          code.line "else"
-          code.indent do
-            code.line "input # Return input unchanged if filter not found"
-          end
-          code.line "end"
-        end
-        code.line "}"
       end
 
       # Compile all registered partials as inner methods
@@ -377,11 +343,14 @@ module Liquid
       end
 
       def compile_tag(tag, code)
-        compiler_class = find_tag_compiler(tag)
-        if compiler_class
+        # First, check if the tag implements to_ruby (custom compilation)
+        if tag.respond_to?(:to_ruby)
+          tag.to_ruby(code, self)
+        # Then check for a built-in compiler class
+        elsif (compiler_class = find_tag_compiler(tag))
           compiler_class.compile(tag, self, code)
         else
-          # Unknown tag - delegate to the original tag's render method at runtime
+          # Unknown tag - yield to caller at runtime
           compile_external_tag(tag, code)
         end
       end
@@ -390,10 +359,10 @@ module Liquid
         tag_var = register_external_tag(tag)
         tag_name = tag.class.name.split('::').last
         if debug?
-          code.line "# External tag: #{tag_name} (delegated to runtime)"
-          code.line "$stderr.puts '* WARN: Liquid external tag call - #{tag_name} (not compiled, delegated to runtime)' if $VERBOSE"
+          code.line "# External tag: #{tag_name} (yields to caller)"
         end
-        code.line "__output__ << __call_external_tag__.call(#{tag_var.inspect}, assigns)"
+        # Yield [:tag, tag_var, assigns] to the external handler
+        code.line "__output__ << __external__.call(:tag, #{tag_var.inspect}, assigns)"
       end
 
       def find_tag_compiler(tag)
@@ -439,93 +408,8 @@ module Liquid
         end
       end
 
-      def compile_helper_methods(code)
-        code.line "# Helper methods for filters and utilities"
-
-        # to_s helper that handles arrays and hashes like Liquid does
-        code.line "def __to_s__(obj)"
-        code.indent do
-          code.line "case obj"
-          code.line "when NilClass then ''"
-          code.line "when Array then obj.join"
-          code.line "else obj.to_s"
-          code.line "end"
-        end
-        code.line "end"
-        code.blank_line
-
-        # to_number helper
-        code.line "def __to_number__(obj)"
-        code.indent do
-          code.line "case obj"
-          code.line "when Numeric then obj"
-          code.line "when String"
-          code.indent do
-            code.line "obj.strip =~ /\\A-?\\d+\\.\\d+\\z/ ? BigDecimal(obj) : obj.to_i"
-          end
-          code.line "else 0"
-          code.line "end"
-        end
-        code.line "end"
-        code.blank_line
-
-        # to_integer helper
-        code.line "def __to_integer__(obj)"
-        code.indent do
-          code.line "return obj if obj.is_a?(Integer)"
-          code.line "Integer(obj.to_s)"
-        end
-        code.line "end"
-        code.blank_line
-
-        # Liquid truthiness helper
-        code.line "def __truthy__(obj)"
-        code.indent do
-          code.line "obj != nil && obj != false"
-        end
-        code.line "end"
-        code.blank_line
-
-        # Variable lookup helper - handles hash/array access, method calls, to_liquid, and drop context
-        code.line "__lookup__ = ->(obj, key) {"
-        code.indent do
-          code.line "return nil if obj.nil?"
-          code.line "# Set context on Drops BEFORE accessing their methods"
-          code.line "obj = obj.to_liquid if obj.respond_to?(:to_liquid)"
-          code.line "obj.context = __context__ if obj.respond_to?(:context=)"
-          code.line "# Now perform the lookup"
-          code.line "result = if obj.respond_to?(:[]) && (obj.respond_to?(:key?) && obj.key?(key) || obj.respond_to?(:fetch) && key.is_a?(Integer))"
-          code.indent do
-            code.line "obj[key]"
-          end
-          code.line "elsif obj.respond_to?(key)"
-          code.indent do
-            code.line "obj.send(key)"
-          end
-          code.line "else"
-          code.indent do
-            code.line "nil"
-          end
-          code.line "end"
-          code.line "# Convert result to liquid and set context for nested Drops"
-          code.line "result = result.to_liquid if result.respond_to?(:to_liquid)"
-          code.line "result.context = __context__ if result.respond_to?(:context=)"
-          code.line "result"
-        end
-        code.line "}"
-        code.blank_line
-
-        # Output helper that handles nil and arrays
-        code.line "def __output_value__(obj)"
-        code.indent do
-          code.line "case obj"
-          code.line "when NilClass then ''"
-          code.line "when Array then obj.map { |o| __output_value__(o) }.join"
-          code.line "else obj.to_s"
-          code.line "end"
-        end
-        code.line "end"
-      end
+      # NOTE: compile_helper_methods was removed - helpers are now provided by the
+      # pre-loaded LR module (compile/runtime.rb). Templates call LR.to_s(), LR.lookup(), etc.
     end
 
     # Custom error for compilation issues
