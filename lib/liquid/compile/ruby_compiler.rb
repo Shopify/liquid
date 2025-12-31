@@ -317,11 +317,14 @@ module Liquid
       end
 
       def compile_tag(tag, code)
-        compiler_class = find_tag_compiler(tag)
-        if compiler_class
+        # First, check if the tag implements to_ruby (custom compilation)
+        if tag.respond_to?(:to_ruby)
+          tag.to_ruby(code, self)
+        # Then check for a built-in compiler class
+        elsif (compiler_class = find_tag_compiler(tag))
           compiler_class.compile(tag, self, code)
         else
-          # Unknown tag - delegate to the original tag's render method at runtime
+          # Unknown tag - yield to caller at runtime
           compile_external_tag(tag, code)
         end
       end
