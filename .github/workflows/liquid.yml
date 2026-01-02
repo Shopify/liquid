@@ -21,14 +21,16 @@ jobs:
             }
           - { ruby: 4.0, allowed-failure: false, rubyopt: "--yjit" }
           - { ruby: 4.0, allowed-failure: false, rubyopt: "--zjit" }
-          - { ruby: head, allowed-failure: false }
+
+          # Head can have failures due to being in development
+          - { ruby: head, allowed-failure: true }
           - {
               ruby: head,
-              allowed-failure: false,
+              allowed-failure: true,
               rubyopt: "--enable-frozen-string-literal",
             }
-          - { ruby: head, allowed-failure: false, rubyopt: "--yjit" }
-          - { ruby: head, allowed-failure: false, rubyopt: "--zjit" }
+          - { ruby: head, allowed-failure: true, rubyopt: "--yjit" }
+          - { ruby: head, allowed-failure: true, rubyopt: "--zjit" }
     name: Test Ruby ${{ matrix.entry.ruby }}
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
@@ -50,7 +52,7 @@ jobs:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - uses: ruby/setup-ruby@a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a # v1.273.0
         with:
-          #bundler-cache: true
+          bundler-cache: true
           bundler: latest
       - run: bundle exec liquid-spec run spec/ruby_liquid.rb --no-max-failures
 
