@@ -12,7 +12,6 @@ jobs:
       matrix:
         entry:
           - { ruby: 3.3, allowed-failure: false } # minimum supported
-          - { ruby: 3.4, allowed-failure: false }
           - { ruby: 3.4, allowed-failure: false, rubyopt: "--yjit" }
           - { ruby: 4.0, allowed-failure: false } # latest stable
           - {
@@ -51,7 +50,7 @@ jobs:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - uses: ruby/setup-ruby@a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a # v1.273.0
         with:
-          bundler-cache: true
+          #bundler-cache: true
           bundler: latest
       - run: bundle exec liquid-spec run spec/ruby_liquid.rb --no-max-failures
 
