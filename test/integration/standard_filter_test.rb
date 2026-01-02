@@ -627,6 +627,38 @@ class StandardFiltersTest < Minitest::Test
     assert_nil(@filters.last([]))
   end
 
+  def test_first_last_on_strings
+    # Ruby's String class does not have first/last methods by default.
+    # ActiveSupport adds String#first and String#last to return the first/last character.
+    # Liquid must work without ActiveSupport, so the first/last filters handle strings specially.
+    #
+    # This enables template patterns like:
+    #   {{ product.title | first }}  => "S" (for "Snowboard")
+    #   {{ customer.name | last }}   => "h" (for "Smith")
+    assert_equal('f', @filters.first('foo'))
+    assert_equal('o', @filters.last('foo'))
+    assert_nil(@filters.first(''))
+    assert_nil(@filters.last(''))
+  end
+
+  def test_first_last_on_unicode_strings
+    # Unicode strings should return the first/last grapheme cluster (character),
+    # not the first/last byte. Ruby's String#[] handles this correctly with index 0/-1.
+    # This ensures international text works properly:
+    #   {{ korean_name | first }} => "고" (not a partial byte sequence)
+    assert_equal('고', @filters.first('고스트빈'))
+    assert_equal('빈', @filters.last('고스트빈'))
+  end
+
+  def test_first_last_on_strings_via_template
+    # Integration test to verify the filter works end-to-end in templates.
+    # Empty strings return empty output (nil renders as empty string).
+    assert_template_result('f', '{{ name | first }}', { 'name' => 'foo' })
+    assert_template_result('o', '{{ name | last }}', { 'name' => 'foo' })
+    assert_template_result('', '{{ name | first }}', { 'name' => '' })
+    assert_template_result('', '{{ name | last }}', { 'name' => '' })
+  end
+
   def test_replace
     assert_equal('b b b b', @filters.replace('a a a a', 'a', 'b'))
     assert_equal('2 2 2 2', @filters.replace('1 1 1 1', 1, 2))
