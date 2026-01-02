@@ -32,5 +32,5 @@ group :test do
 end
 
 group :spec do
-  gem 'liquid-spec', github: 'Shopify/liquid-spec'
+  gem 'liquid-spec', github: 'Shopify/liquid-spec', branch: 'main'
 end
