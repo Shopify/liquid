@@ -54,7 +54,12 @@ jobs:
         with:
           bundler-cache: true
           bundler: latest
-      - run: bundle exec liquid-spec run spec/ruby_liquid.rb --no-max-failures
+      - name: Run liquid-spec for all adapters
+        run: |
+          for adapter in spec/*.rb; do
+            echo "=== Running $adapter ==="
+            bundle exec liquid-spec run "$adapter" --no-max-failures
+          done
 
   memory_profile:
     runs-on: ubuntu-latest
