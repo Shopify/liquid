@@ -30,3 +30,7 @@ group :test do
   gem 'rubocop-shopify', '~> 2.18.0', require: false
   gem 'rubocop-performance', require: false
 end
+
+group :spec do
+  gem 'liquid-spec', github: 'Shopify/liquid-spec'
+end

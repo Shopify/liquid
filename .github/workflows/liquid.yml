@@ -42,6 +42,16 @@ jobs:
         env:
           RUBYOPT: ${{ matrix.entry.rubyopt }}
 
+  spec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: ruby/setup-ruby@a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a # v1.273.0
+        with:
+          bundler-cache: true
+          bundler: latest
+      - run: bundle exec liquid-spec run spec/ruby-liquid.rb --no-max-failures
+
   memory_profile:
     runs-on: ubuntu-latest
     steps:
