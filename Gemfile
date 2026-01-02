@@ -32,6 +32,6 @@ group :test do
 end
 
 group :spec do
-  gem 'liquid-spec', github: 'Shopify/liquid-spec', branch: 'add-per-spec-required-features'
+  gem 'liquid-spec', github: 'Shopify/liquid-spec', branch: 'main'
   gem 'activesupport', require: false
 end
