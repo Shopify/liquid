@@ -9,8 +9,8 @@ require 'active_support/all'
 require 'liquid'
 
 LiquidSpec.configure do |config|
-  # Run core Liquid specs
-  config.features = [:core]
+  # Run core Liquid specs plus ActiveSupport SafeBuffer tests
+  config.features = [:core, :activesupport]
 end
 
 # Compile a template string into a Liquid::Template
