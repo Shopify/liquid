@@ -32,6 +32,7 @@ group :test do
 end
 
 group :spec do
-  gem 'liquid-spec', github: 'Shopify/liquid-spec', branch: 'main'
+  # Using feature branch until https://github.com/Shopify/liquid-spec/pull/97 is merged
+  gem 'liquid-spec', github: 'Shopify/liquid-spec', branch: 'add-per-spec-required-features'
   gem 'activesupport', require: false
 end
