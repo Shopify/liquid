@@ -138,8 +138,6 @@ module Liquid
         liquid_blank?(value)
       when :empty?
         liquid_empty?(value)
-      else
-        nil
       end
     end
 
