@@ -9,6 +9,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         entry:
           - { ruby: 3.3, allowed-failure: false } # minimum supported
