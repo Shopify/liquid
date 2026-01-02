@@ -18,17 +18,19 @@ LiquidSpec.compile do |source, options|
 end
 
 # Render a compiled template with the given context
-LiquidSpec.render do |template, ctx|
-  static_registers = ctx.registers
-  registers = Liquid::Registers.new(static_registers)
+# @param template [Liquid::Template] compiled template
+# @param assigns [Hash] environment variables
+# @param options [Hash] :registers, :strict_errors, :exception_renderer
+LiquidSpec.render do |template, assigns, options|
+  registers = Liquid::Registers.new(options[:registers] || {})
 
   context = Liquid::Context.build(
-    static_environments: ctx.environment,
+    static_environments: assigns,
     registers: registers,
-    rethrow_errors: ctx.rethrow_errors?,
+    rethrow_errors: options[:strict_errors],
   )
 
-  context.exception_renderer = ctx.exception_renderer if ctx.exception_renderer
+  context.exception_renderer = options[:exception_renderer] if options[:exception_renderer]
 
   template.render(context)
 end
