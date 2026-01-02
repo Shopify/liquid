@@ -117,7 +117,7 @@ class StandardTagTest < Minitest::Test
     assigns = { 'condition' => "bad string here" }
     assert_template_result(
       '',
-      '{% case condition %}{% when "string here" %} hit {% endcase %}',\
+      '{% case condition %}{% when "string here" %} hit {% endcase %}',
       assigns,
     )
   end

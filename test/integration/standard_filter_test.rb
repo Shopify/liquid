@@ -116,7 +116,7 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_slice_on_arrays
-    input = 'foobar'.split(//)
+    input = 'foobar'.split('')
     assert_equal(%w(o o b), @filters.slice(input, 1, 3))
     assert_equal(%w(o o b a r), @filters.slice(input, 1, 1000))
     assert_equal(%w(), @filters.slice(input, 1, 0))
@@ -625,6 +625,40 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(3, @filters.last([1, 2, 3]))
     assert_nil(@filters.first([]))
     assert_nil(@filters.last([]))
+  end
+
+  def test_first_last_on_strings
+    # Ruby's String class does not have first/last methods by default.
+    # ActiveSupport adds String#first and String#last to return the first/last character.
+    # Liquid must work without ActiveSupport, so the first/last filters handle strings specially.
+    #
+    # This enables template patterns like:
+    #   {{ product.title | first }}  => "S" (for "Snowboard")
+    #   {{ customer.name | last }}   => "h" (for "Smith")
+    #
+    # Note: ActiveSupport returns "" for empty strings, not nil.
+    assert_equal('f', @filters.first('foo'))
+    assert_equal('o', @filters.last('foo'))
+    assert_equal('', @filters.first(''))
+    assert_equal('', @filters.last(''))
+  end
+
+  def test_first_last_on_unicode_strings
+    # Unicode strings should return the first/last grapheme cluster (character),
+    # not the first/last byte. Ruby's String#[] handles this correctly with index 0/-1.
+    # This ensures international text works properly:
+    #   {{ korean_name | first }} => "고" (not a partial byte sequence)
+    assert_equal('고', @filters.first('고스트빈'))
+    assert_equal('빈', @filters.last('고스트빈'))
+  end
+
+  def test_first_last_on_strings_via_template
+    # Integration test to verify the filter works end-to-end in templates.
+    # Empty strings return empty output (nil renders as empty string).
+    assert_template_result('f', '{{ name | first }}', { 'name' => 'foo' })
+    assert_template_result('o', '{{ name | last }}', { 'name' => 'foo' })
+    assert_template_result('', '{{ name | first }}', { 'name' => '' })
+    assert_template_result('', '{{ name | last }}', { 'name' => '' })
   end
 
   def test_replace
@@ -1296,7 +1330,7 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(1, @filters.sum(input, true))
     assert_equal(0.2, @filters.sum(input, 1.0))
     assert_equal(-0.3, @filters.sum(input, 1))
-    assert_equal(0.4, @filters.sum(input, (1..5)))
+    assert_equal(0.4, @filters.sum(input, 1..5))
     assert_equal(0, @filters.sum(input, nil))
     assert_equal(0, @filters.sum(input, ""))
   end

@@ -113,22 +113,61 @@ module Liquid
 
     def equal_variables(left, right)
       if left.is_a?(MethodLiteral)
-        if right.respond_to?(left.method_name)
-          return right.send(left.method_name)
-        else
-          return nil
-        end
+        return call_method_literal(left, right)
       end
 
       if right.is_a?(MethodLiteral)
-        if left.respond_to?(right.method_name)
-          return left.send(right.method_name)
-        else
-          return nil
-        end
+        return call_method_literal(right, left)
       end
 
       left == right
+    end
+
+    def call_method_literal(literal, value)
+      method_name = literal.method_name
+
+      # If the object responds to the method, use it
+      if value.respond_to?(method_name)
+        return value.send(method_name)
+      end
+
+      # Implement blank?/empty? for common types that don't have it
+      # (ActiveSupport adds these, but Liquid should work without it)
+      case method_name
+      when :blank?
+        liquid_blank?(value)
+      when :empty?
+        liquid_empty?(value)
+      end
+    end
+
+    # Implement blank? semantics matching ActiveSupport
+    def liquid_blank?(value)
+      case value
+      when NilClass, FalseClass
+        true
+      when TrueClass, Numeric
+        false
+      when String
+        # Blank if empty or whitespace only
+        value.empty? || value.match?(/\A\s*\z/)
+      when Array, Hash
+        value.empty?
+      else
+        # Fall back to empty? if available, otherwise false
+        value.respond_to?(:empty?) ? value.empty? : false
+      end
+    end
+
+    # Implement empty? semantics
+    # Note: nil is NOT empty (but IS blank). empty? checks if a collection has zero elements.
+    def liquid_empty?(value)
+      case value
+      when String, Array, Hash
+        value.empty?
+      else
+        value.respond_to?(:empty?) ? value.empty? : false
+      end
     end
 
     def interpret_condition(left, right, op, context)
@@ -154,8 +193,8 @@ module Liquid
     end
 
     def deprecated_default_context
-      warn("DEPRECATION WARNING: Condition#evaluate without a context argument is deprecated" \
-        " and will be removed from Liquid 6.0.0.")
+      warn("DEPRECATION WARNING: Condition#evaluate without a context argument is deprecated " \
+        "and will be removed from Liquid 6.0.0.")
       Context.new
     end
 

@@ -25,7 +25,14 @@ group :development do
 end
 
 group :test do
-  gem 'rubocop', '~> 1.61.0'
-  gem 'rubocop-shopify', '~> 2.12.0', require: false
+  gem 'benchmark'
+  gem 'rubocop', '~> 1.82.0'
+  gem 'rubocop-shopify', '~> 2.18.0', require: false
   gem 'rubocop-performance', require: false
+end
+
+group :spec do
+  # Using feature branch until https://github.com/Shopify/liquid-spec/pull/97 is merged
+  gem 'liquid-spec', github: 'Shopify/liquid-spec', branch: 'add-per-spec-required-features'
+  gem 'activesupport', require: false
 end

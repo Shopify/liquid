@@ -70,6 +70,11 @@ module Liquid
         elsif lookup_command?(i) && object.respond_to?(key)
           object = object.send(key).to_liquid
 
+        # Handle string first/last like ActiveSupport does (returns first/last character)
+        # ActiveSupport returns "" for empty strings, not nil
+        elsif lookup_command?(i) && object.is_a?(String) && (key == "first" || key == "last")
+          object = key == "first" ? (object[0] || "") : (object[-1] || "")
+
           # No key was present with the desired value and it wasn't one of the directly supported
           # keywords either. The only thing we got left is to return nil or
           # raise an exception if `strict_variables` option is set to true
