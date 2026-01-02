@@ -13,13 +13,15 @@ jobs:
         entry:
           - { ruby: 3.3, allowed-failure: false } # minimum supported
           - { ruby: 3.4, allowed-failure: false }
-          - { ruby: 4.0, allowed-failure: false } # latest
+          - { ruby: 3.4, allowed-failure: false, rubyopt: "--yjit" }
+          - { ruby: 4.0, allowed-failure: false } # latest stable
           - {
               ruby: 4.0,
               allowed-failure: false,
               rubyopt: "--enable-frozen-string-literal",
             }
           - { ruby: 4.0, allowed-failure: false, rubyopt: "--yjit" }
+          - { ruby: 4.0, allowed-failure: false, rubyopt: "--zjit" }
           - { ruby: head, allowed-failure: false }
           - {
               ruby: head,
@@ -27,6 +29,7 @@ jobs:
               rubyopt: "--enable-frozen-string-literal",
             }
           - { ruby: head, allowed-failure: false, rubyopt: "--yjit" }
+          - { ruby: head, allowed-failure: false, rubyopt: "--zjit" }
     name: Test Ruby ${{ matrix.entry.ruby }}
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
