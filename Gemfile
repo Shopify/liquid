@@ -34,5 +34,5 @@ end
 group :spec do
   # Minimum required: 3d1b492 (run `bundle update liquid-spec` to get newer)
   gem 'liquid-spec', github: 'Shopify/liquid-spec', ref: '3d1b492dce27cd78b4d5a46ca8cf260ae1349f29'
-  gem 'activesupport'
+  gem 'activesupport', require: false
 end
