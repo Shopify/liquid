@@ -26,7 +26,7 @@ end
 
 group :test do
   gem 'benchmark'
-  gem 'rubocop', '~> 1.61.0'
+  gem 'rubocop', '~> 1.82.0'
   gem 'rubocop-shopify', '~> 2.12.0', require: false
   gem 'rubocop-performance', require: false
 end
