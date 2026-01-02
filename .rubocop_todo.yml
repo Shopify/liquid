@@ -174,7 +174,16 @@ Style/WordArray:
 
 # Offense count: 117
 # This cop supports safe auto-correction (--auto-correct).
-# Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, AllowedPatterns, IgnoredPatterns.
+# Configuration parameters: AllowHeredoc, AllowURI, URISchemes, AllowCopDirectives, AllowedPatterns.
 # URISchemes: http, https
 Layout/LineLength:
   Max: 260
+
+Naming/PredicatePrefix:
+  Enabled: false
+
+# Offense count: 1
+# This is intentional - early return from begin/rescue in assignment context
+Lint/NoReturnInBeginEndBlocks:
+  Exclude:
+    - 'lib/liquid/standardfilters.rb'

@@ -161,8 +161,8 @@ class ConditionUnitTest < Minitest::Test
       assert_equal(true, Condition.new(1, '==', 1).evaluate)
     end
 
-    expected = "DEPRECATION WARNING: Condition#evaluate without a context argument is deprecated" \
-      " and will be removed from Liquid 6.0.0."
+    expected = "DEPRECATION WARNING: Condition#evaluate without a context argument is deprecated " \
+      "and will be removed from Liquid 6.0.0."
     assert_includes(err.lines.map(&:strip), expected)
   end
 

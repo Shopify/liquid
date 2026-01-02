@@ -69,7 +69,7 @@ module Liquid
       return obj if obj.respond_to?(:strftime)
 
       if obj.is_a?(String)
-        return nil if obj.empty?
+        return if obj.empty?
         obj = obj.downcase
       end
 

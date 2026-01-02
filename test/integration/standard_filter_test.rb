@@ -116,7 +116,7 @@ class StandardFiltersTest < Minitest::Test
   end
 
   def test_slice_on_arrays
-    input = 'foobar'.split(//)
+    input = 'foobar'.split('')
     assert_equal(%w(o o b), @filters.slice(input, 1, 3))
     assert_equal(%w(o o b a r), @filters.slice(input, 1, 1000))
     assert_equal(%w(), @filters.slice(input, 1, 0))
