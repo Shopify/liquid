@@ -160,10 +160,9 @@ module Liquid
     end
 
     # Implement empty? semantics
+    # Note: nil is NOT empty (but IS blank). empty? checks if a collection has zero elements.
     def liquid_empty?(value)
       case value
-      when NilClass
-        true
       when String, Array, Hash
         value.empty?
       else

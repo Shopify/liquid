@@ -353,6 +353,16 @@ class ConditionUnitTest < Minitest::Test
     assert_evaluates_true(VariableLookup.new('empty_hash'), '==', empty_literal)
   end
 
+  def test_nil_is_not_empty
+    # nil is NOT empty - empty? checks if a collection has zero elements.
+    # nil is not a collection, so it cannot be empty.
+    # This differs from blank: nil IS blank, but nil is NOT empty.
+    @context['nil_value'] = nil
+    empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
+
+    assert_evaluates_false(VariableLookup.new('nil_value'), '==', empty_literal)
+  end
+
   private
 
   def assert_evaluates_true(left, op, right)

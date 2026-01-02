@@ -635,10 +635,12 @@ class StandardFiltersTest < Minitest::Test
     # This enables template patterns like:
     #   {{ product.title | first }}  => "S" (for "Snowboard")
     #   {{ customer.name | last }}   => "h" (for "Smith")
+    #
+    # Note: ActiveSupport returns "" for empty strings, not nil.
     assert_equal('f', @filters.first('foo'))
     assert_equal('o', @filters.last('foo'))
-    assert_nil(@filters.first(''))
-    assert_nil(@filters.last(''))
+    assert_equal('', @filters.first(''))
+    assert_equal('', @filters.last(''))
   end
 
   def test_first_last_on_unicode_strings
