@@ -1328,7 +1328,7 @@ class StandardFiltersTest < Minitest::Test
     assert_equal(1, @filters.sum(input, true))
     assert_equal(0.2, @filters.sum(input, 1.0))
     assert_equal(-0.3, @filters.sum(input, 1))
-    assert_equal(0.4, @filters.sum(input, (1..5)))
+    assert_equal(0.4, @filters.sum(input, 1..5))
     assert_equal(0, @filters.sum(input, nil))
     assert_equal(0, @filters.sum(input, ""))
   end

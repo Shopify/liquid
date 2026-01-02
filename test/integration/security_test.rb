@@ -59,7 +59,7 @@ class SecurityTest < Minitest::Test
 
     GC.start
 
-    assert_equal([], (Symbol.all_symbols - current_symbols))
+    assert_equal([], Symbol.all_symbols - current_symbols)
   end
 
   def test_does_not_add_drop_methods_to_symbol_table
@@ -70,7 +70,7 @@ class SecurityTest < Minitest::Test
     assert_equal("", Template.parse("{{ drop.custom_method_2 }}", assigns).render!)
     assert_equal("", Template.parse("{{ drop.custom_method_3 }}", assigns).render!)
 
-    assert_equal([], (Symbol.all_symbols - current_symbols))
+    assert_equal([], Symbol.all_symbols - current_symbols)
   end
 
   def test_max_depth_nested_blocks_does_not_raise_exception

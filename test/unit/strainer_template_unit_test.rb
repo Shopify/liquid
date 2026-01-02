@@ -8,7 +8,7 @@ class StrainerTemplateUnitTest < Minitest::Test
   def test_add_filter_when_wrong_filter_class
     c = Context.new
     s = c.strainer
-    wrong_filter = ->(v) { v.reverse }
+    wrong_filter = lambda(&:reverse)
 
     exception = assert_raises(TypeError) do
       s.class.add_filter(wrong_filter)

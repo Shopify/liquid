@@ -117,7 +117,7 @@ module Liquid
       byte_a = byte_b = @ss.scan_byte
 
       while byte_b
-        byte_a = @ss.scan_byte while byte_a && (byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY)
+        byte_a = @ss.scan_byte while byte_a && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
 
         break unless byte_a
 

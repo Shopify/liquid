@@ -133,7 +133,7 @@ class TemplateTest < Minitest::Test
     assert(t.resource_limits.reached?)
 
     t.resource_limits.render_score_limit = 200
-    assert_equal((" foo " * 100), t.render!)
+    assert_equal(" foo " * 100, t.render!)
     refute_nil(t.resource_limits.render_score)
   end
 
