@@ -35,7 +35,7 @@ jobs:
     name: Test Ruby ${{ matrix.entry.ruby }}
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-      - uses: ruby/setup-ruby@a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a # v1.273.0
+      - uses: ruby/setup-ruby@4c24fa5ec04b2e79eb40571b1cee2a0d2b705771 # v1.278.0
         with:
           ruby-version: ${{ matrix.entry.ruby }}
           bundler-cache: true
@@ -51,7 +51,7 @@ jobs:
       BUNDLE_WITH: spec
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-      - uses: ruby/setup-ruby@a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a # v1.273.0
+      - uses: ruby/setup-ruby@4c24fa5ec04b2e79eb40571b1cee2a0d2b705771 # v1.278.0
         with:
           bundler-cache: true
           bundler: latest
@@ -66,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-      - uses: ruby/setup-ruby@a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a # v1.273.0
+      - uses: ruby/setup-ruby@4c24fa5ec04b2e79eb40571b1cee2a0d2b705771 # v1.278.0
         with:
           bundler-cache: true
       - run: bundle exec rake memory_profile:run
