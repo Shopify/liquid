@@ -52,7 +52,7 @@ jobs:
         with:
           bundler-cache: true
           bundler: latest
-      - run: bundle exec liquid-spec run spec/ruby-liquid.rb --no-max-failures
+      - run: bundle exec liquid-spec run spec/ruby_liquid.rb --no-max-failures
 
   memory_profile:
     runs-on: ubuntu-latest
