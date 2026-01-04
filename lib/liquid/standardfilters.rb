@@ -1010,7 +1010,7 @@ module Liquid
     end
 
     def nil_safe_compare(a, b)
-      result = a <=> b
+      result = Utils.to_liquid_value(a) <=> Utils.to_liquid_value(b)
 
       if result
         result
