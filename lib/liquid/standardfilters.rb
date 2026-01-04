@@ -375,18 +375,19 @@ module Liquid
     #   Sorts the items in an array in case-sensitive alphabetical, or numerical, order.
     # @liquid_syntax array | sort
     # @liquid_return [array[untyped]]
-    def sort(input, property = nil)
+    # @liquid_optional_param order: [string] Which direction to sort the array in. Default is "asc". Valid values are "asc" and "desc".
+    def sort(input, property = nil, options = {})
       ary = InputIterator.new(input, context)
 
       return [] if ary.empty?
 
       if property.nil?
         ary.sort do |a, b|
-          nil_safe_compare(a, b)
+          nil_safe_compare(a, b, options['order'])
         end
       elsif ary.all? { |el| el.respond_to?(:[]) }
         begin
-          ary.sort { |a, b| nil_safe_compare(a[property], b[property]) }
+          ary.sort { |a, b| nil_safe_compare(a[property], b[property], options['order']) }
         rescue TypeError
           raise_property_error(property)
         end
@@ -404,18 +405,19 @@ module Liquid
     #   > string, so sorting on numerical values can lead to unexpected results.
     # @liquid_syntax array | sort_natural
     # @liquid_return [array[untyped]]
-    def sort_natural(input, property = nil)
+    # @liquid_optional_param order: [string] Which direction to sort the array in. Default is "asc". Valid values are "asc" and "desc".
+    def sort_natural(input, property = nil, options = {})
       ary = InputIterator.new(input, context)
 
       return [] if ary.empty?
 
       if property.nil?
         ary.sort do |a, b|
-          nil_safe_casecmp(a, b)
+          nil_safe_casecmp(a, b, options['order'])
         end
       elsif ary.all? { |el| el.respond_to?(:[]) }
         begin
-          ary.sort { |a, b| nil_safe_casecmp(a[property], b[property]) }
+          ary.sort { |a, b| nil_safe_casecmp(a[property], b[property], options['order']) }
         rescue TypeError
           raise_property_error(property)
         end
@@ -1009,11 +1011,17 @@ module Liquid
       result.is_a?(BigDecimal) ? result.to_f : result
     end
 
-    def nil_safe_compare(a, b)
+    def nil_safe_compare(a, b, order)
+      order = order ? Utils.to_s(order).downcase : 'asc'
+
+      if order != 'asc' && order != 'desc'
+        raise Liquid::ArgumentError, "invalid order provided to sort_natural. '#{order}' was provided"
+      end
+
       result = a <=> b
 
       if result
-        result
+        result * (order == 'desc' ? -1 : 1)
       elsif a.nil?
         1
       elsif b.nil?
@@ -1023,9 +1031,15 @@ module Liquid
       end
     end
 
-    def nil_safe_casecmp(a, b)
+    def nil_safe_casecmp(a, b, order)
+      order = order ? Utils.to_s(order).downcase : 'asc'
+
+      if order != 'asc' && order != 'desc'
+        raise Liquid::ArgumentError, "invalid order provided to sort_natural. '#{order}' was provided"
+      end
+
       if !a.nil? && !b.nil?
-        a.to_s.casecmp(b.to_s)
+        a.to_s.casecmp(b.to_s) * (order == 'desc' ? -1 : 1)
       elsif a.nil? && b.nil?
         0
       else
