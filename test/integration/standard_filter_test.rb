@@ -299,12 +299,15 @@ class StandardFiltersTest < Minitest::Test
 
   def test_sort
     assert_equal([1, 2, 3, 4], @filters.sort([4, 3, 2, 1]))
+    assert_equal([false, false, true, true], @filters.sort([true, false, true, false]))
     assert_equal([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }], @filters.sort([{ "a" => 4 }, { "a" => 3 }, { "a" => 1 }, { "a" => 2 }], "a"))
+    assert_equal([{ "a" => false }, { "a" => false }, { "a" => true }, { "a" => true }], @filters.sort([{ "a" => true }, { "a" => false }, { "a" => true }, { "a" => false }], "a"))
   end
 
   def test_sort_with_nils
     assert_equal([1, 2, 3, 4, nil], @filters.sort([nil, 4, 3, 2, 1]))
     assert_equal([{ "a" => 1 }, { "a" => 2 }, { "a" => 3 }, { "a" => 4 }, {}], @filters.sort([{ "a" => 4 }, { "a" => 3 }, {}, { "a" => 1 }, { "a" => 2 }], "a"))
+    assert_equal([{ "a" => false }, { "a" => false }, { "a" => true }, { "a" => true }, {}], @filters.sort([{ "a" => true }, {}, { "a" => false }, { "a" => true }, { "a" => false }], "a"))
   end
 
   def test_sort_when_property_is_sometimes_missing_puts_nils_last

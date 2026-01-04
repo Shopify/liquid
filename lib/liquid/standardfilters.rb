@@ -1010,6 +1010,9 @@ module Liquid
     end
 
     def nil_safe_compare(a, b)
+      a = a ? 1 : 0 if boolean?(a)
+      b = b ? 1 : 0 if boolean?(b)
+
       result = a <=> b
 
       if result
@@ -1031,6 +1034,10 @@ module Liquid
       else
         a.nil? ? 1 : -1
       end
+    end
+
+    def boolean?(value)
+      value.is_a?(TrueClass) || value.is_a?(FalseClass)
     end
 
     class InputIterator
