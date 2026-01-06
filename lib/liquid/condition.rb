@@ -126,22 +126,26 @@ module Liquid
     def call_method_literal(literal, value)
       method_name = literal.method_name
 
-      # If the object responds to the method, use it
+      # If the object responds to the method (e.g., ActiveSupport is loaded), use it
       if value.respond_to?(method_name)
-        return value.send(method_name)
-      end
-
-      # Implement blank?/empty? for common types that don't have it
-      # (ActiveSupport adds these, but Liquid should work without it)
-      case method_name
-      when :blank?
-        liquid_blank?(value)
-      when :empty?
-        liquid_empty?(value)
+        value.send(method_name)
+      else
+        # Emulate ActiveSupport's blank?/empty? to make Liquid invariant
+        # to whether ActiveSupport is loaded or not
+        case method_name
+        when :blank?
+          liquid_blank?(value)
+        when :empty?
+          liquid_empty?(value)
+        else
+          false
+        end
       end
     end
 
     # Implement blank? semantics matching ActiveSupport
+    # blank? returns true for nil, false, empty strings, whitespace-only strings,
+    # empty arrays, and empty hashes
     def liquid_blank?(value)
       case value
       when NilClass, FalseClass
@@ -149,7 +153,7 @@ module Liquid
       when TrueClass, Numeric
         false
       when String
-        # Blank if empty or whitespace only
+        # Blank if empty or whitespace only (matches ActiveSupport)
         value.empty? || value.match?(/\A\s*\z/)
       when Array, Hash
         value.empty?
@@ -160,7 +164,7 @@ module Liquid
     end
 
     # Implement empty? semantics
-    # Note: nil is NOT empty (but IS blank). empty? checks if a collection has zero elements.
+    # Note: nil is NOT empty. empty? checks if a collection has zero elements.
     def liquid_empty?(value)
       case value
       when String, Array, Hash
