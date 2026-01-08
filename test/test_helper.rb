@@ -227,7 +227,7 @@ class StubFileSystem
     @values          = values
   end
 
-  def read_template_file(template_path)
+  def read_template_file(template_path, context: nil)
     @file_read_count += 1
     @values.fetch(template_path)
   end

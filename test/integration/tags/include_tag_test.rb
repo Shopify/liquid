@@ -8,20 +8,20 @@ class TestFileSystem
     "body" => "body {% include 'body_detail' %}",
   }
 
-  def read_template_file(template_path)
+  def read_template_file(template_path, context: nil)
     PARTIALS[template_path] || template_path
   end
 end
 
 class OtherFileSystem
-  def read_template_file(_template_path)
+  def read_template_file(_template_path, context: nil)
     'from OtherFileSystem'
   end
 end
 
 class CountingFileSystem
   attr_reader :count
-  def read_template_file(_template_path)
+  def read_template_file(_template_path, context: nil)
     @count ||= 0
     @count  += 1
     'from CountingFileSystem'
@@ -169,7 +169,7 @@ class IncludeTagTest < Minitest::Test
 
   def test_recursively_included_template_does_not_produce_endless_loop
     infinite_file_system = Class.new do
-      def read_template_file(_template_path)
+      def read_template_file(_template_path, context: nil)
         "-{% include 'loop' %}"
       end
     end

@@ -148,6 +148,11 @@ module Liquid
     end
 
     def render_segment(context, output, segment)
+      # Recording hook - loop enter
+      if (recorder = context.registers[:recorder])
+        recorder.for_enter(@collection_name.name, @variable_name)
+      end
+      
       for_stack = context.registers[:for_stack] ||= []
       length    = segment.length
 
@@ -159,7 +164,12 @@ module Liquid
         begin
           context['forloop'] = loop_vars
 
-          segment.each do |item|
+          segment.each_with_index do |item, index|
+            # Recording hook - item binding
+            if (recorder = context.registers[:recorder])
+              recorder.for_item(index, item)
+            end
+            
             context[@variable_name] = item
             @for_block.render_to_output_buffer(context, output)
             loop_vars.send(:increment!)
@@ -172,6 +182,11 @@ module Liquid
           end
         ensure
           for_stack.pop
+          
+          # Recording hook - loop exit
+          if (recorder = context.registers[:recorder])
+            recorder.for_exit
+          end
         end
       end
 

@@ -48,13 +48,20 @@ module Liquid
     end
 
     def invoke(method, *args)
-      if self.class.invokable?(method)
+      result = if self.class.invokable?(method)
         send(method, *args)
-      elsif @context.strict_filters
+      elsif @context && @context.strict_filters
         raise Liquid::UndefinedFilter, "undefined filter #{method}"
       else
         args.first
       end
+      
+      # Recording hook - only when recorder is present
+      if @context && @context.registers && (recorder = @context.registers[:recorder])
+        recorder.emit_filter_call(method, args.first, args[1..-1] || [], result)
+      end
+      
+      result
     rescue ::ArgumentError => e
       raise Liquid::ArgumentError, e.message, e.backtrace
     end

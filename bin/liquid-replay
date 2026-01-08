@@ -1,0 +1,67 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/liquid'
+
+def usage
+  puts <<~USAGE
+    Usage: liquid-replay <recording_file> [mode]
+    
+    Replays a liquid template recording in hermetic mode.
+    
+    Arguments:
+      recording_file - Path to the JSON recording file
+      mode          - Replay mode: compute (default), strict, or verify
+    
+    Modes:
+      compute - Normal replay with computed results
+      strict  - Strict replay, errors on unexpected calls
+      verify  - Verification mode, compares against recorded results
+    
+    Examples:
+      liquid-replay recording.json
+      liquid-replay recording.json strict
+      liquid-replay recording.json verify
+  USAGE
+end
+
+def main
+  if ARGV.length < 1 || ARGV.length > 2
+    usage
+    exit 1
+  end
+
+  recording_file = ARGV[0]
+  mode = (ARGV[1] || 'compute').to_sym
+
+  unless File.exist?(recording_file)
+    puts "Error: Recording file '#{recording_file}' not found"
+    exit 1
+  end
+
+  unless [:compute, :strict, :verify].include?(mode)
+    puts "Error: Invalid mode '#{mode}'. Must be compute, strict, or verify"
+    exit 1
+  end
+
+  puts "Replaying recording: #{recording_file}"
+  puts "Mode: #{mode}"
+
+  begin
+    replayer = Liquid::TemplateRecorder.replay_from(recording_file, mode: mode)
+    result = replayer.render
+    
+    puts "\nReplay completed successfully!"
+    puts "Output length: #{result.length} characters"
+    puts "\nRendered output:"
+    puts "-" * 40
+    puts result
+    puts "-" * 40
+    STDOUT.flush
+  rescue => e
+    puts "Error during replay: #{e.message}"
+    puts e.backtrace.first(5)
+    exit 1
+  end
+end
+
+main if __FILE__ == $0
