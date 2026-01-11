@@ -419,6 +419,50 @@ class StandardFiltersTest < Minitest::Test
     assert_equal([{ "a" => "10" }, { "a" => "2" }], @filters.sort([{ "a" => "10" }, { "a" => "2" }], "a"))
   end
 
+  def test_sort_numeric
+    assert_equal([], @filters.sort_numeric([]))
+    assert_equal([1, 2, 3, 10], @filters.sort_numeric([10, 3, 1, 2]))
+    assert_equal(["1", "2", "3", "10"], @filters.sort_numeric(["10", "3", "1", "2"]))
+    assert_equal([1.01, 1.1, 2.3, 3.5, 10.1], @filters.sort_numeric([10.1, 3.5, 2.3, 1.1, 1.01]))
+    assert_equal(["1.01", "1.1", "2.3", "3.5", "10.1"], @filters.sort_numeric(["10.1", "3.5", "2.3", "1.1", "1.01"]))
+    assert_equal(["-1", "1"], @filters.sort_numeric(["1", "-1"]))
+    assert_equal(["1", "2", "3", "10", nil], @filters.sort_numeric(["10", "3", nil, "1", "2"]))
+    assert_equal(["v0.1", "v1.1.0", "v1.2", "v1.9", "v1.10", "v10.0"], @filters.sort_numeric(["v1.2", "v1.9", "v10.0", "v0.1", "v1.10", "v1.1.0"]))
+    assert_equal(["0001", "02", "17", "042", "107"], @filters.sort_numeric(["107", "042", "0001", "02", "17"]))
+    assert_equal(["7 The Street", "42 The Street", "101 The Street"], @filters.sort_numeric(["42 The Street", "7 The Street", "101 The Street"]))
+    assert_equal(["1", "2", "no numbers"], @filters.sort_numeric(["no numbers", "1", "2"]))
+    assert_equal(["1", 2, 3, "10"], @filters.sort_numeric(["10", 3, "1", 2]))
+    assert_equal([1, 2, 3], @filters.sort_numeric([[1], [3], [2]])) # nested arrays get flattened
+    assert_equal([1.1, 2, BigDecimal(3), 10], @filters.sort_numeric([10, BigDecimal(3), 1.1, 2]))
+  end
+
+  def test_sort_numeric_with_property
+    assert_equal([], @filters.sort_numeric([], "a"))
+    assert_equal([{}], @filters.sort_numeric([{}], "a"))
+    assert_equal([{ "a" => 2 }, { "a" => 10 }], @filters.sort_numeric([{ "a" => 10 }, { "a" => 2 }], "a"))
+    assert_equal([{ "a" => "2" }, { "a" => "10" }], @filters.sort_numeric([{ "a" => "10" }, { "a" => "2" }], "a"))
+    assert_equal([{ "a" => "2" }, { "a" => "10" }, { "b" => "1" }], @filters.sort_numeric([{ "a" => "10" }, { "b" => "1" }, { "a" => "2" }], "a"))
+    assert_equal([{ "a" => 1 }, { "a" => "2" }, { "a" => "10" }], @filters.sort_numeric([{ "a" => "10" }, { "a" => 1 }, { "a" => "2" }], "a"))
+    assert_equal([1, 2, 3], @filters.sort_numeric([[1], [3], [2]]), "a")
+  end
+
+  def test_sort_numeric_input_is_not_an_array
+    assert_equal([], @filters.sort_numeric(nil))
+    assert_equal([true], @filters.sort_numeric(true))
+    assert_equal([false], @filters.sort_numeric(false))
+    assert_equal([42], @filters.sort_numeric(42))
+    assert_equal([42.5], @filters.sort_numeric(42.5))
+    assert_equal(["42.5"], @filters.sort_numeric("42.5"))
+    assert_equal([{ "a" => "42.5" }], @filters.sort_numeric({ "a" => "42.5" }))
+    assert_equal([], @filters.sort_numeric(nil, "a"))
+    assert_nil(@filters.sort_numeric(true, "a"))
+    assert_nil(@filters.sort_numeric(false, "a"))
+    assert_equal([42], @filters.sort_numeric(42, "a"))
+    assert_nil(@filters.sort_numeric(42.5, "a"))
+    assert_equal(["42.5"], @filters.sort_numeric("42.5", "a"))
+    assert_equal([{ "a" => "42.5" }], @filters.sort_numeric({ "a" => "42.5" }, "a"))
+  end
+
   def test_uniq
     assert_equal(["foo"], @filters.uniq("foo"))
     assert_equal([1, 3, 2, 4], @filters.uniq([1, 1, 3, 2, 3, 1, 4, 3, 2, 1]))
