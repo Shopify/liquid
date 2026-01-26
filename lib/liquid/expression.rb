@@ -48,7 +48,7 @@ module Liquid
       end
 
       def inner_parse(markup, ss, cache)
-        if (markup.start_with?("(") && markup.end_with?(")")) && markup =~ RANGES_REGEX
+        if markup.start_with?("(") && markup.end_with?(")") && markup =~ RANGES_REGEX
           start_markup = Regexp.last_match(1)
           end_markup = Regexp.last_match(2)
           start_obj = parse(start_markup, ss, cache)
