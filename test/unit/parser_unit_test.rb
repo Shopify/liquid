@@ -74,7 +74,7 @@ class ParserUnitTest < Minitest::Test
     assert_equal('wut', p.expression)
     assert_equal(true, p.expression)
     assert_equal(false, p.expression)
-    assert_equal((0..5), p.expression)
+    assert_equal(0..5, p.expression)
   end
 
   def test_number
@@ -104,11 +104,11 @@ class ParserUnitTest < Minitest::Test
 
   def test_range_lookup
     p = new_parser('(0..5) (a..b)')
-    assert_equal((0..5), p.expression)
+    assert_equal(0..5, p.expression)
 
     r2 = p.expression
     assert(r2.is_a?(RangeLookup))
-    assert_equal((1..4), r2.evaluate(Context.new({ 'a' => 1, 'b' => 4 })))
+    assert_equal(1..4, r2.evaluate(Context.new({ 'a' => 1, 'b' => 4 })))
   end
 
   def test_ranges
