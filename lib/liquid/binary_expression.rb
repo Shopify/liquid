@@ -72,7 +72,7 @@ module Liquid
     end
 
     def apply_method_literal(node, other)
-      other.send(node.method_name) if other.respond_to?(node.method_name)
+      node.apply(other)
     end
 
     def equal_variables(left, right)

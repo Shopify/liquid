@@ -197,7 +197,7 @@ class ConditionUnitTest < Minitest::Test
     # Template authors expect "   " to be blank since it has no visible content.
     # This matches ActiveSupport's String#blank? which returns true for whitespace-only strings.
     @context['whitespace'] = '   '
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('whitespace'), '==', blank_literal)
   end
@@ -206,7 +206,7 @@ class ConditionUnitTest < Minitest::Test
     # An empty string has no content, so it should be considered blank.
     # This is the most basic case of a blank string.
     @context['empty_string'] = ''
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('empty_string'), '==', blank_literal)
   end
@@ -215,7 +215,7 @@ class ConditionUnitTest < Minitest::Test
     # Empty arrays have no elements, so they are blank.
     # Useful for checking if a collection has items: {% if products == blank %}
     @context['empty_array'] = []
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('empty_array'), '==', blank_literal)
   end
@@ -224,7 +224,7 @@ class ConditionUnitTest < Minitest::Test
     # Empty hashes have no key-value pairs, so they are blank.
     # Useful for checking if settings/options exist: {% if settings == blank %}
     @context['empty_hash'] = {}
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('empty_hash'), '==', blank_literal)
   end
@@ -233,7 +233,7 @@ class ConditionUnitTest < Minitest::Test
     # nil represents "nothing" and is the canonical blank value.
     # Unassigned variables resolve to nil, so this enables: {% if missing_var == blank %}
     @context['nil_value'] = nil
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('nil_value'), '==', blank_literal)
   end
@@ -242,7 +242,7 @@ class ConditionUnitTest < Minitest::Test
     # false is considered blank to match ActiveSupport semantics.
     # This allows {% if some_flag == blank %} to work when flag is false.
     @context['false_value'] = false
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('false_value'), '==', blank_literal)
   end
@@ -251,7 +251,7 @@ class ConditionUnitTest < Minitest::Test
     # true is a definite value, not blank.
     # Ensures {% if flag == blank %} works correctly for boolean flags.
     @context['true_value'] = true
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_false(VariableLookup.parse('true_value'), '==', blank_literal)
   end
@@ -260,7 +260,7 @@ class ConditionUnitTest < Minitest::Test
     # Numbers (including zero) are never blank - they represent actual values.
     # 0 is a valid quantity, not the absence of a value.
     @context['number'] = 42
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_false(VariableLookup.parse('number'), '==', blank_literal)
   end
@@ -269,7 +269,7 @@ class ConditionUnitTest < Minitest::Test
     # A string with actual content is not blank.
     # This is the expected behavior for most template string comparisons.
     @context['string'] = 'hello'
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_false(VariableLookup.parse('string'), '==', blank_literal)
   end
@@ -278,7 +278,7 @@ class ConditionUnitTest < Minitest::Test
     # An array with elements has content, so it's not blank.
     # Enables patterns like {% unless products == blank %}Show products{% endunless %}
     @context['array'] = [1, 2, 3]
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_false(VariableLookup.parse('array'), '==', blank_literal)
   end
@@ -287,7 +287,7 @@ class ConditionUnitTest < Minitest::Test
     # A hash with key-value pairs has content, so it's not blank.
     # Useful for checking if configuration exists: {% if config != blank %}
     @context['hash'] = { 'a' => 1 }
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_false(VariableLookup.parse('hash'), '==', blank_literal)
   end
@@ -303,7 +303,7 @@ class ConditionUnitTest < Minitest::Test
     # An empty string ("") has length 0, so it's empty.
     # Different from blank - empty is a stricter check.
     @context['empty_string'] = ''
-    empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
+    empty_literal = Expression::LITERALS['empty']
 
     assert_evaluates_true(VariableLookup.parse('empty_string'), '==', empty_literal)
   end
@@ -313,7 +313,7 @@ class ConditionUnitTest < Minitest::Test
     # This is the key difference between empty and blank:
     # "   ".empty? => false, but "   ".blank? => true
     @context['whitespace'] = '   '
-    empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
+    empty_literal = Expression::LITERALS['empty']
 
     assert_evaluates_false(VariableLookup.parse('whitespace'), '==', empty_literal)
   end
@@ -322,7 +322,7 @@ class ConditionUnitTest < Minitest::Test
     # An array with no elements is empty.
     # [].empty? => true
     @context['empty_array'] = []
-    empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
+    empty_literal = Expression::LITERALS['empty']
 
     assert_evaluates_true(VariableLookup.parse('empty_array'), '==', empty_literal)
   end
@@ -331,7 +331,7 @@ class ConditionUnitTest < Minitest::Test
     # A hash with no key-value pairs is empty.
     # {}.empty? => true
     @context['empty_hash'] = {}
-    empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
+    empty_literal = Expression::LITERALS['empty']
 
     assert_evaluates_true(VariableLookup.parse('empty_hash'), '==', empty_literal)
   end
@@ -341,7 +341,7 @@ class ConditionUnitTest < Minitest::Test
     # nil is not a collection, so it cannot be empty.
     # This differs from blank: nil IS blank, but nil is NOT empty.
     @context['nil_value'] = nil
-    empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
+    empty_literal = Expression::LITERALS['empty']
 
     assert_evaluates_false(VariableLookup.parse('nil_value'), '==', empty_literal)
   end
