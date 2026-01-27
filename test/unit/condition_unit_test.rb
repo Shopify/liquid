@@ -145,21 +145,6 @@ class ConditionUnitTest < Minitest::Test
     assert_evaluates_true(VariableLookup.parse("one"), '==', VariableLookup.parse("another"))
   end
 
-  def test_default_context_is_deprecated
-    if Gem::Version.new(Liquid::VERSION) >= Gem::Version.new('6.0.0')
-      flunk("Condition#evaluate without a context argument is to be removed")
-    end
-
-    _out, err = capture_io do
-      expr = Parser.new('1 == 1').expression
-      assert_equal(true, Condition.new(expr).evaluate)
-    end
-
-    expected = "DEPRECATION WARNING: Condition#evaluate without a context argument is deprecated " \
-      "and will be removed from Liquid 6.0.0."
-    assert_includes(err.lines.map(&:strip), expected)
-  end
-
   def test_parse_expression
     environment = Environment.build
     parse_context = ParseContext.new(environment: environment)
