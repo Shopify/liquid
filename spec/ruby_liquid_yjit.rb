@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Liquid Spec Adapter for Shopify/liquid with YJIT + strict mode + ActiveSupport
+# Liquid Spec Adapter for Shopify/liquid with YJIT + ActiveSupport
 #
 # Run with: bundle exec liquid-spec run spec/ruby_liquid_yjit.rb
 
@@ -20,8 +20,6 @@ end
 
 # Compile a template string into a Liquid::Template
 LiquidSpec.compile do |ctx, source, options|
-  # Force strict mode
-  options = { error_mode: :strict }.merge(options)
   ctx[:template] = Liquid::Template.parse(source, **options)
 end
 

@@ -27,7 +27,6 @@ module Liquid
   # @liquid_syntax_keyword filename The name of the snippet to render, without the `.liquid` extension.
   class Render < Tag
     FOR = 'for'
-    SYNTAX = /(#{QuotedString}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
 
     disable_tags "include"
 
@@ -85,10 +84,10 @@ module Liquid
     end
 
     # render (string) (with|for expression)? (as id)? (key: value)*
-    def strict2_parse(markup)
+    def parse_markup(markup)
       p = @parse_context.new_parser(markup)
 
-      @template_name_expr = parse_expression(strict2_template_name(p), safe: true)
+      @template_name_expr = parse_expression(template_name(p), safe: true)
       with_or_for         = p.id?("for") || p.id?("with")
       @variable_name_expr = safe_parse_expression(p) if with_or_for
       @alias_name         = p.consume(:id) if p.id?("as")
@@ -107,30 +106,8 @@ module Liquid
       p.consume(:end_of_string)
     end
 
-    def strict2_template_name(p)
+    def template_name(p)
       p.consume(:string)
-    end
-
-    def strict_parse(markup)
-      lax_parse(markup)
-    end
-
-    def lax_parse(markup)
-      raise SyntaxError, options[:locale].t("errors.syntax.render") unless markup =~ SYNTAX
-
-      template_name = Regexp.last_match(1)
-      with_or_for = Regexp.last_match(3)
-      variable_name = Regexp.last_match(4)
-
-      @alias_name = Regexp.last_match(6)
-      @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
-      @template_name_expr = parse_expression(template_name)
-      @is_for_loop = (with_or_for == FOR)
-
-      @attributes = {}
-      markup.scan(TagAttributes) do |key, value|
-        @attributes[key] = parse_expression(value)
-      end
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor

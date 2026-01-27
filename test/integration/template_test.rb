@@ -44,16 +44,6 @@ class TemplateTest < Minitest::Test
     assert_equal('from instance assigns', t.parse("{{ foo }}").render!)
   end
 
-  def test_warnings_is_not_exponential_time
-    str = "false"
-    100.times do
-      str = "{% if true %}true{% else %}#{str}{% endif %}"
-    end
-
-    t = Template.parse(str)
-    assert_equal([], Timeout.timeout(1) { t.warnings })
-  end
-
   def test_instance_assigns_persist_on_same_template_parsing_between_renders
     t = Template.new.parse("{{ foo }}{% assign foo = 'foo' %}{{ foo }}")
     assert_equal('foo', t.render!)
@@ -259,7 +249,7 @@ class TemplateTest < Minitest::Test
   end
 
   def test_nil_value_does_not_raise
-    t      = Template.parse("some{{x}}thing", error_mode: :strict)
+    t      = Template.parse("some{{x}}thing")
     result = t.render!({ 'x' => nil }, strict_variables: true)
 
     assert_equal(0, t.errors.count)

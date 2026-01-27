@@ -32,6 +32,7 @@ group :test do
 end
 
 group :spec do
-  gem 'liquid-spec', github: 'Shopify/liquid-spec', branch: 'main'
+  # TODO: temporary - using cp-gate-lax-specs-ai branch until lax specs are properly gated
+  gem 'liquid-spec', github: 'Shopify/liquid-spec', branch: 'cp-gate-lax-specs-ai'
   gem 'activesupport', require: false
 end

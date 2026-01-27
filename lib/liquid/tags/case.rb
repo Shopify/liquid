@@ -23,9 +23,6 @@ module Liquid
   # @liquid_syntax_keyword second_expression An expression to be rendered when the variable's value matches `second_value`.
   # @liquid_syntax_keyword third_expression An expression to be rendered when the variable's value has no match.
   class Case < Block
-    Syntax     = /(#{QuotedFragment})/o
-    WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*\,\s*)(#{QuotedFragment}.*))?/om
-
     attr_reader :blocks, :left
 
     def initialize(tag_name, markup, options)
@@ -86,35 +83,19 @@ module Liquid
 
     private
 
-    def strict2_parse(markup)
+    def parse_markup(markup)
       parser = @parse_context.new_parser(markup)
       @left = safe_parse_expression(parser)
       parser.consume(:end_of_string)
     end
 
-    def strict_parse(markup)
-      lax_parse(markup)
-    end
-
-    def lax_parse(markup)
-      if markup =~ Syntax
-        @left = parse_expression(Regexp.last_match(1))
-      else
-        raise SyntaxError, options[:locale].t("errors.syntax.case")
-      end
-    end
-
     def record_when_condition(markup)
       body = new_body
 
-      if strict2_mode?
-        parse_strict2_when(markup, body)
-      else
-        parse_lax_when(markup, body)
-      end
+      parse_when(markup, body)
     end
 
-    def parse_strict2_when(markup, body)
+    def parse_when(markup, body)
       parser = @parse_context.new_parser(markup)
 
       loop do
@@ -127,20 +108,6 @@ module Liquid
       end
 
       parser.consume(:end_of_string)
-    end
-
-    def parse_lax_when(markup, body)
-      while markup
-        unless markup =~ WhenSyntax
-          raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_when")
-        end
-
-        markup = Regexp.last_match(2)
-
-        block = Condition.new(@left, '==', Condition.parse_expression(parse_context, Regexp.last_match(1)))
-        block.attach(body)
-        @blocks << block
-      end
     end
 
     def record_else_condition(markup)

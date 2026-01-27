@@ -175,7 +175,7 @@ class PartialCacheUnitTest < Minitest::Test
     assert_equal('some/path/my_partial', partial.name)
   end
 
-  def test_includes_error_mode_into_template_cache
+  def test_cache_key
     template_factory = StubTemplateFactory.new
     context = Liquid::Context.build(
       registers: {
@@ -184,16 +184,14 @@ class PartialCacheUnitTest < Minitest::Test
       },
     )
 
-    [:lax, :warn, :strict, :strict2].each do |error_mode|
-      Liquid::PartialCache.load(
-        'my_partial',
-        context: context,
-        parse_context: Liquid::ParseContext.new(error_mode: error_mode),
-      )
-    end
+    Liquid::PartialCache.load(
+      'my_partial',
+      context: context,
+      parse_context: Liquid::ParseContext.new,
+    )
 
     assert_equal(
-      ["my_partial:lax", "my_partial:warn", "my_partial:strict", "my_partial:strict2"],
+      ["my_partial"],
       context.registers[:cached_partials].keys,
     )
   end

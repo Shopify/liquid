@@ -15,8 +15,6 @@ module Liquid
   # @liquid_syntax
   #   {% cycle string, string, ... %}
   class Cycle < Tag
-    SimpleSyntax = /\A#{QuotedFragment}+/o
-    NamedSyntax  = /\A(#{QuotedFragment})\s*\:\s*(.*)/om
     UNNAMED_CYCLE_PATTERN = /\w+:0x\h{8}/
 
     attr_reader :variables
@@ -56,7 +54,7 @@ module Liquid
     private
 
     # cycle [name:] expression(, expression)*
-    def strict2_parse(markup)
+    def parse_markup(markup)
       p = @parse_context.new_parser(markup)
 
       @variables = []
@@ -89,35 +87,6 @@ module Liquid
         @name = @variables.to_s
         @is_named = !@name.match?(UNNAMED_CYCLE_PATTERN)
       end
-    end
-
-    def strict_parse(markup)
-      lax_parse(markup)
-    end
-
-    def lax_parse(markup)
-      case markup
-      when NamedSyntax
-        @variables = variables_from_string(Regexp.last_match(2))
-        @name      = parse_expression(Regexp.last_match(1))
-        @is_named = true
-      when SimpleSyntax
-        @variables = variables_from_string(markup)
-        @name      = @variables.to_s
-        @is_named = !@name.match?(UNNAMED_CYCLE_PATTERN)
-      else
-        raise SyntaxError, options[:locale].t("errors.syntax.cycle")
-      end
-    end
-
-    def variables_from_string(markup)
-      markup.split(',').collect do |var|
-        var =~ /\s*(#{QuotedFragment})\s*/o
-        next unless Regexp.last_match(1)
-
-        var = parse_expression(Regexp.last_match(1))
-        maybe_dup_lookup(var)
-      end.compact
     end
 
     # For backwards compatibility, whenever a lookup is used in an unnamed cycle,
