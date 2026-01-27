@@ -2,15 +2,15 @@
 
 module Liquid
   class RangeLookup
-    def self.parse(start_markup, end_markup, string_scanner, cache = nil)
-      start_obj = Expression.parse(start_markup, string_scanner, cache)
-      end_obj   = Expression.parse(end_markup, string_scanner, cache)
+    def self.create(start_obj, end_obj, start_markup = nil, end_markup = nil)
       if start_obj.respond_to?(:evaluate) || end_obj.respond_to?(:evaluate)
         new(start_obj, end_obj)
       else
         begin
           start_obj.to_i..end_obj.to_i
         rescue NoMethodError
+          start_markup = start_obj.to_s unless start_markup
+          end_markup = end_obj.to_s unless end_markup
           invalid_expr = start_markup unless start_obj.respond_to?(:to_i)
           invalid_expr ||= end_markup unless end_obj.respond_to?(:to_i)
           if invalid_expr

@@ -61,14 +61,14 @@ module Liquid
 
       raise SyntaxError, options[:locale].t("errors.syntax.cycle") if p.look(:end_of_string)
 
-      first_expression = safe_parse_expression(p)
+      first_expression = p.expression
       if p.look(:colon)
         # cycle name: expr1, expr2, ...
         @name = first_expression
         @is_named = true
         p.consume(:colon)
         # After the colon, parse the first variable (required for named cycles)
-        @variables << maybe_dup_lookup(safe_parse_expression(p))
+        @variables << maybe_dup_lookup(p.expression)
       else
         # cycle expr1, expr2, ...
         @variables << maybe_dup_lookup(first_expression)
@@ -78,7 +78,7 @@ module Liquid
       while p.consume?(:comma)
         break if p.look(:end_of_string)
 
-        @variables << maybe_dup_lookup(safe_parse_expression(p))
+        @variables << maybe_dup_lookup(p.expression)
       end
 
       p.consume(:end_of_string)
