@@ -35,13 +35,26 @@ class AssignTest < Minitest::Test
     )
   end
 
+  def test_assign_boolean_expression_assignment
+    assert_template_result(
+      'it rendered',
+      <<~LIQUID,
+        {%- assign should_render = a == 0 or (b == 1 and c == 2) -%}
+        {%- if should_render -%}
+          it rendered
+        {%- endif -%}
+      LIQUID
+      { 'b' => 1, 'c' => 2 },
+    )
+  end
+
   def test_assign_syntax_error
     assert_match_syntax_error(/assign/, '{% assign foo not values %}.')
   end
 
   def test_assign_throws_on_unsupported_syntax
     assert_match_syntax_error(
-      "Expected dotdot but found pipe",
+      "Expected close_round but found pipe",
       "{% assign foo = ('X' | downcase) %}",
     )
   end

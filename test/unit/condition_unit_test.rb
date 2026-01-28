@@ -9,11 +9,6 @@ class ConditionUnitTest < Minitest::Test
     @context = Liquid::Context.new
   end
 
-  def test_basic_condition
-    assert_equal(false, Condition.new(1, '==', 2).evaluate(Context.new))
-    assert_equal(true,  Condition.new(1, '==', 1).evaluate(Context.new))
-  end
-
   def test_default_operators_evalute_true
     assert_evaluates_true(1, '==', 1)
     assert_evaluates_true(1, '!=', 2)
@@ -72,11 +67,11 @@ class ConditionUnitTest < Minitest::Test
   end
 
   def test_hash_compare_backwards_compatibility
-    assert_nil(Condition.new({}, '>', 2).evaluate(Context.new))
-    assert_nil(Condition.new(2, '>', {}).evaluate(Context.new))
-    assert_equal(false, Condition.new({}, '==', 2).evaluate(Context.new))
-    assert_equal(true, Condition.new({ 'a' => 1 }, '==', 'a' => 1).evaluate(Context.new))
-    assert_equal(true, Condition.new({ 'a' => 2 }, 'contains', 'a').evaluate(Context.new))
+    assert_evaluates_nil({}, '>', 2)
+    assert_evaluates_nil(2, '>', {})
+    assert_evaluates_false({}, '==', 2)
+    assert_evaluates_true({ 'a' => 1 }, '==', 'a' => 1)
+    assert_evaluates_true({ 'a' => 2 }, 'contains', 'a')
   end
 
   def test_contains_works_on_arrays
@@ -110,39 +105,37 @@ class ConditionUnitTest < Minitest::Test
   end
 
   def test_or_condition
-    condition = Condition.new(1, '==', 2)
+    false_expr = '1 == 2'
+    true_expr = '1 == 1'
+
+    condition = Condition.new(expression(false_expr))
     assert_equal(false, condition.evaluate(Context.new))
 
-    condition.or(Condition.new(2, '==', 1))
-
+    condition = Condition.new(expression("#{false_expr} or #{false_expr}"))
     assert_equal(false, condition.evaluate(Context.new))
 
-    condition.or(Condition.new(1, '==', 1))
+    condition = Condition.new(expression("#{false_expr} or #{true_expr}"))
+    assert_equal(true, condition.evaluate(Context.new))
 
+    condition = Condition.new(expression("#{true_expr} or #{false_expr}"))
     assert_equal(true, condition.evaluate(Context.new))
   end
 
   def test_and_condition
-    condition = Condition.new(1, '==', 1)
+    false_expr = '1 == 2'
+    true_expr = '1 == 1'
 
+    condition = Condition.new(expression(true_expr))
     assert_equal(true, condition.evaluate(Context.new))
 
-    condition.and(Condition.new(2, '==', 2))
-
-    assert_equal(true, condition.evaluate(Context.new))
-
-    condition.and(Condition.new(2, '==', 1))
-
+    condition = Condition.new(expression("#{true_expr} and #{false_expr}"))
     assert_equal(false, condition.evaluate(Context.new))
-  end
 
-  def test_should_allow_custom_proc_operator
-    Condition.operators['starts_with'] = proc { |_cond, left, right| left =~ /^#{right}/ }
+    condition = Condition.new(expression("#{false_expr} and #{true_expr}"))
+    assert_equal(false, condition.evaluate(Context.new))
 
-    assert_evaluates_true('bob', 'starts_with', 'b')
-    assert_evaluates_false('bob', 'starts_with', 'o')
-  ensure
-    Condition.operators.delete('starts_with')
+    condition = Condition.new(expression("#{true_expr} and #{true_expr}"))
+    assert_equal(true, condition.evaluate(Context.new))
   end
 
   def test_left_or_right_may_contain_operators
@@ -152,38 +145,24 @@ class ConditionUnitTest < Minitest::Test
     assert_evaluates_true(VariableLookup.parse("one"), '==', VariableLookup.parse("another"))
   end
 
-  def test_default_context_is_deprecated
-    if Gem::Version.new(Liquid::VERSION) >= Gem::Version.new('6.0.0')
-      flunk("Condition#evaluate without a context argument is to be removed")
-    end
-
-    _out, err = capture_io do
-      assert_equal(true, Condition.new(1, '==', 1).evaluate)
-    end
-
-    expected = "DEPRECATION WARNING: Condition#evaluate without a context argument is deprecated " \
-      "and will be removed from Liquid 6.0.0."
-    assert_includes(err.lines.map(&:strip), expected)
-  end
-
   def test_parse_expression
     environment = Environment.build
     parse_context = ParseContext.new(environment: environment)
     parser = parse_context.new_parser('product.title')
-    result = Condition.parse_expression(parser)
+    result = parser.expression
 
     assert_instance_of(VariableLookup, result)
     assert_equal('product', result.name)
     assert_equal(['title'], result.lookups)
   end
 
-  def test_parse_expression_returns_method_literal_for_blank_and_empty
+  def test_parser_expression_returns_method_literal_for_blank_and_empty
     environment = Environment.build
     parse_context = ParseContext.new(environment: environment)
     parser = parse_context.new_parser('blank')
-    result = Condition.parse_expression(parser)
+    result = parser.expression
 
-    assert_instance_of(Condition::MethodLiteral, result)
+    assert_instance_of(MethodLiteral, result)
   end
 
   # Tests for blank? comparison without ActiveSupport
@@ -203,7 +182,7 @@ class ConditionUnitTest < Minitest::Test
     # Template authors expect "   " to be blank since it has no visible content.
     # This matches ActiveSupport's String#blank? which returns true for whitespace-only strings.
     @context['whitespace'] = '   '
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('whitespace'), '==', blank_literal)
   end
@@ -212,7 +191,7 @@ class ConditionUnitTest < Minitest::Test
     # An empty string has no content, so it should be considered blank.
     # This is the most basic case of a blank string.
     @context['empty_string'] = ''
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('empty_string'), '==', blank_literal)
   end
@@ -221,7 +200,7 @@ class ConditionUnitTest < Minitest::Test
     # Empty arrays have no elements, so they are blank.
     # Useful for checking if a collection has items: {% if products == blank %}
     @context['empty_array'] = []
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('empty_array'), '==', blank_literal)
   end
@@ -230,7 +209,7 @@ class ConditionUnitTest < Minitest::Test
     # Empty hashes have no key-value pairs, so they are blank.
     # Useful for checking if settings/options exist: {% if settings == blank %}
     @context['empty_hash'] = {}
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('empty_hash'), '==', blank_literal)
   end
@@ -239,7 +218,7 @@ class ConditionUnitTest < Minitest::Test
     # nil represents "nothing" and is the canonical blank value.
     # Unassigned variables resolve to nil, so this enables: {% if missing_var == blank %}
     @context['nil_value'] = nil
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('nil_value'), '==', blank_literal)
   end
@@ -248,7 +227,7 @@ class ConditionUnitTest < Minitest::Test
     # false is considered blank to match ActiveSupport semantics.
     # This allows {% if some_flag == blank %} to work when flag is false.
     @context['false_value'] = false
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_true(VariableLookup.parse('false_value'), '==', blank_literal)
   end
@@ -257,7 +236,7 @@ class ConditionUnitTest < Minitest::Test
     # true is a definite value, not blank.
     # Ensures {% if flag == blank %} works correctly for boolean flags.
     @context['true_value'] = true
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_false(VariableLookup.parse('true_value'), '==', blank_literal)
   end
@@ -266,7 +245,7 @@ class ConditionUnitTest < Minitest::Test
     # Numbers (including zero) are never blank - they represent actual values.
     # 0 is a valid quantity, not the absence of a value.
     @context['number'] = 42
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_false(VariableLookup.parse('number'), '==', blank_literal)
   end
@@ -275,7 +254,7 @@ class ConditionUnitTest < Minitest::Test
     # A string with actual content is not blank.
     # This is the expected behavior for most template string comparisons.
     @context['string'] = 'hello'
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_false(VariableLookup.parse('string'), '==', blank_literal)
   end
@@ -284,7 +263,7 @@ class ConditionUnitTest < Minitest::Test
     # An array with elements has content, so it's not blank.
     # Enables patterns like {% unless products == blank %}Show products{% endunless %}
     @context['array'] = [1, 2, 3]
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_false(VariableLookup.parse('array'), '==', blank_literal)
   end
@@ -293,7 +272,7 @@ class ConditionUnitTest < Minitest::Test
     # A hash with key-value pairs has content, so it's not blank.
     # Useful for checking if configuration exists: {% if config != blank %}
     @context['hash'] = { 'a' => 1 }
-    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+    blank_literal = Expression::LITERALS['blank']
 
     assert_evaluates_false(VariableLookup.parse('hash'), '==', blank_literal)
   end
@@ -309,7 +288,7 @@ class ConditionUnitTest < Minitest::Test
     # An empty string ("") has length 0, so it's empty.
     # Different from blank - empty is a stricter check.
     @context['empty_string'] = ''
-    empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
+    empty_literal = Expression::LITERALS['empty']
 
     assert_evaluates_true(VariableLookup.parse('empty_string'), '==', empty_literal)
   end
@@ -319,7 +298,7 @@ class ConditionUnitTest < Minitest::Test
     # This is the key difference between empty and blank:
     # "   ".empty? => false, but "   ".blank? => true
     @context['whitespace'] = '   '
-    empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
+    empty_literal = Expression::LITERALS['empty']
 
     assert_evaluates_false(VariableLookup.parse('whitespace'), '==', empty_literal)
   end
@@ -328,7 +307,7 @@ class ConditionUnitTest < Minitest::Test
     # An array with no elements is empty.
     # [].empty? => true
     @context['empty_array'] = []
-    empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
+    empty_literal = Expression::LITERALS['empty']
 
     assert_evaluates_true(VariableLookup.parse('empty_array'), '==', empty_literal)
   end
@@ -337,7 +316,7 @@ class ConditionUnitTest < Minitest::Test
     # A hash with no key-value pairs is empty.
     # {}.empty? => true
     @context['empty_hash'] = {}
-    empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
+    empty_literal = Expression::LITERALS['empty']
 
     assert_evaluates_true(VariableLookup.parse('empty_hash'), '==', empty_literal)
   end
@@ -347,30 +326,45 @@ class ConditionUnitTest < Minitest::Test
     # nil is not a collection, so it cannot be empty.
     # This differs from blank: nil IS blank, but nil is NOT empty.
     @context['nil_value'] = nil
-    empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
+    empty_literal = Expression::LITERALS['empty']
 
     assert_evaluates_false(VariableLookup.parse('nil_value'), '==', empty_literal)
   end
 
   private
 
+  def assert_evaluates_nil(left, op, right)
+    expr = BinaryExpression.new(left, op, right)
+    assert_nil(
+      Condition.new(expr).evaluate(@context),
+      "Evaluated not nil: #{left.inspect} #{op} #{right.inspect}",
+    )
+  end
+
   def assert_evaluates_true(left, op, right)
+    expr = BinaryExpression.new(left, op, right)
     assert(
-      Condition.new(left, op, right).evaluate(@context),
+      Condition.new(expr).evaluate(@context),
       "Evaluated false: #{left.inspect} #{op} #{right.inspect}",
     )
   end
 
   def assert_evaluates_false(left, op, right)
+    expr = BinaryExpression.new(left, op, right)
     assert(
-      !Condition.new(left, op, right).evaluate(@context),
+      !Condition.new(expr).evaluate(@context),
       "Evaluated true: #{left.inspect} #{op} #{right.inspect}",
     )
   end
 
   def assert_evaluates_argument_error(left, op, right)
     assert_raises(Liquid::ArgumentError) do
-      Condition.new(left, op, right).evaluate(@context)
+      expr = BinaryExpression.new(left, op, right)
+      Condition.new(expr).evaluate(@context)
     end
+  end
+
+  def expression(markup)
+    Parser.new(markup).expression
   end
 end # ConditionTest
