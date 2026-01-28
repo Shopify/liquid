@@ -59,18 +59,18 @@ module Liquid
       logical
     end
 
-    # Logical relations in Liquid, unlike other languages, are right-to-left
-    # associative. This creates a right-leaning tree and is why the method
-    # looks a bit more complicated
-    #
+    # Logical relations use right-to-left associativity.
     # `a and b or c` is evaluated like (a and (b or c))
-    # logical := equality (("and" | "or") equality)*
+    # This enables short-circuit: if `a` is false, entire expression short-circuits.
+    # logical := equality (("and" | "or") logical)?
     def logical
-      operator = nil
-      expr = equality
-      expr = BinaryExpression.new(expr, operator, equality) if (operator = consume?(:logical))
-      expr.right_node = BinaryExpression.new(expr.right_node, operator, equality) while (operator = consume?(:logical))
-      expr
+      left = equality
+      if (operator = consume?(:logical))
+        right = logical # recursive call builds proper RTL tree
+        BinaryExpression.new(left, operator, right)
+      else
+        left
+      end
     end
 
     # equality := comparison (("==" | "!=" | "<>") comparison)*
