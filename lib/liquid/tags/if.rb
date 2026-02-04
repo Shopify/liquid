@@ -56,7 +56,7 @@ module Liquid
           block.evaluate(context),
         )
 
-        if result
+        if result.respond_to?(:truthy?) ? result.truthy? : result
           return block.attachment.render_to_output_buffer(context, output)
         end
       end
