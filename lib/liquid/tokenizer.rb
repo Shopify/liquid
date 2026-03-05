@@ -9,6 +9,7 @@ module Liquid
     TAG_END = /%\}/
     TAG_OR_VARIABLE_START = /\{[\{\%]/
     NEWLINE = /\n/
+    TAG_NAME_PATTERN = /\A\{%-?\s*(\w+)/
 
     OPEN_CURLEY = "{".ord
     CLOSE_CURLEY = "}".ord
@@ -46,6 +47,49 @@ module Liquid
       end
 
       token
+    end
+
+    def peek
+      @tokens[@offset]
+    end
+
+    def position
+      [@offset, @line_number]
+    end
+
+    def position=(pos)
+      @offset, @line_number = pos
+    end
+
+    # Depth-aware forward scan of pre-tokenized tokens starting from the
+    # current position.
+    def matching_end_tag?(tag_name)
+      end_tag_name = "end#{tag_name}"
+      depth = 0
+      i = @offset
+
+      while i < @tokens.length
+        token = @tokens[i]
+        i += 1
+
+        next unless token.start_with?("{%")
+
+        # TODO: use tag_name
+        match = TAG_NAME_PATTERN.match(token)
+        next unless match
+
+        name = match[1]
+
+        if name == tag_name
+          depth += 1
+        elsif name == end_tag_name
+          return true if depth == 0
+
+          depth -= 1
+        end
+      end
+
+      false
     end
 
     private
