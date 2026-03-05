@@ -25,7 +25,7 @@ module Liquid
   # @liquid_syntax
   #   {% render 'filename' %}
   # @liquid_syntax_keyword filename The name of the snippet to render, without the `.liquid` extension.
-  class Render < Tag
+  class Render < HybridTag
     FOR = 'for'
     SYNTAX = /(#{QuotedString}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
 
@@ -42,11 +42,24 @@ module Liquid
       @is_for_loop
     end
 
-    def render_to_output_buffer(context, output)
+    def blank?
+      false
+    end
+
+    private
+
+    def render_self_closing_to_output_buffer(context, output)
       render_tag(context, output)
     end
 
-    def render_tag(context, output)
+    def render_block_form_to_output_buffer(context, output)
+      rendered_content = +""
+      @body.render_to_output_buffer(context, rendered_content)
+
+      render_tag(context, output, content: rendered_content)
+    end
+
+    def render_tag(context, output, content: nil)
       # The expression should be a String literal, which parses to a String object
       template_name = @template_name_expr
       raise ::ArgumentError unless template_name.is_a?(String)
@@ -69,6 +82,7 @@ module Liquid
           inner_context[key] = context.evaluate(value)
         end
         inner_context[context_variable_name] = var unless var.nil?
+        inner_context['content'] = content if content && !@attributes.key?('content')
         partial.render_to_output_buffer(inner_context, output)
         forloop&.send(:increment!)
       }
