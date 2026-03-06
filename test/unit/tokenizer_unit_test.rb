@@ -108,7 +108,7 @@ class TokenizerTest < Minitest::Test
 
   def test_matching_end_tag_handles_nested_same_name_tags
     tokenizer = new_tokenizer(
-      '{% render "a" %}{% render "b" %}inner{% endrender %}outer{% endrender %}'
+      '{% render "a" %}{% render "b" %}inner{% endrender %}outer{% endrender %}',
     )
     tokenizer.send(:shift) # {% render "a" %}
     # Should find the outer endrender (depth-aware), not the inner one
@@ -126,7 +126,7 @@ class TokenizerTest < Minitest::Test
   def test_matching_end_tag_returns_false_when_only_nested_end_tag
     # Only a nested endrender exists (consumed by the inner render), no outer endrender
     tokenizer = new_tokenizer(
-      '{% render "a" %}{% render "b" %}{% endrender %}'
+      '{% render "a" %}{% render "b" %}{% endrender %}',
     )
     tokenizer.send(:shift) # {% render "a" %}
     # The endrender belongs to the inner render (depth 1 -> 0), not the outer (depth 0)

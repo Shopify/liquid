@@ -108,12 +108,12 @@ module Liquid
         next unless token.start_with?("{%")
 
         j = 2
-        j += 1 if token.getbyte(j) == 45   # '-'
+        j += 1 if token.getbyte(j) == 45 # '-'
         j += 1 while token.getbyte(j) == 32 # ' '
 
-        if token.getbyte(j) == 101 &&     # 'e'
-           token.getbyte(j + 1) == 110 && # 'n'
-           token.getbyte(j + 2) == 100    # 'd'
+        if token.getbyte(j) == 101 && # 'e'
+            token.getbyte(j + 1) == 110 && # 'n'
+            token.getbyte(j + 2) == 100    # 'd'
           has_any_end_tag = true
           break
         end
@@ -133,7 +133,7 @@ module Liquid
 
         # Advance past "{%", optional "-", and spaces to reach tag name
         j = 2
-        j += 1 if token.getbyte(j) == 45   # '-'
+        j += 1 if token.getbyte(j) == 45 # '-'
         j += 1 while token.getbyte(j) == 32 # ' '
 
         # Extract tag name: scan word characters [a-zA-Z0-9_]
@@ -142,18 +142,18 @@ module Liquid
         while byte && ((byte >= 97 && byte <= 122) || # a-z
                        (byte >= 65 && byte <= 90) ||  # A-Z
                        (byte >= 48 && byte <= 57) ||  # 0-9
-                       byte == 95)                     # _
+                       byte == 95) # _
           j += 1
           byte = token.getbyte(j)
         end
-        next if j == name_start  # no tag name found
+        next if j == name_start # no tag name found
 
         name = token.byteslice(name_start, j - name_start)
 
         if name.start_with?("end")
           base = name.byteslice(3, name.bytesize - 3)
           stack = open_stacks[base]
-          if stack.length > 0
+          unless stack.empty?
             open_pos = stack.pop
             @has_matching_end_tag[open_pos] = true
           end

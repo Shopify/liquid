@@ -151,14 +151,12 @@ Benchmark.ips do |x|
   x.config(time: 10, warmup: 5)
 
   TEMPLATES.each do |label, source|
-    begin
+    Liquid::Template.parse(source, environment: env)
+    x.report("parse: #{label}") do
       Liquid::Template.parse(source, environment: env)
-      x.report("parse: #{label}") do
-        Liquid::Template.parse(source, environment: env)
-      end
-    rescue Liquid::SyntaxError => e
-      puts "  Skipping '#{label}' - #{e.message}"
     end
+  rescue Liquid::SyntaxError => e
+    puts "  Skipping '#{label}' - #{e.message}"
   end
 
   x.compare!
