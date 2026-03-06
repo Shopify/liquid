@@ -9,11 +9,10 @@ module Liquid
     TAG_END = /%\}/
     TAG_OR_VARIABLE_START = /\{[\{\%]/
     NEWLINE = /\n/
-    TAG_NAME_PATTERN = /\A\{%-?\s*(\w+)/
-
     OPEN_CURLEY = "{".ord
     CLOSE_CURLEY = "}".ord
     PERCENTAGE = "%".ord
+    EMPTY_MATCH_MAP = [].freeze
 
     def initialize(
       source:,
@@ -61,35 +60,9 @@ module Liquid
       @offset, @line_number = pos
     end
 
-    # Depth-aware forward scan of pre-tokenized tokens starting from the
-    # current position.
     def matching_end_tag?(tag_name)
-      end_tag_name = "end#{tag_name}"
-      depth = 0
-      i = @offset
-
-      while i < @tokens.length
-        token = @tokens[i]
-        i += 1
-
-        next unless token.start_with?("{%")
-
-        # TODO: use tag_name
-        match = TAG_NAME_PATTERN.match(token)
-        next unless match
-
-        name = match[1]
-
-        if name == tag_name
-          depth += 1
-        elsif name == end_tag_name
-          return true if depth == 0
-
-          depth -= 1
-        end
-      end
-
-      false
+      precompute_end_tag_matches unless @has_matching_end_tag
+      @has_matching_end_tag[@offset - 1]
     end
 
     private
@@ -103,6 +76,91 @@ module Liquid
 
       @source = nil
       @ss = nil
+    end
+
+    # Precomputes which token positions have a matching depth-0 end tag.
+    #
+    # Uses a two-phase approach to avoid unnecessary work:
+    #
+    # 1. A cheap byte-level scan checks whether any end tag
+    #    exists at all. If none is found, assigns
+    #    +EMPTY_MATCH_MAP+ and returns immediately with zero
+    #    allocations.
+    #
+    # 2. A full stack-based bracket matching pass runs only
+    #    when phase 1 finds at least one end tag.
+    #
+    # This method is called lazily on the first invocation
+    # of #matching_end_tag?.
+    #
+    def precompute_end_tag_matches
+      if @tokens.length - @offset < 1
+        @has_matching_end_tag = EMPTY_MATCH_MAP
+        return
+      end
+
+      # Phase 1: Check if ANY end tag exists in the remaining tokens.
+      has_any_end_tag = false
+      i = @offset
+      while i < @tokens.length
+        token = @tokens[i]
+        i += 1
+        next unless token.start_with?("{%")
+
+        j = 2
+        j += 1 if token.getbyte(j) == 45   # '-'
+        j += 1 while token.getbyte(j) == 32 # ' '
+
+        if token.getbyte(j) == 101 &&     # 'e'
+           token.getbyte(j + 1) == 110 && # 'n'
+           token.getbyte(j + 2) == 100    # 'd'
+          has_any_end_tag = true
+          break
+        end
+      end
+
+      unless has_any_end_tag
+        @has_matching_end_tag = EMPTY_MATCH_MAP
+        return
+      end
+
+      # Phase 2: Full stack-based bracket matching (existing logic).
+      @has_matching_end_tag = Array.new(@tokens.length, false)
+      open_stacks = Hash.new { |h, k| h[k] = [] }
+
+      @tokens.each_with_index do |token, idx|
+        next unless token.start_with?("{%")
+
+        # Advance past "{%", optional "-", and spaces to reach tag name
+        j = 2
+        j += 1 if token.getbyte(j) == 45   # '-'
+        j += 1 while token.getbyte(j) == 32 # ' '
+
+        # Extract tag name: scan word characters [a-zA-Z0-9_]
+        name_start = j
+        byte = token.getbyte(j)
+        while byte && ((byte >= 97 && byte <= 122) || # a-z
+                       (byte >= 65 && byte <= 90) ||  # A-Z
+                       (byte >= 48 && byte <= 57) ||  # 0-9
+                       byte == 95)                     # _
+          j += 1
+          byte = token.getbyte(j)
+        end
+        next if j == name_start  # no tag name found
+
+        name = token.byteslice(name_start, j - name_start)
+
+        if name.start_with?("end")
+          base = name.byteslice(3, name.bytesize - 3)
+          stack = open_stacks[base]
+          if stack.length > 0
+            open_pos = stack.pop
+            @has_matching_end_tag[open_pos] = true
+          end
+        else
+          open_stacks[name] << idx
+        end
+      end
     end
 
     def shift_normal
