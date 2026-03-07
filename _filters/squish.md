@@ -1,6 +1,6 @@
 ---
 title: squish
-description: Liquid filter that remove all whitespace on both ends of the string, and then changing remaining consecutive whitespace groups into one space each.
+description: Liquid filter that removes all whitespace on both ends of the string, and then changes remaining consecutive whitespace groups into one space each.
 ---
 
 Remove all whitespace on both ends of the string, and then changing remaining consecutive whitespace groups into one space each. `squish` is commonly used
