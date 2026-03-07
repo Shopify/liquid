@@ -3,7 +3,7 @@ title: squish
 description: Liquid filter that removes all whitespace on both ends of the string, and then changes remaining consecutive whitespace groups into one space each.
 ---
 
-Remove all whitespace on both ends of the string, and then changing remaining consecutive whitespace groups into one space each. `squish` is commonly used
+Remove all whitespace on both ends of the string, and then change remaining consecutive whitespace groups into one space each. `squish` is commonly used
 to dynamically create a list of classes or inline styles.
 
 <p class="code-label">Input</p>
