@@ -71,6 +71,9 @@ module Liquid
       end
     end
 
+    # Cache for [filtername, EMPTY_ARRAY] tuples — avoids repeated array creation
+    NO_ARG_FILTER_CACHE = Hash.new { |h, k| h[k] = [k, Const::EMPTY_ARRAY].freeze }
+
     FilterMarkupRegex        = /#{FilterSeparator}\s*(.*)/om
     FilterParser             = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
     FilterArgsRegex          = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o
@@ -291,7 +294,7 @@ module Liquid
           @filters << [filtername, filter_args]
         else
           # No args — add as simple filter
-          @filters << [filtername, Const::EMPTY_ARRAY]
+          @filters << NO_ARG_FILTER_CACHE[filtername]
         end
 
         # Skip whitespace between filters
