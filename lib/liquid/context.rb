@@ -38,14 +38,13 @@ module Liquid
       @strict_variables    = false
       @resource_limits     = resource_limits || ResourceLimits.new(environment.default_resource_limits)
       @base_scope_depth    = 0
-      @interrupts          = []
+      @interrupts          = Const::EMPTY_ARRAY
       @filters             = Const::EMPTY_ARRAY
       @global_filter       = nil
       @disabled_tags       = Const::EMPTY_HASH
 
-      # Instead of constructing new StringScanner objects for each Expression parse,
-      # we recycle the same one.
-      @string_scanner = StringScanner.new("")
+      # Lazy-init StringScanner — only needed if Context#[] is called during render
+      @string_scanner = nil
 
       @registers.static[:cached_partials] ||= {}
       @registers.static[:file_system] ||= environment.file_system
@@ -87,11 +86,12 @@ module Liquid
 
     # are there any not handled interrupts?
     def interrupt?
-      !@interrupts.empty?
+      !@interrupts.frozen? && !@interrupts.empty?
     end
 
     # push an interrupt to the stack. this interrupt is considered not handled.
     def push_interrupt(e)
+      @interrupts = [] if @interrupts.frozen?
       @interrupts.push(e)
     end
 
@@ -194,7 +194,7 @@ module Liquid
     # Example:
     #   products == empty #=> products.empty?
     def [](expression)
-      evaluate(Expression.parse(expression, @string_scanner))
+      evaluate(Expression.parse(expression, @string_scanner ||= StringScanner.new("")))
     end
 
     def key?(key)
