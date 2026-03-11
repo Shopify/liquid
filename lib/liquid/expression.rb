@@ -79,6 +79,10 @@ module Liquid
       end
 
       def parse_number(markup, ss)
+        # Quick reject: first byte must be digit or dash
+        first = markup.getbyte(0)
+        return false if first != DASH && (first < ZERO || first > NINE)
+
         # check if the markup is simple integer or float
         case markup
         when INTEGER_REGEX
