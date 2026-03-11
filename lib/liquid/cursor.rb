@@ -132,44 +132,18 @@ module Liquid
       end
     end
 
+    # Regex for numbers: -?\d+(\.\d+)?
+    FLOAT_REGEX = /-?\d+\.\d+/
+    INT_REGEX = /-?\d+/
+
     # ── Numbers ─────────────────────────────────────────────────────
     # Try to scan an integer or float. Returns the number or nil.
     def scan_number
-      start = @ss.pos
-      b = @ss.peek_byte
-      return unless b
-
-      if b == DASH
-        @ss.scan_byte
-        b = @ss.peek_byte
-        unless b && b >= ZERO && b <= NINE
-          @ss.pos = start
-          return
-        end
-      elsif b >= ZERO && b <= NINE
-        # ok
-      else
-        return
+      if (s = @ss.scan(FLOAT_REGEX))
+        s.to_f
+      elsif (s = @ss.scan(INT_REGEX))
+        s.to_i
       end
-
-      # Scan digits
-      @ss.scan_byte
-      @ss.scan_byte while (b = @ss.peek_byte) && b >= ZERO && b <= NINE
-
-      if @ss.peek_byte == DOT
-        @ss.scan_byte
-        # Must have digit after dot for float
-        if (b = @ss.peek_byte) && b >= ZERO && b <= NINE
-          @ss.scan_byte
-          @ss.scan_byte while (b = @ss.peek_byte) && b >= ZERO && b <= NINE
-          return @source.byteslice(start, @ss.pos - start).to_f
-        else
-          # "123." — integer portion only, rewind past dot
-          @ss.pos -= 1
-        end
-      end
-
-      Integer(@source.byteslice(start, @ss.pos - start), 10)
     end
 
     # ── Strings ─────────────────────────────────────────────────────
