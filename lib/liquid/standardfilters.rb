@@ -275,18 +275,54 @@ module Liquid
       words = Utils.to_integer(words)
       words = 1 if words <= 0
 
-      wordlist = begin
-        input.split(" ", words + 1)
-      rescue RangeError
-        # integer too big for String#split, but we can semantically assume no truncation is needed
-        return input if words + 1 > MAX_I32
-        raise # unexpected error
-      end
-      return input if wordlist.length <= words
+      return input if words + 1 > MAX_I32
 
-      wordlist.pop
-      truncate_string = Utils.to_s(truncate_string)
-      wordlist.join(" ").concat(truncate_string)
+      # Build result incrementally — avoids split() array + string allocations
+      len = input.bytesize
+      pos = 0
+      word_count = 0
+      result = nil
+
+      # Skip leading whitespace
+      while pos < len
+        b = input.getbyte(pos)
+        break unless b == 32 || b == 9 || b == 10 || b == 13 || b == 12
+        pos += 1
+      end
+
+      while pos < len
+        word_start = pos
+        word_count += 1
+
+        # Skip non-whitespace chars (word body)
+        while pos < len
+          b = input.getbyte(pos)
+          break if b == 32 || b == 9 || b == 10 || b == 13 || b == 12
+          pos += 1
+        end
+
+        if word_count > words
+          # Truncate — result already has the first N words
+          truncate_string = Utils.to_s(truncate_string)
+          return result.concat(truncate_string)
+        end
+
+        # Append word to result (only allocate result when we know truncation is possible)
+        if result
+          result << " " << input.byteslice(word_start, pos - word_start)
+        else
+          result = +input.byteslice(word_start, pos - word_start)
+        end
+
+        # Skip whitespace between words
+        while pos < len
+          b = input.getbyte(pos)
+          break unless b == 32 || b == 9 || b == 10 || b == 13 || b == 12
+          pos += 1
+        end
+      end
+
+      input
     end
 
     # @liquid_public_docs
