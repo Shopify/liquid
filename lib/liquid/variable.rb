@@ -91,7 +91,9 @@ module Liquid
 
       # Fast path: try to parse without going through Lexer → Parser
       # Skip for strict2/rigid modes which require different parsing
-      if parse_context.error_mode == :strict2 || parse_context.error_mode == :rigid || !try_fast_parse(markup, parse_context)
+      # Fast path only for lax/warn modes — strict modes need full error checking
+      error_mode = parse_context.error_mode
+      if error_mode == :strict2 || error_mode == :rigid || error_mode == :strict || !try_fast_parse(markup, parse_context)
         strict_parse_with_error_mode_fallback(markup)
       end
     end
@@ -175,19 +177,58 @@ module Liquid
       # Must be a pipe for filters
       return false unless markup.getbyte(pos) == 124 # '|'
 
-      # Parse filters using the standard path but skip the Lexer/Parser for the name
-      # We reuse strict_parse's filter loop by creating a parser from the filter portion only
+      # Try fast filter scanning first — handles no-arg and simple-arg filters
+      # Falls through to Lexer-based parsing for complex cases
       @filters = []
-      filter_markup = markup.byteslice(pos, len - pos)
-      # Use the standard parser for the filter chain (still cheaper than re-lexing the whole thing)
-      p = parse_context.new_parser(filter_markup)
+      filter_pos = pos
 
-      while p.consume?(:pipe)
-        filtername = p.consume(:id)
-        filterargs = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
-        @filters << lax_parse_filter_expressions(filtername, filterargs)
+      while filter_pos < len && markup.getbyte(filter_pos) == 124 # '|'
+        filter_pos += 1
+        # Skip whitespace
+        filter_pos += 1 while filter_pos < len && markup.getbyte(filter_pos) == 32
+
+        # Scan filter name
+        fname_start = filter_pos
+        b = filter_pos < len ? markup.getbyte(filter_pos) : nil
+        break unless b && ((b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95)
+        filter_pos += 1
+        while filter_pos < len
+          b = markup.getbyte(filter_pos)
+          break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 || b == 45
+          filter_pos += 1
+        end
+        filtername = markup.byteslice(fname_start, filter_pos - fname_start)
+
+        # Skip whitespace
+        filter_pos += 1 while filter_pos < len && markup.getbyte(filter_pos) == 32
+
+        # Check for colon (has arguments) — use Lexer for the remaining filter chain
+        if filter_pos < len && markup.getbyte(filter_pos) == 58 # ':'
+          # Rewind to the '|' before this filter and use Lexer for the rest
+          # We already have filters parsed so far as no-arg filters
+          rest_start = fname_start
+          # Go back to find the '|' before this filter name
+          rest_start -= 1 while rest_start > pos && markup.getbyte(rest_start) != 124
+          rest_markup = markup.byteslice(rest_start, len - rest_start)
+          p = parse_context.new_parser(rest_markup)
+          while p.consume?(:pipe)
+            fn = p.consume(:id)
+            fa = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
+            @filters << lax_parse_filter_expressions(fn, fa)
+          end
+          p.consume(:end_of_string)
+          @filters = Const::EMPTY_ARRAY if @filters.empty?
+          return true
+        end
+
+        # No args — add as simple filter
+        @filters << [filtername, Const::EMPTY_ARRAY]
       end
-      p.consume(:end_of_string)
+
+      # Skip trailing whitespace
+      filter_pos += 1 while filter_pos < len && (b = markup.getbyte(filter_pos)) && (b == 32 || b == 9 || b == 10 || b == 13)
+      return false unless filter_pos >= len
+
       @filters = Const::EMPTY_ARRAY if @filters.empty?
       true
     rescue SyntaxError
