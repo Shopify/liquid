@@ -29,6 +29,7 @@ module Liquid
     RUBY_WHITESPACE = [" ", "\t", "\r", "\n", "\f"].freeze
     SINGLE_STRING_LITERAL = /'[^\']*'/
     WHITESPACE_OR_NOTHING = /\s*/
+    WHITESPACE = /\s+/
 
     SINGLE_COMPARISON_TOKENS = [].tap do |table|
       table["<".ord] = COMPARISON_LESS_THAN
@@ -104,7 +105,7 @@ module Liquid
         output = []
 
         until ss.eos?
-          ss.skip(WHITESPACE_OR_NOTHING)
+          ss.skip(WHITESPACE)
 
           break if ss.eos?
 
@@ -114,10 +115,10 @@ module Liquid
           if (special = SPECIAL_TABLE[peeked])
             ss.scan_byte
             # Special case for ".."
-            if special == DOT && ss.peek_byte == DOT_ORD
+            if special.equal?(DOT) && ss.peek_byte == DOT_ORD
               ss.scan_byte
               output << DOTDOT
-            elsif special == DASH
+            elsif special.equal?(DASH)
               # Special case for negative numbers
               if (peeked_byte = ss.peek_byte) && NUMBER_TABLE[peeked_byte]
                 ss.pos -= 1
