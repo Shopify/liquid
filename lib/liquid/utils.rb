@@ -96,8 +96,14 @@ module Liquid
       obj
     end
 
+    # Cached string representations for common small integers (0-999)
+    # Avoids repeated Integer#to_s allocations during rendering
+    SMALL_INT_STRINGS = Array.new(1000) { |i| i.to_s.freeze }.freeze
+
     def self.to_s(obj, seen = nil)
       case obj
+      when Integer
+        return (obj >= 0 && obj < 1000) ? SMALL_INT_STRINGS[obj] : obj.to_s
       when BigDecimal
         obj.to_s("F")
       when Hash
