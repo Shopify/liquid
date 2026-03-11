@@ -83,6 +83,9 @@ module Liquid
     end
 
     def variable_lookups
+      # Fast path: no lookups at all (most common case for simple identifiers)
+      return "" unless look(:dot) || look(:open_square)
+
       str = +""
       loop do
         if look(:open_square)
