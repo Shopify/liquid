@@ -34,6 +34,10 @@ then the performance benchmark, outputting metrics in parseable format.
 - liquid-spec failures must not increase beyond 2 (pre-existing UTF-8 edge cases)
 - No new gem dependencies
 - Semantic correctness must be preserved — templates must render identical output
+- **Security**: Liquid runs untrusted user code. Never use eval, send on user input,
+  dynamic method dispatch, const_get, or any pattern that could let template authors
+  escape the sandbox. All optimizations must use safe byte-level scanning with explicit
+  character checks only.
 
 ## Baseline
 - **Commit**: 4ea835a (original, before any optimizations)
