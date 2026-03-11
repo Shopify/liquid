@@ -142,19 +142,16 @@ module Liquid
       end
     end
 
+    # Regex for quoted string content (without quotes)
+    SINGLE_QUOTED_CONTENT = /'([^']*)'/
+    DOUBLE_QUOTED_CONTENT = /"([^"]*)"/
+
     # ── Strings ─────────────────────────────────────────────────────
     # Scan a quoted string ('...' or "..."). Returns the content without quotes, or nil.
     def scan_quoted_string
-      b = @ss.peek_byte
-      return unless b == QUOTE_S || b == QUOTE_D
-
-      quote = b
-      @ss.scan_byte
-      start = @ss.pos
-      @ss.scan_byte while (b = @ss.peek_byte) && b != quote
-      content = @source.byteslice(start, @ss.pos - start)
-      @ss.scan_byte if @ss.peek_byte == quote # consume closing quote
-      content
+      if @ss.scan(SINGLE_QUOTED_CONTENT) || @ss.scan(DOUBLE_QUOTED_CONTENT)
+        @ss[1]
+      end
     end
 
     # Regex for quoted strings (single or double quoted, including quotes)
