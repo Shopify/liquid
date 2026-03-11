@@ -212,27 +212,13 @@ module Liquid
     }.freeze
 
     # Scan a comparison operator. Returns frozen string or nil.
-    def scan_comparison_op
-      start = @ss.pos
-      b = @ss.peek_byte
-      case b
-      when 61, 33, 60, 62 # = ! < >
-        @ss.scan_byte
-        b2 = @ss.peek_byte
-        if b2 == 61 || b2 == 62 # second char of ==, !=, <=, >=, <>
-          @ss.scan_byte
-        end
-      when 99 # 'c' for contains
-        id = scan_id
-        return unless id == "contains"
+    # Regex for comparison operators
+    COMPARISON_OP_REGEX = /==|!=|<>|<=|>=|<|>|contains(?!\w)/
 
-        return COMPARISON_OPS['contains']
-      else
-        return
+    def scan_comparison_op
+      if (op = @ss.scan(COMPARISON_OP_REGEX))
+        COMPARISON_OPS[op]
       end
-      op_str = @source.byteslice(start, @ss.pos - start)
-      COMPARISON_OPS[op_str] || (@ss.pos = start
-                                 nil)
     end
 
     # ── Tag parsing helpers ─────────────────────────────────────────
