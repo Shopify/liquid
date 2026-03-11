@@ -79,8 +79,11 @@ module Liquid
         @reversed        = !!Regexp.last_match(3)
         @name            = "#{@variable_name}-#{collection_name}"
         @collection_name = parse_expression(collection_name)
-        markup.scan(TagAttributes) do |key, value|
-          set_attribute(key, value)
+        # Only scan for limit:/offset: attributes if markup contains ':'
+        if markup.include?(':')
+          markup.scan(TagAttributes) do |key, value|
+            set_attribute(key, value)
+          end
         end
       else
         raise SyntaxError, options[:locale].t("errors.syntax.for")
