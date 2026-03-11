@@ -85,7 +85,19 @@ module Liquid
       Condition.parse_expression(parse_context, markup, safe: safe)
     end
 
+    # Fast path regex for simple conditions: "expr", "expr op expr" (no and/or)
+    SIMPLE_CONDITION = /\A\s*(#{QuotedFragment})\s*(?:([=!<>a-z_]+)\s*(#{QuotedFragment}))?\s*\z/o
+
     def lax_parse(markup)
+      # Fast path: simple condition without and/or
+      if !markup.include?(' and ') && !markup.include?(' or ') && markup =~ SIMPLE_CONDITION
+        return Condition.new(
+          parse_expression(Regexp.last_match(1)),
+          Regexp.last_match(2),
+          Regexp.last_match(3) ? parse_expression(Regexp.last_match(3)) : nil,
+        )
+      end
+
       expressions = markup.scan(ExpressionsAndOperators)
       raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop =~ Syntax
 
