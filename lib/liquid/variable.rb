@@ -111,10 +111,11 @@ module Liquid
     end
 
     def render_obj_to_output(obj, output)
-      case obj
-      when NilClass
+      if obj.instance_of?(String)
+        output << obj
+      elsif obj.nil?
         # Do nothing
-      when Array
+      elsif obj.instance_of?(Array)
         obj.each do |o|
           render_obj_to_output(o, output)
         end
