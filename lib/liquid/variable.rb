@@ -12,6 +12,65 @@ module Liquid
   #   {{ user | link }}
   #
   class Variable
+    # Checks if markup is a simple "name.lookup.chain" with no filters/brackets/quotes.
+    # Returns the trimmed markup string, or nil if not simple.
+    # Avoids regex MatchData allocation.
+    def self.simple_variable_markup(markup)
+      len = markup.bytesize
+      return nil if len == 0
+
+      # Skip leading whitespace
+      pos = 0
+      while pos < len
+        b = markup.getbyte(pos)
+        break unless b == 32 || b == 9 || b == 10 || b == 13
+        pos += 1
+      end
+      return nil if pos >= len
+
+      start = pos
+
+      # First char must be [a-zA-Z_]
+      b = markup.getbyte(pos)
+      return nil unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
+      pos += 1
+
+      # Scan segments: [\w-]* (. [\w-]*)*
+      while pos < len
+        b = markup.getbyte(pos)
+        if (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 || b == 45
+          pos += 1
+        elsif b == 46 # '.'
+          pos += 1
+          # After dot, must have [a-zA-Z_]
+          return nil if pos >= len
+          b = markup.getbyte(pos)
+          return nil unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
+          pos += 1
+        else
+          break
+        end
+      end
+
+      content_end = pos
+
+      # Skip trailing whitespace
+      while pos < len
+        b = markup.getbyte(pos)
+        return nil unless b == 32 || b == 9 || b == 10 || b == 13
+        pos += 1
+      end
+
+      # Must have consumed everything
+      return nil unless pos == len
+
+      if start == 0 && content_end == len
+        markup
+      else
+        markup.byteslice(start, content_end - start)
+      end
+    end
+
     FilterMarkupRegex        = /#{FilterSeparator}\s*(.*)/om
     FilterParser             = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
     FilterArgsRegex          = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o
@@ -24,19 +83,14 @@ module Liquid
 
     include ParserSwitching
 
-    # Fast path regex: matches simple "name.lookup.chain" with no filters, no brackets, no quotes
-    # This avoids the full Lexer → Parser → Expression pipeline for the most common case
-    SIMPLE_VARIABLE = /\A\s*([a-zA-Z_][\w-]*(?:\.[a-zA-Z_][\w-]*)*)\s*\z/
-
     def initialize(markup, parse_context)
       @markup        = markup
       @name          = nil
       @parse_context = parse_context
       @line_number   = parse_context.line_number
 
-      # Fast path for simple variables like "product.title" (no filters, no brackets)
-      if markup =~ SIMPLE_VARIABLE
-        expr_markup = Regexp.last_match(1)
+      # Fast path for simple variables like "product.title" (no filters, no brackets, no quotes)
+      if (expr_markup = self.class.simple_variable_markup(markup))
         @filters = Const::EMPTY_ARRAY
         if Expression::LITERALS.key?(expr_markup)
           @name = Expression::LITERALS[expr_markup]
