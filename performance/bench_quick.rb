@@ -9,9 +9,9 @@ RubyVM::YJIT.enable if defined?(RubyVM::YJIT)
 
 runner = ThemeRunner.new
 
-# Warmup
-5.times { runner.compile }
-5.times { runner.render }
+# Warmup — enough iterations for YJIT to fully optimize hot paths
+20.times { runner.compile }
+20.times { runner.render }
 
 GC.start
 GC.compact if GC.respond_to?(:compact)
