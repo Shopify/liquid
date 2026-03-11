@@ -86,3 +86,6 @@ the sandbox.
 - 58d2514: parse_tag_token returns [tag_name, markup, newlines] → combined ~4,815, allocs 37,355
 - db43492: Hoist write score check out of render loop → render ~1,345
 - 17daac9: Extend fast-path to quoted string literal variables → all 1,197 variables fast-pathed
+- 9fd7cec: Split filter parsing: no-arg filters scanned directly, Lexer only for args → combined ~4,595, allocs 35,159
+- e5933fc: Avoid array alloc in parse_tag_token via class ivars → allocs 34,281
+- 2e207e6: Replace WhitespaceOrNothing regex with byte-level blank_string? → combined ~4,800
