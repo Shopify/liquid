@@ -12,6 +12,57 @@ module Liquid
     TAGSTART            = "{%"
     VARSTART            = "{{"
 
+    # Fast manual tag token parser - avoids regex MatchData allocation
+    # Parses "{%[-] tag_name markup [-]%}" and returns [pre_ws, tag_name, post_ws, markup] or nil
+    def self.parse_tag_token(token)
+      # token starts with "{%"
+      pos = 2
+      len = token.length
+
+      # skip optional whitespace control '-'
+      pos += 1 if pos < len && token.getbyte(pos) == 45 # '-'
+
+      # capture pre-whitespace (for line number counting)
+      ws_start = pos
+      while pos < len
+        b = token.getbyte(pos)
+        break unless b == 32 || b == 9 || b == 10 || b == 13 # space, tab, \n, \r
+        pos += 1
+      end
+      pre_ws = token.byteslice(ws_start, pos - ws_start)
+
+      # parse tag name: # or \w+
+      name_start = pos
+      if pos < len && token.getbyte(pos) == 35 # '#'
+        pos += 1
+      else
+        while pos < len
+          b = token.getbyte(pos)
+          break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 # a-z, A-Z, 0-9, _
+          pos += 1
+        end
+      end
+      return nil if pos == name_start # no tag name found
+      tag_name = token.byteslice(name_start, pos - name_start)
+
+      # capture post-whitespace
+      post_ws_start = pos
+      while pos < len
+        b = token.getbyte(pos)
+        break unless b == 32 || b == 9 || b == 10 || b == 13
+        pos += 1
+      end
+      post_ws = token.byteslice(post_ws_start, pos - post_ws_start)
+
+      # the rest is markup, up to optional '-' and '%}'
+      # token ends with '%}' (guaranteed by tokenizer)
+      markup_end = len - 2
+      markup_end -= 1 if markup_end > pos && token.getbyte(markup_end - 1) == 45 # trailing '-'
+      markup = pos >= markup_end ? "" : token.byteslice(pos, markup_end - pos)
+
+      [pre_ws, tag_name, post_ws, markup]
+    end
+
     attr_reader :nodelist
 
     def initialize
@@ -130,16 +181,16 @@ module Liquid
         case
         when token.start_with?(TAGSTART)
           whitespace_handler(token, parse_context)
-          unless token =~ FullToken
+          parsed = BlockBody.parse_tag_token(token)
+          unless parsed
             return handle_invalid_tag_token(token, parse_context, &block)
           end
-          tag_name = Regexp.last_match(2)
-          markup   = Regexp.last_match(4)
+          pre_ws, tag_name, post_ws, markup = parsed
 
           if parse_context.line_number
             # newlines inside the tag should increase the line number,
             # particularly important for multiline {% liquid %} tags
-            parse_context.line_number += Regexp.last_match(1).count("\n") + Regexp.last_match(3).count("\n")
+            parse_context.line_number += pre_ws.count("\n") + post_ws.count("\n")
           end
 
           if tag_name == 'liquid'
