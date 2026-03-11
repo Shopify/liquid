@@ -98,17 +98,20 @@ module Liquid
     # Check if next id matches expected string, consume if so. No allocation.
     def expect_id(expected)
       start = @ss.pos
-      if @ss.skip(ID_REGEX) == expected.bytesize
-        match = true
-        expected.bytesize.times do |i|
-          if @source.getbyte(start + i) != expected.getbyte(i)
-            match = false
-            break
+      len = @ss.skip(ID_REGEX)
+      if len == expected.bytesize
+        # Compare bytes directly without allocating a string
+        i = 0
+        while i < len
+          unless @source.getbyte(start + i) == expected.getbyte(i)
+            @ss.pos = start
+            return false
           end
+          i += 1
         end
-        return true if match
+        return true
       end
-      @ss.pos = start
+      @ss.pos = start if len
       false
     end
 
