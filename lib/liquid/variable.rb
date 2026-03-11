@@ -202,12 +202,10 @@ module Liquid
         # Skip whitespace
         filter_pos += 1 while filter_pos < len && markup.getbyte(filter_pos) == 32
 
-        # Check for colon (has arguments) — use Lexer for the remaining filter chain
+        # Has arguments — use Lexer-based parser for this and remaining filters
         if filter_pos < len && markup.getbyte(filter_pos) == 58 # ':'
-          # Rewind to the '|' before this filter and use Lexer for the rest
-          # We already have filters parsed so far as no-arg filters
+          # Rewind to the '|' before this filter for the Lexer
           rest_start = fname_start
-          # Go back to find the '|' before this filter name
           rest_start -= 1 while rest_start > pos && markup.getbyte(rest_start) != 124
           rest_markup = markup.byteslice(rest_start, len - rest_start)
           p = parse_context.new_parser(rest_markup)
