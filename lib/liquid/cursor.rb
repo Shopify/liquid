@@ -162,21 +162,14 @@ module Liquid
       @ss.scan(QUOTED_STRING_RAW)
     end
 
+    # Regex for dotted identifier: name(.name)*
+    DOTTED_ID_REGEX = /[a-zA-Z_][\w-]*\??(?:\.[a-zA-Z_][\w-]*\??)*/
+
     # ── Expressions ─────────────────────────────────────────────────
     # Scan a simple variable lookup: name(.name)* — no brackets, no filters
     # Returns the string or nil
     def scan_dotted_id
-      start = @ss.pos
-      return unless scan_id
-
-      while @ss.peek_byte == DOT
-        @ss.scan_byte
-        unless scan_id
-          @ss.pos -= 1 # rewind the dot
-          break
-        end
-      end
-      @source.byteslice(start, @ss.pos - start)
+      @ss.scan(DOTTED_ID_REGEX)
     end
 
     # Skip a fragment without allocating. Returns length skipped, or 0.
