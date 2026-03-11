@@ -64,7 +64,69 @@ module Liquid
       result
     end
 
+    # Check if markup is a simple identifier chain: [\w-]+\??(.[\w-]+\??)*
+    # Returns true if it only contains word chars, hyphens, dots, and optional trailing ?
+    def self.simple_lookup?(markup)
+      pos = 0
+      len = markup.bytesize
+      return false if len == 0
+      while pos < len
+        b = markup.getbyte(pos)
+        if (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 || b == 45 # \w or -
+          pos += 1
+        elsif b == 63 # '?'
+          pos += 1
+          # '?' must be followed by '.' or end
+          return true if pos >= len
+          return false unless markup.getbyte(pos) == 46
+        elsif b == 46 # '.'
+          pos += 1
+          # Must have at least one word char after dot
+          return false if pos >= len
+          b2 = markup.getbyte(pos)
+          return false unless (b2 >= 97 && b2 <= 122) || (b2 >= 65 && b2 <= 90) || b2 == 95
+          pos += 1
+        else
+          return false
+        end
+      end
+      true
+    end
+
     def initialize(markup, string_scanner = StringScanner.new(""), cache = nil)
+      # Fast path: simple identifier chain without brackets
+      if self.class.simple_lookup?(markup)
+        dot_pos = markup.index('.')
+        if dot_pos.nil?
+          @name = markup
+          @lookups = Const::EMPTY_ARRAY
+          @command_flags = 0
+          return
+        end
+        @name = markup.byteslice(0, dot_pos)
+        # Build lookups array from remaining dot-separated segments
+        lookups = []
+        @command_flags = 0
+        pos = dot_pos + 1
+        len = markup.bytesize
+        while pos < len
+          seg_start = pos
+          while pos < len
+            b = markup.getbyte(pos)
+            break if b == 46 # '.'
+            pos += 1
+          end
+          seg = markup.byteslice(seg_start, pos - seg_start)
+          if COMMAND_METHODS.include?(seg)
+            @command_flags |= 1 << lookups.length
+          end
+          lookups << seg
+          pos += 1 # skip dot
+        end
+        @lookups = lookups
+        return
+      end
+
       lookups = self.class.scan_variable(markup)
 
       name = lookups.shift
