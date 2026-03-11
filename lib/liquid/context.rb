@@ -28,6 +28,8 @@ module Liquid
 
       @static_environments = if static_environments.is_a?(Array)
         static_environments.frozen? ? static_environments : static_environments.freeze
+      elsif static_environments.empty?
+        Const::EMPTY_ARRAY
       else
         [static_environments].freeze
       end
