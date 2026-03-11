@@ -90,31 +90,21 @@ module Liquid
       true
     end
 
+    # Regex for identifier: [a-zA-Z_][\w-]*\??
+    ID_REGEX = /[a-zA-Z_][\w-]*\??/
+
     # ── Identifiers ─────────────────────────────────────────────────
     # Skip an identifier without allocating a string. Returns length skipped, or 0.
     def skip_id
-      start = @ss.pos
-      b = @ss.peek_byte
-      return 0 unless b && ((b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == USCORE)
-
-      @ss.scan_byte
-      while (b = @ss.peek_byte)
-        break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) ||
-          (b >= 48 && b <= 57) || b == USCORE || b == DASH
-
-        @ss.scan_byte
-      end
-      @ss.scan_byte if @ss.peek_byte == QMARK
-      @ss.pos - start
+      @ss.skip(ID_REGEX) || 0
     end
 
     # Check if next id matches expected string, consume if so. No allocation.
     def expect_id(expected)
       start = @ss.pos
-      len = skip_id
-      if len == expected.bytesize
+      if @ss.skip(ID_REGEX) == expected.bytesize
         match = true
-        len.times do |i|
+        expected.bytesize.times do |i|
           if @source.getbyte(start + i) != expected.getbyte(i)
             match = false
             break
@@ -129,19 +119,7 @@ module Liquid
     # Scan a single identifier: [a-zA-Z_][\w-]*\??
     # Returns the string or nil if not at an identifier
     def scan_id
-      start = @ss.pos
-      b = @ss.peek_byte
-      return unless b && ((b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == USCORE)
-
-      @ss.scan_byte
-      while (b = @ss.peek_byte)
-        break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) ||
-          (b >= 48 && b <= 57) || b == USCORE || b == DASH
-
-        @ss.scan_byte
-      end
-      @ss.scan_byte if @ss.peek_byte == QMARK
-      @source.byteslice(start, @ss.pos - start)
+      @ss.scan(ID_REGEX)
     end
 
     # Scan a tag name: '#' or \w+
