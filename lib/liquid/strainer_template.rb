@@ -58,5 +58,19 @@ module Liquid
     rescue ::ArgumentError => e
       raise Liquid::ArgumentError, e.message, e.backtrace
     end
+
+    # Fast path for single-argument (no extra args) filter invocation.
+    # Avoids *args splat allocation for the common {{ value | filter }} case.
+    def invoke_single(method, input)
+      if self.class.invokable?(method)
+        send(method, input)
+      elsif @context.strict_filters
+        raise Liquid::UndefinedFilter, "undefined filter #{method}"
+      else
+        input
+      end
+    rescue ::ArgumentError => e
+      raise Liquid::ArgumentError, e.message, e.backtrace
+    end
   end
 end
