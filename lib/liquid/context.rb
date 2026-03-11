@@ -115,6 +115,11 @@ module Liquid
       strainer.invoke_single(method, input).to_liquid
     end
 
+    # Fast path for two-argument filter invocation (e.g. {{ value | default: 'x' }})
+    def invoke_two(method, input, arg1)
+      strainer.invoke_two(method, input, arg1).to_liquid
+    end
+
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
     def push(new_scope = {})
       @scopes.unshift(new_scope)

@@ -307,6 +307,9 @@ module Liquid
       @filters.each do |filter_name, filter_args, filter_kwargs|
         if filter_args.empty? && !filter_kwargs
           obj = context.invoke_single(filter_name, obj)
+        elsif !filter_kwargs && filter_args.length == 1
+          # Single positional arg — most common after no-arg
+          obj = context.invoke_two(filter_name, obj, context.evaluate(filter_args[0]))
         else
           filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
           obj = context.invoke(filter_name, obj, *filter_args)
