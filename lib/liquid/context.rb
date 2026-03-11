@@ -24,10 +24,13 @@ module Liquid
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {}, environment = Environment.default)
       @environment = environment
-      @environments = [environments]
-      @environments.flatten!
+      @environments = environments.is_a?(Array) ? environments : [environments]
 
-      @static_environments = [static_environments].flatten(1).freeze
+      @static_environments = if static_environments.is_a?(Array)
+        static_environments.frozen? ? static_environments : static_environments.freeze
+      else
+        [static_environments].freeze
+      end
       @scopes              = [outer_scope || {}]
       @registers           = registers.is_a?(Registers) ? registers : Registers.new(registers)
       @errors              = []
