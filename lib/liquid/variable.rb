@@ -202,29 +202,94 @@ module Liquid
         # Skip whitespace
         filter_pos += 1 while filter_pos < len && markup.getbyte(filter_pos) == 32
 
-        # Has arguments — use Lexer-based parser for this and remaining filters
+        # Has arguments — try fast scanning for simple single-arg filters first
         if filter_pos < len && markup.getbyte(filter_pos) == 58 # ':'
-          # Rewind to the '|' before this filter for the Lexer
-          rest_start = fname_start
-          rest_start -= 1 while rest_start > pos && markup.getbyte(rest_start) != 124
-          rest_markup = markup.byteslice(rest_start, len - rest_start)
-          p = parse_context.new_parser(rest_markup)
-          while p.consume?(:pipe)
-            fn = p.consume(:id)
-            fa = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
-            @filters << lax_parse_filter_expressions(fn, fa)
+          filter_pos += 1 # skip ':'
+          filter_pos += 1 while filter_pos < len && markup.getbyte(filter_pos) == 32
+
+          # Try to parse simple args: one positional arg (quoted string, number, or identifier)
+          arg_expr = nil
+          has_kwargs = false
+          arg_start = filter_pos
+
+          b = filter_pos < len ? markup.getbyte(filter_pos) : nil
+          if b == 39 || b == 34 # quoted string
+            quote = b
+            filter_pos += 1
+            filter_pos += 1 while filter_pos < len && markup.getbyte(filter_pos) != quote
+            filter_pos += 1 if filter_pos < len # skip closing quote
+            arg_expr = markup.byteslice(arg_start + 1, filter_pos - arg_start - 2)
+          elsif b && ((b >= 48 && b <= 57) || (b == 45 && filter_pos + 1 < len && markup.getbyte(filter_pos + 1) >= 48 && markup.getbyte(filter_pos + 1) <= 57))
+            # Number
+            filter_pos += 1 if b == 45 # skip -
+            filter_pos += 1 while filter_pos < len && markup.getbyte(filter_pos) >= 48 && markup.getbyte(filter_pos) <= 57
+            if filter_pos < len && markup.getbyte(filter_pos) == 46 # float
+              filter_pos += 1
+              filter_pos += 1 while filter_pos < len && markup.getbyte(filter_pos) >= 48 && markup.getbyte(filter_pos) <= 57
+            end
+            num_str = markup.byteslice(arg_start, filter_pos - arg_start)
+            arg_expr = num_str.include?('.') ? num_str.to_f : num_str.to_i
+          elsif b && ((b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95)
+            # Identifier — could be keyword arg "key: val" or positional
+            id_start = filter_pos
+            filter_pos += 1
+            while filter_pos < len
+              b2 = markup.getbyte(filter_pos)
+              break unless (b2 >= 97 && b2 <= 122) || (b2 >= 65 && b2 <= 90) || (b2 >= 48 && b2 <= 57) || b2 == 95 || b2 == 45 || b2 == 46
+              filter_pos += 1
+            end
+            # Check for '?' suffix
+            filter_pos += 1 if filter_pos < len && markup.getbyte(filter_pos) == 63
+
+            # Check if this is a keyword arg (id followed by ':')
+            kw_check = filter_pos
+            kw_check += 1 while kw_check < len && markup.getbyte(kw_check) == 32
+            if kw_check < len && markup.getbyte(kw_check) == 58
+              has_kwargs = true # fall through to Lexer
+            else
+              id_markup = markup.byteslice(id_start, filter_pos - id_start)
+              cache = parse_context.expression_cache
+              arg_expr = Expression.parse(id_markup, parse_context.string_scanner, cache)
+            end
           end
-          p.consume(:end_of_string)
-          @filters = Const::EMPTY_ARRAY if @filters.empty?
-          return true
+
+          if arg_expr != nil && !has_kwargs
+            # Skip trailing whitespace after arg
+            filter_pos += 1 while filter_pos < len && markup.getbyte(filter_pos) == 32
+
+            # Check if there's a comma (multiple args) — fall through to Lexer
+            if filter_pos < len && markup.getbyte(filter_pos) == 44 # ','
+              has_kwargs = true
+            end
+          end
+
+          unless arg_expr != nil && !has_kwargs
+            # Complex filter — fall to Lexer for this and remaining filters
+            rest_start = fname_start
+            rest_start -= 1 while rest_start > pos && markup.getbyte(rest_start) != 124
+            rest_markup = markup.byteslice(rest_start, len - rest_start)
+            p = parse_context.new_parser(rest_markup)
+            while p.consume?(:pipe)
+              fn = p.consume(:id)
+              fa = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
+              @filters << lax_parse_filter_expressions(fn, fa)
+            end
+            p.consume(:end_of_string)
+            @filters = Const::EMPTY_ARRAY if @filters.empty?
+            return true
+          end
+
+          @filters << [filtername, [arg_expr]]
+        else
+          # No args — add as simple filter
+          @filters << [filtername, Const::EMPTY_ARRAY]
         end
 
-        # No args — add as simple filter
-        @filters << [filtername, Const::EMPTY_ARRAY]
+        # Skip whitespace between filters
+        filter_pos += 1 while filter_pos < len && (markup.getbyte(filter_pos) == 32 || markup.getbyte(filter_pos) == 9 || markup.getbyte(filter_pos) == 10 || markup.getbyte(filter_pos) == 13)
       end
 
-      # Skip trailing whitespace
-      filter_pos += 1 while filter_pos < len && (b = markup.getbyte(filter_pos)) && (b == 32 || b == 9 || b == 10 || b == 13)
+      # Must have consumed everything
       return false if filter_pos < len
 
       @filters = Const::EMPTY_ARRAY if @filters.empty?
