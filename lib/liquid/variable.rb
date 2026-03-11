@@ -163,9 +163,9 @@ module Liquid
       elsif Expression::LITERALS.key?(expr_markup)
         @name = Expression::LITERALS[expr_markup]
       elsif cache
-        @name = cache[expr_markup] || (cache[expr_markup] = VariableLookup.parse(expr_markup, ss, cache).freeze)
+        @name = cache[expr_markup] || (cache[expr_markup] = VariableLookup.parse_simple(expr_markup, ss, cache).freeze)
       else
-        @name = VariableLookup.parse(expr_markup, ss || StringScanner.new(""), nil).freeze
+        @name = VariableLookup.parse_simple(expr_markup, ss || StringScanner.new(""), nil).freeze
       end
 
       # End of markup? No filters.

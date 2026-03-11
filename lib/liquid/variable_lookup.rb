@@ -10,6 +10,11 @@ module Liquid
       new(markup, string_scanner, cache)
     end
 
+    # Fast parse that skips simple_lookup? check — caller guarantees simple identifier chain
+    def self.parse_simple(markup, string_scanner = nil, cache = nil)
+      new(markup, string_scanner, cache, true)
+    end
+
     # Fast manual scanner replacing markup.scan(VariableParser)
     # VariableParser = /\[(?>[^\[\]]+|\g<0>)*\]|[\w-]+\??/
     # Splits "product.variants[0].title" into ["product", "variants", "[0]", "title"]
@@ -93,9 +98,9 @@ module Liquid
       true
     end
 
-    def initialize(markup, string_scanner = StringScanner.new(""), cache = nil)
+    def initialize(markup, string_scanner = StringScanner.new(""), cache = nil, simple = false)
       # Fast path: simple identifier chain without brackets
-      if self.class.simple_lookup?(markup)
+      if simple || self.class.simple_lookup?(markup)
         dot_pos = markup.index('.')
         if dot_pos.nil?
           @name = markup
