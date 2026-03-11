@@ -109,6 +109,12 @@ module Liquid
       strainer.invoke(method, *args).to_liquid
     end
 
+    # Fast path for single-argument filter invocation (the most common case:
+    # {{ value | filter }}) — avoids *args splat allocation.
+    def invoke_single(method, input)
+      strainer.invoke_single(method, input).to_liquid
+    end
+
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
     def push(new_scope = {})
       @scopes.unshift(new_scope)
