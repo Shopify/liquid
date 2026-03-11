@@ -17,7 +17,7 @@ module Liquid
     # Avoids regex MatchData allocation.
     def self.simple_variable_markup(markup)
       len = markup.bytesize
-      return nil if len == 0
+      return if len == 0
 
       # Skip leading whitespace
       pos = 0
@@ -26,13 +26,13 @@ module Liquid
         break unless b == 32 || b == 9 || b == 10 || b == 13
         pos += 1
       end
-      return nil if pos >= len
+      return if pos >= len
 
       start = pos
 
       # First char must be [a-zA-Z_]
       b = markup.getbyte(pos)
-      return nil unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
+      return unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
       pos += 1
 
       # Scan segments: [\w-]* (. [\w-]*)*
@@ -43,9 +43,9 @@ module Liquid
         elsif b == 46 # '.'
           pos += 1
           # After dot, must have [a-zA-Z_]
-          return nil if pos >= len
+          return if pos >= len
           b = markup.getbyte(pos)
-          return nil unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
+          return unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
           pos += 1
         else
           break
@@ -57,12 +57,12 @@ module Liquid
       # Skip trailing whitespace
       while pos < len
         b = markup.getbyte(pos)
-        return nil unless b == 32 || b == 9 || b == 10 || b == 13
+        return unless b == 32 || b == 9 || b == 10 || b == 13
         pos += 1
       end
 
       # Must have consumed everything
-      return nil unless pos == len
+      return unless pos == len
 
       if start == 0 && content_end == len
         markup
@@ -157,15 +157,15 @@ module Liquid
       ss = parse_context.string_scanner
 
       first_byte = expr_markup.getbyte(0)
-      if first_byte == 39 || first_byte == 34 # quoted string
+      @name = if first_byte == 39 || first_byte == 34 # quoted string
         # Strip quotes for string literal
-        @name = expr_markup.byteslice(1, expr_markup.bytesize - 2)
+        expr_markup.byteslice(1, expr_markup.bytesize - 2)
       elsif Expression::LITERALS.key?(expr_markup)
-        @name = Expression::LITERALS[expr_markup]
+        Expression::LITERALS[expr_markup]
       elsif cache
-        @name = cache[expr_markup] || (cache[expr_markup] = VariableLookup.parse_simple(expr_markup, ss, cache).freeze)
+        cache[expr_markup] || (cache[expr_markup] = VariableLookup.parse_simple(expr_markup, ss, cache).freeze)
       else
-        @name = VariableLookup.parse_simple(expr_markup, ss || StringScanner.new(""), nil).freeze
+        VariableLookup.parse_simple(expr_markup, ss || StringScanner.new(""), nil).freeze
       end
 
       # End of markup? No filters.
@@ -225,7 +225,7 @@ module Liquid
 
       # Skip trailing whitespace
       filter_pos += 1 while filter_pos < len && (b = markup.getbyte(filter_pos)) && (b == 32 || b == 9 || b == 10 || b == 13)
-      return false unless filter_pos >= len
+      return false if filter_pos < len
 
       @filters = Const::EMPTY_ARRAY if @filters.empty?
       true
@@ -321,10 +321,10 @@ module Liquid
 
     def render_to_output_buffer(context, output)
       # Fast path: no filters and no global filter
-      if @filters.empty? && context.global_filter.nil?
-        obj = context.evaluate(@name)
+      obj = if @filters.empty? && context.global_filter.nil?
+        context.evaluate(@name)
       else
-        obj = render(context)
+        render(context)
       end
       render_obj_to_output(obj, output)
       output
