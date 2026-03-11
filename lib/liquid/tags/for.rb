@@ -76,73 +76,47 @@ module Liquid
     REVERSED_BYTES = "reversed".bytes.freeze
 
     def lax_parse(markup)
-      # Try fast manual parse first
-      len = markup.bytesize
-      pos = 0
+      c = @parse_context.cursor
+      c.reset(markup)
+      c.skip_ws
 
-      # Skip whitespace
-      pos += 1 while pos < len && (b = markup.getbyte(pos)) && (b == 32 || b == 9)
+      # Parse variable name
+      var_start = c.pos
+      var_len = c.skip_id
+      raise SyntaxError, options[:locale].t("errors.syntax.for") if var_len == 0
+      @variable_name = c.slice(var_start, var_len)
 
-      # Parse variable name: [\w-]+
-      var_start = pos
-      while pos < len
-        b = markup.getbyte(pos)
-        break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 || b == 45
-        pos += 1
-      end
+      # Expect "in"
+      c.skip_ws
+      raise SyntaxError, options[:locale].t("errors.syntax.for") unless c.expect_id("in")
+      c.skip_ws
 
-      if pos == var_start
-        raise SyntaxError, options[:locale].t("errors.syntax.for")
-      end
-
-      @variable_name = markup.byteslice(var_start, pos - var_start)
-
-      # Expect whitespace + "in" + whitespace
-      pos += 1 while pos < len && markup.getbyte(pos) == 32
-      unless pos + 1 < len && markup.getbyte(pos) == 105 && markup.getbyte(pos + 1) == 110 # 'i', 'n'
-        raise SyntaxError, options[:locale].t("errors.syntax.for")
-      end
-      pos += 2
-      pos += 1 while pos < len && markup.getbyte(pos) == 32
-
-      # Parse collection name (QuotedFragment - take everything until whitespace)
-      col_start = pos
-      # Handle parenthesized ranges: (1..10)
-      if pos < len && markup.getbyte(pos) == 40 # '('
+      # Parse collection name
+      col_start = c.pos
+      if c.peek_byte == Cursor::LPAREN
+        # Parenthesized range: (1..10)
         depth = 1
-        pos += 1
-        while pos < len && depth > 0
-          b = markup.getbyte(pos)
-          depth += 1 if b == 40
-          depth -= 1 if b == 41
-          pos += 1
+        c.scan_byte
+        while !c.eos? && depth > 0
+          b = c.scan_byte
+          depth += 1 if b == Cursor::LPAREN
+          depth -= 1 if b == Cursor::RPAREN
         end
       else
-        while pos < len
-          b = markup.getbyte(pos)
-          break if b == 32 || b == 9
-          pos += 1
-        end
+        c.skip_fragment
       end
-      collection_name = markup.byteslice(col_start, pos - col_start)
+      collection_name = c.slice(col_start, c.pos - col_start)
 
-      @name = "#{@variable_name}-#{collection_name}"
+      @name            = "#{@variable_name}-#{collection_name}"
       @collection_name = parse_expression(collection_name)
 
-      # Skip whitespace
-      pos += 1 while pos < len && markup.getbyte(pos) == 32
-
-      # Check for 'reversed'
-      @reversed = false
-      if pos + 7 < len && markup.byteslice(pos, 8) == "reversed"
-        @reversed = true
-        pos += 8
-        pos += 1 while pos < len && markup.getbyte(pos) == 32
-      end
+      c.skip_ws
+      @reversed = c.expect_id("reversed")
+      c.skip_ws
 
       # Parse limit:/offset: if present
-      if pos < len && markup.include?(':')
-        rest = markup.byteslice(pos, len - pos)
+      if !c.eos? && markup.include?(':')
+        rest = c.slice(c.pos, markup.bytesize - c.pos)
         rest.scan(TagAttributes) do |key, value|
           set_attribute(key, value)
         end
