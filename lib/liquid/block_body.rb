@@ -309,10 +309,7 @@ module Liquid
           output << node
         else
           render_node(context, output, node)
-          # If we get an Interrupt that means the block must stop processing. An
-          # Interrupt is any command that stops block execution such as {% break %}
-          # or {% continue %}. These tags may also occur through Block or Include tags.
-          break if context.interrupt? # might have happened in a for-block
+          break if context.interrupt?
         end
         idx += 1
 
