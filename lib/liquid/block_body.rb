@@ -297,7 +297,11 @@ module Liquid
     def render_to_output_buffer(context, output)
       freeze unless frozen?
 
-      context.resource_limits.increment_render_score(@nodelist.length)
+      resource_limits = context.resource_limits
+      resource_limits.increment_render_score(@nodelist.length)
+
+      # Check if we need per-node write score tracking
+      check_write = resource_limits.render_length_limit || resource_limits.last_capture_length
 
       idx = 0
       while (node = @nodelist[idx])
@@ -312,7 +316,7 @@ module Liquid
         end
         idx += 1
 
-        context.resource_limits.increment_write_score(output)
+        resource_limits.increment_write_score(output) if check_write
       end
 
       output
