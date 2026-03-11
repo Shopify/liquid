@@ -79,15 +79,11 @@ module Liquid
 
     # Check if remaining bytes are all whitespace
     def rest_blank?
-      p = @ss.pos
-      len = @source.bytesize
-      while p < len
-        b = @source.getbyte(p)
-        return false unless b == SPACE || b == TAB || b == NL || b == CR || b == FF
-
-        p += 1
-      end
-      true
+      saved = @ss.pos
+      @ss.skip(/\s*/)
+      result = @ss.eos?
+      @ss.pos = saved
+      result
     end
 
     # Regex for identifier: [a-zA-Z_][\w-]*\??
