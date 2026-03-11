@@ -110,7 +110,7 @@ module Liquid
 
     private def parse_for_liquid_tag(tokenizer, parse_context)
       while (token = tokenizer.shift)
-        unless token.empty? || token.match?(WhitespaceOrNothing)
+        unless token.empty? || BlockBody.blank_string?(token)
           unless token =~ LiquidTagToken
             # line isn't empty but didn't match tag syntax, yield and let the
             # caller raise a syntax error
@@ -199,6 +199,18 @@ module Liquid
     OPEN_CURLEY_BYTE = 123 # '{'.ord
     PERCENT_BYTE = 37 # '%'.ord
 
+    # Fast check if string is whitespace-only (replaces WhitespaceOrNothing regex)
+    def self.blank_string?(str)
+      pos = 0
+      len = str.bytesize
+      while pos < len
+        b = str.getbyte(pos)
+        return false unless b == 32 || b == 9 || b == 10 || b == 13 || b == 12 # space, tab, \n, \r, \f
+        pos += 1
+      end
+      true
+    end
+
     private def parse_for_document(tokenizer, parse_context, &block)
       while (token = tokenizer.shift)
         next if token.empty?
@@ -243,7 +255,7 @@ module Liquid
             end
             parse_context.trim_whitespace = false
             @nodelist << token
-            @blank &&= token.match?(WhitespaceOrNothing)
+            @blank &&= BlockBody.blank_string?(token)
           end
         else
           if parse_context.trim_whitespace
@@ -251,7 +263,7 @@ module Liquid
           end
           parse_context.trim_whitespace = false
           @nodelist << token
-          @blank &&= token.match?(WhitespaceOrNothing)
+          @blank &&= BlockBody.blank_string?(token)
         end
         parse_context.line_number = tokenizer.line_number
       end
