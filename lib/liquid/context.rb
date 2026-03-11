@@ -213,9 +213,11 @@ module Liquid
       scope = @scopes[0]
       if scope.key?(key)
         variable = lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found)
+      elsif @scopes.length == 1
+        # Only one scope and key not found — go straight to environments
+        variable = try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
       else
-        # This was changed from find() to find_index() because this is a very hot
-        # path and find_index() is optimized in MRI to reduce object allocation
+        # Multiple scopes — search through all of them
         index = @scopes.find_index { |s| s.key?(key) }
 
         variable = if index
