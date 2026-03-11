@@ -88,8 +88,10 @@ module Liquid
         if first == DASH
           pos += 1
           return false if pos >= len
+
           b = markup.getbyte(pos)
           return false if b < ZERO || b > NINE
+
           pos += 1
         elsif first >= ZERO && first <= NINE
           pos += 1
@@ -100,7 +102,8 @@ module Liquid
         # Scan digits
         while pos < len
           b = markup.getbyte(pos)
-          break unless b >= ZERO && b <= NINE
+          break if b < ZERO || b > NINE
+
           pos += 1
         end
 
@@ -117,7 +120,8 @@ module Liquid
           digit_after_dot = pos
           while pos < len
             b = markup.getbyte(pos)
-            break unless b >= ZERO && b <= NINE
+            break if b < ZERO || b > NINE
+
             pos += 1
           end
 
@@ -127,7 +131,6 @@ module Liquid
           elsif pos > digit_after_dot
             # Float followed by more dots or other chars: "1.2.3.4"
             # Return the float portion up to second dot
-            first_dot_pos = dot_pos + 1
             while pos < len
               b = markup.getbyte(pos)
               if b == DOT
@@ -135,6 +138,7 @@ module Liquid
               elsif b < ZERO || b > NINE
                 return false
               end
+
               pos += 1
             end
             return markup.byteslice(0, pos).to_f

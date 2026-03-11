@@ -41,11 +41,15 @@ module Liquid
     end
 
     # ── Position ────────────────────────────────────────────────────
-    def pos;         @ss.pos;          end
-    def pos=(n);     @ss.pos = n;      end
-    def eos?;        @ss.eos?;         end
-    def peek_byte;   @ss.peek_byte;    end
-    def scan_byte;   @ss.scan_byte;    end
+    def pos = @ss.pos
+
+    def pos=(n)
+      @ss.pos = n
+    end
+
+    def eos? = @ss.eos?
+    def peek_byte = @ss.peek_byte
+    def scan_byte = @ss.scan_byte
 
     # Reset scanner to a new string (for reuse on sub-markup)
     def reset(source)
@@ -65,7 +69,8 @@ module Liquid
       while (b = @ss.peek_byte)
         case b
         when SPACE, TAB, CR, FF then @ss.scan_byte
-        when NL then @ss.scan_byte; nl += 1
+        when NL then @ss.scan_byte
+                     nl += 1
         else break
         end
       end
@@ -79,6 +84,7 @@ module Liquid
       while p < len
         b = @source.getbyte(p)
         return false unless b == SPACE || b == TAB || b == NL || b == CR || b == FF
+
         p += 1
       end
       true
@@ -90,10 +96,12 @@ module Liquid
       start = @ss.pos
       b = @ss.peek_byte
       return 0 unless b && ((b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == USCORE)
+
       @ss.scan_byte
       while (b = @ss.peek_byte)
         break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) ||
-                     (b >= 48 && b <= 57) || b == USCORE || b == DASH
+          (b >= 48 && b <= 57) || b == USCORE || b == DASH
+
         @ss.scan_byte
       end
       @ss.scan_byte if @ss.peek_byte == QMARK
@@ -123,11 +131,13 @@ module Liquid
     def scan_id
       start = @ss.pos
       b = @ss.peek_byte
-      return nil unless b && ((b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == USCORE)
+      return unless b && ((b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == USCORE)
+
       @ss.scan_byte
       while (b = @ss.peek_byte)
         break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) ||
-                     (b >= 48 && b <= 57) || b == USCORE || b == DASH
+          (b >= 48 && b <= 57) || b == USCORE || b == DASH
+
         @ss.scan_byte
       end
       @ss.scan_byte if @ss.peek_byte == QMARK
@@ -149,19 +159,19 @@ module Liquid
     def scan_number
       start = @ss.pos
       b = @ss.peek_byte
-      return nil unless b
+      return unless b
 
       if b == DASH
         @ss.scan_byte
         b = @ss.peek_byte
         unless b && b >= ZERO && b <= NINE
           @ss.pos = start
-          return nil
+          return
         end
       elsif b >= ZERO && b <= NINE
         # ok
       else
-        return nil
+        return
       end
 
       # Scan digits
@@ -188,7 +198,8 @@ module Liquid
     # Scan a quoted string ('...' or "..."). Returns the content without quotes, or nil.
     def scan_quoted_string
       b = @ss.peek_byte
-      return nil unless b == QUOTE_S || b == QUOTE_D
+      return unless b == QUOTE_S || b == QUOTE_D
+
       quote = b
       @ss.scan_byte
       start = @ss.pos
@@ -201,7 +212,8 @@ module Liquid
     # Scan a quoted string including quotes. Returns the full "..." or '...' string, or nil.
     def scan_quoted_string_raw
       b = @ss.peek_byte
-      return nil unless b == QUOTE_S || b == QUOTE_D
+      return unless b == QUOTE_S || b == QUOTE_D
+
       quote = b
       start = @ss.pos
       @ss.scan_byte
@@ -215,7 +227,8 @@ module Liquid
     # Returns the string or nil
     def scan_dotted_id
       start = @ss.pos
-      return nil unless scan_id
+      return unless scan_id
+
       while @ss.peek_byte == DOT
         @ss.scan_byte
         unless scan_id
@@ -230,6 +243,7 @@ module Liquid
     def skip_fragment
       b = @ss.peek_byte
       return 0 unless b
+
       start = @ss.pos
       if b == QUOTE_S || b == QUOTE_D
         quote = b
@@ -239,6 +253,7 @@ module Liquid
       else
         while (b = @ss.peek_byte)
           break if b == SPACE || b == TAB || b == NL || b == CR || b == COMMA || b == PIPE
+
           @ss.scan_byte
         end
       end
@@ -248,13 +263,15 @@ module Liquid
     # Scan a "QuotedFragment" — a quoted string or non-whitespace/comma/pipe run
     def scan_fragment
       b = @ss.peek_byte
-      return nil unless b
+      return unless b
+
       if b == QUOTE_S || b == QUOTE_D
         scan_quoted_string_raw
       else
         start = @ss.pos
         while (b = @ss.peek_byte)
           break if b == SPACE || b == TAB || b == NL || b == CR || b == COMMA || b == PIPE
+
           @ss.scan_byte
         end
         len = @ss.pos - start
@@ -264,8 +281,13 @@ module Liquid
 
     # ── Comparison operators ────────────────────────────────────────
     COMPARISON_OPS = {
-      '==' => '==', '!=' => '!=', '<>' => '<>',
-      '<=' => '<=', '>=' => '>=', '<' => '<', '>' => '>',
+      '==' => '==',
+      '!=' => '!=',
+      '<>' => '<>',
+      '<=' => '<=',
+      '>=' => '>=',
+      '<' => '<',
+      '>' => '>',
       'contains' => 'contains',
     }.freeze
 
@@ -282,13 +304,15 @@ module Liquid
         end
       when 99 # 'c' for contains
         id = scan_id
-        return nil unless id == "contains"
+        return unless id == "contains"
+
         return COMPARISON_OPS['contains']
       else
-        return nil
+        return
       end
       op_str = @source.byteslice(start, @ss.pos - start)
-      COMPARISON_OPS[op_str] || (@ss.pos = start; nil)
+      COMPARISON_OPS[op_str] || (@ss.pos = start
+                                 nil)
     end
 
     # ── Tag parsing helpers ─────────────────────────────────────────
@@ -304,7 +328,8 @@ module Liquid
       @ss.scan_byte if peek_byte == DASH # skip whitespace control '-'
       nl = skip_ws
       tag_name = scan_tag_name
-      return nil unless tag_name
+      return unless tag_name
+
       nl += skip_ws
 
       # markup is everything up to optional '-' before '%}'
@@ -319,7 +344,8 @@ module Liquid
     # Parse variable token interior: extract markup from "{{[-] ... [-]}}"
     def parse_variable_token(token)
       len = token.bytesize
-      return nil if len < 4
+      return if len < 4
+
       i = 2
       i = 3 if token.getbyte(i) == DASH
       parse_end = len - 3
@@ -337,7 +363,7 @@ module Liquid
     def parse_simple_condition
       skip_ws
       @cond_left = scan_fragment
-      return nil unless @cond_left
+      return unless @cond_left
 
       skip_ws
       if eos?
@@ -347,14 +373,15 @@ module Liquid
       end
 
       @cond_op = scan_comparison_op
-      return nil unless @cond_op
+      return unless @cond_op
 
       skip_ws
       @cond_right = scan_fragment
-      return nil unless @cond_right
+      return unless @cond_right
 
       skip_ws
-      return nil unless eos? # trailing junk
+      return unless eos? # trailing junk
+
       true
     end
     # ── For tag parser ────────────────────────────────────────────────
@@ -366,11 +393,11 @@ module Liquid
     def parse_for_markup
       skip_ws
       @for_var = scan_id
-      return nil unless @for_var
+      return unless @for_var
 
       skip_ws
       # expect "in"
-      return nil unless scan_id == "in"
+      return unless scan_id == "in"
 
       skip_ws
       # Collection: parenthesized range or fragment
@@ -386,7 +413,7 @@ module Liquid
         @for_collection = @source.byteslice(start, @ss.pos - start)
       else
         @for_collection = scan_fragment
-        return nil unless @for_collection
+        return unless @for_collection
       end
 
       skip_ws

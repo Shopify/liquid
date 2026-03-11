@@ -85,7 +85,6 @@ module Liquid
       Condition.parse_expression(parse_context, markup, safe: safe)
     end
 
-
     def lax_parse(markup)
       # Fastest path: simple identifier truthiness like "product.available" or "forloop.first"
       if (simple = Variable.simple_variable_markup(markup))
