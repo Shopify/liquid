@@ -89,3 +89,21 @@ the sandbox.
 - 9fd7cec: Split filter parsing: no-arg filters scanned directly, Lexer only for args → combined ~4,595, allocs 35,159
 - e5933fc: Avoid array alloc in parse_tag_token via class ivars → allocs 34,281
 - 2e207e6: Replace WhitespaceOrNothing regex with byte-level blank_string? → combined ~4,800
+- 526af22: invoke_single fast path for no-arg filter invocation → allocs 32,621
+- 76ae8f1: find_variable top-scope fast path → combined ~4,740
+- 4cda1a5: slice_collection: skip copy for full Array → allocs 32,004
+- 79840b1: Replace SIMPLE_CONDITION regex with manual byte parser → combined ~4,663, allocs 31,465
+- 69430e9: Replace INTEGER_REGEX/FLOAT_REGEX with byte-level parse_number → allocs 31,129
+- 405e3dc: Frozen EMPTY_ARRAY/EMPTY_HASH for Context @filters/@disabled_tags → allocs 31,009
+- b90d7f0: Avoid unnecessary array wrapping for Context environments → allocs 30,709
+- 3799d4c: Lazy seen={} hash in Utils.to_s/inspect → allocs 30,169
+- 0b07487: Fast-path VariableLookup: skip scan_variable for simple identifiers → allocs 29,711
+- 9de1527: Introduce Cursor class for centralized byte-level scanning
+- dd4a100: Remove dead parse_tag_token/SIMPLE_CONDITION (now in Cursor)
+- cdc3438: For tag: migrate lax_parse to Cursor with zero-alloc scanning → allocs 29,620
+
+## Current Best
+- **combined_µs**: ~4,500 (-39% from baseline)
+- **parse_µs**: ~3,200
+- **render_µs**: ~1,300
+- **allocations**: 29,620 (-53% from baseline)
