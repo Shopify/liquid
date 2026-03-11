@@ -199,14 +199,20 @@ module Liquid
 
     # Fetches an object starting at the local scope and then moving up the hierachy
     def find_variable(key, raise_on_not_found: true)
-      # This was changed from find() to find_index() because this is a very hot
-      # path and find_index() is optimized in MRI to reduce object allocation
-      index = @scopes.find_index { |s| s.key?(key) }
-
-      variable = if index
-        lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
+      # Fast path: check top scope first (most common in for loops)
+      scope = @scopes[0]
+      if scope.key?(key)
+        variable = lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found)
       else
-        try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
+        # This was changed from find() to find_index() because this is a very hot
+        # path and find_index() is optimized in MRI to reduce object allocation
+        index = @scopes.find_index { |s| s.key?(key) }
+
+        variable = if index
+          lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
+        else
+          try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
+        end
       end
 
       # update variable's context before invoking #to_liquid
