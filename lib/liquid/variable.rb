@@ -188,7 +188,12 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      obj = render(context)
+      # Fast path: no filters and no global filter
+      if @filters.empty? && context.global_filter.nil?
+        obj = context.evaluate(@name)
+      else
+        obj = render(context)
+      end
       render_obj_to_output(obj, output)
       output
     end
