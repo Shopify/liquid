@@ -34,10 +34,34 @@ then the performance benchmark, outputting metrics in parseable format.
 - liquid-spec failures must not increase beyond 2 (pre-existing UTF-8 edge cases)
 - No new gem dependencies
 - Semantic correctness must be preserved — templates must render identical output
-- **Security**: Liquid runs untrusted user code. Never use eval, send on user input,
-  dynamic method dispatch, const_get, or any pattern that could let template authors
-  escape the sandbox. All optimizations must use safe byte-level scanning with explicit
-  character checks only.
+- **Security**: Liquid runs untrusted user code. See Strategic Direction for details.
+
+## Strategic Direction
+The long-term goal is to converge toward a **single-pass, forward-only parsing
+architecture** using one shared StringScanner instance. The current system has
+multiple redundant passes: Tokenizer → BlockBody → Lexer → Parser → Expression
+→ VariableLookup, each re-scanning portions of the source. A unified scanner
+approach would:
+
+1. **One StringScanner** flows through the entire parse — no intermediate token
+   arrays, no re-lexing filter chains, no string reconstruction in Parser#expression.
+2. **Emit a lightweight IL or normalized AST** during the single forward pass,
+   decoupling strictness checking from the hot parse path. The LiquidIL project
+   (`~/src/tries/2026-01-05-liquid-il`) demonstrated this: a recursive-descent
+   parser emitting IL directly achieved significant speedups.
+3. **Minimal backtracking** — the scanner advances forward, byte-checking as it
+   goes. liquid-c (`~/src/tries/2026-01-16-Shopify-liquid-c`) showed that a
+   C-level cursor-based tokenizer eliminates most allocation overhead.
+
+Current fast-path optimizations (byte-level tag/variable/for/if parsing) are
+steps toward this goal. Each one replaces a regex+MatchData pattern with
+forward-only byte scanning. The remaining Lexer→Parser path for filter args
+is the next target for elimination.
+
+**Security note**: Liquid executes untrusted user templates. All parsing must
+use explicit byte-range checks. Never use eval, send on user input, dynamic
+method dispatch, const_get, or any pattern that lets template authors escape
+the sandbox.
 
 ## Baseline
 - **Commit**: 4ea835a (original, before any optimizations)
