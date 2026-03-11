@@ -36,9 +36,9 @@ module Liquid
       @resource_limits     = resource_limits || ResourceLimits.new(environment.default_resource_limits)
       @base_scope_depth    = 0
       @interrupts          = []
-      @filters             = []
+      @filters             = Const::EMPTY_ARRAY
       @global_filter       = nil
-      @disabled_tags       = {}
+      @disabled_tags       = Const::EMPTY_HASH
 
       # Instead of constructing new StringScanner objects for each Expression parse,
       # we recycle the same one.
@@ -245,6 +245,7 @@ module Liquid
     end
 
     def with_disabled_tags(tag_names)
+      @disabled_tags = {} if @disabled_tags.frozen?
       tag_names.each do |name|
         @disabled_tags[name] = @disabled_tags.fetch(name, 0) + 1
       end
