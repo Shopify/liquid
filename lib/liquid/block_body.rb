@@ -224,8 +224,10 @@ module Liquid
       yield nil, nil
     end
 
+    DASH_BYTE = 45 # '-'.ord
+
     def whitespace_handler(token, parse_context)
-      if token[2] == WhitespaceControl
+      if token.getbyte(2) == DASH_BYTE
         previous_token = @nodelist.last
         if previous_token.is_a?(String)
           first_byte = previous_token.getbyte(0)
@@ -235,7 +237,7 @@ module Liquid
           end
         end
       end
-      parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
+      parse_context.trim_whitespace = (token.getbyte(token.bytesize - 3) == DASH_BYTE)
     end
 
     def blank?
@@ -296,14 +298,17 @@ module Liquid
       BlockBody.render_node(context, output, node)
     end
 
+    CLOSE_CURLEY_BYTE = 125 # '}'.ord
+
     def create_variable(token, parse_context)
-      if token.end_with?("}}")
+      len = token.bytesize
+      if len >= 4 && token.getbyte(len - 1) == CLOSE_CURLEY_BYTE && token.getbyte(len - 2) == CLOSE_CURLEY_BYTE
         i = 2
-        i = 3 if token[i] == "-"
-        parse_end = token.length - 3
-        parse_end -= 1 if token[parse_end] == "-"
+        i = 3 if token.getbyte(i) == DASH_BYTE
+        parse_end = len - 3
+        parse_end -= 1 if token.getbyte(parse_end) == DASH_BYTE
         markup_end = parse_end - i + 1
-        markup = markup_end <= 0 ? "" : token.slice(i, markup_end)
+        markup = markup_end <= 0 ? "" : token.byteslice(i, markup_end)
 
         return Variable.new(markup, parse_context)
       end
