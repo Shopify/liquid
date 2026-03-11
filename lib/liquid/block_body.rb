@@ -175,41 +175,56 @@ module Liquid
       end
     end
 
+    OPEN_CURLEY_BYTE = 123 # '{'.ord
+    PERCENT_BYTE = 37 # '%'.ord
+
     private def parse_for_document(tokenizer, parse_context, &block)
       while (token = tokenizer.shift)
         next if token.empty?
-        case
-        when token.start_with?(TAGSTART)
-          whitespace_handler(token, parse_context)
-          parsed = BlockBody.parse_tag_token(token)
-          unless parsed
-            return handle_invalid_tag_token(token, parse_context, &block)
-          end
-          pre_ws, tag_name, post_ws, markup = parsed
 
-          if parse_context.line_number
-            # newlines inside the tag should increase the line number,
-            # particularly important for multiline {% liquid %} tags
-            parse_context.line_number += pre_ws.count("\n") + post_ws.count("\n")
-          end
+        first_byte = token.getbyte(0)
+        if first_byte == OPEN_CURLEY_BYTE
+          second_byte = token.getbyte(1)
+          if second_byte == PERCENT_BYTE
+            whitespace_handler(token, parse_context)
+            parsed = BlockBody.parse_tag_token(token)
+            unless parsed
+              return handle_invalid_tag_token(token, parse_context, &block)
+            end
+            pre_ws, tag_name, post_ws, markup = parsed
 
-          if tag_name == 'liquid'
-            parse_liquid_tag(markup, parse_context)
-            next
-          end
+            if parse_context.line_number
+              # newlines inside the tag should increase the line number,
+              # particularly important for multiline {% liquid %} tags
+              parse_context.line_number += pre_ws.count("\n") + post_ws.count("\n")
+            end
 
-          unless (tag = parse_context.environment.tag_for_name(tag_name))
-            # end parsing if we reach an unknown tag and let the caller decide
-            # determine how to proceed
-            return yield tag_name, markup
+            if tag_name == 'liquid'
+              parse_liquid_tag(markup, parse_context)
+              next
+            end
+
+            unless (tag = parse_context.environment.tag_for_name(tag_name))
+              # end parsing if we reach an unknown tag and let the caller decide
+              # determine how to proceed
+              return yield tag_name, markup
+            end
+            new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
+            @blank &&= new_tag.blank?
+            @nodelist << new_tag
+          elsif second_byte == OPEN_CURLEY_BYTE
+            whitespace_handler(token, parse_context)
+            @nodelist << create_variable(token, parse_context)
+            @blank = false
+          else
+            # Fallback: text token starting with '{'
+            if parse_context.trim_whitespace
+              token.lstrip!
+            end
+            parse_context.trim_whitespace = false
+            @nodelist << token
+            @blank &&= token.match?(WhitespaceOrNothing)
           end
-          new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
-          @blank &&= new_tag.blank?
-          @nodelist << new_tag
-        when token.start_with?(VARSTART)
-          whitespace_handler(token, parse_context)
-          @nodelist << create_variable(token, parse_context)
-          @blank = false
         else
           if parse_context.trim_whitespace
             token.lstrip!
