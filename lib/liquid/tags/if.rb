@@ -85,8 +85,6 @@ module Liquid
       Condition.parse_expression(parse_context, markup, safe: safe)
     end
 
-    # Fast path regex for simple conditions: "expr", "expr op expr" (no and/or)
-    SIMPLE_CONDITION = /\A\s*(#{QuotedFragment})\s*(?:([=!<>a-z_]+)\s*(#{QuotedFragment}))?\s*\z/o
 
     def lax_parse(markup)
       # Fastest path: simple identifier truthiness like "product.available" or "forloop.first"
