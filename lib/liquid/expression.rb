@@ -35,11 +35,18 @@ module Liquid
       def parse(markup, ss = StringScanner.new(""), cache = nil)
         return unless markup
 
-        markup = markup.strip # markup can be a frozen string
+        # Only strip if there's leading/trailing whitespace (avoids allocation)
+        first_byte = markup.getbyte(0)
+        if first_byte == 32 || first_byte == 9 || first_byte == 10 || first_byte == 13 # space, tab, \n, \r
+          markup = markup.strip
+        else
+          last_byte = markup.getbyte(markup.bytesize - 1)
+          markup = markup.strip if last_byte == 32 || last_byte == 9 || last_byte == 10 || last_byte == 13
+        end
 
         if (markup.start_with?('"') && markup.end_with?('"')) ||
           (markup.start_with?("'") && markup.end_with?("'"))
-          return markup[1..-2]
+          return markup.byteslice(1, markup.bytesize - 2)
         elsif LITERALS.key?(markup)
           return LITERALS[markup]
         end
