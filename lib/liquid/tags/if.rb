@@ -89,6 +89,11 @@ module Liquid
     SIMPLE_CONDITION = /\A\s*(#{QuotedFragment})\s*(?:([=!<>a-z_]+)\s*(#{QuotedFragment}))?\s*\z/o
 
     def lax_parse(markup)
+      # Fastest path: simple identifier truthiness like "product.available" or "forloop.first"
+      if (simple = Variable.simple_variable_markup(markup))
+        return Condition.new(parse_expression(simple))
+      end
+
       # Fast path: simple condition without and/or
       if !markup.include?(' and ') && !markup.include?(' or ') && markup =~ SIMPLE_CONDITION
         return Condition.new(
