@@ -300,5 +300,50 @@ module Liquid
       return nil unless eos? # trailing junk
       true
     end
+    # ── For tag parser ────────────────────────────────────────────────
+    # Results from parse_for_markup
+    attr_reader :for_var, :for_collection, :for_reversed
+
+    # Parse "var in collection [reversed] [limit:N] [offset:N]"
+    # Returns true on success, nil on failure.
+    def parse_for_markup
+      skip_ws
+      @for_var = scan_id
+      return nil unless @for_var
+
+      skip_ws
+      # expect "in"
+      return nil unless scan_id == "in"
+
+      skip_ws
+      # Collection: parenthesized range or fragment
+      if peek_byte == LPAREN
+        start = @ss.pos
+        depth = 1
+        @ss.scan_byte
+        while !@ss.eos? && depth > 0
+          b = @ss.scan_byte
+          depth += 1 if b == LPAREN
+          depth -= 1 if b == RPAREN
+        end
+        @for_collection = @source.byteslice(start, @ss.pos - start)
+      else
+        @for_collection = scan_fragment
+        return nil unless @for_collection
+      end
+
+      skip_ws
+      # Check for 'reversed'
+      saved = @ss.pos
+      word = scan_id
+      if word == "reversed"
+        @for_reversed = true
+      else
+        @for_reversed = false
+        @ss.pos = saved if word # rewind if we consumed a non-'reversed' word
+      end
+
+      true
+    end
   end
 end
