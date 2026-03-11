@@ -24,13 +24,37 @@ module Liquid
 
     include ParserSwitching
 
+    # Fast path regex: matches simple "name.lookup.chain" with no filters, no brackets, no quotes
+    # This avoids the full Lexer → Parser → Expression pipeline for the most common case
+    SIMPLE_VARIABLE = /\A\s*([a-zA-Z_][\w-]*(?:\.[a-zA-Z_][\w-]*)*)\s*\z/
+
     def initialize(markup, parse_context)
       @markup        = markup
       @name          = nil
       @parse_context = parse_context
       @line_number   = parse_context.line_number
 
-      strict_parse_with_error_mode_fallback(markup)
+      # Fast path for simple variables like "product.title" (no filters, no brackets)
+      if markup =~ SIMPLE_VARIABLE
+        expr_markup = Regexp.last_match(1)
+        @filters = Const::EMPTY_ARRAY
+        if Expression::LITERALS.key?(expr_markup)
+          @name = Expression::LITERALS[expr_markup]
+        else
+          cache = parse_context.instance_variable_get(:@expression_cache)
+          if cache
+            @name = cache[expr_markup] || (cache[expr_markup] = VariableLookup.parse(
+              expr_markup,
+              parse_context.instance_variable_get(:@string_scanner),
+              cache,
+            ).freeze)
+          else
+            @name = VariableLookup.parse(expr_markup, StringScanner.new(""), nil).freeze
+          end
+        end
+      else
+        strict_parse_with_error_mode_fallback(markup)
+      end
     end
 
     def raw
