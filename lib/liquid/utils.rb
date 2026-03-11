@@ -96,7 +96,7 @@ module Liquid
       obj
     end
 
-    def self.to_s(obj, seen = {})
+    def self.to_s(obj, seen = nil)
       case obj
       when BigDecimal
         obj.to_s("F")
@@ -105,30 +105,30 @@ module Liquid
         # custom implementation. Otherwise we use Liquid's default
         # implementation.
         if obj.class.instance_method(:to_s) == HASH_TO_S_METHOD
-          hash_inspect(obj, seen)
+          hash_inspect(obj, seen || {})
         else
           obj.to_s
         end
       when Array
-        array_inspect(obj, seen)
+        array_inspect(obj, seen || {})
       else
         obj.to_s
       end
     end
 
-    def self.inspect(obj, seen = {})
+    def self.inspect(obj, seen = nil)
       case obj
       when Hash
         # If the custom hash implementation overrides `#inspect`, use their
         # custom implementation. Otherwise we use Liquid's default
         # implementation.
         if obj.class.instance_method(:inspect) == HASH_INSPECT_METHOD
-          hash_inspect(obj, seen)
+          hash_inspect(obj, seen || {})
         else
           obj.inspect
         end
       when Array
-        array_inspect(obj, seen)
+        array_inspect(obj, seen || {})
       else
         obj.inspect
       end
