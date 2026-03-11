@@ -170,7 +170,8 @@ module Liquid
       object = context.find_variable(name)
 
       @lookups.each_index do |i|
-        key = context.evaluate(@lookups[i])
+        lookup = @lookups[i]
+        key = lookup.instance_of?(String) ? lookup : context.evaluate(lookup)
 
         # Cast "key" to its liquid value to enable it to act as a primitive value
         # Fast path: strings and integers (most common key types) don't need conversion
