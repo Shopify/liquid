@@ -291,7 +291,7 @@ module Liquid
     end
 
     def disabled_tags
-      []
+      Const::EMPTY_ARRAY
     end
 
     private
