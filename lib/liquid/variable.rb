@@ -151,8 +151,12 @@ module Liquid
         pos += 1
       end
 
-      # Resolve the name expression
-      expr_markup = markup.byteslice(name_start, name_end - name_start)
+      # Resolve the name expression — avoid byteslice when markup is already the name
+      expr_markup = if name_start == 0 && name_end == len
+        markup # no whitespace, no filters — reuse the string
+      else
+        markup.byteslice(name_start, name_end - name_start)
+      end
       cache = parse_context.expression_cache
       ss = parse_context.string_scanner
 
