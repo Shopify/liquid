@@ -173,7 +173,10 @@ module Liquid
         key = context.evaluate(@lookups[i])
 
         # Cast "key" to its liquid value to enable it to act as a primitive value
-        key = Liquid::Utils.to_liquid_value(key)
+        # Fast path: strings and integers (most common key types) don't need conversion
+        unless key.instance_of?(String) || key.instance_of?(Integer)
+          key = Liquid::Utils.to_liquid_value(key)
+        end
 
         # If object is a hash- or array-like object we look for the
         # presence of the key and if its available we return it
