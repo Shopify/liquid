@@ -10,8 +10,62 @@ module Liquid
       new(markup, string_scanner, cache)
     end
 
+    # Fast manual scanner replacing markup.scan(VariableParser)
+    # VariableParser = /\[(?>[^\[\]]+|\g<0>)*\]|[\w-]+\??/
+    # Splits "product.variants[0].title" into ["product", "variants", "[0]", "title"]
+    def self.scan_variable(markup)
+      result = []
+      pos = 0
+      len = markup.bytesize
+
+      while pos < len
+        byte = markup.getbyte(pos)
+
+        if byte == 91 # '['
+          # Scan balanced brackets
+          depth = 1
+          start = pos
+          pos += 1
+          while pos < len && depth > 0
+            b = markup.getbyte(pos)
+            if b == 91
+              depth += 1
+            elsif b == 93
+              depth -= 1
+            end
+            pos += 1
+          end
+          if depth == 0
+            result << markup.byteslice(start, pos - start)
+          else
+            # Unbalanced bracket - skip '[' and continue
+            pos = start + 1
+          end
+        elsif byte == 46 # '.'
+          pos += 1
+        elsif (byte >= 97 && byte <= 122) || (byte >= 65 && byte <= 90) || (byte >= 48 && byte <= 57) || byte == 95 || byte == 45 # \w or -
+          start = pos
+          pos += 1
+          while pos < len
+            b = markup.getbyte(pos)
+            break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 || b == 45
+            pos += 1
+          end
+          # Check trailing '?'
+          if pos < len && markup.getbyte(pos) == 63
+            pos += 1
+          end
+          result << markup.byteslice(start, pos - start)
+        else
+          pos += 1
+        end
+      end
+
+      result
+    end
+
     def initialize(markup, string_scanner = StringScanner.new(""), cache = nil)
-      lookups = markup.scan(VariableParser)
+      lookups = self.class.scan_variable(markup)
 
       name = lookups.shift
       if name&.start_with?('[') && name&.end_with?(']')
