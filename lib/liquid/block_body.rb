@@ -16,8 +16,13 @@ module Liquid
     # Parses "{%[-] tag_name markup [-]%}" and returns [pre_ws, tag_name, post_ws, markup] or nil
     NEWLINE_BYTE = 10 # "\n".ord
 
+    class << self
+      attr_reader :_last_markup, :_last_newlines
+    end
+
     # Fast manual tag token parser - avoids regex MatchData allocation
-    # Parses "{%[-] tag_name markup [-]%}" and returns [tag_name, markup, newline_count] or nil
+    # Parses "{%[-] tag_name markup [-]%}" directly into parse_context fields
+    # Returns tag_name string or nil on failure. Sets @_tag_markup and @_tag_newlines.
     def self.parse_tag_token(token)
       # token starts with "{%"
       pos = 2
@@ -47,11 +52,11 @@ module Liquid
       else
         while pos < len
           b = token.getbyte(pos)
-          break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 # a-z, A-Z, 0-9, _
+          break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95
           pos += 1
         end
       end
-      return nil if pos == name_start # no tag name found
+      return nil if pos == name_start
       tag_name = token.byteslice(name_start, pos - name_start)
 
       # skip post-whitespace, counting newlines
@@ -68,12 +73,15 @@ module Liquid
       end
 
       # the rest is markup, up to optional '-' and '%}'
-      # token ends with '%}' (guaranteed by tokenizer)
       markup_end = len - 2
-      markup_end -= 1 if markup_end > pos && token.getbyte(markup_end - 1) == 45 # trailing '-'
+      markup_end -= 1 if markup_end > pos && token.getbyte(markup_end - 1) == 45
       markup = pos >= markup_end ? "" : token.byteslice(pos, markup_end - pos)
 
-      [tag_name, markup, newlines]
+      # Store extra results to avoid array allocation for the return value
+      @_last_markup = markup
+      @_last_newlines = newlines
+
+      tag_name
     end
 
     attr_reader :nodelist
@@ -200,14 +208,15 @@ module Liquid
           second_byte = token.getbyte(1)
           if second_byte == PERCENT_BYTE
             whitespace_handler(token, parse_context)
-            parsed = BlockBody.parse_tag_token(token)
-            unless parsed
+            tag_name = BlockBody.parse_tag_token(token)
+            unless tag_name
               return handle_invalid_tag_token(token, parse_context, &block)
             end
-            tag_name, markup, newlines = parsed
+            markup = BlockBody._last_markup
 
-            if parse_context.line_number && newlines > 0
-              parse_context.line_number += newlines
+            if parse_context.line_number
+              newlines = BlockBody._last_newlines
+              parse_context.line_number += newlines if newlines > 0
             end
 
             if tag_name == 'liquid'
