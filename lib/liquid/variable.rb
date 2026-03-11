@@ -254,8 +254,12 @@ module Liquid
       obj = context.evaluate(@name)
 
       @filters.each do |filter_name, filter_args, filter_kwargs|
-        filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
-        obj = context.invoke(filter_name, obj, *filter_args)
+        if filter_args.empty? && !filter_kwargs
+          obj = context.invoke(filter_name, obj)
+        else
+          filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
+          obj = context.invoke(filter_name, obj, *filter_args)
+        end
       end
 
       context.apply_global_filter(obj)
