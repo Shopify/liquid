@@ -8,6 +8,9 @@ module Liquid
     def self.slice_collection(collection, from, to)
       if (from != 0 || !to.nil?) && collection.respond_to?(:load_slice)
         collection.load_slice(from, to)
+      elsif from == 0 && to.nil? && collection.is_a?(Array)
+        # Fast path: no offset/limit on an Array — return as-is (avoid copy)
+        collection
       else
         slice_collection_using_each(collection, from, to)
       end
