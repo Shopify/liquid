@@ -220,14 +220,15 @@ module Liquid
           second_byte = token.getbyte(1)
           if second_byte == PERCENT_BYTE
             whitespace_handler(token, parse_context)
-            tag_name = BlockBody.parse_tag_token(token)
+            cursor = parse_context.cursor
+            tag_name = cursor.parse_tag_token(token)
             unless tag_name
               return handle_invalid_tag_token(token, parse_context, &block)
             end
-            markup = BlockBody._last_markup
+            markup = cursor.tag_markup
 
             if parse_context.line_number
-              newlines = BlockBody._last_newlines
+              newlines = cursor.tag_newlines
               parse_context.line_number += newlines if newlines > 0
             end
 
@@ -351,13 +352,7 @@ module Liquid
     def create_variable(token, parse_context)
       len = token.bytesize
       if len >= 4 && token.getbyte(len - 1) == CLOSE_CURLEY_BYTE && token.getbyte(len - 2) == CLOSE_CURLEY_BYTE
-        i = 2
-        i = 3 if token.getbyte(i) == DASH_BYTE
-        parse_end = len - 3
-        parse_end -= 1 if token.getbyte(parse_end) == DASH_BYTE
-        markup_end = parse_end - i + 1
-        markup = markup_end <= 0 ? "" : token.byteslice(i, markup_end)
-
+        markup = parse_context.cursor.parse_variable_token(token)
         return Variable.new(markup, parse_context)
       end
 

@@ -3,7 +3,7 @@
 module Liquid
   class ParseContext
     attr_accessor :locale, :line_number, :trim_whitespace, :depth
-    attr_reader :partial, :warnings, :error_mode, :environment, :expression_cache, :string_scanner
+    attr_reader :partial, :warnings, :error_mode, :environment, :expression_cache, :string_scanner, :cursor
 
     def initialize(options = Const::EMPTY_HASH)
       @environment = options.fetch(:environment, Environment.default)
@@ -23,6 +23,8 @@ module Liquid
       elsif options[:expression_cache]
         {}
       end
+
+      @cursor = Cursor.new("")
 
       self.depth   = 0
       self.partial = false

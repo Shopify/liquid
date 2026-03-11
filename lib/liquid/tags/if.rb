@@ -88,119 +88,21 @@ module Liquid
     # Fast path regex for simple conditions: "expr", "expr op expr" (no and/or)
     SIMPLE_CONDITION = /\A\s*(#{QuotedFragment})\s*(?:([=!<>a-z_]+)\s*(#{QuotedFragment}))?\s*\z/o
 
-    # Operators indexed by first byte for fast lookup
-    COMPARISON_OPS = {
-      '==' => '==', '!=' => '!=', '<>' => '<>',
-      '<=' => '<=', '>=' => '>=', '<' => '<', '>' => '>',
-      'contains' => 'contains',
-    }.freeze
-
-    # Parse a simple condition "expr [op expr]" without regex.
-    # Returns [left, op, right] or nil if not parseable.
-    def self.parse_simple_condition(markup)
-      len = markup.bytesize
-      pos = 0
-
-      # Skip leading whitespace
-      pos += 1 while pos < len && (b = markup.getbyte(pos)) && (b == 32 || b == 9 || b == 10 || b == 13)
-      return nil if pos >= len
-
-      # Scan left expression (QuotedFragment): quoted string or non-whitespace/comma/pipe sequence
-      left_start = pos
-      b = markup.getbyte(pos)
-      if b == 34 || b == 39 # quoted string
-        quote = b
-        pos += 1
-        pos += 1 while pos < len && markup.getbyte(pos) != quote
-        pos += 1 if pos < len # closing quote
-      else
-        # Non-whitespace, non-comma, non-pipe chars (QuotedFragment without quotes)
-        while pos < len
-          b = markup.getbyte(pos)
-          break if b == 32 || b == 9 || b == 10 || b == 13 || b == 44 || b == 124 # space, tab, \n, \r, comma, pipe
-          pos += 1
-        end
-      end
-      left_end = pos
-
-      return nil if left_start == left_end
-
-      # Skip whitespace
-      pos += 1 while pos < len && (b = markup.getbyte(pos)) && (b == 32 || b == 9 || b == 10 || b == 13)
-
-      # End of markup? Simple truthiness
-      if pos >= len
-        left = markup.byteslice(left_start, left_end - left_start)
-        return [left, nil, nil]
-      end
-
-      # Scan operator
-      op_start = pos
-      b = markup.getbyte(pos)
-      if b == 61 || b == 33 || b == 60 || b == 62 # =, !, <, >
-        pos += 1
-        b2 = markup.getbyte(pos)
-        pos += 1 if b2 && (b2 == 61 || b2 == 62) # second char of ==, !=, <=, >=, <>
-      elsif b == 99 # 'c' for 'contains'
-        while pos < len
-          b = markup.getbyte(pos)
-          break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
-          pos += 1
-        end
-      else
-        return nil # unknown operator start
-      end
-      op = markup.byteslice(op_start, pos - op_start)
-      return nil unless COMPARISON_OPS.key?(op)
-      op = COMPARISON_OPS[op] # use frozen string
-
-      # Skip whitespace
-      pos += 1 while pos < len && (b = markup.getbyte(pos)) && (b == 32 || b == 9 || b == 10 || b == 13)
-      return nil if pos >= len # op without right operand
-
-      # Scan right expression
-      right_start = pos
-      b = markup.getbyte(pos)
-      if b == 34 || b == 39
-        quote = b
-        pos += 1
-        pos += 1 while pos < len && markup.getbyte(pos) != quote
-        pos += 1 if pos < len
-      else
-        while pos < len
-          b = markup.getbyte(pos)
-          break if b == 32 || b == 9 || b == 10 || b == 13 || b == 44 || b == 124
-          pos += 1
-        end
-      end
-      right_end = pos
-
-      return nil if right_start == right_end
-
-      # Skip trailing whitespace
-      pos += 1 while pos < len && (b = markup.getbyte(pos)) && (b == 32 || b == 9 || b == 10 || b == 13)
-      return nil unless pos >= len # extra stuff after right expr
-
-      left = markup.byteslice(left_start, left_end - left_start)
-      right = markup.byteslice(right_start, right_end - right_start)
-      [left, op, right]
-    end
-
     def lax_parse(markup)
       # Fastest path: simple identifier truthiness like "product.available" or "forloop.first"
       if (simple = Variable.simple_variable_markup(markup))
         return Condition.new(parse_expression(simple))
       end
 
-      # Fast path: simple condition without and/or — manual byte parser
+      # Fast path: simple condition without and/or — use Cursor
       if !markup.include?(' and ') && !markup.include?(' or ')
-        parsed = If.parse_simple_condition(markup)
-        if parsed
-          left, op, right = parsed
+        cursor = @parse_context.cursor
+        cursor.reset(markup)
+        if cursor.parse_simple_condition
           return Condition.new(
-            parse_expression(left),
-            op,
-            right ? parse_expression(right) : nil,
+            parse_expression(cursor.cond_left),
+            cursor.cond_op,
+            cursor.cond_right ? parse_expression(cursor.cond_right) : nil,
           )
         end
       end
