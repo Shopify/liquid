@@ -42,7 +42,7 @@ module Liquid
     end
 
     def lax_parse(markup)
-      @filters = []
+      @filters = Const::EMPTY_ARRAY
       return unless markup =~ MarkupWithQuotedFragment
 
       name_markup   = Regexp.last_match(1)
@@ -54,19 +54,21 @@ module Liquid
           next unless f =~ /\w+/
           filtername = Regexp.last_match(0)
           filterargs = f.scan(FilterArgsRegex).flatten
+          @filters = [] if @filters.frozen?
           @filters << lax_parse_filter_expressions(filtername, filterargs)
         end
       end
     end
 
     def strict_parse(markup)
-      @filters = []
+      @filters = Const::EMPTY_ARRAY
       p = @parse_context.new_parser(markup)
 
       return if p.look(:end_of_string)
 
       @name = parse_context.safe_parse_expression(p)
       while p.consume?(:pipe)
+        @filters = [] if @filters.frozen?
         filtername = p.consume(:id)
         filterargs = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
         @filters << lax_parse_filter_expressions(filtername, filterargs)
@@ -75,13 +77,16 @@ module Liquid
     end
 
     def strict2_parse(markup)
-      @filters = []
+      @filters = Const::EMPTY_ARRAY
       p = @parse_context.new_parser(markup)
 
       return if p.look(:end_of_string)
 
       @name = parse_context.safe_parse_expression(p)
-      @filters << strict2_parse_filter_expressions(p) while p.consume?(:pipe)
+      while p.consume?(:pipe)
+        @filters = [] if @filters.frozen?
+        @filters << strict2_parse_filter_expressions(p)
+      end
       p.consume(:end_of_string)
     end
 
