@@ -104,6 +104,6 @@ the sandbox.
 
 ## Current Best
 - **combined_µs**: ~4,100 (-44% from baseline)
-- **parse_µs**: ~2,900
+- **parse_µs**: ~2,850
 - **render_µs**: ~1,200
-- **allocations**: 25,535 (-59% from baseline)
+- **allocations**: 24,881 (-60% from baseline)
