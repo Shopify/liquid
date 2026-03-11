@@ -226,11 +226,19 @@ module Liquid
       end
 
       # update variable's context before invoking #to_liquid
-      variable.context = self if variable.respond_to?(:context=)
+      # Fast path: skip respond_to? check for common primitive types
+      unless variable.instance_of?(String) || variable.instance_of?(Integer) || variable.instance_of?(Float) ||
+          variable.instance_of?(NilClass) || variable.instance_of?(TrueClass) || variable.instance_of?(FalseClass)
+        variable.context = self if variable.respond_to?(:context=)
+      end
 
       liquid_variable = variable.to_liquid
 
-      liquid_variable.context = self if variable != liquid_variable && liquid_variable.respond_to?(:context=)
+      if variable != liquid_variable
+        unless liquid_variable.instance_of?(String) || liquid_variable.instance_of?(Integer)
+          liquid_variable.context = self if liquid_variable.respond_to?(:context=)
+        end
+      end
 
       liquid_variable
     end
