@@ -89,26 +89,100 @@ module Liquid
       @parse_context = parse_context
       @line_number   = parse_context.line_number
 
-      # Fast path for simple variables like "product.title" (no filters, no brackets, no quotes)
-      if (expr_markup = self.class.simple_variable_markup(markup))
-        @filters = Const::EMPTY_ARRAY
-        if Expression::LITERALS.key?(expr_markup)
-          @name = Expression::LITERALS[expr_markup]
-        else
-          cache = parse_context.instance_variable_get(:@expression_cache)
-          if cache
-            @name = cache[expr_markup] || (cache[expr_markup] = VariableLookup.parse(
-              expr_markup,
-              parse_context.instance_variable_get(:@string_scanner),
-              cache,
-            ).freeze)
-          else
-            @name = VariableLookup.parse(expr_markup, StringScanner.new(""), nil).freeze
-          end
-        end
-      else
+      # Fast path: try to parse without going through Lexer → Parser
+      # Skip for strict2/rigid modes which require different parsing
+      if parse_context.error_mode == :strict2 || parse_context.error_mode == :rigid || !try_fast_parse(markup, parse_context)
         strict_parse_with_error_mode_fallback(markup)
       end
+    end
+
+    private def try_fast_parse(markup, parse_context)
+      len = markup.bytesize
+      return false if len == 0
+
+      # Skip leading whitespace
+      pos = 0
+      while pos < len
+        b = markup.getbyte(pos)
+        break unless b == 32 || b == 9 || b == 10 || b == 13
+        pos += 1
+      end
+      return false if pos >= len
+
+      # Check first byte: must be identifier start, quote, or digit for fast path
+      b = markup.getbyte(pos)
+
+      # Only handle identifier-started expressions (covers ~95% of variables)
+      return false unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
+
+      # Scan the name portion: [\w-]*(\.[\w-]*)*
+      name_start = pos
+      pos += 1
+      while pos < len
+        b = markup.getbyte(pos)
+        if (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 || b == 45
+          pos += 1
+        elsif b == 46 # '.'
+          pos += 1
+          return false if pos >= len
+          b = markup.getbyte(pos)
+          return false unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
+          pos += 1
+        else
+          break
+        end
+      end
+      name_end = pos
+
+      # Skip whitespace after name
+      while pos < len
+        b = markup.getbyte(pos)
+        break unless b == 32 || b == 9 || b == 10 || b == 13
+        pos += 1
+      end
+
+      # Resolve the name expression
+      expr_markup = markup.byteslice(name_start, name_end - name_start)
+      cache = parse_context.instance_variable_get(:@expression_cache)
+      ss = parse_context.instance_variable_get(:@string_scanner)
+
+      if Expression::LITERALS.key?(expr_markup)
+        @name = Expression::LITERALS[expr_markup]
+      elsif cache
+        @name = cache[expr_markup] || (cache[expr_markup] = VariableLookup.parse(expr_markup, ss, cache).freeze)
+      else
+        @name = VariableLookup.parse(expr_markup, ss || StringScanner.new(""), nil).freeze
+      end
+
+      # End of markup? No filters.
+      if pos >= len
+        @filters = Const::EMPTY_ARRAY
+        return true
+      end
+
+      # Must be a pipe for filters
+      return false unless markup.getbyte(pos) == 124 # '|'
+
+      # Parse filters using the standard path but skip the Lexer/Parser for the name
+      # We reuse strict_parse's filter loop by creating a parser from the filter portion only
+      @filters = []
+      filter_markup = markup.byteslice(pos, len - pos)
+      # Use the standard parser for the filter chain (still cheaper than re-lexing the whole thing)
+      p = parse_context.new_parser(filter_markup)
+
+      while p.consume?(:pipe)
+        filtername = p.consume(:id)
+        filterargs = p.consume?(:colon) ? parse_filterargs(p) : Const::EMPTY_ARRAY
+        @filters << lax_parse_filter_expressions(filtername, filterargs)
+      end
+      p.consume(:end_of_string)
+      @filters = Const::EMPTY_ARRAY if @filters.empty?
+      true
+    rescue SyntaxError
+      # If fast parse fails, fall back to full parse
+      @name = nil
+      @filters = nil
+      false
     end
 
     def raw
