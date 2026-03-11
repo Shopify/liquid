@@ -72,21 +72,80 @@ module Liquid
 
     protected
 
+    # Fast byte-level parser for "var in collection [reversed] [limit:N] [offset:N]"
+    REVERSED_BYTES = "reversed".bytes.freeze
+
     def lax_parse(markup)
-      if markup =~ Syntax
-        @variable_name   = Regexp.last_match(1)
-        collection_name  = Regexp.last_match(2)
-        @reversed        = !!Regexp.last_match(3)
-        @name            = "#{@variable_name}-#{collection_name}"
-        @collection_name = parse_expression(collection_name)
-        # Only scan for limit:/offset: attributes if markup contains ':'
-        if markup.include?(':')
-          markup.scan(TagAttributes) do |key, value|
-            set_attribute(key, value)
-          end
+      # Try fast manual parse first
+      len = markup.bytesize
+      pos = 0
+
+      # Skip whitespace
+      pos += 1 while pos < len && (b = markup.getbyte(pos)) && (b == 32 || b == 9)
+
+      # Parse variable name: [\w-]+
+      var_start = pos
+      while pos < len
+        b = markup.getbyte(pos)
+        break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 || b == 45
+        pos += 1
+      end
+
+      if pos == var_start
+        raise SyntaxError, options[:locale].t("errors.syntax.for")
+      end
+
+      @variable_name = markup.byteslice(var_start, pos - var_start)
+
+      # Expect whitespace + "in" + whitespace
+      pos += 1 while pos < len && markup.getbyte(pos) == 32
+      unless pos + 1 < len && markup.getbyte(pos) == 105 && markup.getbyte(pos + 1) == 110 # 'i', 'n'
+        raise SyntaxError, options[:locale].t("errors.syntax.for")
+      end
+      pos += 2
+      pos += 1 while pos < len && markup.getbyte(pos) == 32
+
+      # Parse collection name (QuotedFragment - take everything until whitespace)
+      col_start = pos
+      # Handle parenthesized ranges: (1..10)
+      if pos < len && markup.getbyte(pos) == 40 # '('
+        depth = 1
+        pos += 1
+        while pos < len && depth > 0
+          b = markup.getbyte(pos)
+          depth += 1 if b == 40
+          depth -= 1 if b == 41
+          pos += 1
         end
       else
-        raise SyntaxError, options[:locale].t("errors.syntax.for")
+        while pos < len
+          b = markup.getbyte(pos)
+          break if b == 32 || b == 9
+          pos += 1
+        end
+      end
+      collection_name = markup.byteslice(col_start, pos - col_start)
+
+      @name = "#{@variable_name}-#{collection_name}"
+      @collection_name = parse_expression(collection_name)
+
+      # Skip whitespace
+      pos += 1 while pos < len && markup.getbyte(pos) == 32
+
+      # Check for 'reversed'
+      @reversed = false
+      if pos + 7 < len && markup.byteslice(pos, 8) == "reversed"
+        @reversed = true
+        pos += 8
+        pos += 1 while pos < len && markup.getbyte(pos) == 32
+      end
+
+      # Parse limit:/offset: if present
+      if pos < len && markup.include?(':')
+        rest = markup.byteslice(pos, len - pos)
+        rest.scan(TagAttributes) do |key, value|
+          set_attribute(key, value)
+        end
       end
     end
 
