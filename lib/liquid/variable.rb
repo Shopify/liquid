@@ -354,15 +354,19 @@ module Liquid
     end
 
     def evaluate_filter_expressions(context, filter_args, filter_kwargs)
-      parsed_args = filter_args.map { |expr| context.evaluate(expr) }
       if filter_kwargs
+        parsed_args = filter_args.map { |expr| context.evaluate(expr) }
         parsed_kwargs = {}
         filter_kwargs.each do |key, expr|
           parsed_kwargs[key] = context.evaluate(expr)
         end
         parsed_args << parsed_kwargs
+        parsed_args
+      elsif filter_args.empty?
+        Const::EMPTY_ARRAY
+      else
+        filter_args.map { |expr| context.evaluate(expr) }
       end
-      parsed_args
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
