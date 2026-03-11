@@ -182,14 +182,23 @@ module Liquid
              (object.respond_to?(:fetch) && key.is_a?(Integer)))
 
           # if its a proc we will replace the entry with the proc
-          res    = context.lookup_and_evaluate(object, key)
-          object = res.to_liquid
+          object = context.lookup_and_evaluate(object, key)
+          # Skip to_liquid for common primitive types (they return self)
+          unless object.instance_of?(String) || object.instance_of?(Integer) || object.instance_of?(Float) ||
+              object.instance_of?(Array) || object.instance_of?(Hash) || object.nil?
+            object = object.to_liquid
+            object.context = context if object.respond_to?(:context=)
+          end
 
           # Some special cases. If the part wasn't in square brackets and
           # no key with the same name was found we interpret following calls
           # as commands and call them on the current object
         elsif lookup_command?(i) && object.respond_to?(key)
-          object = object.send(key).to_liquid
+          object = object.send(key)
+          unless object.instance_of?(String) || object.instance_of?(Integer) || object.instance_of?(Array) || object.nil?
+            object = object.to_liquid
+            object.context = context if object.respond_to?(:context=)
+          end
 
         # Handle string first/last like ActiveSupport does (returns first/last character)
         # ActiveSupport returns "" for empty strings, not nil
@@ -203,9 +212,6 @@ module Liquid
           return nil unless context.strict_variables
           raise Liquid::UndefinedVariable, "undefined variable #{key}"
         end
-
-        # If we are dealing with a drop here we have to
-        object.context = context if object.respond_to?(:context=)
       end
 
       object
