@@ -6,15 +6,15 @@ module Liquid
 
     def initialize(registers = {})
       @static = registers.is_a?(Registers) ? registers.static : registers
-      @changes = {}
+      @changes = nil
     end
 
     def []=(key, value)
-      @changes[key] = value
+      (@changes ||= {})[key] = value
     end
 
     def [](key)
-      if @changes.key?(key)
+      if @changes&.key?(key)
         @changes[key]
       else
         @static[key]
@@ -22,13 +22,13 @@ module Liquid
     end
 
     def delete(key)
-      @changes.delete(key)
+      @changes&.delete(key)
     end
 
     UNDEFINED = Object.new
 
     def fetch(key, default = UNDEFINED, &block)
-      if @changes.key?(key)
+      if @changes&.key?(key)
         @changes.fetch(key)
       elsif default != UNDEFINED
         if block_given?
@@ -42,7 +42,7 @@ module Liquid
     end
 
     def key?(key)
-      @changes.key?(key) || @static.key?(key)
+      @changes&.key?(key) || @static.key?(key)
     end
   end
 
