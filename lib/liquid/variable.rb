@@ -109,30 +109,38 @@ module Liquid
       end
       return false if pos >= len
 
-      # Check first byte: must be identifier start, quote, or digit for fast path
       b = markup.getbyte(pos)
 
-      # Only handle identifier-started expressions (covers ~95% of variables)
-      return false unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
-
-      # Scan the name portion: [\w-]*(\.[\w-]*)*
-      name_start = pos
-      pos += 1
-      while pos < len
-        b = markup.getbyte(pos)
-        if (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 || b == 45
-          pos += 1
-        elsif b == 46 # '.'
-          pos += 1
-          return false if pos >= len
+      if b == 39 || b == 34 # single or double quote
+        # Quoted string literal: scan to matching close quote
+        quote = b
+        name_start = pos
+        pos += 1
+        pos += 1 while pos < len && markup.getbyte(pos) != quote
+        pos += 1 if pos < len # skip closing quote
+        name_end = pos
+      elsif (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
+        # Identifier: scan [\w-]*(\.[\w-]*)*
+        name_start = pos
+        pos += 1
+        while pos < len
           b = markup.getbyte(pos)
-          return false unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
-          pos += 1
-        else
-          break
+          if (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 || b == 45
+            pos += 1
+          elsif b == 46 # '.'
+            pos += 1
+            return false if pos >= len
+            b = markup.getbyte(pos)
+            return false unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == 95
+            pos += 1
+          else
+            break
+          end
         end
+        name_end = pos
+      else
+        return false
       end
-      name_end = pos
 
       # Skip whitespace after name
       while pos < len
@@ -146,7 +154,11 @@ module Liquid
       cache = parse_context.expression_cache
       ss = parse_context.string_scanner
 
-      if Expression::LITERALS.key?(expr_markup)
+      first_byte = expr_markup.getbyte(0)
+      if first_byte == 39 || first_byte == 34 # quoted string
+        # Strip quotes for string literal
+        @name = expr_markup.byteslice(1, expr_markup.bytesize - 2)
+      elsif Expression::LITERALS.key?(expr_markup)
         @name = Expression::LITERALS[expr_markup]
       elsif cache
         @name = cache[expr_markup] || (cache[expr_markup] = VariableLookup.parse(expr_markup, ss, cache).freeze)
