@@ -161,17 +161,12 @@ module Liquid
       content
     end
 
+    # Regex for quoted strings (single or double quoted, including quotes)
+    QUOTED_STRING_RAW = /"[^"]*"|'[^']*'/
+
     # Scan a quoted string including quotes. Returns the full "..." or '...' string, or nil.
     def scan_quoted_string_raw
-      b = @ss.peek_byte
-      return unless b == QUOTE_S || b == QUOTE_D
-
-      quote = b
-      start = @ss.pos
-      @ss.scan_byte
-      @ss.scan_byte while (b = @ss.peek_byte) && b != quote
-      @ss.scan_byte if @ss.peek_byte == quote
-      @source.byteslice(start, @ss.pos - start)
+      @ss.scan(QUOTED_STRING_RAW)
     end
 
     # ── Expressions ─────────────────────────────────────────────────
@@ -193,42 +188,15 @@ module Liquid
 
     # Skip a fragment without allocating. Returns length skipped, or 0.
     def skip_fragment
-      b = @ss.peek_byte
-      return 0 unless b
-
-      start = @ss.pos
-      if b == QUOTE_S || b == QUOTE_D
-        quote = b
-        @ss.scan_byte
-        @ss.scan_byte while (b = @ss.peek_byte) && b != quote
-        @ss.scan_byte if @ss.peek_byte == quote
-      else
-        while (b = @ss.peek_byte)
-          break if b == SPACE || b == TAB || b == NL || b == CR || b == COMMA || b == PIPE
-
-          @ss.scan_byte
-        end
-      end
-      @ss.pos - start
+      @ss.skip(QUOTED_STRING_RAW) || @ss.skip(UNQUOTED_FRAGMENT) || 0
     end
+
+    # Regex for unquoted fragment: non-whitespace/comma/pipe sequence
+    UNQUOTED_FRAGMENT = /[^\s,|]+/
 
     # Scan a "QuotedFragment" — a quoted string or non-whitespace/comma/pipe run
     def scan_fragment
-      b = @ss.peek_byte
-      return unless b
-
-      if b == QUOTE_S || b == QUOTE_D
-        scan_quoted_string_raw
-      else
-        start = @ss.pos
-        while (b = @ss.peek_byte)
-          break if b == SPACE || b == TAB || b == NL || b == CR || b == COMMA || b == PIPE
-
-          @ss.scan_byte
-        end
-        len = @ss.pos - start
-        len > 0 ? @source.byteslice(start, len) : nil
-      end
+      @ss.scan(QUOTED_STRING_RAW) || @ss.scan(UNQUOTED_FRAGMENT)
     end
 
     # ── Comparison operators ────────────────────────────────────────
