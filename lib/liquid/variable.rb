@@ -143,8 +143,8 @@ module Liquid
 
       # Resolve the name expression
       expr_markup = markup.byteslice(name_start, name_end - name_start)
-      cache = parse_context.instance_variable_get(:@expression_cache)
-      ss = parse_context.instance_variable_get(:@string_scanner)
+      cache = parse_context.expression_cache
+      ss = parse_context.string_scanner
 
       if Expression::LITERALS.key?(expr_markup)
         @name = Expression::LITERALS[expr_markup]
@@ -300,7 +300,8 @@ module Liquid
       filter_args  = []
       keyword_args = nil
       unparsed_args.each do |a|
-        if (matches = a.match(JustTagAttributes))
+        # Fast check: keyword args must contain ':'
+        if a.include?(':') && (matches = a.match(JustTagAttributes))
           keyword_args           ||= {}
           keyword_args[matches[1]] = parse_context.parse_expression(matches[2])
         else
