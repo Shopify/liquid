@@ -103,7 +103,7 @@ the sandbox.
 - cdc3438: For tag: migrate lax_parse to Cursor with zero-alloc scanning → allocs 29,620
 
 ## Current Best
-- **combined_µs**: ~4,100 (-44% from baseline)
-- **parse_µs**: ~2,850
-- **render_µs**: ~1,200
-- **allocations**: 24,881 (-60% from baseline)
+- **combined_µs**: ~3,400 (-54% from original 7,374 baseline)
+- **parse_µs**: ~2,300
+- **render_µs**: ~1,100
+- **allocations**: 24,882 (-60% from original 62,620 baseline)
