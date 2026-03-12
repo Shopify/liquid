@@ -42,8 +42,7 @@ for i in 1 2 3; do
 done
 
 echo ""
-echo "RESULTS"
-echo "parse_us=$BEST_PARSE"
-echo "render_us=$BEST_RENDER"
-echo "combined_us=$BEST_COMBINED"
-echo "allocations=$BEST_ALLOC"
+echo "METRIC combined_us=$BEST_COMBINED"
+echo "METRIC parse_us=$BEST_PARSE"
+echo "METRIC render_us=$BEST_RENDER"
+echo "METRIC allocations=$BEST_ALLOC"
