@@ -215,22 +215,56 @@ module Liquid
     attr_reader :tag_markup, :tag_newlines
 
     # Parse the interior of a tag token: "{%[-] tag_name markup [-]%}"
-    # Caller provides the full token string. Sets cursor to the token.
+    # Pure byte operations — avoids StringScanner reset overhead.
     # Returns tag_name string or nil. Sets tag_markup and tag_newlines.
     def parse_tag_token(token)
-      reset(token)
-      @ss.pos = 2 # skip "{%"
-      @ss.scan_byte if peek_byte == DASH # skip whitespace control '-'
-      nl = skip_ws
-      tag_name = scan_tag_name
-      return unless tag_name
+      len = token.bytesize
+      pos = 2 # skip "{%"
+      pos += 1 if token.getbyte(pos) == DASH # skip '-'
+      nl = 0
 
-      nl += skip_ws
+      # Skip whitespace, count newlines
+      while pos < len
+        b = token.getbyte(pos)
+        case b
+        when SPACE, TAB, CR, FF then pos += 1
+        when NL then pos += 1; nl += 1
+        else break
+        end
+      end
+
+      # Scan tag name: '#' or [a-zA-Z_][\w-]*
+      name_start = pos
+      b = token.getbyte(pos)
+      if b == HASH
+        pos += 1
+      elsif b && ((b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == USCORE)
+        pos += 1
+        while pos < len
+          b = token.getbyte(pos)
+          break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == USCORE || b == DASH
+          pos += 1
+        end
+        pos += 1 if pos < len && token.getbyte(pos) == QMARK
+      else
+        return
+      end
+      tag_name = token.byteslice(name_start, pos - name_start)
+
+      # Skip whitespace after tag name, count newlines
+      while pos < len
+        b = token.getbyte(pos)
+        case b
+        when SPACE, TAB, CR, FF then pos += 1
+        when NL then pos += 1; nl += 1
+        else break
+        end
+      end
 
       # markup is everything up to optional '-' before '%}'
-      markup_end = token.bytesize - 2
-      markup_end -= 1 if markup_end > @ss.pos && token.getbyte(markup_end - 1) == DASH
-      @tag_markup = @ss.pos >= markup_end ? "" : token.byteslice(@ss.pos, markup_end - @ss.pos)
+      markup_end = len - 2
+      markup_end -= 1 if markup_end > pos && token.getbyte(markup_end - 1) == DASH
+      @tag_markup = pos >= markup_end ? "" : token.byteslice(pos, markup_end - pos)
       @tag_newlines = nl
 
       tag_name
