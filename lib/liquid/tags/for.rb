@@ -72,18 +72,54 @@ module Liquid
 
     protected
 
+    # Fast byte-level parser for "var in collection [reversed] [limit:N] [offset:N]"
+    REVERSED_BYTES = "reversed".bytes.freeze
+
     def lax_parse(markup)
-      if markup =~ Syntax
-        @variable_name   = Regexp.last_match(1)
-        collection_name  = Regexp.last_match(2)
-        @reversed        = !!Regexp.last_match(3)
-        @name            = "#{@variable_name}-#{collection_name}"
-        @collection_name = parse_expression(collection_name)
-        markup.scan(TagAttributes) do |key, value|
-          set_attribute(key, value)
+      c = @parse_context.cursor
+      c.reset(markup)
+      c.skip_ws
+
+      # Parse variable name
+      var_start = c.pos
+      var_len = c.skip_id
+      raise SyntaxError, options[:locale].t("errors.syntax.for") if var_len == 0
+      @variable_name = c.slice(var_start, var_len)
+
+      # Expect "in"
+      c.skip_ws
+      raise SyntaxError, options[:locale].t("errors.syntax.for") unless c.expect_id("in")
+      c.skip_ws
+
+      # Parse collection name
+      col_start = c.pos
+      if c.peek_byte == Cursor::LPAREN
+        # Parenthesized range: (1..10)
+        depth = 1
+        c.scan_byte
+        while !c.eos? && depth > 0
+          b = c.scan_byte
+          depth += 1 if b == Cursor::LPAREN
+          depth -= 1 if b == Cursor::RPAREN
         end
       else
-        raise SyntaxError, options[:locale].t("errors.syntax.for")
+        c.skip_fragment
+      end
+      collection_name = c.slice(col_start, c.pos - col_start)
+
+      @name            = "#{@variable_name}-#{collection_name}"
+      @collection_name = parse_expression(collection_name)
+
+      c.skip_ws
+      @reversed = c.expect_id("reversed")
+      c.skip_ws
+
+      # Parse limit:/offset: if present
+      if !c.eos? && markup.include?(':')
+        rest = c.slice(c.pos, markup.bytesize - c.pos)
+        rest.scan(TagAttributes) do |key, value|
+          set_attribute(key, value)
+        end
       end
     end
 

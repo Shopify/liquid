@@ -3,7 +3,7 @@
 module Liquid
   class ResourceLimits
     attr_accessor :render_length_limit, :render_score_limit, :assign_score_limit
-    attr_reader :render_score, :assign_score
+    attr_reader :render_score, :assign_score, :last_capture_length
 
     def initialize(limits)
       @render_length_limit = limits[:render_length_limit]

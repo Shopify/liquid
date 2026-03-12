@@ -8,6 +8,9 @@ module Liquid
     def self.slice_collection(collection, from, to)
       if (from != 0 || !to.nil?) && collection.respond_to?(:load_slice)
         collection.load_slice(from, to)
+      elsif from == 0 && to.nil? && collection.is_a?(Array)
+        # Fast path: no offset/limit on an Array — return as-is (avoid copy)
+        collection
       else
         slice_collection_using_each(collection, from, to)
       end
@@ -93,8 +96,14 @@ module Liquid
       obj
     end
 
-    def self.to_s(obj, seen = {})
+    # Cached string representations for common small integers (0-999)
+    # Avoids repeated Integer#to_s allocations during rendering
+    SMALL_INT_STRINGS = Array.new(1000) { |i| i.to_s.freeze }.freeze
+
+    def self.to_s(obj, seen = nil)
       case obj
+      when Integer
+        return (obj >= 0 && obj < 1000) ? SMALL_INT_STRINGS[obj] : obj.to_s
       when BigDecimal
         obj.to_s("F")
       when Hash
@@ -102,30 +111,30 @@ module Liquid
         # custom implementation. Otherwise we use Liquid's default
         # implementation.
         if obj.class.instance_method(:to_s) == HASH_TO_S_METHOD
-          hash_inspect(obj, seen)
+          hash_inspect(obj, seen || {})
         else
           obj.to_s
         end
       when Array
-        array_inspect(obj, seen)
+        array_inspect(obj, seen || {})
       else
         obj.to_s
       end
     end
 
-    def self.inspect(obj, seen = {})
+    def self.inspect(obj, seen = nil)
       case obj
       when Hash
         # If the custom hash implementation overrides `#inspect`, use their
         # custom implementation. Otherwise we use Liquid's default
         # implementation.
         if obj.class.instance_method(:inspect) == HASH_INSPECT_METHOD
-          hash_inspect(obj, seen)
+          hash_inspect(obj, seen || {})
         else
           obj.inspect
         end
       when Array
-        array_inspect(obj, seen)
+        array_inspect(obj, seen || {})
       else
         obj.inspect
       end

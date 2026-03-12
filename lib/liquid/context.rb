@@ -24,10 +24,15 @@ module Liquid
 
     def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {}, environment = Environment.default)
       @environment = environment
-      @environments = [environments]
-      @environments.flatten!
+      @environments = environments.is_a?(Array) ? environments : [environments]
 
-      @static_environments = [static_environments].flatten(1).freeze
+      @static_environments = if static_environments.is_a?(Array)
+        static_environments.frozen? ? static_environments : static_environments.freeze
+      elsif static_environments.empty?
+        Const::EMPTY_ARRAY
+      else
+        [static_environments].freeze
+      end
       @scopes              = [outer_scope || {}]
       @registers           = registers.is_a?(Registers) ? registers : Registers.new(registers)
       @errors              = []
@@ -35,14 +40,13 @@ module Liquid
       @strict_variables    = false
       @resource_limits     = resource_limits || ResourceLimits.new(environment.default_resource_limits)
       @base_scope_depth    = 0
-      @interrupts          = []
-      @filters             = []
+      @interrupts          = Const::EMPTY_ARRAY
+      @filters             = Const::EMPTY_ARRAY
       @global_filter       = nil
-      @disabled_tags       = {}
+      @disabled_tags       = Const::EMPTY_HASH
 
-      # Instead of constructing new StringScanner objects for each Expression parse,
-      # we recycle the same one.
-      @string_scanner = StringScanner.new("")
+      # Lazy-init StringScanner — only needed if Context#[] is called during render
+      @string_scanner = nil
 
       @registers.static[:cached_partials] ||= {}
       @registers.static[:file_system] ||= environment.file_system
@@ -84,11 +88,12 @@ module Liquid
 
     # are there any not handled interrupts?
     def interrupt?
-      !@interrupts.empty?
+      !@interrupts.frozen? && !@interrupts.empty?
     end
 
     # push an interrupt to the stack. this interrupt is considered not handled.
     def push_interrupt(e)
+      @interrupts = [] if @interrupts.frozen?
       @interrupts.push(e)
     end
 
@@ -107,6 +112,17 @@ module Liquid
 
     def invoke(method, *args)
       strainer.invoke(method, *args).to_liquid
+    end
+
+    # Fast path for single-argument filter invocation (the most common case:
+    # {{ value | filter }}) — avoids *args splat allocation.
+    def invoke_single(method, input)
+      strainer.invoke_single(method, input).to_liquid
+    end
+
+    # Fast path for two-argument filter invocation (e.g. {{ value | default: 'x' }})
+    def invoke_two(method, input, arg1)
+      strainer.invoke_two(method, input, arg1).to_liquid
     end
 
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
@@ -180,7 +196,7 @@ module Liquid
     # Example:
     #   products == empty #=> products.empty?
     def [](expression)
-      evaluate(Expression.parse(expression, @string_scanner))
+      evaluate(Expression.parse(expression, @string_scanner ||= StringScanner.new("")))
     end
 
     def key?(key)
@@ -193,22 +209,40 @@ module Liquid
 
     # Fetches an object starting at the local scope and then moving up the hierachy
     def find_variable(key, raise_on_not_found: true)
-      # This was changed from find() to find_index() because this is a very hot
-      # path and find_index() is optimized in MRI to reduce object allocation
-      index = @scopes.find_index { |s| s.key?(key) }
-
-      variable = if index
-        lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
+      # Fast path: check top scope first (most common in for loops)
+      scope = @scopes[0]
+      if scope.key?(key)
+        variable = lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found)
+      elsif @scopes.length == 1
+        # Only one scope and key not found — go straight to environments
+        variable = try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
       else
-        try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
+        # Multiple scopes — search through all of them
+        index = @scopes.find_index { |s| s.key?(key) }
+
+        variable = if index
+          lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
+        else
+          try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
+        end
       end
 
       # update variable's context before invoking #to_liquid
+      # Fast path: primitive types don't need context= or to_liquid conversion
+      case variable
+      when String, Integer, Float, NilClass, TrueClass, FalseClass
+        return variable
+      when Array, Hash, Time
+        return variable
+      end
+
       variable.context = self if variable.respond_to?(:context=)
 
       liquid_variable = variable.to_liquid
 
-      liquid_variable.context = self if variable != liquid_variable && liquid_variable.respond_to?(:context=)
+      if variable != liquid_variable
+        liquid_variable.context = self if liquid_variable.respond_to?(:context=)
+      end
 
       liquid_variable
     end
@@ -228,6 +262,7 @@ module Liquid
     end
 
     def with_disabled_tags(tag_names)
+      @disabled_tags = {} if @disabled_tags.frozen?
       tag_names.each do |name|
         @disabled_tags[name] = @disabled_tags.fetch(name, 0) + 1
       end

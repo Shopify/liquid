@@ -51,14 +51,17 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      @blocks.each do |block|
-        result = Liquid::Utils.to_liquid_value(
-          block.evaluate(context),
-        )
+      idx = 0
+      blocks = @blocks
+      while idx < blocks.length
+        block = blocks[idx]
+        result = block.evaluate(context)
+        result = result.to_liquid_value if result.respond_to?(:to_liquid_value)
 
         if result
           return block.attachment.render_to_output_buffer(context, output)
         end
+        idx += 1
       end
 
       output
@@ -86,6 +89,24 @@ module Liquid
     end
 
     def lax_parse(markup)
+      # Fastest path: simple identifier truthiness like "product.available" or "forloop.first"
+      if (simple = Variable.simple_variable_markup(markup))
+        return Condition.new(parse_expression(simple))
+      end
+
+      # Fast path: simple condition without and/or — use Cursor
+      if !markup.include?(' and ') && !markup.include?(' or ')
+        cursor = @parse_context.cursor
+        cursor.reset(markup)
+        if cursor.parse_simple_condition
+          return Condition.new(
+            parse_expression(cursor.cond_left),
+            cursor.cond_op,
+            cursor.cond_right ? parse_expression(cursor.cond_right) : nil,
+          )
+        end
+      end
+
       expressions = markup.scan(ExpressionsAndOperators)
       raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop =~ Syntax
 
