@@ -6,10 +6,6 @@ module Liquid
   class Tokenizer
     attr_reader :line_number, :for_liquid_tag
 
-    TAG_END = /%\}/
-    TAG_OR_VARIABLE_START = /\{[\{\%]/
-    NEWLINE = /\n/
-
     OPEN_CURLEY = "{".ord
     CLOSE_CURLEY = "}".ord
     PERCENTAGE = "%".ord
@@ -27,11 +23,7 @@ module Liquid
       @offset = 0
       @tokens = []
 
-      if @source
-        @ss = string_scanner
-        @ss.string = @source
-        tokenize
-      end
+      tokenize if @source
     end
 
     def shift
