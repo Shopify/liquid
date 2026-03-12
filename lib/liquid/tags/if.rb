@@ -52,9 +52,9 @@ module Liquid
 
     def render_to_output_buffer(context, output)
       @blocks.each do |block|
-        result = Liquid::Utils.to_liquid_value(
-          block.evaluate(context),
-        )
+        result = block.evaluate(context)
+        # Inline to_liquid_value fast path — respond_to? check is rarely true
+        result = result.to_liquid_value if result.respond_to?(:to_liquid_value)
 
         if result
           return block.attachment.render_to_output_buffer(context, output)
