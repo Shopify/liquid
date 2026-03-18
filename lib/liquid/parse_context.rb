@@ -38,7 +38,7 @@ module Liquid
 
     def new_parser(input)
       @string_scanner.string = input
-      Parser.new(@string_scanner)
+      Parser.new(@string_scanner, reject_bare_brackets: @error_mode == :strict2 || @error_mode == :rigid)
     end
 
     def new_tokenizer(source, start_line_number: nil, for_liquid_tag: false)

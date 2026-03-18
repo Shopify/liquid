@@ -296,8 +296,8 @@ class ContextTest < Minitest::Test
   end
 
   def test_access_variable_with_hash_notation
-    assert_template_result('baz', '{{ ["foo"] }}', { "foo" => "baz" })
-    assert_template_result('baz', '{{ [bar] }}', { 'foo' => 'baz', 'bar' => 'foo' })
+    assert_template_result('baz', '{{ foo }}', { "foo" => "baz" })
+    assert_template_result('baz', '{{ self[bar] }}', { 'foo' => 'baz', 'bar' => 'foo' })
   end
 
   def test_access_hashes_with_hash_access_variables

@@ -2,6 +2,8 @@
 
 module Liquid
   class Expression
+    SELF = 'self'
+
     LITERALS = {
       nil => nil,
       'nil' => nil,

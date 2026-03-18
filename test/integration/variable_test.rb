@@ -55,7 +55,7 @@ class VariableTest < Minitest::Test
 
   def test_expression_with_whitespace_in_square_brackets
     assert_template_result('result', "{{ a[ 'b' ] }}", { 'a' => { 'b' => 'result' } })
-    assert_template_result('result', "{{ a[ [ 'b' ] ] }}", { 'b' => 'c', 'a' => { 'c' => 'result' } })
+    assert_template_result('result', "{{ a[ self[ 'b' ] ] }}", { 'b' => 'c', 'a' => { 'c' => 'result' } })
   end
 
   def test_ignore_unknown
@@ -135,17 +135,17 @@ class VariableTest < Minitest::Test
   end
 
   def test_dynamic_find_var
-    assert_template_result('bar', '{{ [key] }}', { 'key' => 'foo', 'foo' => 'bar' })
+    assert_template_result('bar', '{{ self[key] }}', { 'key' => 'foo', 'foo' => 'bar' })
   end
 
   def test_raw_value_variable
-    assert_template_result('bar', '{{ [key] }}', { 'key' => 'foo', 'foo' => 'bar' })
+    assert_template_result('bar', '{{ self[key] }}', { 'key' => 'foo', 'foo' => 'bar' })
   end
 
   def test_dynamic_find_var_with_drop
     assert_template_result(
       'bar',
-      '{{ [list[settings.zero]] }}',
+      '{{ self[list[settings.zero]] }}',
       {
         'list' => ['foo'],
         'settings' => SettingsDrop.new("zero" => 0),
@@ -155,7 +155,7 @@ class VariableTest < Minitest::Test
 
     assert_template_result(
       'foo',
-      '{{ [list[settings.zero]["foo"]] }}',
+      '{{ self[list[settings.zero]["foo"]] }}',
       {
         'list' => [{ 'foo' => 'bar' }],
         'settings' => SettingsDrop.new("zero" => 0),
