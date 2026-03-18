@@ -232,6 +232,7 @@ module Liquid
           break if context.interrupt? # might have happened in a for-block
         end
         idx += 1
+        break if context.resource_limits.reached?
 
         context.resource_limits.increment_write_score(output)
       end
