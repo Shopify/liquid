@@ -52,11 +52,17 @@ module Liquid
             next parse_liquid_tag(markup, parse_context)
           end
 
-          unless (tag = parse_context.environment.tag_for_name(tag_name))
-            # end parsing if we reach an unknown tag and let the caller decide
-            # determine how to proceed
-            return yield tag_name, markup
+          tag = parse_context.environment.tag_for_name(tag_name)
+
+          if tag.nil? && try_reparent_hybrid_tag(tag_name, parse_context)
+            parse_context.line_number = tokenizer.line_number
+            next
           end
+
+          # end parsing if we reach an unknown tag and let the caller decide
+          # determine how to proceed
+          return yield tag_name, markup unless tag
+
           new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
           @blank &&= new_tag.blank?
           @nodelist << new_tag
@@ -147,11 +153,17 @@ module Liquid
             next
           end
 
-          unless (tag = parse_context.environment.tag_for_name(tag_name))
-            # end parsing if we reach an unknown tag and let the caller decide
-            # determine how to proceed
-            return yield tag_name, markup
+          tag = parse_context.environment.tag_for_name(tag_name)
+
+          if tag.nil? && try_reparent_hybrid_tag(tag_name, parse_context)
+            parse_context.line_number = tokenizer.line_number
+            next
           end
+
+          # end parsing if we reach an unknown tag and let the caller decide
+          # determine how to proceed
+          return yield tag_name, markup unless tag
+
           new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
           @blank &&= new_tag.blank?
           @nodelist << new_tag
@@ -268,6 +280,47 @@ module Liquid
     # @deprecated Use {.raise_missing_variable_terminator} instead
     def raise_missing_variable_terminator(token, parse_context)
       BlockBody.raise_missing_variable_terminator(token, parse_context)
+    end
+
+    private def try_reparent_hybrid_tag(end_tag_name, parse_context)
+      return false unless end_tag_name.start_with?("end")
+
+      hybrid_tag_name = end_tag_name.delete_prefix("end")
+      tag_class = parse_context.environment.tag_for_name(hybrid_tag_name)
+      return false unless tag_class && tag_class < HybridTag
+
+      hybrid_index = nil
+      i = @nodelist.length - 1
+      while i >= 0
+        node = @nodelist[i]
+        if node.is_a?(HybridTag) && node.tag_name == hybrid_tag_name
+          if node.block_form?
+            raise SyntaxError, parse_context.locale.t(
+              "errors.syntax.hybrid_tag_nested",
+              tag: hybrid_tag_name,
+            )
+          end
+
+          hybrid_index = i
+          break
+        end
+        i -= 1
+      end
+
+      unless hybrid_index
+        raise SyntaxError, parse_context.locale.t(
+          "errors.syntax.hybrid_tag_no_match",
+          end_tag: end_tag_name,
+          tag: hybrid_tag_name,
+        )
+      end
+
+      children = @nodelist.slice!((hybrid_index + 1)..)
+      hybrid_tag = @nodelist[hybrid_index]
+
+      hybrid_tag.reparent_as_block(children, parse_context)
+
+      true
     end
   end
 end

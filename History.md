@@ -1,5 +1,8 @@
 # Liquid Change Log
 
+## 5.12.0
+* Introduce HybridTag base class for tags that can be self-closing or block-form, with end-tag-triggered reparenting in BlockBody [CP Clermont]
+
 ## 5.11.0
 * Revert the Inline Snippets tag (#2001), treat its inclusion in the latest Liquid release as a bug, and allow for feedback on RFC#1916 to better support Liquid developers [Guilherme Carreiro]
 * Rename the `:rigid` error mode to `:strict2` and display a warning when users attempt to use the `:rigid` mode [Guilherme Carreiro]

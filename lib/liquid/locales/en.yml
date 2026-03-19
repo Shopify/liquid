@@ -24,6 +24,8 @@
       tag_never_closed: "'%{block_name}' tag was never closed"
       tag_termination: "Tag '%{token}' was not properly terminated with regexp: %{tag_end}"
       unexpected_else: "%{block_name} tag does not expect 'else' tag"
+      hybrid_tag_nested: "'%{tag}' tag cannot be nested inside another '%{tag}' tag"
+      hybrid_tag_no_match: "Unexpected end tag '%{end_tag}' — no matching '%{tag}' tag found"
       unexpected_outer_tag: "Unexpected outer '%{tag}' tag"
       unknown_tag: "Unknown tag '%{tag}'"
       variable_termination: "Variable '%{token}' was not properly terminated with regexp: %{tag_end}"
