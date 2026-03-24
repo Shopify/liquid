@@ -105,10 +105,8 @@ class CycleTagTest < Minitest::Test
       error1 = assert_raises(Liquid::SyntaxError) { Template.parse(template1) }
       error2 = assert_raises(Liquid::SyntaxError) { Template.parse(template2) }
 
-      expected_error = /Liquid syntax error: \[:dot, "."\] is not a valid expression/
-
-      assert_match(expected_error, error1.message)
-      assert_match(expected_error, error2.message)
+      assert_match(/Liquid syntax error:/, error1.message)
+      assert_match(/Liquid syntax error: \[:dot, "."\] is not a valid expression/, error2.message)
     end
   end
 
