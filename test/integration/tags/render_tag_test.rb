@@ -174,16 +174,16 @@ class RenderTagTest < Minitest::Test
   def test_increment_is_isolated_between_renders
     assert_template_result(
       '010',
-      '{% increment %}{% increment %}{% render "incr" %}',
-      partials: { 'incr' => '{% increment %}' },
+      '{% increment port %}{% increment port %}{% render "incr" %}',
+      partials: { 'incr' => '{% increment port %}' },
     )
   end
 
   def test_decrement_is_isolated_between_renders
     assert_template_result(
       '-1-2-1',
-      '{% decrement %}{% decrement %}{% render "decr" %}',
-      partials: { 'decr' => '{% decrement %}' },
+      '{% decrement port %}{% decrement port %}{% render "decr" %}',
+      partials: { 'decr' => '{% decrement port %}' },
     )
   end
 

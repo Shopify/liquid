@@ -23,11 +23,27 @@ module Liquid
   #   {% increment variable_name %}
   # @liquid_syntax_keyword variable_name The name of the variable being incremented.
   class Increment < Tag
+    include ParserSwitching
+
     attr_reader :variable_name
 
     def initialize(tag_name, markup, options)
       super
+      parse_with_selected_parser(markup)
+    end
+
+    def lax_parse(markup)
       @variable_name = markup.strip
+    end
+
+    def strict_parse(markup)
+      lax_parse(markup)
+    end
+
+    def strict2_parse(markup)
+      p = @parse_context.new_parser(markup.strip)
+      @variable_name = p.consume(:id)
+      p.consume(:end_of_string)
     end
 
     def render_to_output_buffer(context, output)
