@@ -18,23 +18,17 @@ module Liquid
 
     def self.slice_collection_using_each(collection, from, to)
       segments = []
-      index    = 0
 
-      # Maintains Ruby 1.8.7 String#each behaviour on 1.9
+      # String is Enumerable but #each is not defined; handle it as a single-element collection
       if collection.is_a?(String)
         return collection.empty? ? [] : [collection]
       end
       return [] unless collection.respond_to?(:each)
 
+      index = 0
       collection.each do |item|
-        if to && to <= index
-          break
-        end
-
-        if from <= index
-          segments << item
-        end
-
+        break if to && to <= index
+        segments << item if from <= index
         index += 1
       end
 
@@ -103,7 +97,7 @@ module Liquid
     def self.to_s(obj, seen = nil)
       case obj
       when Integer
-        return (obj >= 0 && obj < 1000) ? SMALL_INT_STRINGS[obj] : obj.to_s
+        obj >= 0 && obj < 1000 ? SMALL_INT_STRINGS[obj] : obj.to_s
       when BigDecimal
         obj.to_s("F")
       when Hash

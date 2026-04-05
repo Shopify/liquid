@@ -94,7 +94,10 @@ module Liquid
         return Condition.new(parse_expression(simple))
       end
 
-      # Fast path: simple condition without and/or — use Cursor
+      # Fast path: simple condition without and/or — use Cursor.
+      # The include? pre-checks are both a correctness guard (parse_simple_condition
+      # only handles a single comparison) and a perf gate (avoids cursor allocation
+      # for the compound-condition case that will always fall through to lax_parse).
       if !markup.include?(' and ') && !markup.include?(' or ')
         cursor = @parse_context.cursor
         cursor.reset(markup)

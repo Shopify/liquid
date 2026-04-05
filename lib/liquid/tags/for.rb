@@ -25,8 +25,6 @@ module Liquid
   # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   # @liquid_optional_param reversed [untyped] Iterate in reverse order.
   class For < Block
-    Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
-
     attr_reader :collection_name, :variable_name, :limit, :from
 
     def initialize(tag_name, markup, options)
@@ -73,8 +71,6 @@ module Liquid
     protected
 
     # Fast byte-level parser for "var in collection [reversed] [limit:N] [offset:N]"
-    REVERSED_BYTES = "reversed".bytes.freeze
-
     def lax_parse(markup)
       c = @parse_context.cursor
       c.reset(markup)
@@ -114,9 +110,9 @@ module Liquid
       @reversed = c.expect_id("reversed")
       c.skip_ws
 
-      # Parse limit:/offset: if present
-      if !c.eos? && markup.include?(':')
-        rest = c.slice(c.pos, markup.bytesize - c.pos)
+      # Parse limit:/offset: if present.
+      # Cursor doesn't handle key:value attributes — delegate to regex for limit:/offset:.
+      if !c.eos? && (rest = c.slice(c.pos, markup.bytesize - c.pos)).include?(':')
         rest.scan(TagAttributes) do |key, value|
           set_attribute(key, value)
         end
@@ -147,9 +143,7 @@ module Liquid
 
     private
 
-    def strict2_parse(markup)
-      strict_parse(markup)
-    end
+    alias_method :strict2_parse, :strict_parse
 
     def collection_segment(context)
       offsets = context.registers[:for] ||= {}
@@ -158,22 +152,14 @@ module Liquid
         offsets[@name].to_i
       else
         from_value = context.evaluate(@from)
-        if from_value.nil?
-          0
-        else
-          Utils.to_integer(from_value)
-        end
+        from_value.nil? ? 0 : Utils.to_integer(from_value)
       end
 
       collection = context.evaluate(@collection_name)
       collection = collection.to_a if collection.is_a?(Range)
 
       limit_value = context.evaluate(@limit)
-      to = if limit_value.nil?
-        nil
-      else
-        Utils.to_integer(limit_value) + from
-      end
+      to = limit_value && (Utils.to_integer(limit_value) + from)
 
       segment = Utils.slice_collection(collection, from, to)
       segment.reverse! if @reversed
@@ -228,11 +214,7 @@ module Liquid
     end
 
     def render_else(context, output)
-      if @else_block
-        @else_block.render_to_output_buffer(context, output)
-      else
-        output
-      end
+      @else_block ? @else_block.render_to_output_buffer(context, output) : output
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor

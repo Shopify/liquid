@@ -33,11 +33,8 @@ module Liquid
           pos += 1
           while pos < len && depth > 0
             b = markup.getbyte(pos)
-            if b == 91 # rubocop:disable Metrics/BlockNesting
-              depth += 1
-            elsif b == 93 # rubocop:disable Metrics/BlockNesting
-              depth -= 1
-            end
+            depth += 1 if b == 91
+            depth -= 1 if b == 93
             pos += 1
           end
           if depth == 0

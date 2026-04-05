@@ -72,23 +72,23 @@ module Liquid
 
       def parse_number(markup, _ss = nil)
         len = markup.bytesize
-        return false if len == 0
+        return if len == 0
 
         # Quick reject: first byte must be digit or dash
         pos = 0
         first = markup.getbyte(pos)
         if first == Cursor::DASH
           pos += 1
-          return false if pos >= len
+          return if pos >= len
 
           b = markup.getbyte(pos)
-          return false unless ByteTables::DIGIT[b]
+          return unless ByteTables::DIGIT[b]
 
           pos += 1
         elsif ByteTables::DIGIT[first]
           pos += 1
         else
-          return false
+          return
         end
 
         # Scan digits
@@ -121,19 +121,9 @@ module Liquid
             # Simple float like "123.456"
             return markup.to_f
           elsif pos > digit_after_dot
-            # Float followed by more dots or other chars: "1.2.3.4"
-            # Return the float portion up to second dot
-            while pos < len
-              b = markup.getbyte(pos)
-              if b == Cursor::DOT
-                return markup.byteslice(0, pos).to_f
-              elsif !ByteTables::DIGIT[b]
-                return false
-              end
-
-              pos += 1
-            end
-            return markup.byteslice(0, pos).to_f
+            # Float followed by more content: "1.2.3.4" — scan to find where the
+            # numeric portion ends (stop at next dot or non-digit).
+            return scan_float_with_trailing(markup, pos, len)
           else
             # dot at end: "123."
             return markup.byteslice(0, dot_pos).to_f
@@ -141,7 +131,24 @@ module Liquid
         end
 
         # Not a number (has non-digit, non-dot characters)
-        false
+        nil
+      end
+
+      private
+
+      # Scans forward from `pos` through digits, returning the float up to the
+      # next dot or the end of string. Returns nil when a non-digit, non-dot
+      # byte is found (not a valid number). Used by parse_number for inputs
+      # like "1.2.3.4" where the float literal ends at the second dot.
+      def scan_float_with_trailing(markup, pos, len)
+        while pos < len
+          b = markup.getbyte(pos)
+          return markup.byteslice(0, pos).to_f if b == Cursor::DOT
+          return unless ByteTables::DIGIT[b]
+
+          pos += 1
+        end
+        markup.byteslice(0, pos).to_f
       end
     end
   end

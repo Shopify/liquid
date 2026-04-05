@@ -189,6 +189,10 @@ module Liquid
     end
 
     # ── Comparison operators ────────────────────────────────────────
+    # Identity map used for frozen string interning: StringScanner#scan returns a
+    # new unfrozen String on every call. Indexing into this hash returns the frozen
+    # literal stored here, avoiding a separate allocation and enabling faster
+    # equality checks downstream (frozen strings can be compared by identity).
     COMPARISON_OPS = {
       '==' => '==',
       '!=' => '!=',
@@ -313,50 +317,6 @@ module Liquid
 
       true
     end
-    # ── For tag parser ────────────────────────────────────────────────
-    # Results from parse_for_markup
-    attr_reader :for_var, :for_collection, :for_reversed
 
-    # Parse "var in collection [reversed] [limit:N] [offset:N]"
-    # Returns true on success, nil on failure.
-    def parse_for_markup
-      skip_ws
-      @for_var = scan_id
-      return unless @for_var
-
-      skip_ws
-      # expect "in"
-      return unless scan_id == "in"
-
-      skip_ws
-      # Collection: parenthesized range or fragment
-      if peek_byte == LPAREN
-        start = @ss.pos
-        depth = 1
-        @ss.scan_byte
-        while !@ss.eos? && depth > 0
-          b = @ss.scan_byte
-          depth += 1 if b == LPAREN
-          depth -= 1 if b == RPAREN
-        end
-        @for_collection = @source.byteslice(start, @ss.pos - start)
-      else
-        @for_collection = scan_fragment
-        return unless @for_collection
-      end
-
-      skip_ws
-      # Check for 'reversed'
-      saved = @ss.pos
-      word = scan_id
-      if word == "reversed"
-        @for_reversed = true
-      else
-        @for_reversed = false
-        @ss.pos = saved if word # rewind if we consumed a non-'reversed' word
-      end
-
-      true
-    end
   end
 end

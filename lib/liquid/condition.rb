@@ -71,14 +71,12 @@ module Liquid
       return result unless @child_relation
 
       condition = self
-      loop do
+      while condition.child_relation
         case condition.child_relation
         when :or
           break if Liquid::Utils.to_liquid_value(result)
         when :and
           break unless Liquid::Utils.to_liquid_value(result)
-        else
-          break
         end
         condition = condition.child_condition
         result = interpret_condition(condition.left, condition.right, condition.operator, context)
