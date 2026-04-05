@@ -59,31 +59,30 @@ module Liquid
       raise Liquid::ArgumentError, e.message, e.backtrace
     end
 
-    # Fast path for single-argument (no extra args) filter invocation.
-    # Avoids *args splat allocation for the common {{ value | filter }} case.
-    def invoke_single(method, input)
-      if self.class.invokable?(method)
-        send(method, input)
-      elsif @context.strict_filters
-        raise Liquid::UndefinedFilter, "undefined filter #{method}"
-      else
-        input
-      end
-    rescue ::ArgumentError => e
-      raise Liquid::ArgumentError, e.message, e.backtrace
-    end
-
-    # Fast path for two-argument filter invocation (input + one arg).
-    def invoke_two(method, input, arg1)
-      if self.class.invokable?(method)
-        send(method, input, arg1)
-      elsif @context.strict_filters
-        raise Liquid::UndefinedFilter, "undefined filter #{method}"
-      else
-        input
-      end
-    rescue ::ArgumentError => e
-      raise Liquid::ArgumentError, e.message, e.backtrace
+    # Arity-specialized filter invocation.
+    # Avoids *args splat allocation for the common 0-arg and 1-arg cases.
+    # `invoke` (general case) still uses *args for 2+ extra arguments.
+    {
+      invoke_single: ['input'],
+      invoke_two: ['input', 'arg1'],
+    }.each do |method_name, params|
+      all_params = (["method"] + params).join(", ")
+      send_params = params.join(", ")
+      # __LINE__ + 1 is a parse-time constant; both generated methods will report
+      # the same file:line in backtraces. The method name in the trace distinguishes them.
+      module_eval(<<~RUBY, __FILE__, __LINE__ + 1)
+        def #{method_name}(#{all_params})
+          if self.class.invokable?(method)
+            send(method, #{send_params})
+          elsif @context.strict_filters
+            raise Liquid::UndefinedFilter, "undefined filter \#{method}"
+          else
+            input
+          end
+        rescue ::ArgumentError => e
+          raise Liquid::ArgumentError, e.message, e.backtrace
+        end
+      RUBY
     end
   end
 end

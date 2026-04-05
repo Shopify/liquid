@@ -77,7 +77,7 @@ module Liquid
     # Note that this does not register the filters with the main Template object. see <tt>Template.register_filter</tt>
     # for that
     def add_filters(filters)
-      filters = [filters].flatten.compact
+      filters = Array(filters).flatten.compact
       @filters += filters
       @strainer = nil
     end
@@ -88,7 +88,7 @@ module Liquid
 
     # are there any not handled interrupts?
     def interrupt?
-      !@interrupts.frozen? && !@interrupts.empty?
+      !@interrupts.equal?(Const::EMPTY_ARRAY) && @interrupts.any?
     end
 
     # push an interrupt to the stack. this interrupt is considered not handled.
@@ -114,15 +114,18 @@ module Liquid
       strainer.invoke(method, *args).to_liquid
     end
 
-    # Fast path for single-argument filter invocation (the most common case:
-    # {{ value | filter }}) — avoids *args splat allocation.
-    def invoke_single(method, input)
-      strainer.invoke_single(method, input).to_liquid
-    end
-
-    # Fast path for two-argument filter invocation (e.g. {{ value | default: 'x' }})
-    def invoke_two(method, input, arg1)
-      strainer.invoke_two(method, input, arg1).to_liquid
+    # Arity-specialized filter delegation — generated to match StrainerTemplate's specializations.
+    # The pattern (avoid *args splat) is the same for each arity; generating makes it explicit.
+    {
+      invoke_single: ['input'],
+      invoke_two: ['input', 'arg1'],
+    }.each do |method_name, params|
+      all_params = (["method"] + params).join(", ")
+      module_eval(<<~RUBY, __FILE__, __LINE__ + 1)
+        def #{method_name}(#{all_params})
+          strainer.#{method_name}(#{all_params}).to_liquid
+        end
+      RUBY
     end
 
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
@@ -200,7 +203,7 @@ module Liquid
     end
 
     def key?(key)
-      find_variable(key, raise_on_not_found: false) != nil
+      !find_variable(key, raise_on_not_found: false).nil?
     end
 
     def evaluate(object)
@@ -218,10 +221,10 @@ module Liquid
         variable = try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
       else
         # Multiple scopes — search through all of them
-        index = @scopes.find_index { |s| s.key?(key) }
+        scope = @scopes.find { |s| s.key?(key) }
 
-        variable = if index
-          lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
+        variable = if scope
+          lookup_and_evaluate(scope, key, raise_on_not_found: raise_on_not_found)
         else
           try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
         end
@@ -230,9 +233,7 @@ module Liquid
       # update variable's context before invoking #to_liquid
       # Fast path: primitive types don't need context= or to_liquid conversion
       case variable
-      when String, Integer, Float, NilClass, TrueClass, FalseClass
-        return variable
-      when Array, Hash, Time
+      when String, Integer, Float, NilClass, TrueClass, FalseClass, Array, Hash, Time
         return variable
       end
 
@@ -286,17 +287,16 @@ module Liquid
     attr_reader :base_scope_depth
 
     def try_variable_find_in_environments(key, raise_on_not_found:)
-      @environments.each do |environment|
+      found = find_in_envs(@environments, key, raise_on_not_found: raise_on_not_found)
+      return found unless found.nil? && !(@strict_variables && raise_on_not_found)
+
+      find_in_envs(@static_environments, key, raise_on_not_found: raise_on_not_found)
+    end
+
+    def find_in_envs(envs, key, raise_on_not_found:)
+      envs.each do |environment|
         found_variable = lookup_and_evaluate(environment, key, raise_on_not_found: raise_on_not_found)
-        if !found_variable.nil? || @strict_variables && raise_on_not_found
-          return found_variable
-        end
-      end
-      @static_environments.each do |environment|
-        found_variable = lookup_and_evaluate(environment, key, raise_on_not_found: raise_on_not_found)
-        if !found_variable.nil? || @strict_variables && raise_on_not_found
-          return found_variable
-        end
+        return found_variable if !found_variable.nil? || (@strict_variables && raise_on_not_found)
       end
       nil
     end

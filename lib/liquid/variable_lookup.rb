@@ -33,9 +33,9 @@ module Liquid
           pos += 1
           while pos < len && depth > 0
             b = markup.getbyte(pos)
-            if b == 91
+            if b == 91 # rubocop:disable Metrics/BlockNesting
               depth += 1
-            elsif b == 93
+            elsif b == 93 # rubocop:disable Metrics/BlockNesting
               depth -= 1
             end
             pos += 1
@@ -114,7 +114,7 @@ module Liquid
       lookups = self.class.scan_variable(markup)
 
       name = lookups.shift
-      if name&.start_with?('[') && name&.end_with?(']')
+      if name&.start_with?('[') && name.end_with?(']')
         name = Expression.parse(
           name[1..-2],
           string_scanner,
@@ -126,9 +126,8 @@ module Liquid
       @lookups       = lookups
       @command_flags = 0
 
-      @lookups.each_index do |i|
-        lookup = lookups[i]
-        if lookup&.start_with?('[') && lookup&.end_with?(']')
+      @lookups.each_with_index do |lookup, i|
+        if lookup&.start_with?('[') && lookup.end_with?(']')
           lookups[i] = Expression.parse(
             lookup[1..-2],
             string_scanner,
@@ -160,18 +159,13 @@ module Liquid
 
         # If object is a hash- or array-like object we look for the
         # presence of the key and if its available we return it
-        if object.instance_of?(Hash) ? object.key?(key) :
-            (object.respond_to?(:[]) &&
-              ((object.respond_to?(:key?) && object.key?(key)) ||
-               (object.respond_to?(:fetch) && key.is_a?(Integer))))
-
+        if accessible?(object, key)
           # if its a proc we will replace the entry with the proc
           object = context.lookup_and_evaluate(object, key)
           # Skip to_liquid for common primitive types (they return self)
           unless object.instance_of?(String) || object.instance_of?(Integer) || object.instance_of?(Float) ||
               object.instance_of?(Array) || object.instance_of?(Hash) || object.nil?
-            object = object.to_liquid
-            object.context = context if object.respond_to?(:context=)
+            object = liquidize(object, context)
           end
 
           # Some special cases. If the part wasn't in square brackets and
@@ -180,8 +174,7 @@ module Liquid
         elsif lookup_command?(i) && object.respond_to?(key)
           object = object.send(key)
           unless object.instance_of?(String) || object.instance_of?(Integer) || object.instance_of?(Array) || object.nil?
-            object = object.to_liquid
-            object.context = context if object.respond_to?(:context=)
+            object = liquidize(object, context)
           end
 
         # Handle string first/last like ActiveSupport does (returns first/last character)
@@ -203,6 +196,27 @@ module Liquid
 
     def ==(other)
       self.class == other.class && state == other.state
+    end
+
+    private
+
+    # Returns true if +object+ has +key+ accessible via [] lookup.
+    def accessible?(object, key)
+      if object.instance_of?(Hash)
+        object.key?(key)
+      else
+        object.respond_to?(:[]) &&
+          ((object.respond_to?(:key?) && object.key?(key)) ||
+           (object.respond_to?(:fetch) && key.is_a?(Integer)))
+      end
+    end
+
+    # Calls to_liquid on +object+ and wires up the context reference if needed.
+    # Skipped for primitive types that return self from to_liquid.
+    def liquidize(object, context)
+      object = object.to_liquid
+      object.context = context if object.respond_to?(:context=)
+      object
     end
 
     protected
