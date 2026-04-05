@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'English'
-
 module Liquid
   class BlockBody
     LiquidTagToken      = /\A\s*(#{TagName})\s*(.*?)\z/o
@@ -38,7 +36,7 @@ module Liquid
 
     private def parse_for_liquid_tag(tokenizer, parse_context)
       while (token = tokenizer.shift)
-        unless token.empty? || token.match?(WhitespaceOrNothing)
+        unless token.empty? || BlockBody.blank_string?(token)
           unless token =~ LiquidTagToken
             # line isn't empty but didn't match tag syntax, yield and let the
             # caller raise a syntax error
@@ -53,8 +51,7 @@ module Liquid
           end
 
           unless (tag = parse_context.environment.tag_for_name(tag_name))
-            # end parsing if we reach an unknown tag and let the caller decide
-            # determine how to proceed
+            # end parsing if we reach an unknown tag; let the caller determine how to proceed
             return yield tag_name, markup
           end
           new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
@@ -124,48 +121,38 @@ module Liquid
       end
     end
 
+    def self.blank_string?(str)
+      str.match?(WhitespaceOrNothing)
+    end
+
     private def parse_for_document(tokenizer, parse_context, &block)
       while (token = tokenizer.shift)
         next if token.empty?
-        case
-        when token.start_with?(TAGSTART)
-          whitespace_handler(token, parse_context)
-          unless token =~ FullToken
-            return handle_invalid_tag_token(token, parse_context, &block)
-          end
-          tag_name = Regexp.last_match(2)
-          markup   = Regexp.last_match(4)
 
-          if parse_context.line_number
-            # newlines inside the tag should increase the line number,
-            # particularly important for multiline {% liquid %} tags
-            parse_context.line_number += Regexp.last_match(1).count("\n") + Regexp.last_match(3).count("\n")
+        first_byte = token.getbyte(0)
+        if first_byte == Cursor::LCURLY
+          second_byte = token.getbyte(1)
+          if second_byte == Cursor::PCT
+            # handle_tag_token returns:
+            #   nil      — tag parsed normally, continue (update line number)
+            #   :next    — 'liquid' inline tag; skip line number update
+            #   :unknown — end tag or unknown tag; yield to caller and return
+            #   :invalid — malformed tag token; delegate to handle_invalid_tag_token
+            result = handle_tag_token(token, parse_context, tokenizer)
+            next unless result                                                          # nil: normal
+            next if result == :next                                                     # :next: 'liquid'
+            return yield(@_unknown_tag_name, parse_context.cursor.tag_markup) if result == :unknown
+            return handle_invalid_tag_token(token, parse_context, &block) # :invalid
+          elsif second_byte == Cursor::LCURLY
+            whitespace_handler(token, parse_context)
+            @nodelist << create_variable(token, parse_context)
+            @blank = false
+          else
+            # Fallback: text token starting with '{'
+            append_text_token(token, parse_context)
           end
-
-          if tag_name == 'liquid'
-            parse_liquid_tag(markup, parse_context)
-            next
-          end
-
-          unless (tag = parse_context.environment.tag_for_name(tag_name))
-            # end parsing if we reach an unknown tag and let the caller decide
-            # determine how to proceed
-            return yield tag_name, markup
-          end
-          new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
-          @blank &&= new_tag.blank?
-          @nodelist << new_tag
-        when token.start_with?(VARSTART)
-          whitespace_handler(token, parse_context)
-          @nodelist << create_variable(token, parse_context)
-          @blank = false
         else
-          if parse_context.trim_whitespace
-            token.lstrip!
-          end
-          parse_context.trim_whitespace = false
-          @nodelist << token
-          @blank &&= token.match?(WhitespaceOrNothing)
+          append_text_token(token, parse_context)
         end
         parse_context.line_number = tokenizer.line_number
       end
@@ -173,8 +160,54 @@ module Liquid
       yield nil, nil
     end
 
-    def whitespace_handler(token, parse_context)
-      if token[2] == WhitespaceControl
+    # Handles a {%...%} tag token. Does not receive the outer block — callers handle
+    # yield/block passing themselves, keeping the Proc off the hot path.
+    # Returns:
+    #   nil      — tag parsed, caller continues the loop
+    #   :next    — 'liquid' inline tag; caller skips line number update
+    #   :unknown — unknown/end tag; @_unknown_tag_name holds the tag name;
+    #              markup is in parse_context.cursor.tag_markup
+    #   :invalid — malformed token; caller delegates to handle_invalid_tag_token
+    private def handle_tag_token(token, parse_context, tokenizer)
+      whitespace_handler(token, parse_context)
+      cursor = parse_context.cursor
+      tag_name = cursor.parse_tag_token(token)
+      return :invalid unless tag_name
+
+      markup = cursor.tag_markup
+      if parse_context.line_number
+        newlines = cursor.tag_newlines
+        parse_context.line_number += newlines if newlines > 0
+      end
+
+      if tag_name == 'liquid'
+        parse_liquid_tag(markup, parse_context)
+        return :next
+      end
+
+      tag = parse_context.environment.tag_for_name(tag_name)
+      unless tag
+        # end parsing if we reach an unknown tag; let the caller determine how to proceed
+        @_unknown_tag_name = tag_name
+        return :unknown
+      end
+
+      new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
+      @blank &&= new_tag.blank?
+      @nodelist << new_tag
+      nil
+    end
+
+    def append_text_token(token, parse_context)
+      token.lstrip! if parse_context.trim_whitespace
+      parse_context.trim_whitespace = false
+      @nodelist << token
+      @blank &&= BlockBody.blank_string?(token)
+    end
+    private :append_text_token
+
+    private def whitespace_handler(token, parse_context)
+      if token.getbyte(2) == Cursor::DASH
         previous_token = @nodelist.last
         if previous_token.is_a?(String)
           first_byte = previous_token.getbyte(0)
@@ -184,7 +217,7 @@ module Liquid
           end
         end
       end
-      parse_context.trim_whitespace = (token[-3] == WhitespaceControl)
+      parse_context.trim_whitespace = (token.getbyte(token.bytesize - 3) == Cursor::DASH)
     end
 
     def blank?
@@ -216,24 +249,35 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      freeze unless frozen?
+      freeze
 
-      context.resource_limits.increment_render_score(@nodelist.length)
+      resource_limits = context.resource_limits
+      resource_limits.increment_render_score(@nodelist.length)
 
+      # Hot render loop — split on check_write so the common case (no resource
+      # limits) pays zero branch cost per node.
       idx = 0
-      while (node = @nodelist[idx])
-        if node.instance_of?(String)
-          output << node
-        else
-          render_node(context, output, node)
-          # If we get an Interrupt that means the block must stop processing. An
-          # Interrupt is any command that stops block execution such as {% break %}
-          # or {% continue %}. These tags may also occur through Block or Include tags.
-          break if context.interrupt? # might have happened in a for-block
+      if resource_limits.render_length_limit || resource_limits.last_capture_length
+        while (node = @nodelist[idx])
+          if node.instance_of?(String)
+            output << node
+          else
+            render_node(context, output, node)
+            break if context.interrupt?
+          end
+          idx += 1
+          resource_limits.increment_write_score(output)
         end
-        idx += 1
-
-        context.resource_limits.increment_write_score(output)
+      else
+        while (node = @nodelist[idx])
+          if node.instance_of?(String)
+            output << node
+          else
+            render_node(context, output, node)
+            break if context.interrupt?
+          end
+          idx += 1
+        end
       end
 
       output
@@ -241,19 +285,15 @@ module Liquid
 
     private
 
+    # Indirection allows subclasses to intercept per-node rendering.
     def render_node(context, output, node)
       BlockBody.render_node(context, output, node)
     end
 
     def create_variable(token, parse_context)
-      if token.end_with?("}}")
-        i = 2
-        i = 3 if token[i] == "-"
-        parse_end = token.length - 3
-        parse_end -= 1 if token[parse_end] == "-"
-        markup_end = parse_end - i + 1
-        markup = markup_end <= 0 ? "" : token.slice(i, markup_end)
-
+      len = token.bytesize
+      if len >= 4 && token.getbyte(len - 1) == Cursor::RCURLY && token.getbyte(len - 2) == Cursor::RCURLY
+        markup = parse_context.cursor.parse_variable_token(token)
         return Variable.new(markup, parse_context)
       end
 

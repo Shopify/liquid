@@ -60,8 +60,11 @@ module Liquid
       @tag_name
     end
 
+    # Cache block delimiters per tag name to avoid repeated string allocation
+    BLOCK_DELIMITER_CACHE = Hash.new { |h, k| h[k] = "end#{k}".freeze }
+
     def block_delimiter
-      @block_delimiter ||= "end#{block_name}"
+      @block_delimiter ||= BLOCK_DELIMITER_CACHE[block_name]
     end
 
     private

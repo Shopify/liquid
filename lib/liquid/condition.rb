@@ -65,20 +65,21 @@ module Liquid
     end
 
     def evaluate(context = deprecated_default_context)
-      condition = self
-      result = nil
-      loop do
-        result = interpret_condition(condition.left, condition.right, condition.operator, context)
+      result = interpret_condition(@left, @right, @operator, context)
 
+      # Fast path: no child conditions (most common)
+      return result unless @child_relation
+
+      condition = self
+      while condition.child_relation
         case condition.child_relation
         when :or
           break if Liquid::Utils.to_liquid_value(result)
         when :and
           break unless Liquid::Utils.to_liquid_value(result)
-        else
-          break
         end
         condition = condition.child_condition
+        result = interpret_condition(condition.left, condition.right, condition.operator, context)
       end
       result
     end

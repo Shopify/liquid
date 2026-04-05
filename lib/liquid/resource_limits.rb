@@ -9,6 +9,7 @@ module Liquid
       :cumulative_assign_score_limit
     attr_reader :render_score,
       :assign_score,
+      :last_capture_length,
       :cumulative_render_score,
       :cumulative_assign_score
 

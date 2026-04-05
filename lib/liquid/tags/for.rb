@@ -25,8 +25,6 @@ module Liquid
   # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   # @liquid_optional_param reversed [untyped] Iterate in reverse order.
   class For < Block
-    Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
-
     attr_reader :collection_name, :variable_name, :limit, :from
 
     def initialize(tag_name, markup, options)
@@ -72,18 +70,52 @@ module Liquid
 
     protected
 
+    # Fast byte-level parser for "var in collection [reversed] [limit:N] [offset:N]"
     def lax_parse(markup)
-      if markup =~ Syntax
-        @variable_name   = Regexp.last_match(1)
-        collection_name  = Regexp.last_match(2)
-        @reversed        = !!Regexp.last_match(3)
-        @name            = "#{@variable_name}-#{collection_name}"
-        @collection_name = parse_expression(collection_name)
-        markup.scan(TagAttributes) do |key, value|
-          set_attribute(key, value)
+      c = @parse_context.cursor
+      c.reset(markup)
+      c.skip_ws
+
+      # Parse variable name
+      var_start = c.pos
+      var_len = c.skip_id
+      raise SyntaxError, options[:locale].t("errors.syntax.for") if var_len == 0
+      @variable_name = c.slice(var_start, var_len)
+
+      # Expect "in"
+      c.skip_ws
+      raise SyntaxError, options[:locale].t("errors.syntax.for") unless c.expect_id("in")
+      c.skip_ws
+
+      # Parse collection name
+      col_start = c.pos
+      if c.peek_byte == Cursor::LPAREN
+        # Parenthesized range: (1..10)
+        depth = 1
+        c.scan_byte
+        while !c.eos? && depth > 0
+          b = c.scan_byte
+          depth += 1 if b == Cursor::LPAREN
+          depth -= 1 if b == Cursor::RPAREN
         end
       else
-        raise SyntaxError, options[:locale].t("errors.syntax.for")
+        c.skip_fragment
+      end
+      collection_name = c.slice(col_start, c.pos - col_start)
+
+      @name            = "#{@variable_name}-#{collection_name}"
+      @collection_name = parse_expression(collection_name)
+
+      c.skip_ws
+      @reversed = c.expect_id("reversed")
+      c.skip_ws
+
+      # Parse limit:/offset: if present.
+      # Cursor doesn't handle key:value attributes — delegate to regex for limit:/offset:.
+      if !c.eos? && (rest = c.slice(c.pos, markup.bytesize - c.pos)).include?(':')
+        rest.scan(TagAttributes) do |key, value|
+          set_attribute(key, value)
+        end
       end
     end
 
@@ -111,9 +143,7 @@ module Liquid
 
     private
 
-    def strict2_parse(markup)
-      strict_parse(markup)
-    end
+    alias_method :strict2_parse, :strict_parse
 
     def collection_segment(context)
       offsets = context.registers[:for] ||= {}
@@ -122,22 +152,14 @@ module Liquid
         offsets[@name].to_i
       else
         from_value = context.evaluate(@from)
-        if from_value.nil?
-          0
-        else
-          Utils.to_integer(from_value)
-        end
+        from_value.nil? ? 0 : Utils.to_integer(from_value)
       end
 
       collection = context.evaluate(@collection_name)
       collection = collection.to_a if collection.is_a?(Range)
 
       limit_value = context.evaluate(@limit)
-      to = if limit_value.nil?
-        nil
-      else
-        Utils.to_integer(limit_value) + from
-      end
+      to = limit_value && (Utils.to_integer(limit_value) + from)
 
       segment = Utils.slice_collection(collection, from, to)
       segment.reverse! if @reversed
@@ -192,11 +214,7 @@ module Liquid
     end
 
     def render_else(context, output)
-      if @else_block
-        @else_block.render_to_output_buffer(context, output)
-      else
-        output
-      end
+      @else_block ? @else_block.render_to_output_buffer(context, output) : output
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor

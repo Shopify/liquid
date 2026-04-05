@@ -275,18 +275,71 @@ module Liquid
       words = Utils.to_integer(words)
       words = 1 if words <= 0
 
-      wordlist = begin
-        input.split(" ", words + 1)
-      rescue RangeError
-        # integer too big for String#split, but we can semantically assume no truncation is needed
-        return input if words + 1 > MAX_I32
-        raise # unexpected error
-      end
-      return input if wordlist.length <= words
+      return input if words + 1 > MAX_I32
 
-      wordlist.pop
-      truncate_string = Utils.to_s(truncate_string)
-      wordlist.join(" ").concat(truncate_string)
+      # Scan words tracking byte positions; build the normalized (single-space)
+      # result string only when truncation is actually needed.
+      len = input.bytesize
+      pos = 0
+      word_count = 0
+      # Flat array of [start, end, start, end, ...] for up to `words` words.
+      # Avoids allocating a result string in the common no-truncation case.
+      positions = []
+
+      # Skip leading whitespace
+      while pos < len
+        break unless ByteTables::WHITESPACE[input.getbyte(pos)]
+        pos += 1
+      end
+
+      while pos < len
+        word_start = pos
+        word_count += 1
+
+        # Scan to end of word
+        while pos < len
+          break if ByteTables::WHITESPACE[input.getbyte(pos)]
+          pos += 1
+        end
+
+        if word_count <= words
+          positions.push(word_start, pos) # [start, end, start, end, ...]
+        else
+          # Truncation confirmed — build normalized result from stored positions
+          result = +input.byteslice(positions[0], positions[1] - positions[0])
+          i = 2
+          while i < positions.length
+            result << " " << input.byteslice(positions[i], positions[i + 1] - positions[i])
+            i += 2
+          end
+          return result << Utils.to_s(truncate_string)
+        end
+
+        # Skip whitespace between words
+        while pos < len
+          break unless ByteTables::WHITESPACE[input.getbyte(pos)]
+          pos += 1
+        end
+      end
+
+      # Fewer words than requested — no truncation needed, return original unchanged.
+      return input if word_count < words
+
+      # Exactly `words` words. Ruby's split(" ", words+1) would produce a words+1-th
+      # empty element when input has trailing whitespace, triggering the truncation path.
+      # Match that behaviour: if the input ends with whitespace, normalize and append
+      # truncate_string even though no word was cut.
+      if len > 0 && ByteTables::WHITESPACE[input.getbyte(len - 1)]
+        result = +input.byteslice(positions[0], positions[1] - positions[0])
+        i = 2
+        while i < positions.length
+          result << " " << input.byteslice(positions[i], positions[i + 1] - positions[i])
+          i += 2
+        end
+        return result << Utils.to_s(truncate_string)
+      end
+
+      input
     end
 
     # @liquid_public_docs
