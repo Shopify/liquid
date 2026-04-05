@@ -48,6 +48,33 @@ class TokenizerTest < Minitest::Test
     assert_equal(["{%%}", "}"], tokenize('{%%}}'))
   end
 
+  # Regression: lone '{' at or near end of string previously caused an infinite
+  # loop. The stray-{ else branch left `pos` unchanged when no further '{{' or
+  # '{%' existed, so the outer loop found the same '{' on every iteration.
+  def test_lone_brace_does_not_loop
+    assert_equal(["{"],              tokenize('{'))
+    assert_equal(["a{"],             tokenize('a{'))
+    assert_equal(["hello { world {"], tokenize('hello { world {'))
+    assert_equal(["{ world"],         tokenize('{ world'))
+    assert_equal(["x{y"],             tokenize('x{y'))
+    assert_equal(["{b{c"],            tokenize('{b{c'))
+  end
+
+  def test_lone_brace_before_real_token
+    assert_equal(
+      ["a { b ", "{% if x %}", "yes", "{% endif %}", " c"],
+      tokenize('a { b {% if x %}yes{% endif %} c'),
+    )
+    assert_equal(
+      ["x { ", "{{ var }}", " y"],
+      tokenize('x { {{ var }} y'),
+    )
+    assert_equal(
+      ["{ ", "{{ var }}"],
+      tokenize('{ {{ var }}'),
+    )
+  end
+
   private
 
   def new_tokenizer(source, parse_context: Liquid::ParseContext.new, start_line_number: nil)

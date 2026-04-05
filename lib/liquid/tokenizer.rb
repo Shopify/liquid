@@ -146,24 +146,18 @@ module Liquid
             pos = idx + 2
           end
         else
-          # { followed by something else — it's text
-          # Keep scanning from after this {
-          # Find next { that could be {%  or {{
-          next_open = idx + 1
-          while next_open < len
-            ni = src.byteindex('{', next_open)
-            unless ni
-              @tokens << src.byteslice(pos, len - pos)
-              pos = len
-              break
-            end
-            nb = ni + 1 < len ? src.getbyte(ni + 1) : nil
-            if nb == PERCENTAGE || nb == OPEN_CURLEY
-              @tokens << src.byteslice(pos, ni - pos)
-              pos = ni
-              break
-            end
-            next_open = ni + 1
+          # Lone '{' — not the start of a tag or variable.
+          # Find the next '{{' or '{%' to know where this text token ends.
+          # Using two byteindex calls avoids a nested loop and is always O(n).
+          tag_start = src.byteindex('{%', idx + 1)
+          var_start = src.byteindex('{{', idx + 1)
+          next_token = [tag_start, var_start].compact.min
+          if next_token
+            @tokens << src.byteslice(pos, next_token - pos)
+            pos = next_token
+          else
+            @tokens << src.byteslice(pos, len - pos)
+            pos = len
           end
         end
       end
