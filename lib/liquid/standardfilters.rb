@@ -286,7 +286,7 @@ module Liquid
       # Skip leading whitespace
       while pos < len
         b = input.getbyte(pos)
-        break unless b == 32 || b == 9 || b == 10 || b == 13 || b == 12
+        break unless ByteTables::WHITESPACE[b]
         pos += 1
       end
 
@@ -297,7 +297,7 @@ module Liquid
         # Skip non-whitespace chars (word body)
         while pos < len
           b = input.getbyte(pos)
-          break if b == 32 || b == 9 || b == 10 || b == 13 || b == 12
+          break if ByteTables::WHITESPACE[b]
           pos += 1
         end
 
@@ -317,7 +317,7 @@ module Liquid
         # Skip whitespace between words
         while pos < len
           b = input.getbyte(pos)
-          break unless b == 32 || b == 9 || b == 10 || b == 13 || b == 12
+          break unless ByteTables::WHITESPACE[b]
           pos += 1
         end
       end

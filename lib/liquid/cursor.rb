@@ -238,11 +238,11 @@ module Liquid
       b = token.getbyte(pos)
       if b == HASH
         pos += 1
-      elsif b && ((b >= 97 && b <= 122) || (b >= 65 && b <= 90) || b == USCORE)
+      elsif b && ByteTables::IDENT_START[b]
         pos += 1
         while pos < len
           b = token.getbyte(pos)
-          break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == USCORE || b == DASH
+          break unless ByteTables::IDENT_CONT[b]
           pos += 1
         end
         pos += 1 if pos < len && token.getbyte(pos) == QMARK

@@ -48,12 +48,12 @@ module Liquid
           end
         elsif byte == 46 # '.'
           pos += 1
-        elsif (byte >= 97 && byte <= 122) || (byte >= 65 && byte <= 90) || (byte >= 48 && byte <= 57) || byte == 95 || byte == 45 # \w or -
+        elsif ByteTables::IDENT_CONT[byte] # [\w-]
           start = pos
           pos += 1
           while pos < len
             b = markup.getbyte(pos)
-            break unless (b >= 97 && b <= 122) || (b >= 65 && b <= 90) || (b >= 48 && b <= 57) || b == 95 || b == 45
+            break unless ByteTables::IDENT_CONT[b]
             pos += 1
           end
           # Check trailing '?'

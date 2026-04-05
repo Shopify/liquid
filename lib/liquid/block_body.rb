@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'English'
 
 module Liquid
   class BlockBody
@@ -124,8 +123,6 @@ module Liquid
       end
     end
 
-    OPEN_CURLEY_BYTE = 123 # '{'.ord
-    PERCENT_BYTE = 37 # '%'.ord
 
     # Fast check if string is whitespace-only (replaces WhitespaceOrNothing regex)
     BLANK_STRING_REGEX = /\A\s*\z/
@@ -139,9 +136,9 @@ module Liquid
         next if token.empty?
 
         first_byte = token.getbyte(0)
-        if first_byte == OPEN_CURLEY_BYTE
+        if first_byte == Cursor::LCURLY
           second_byte = token.getbyte(1)
-          if second_byte == PERCENT_BYTE
+          if second_byte == Cursor::PCT
             whitespace_handler(token, parse_context)
             cursor = parse_context.cursor
             tag_name = cursor.parse_tag_token(token)
@@ -168,7 +165,7 @@ module Liquid
             new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
             @blank &&= new_tag.blank?
             @nodelist << new_tag
-          elsif second_byte == OPEN_CURLEY_BYTE
+          elsif second_byte == Cursor::LCURLY
             whitespace_handler(token, parse_context)
             @nodelist << create_variable(token, parse_context)
             @blank = false
@@ -195,10 +192,9 @@ module Liquid
       yield nil, nil
     end
 
-    DASH_BYTE = 45 # '-'.ord
 
     def whitespace_handler(token, parse_context)
-      if token.getbyte(2) == DASH_BYTE
+      if token.getbyte(2) == Cursor::DASH
         previous_token = @nodelist.last
         if previous_token.is_a?(String)
           first_byte = previous_token.getbyte(0)
@@ -208,7 +204,7 @@ module Liquid
           end
         end
       end
-      parse_context.trim_whitespace = (token.getbyte(token.bytesize - 3) == DASH_BYTE)
+      parse_context.trim_whitespace = (token.getbyte(token.bytesize - 3) == Cursor::DASH)
     end
 
     def blank?
@@ -270,11 +266,10 @@ module Liquid
       BlockBody.render_node(context, output, node)
     end
 
-    CLOSE_CURLEY_BYTE = 125 # '}'.ord
 
     def create_variable(token, parse_context)
       len = token.bytesize
-      if len >= 4 && token.getbyte(len - 1) == CLOSE_CURLEY_BYTE && token.getbyte(len - 2) == CLOSE_CURLEY_BYTE
+      if len >= 4 && token.getbyte(len - 1) == Cursor::RCURLY && token.getbyte(len - 2) == Cursor::RCURLY
         markup = parse_context.cursor.parse_variable_token(token)
         return Variable.new(markup, parse_context)
       end

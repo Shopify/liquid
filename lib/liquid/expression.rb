@@ -16,16 +16,9 @@ module Liquid
       '-' => VariableLookup.parse("-", nil).freeze,
     }.freeze
 
-    DOT = ".".ord
-    ZERO = "0".ord
-    NINE = "9".ord
-    DASH = "-".ord
-
     # Use an atomic group (?>...) to avoid pathological backtracing from
     # malicious input as described in https://github.com/Shopify/liquid/issues/1357
     RANGES_REGEX = /\A\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\z/
-    INTEGER_REGEX = /\A(-?\d+)\z/
-    FLOAT_REGEX = /\A(-?\d+)\.\d+\z/
 
     class << self
       def safe_parse(parser, ss = StringScanner.new(""), cache = nil)
@@ -37,11 +30,10 @@ module Liquid
 
         # Only strip if there's leading/trailing whitespace (avoids allocation)
         first_byte = markup.getbyte(0)
-        if first_byte == 32 || first_byte == 9 || first_byte == 10 || first_byte == 13 # space, tab, \n, \r
+        if first_byte && ByteTables::WHITESPACE[first_byte]
           markup = markup.strip
-        else
-          last_byte = markup.getbyte(markup.bytesize - 1)
-          markup = markup.strip if last_byte == 32 || last_byte == 9 || last_byte == 10 || last_byte == 13
+        elsif first_byte
+          markup = markup.strip if ByteTables::WHITESPACE[markup.getbyte(markup.bytesize - 1)]
         end
 
         if (markup.start_with?('"') && markup.end_with?('"')) ||
@@ -85,15 +77,15 @@ module Liquid
         # Quick reject: first byte must be digit or dash
         pos = 0
         first = markup.getbyte(pos)
-        if first == DASH
+        if first == Cursor::DASH
           pos += 1
           return false if pos >= len
 
           b = markup.getbyte(pos)
-          return false if b < ZERO || b > NINE
+          return false unless ByteTables::DIGIT[b]
 
           pos += 1
-        elsif first >= ZERO && first <= NINE
+        elsif ByteTables::DIGIT[first]
           pos += 1
         else
           return false
@@ -102,7 +94,7 @@ module Liquid
         # Scan digits
         while pos < len
           b = markup.getbyte(pos)
-          break if b < ZERO || b > NINE
+          break unless ByteTables::DIGIT[b]
 
           pos += 1
         end
@@ -113,14 +105,14 @@ module Liquid
         end
 
         # Check for dot (float)
-        if markup.getbyte(pos) == DOT
+        if markup.getbyte(pos) == Cursor::DOT
           dot_pos = pos
           pos += 1
           # Must have at least one digit after dot
           digit_after_dot = pos
           while pos < len
             b = markup.getbyte(pos)
-            break if b < ZERO || b > NINE
+            break unless ByteTables::DIGIT[b]
 
             pos += 1
           end
@@ -133,9 +125,9 @@ module Liquid
             # Return the float portion up to second dot
             while pos < len
               b = markup.getbyte(pos)
-              if b == DOT
+              if b == Cursor::DOT
                 return markup.byteslice(0, pos).to_f
-              elsif b < ZERO || b > NINE
+              elsif !ByteTables::DIGIT[b]
                 return false
               end
 
