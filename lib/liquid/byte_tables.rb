@@ -12,29 +12,29 @@ module Liquid
   #   ByteTables::IDENT_START[b]
   module ByteTables
     # [a-zA-Z_] — valid first byte of an identifier
-    IDENT_START = Array.new(256, false).tap { |t|
+    IDENT_START = Array.new(256, false).tap do |t|
       (97..122).each { |b| t[b] = true }  # a-z
       (65..90).each  { |b| t[b] = true }  # A-Z
-      t[95] = true                          # _
-    }.freeze
+      t[95] = true # _
+    end.freeze
 
     # [a-zA-Z0-9_-] — valid continuation byte of an identifier
-    IDENT_CONT = Array.new(256, false).tap { |t|
+    IDENT_CONT = Array.new(256, false).tap do |t|
       (97..122).each { |b| t[b] = true }  # a-z
       (65..90).each  { |b| t[b] = true }  # A-Z
       (48..57).each  { |b| t[b] = true }  # 0-9
       t[95] = true                          # _
       t[45] = true                          # -
-    }.freeze
+    end.freeze
 
     # [0-9] — ASCII digit
-    DIGIT = Array.new(256, false).tap { |t|
+    DIGIT = Array.new(256, false).tap do |t|
       (48..57).each { |b| t[b] = true }
-    }.freeze
+    end.freeze
 
-    # [ \t\n\r\f] — ASCII whitespace
-    WHITESPACE = Array.new(256, false).tap { |t|
-      [32, 9, 10, 13, 12].each { |b| t[b] = true }  # space, tab, \n, \r, \f
-    }.freeze
+    # [ \t\n\v\f\r] — ASCII whitespace (mirrors Ruby's \s)
+    WHITESPACE = Array.new(256, false).tap do |t|
+      [32, 9, 10, 11, 12, 13].each { |b| t[b] = true } # space, tab, \n, \v, \f, \r
+    end.freeze
   end
 end

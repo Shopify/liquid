@@ -63,27 +63,20 @@ module Liquid
     end
 
     # ── Whitespace ──────────────────────────────────────────────────
-    # Skip spaces/tabs/newlines/cr, return count of newlines skipped
+    # Skip spaces/tabs/newlines/cr
     def skip_ws
-      nl = 0
       while (b = @ss.peek_byte)
         case b
-        when SPACE, TAB, CR, FF then @ss.scan_byte
-        when NL then @ss.scan_byte
-                     nl += 1
+        when SPACE, TAB, CR, FF, NL then @ss.scan_byte
         else break
         end
       end
-      nl
     end
 
-    # Check if remaining bytes are all whitespace
+    # Check if remaining bytes are all whitespace (or EOS).
+    # exist?(/\S/) returns nil when no non-whitespace remains, without advancing position.
     def rest_blank?
-      saved = @ss.pos
-      @ss.skip(/\s*/)
-      result = @ss.eos?
-      @ss.pos = saved
-      result
+      !@ss.exist?(/\S/)
     end
 
     # Regex for identifier: [a-zA-Z_][\w-]*\??
@@ -232,7 +225,8 @@ module Liquid
         b = token.getbyte(pos)
         case b
         when SPACE, TAB, CR, FF then pos += 1
-        when NL then pos += 1; nl += 1
+        when NL then pos += 1
+                     nl += 1
         else break
         end
       end
@@ -247,6 +241,7 @@ module Liquid
         while pos < len
           b = token.getbyte(pos)
           break unless ByteTables::IDENT_CONT[b]
+
           pos += 1
         end
         pos += 1 if pos < len && token.getbyte(pos) == QMARK
@@ -260,7 +255,8 @@ module Liquid
         b = token.getbyte(pos)
         case b
         when SPACE, TAB, CR, FF then pos += 1
-        when NL then pos += 1; nl += 1
+        when NL then pos += 1
+                     nl += 1
         else break
         end
       end
@@ -317,6 +313,5 @@ module Liquid
 
       true
     end
-
   end
 end

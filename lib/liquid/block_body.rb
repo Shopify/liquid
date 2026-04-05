@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module Liquid
   class BlockBody
     LiquidTagToken      = /\A\s*(#{TagName})\s*(.*?)\z/o
@@ -121,8 +120,6 @@ module Liquid
         BlockBody.raise_missing_tag_terminator(token, parse_context)
       end
     end
-
-
 
     def self.blank_string?(str)
       str.match?(WhitespaceOrNothing)
@@ -257,20 +254,30 @@ module Liquid
       resource_limits = context.resource_limits
       resource_limits.increment_render_score(@nodelist.length)
 
-      # Check if we need per-node write score tracking
-      check_write = resource_limits.render_length_limit || resource_limits.last_capture_length
-
+      # Hot render loop — split on check_write so the common case (no resource
+      # limits) pays zero branch cost per node.
       idx = 0
-      while (node = @nodelist[idx])
-        if node.instance_of?(String)
-          output << node
-        else
-          render_node(context, output, node)
-          break if context.interrupt?
+      if resource_limits.render_length_limit || resource_limits.last_capture_length
+        while (node = @nodelist[idx])
+          if node.instance_of?(String)
+            output << node
+          else
+            render_node(context, output, node)
+            break if context.interrupt?
+          end
+          idx += 1
+          resource_limits.increment_write_score(output)
         end
-        idx += 1
-
-        resource_limits.increment_write_score(output) if check_write
+      else
+        while (node = @nodelist[idx])
+          if node.instance_of?(String)
+            output << node
+          else
+            render_node(context, output, node)
+            break if context.interrupt?
+          end
+          idx += 1
+        end
       end
 
       output
@@ -282,7 +289,6 @@ module Liquid
     def render_node(context, output, node)
       BlockBody.render_node(context, output, node)
     end
-
 
     def create_variable(token, parse_context)
       len = token.bytesize
