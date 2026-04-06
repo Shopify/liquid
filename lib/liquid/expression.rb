@@ -16,16 +16,9 @@ module Liquid
       '-' => VariableLookup.parse("-", nil).freeze,
     }.freeze
 
-    DOT = ".".ord
-    ZERO = "0".ord
-    NINE = "9".ord
-    DASH = "-".ord
-
     # Use an atomic group (?>...) to avoid pathological backtracing from
     # malicious input as described in https://github.com/Shopify/liquid/issues/1357
     RANGES_REGEX = /\A\(\s*(?>(\S+)\s*\.\.)\s*(\S+)\s*\)\z/
-    INTEGER_REGEX = /\A(-?\d+)\z/
-    FLOAT_REGEX = /\A(-?\d+)\.\d+\z/
 
     class << self
       def safe_parse(parser, ss = StringScanner.new(""), cache = nil)
@@ -35,7 +28,15 @@ module Liquid
       def parse(markup, ss = StringScanner.new(""), cache = nil)
         return unless markup
 
-        markup = markup.strip # markup can be a frozen string
+        # Guard: only call .strip when the first or last byte is whitespace.
+        # String#strip always allocates a new String, even when there's nothing
+        # to strip. ByteTables::WHITESPACE matches the same bytes that strip
+        # removes (space, \t, \n, \v, \f, \r, \x00). When neither end has
+        # whitespace, we skip the call and avoid ~4,464 allocations per compile.
+        first = markup.getbyte(0)
+        if first && (ByteTables::WHITESPACE[first] || ByteTables::WHITESPACE[markup.getbyte(markup.bytesize - 1)])
+          markup = markup.strip
+        end
 
         if (markup.start_with?('"') && markup.end_with?('"')) ||
           (markup.start_with?("'") && markup.end_with?("'"))
@@ -71,56 +72,74 @@ module Liquid
         end
       end
 
-      def parse_number(markup, ss)
-        # check if the markup is simple integer or float
-        case markup
-        when INTEGER_REGEX
-          return Integer(markup, 10)
-        when FLOAT_REGEX
-          return markup.to_f
-        end
+      # Fast path for number parsing. Accepts:
+      #   - Simple integers: "42", "-7"
+      #   - Simple floats: "3.14", "-0.5"
+      #   - Multi-dot floats (truncated at second dot): "1.2.3" → 1.2
+      #   - Trailing-dot floats: "123." → 123.0
+      # Rejects (returns nil → caller treats as VariableLookup):
+      #   - Non-numeric input: "hello", ""
+      #   - Inputs with non-digit/non-dot bytes after the number: "1.2.3a"
+      # Fallback: nil return causes caller to fall through to VariableLookup.parse,
+      #   which is the same path the old regex-based code took on non-match.
+      def parse_number(markup, _ss = nil)
+        len = markup.bytesize
+        return if len == 0
 
-        ss.string = markup
-        # the first byte must be a digit or  a dash
-        byte = ss.scan_byte
+        pos = 0
+        first = markup.getbyte(pos)
 
-        return false if byte != DASH && (byte < ZERO || byte > NINE)
+        if first == ByteTables::DASH
+          pos += 1
+          return if pos >= len
+          return unless ByteTables::DIGIT[markup.getbyte(pos)]
 
-        if byte == DASH
-          peek_byte = ss.peek_byte
-
-          # if it starts with a dash, the next byte must be a digit
-          return false if peek_byte.nil? || !(peek_byte >= ZERO && peek_byte <= NINE)
-        end
-
-        # The markup could be a float with multiple dots
-        first_dot_pos = nil
-        num_end_pos = nil
-
-        while (byte = ss.scan_byte)
-          return false if byte != DOT && (byte < ZERO || byte > NINE)
-
-          # we found our number and now we are just scanning the rest of the string
-          next if num_end_pos
-
-          if byte == DOT
-            if first_dot_pos.nil?
-              first_dot_pos = ss.pos
-            else
-              # we found another dot, so we know that the number ends here
-              num_end_pos = ss.pos - 1
-            end
-          end
-        end
-
-        num_end_pos = markup.length if ss.eos?
-
-        if num_end_pos
-          # number ends with a number "123.123"
-          markup.byteslice(0, num_end_pos).to_f
+          pos += 1
+        elsif ByteTables::DIGIT[first]
+          pos += 1
         else
-          # number ends with a dot "123."
-          markup.byteslice(0, first_dot_pos).to_f
+          return
+        end
+
+        # Scan digits
+        pos += 1 while pos < len && ByteTables::DIGIT[markup.getbyte(pos)]
+
+        # Consumed everything = simple integer
+        return Integer(markup, 10) if pos == len
+
+        # Check for dot — three float cases:
+        #   1. Simple float:   "123.456"   → markup.to_f
+        #   2. Multi-dot:      "1.2.3.4"   → truncate at second dot → 1.2
+        #   3. Trailing dot:   "123."      → truncate before dot → 123.0
+        return unless markup.getbyte(pos) == ByteTables::DOT
+
+        dot_pos = pos
+        pos += 1
+        digit_start = pos
+        pos += 1 while pos < len && ByteTables::DIGIT[markup.getbyte(pos)]
+
+        if pos > digit_start && pos == len
+          # Case 1: simple float like "123.456"
+          markup.to_f
+        elsif pos > digit_start
+          # Case 2: multi-dot like "1.2.3.4" — find where the numeric
+          # portion ends. Reject if any non-digit, non-dot byte is found
+          # (e.g. "1.2.3a" → nil, matching the old regex-based behavior).
+          num_end = nil
+          check = pos
+          while check < len
+            b = markup.getbyte(check)
+            if b == ByteTables::DOT
+              num_end ||= check
+            elsif !ByteTables::DIGIT[b]
+              return
+            end
+            check += 1
+          end
+          markup.byteslice(0, num_end || len).to_f
+        else
+          # Case 3: trailing dot like "123."
+          markup.byteslice(0, dot_pos).to_f
         end
       end
     end
