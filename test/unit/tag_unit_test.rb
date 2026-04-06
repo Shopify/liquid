@@ -33,9 +33,6 @@ class TagUnitTest < Minitest::Test
   private
 
   def new_tokenizer
-    Tokenizer.new(
-      source: "",
-      string_scanner: StringScanner.new(""),
-    )
+    Tokenizer.new(source: "")
   end
 end
