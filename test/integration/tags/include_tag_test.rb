@@ -439,4 +439,49 @@ class IncludeTagTest < Minitest::Test
       assert_match(/Unexpected character =/, error.message)
     end
   end
+
+  def test_include_for_loop_true_with_for_keyword
+    with_error_modes(:lax, :strict, :strict2) do
+      template = Template.parse("{% include 'product' for products %}")
+      include_node = template.root.nodelist.first
+
+      assert(include_node.for_loop?, "Expected for_loop? to be true for 'for' keyword")
+    end
+  end
+
+  def test_include_for_loop_false_with_with_keyword
+    with_error_modes(:lax, :strict, :strict2) do
+      template = Template.parse("{% include 'product' with product %}")
+      include_node = template.root.nodelist.first
+
+      refute(include_node.for_loop?, "Expected for_loop? to be false for 'with' keyword")
+    end
+  end
+
+  def test_include_for_loop_false_without_keyword
+    with_error_modes(:lax, :strict, :strict2) do
+      template = Template.parse("{% include 'header' %}")
+      include_node = template.root.nodelist.first
+
+      refute(include_node.for_loop?, "Expected for_loop? to be false when no keyword")
+    end
+  end
+
+  def test_include_for_loop_with_alias
+    with_error_modes(:lax, :strict, :strict2) do
+      template = Template.parse("{% include 'product' for products as item %}")
+      include_node = template.root.nodelist.first
+
+      assert(include_node.for_loop?, "Expected for_loop? to be true for 'for' with alias")
+    end
+  end
+
+  def test_include_with_keyword_and_alias
+    with_error_modes(:lax, :strict, :strict2) do
+      template = Template.parse("{% include 'product' with products[0] as item %}")
+      include_node = template.root.nodelist.first
+
+      refute(include_node.for_loop?, "Expected for_loop? to be false for 'with' with alias")
+    end
+  end
 end # IncludeTagTest
