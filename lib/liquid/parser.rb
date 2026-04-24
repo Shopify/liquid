@@ -55,7 +55,7 @@ module Liquid
         str << variable_lookups
       when :open_square
         if @reject_bare_brackets
-          raise SyntaxError, "Bare bracket access is not allowed in strict2 mode. Use #{Expression::SELF}['...'] instead"
+          raise SyntaxError, "Bare bracket access is not allowed. Use #{Expression::SELF}['...'] instead"
         end
         str = consume.dup
         str << expression
