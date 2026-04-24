@@ -18,6 +18,8 @@ module Liquid
   # @liquid_syntax_keyword variable_name The name of the variable being created.
   # @liquid_syntax_keyword value The value you want to assign to the variable.
   class Assign < Tag
+    include ParserSwitching
+
     Syntax = /(#{VariableSignature}+)\s*=\s*(.*)\s*/om
 
     # @api private
@@ -29,12 +31,35 @@ module Liquid
 
     def initialize(tag_name, markup, parse_context)
       super
+      parse_with_selected_parser(markup)
+    end
+
+    def lax_parse(markup)
       if markup =~ Syntax
         @to   = Regexp.last_match(1)
         @from = Variable.new(Regexp.last_match(2), parse_context)
       else
         self.class.raise_syntax_error(parse_context)
       end
+    end
+
+    def strict_parse(markup)
+      lax_parse(markup)
+    end
+
+    def strict2_parse(markup)
+      unless markup =~ Syntax
+        self.class.raise_syntax_error(parse_context)
+      end
+
+      lhs = Regexp.last_match(1).strip
+      rhs = Regexp.last_match(2)
+
+      p = @parse_context.new_parser(lhs)
+      @to = p.consume(:id)
+      p.consume(:end_of_string)
+
+      @from = Variable.new(rhs, parse_context)
     end
 
     def render_to_output_buffer(context, output)

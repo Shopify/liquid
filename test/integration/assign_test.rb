@@ -97,6 +97,46 @@ class AssignTest < Minitest::Test
     assert_equal(12, assign_score_of('int' => 123, 'str' => 'abcd'))
   end
 
+  def test_assign_with_valid_identifier_in_strict2
+    assert_template_result("hello", "{% assign my_var = 'hello' %}{{ my_var }}", error_mode: :strict2)
+  end
+
+  def test_assign_with_hyphen_in_strict2
+    assert_template_result("hello", "{% assign my-var = 'hello' %}{{ my-var }}", error_mode: :strict2)
+  end
+
+  def test_assign_rejects_parentheses_in_variable_name_in_strict2
+    assert_raises(Liquid::SyntaxError) do
+      Liquid::Template.parse("{% assign (a(b(c) = 1234 %}", error_mode: :strict2)
+    end
+  end
+
+  def test_assign_rejects_brackets_in_variable_name_in_strict2
+    assert_raises(Liquid::SyntaxError) do
+      Liquid::Template.parse("{% assign [x.y] = 'hello' %}", error_mode: :strict2)
+    end
+  end
+
+  def test_assign_rejects_dot_in_variable_name_in_strict2
+    assert_raises(Liquid::SyntaxError) do
+      Liquid::Template.parse("{% assign a.b = 'hello' %}", error_mode: :strict2)
+    end
+  end
+
+  def test_assign_rejects_numeric_variable_name_in_strict2
+    assert_raises(Liquid::SyntaxError) do
+      Liquid::Template.parse("{% assign 1abc = 'hello' %}", error_mode: :strict2)
+    end
+  end
+
+  def test_assign_allows_invalid_names_in_lax
+    assert_template_result("1234", "{% assign (a(b(c) = 1234 %}{{ self['(a(b(c)'] }}", error_mode: :lax)
+  end
+
+  def test_assign_with_filter_in_strict2
+    assert_template_result("HELLO", "{% assign my_var = 'hello' | upcase %}{{ my_var }}", error_mode: :strict2)
+  end
+
   private
 
   class ObjectWrapperDrop < Liquid::Drop

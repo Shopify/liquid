@@ -20,7 +20,8 @@ module Liquid
   class Include < Tag
     prepend Tag::Disableable
 
-    SYNTAX = /(#{QuotedFragment}+)(\s+(?:with|for)\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
+    FOR = 'for'
+    SYNTAX = /(#{QuotedFragment}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
     Syntax = SYNTAX
 
     attr_reader :template_name_expr, :variable_name_expr, :attributes
@@ -84,12 +85,18 @@ module Liquid
     alias_method :parse_context, :options
     private :parse_context
 
+    def for_loop?
+      @is_for_loop
+    end
+
     def strict2_parse(markup)
       p = @parse_context.new_parser(markup)
 
       @template_name_expr = safe_parse_expression(p)
-      @variable_name_expr = safe_parse_expression(p) if p.id?("for") || p.id?("with")
+      with_or_for         = p.id?("for") || p.id?("with")
+      @variable_name_expr = safe_parse_expression(p) if with_or_for
       @alias_name         = p.consume(:id) if p.id?("as")
+      @is_for_loop        = (with_or_for == FOR)
 
       p.consume?(:comma)
 
@@ -111,11 +118,13 @@ module Liquid
     def lax_parse(markup)
       if markup =~ SYNTAX
         template_name = Regexp.last_match(1)
-        variable_name = Regexp.last_match(3)
+        with_or_for   = Regexp.last_match(3)
+        variable_name = Regexp.last_match(4)
 
-        @alias_name         = Regexp.last_match(5)
+        @alias_name         = Regexp.last_match(6)
         @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
         @template_name_expr = parse_expression(template_name)
+        @is_for_loop        = (with_or_for == FOR)
         @attributes         = {}
 
         markup.scan(TagAttributes) do |key, value|
