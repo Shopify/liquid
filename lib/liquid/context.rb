@@ -187,6 +187,15 @@ module Liquid
       find_variable(key, raise_on_not_found: false) != nil
     end
 
+    # Checks whether a variable is defined in any scope, including nil-valued keys.
+    # Unlike #key?, this uses Hash#key? so that variables explicitly set to nil
+    # are still considered defined.
+    def variable_defined?(key)
+      @scopes.any? { |s| s.key?(key) } ||
+        @environments.any? { |e| e.key?(key) } ||
+        @static_environments.any? { |e| e.key?(key) }
+    end
+
     def evaluate(object)
       object.respond_to?(:evaluate) ? object.evaluate(self) : object
     end
@@ -196,6 +205,10 @@ module Liquid
       # This was changed from find() to find_index() because this is a very hot
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.key?(key) }
+
+      # `self` resolves to a SelfDrop (enabling `self['var']` lookups),
+      # but only when it hasn't been explicitly assigned as a local variable.
+      return SelfDrop.new(self) if key == Expression::SELF && !index
 
       variable = if index
         lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)

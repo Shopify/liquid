@@ -37,6 +37,10 @@ module Liquid
       @markup
     end
 
+    def ==(other)
+      self.class == other.class && name == other.name && filters == other.filters
+    end
+
     def markup_context(markup)
       "in \"{{#{markup}}}\""
     end
