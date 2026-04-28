@@ -151,6 +151,8 @@ end
 
 desc('run liquid-spec suite across all adapters')
 task :spec do
-  adapters = Dir['./spec/*.rb'].join(',')
-  sh "bundle exec liquid-spec matrix --adapters=#{adapters} --reference=ruby_liquid"
+  Dir['./spec/*.rb'].sort.each do |adapter|
+    puts "=== Running #{adapter} ==="
+    sh 'bundle', 'exec', 'liquid-spec', 'run', adapter, '--no-max-failures'
+  end
 end
