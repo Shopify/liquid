@@ -6,15 +6,24 @@
 
 $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
 require 'liquid'
+require_relative 'support/liquid_spec_adapter_helper'
 
 LiquidSpec.configure do |config|
-  config.features = [:core, :lax_parsing]
+  config.missing_features = [
+    :activesupport,
+    :shopify_filters,
+    :shopify_includes,
+    :shopify_blank,
+    :shopify_error_handling,
+    :shopify_error_format,
+    :shopify_string_access,
+  ]
 end
 
 # Compile a template string into a Liquid::Template
 LiquidSpec.compile do |ctx, source, options|
-  # Force lax mode
-  options = options.merge(error_mode: :lax)
+  # Default to lax mode while still honoring specs that explicitly set error_mode.
+  options = { error_mode: :lax }.merge(options)
   ctx[:template] = Liquid::Template.parse(source, **options)
 end
 
@@ -26,9 +35,12 @@ LiquidSpec.render do |ctx, assigns, options|
     static_environments: assigns,
     registers: registers,
     rethrow_errors: options[:strict_errors],
+    resource_limits: LiquidSpecAdapterHelper.resource_limits(options),
   )
 
   context.exception_renderer = options[:exception_renderer] if options[:exception_renderer]
 
-  ctx[:template].render(context)
+  LiquidSpecAdapterHelper.with_frozen_time do
+    ctx[:template].render(context)
+  end
 end
