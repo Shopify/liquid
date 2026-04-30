@@ -200,6 +200,10 @@ module Liquid
       object.respond_to?(:evaluate) ? object.evaluate(self) : object
     end
 
+    def self_drop
+      @self_drop ||= SelfDrop.new(self)
+    end
+
     # Fetches an object starting at the local scope and then moving up the hierachy
     def find_variable(key, raise_on_not_found: true)
       # This was changed from find() to find_index() because this is a very hot
@@ -208,7 +212,7 @@ module Liquid
 
       # `self` resolves to a SelfDrop (enabling `self['var']` lookups),
       # but only when it hasn't been explicitly assigned as a local variable.
-      return SelfDrop.new(self) if key == Expression::SELF && !index
+      return self_drop if key == Expression::SELF && !index
 
       variable = if index
         lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)

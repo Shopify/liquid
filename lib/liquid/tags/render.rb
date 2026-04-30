@@ -66,7 +66,12 @@ module Liquid
         inner_context['forloop']    = forloop if forloop
 
         @attributes.each do |key, value|
-          inner_context[key] = context.evaluate(value)
+          evaluated = context.evaluate(value)
+          if key == Expression::SELF
+            inner_context.self_drop.bound_self = evaluated
+          else
+            inner_context[key] = evaluated
+          end
         end
         inner_context[context_variable_name] = var unless var.nil?
         partial.render_to_output_buffer(inner_context, output)

@@ -16,23 +16,42 @@ module Liquid
   #   then the local value takes precedence over the `self` object.
   # @liquid_access global
   class SelfDrop < Drop
+    attr_accessor :bound_self
+
     def initialize(context)
       super()
       @context = context
+      @bound_self = nil
     end
 
     def [](key)
-      @context.find_variable(key)
+      if @bound_self && bound_has?(key)
+        bound_lookup(key)
+      else
+        @context.find_variable(key)
+      end
     rescue UndefinedVariable
       nil
     end
 
     def key?(key)
-      @context.variable_defined?(key)
+      (@bound_self && bound_has?(key)) || @context.variable_defined?(key)
     end
 
     def to_liquid
       self
+    end
+
+    private
+
+    def bound_has?(key)
+      @bound_self.respond_to?(:key?) && @bound_self.key?(key)
+    end
+
+    def bound_lookup(key)
+      return unless @bound_self.respond_to?(:[])
+
+      @bound_self[key]
     end
   end
 end
