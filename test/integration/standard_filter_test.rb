@@ -171,6 +171,19 @@ class StandardFiltersTest < Minitest::Test
     assert_equal("", Liquid::Template.parse('{{ " " | squish }}').render)
   end
 
+  def test_squish_whitespace_filter
+    unicode_spaces = "\u00A0\u202F\u2009\u2007"
+
+    assert_template_result(
+      "foo bar boo",
+      "{{ source | squish_whitespace }}",
+      { 'source' => "#{unicode_spaces}foo\u202F\u2009bar\t\n\u2007boo#{unicode_spaces}" },
+    )
+    assert_template_result("", "{{ nil | squish_whitespace }}")
+    assert_template_result("", "{{ source | squish_whitespace }}", { 'source' => unicode_spaces })
+    assert_template_result("\u200Bfoo\u200B", "{{ source | squish_whitespace }}", { 'source' => "\u200Bfoo\u200B" })
+  end
+
   def test_escape
     assert_equal('&lt;strong&gt;', @filters.escape('<strong>'))
     assert_equal('1', @filters.escape(1))
@@ -705,14 +718,50 @@ class StandardFiltersTest < Minitest::Test
     assert_template_result('ab c', "{{ source | strip }}", { 'source' => " \tab c  \n \t" })
   end
 
+  def test_strip_whitespace
+    unicode_spaces = "\u00A0\u202F\u2009\u2007"
+
+    assert_template_result(
+      'ab c',
+      "{{ source | strip_whitespace }}",
+      { 'source' => "#{unicode_spaces}ab c#{unicode_spaces}" },
+    )
+    assert_template_result("a\u00A0b\u202Fc", "{{ source | strip_whitespace }}", { 'source' => "a\u00A0b\u202Fc" })
+    assert_template_result("\u200Bfoo\u200B", "{{ source | strip_whitespace }}", { 'source' => "\u200Bfoo\u200B" })
+  end
+
   def test_lstrip
     assert_template_result('ab c  ', "{{ source | lstrip }}", { 'source' => " ab c  " })
     assert_template_result("ab c  \n \t", "{{ source | lstrip }}", { 'source' => " \tab c  \n \t" })
   end
 
+  def test_lstrip_whitespace
+    unicode_spaces = "\u00A0\u202F\u2009\u2007"
+
+    assert_template_result(
+      "ab c#{unicode_spaces}",
+      "{{ source | lstrip_whitespace }}",
+      { 'source' => "#{unicode_spaces}ab c#{unicode_spaces}" },
+    )
+    assert_template_result("a\u00A0b\u202Fc", "{{ source | lstrip_whitespace }}", { 'source' => "a\u00A0b\u202Fc" })
+    assert_template_result("\u200Bfoo\u200B", "{{ source | lstrip_whitespace }}", { 'source' => "\u200Bfoo\u200B" })
+  end
+
   def test_rstrip
     assert_template_result(" ab c", "{{ source | rstrip }}", { 'source' => " ab c  " })
     assert_template_result(" \tab c", "{{ source | rstrip }}", { 'source' => " \tab c  \n \t" })
+  end
+
+  def test_rstrip_whitespace
+    unicode_spaces = "\u00A0\u202F\u2009\u2007"
+
+    assert_template_result(
+      "#{unicode_spaces}ab c",
+      "{{ source | rstrip_whitespace }}",
+      { 'source' => "#{unicode_spaces}ab c#{unicode_spaces}" },
+    )
+    assert_template_result("a\u00A0b\u202Fc", "{{ source | rstrip_whitespace }}", { 'source' => "a\u00A0b\u202Fc" })
+    assert_template_result("\u200Bfoo\u200B", "{{ source | rstrip_whitespace }}", { 'source' => "\u200Bfoo\u200B" })
   end
 
   def test_strip_newlines

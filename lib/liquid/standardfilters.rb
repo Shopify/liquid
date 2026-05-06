@@ -36,6 +36,16 @@ module Liquid
       %r{<style.*?</style>}m,
     )
     STRIP_HTML_TAGS = /<.*?>/m
+    UNICODE_WHITESPACE_LEFT = /\A[[:space:]]+/
+    UNICODE_WHITESPACE_RIGHT = /[[:space:]]+\z/
+    UNICODE_WHITESPACE_EDGES = Regexp.union(UNICODE_WHITESPACE_LEFT, UNICODE_WHITESPACE_RIGHT)
+    UNICODE_WHITESPACE_RUNS = /[[:space:]]+/
+    private_constant(
+      :UNICODE_WHITESPACE_EDGES,
+      :UNICODE_WHITESPACE_LEFT,
+      :UNICODE_WHITESPACE_RIGHT,
+      :UNICODE_WHITESPACE_RUNS,
+    )
 
     class << self
       def try_coerce_encoding(input, encoding:)
@@ -313,6 +323,56 @@ module Liquid
       return if input.nil?
 
       Utils.to_s(input).strip.gsub(/\s+/, ' ')
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_summary
+    #   Strips whitespace, including Unicode whitespace, from the left and right of a string.
+    # @liquid_syntax string | strip_whitespace
+    # @liquid_return [string]
+    def strip_whitespace(input)
+      input = Utils.to_s(input)
+      input.gsub(UNICODE_WHITESPACE_EDGES, ' ').strip
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_summary
+    #   Strips whitespace, including Unicode whitespace, from the left of a string.
+    # @liquid_syntax string | lstrip_whitespace
+    # @liquid_return [string]
+    def lstrip_whitespace(input)
+      input = Utils.to_s(input)
+      input.gsub(UNICODE_WHITESPACE_LEFT, ' ').lstrip
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_summary
+    #   Strips whitespace, including Unicode whitespace, from the right of a string.
+    # @liquid_syntax string | rstrip_whitespace
+    # @liquid_return [string]
+    def rstrip_whitespace(input)
+      input = Utils.to_s(input)
+      input.gsub(UNICODE_WHITESPACE_RIGHT, ' ').rstrip
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
+    # @liquid_category string
+    # @liquid_summary
+    #   Strips whitespace, including Unicode whitespace, from a string and collapses consecutive whitespace
+    #   to a single ASCII space.
+    # @liquid_syntax string | squish_whitespace
+    # @liquid_return [string]
+    def squish_whitespace(input)
+      return if input.nil?
+
+      Utils.to_s(input).gsub(UNICODE_WHITESPACE_RUNS, ' ').strip
     end
 
     # @liquid_public_docs
