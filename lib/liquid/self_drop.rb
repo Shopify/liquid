@@ -16,19 +16,19 @@ module Liquid
   #   then the local value takes precedence over the `self` object.
   # @liquid_access global
   class SelfDrop < Drop
-    def initialize(context)
+    def initialize(self_context)
       super()
-      @context = context
+      @self_context = self_context
     end
 
     def [](key)
-      @context.find_variable(key)
+      @self_context.find_variable(key)
     rescue UndefinedVariable
       nil
     end
 
     def key?(key)
-      @context.variable_defined?(key)
+      @self_context.variable_defined?(key)
     end
 
     def to_liquid
