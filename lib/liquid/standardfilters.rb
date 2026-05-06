@@ -36,6 +36,19 @@ module Liquid
       %r{<style.*?</style>}m,
     )
     STRIP_HTML_TAGS = /<.*?>/m
+    # Use POSIX whitespace matching so filters handle whitespace beyond Ruby String#strip's ASCII set.
+    WHITESPACE_LEFT = /\A[[:space:]]+/
+    WHITESPACE_RIGHT = /[[:space:]]+\z/
+    WHITESPACE_EDGES = Regexp.union(WHITESPACE_LEFT, WHITESPACE_RIGHT)
+    # Optimized runs regex to find 2 or more [[:space:]] OR a single [[:space:]]
+    # that isn't already `" " `.
+    WHITESPACE_RUNS = /([[:space:]]{2,}|[[[:space:]]&&[^ ]])/
+    private_constant(
+      :WHITESPACE_EDGES,
+      :WHITESPACE_LEFT,
+      :WHITESPACE_RIGHT,
+      :WHITESPACE_RUNS,
+    )
 
     class << self
       def try_coerce_encoding(input, encoding:)
@@ -312,7 +325,7 @@ module Liquid
     def squish(input)
       return if input.nil?
 
-      Utils.to_s(input).strip.gsub(/\s+/, ' ')
+      Utils.to_s(input).gsub(WHITESPACE_RUNS, ' ').strip
     end
 
     # @liquid_public_docs
@@ -324,7 +337,7 @@ module Liquid
     # @liquid_return [string]
     def strip(input)
       input = Utils.to_s(input)
-      input.strip
+      input.gsub(WHITESPACE_EDGES, ' ').strip
     end
 
     # @liquid_public_docs
@@ -336,7 +349,7 @@ module Liquid
     # @liquid_return [string]
     def lstrip(input)
       input = Utils.to_s(input)
-      input.lstrip
+      input.gsub(WHITESPACE_LEFT, ' ').lstrip
     end
 
     # @liquid_public_docs
@@ -348,7 +361,7 @@ module Liquid
     # @liquid_return [string]
     def rstrip(input)
       input = Utils.to_s(input)
-      input.rstrip
+      input.gsub(WHITESPACE_RIGHT, ' ').rstrip
     end
 
     # @liquid_public_docs
