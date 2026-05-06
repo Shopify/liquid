@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class SelfDropTest < Minitest::Test
+class SelfDropContextTest < Minitest::Test
   include Liquid
 
   def test_self_drop_passed_as_render_param_preserves_original_scope
