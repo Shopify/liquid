@@ -64,9 +64,14 @@ module Liquid
           res    = context.lookup_and_evaluate(object, key)
           object = res.to_liquid
 
-          # Some special cases. If the part wasn't in square brackets and
-          # no key with the same name was found we interpret following calls
-          # as commands and call them on the current object
+        # If "self" is not in scope or `self[key]` does not exist, try to
+        # resolve `key` in the current scope.
+        elsif i == 0 && name == "self" && key.is_a?(String) && context.variable_defined?(key)
+          object = context.find_variable(key)
+
+        # Some special cases. If the part wasn't in square brackets and
+        # no key with the same name was found we interpret following calls
+        # as commands and call them on the current object
         elsif lookup_command?(i) && object.respond_to?(key)
           object = object.send(key).to_liquid
 
@@ -75,9 +80,9 @@ module Liquid
         elsif lookup_command?(i) && object.is_a?(String) && (key == "first" || key == "last")
           object = key == "first" ? (object[0] || "") : (object[-1] || "")
 
-          # No key was present with the desired value and it wasn't one of the directly supported
-          # keywords either. The only thing we got left is to return nil or
-          # raise an exception if `strict_variables` option is set to true
+        # No key was present with the desired value and it wasn't one of the directly supported
+        # keywords either. The only thing we got left is to return nil or
+        # raise an exception if `strict_variables` option is set to true
         else
           return nil unless context.strict_variables
           raise Liquid::UndefinedVariable, "undefined variable #{key}"

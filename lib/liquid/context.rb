@@ -206,10 +206,6 @@ module Liquid
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.key?(key) }
 
-      # `self` resolves to a SelfDrop (enabling `self['var']` lookups),
-      # but only when it hasn't been explicitly assigned as a local variable.
-      return SelfDrop.new(self) if key == Expression::SELF && !index
-
       variable = if index
         lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
       else
