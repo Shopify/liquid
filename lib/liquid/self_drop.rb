@@ -31,7 +31,7 @@ module Liquid
       @self_context.variable_defined?(key)
     end
 
-    def context=(_); end
+    undef context
 
     def to_liquid
       self
