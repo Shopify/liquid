@@ -69,12 +69,12 @@ class SelfDropContextTest < Minitest::Test
     assert_template_result('42', source)
   end
 
-  def test_self_drop_context_writer_is_a_noop
+  def test_self_drop_context_setter_is_undefined
     context = Context.new
     drop = SelfDrop.new(context)
-    assert(drop.respond_to?(:context=))
-    drop.context = Context.new
-    assert_nil(drop.instance_variable_get(:@context))
+    refute(drop.respond_to?(:context=))
+
+    assert_template_result('42', '{{ self.x }}', { 'x' => 42 })
   end
 
   def test_self_drop_with_strict_variables_does_not_raise_for_defined_var
@@ -87,5 +87,12 @@ class SelfDropContextTest < Minitest::Test
     t = Template.parse('{{ self.x }}')
     result = t.render({}, strict_variables: true)
     assert_equal('', result)
+  end
+
+  def test_self_drop_can_be_passed_as_bare_drop_to_render
+    t = Template.parse('{{ self.x }}')
+    drop = SelfDrop.new(Context.new({ 'x' => 42 }))
+    result = t.render(drop)
+    assert_equal('42', result)
   end
 end
