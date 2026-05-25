@@ -27,7 +27,11 @@ module Liquid
   # @liquid_syntax_keyword filename The name of the snippet to render, without the `.liquid` extension.
   class Render < Tag
     FOR = 'for'
-    SYNTAX = /(#{QuotedString}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
+    AFTER = 'after'
+    AFTER_MARKUP = /\s+#{AFTER}(?=\s|,|\z)/o
+    WITH_OR_FOR_MARKUP = /\s+(with|#{FOR})\s+(#{QuotedFragment}+)/o
+    ALIAS_MARKUP = /\s+(?:as)\s+(#{VariableSegment}+)/o
+    SYNTAX = /(#{QuotedString}+)(#{AFTER_MARKUP})?(#{WITH_OR_FOR_MARKUP})?(#{ALIAS_MARKUP})?/o
 
     disable_tags "include"
 
@@ -39,10 +43,11 @@ module Liquid
       raise SyntaxError, options[:locale].t("errors.syntax.render") unless markup =~ SYNTAX
 
       template_name = Regexp.last_match(1)
-      with_or_for = Regexp.last_match(3)
-      variable_name = Regexp.last_match(4)
+      @after = !!Regexp.last_match(2)
+      with_or_for = Regexp.last_match(4)
+      variable_name = Regexp.last_match(5)
 
-      @alias_name = Regexp.last_match(6)
+      @alias_name = Regexp.last_match(7)
       @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
       @template_name_expr = parse_expression(template_name)
       @is_for_loop = (with_or_for == FOR)
@@ -61,6 +66,10 @@ module Liquid
       render_tag(context, output)
     end
 
+    def after?
+      @after
+    end
+
     def render_tag(context, output)
       # The expression should be a String literal, which parses to a String object
       template_name = @template_name_expr
@@ -74,26 +83,43 @@ module Liquid
 
       context_variable_name = @alias_name || template_name.split('/').last
 
-      render_partial_func = ->(var, forloop) {
+      evaluated_attributes = @attributes.transform_values { |value| context.evaluate(value) }
+
+      render_partial_func = ->(var, forloop, render_output) {
         inner_context               = context.new_isolated_subcontext
         inner_context.template_name = partial.name
         inner_context.partial       = true
         inner_context['forloop']    = forloop if forloop
 
-        @attributes.each do |key, value|
-          inner_context[key] = context.evaluate(value)
+        evaluated_attributes.each do |key, value|
+          inner_context[key] = value
         end
         inner_context[context_variable_name] = var unless var.nil?
-        partial.render_to_output_buffer(inner_context, output)
+        partial.render_to_output_buffer(inner_context, render_output)
         forloop&.send(:increment!)
       }
 
       variable = @variable_name_expr ? context.evaluate(@variable_name_expr) : nil
-      if @is_for_loop && variable.respond_to?(:each) && variable.respond_to?(:count)
+
+      if @after
+        id = context.next_after_render_id
+        context.enqueue_after_render(
+          id: id,
+          renderer: ->(after_output) {
+            if @is_for_loop && variable.respond_to?(:each) && variable.respond_to?(:count)
+              forloop = Liquid::ForloopDrop.new(template_name, variable.count, nil)
+              variable.each { |var| render_partial_func.call(var, forloop, after_output) }
+            else
+              render_partial_func.call(variable, nil, after_output)
+            end
+          }
+        )
+        output << %(<?marker name="#{id}">)
+      elsif @is_for_loop && variable.respond_to?(:each) && variable.respond_to?(:count)
         forloop = Liquid::ForloopDrop.new(template_name, variable.count, nil)
-        variable.each { |var| render_partial_func.call(var, forloop) }
+        variable.each { |var| render_partial_func.call(var, forloop, output) }
       else
-        render_partial_func.call(variable, nil)
+        render_partial_func.call(variable, nil, output)
       end
 
       output

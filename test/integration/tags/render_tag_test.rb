@@ -46,6 +46,70 @@ class RenderTagTest < Minitest::Test
     )
   end
 
+  def test_render_after_defers_partial_until_context_flush
+    file_system = StubFileSystem.new('snippet' => 'deferred {{ value }}')
+    environment = Liquid::Environment.build(file_system: file_system)
+    template = Liquid::Template.parse('before {% render "snippet" after, value: 1 %} after', environment: environment)
+    registers = Liquid::Registers.new(file_system: file_system)
+    context = Liquid::Context.build(registers: registers, environment: environment)
+
+    assert_equal('before <?marker name="liquid-after-1"> after', template.render(context))
+    assert_equal('<template for="liquid-after-1">deferred 1</template>', context.render_after_tags)
+    assert_empty(context.after_render_jobs)
+  end
+
+  def test_render_after_evaluates_attributes_when_enqueued
+    file_system = StubFileSystem.new('snippet' => '{{ value }}')
+    environment = Liquid::Environment.build(file_system: file_system)
+    template = Liquid::Template.parse('{% assign value = 1 %}{% render "snippet" after, value: value %}{% assign value = 2 %}', environment: environment)
+    registers = Liquid::Registers.new(file_system: file_system)
+    context = Liquid::Context.build(registers: registers, environment: environment)
+
+    assert_equal('<?marker name="liquid-after-1">', template.render(context))
+    assert_equal('<template for="liquid-after-1">1</template>', context.render_after_tags)
+  end
+
+  def test_render_after_supports_with_and_as
+    file_system = StubFileSystem.new('snippet' => '{{ item }}')
+    environment = Liquid::Environment.build(file_system: file_system)
+    template = Liquid::Template.parse('{% render "snippet" after with value as item %}', environment: environment)
+    registers = Liquid::Registers.new(file_system: file_system)
+    context = Liquid::Context.build(static_environments: { 'value' => 'captured' }, registers: registers, environment: environment)
+
+    assert_equal('<?marker name="liquid-after-1">', template.render(context))
+    assert_equal('<template for="liquid-after-1">captured</template>', context.render_after_tags)
+  end
+
+  def test_render_after_supports_for_and_as
+    file_system = StubFileSystem.new('snippet' => '{{ forloop.index }}:{{ item }};')
+    environment = Liquid::Environment.build(file_system: file_system)
+    template = Liquid::Template.parse('{% render "snippet" after for values as item %}', environment: environment)
+    registers = Liquid::Registers.new(file_system: file_system)
+    context = Liquid::Context.build(static_environments: { 'values' => ['a', 'b'] }, registers: registers, environment: environment)
+
+    assert_equal('<?marker name="liquid-after-1">', template.render(context))
+    assert_equal('<template for="liquid-after-1">1:a;2:b;</template>', context.render_after_tags)
+  end
+
+  def test_render_after_preserves_fifo_order
+    file_system = StubFileSystem.new('snippet' => '{{ value }}')
+    environment = Liquid::Environment.build(file_system: file_system)
+    template = Liquid::Template.parse('{% render "snippet" after, value: 1 %}{% render "snippet" after, value: 2 %}', environment: environment)
+    registers = Liquid::Registers.new(file_system: file_system)
+    context = Liquid::Context.build(registers: registers, environment: environment)
+
+    assert_equal('<?marker name="liquid-after-1"><?marker name="liquid-after-2">', template.render(context))
+    assert_equal('<template for="liquid-after-1">1</template><template for="liquid-after-2">2</template>', context.render_after_tags)
+  end
+
+  def test_render_after_colon_remains_a_named_argument
+    assert_template_result(
+      'later',
+      '{% render "snippet", after: "later" %}',
+      partials: { 'snippet' => '{{ after }}' },
+    )
+  end
+
   def test_render_does_not_inherit_parent_scope_variables
     assert_template_result(
       '',

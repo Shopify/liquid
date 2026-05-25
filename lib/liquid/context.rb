@@ -64,6 +64,33 @@ module Liquid
       @warnings ||= []
     end
 
+    def after_render_jobs
+      @registers.static[:after_render_jobs] ||= []
+    end
+
+    def next_after_render_id
+      @registers.static[:after_render_sequence] ||= 0
+      @registers.static[:after_render_sequence] += 1
+      "liquid-after-#{@registers.static[:after_render_sequence]}"
+    end
+
+    def enqueue_after_render(job)
+      after_render_jobs << job
+    end
+
+    def render_after_tags_to_output_buffer(output)
+      while (job = after_render_jobs.shift)
+        output << %(<template for="#{job[:id]}">)
+        job[:renderer].call(output)
+        output << %(</template>)
+      end
+      output
+    end
+
+    def render_after_tags
+      render_after_tags_to_output_buffer(+'')
+    end
+
     def strainer
       @strainer ||= @environment.create_strainer(self, @filters)
     end
