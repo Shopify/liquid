@@ -208,7 +208,7 @@ module Liquid
 
       # `self` resolves to a SelfDrop (enabling `self['var']` lookups),
       # but only when it hasn't been explicitly assigned as a local variable.
-      return SelfDrop.new(self) if key == Expression::SELF && !index
+      return @self_drop ||= SelfDrop.new(self) if key == Expression::SELF && !index
 
       variable = if index
         lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)

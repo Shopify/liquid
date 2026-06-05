@@ -35,6 +35,20 @@ module Liquid
       self
     end
 
+    def ==(other)
+      other.is_a?(SelfDrop) && other.self_context.equal?(@self_context)
+    end
+
+    alias_method :eql?, :==
+
+    def hash
+      @self_context.object_id.hash
+    end
+
+    protected
+
+    attr_reader :self_context
+
     undef context=
   end
 end
