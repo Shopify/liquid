@@ -7,8 +7,6 @@ end
 
 gemspec
 
-gem "base64"
-
 group :benchmark, :test do
   gem 'benchmark-ips'
   gem 'memory_profiler'

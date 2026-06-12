@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency("strscan", ">= 3.1.1")
   s.add_dependency("bigdecimal")
+  s.add_dependency("base64")
 
   s.add_development_dependency('rake', '~> 13.0')
   s.add_development_dependency('minitest')
