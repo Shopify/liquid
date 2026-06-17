@@ -130,16 +130,21 @@ module Liquid
         case
         when token.start_with?(TAGSTART)
           whitespace_handler(token, parse_context)
-          unless token =~ FullToken
+          # rubocop:disable Metrics/BlockNesting
+          fast = try_parse_tag_token(token)
+          if fast
+            tag_name, markup, newlines = fast
+          elsif token =~ FullToken
+            tag_name = Regexp.last_match(2)
+            markup   = Regexp.last_match(4)
+            newlines = parse_context.line_number ? Regexp.last_match(1).count("\n") + Regexp.last_match(3).count("\n") : 0
+          else
             return handle_invalid_tag_token(token, parse_context, &block)
           end
-          tag_name = Regexp.last_match(2)
-          markup   = Regexp.last_match(4)
+          # rubocop:enable Metrics/BlockNesting
 
-          if parse_context.line_number
-            # newlines inside the tag should increase the line number,
-            # particularly important for multiline {% liquid %} tags
-            parse_context.line_number += Regexp.last_match(1).count("\n") + Regexp.last_match(3).count("\n")
+          if parse_context.line_number && newlines > 0
+            parse_context.line_number += newlines
           end
 
           if tag_name == 'liquid'
@@ -258,6 +263,77 @@ module Liquid
       end
 
       BlockBody.raise_missing_variable_terminator(token, parse_context)
+    end
+
+    # Fast path for parsing "{%[-] tag_name markup [-]%}" tag tokens.
+    # Returns [tag_name, markup, newline_count] or nil.
+    #
+    # Accepts tokens where:
+    #   - Tag name is '#' or starts with [a-zA-Z_] followed by \w chars
+    #     (matching TagName = /#|\w+/ exactly — no hyphens, no '?' suffix)
+    #   - Whitespace is spaces, tabs, newlines, \r, \f, \v
+    #   - Whitespace control dashes are at positions 2 and len-3
+    # Rejects (returns nil → caller falls back to FullToken regex):
+    #   - Tokens shorter than "{%x%}" (4 bytes)
+    #   - Tag names starting with a digit (valid in FullToken but rare)
+    #   - Any structure the byte-walk can't confidently parse
+    # Fallback: nil return triggers the original `token =~ FullToken` regex
+    #   match in parse_for_document, preserving identical behavior for any
+    #   input the fast path doesn't handle.
+    def try_parse_tag_token(token)
+      len = token.bytesize
+      pos = 2 # skip "{%"
+      return if pos >= len
+
+      pos += 1 if token.getbyte(pos) == ByteTables::DASH
+      newline_count = 0
+
+      # Skip whitespace before tag name, count newlines
+      while pos < len
+        b = token.getbyte(pos)
+        if b == ByteTables::NEWLINE
+          pos += 1
+          newline_count += 1
+        elsif ByteTables::WHITESPACE[b]
+          pos += 1
+        else
+          break
+        end
+      end
+      return if pos >= len
+
+      # Scan tag name: '#' or \w+ (matching TagName = /#|\w+/)
+      name_start = pos
+      b = token.getbyte(pos)
+      if b == ByteTables::HASH
+        pos += 1
+      elsif ByteTables::IDENT_START[b]
+        pos += 1
+        pos += 1 while pos < len && ByteTables::WORD[token.getbyte(pos)]
+      else
+        return
+      end
+      tag_name = token.byteslice(name_start, pos - name_start)
+
+      # Skip whitespace after tag name, count newlines
+      while pos < len
+        b = token.getbyte(pos)
+        if b == ByteTables::NEWLINE
+          pos += 1
+          newline_count += 1
+        elsif ByteTables::WHITESPACE[b]
+          pos += 1
+        else
+          break
+        end
+      end
+
+      # Markup: everything up to optional '-' before '%}'
+      markup_end = len - 2 # skip '%}'
+      markup_end -= 1 if markup_end > pos && token.getbyte(markup_end - 1) == ByteTables::DASH
+      markup = pos >= markup_end ? "" : token.byteslice(pos, markup_end - pos)
+
+      [tag_name, markup, newline_count]
     end
 
     # @deprecated Use {.raise_missing_tag_terminator} instead
