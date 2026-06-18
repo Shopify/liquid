@@ -37,11 +37,18 @@ module Liquid
 
     # called by liquid to invoke a drop
     def invoke_drop(method_or_key)
-      if self.class.invokable?(method_or_key)
+      result = if self.class.invokable?(method_or_key)
         send(method_or_key)
       else
         liquid_method_missing(method_or_key)
       end
+      
+      # Recording hook - only active when recorder present
+      if @context && (recorder = @context.registers[:recorder])
+        recorder.emit_drop_read(self, method_or_key, result)
+      end
+      
+      result
     end
 
     def key?(_name)
