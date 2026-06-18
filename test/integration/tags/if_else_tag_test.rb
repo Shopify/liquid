@@ -195,4 +195,49 @@ class IfElseTagTest < Minitest::Test
       assert_template_result(expected.to_s, tpl, assigns, message: assigns.to_s)
     end
   end
+
+  def test_operators_order
+    expected_groupings = [
+      ->(w, x, y, z) { (w && (x || (y && z))) },
+      ->(w, x, y, z) { (w || (x && (y || z))) },
+    ]
+
+    liquid_conditions = [
+      'w and x or y and z',
+      'w or x and y or z',
+    ]
+
+    conditions = (0..0b1111).map do |cond|
+      [
+        (cond & 0b1000) == 0 ? false : true,
+        (cond & 0b0100) == 0 ? false : true,
+        (cond & 0b0010) == 0 ? false : true,
+        (cond & 0b0001) == 0 ? false : true,
+      ]
+    end
+
+    expected_results = expected_groupings.map do |test|
+      conditions.map do |condition|
+        test.call(*condition)
+      end
+    end
+
+    liquid_results = liquid_conditions.map do |conditional_expression|
+      tpl = "{% if #{conditional_expression} %}true{% else %}false{% endif %}"
+      template = Liquid::Template.parse(tpl, line_numbers: true)
+      conditions.map do |condition|
+        w, x, y, z = condition
+        assigns = { 'w' => w, 'x' => x, 'y' => y, 'z' => z }
+        template.render!(assigns)
+      end.map { |r| true?(r) }
+    end
+
+    assert_equal(expected_results, liquid_results)
+  end
+
+  private
+
+  def true?(obj)
+    obj.to_s.casecmp('true').zero?
+  end
 end
