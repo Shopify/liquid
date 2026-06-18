@@ -27,6 +27,16 @@ module Liquid
 
     UNDEFINED = Object.new
 
+    def keys
+      (@static.keys + @changes.keys).uniq
+    end
+
+    def each(&block)
+      keys.each do |key|
+        yield(key, fetch(key))
+      end
+    end
+
     def fetch(key, default = UNDEFINED, &block)
       if @changes.key?(key)
         @changes.fetch(key)
