@@ -102,6 +102,32 @@ class FiltersTest < Minitest::Test
     assert_equal('A b C', Template.parse("{{objects | sort_natural: 'a' | map: 'a' | join}}").render(@context))
   end
 
+  def test_sort_numeric
+    assert_template_result(
+      "1 2 3 10",
+      "{{ array | sort_numeric | join }}",
+      { "array" => ["10", "3", "1", "2"] },
+    )
+
+    assert_template_result(
+      "0001 02 17 042 107",
+      "{{ array | sort_numeric | join }}",
+      { "array" => ["107", "042", "0001", "02", "17"] },
+    )
+
+    assert_template_result(
+      "1 2 10",
+      "{{ hash | sort_numeric: 'a' | map: 'a' | join }}",
+      { "hash" => [{ "a" => "10" }, { "a" => 1 }, { "a" => "2" }] },
+    )
+
+    assert_template_result(
+      "v0.1 v1.1.0 v1.10",
+      "{{ objects | sort_numeric: 'a' | map: 'a' | join }}",
+      { "objects" => [TestObject.new("v0.1"), TestObject.new("v1.10"), TestObject.new("v1.1.0")] },
+    )
+  end
+
   def test_compact
     # Test strings
     assert_template_result(
