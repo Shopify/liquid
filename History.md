@@ -1,5 +1,17 @@
 # Liquid Change Log
 
+## 5.13.0
+
+* Add TruffleRuby in CI [Benoit Daloze]
+* Skip slow test raising many exceptions on non-CRuby [Benoit Daloze]
+* Reject bare-bracket syntax in strict2 and introduce `self` keyword by [Alok Swamy]
+* Add strict2_parse to assign and capture tags by [Alok Swamy]
+* Add strict2_parse to increment and decrement tags by [Alok Swamy]
+* Update liquid-spec adapters for `missing_features` [Ian Ker-Seymer]
+* Prevent `SelfDrop` context mutation across render boundaries [Guilherme Carreiro]
+* Fix `SelfDrop` equality [Guilherme Carreiro]
+* Let environment `self` shadow `SelfDrop` [Ian Ker-Seymer]
+
 ## 5.11.0
 * Revert the Inline Snippets tag (#2001), treat its inclusion in the latest Liquid release as a bug, and allow for feedback on RFC#1916 to better support Liquid developers [Guilherme Carreiro]
 * Rename the `:rigid` error mode to `:strict2` and display a warning when users attempt to use the `:rigid` mode [Guilherme Carreiro]
