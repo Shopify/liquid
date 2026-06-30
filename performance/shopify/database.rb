@@ -32,17 +32,34 @@ module Database
         end
       end
 
-      # Some standard direct accessors so that the specialized templates
-      # render correctly
-      db['collection'] = db['collections'].values.first
       db['product']    = db['products'].values.first
       db['blog']       = db['blogs'].values.first
       db['article']    = db['blog']['articles'].first
 
-      db['cart']       = {
+      # Some standard direct accessors so that the specialized templates
+      # render correctly
+      db['collection'] = db['collections'].values.first
+      db['collection']['tags'] = db['collection']['products'].map { |product| product['tags'] }.flatten.uniq.sort
+
+      db['tags'] = db['collection']['tags'][0..1]
+      db['all_tags'] = db['products'].values.map { |product| product['tags'] }.flatten.uniq.sort
+      db['current_tags'] = db['collection']['tags'][0..1]
+      db['handle'] = db['collection']['handle']
+
+      db['cart'] = {
         'total_price' => db['line_items'].values.inject(0) { |sum, item| sum + item['line_price'] * item['quantity'] },
         'item_count' => db['line_items'].values.inject(0) { |sum, item| sum + item['quantity'] },
         'items' => db['line_items'].values,
+      }
+
+      db['linklists'] = db['link_lists']
+
+      db['shop'] = {
+        'name' => 'Snowdevil',
+        'currency' => 'USD',
+        'money_format' => '${{amount}}',
+        'money_with_currency_format' => '${{amount}} USD',
+        'money_format_with_currency' => 'USD ${{amount}}',
       }
 
       db
