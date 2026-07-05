@@ -58,7 +58,10 @@ module Liquid
     # method will be removed.
     def render_to_output_buffer(context, output)
       render_result = render(context)
-      output << render_result if render_result
+      if render_result
+        render_result = render_result.join if render_result.is_a?(Array)
+        output << render_result.to_s
+      end
       output
     end
 
