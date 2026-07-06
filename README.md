@@ -145,7 +145,7 @@ If you want to raise on a first exception instead of pushing all of them in `err
 
 ```ruby
 template = Liquid::Template.parse("{{x}} {{y}}")
-template.render!({ 'x' => 1}, { strict_variables: true })
+template.render!({ 'x' => 1 }, { strict_variables: true })
 #=> Liquid::UndefinedVariable: Liquid error: undefined variable y
 ```
 
