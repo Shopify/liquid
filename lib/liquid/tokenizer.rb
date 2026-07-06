@@ -13,6 +13,8 @@ module Liquid
     OPEN_CURLEY = "{".ord
     CLOSE_CURLEY = "}".ord
     PERCENTAGE = "%".ord
+    SINGLE_QUOTE = "'".ord
+    DOUBLE_QUOTE = '"'.ord
 
     def initialize(
       source:,
@@ -117,9 +119,18 @@ module Liquid
       byte_a = byte_b = @ss.scan_byte
 
       while byte_b
-        byte_a = @ss.scan_byte while byte_a && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
+        byte_a = @ss.scan_byte while byte_a &&
+            byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY &&
+            byte_a != SINGLE_QUOTE && byte_a != DOUBLE_QUOTE
 
         break unless byte_a
+
+        if byte_a == SINGLE_QUOTE || byte_a == DOUBLE_QUOTE
+          @ss.skip_until(byte_a == SINGLE_QUOTE ? /'/ : /"/)
+
+          byte_a = @ss.scan_byte
+          next
+        end
 
         if @ss.eos?
           return byte_a == CLOSE_CURLEY ? @source.byteslice(start, @ss.pos - start) : "{{"
