@@ -88,5 +88,14 @@ module Liquid
         end
       end
     end
+
+    def marshal_dump
+      instance_variables.reject { |v| v == :@string_scanner }.map { |v| [v, instance_variable_get(v)] }.to_h
+    end
+
+    def marshal_load(data)
+      data.each { |k, v| instance_variable_set(k, v) }
+      @string_scanner = StringScanner.new("")
+    end
   end
 end

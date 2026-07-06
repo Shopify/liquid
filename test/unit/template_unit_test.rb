@@ -46,4 +46,26 @@ class TemplateUnitTest < Minitest::Test
       error.message,
     )
   end
+
+  module UpFilter
+    def up(input) = input.upcase
+  end
+
+  def test_marshal_roundtrip
+    env = Liquid::Environment.build { |e| e.register_filter(UpFilter) }
+    t = Template.parse("Hello {{ name | up }}", environment: env)
+    t2 = Marshal.load(Marshal.dump(t))
+    assert_equal("Hello WORLD", t2.render("name" => "world"))
+  end
+
+  module ShoutFilter
+    def shout(input) = input.upcase + "!"
+  end
+
+  def test_marshal_roundtrip_with_custom_filter
+    env = Liquid::Environment.build { |e| e.register_filter(ShoutFilter) }
+    t = Template.parse("{{ name | shout }}", environment: env)
+    t2 = Marshal.load(Marshal.dump(t))
+    assert_equal("WORLD!", t2.render("name" => "world"))
+  end
 end
