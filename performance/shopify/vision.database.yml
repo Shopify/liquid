@@ -345,8 +345,7 @@ products:
     featured_image: products/arbor_draft.jpg
     images:
       - products/arbor_draft.jpg
-    description:
-      The Arbor Draft snowboard wouldn't exist if Polynesians hadn't figured out how to surf hundreds of years ago. But the Draft does exist, and it's here to bring your urban and park riding to a new level. The board's freaky Tiki design pays homage to culture that inspired snowboarding. It's designed to spin with ease, land smoothly, lock hook-free onto rails, and take the abuse of a pavement pounding or twelve. The Draft will pop off kickers with authority and carve solidly across the pipe. The Draft features targeted Koa wood die cuts inlayed into the deck that enhance the flex pattern. Now bow down to riding's ancestors.
+    description: The Arbor Draft snowboard wouldn't exist if Polynesians hadn't figured out how to surf hundreds of years ago. But the Draft does exist, and it's here to bring your urban and park riding to a new level. The board's freaky Tiki design pays homage to culture that inspired snowboarding. It's designed to spin with ease, land smoothly, lock hook-free onto rails, and take the abuse of a pavement pounding or twelve. The Draft will pop off kickers with authority and carve solidly across the pipe. The Draft features targeted Koa wood die cuts inlayed into the deck that enhance the flex pattern. Now bow down to riding's ancestors.
     variants:
       - *product-1-var-1
       - *product-1-var-2
@@ -377,8 +376,7 @@ products:
     featured_image: products/element58.jpg
     images:
       - products/element58.jpg
-    description:
-      The Element is a technically advanced all-mountain board for riders who readily transition from one terrain, snow condition, or riding style to another. Its balanced design provides the versatility needed for the true ride-it-all experience. The Element is exceedingly lively, freely initiates, and holds a tight edge at speed. Its structural real-wood topsheet is made with book-matched Koa.
+    description: The Element is a technically advanced all-mountain board for riders who readily transition from one terrain, snow condition, or riding style to another. Its balanced design provides the versatility needed for the true ride-it-all experience. The Element is exceedingly lively, freely initiates, and holds a tight edge at speed. Its structural real-wood topsheet is made with book-matched Koa.
     variants:
       - *product-2-var-1
 
@@ -411,8 +409,7 @@ products:
       - products/technine1.jpg
       - products/technine2.jpg
       - products/technine_detail.jpg
-    description:
-      2005 Technine Comic Series Description The Comic series was developed to be the ultimate progressive freestyle board in the Technine line. Dependable edge control and a perfect flex pattern for jumping in the park or out of bounds. Landins and progression will come easy with this board and it will help your riding progress to the next level. Street rails, park jibs, backcountry booters and park jumps, this board will do it all.
+    description: 2005 Technine Comic Series Description The Comic series was developed to be the ultimate progressive freestyle board in the Technine line. Dependable edge control and a perfect flex pattern for jumping in the park or out of bounds. Landins and progression will come easy with this board and it will help your riding progress to the next level. Street rails, park jibs, backcountry booters and park jumps, this board will do it all.
     variants:
       - *product-3-var-1
       - *product-3-var-2
@@ -446,8 +443,7 @@ products:
     images:
       - products/technine3.jpg
       - products/technine4.jpg
-    description:
-      2005 Technine Comic Series Description The Comic series was developed to be the ultimate progressive freestyle board in the Technine line. Dependable edge control and a perfect flex pattern for jumping in the park or out of bounds. Landins and progression will come easy with this board and it will help your riding progress to the next level. Street rails, park jibs, backcountry booters and park jumps, this board will do it all.
+    description: 2005 Technine Comic Series Description The Comic series was developed to be the ultimate progressive freestyle board in the Technine line. Dependable edge control and a perfect flex pattern for jumping in the park or out of bounds. Landins and progression will come easy with this board and it will help your riding progress to the next level. Street rails, park jibs, backcountry booters and park jumps, this board will do it all.
     variants:
       - *product-4-var-1
 
@@ -478,8 +474,7 @@ products:
     featured_image: products/burton.jpg
     images:
       - products/burton.jpg
-    description:
-      The Burton boots are particularly well on snowboards. The very best thing about them is that the according picture is cubic. This makes testing in a Vision testing environment very easy.
+    description: The Burton boots are particularly well on snowboards. The very best thing about them is that the according picture is cubic. This makes testing in a Vision testing environment very easy.
     variants:
       - *product-5-var-1
       - *product-5-var-2
@@ -516,8 +511,7 @@ products:
     featured_image: products/ducati.jpg
     images:
       - products/ducati.jpg
-    description:
-      <h3>‘S’ PERFORMANCE</h3>
+    description: <h3>‘S’ PERFORMANCE</h3>
       <p>Producing 170hp (125kW) and with a dry weight of just 169kg (372.6lb), the new 1198 S now incorporates more World Superbike technology than ever before by taking the 1198 motor and adding top-of-the-range suspension, lightweight chassis components and a true racing-style traction control system designed for road use.</p>
       <p>The high performance, fully adjustable 43mm Öhlins forks, which sport low friction titanium nitride-treated fork sliders, respond effortlessly to every imperfection in the tarmac. Beyond their advanced engineering solutions, one of the most important characteristics of Öhlins forks is their ability to communicate the condition and quality of the tyre-to-road contact patch, a feature that puts every rider in superior control. The suspension set-up at the rear is complemented with a fully adjustable Öhlins rear shock equipped with a ride enhancing top-out spring and mounted to a single-sided swingarm for outstanding drive and traction. The front-to-rear Öhlins package is completed with a control-enhancing adjustable steering damper.</p>
     variants:
@@ -636,7 +630,6 @@ products:
       - *product-9-var-2
       - *product-9-var-3
 
-
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 #   Line Items
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -644,8 +637,8 @@ products:
 line_items:
   - &line_item-1
     id: 1
-    title: 'Arbor Draft'
-    subtitle: '151cm'
+    title: "Arbor Draft"
+    subtitle: "151cm"
     price: 29900
     line_price: 29900
     quantity: 1
@@ -654,8 +647,8 @@ line_items:
 
   - &line_item-2
     id: 2
-    title: 'Comic ~ Orange'
-    subtitle: '159cm'
+    title: "Comic ~ Orange"
+    subtitle: "159cm"
     price: 19900
     line_price: 39800
     quantity: 2
@@ -681,7 +674,7 @@ links:
   - &link-4
     id: 4
     title: Powered by Shopify
-    url: 'http://shopify.com'
+    url: "http://shopify.com"
   - &link-5
     id: 5
     title: About Us
@@ -715,8 +708,6 @@ links:
     title: Catalog
     url: /collections/all
 
-
-
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 #   Link Lists
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -724,8 +715,8 @@ links:
 link_lists:
   - &link-list-1
     id: 1
-    title: 'Main Menu'
-    handle: 'main-menu'
+    title: "Main Menu"
+    handle: "main-menu"
     links:
       - *link-12
       - *link-5
@@ -733,8 +724,8 @@ link_lists:
       - *link-8
   - &link-list-2
     id: 1
-    title: 'Footer Menu'
-    handle: 'footer'
+    title: "Footer Menu"
+    handle: "footer"
     links:
       - *link-5
       - *link-6
@@ -768,8 +759,7 @@ collections:
     title: Snowboards
     handle: snowboards
     url: /collections/snowboards
-    description:
-      <p>This is a description for my <strong>Snowboards</strong> collection.</p>
+    description: <p>This is a description for my <strong>Snowboards</strong> collection.</p>
     products:
       - *product-1
       - *product-2
@@ -787,8 +777,8 @@ collections:
   - &collection-5
     id: 5
     title: Paginated Sale
-    handle: 'paginated-sale'
-    url: '/collections/paginated-sale'
+    handle: "paginated-sale"
+    url: "/collections/paginated-sale"
     products:
       - *product-1
       - *product-2
@@ -799,8 +789,8 @@ collections:
   - &collection-6
     id: 6
     title: All products
-    handle: 'all'
-    url: '/collections/all'
+    handle: "all"
+    url: "/collections/all"
     products:
       - *product-7
       - *product-8
@@ -812,7 +802,6 @@ collections:
       - *product-4
       - *product-5
 
-
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 #   Pages and Blogs
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -823,8 +812,7 @@ pages:
     handle: contact
     url: /pages/contact
     author: Tobi
-    content:
-      "<p>You can contact us via phone under (555) 567-2222.</p>
+    content: "<p>You can contact us via phone under (555) 567-2222.</p>
       <p>Our retail store is located at <em>Rue d'Avignon 32, Avignon (Provence)</em>.</p>
       <p><strong>Opening Hours:</strong><br />Monday through Friday: 9am - 6pm<br />Saturday: 10am - 3pm<br />Sunday: closed</p>"
     created_at: 2005-04-04 12:00
@@ -874,12 +862,12 @@ blogs:
     url: /blogs/news
     articles:
       - id: 3
-        title: 'Welcome to the new Foo Shop'
+        title: "Welcome to the new Foo Shop"
         author: Daniel
         content: <p><strong>Welcome to your Shopify store! The jaded Pixel crew is really glad you decided to take Shopify for a spin.</strong></p><p>To help you get you started with Shopify, here are a couple of tips regarding what you see on this page.</p><p>The text you see here is an article. To edit this article, create new articles or create new pages you can go to the <a href="/admin/pages">Blogs &amp; Pages</a> tab of the administration menu.</p><p>The Shopify t-shirt above is a product and selling products is what Shopify is all about. To edit this product, or create new products you can go to the <a href="/admin/products">Products Tab</a> in of the administration menu.</p><p>While you're looking around be sure to check out the <a href="/admin/collections">Collections</a> and <a href="/admin/links">Navigations</a> tabs and soon you will be well on your way to populating your site.</p><p>And of course don't forget to browse the <a href="admin/design/appearance/themes">theme gallery</a> to pick a new look for your shop!</p><p><strong>Shopify is in beta</strong><br />If you would like to make comments or suggestions please visit us in the <a href="http://forums.shopify.com/community">Shopify Forums</a> or drop us an <a href="mailto:feedback@shopify.com">email</a>.</p>
         created_at: 2005-04-04 16:00
       - id: 4
-        title: 'Breaking News: Restock on all sales products'
+        title: "Breaking News: Restock on all sales products"
         author: Tobi
         content: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         created_at: 2005-04-04 12:00
@@ -891,13 +879,12 @@ blogs:
     url: /blogs/bigcheese-blog
     articles:
       - id: 1
-        title: 'One thing you probably did not know yet...'
+        title: "One thing you probably did not know yet..."
         author: Justin
         content: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         created_at: 2005-04-04 16:00
         comments:
-          -
-            id: 1
+          - id: 1
             author: John Smith
             email: john@smith.com
             content: Wow...great article man.
@@ -905,8 +892,7 @@ blogs:
             created_at: 2009-01-01 12:00
             updated_at: 2009-02-01 12:00
             url: ""
-          -
-            id: 2
+          - id: 2
             author: John Jones
             email: john@jones.com
             content: I really enjoyed this article. And I love your shop! It's awesome. Shopify rocks!
@@ -932,7 +918,7 @@ blogs:
     url: /blogs/paginated-blog
     articles:
       - id: 6
-        title: 'One thing you probably did not know yet...'
+        title: "One thing you probably did not know yet..."
         author: Justin
         content: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         created_at: 2005-04-04 16:00

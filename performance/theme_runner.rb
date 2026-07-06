@@ -25,23 +25,41 @@ class ThemeRunner
 
   # Initialize a new liquid ThemeRunner instance
   # Will load all templates into memory, do this now so that we don't profile IO.
-  def initialize
-    @tests = Dir[__dir__ + '/tests/**/*.liquid'].collect do |test|
+  def initialize(strictness: {})
+    @strictness = strictness
+    @tests = []
+    Dir[__dir__ + '/tests/**/*.liquid'].each do |test|
       next if File.basename(test) == 'theme.liquid'
 
-      theme_path = File.dirname(test) + '/theme.liquid'
-      {
-        liquid: File.read(test),
-        layout: (File.file?(theme_path) ? File.read(theme_path) : nil),
-        template_name: test,
-      }
-    end.compact
+      theme_path = File.realpath(File.dirname(test))
+      theme_name = File.basename(theme_path)
+      test_name = theme_name + "/" + File.basename(test)
+      template_name = File.basename(test, '.liquid')
+      layout_path = theme_path + '/theme.liquid'
 
-    compile_all_tests
+      test = {
+        test_name: test_name,
+        liquid: File.read(test),
+        layout: File.file?(layout_path) ? File.read(layout_path) : nil,
+        template_name: template_name,
+        theme_name: theme_name,
+        theme_path: theme_path,
+      }
+
+      @tests << test
+    end
   end
 
+  def find_test(test_name)
+    @tests.find do |test_hash|
+      test_hash[:test_name] == test_name
+    end
+  end
+
+  attr_reader :tests
+
   # `compile` will test just the compilation portion of liquid without any templates
-  def compile
+  def compile_all
     @tests.each do |test_hash|
       Liquid::Template.new.parse(test_hash[:liquid])
       Liquid::Template.new.parse(test_hash[:layout])
@@ -49,7 +67,7 @@ class ThemeRunner
   end
 
   # `tokenize` will just test the tokenizen portion of liquid without any templates
-  def tokenize
+  def tokenize_all
     ss = StringScanner.new("")
     @tests.each do |test_hash|
       tokenizer = Liquid::Tokenizer.new(
@@ -62,78 +80,72 @@ class ThemeRunner
   end
 
   # `run` is called to benchmark rendering and compiling at the same time
-  def run
-    each_test do |liquid, layout, assigns, page_template, template_name|
-      compile_and_render(liquid, layout, assigns, page_template, template_name)
+  def run_all
+    @tests.each do |test|
+      compile_and_render(test)
     end
   end
 
   # `render` is called to benchmark just the render portion of liquid
-  def render
+  def render_all
+    @compiled_tests ||= compile_all_tests
     @compiled_tests.each do |test|
-      tmpl    = test[:tmpl]
-      assigns = test[:assigns]
-      layout  = test[:layout]
-
-      if layout
-        assigns['content_for_layout'] = tmpl.render!(assigns)
-        layout.render!(assigns)
-      else
-        tmpl.render!(assigns)
-      end
+      render_template(test)
     end
+  end
+
+  def run_one_test(test_name)
+    test = find_test(test_name)
+    compile_and_render(test)
   end
 
   private
 
-  def render_layout(template, layout, assigns)
-    assigns['content_for_layout'] = template.render!(assigns)
-    layout&.render!(assigns)
+  def render_template(compiled_test)
+    tmpl, layout, assigns = compiled_test.values_at(:tmpl, :layout, :assigns)
+    if layout
+      assigns['content_for_layout'] = tmpl.render!(assigns, @strictness)
+      rendered_layout = layout.render!(assigns, @strictness)
+      rendered_layout
+    else
+      tmpl.render!(assigns, @strictness)
+    end
   end
 
-  def compile_and_render(template, layout, assigns, page_template, template_file)
-    compiled_test = compile_test(template, layout, assigns, page_template, template_file)
-    render_layout(compiled_test[:tmpl], compiled_test[:layout], compiled_test[:assigns])
+  def compile_and_render(test)
+    compiled_test = compile_test(test)
+    render_template(compiled_test)
   end
 
   def compile_all_tests
     @compiled_tests = []
-    each_test do |liquid, layout, assigns, page_template, template_name|
-      @compiled_tests << compile_test(liquid, layout, assigns, page_template, template_name)
+    @tests.each do |test_hash|
+      @compiled_tests << compile_test(test_hash)
     end
     @compiled_tests
   end
 
-  def compile_test(template, layout, assigns, page_template, template_file)
-    tmpl            = init_template(page_template, template_file)
-    parsed_template = tmpl.parse(template).dup
+  def compile_test(test_hash)
+    theme_path, template_name, layout, liquid = test_hash.values_at(:theme_path, :template_name, :layout, :liquid)
+
+    assigns = Database.tables.dup
+    assigns.merge!({
+      'title' => 'Page title',
+      'page_title' => 'Page title',
+      'content_for_header' => '',
+      'template' => template_name,
+    })
+
+    fs = ThemeRunner::FileSystem.new(theme_path)
+
+    result = {}
+    result[:assigns] = assigns
+    result[:tmpl] = Liquid::Template.parse(liquid, registers: { file_system: fs })
 
     if layout
-      parsed_layout = tmpl.parse(layout)
-      { tmpl: parsed_template, assigns: assigns, layout: parsed_layout }
-    else
-      { tmpl: parsed_template, assigns: assigns }
+      result[:layout] = Liquid::Template.parse(layout, registers: { file_system: fs })
     end
-  end
 
-  # utility method with similar functionality needed in `compile_all_tests` and `run`
-  def each_test
-    # Dup assigns because will make some changes to them
-    assigns = Database.tables.dup
-
-    @tests.each do |test_hash|
-      # Compute page_template outside of profiler run, uninteresting to profiler
-      page_template = File.basename(test_hash[:template_name], File.extname(test_hash[:template_name]))
-      yield(test_hash[:liquid], test_hash[:layout], assigns, page_template, test_hash[:template_name])
-    end
-  end
-
-  # set up a new Liquid::Template object for use in `compile_and_render` and `compile_test`
-  def init_template(page_template, template_file)
-    tmpl                         = Liquid::Template.new
-    tmpl.assigns['page_title']   = 'Page title'
-    tmpl.assigns['template']     = page_template
-    tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(File.dirname(template_file))
-    tmpl
+    result
   end
 end
