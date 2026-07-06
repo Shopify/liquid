@@ -127,6 +127,11 @@ class TemplateTest < Minitest::Test
     assert_equal("Liquid error: Memory limits exceeded", t.render)
     assert(t.resource_limits.reached?)
 
+    t = Template.parse("{% for a in (1..100000000000000) %} foo {% endfor %}")
+    t.resource_limits.render_score_limit = 50
+    assert_equal "Liquid error: Memory limits exceeded", t.render
+    assert t.resource_limits.reached?
+
     t = Template.parse("{% for a in (1..100) %} foo {% endfor %}")
     t.resource_limits.render_score_limit = 50
     assert_equal("Liquid error: Memory limits exceeded", t.render)
