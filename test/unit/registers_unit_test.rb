@@ -60,6 +60,13 @@ class RegistersUnitTest < Minitest::Test
     assert_equal("default 2", result)
   end
 
+  def test_values_at
+    static_register = Registers.new(a: 1, b: 2)
+    assert_equal([1, 2], static_register.values_at(:a, :b))
+    assert_equal([2, 1], static_register.values_at(:b, :a))
+    assert_equal([2], static_register.values_at(:b))
+  end
+
   def test_key
     static_register = Registers.new(a: 1, b: 2)
     static_register[:b] = 22
