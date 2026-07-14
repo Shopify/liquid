@@ -171,6 +171,26 @@ class StandardFiltersTest < Minitest::Test
     assert_equal("", Liquid::Template.parse('{{ " " | squish }}').render)
   end
 
+  def test_to_array
+    assert_equal(['abc'], @filters.to_array('abc'))
+    assert_equal([1], @filters.to_array(1))
+    assert_equal([1, 2, 3], @filters.to_array([1, 2, 3]))
+    assert_equal([true], @filters.to_array(true))
+  end
+
+  def test_to_array_with_blank_values
+    assert_equal([], @filters.to_array(nil))
+    assert_equal([], @filters.to_array(false))
+    assert_equal([], @filters.to_array(''))
+    assert_equal([], @filters.to_array('   '))
+    assert_equal([], @filters.to_array([]))
+  end
+
+  def test_to_array_with_object_raises
+    assert_raises(Liquid::ArgumentError) { @filters.to_array({ 'a' => 1 }) }
+    assert_raises(Liquid::ArgumentError) { @filters.to_array(TestDrop.new(value: 'x')) }
+  end
+
   def test_escape
     assert_equal('&lt;strong&gt;', @filters.escape('<strong>'))
     assert_equal('1', @filters.escape(1))

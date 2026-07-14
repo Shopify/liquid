@@ -317,6 +317,23 @@ module Liquid
 
     # @liquid_public_docs
     # @liquid_type filter
+    # @liquid_category array
+    # @liquid_summary
+    #   Converts a value into an array. Arrays are returned unchanged, blank values (`nil`, `false`,
+    #   empty or whitespace-only strings, and empty arrays) become an empty array, and any other
+    #   scalar value is wrapped in a single-element array.
+    # @liquid_syntax variable | to_array
+    # @liquid_return [array[untyped]]
+    def to_array(input)
+      return input if input.is_a?(Array)
+      return [] if Utils.blank?(input)
+      return [input] if input.is_a?(String) || input.is_a?(Numeric) || input.is_a?(TrueClass) || input.respond_to?(:strftime)
+
+      raise Liquid::ArgumentError, "cannot convert object into array"
+    end
+
+    # @liquid_public_docs
+    # @liquid_type filter
     # @liquid_category string
     # @liquid_summary
     #   Strips all whitespace from the left and right of a string.

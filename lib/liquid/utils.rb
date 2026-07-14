@@ -85,6 +85,24 @@ module Liquid
       nil
     end
 
+    # Implement blank? semantics matching ActiveSupport
+    # blank? returns true for nil, false, empty strings, whitespace-only strings,
+    # empty arrays, and empty hashes
+    def self.blank?(value)
+      case value
+      when NilClass, FalseClass
+        true
+      when TrueClass, Numeric
+        false
+      when String
+        value.empty? || value.match?(/\A\s*\z/)
+      when Array, Hash
+        value.empty?
+      else
+        value.respond_to?(:empty?) ? value.empty? : false
+      end
+    end
+
     def self.to_liquid_value(obj)
       # Enable "obj" to represent itself as a primitive value like integer, string, or boolean
       return obj.to_liquid_value if obj.respond_to?(:to_liquid_value)

@@ -143,24 +143,8 @@ module Liquid
       end
     end
 
-    # Implement blank? semantics matching ActiveSupport
-    # blank? returns true for nil, false, empty strings, whitespace-only strings,
-    # empty arrays, and empty hashes
     def liquid_blank?(value)
-      case value
-      when NilClass, FalseClass
-        true
-      when TrueClass, Numeric
-        false
-      when String
-        # Blank if empty or whitespace only (matches ActiveSupport)
-        value.empty? || value.match?(/\A\s*\z/)
-      when Array, Hash
-        value.empty?
-      else
-        # Fall back to empty? if available, otherwise false
-        value.respond_to?(:empty?) ? value.empty? : false
-      end
+      Liquid::Utils.blank?(value)
     end
 
     # Implement empty? semantics
