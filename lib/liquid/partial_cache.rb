@@ -10,6 +10,8 @@ module Liquid
 
       file_system = context.registers[:file_system]
       source      = file_system.read_template_file(template_name)
+      recorder = context.registers[TemplateRecorder::REGISTER_KEY] if defined?(TemplateRecorder)
+      recorder&.emit_file_read(template_name, source)
 
       parse_context.partial = true
 

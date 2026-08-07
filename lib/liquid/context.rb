@@ -228,6 +228,8 @@ module Liquid
 
       liquid_variable.context = self if variable != liquid_variable && liquid_variable.respond_to?(:context=)
 
+      recorder = @registers[TemplateRecorder::REGISTER_KEY] if defined?(TemplateRecorder)
+      recorder&.emit_variable_read(key, liquid_variable)
       liquid_variable
     end
 

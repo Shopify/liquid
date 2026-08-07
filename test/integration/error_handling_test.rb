@@ -269,7 +269,8 @@ class ErrorHandlingTest < Minitest::Test
     assert_equal("Liquid error: comparison of Integer with String failed0", output)
 
     output = Liquid::Template.parse("{% assign x = 0 %}{% if 1 < '2' %}{% assign x = 3 %}{% endif %}{{ x }}").render
-    assert_equal("0", output)
+    expected = ENV["LIQUID_PARSER_MODE"] == "strict2" ? "Liquid error: comparison of Integer with String failed0" : "0"
+    assert_equal(expected, output)
   end
 
   def test_syntax_error_is_raised_with_template_name

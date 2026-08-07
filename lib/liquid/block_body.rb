@@ -84,10 +84,15 @@ module Liquid
 
     # @api private
     def self.render_node(context, output, node)
+      recorder = TemplateRecorder.current
+      tag_call = recorder&.begin_tag_render(node, context)
+      output_start = output.length
       node.render_to_output_buffer(context, output)
     rescue => exc
       blank_tag = !node.instance_of?(Variable) && node.blank?
       rescue_render_node(context, output, node.line_number, exc, blank_tag)
+    ensure
+      recorder&.finish_tag_render(tag_call, output[output_start..]) if output_start
     end
 
     # @api private
