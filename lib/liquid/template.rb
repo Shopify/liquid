@@ -105,6 +105,7 @@ module Liquid
 
       tokenizer     = parse_context.new_tokenizer(source, start_line_number: @line_numbers && 1)
       @root         = Document.parse(tokenizer, parse_context)
+      @template_recorder_source = source.dup.freeze if defined?(TemplateRecorder) && TemplateRecorder.current
       self
     end
 
@@ -141,6 +142,8 @@ module Liquid
     def render(*args)
       return '' if @root.nil?
 
+      recording_session = TemplateRecorder.current if defined?(TemplateRecorder)
+      recording_assigns = args.first
       context = case args.first
       when Liquid::Context
         c = args.shift
@@ -180,6 +183,13 @@ module Liquid
         context.add_filters(args.pop)
       end
 
+      recording = recording_session&.begin_render(self, recording_assigns, context)
+      if recording
+        recorder_registers = context.registers.static
+        previous_recorder = recorder_registers[TemplateRecorder::REGISTER_KEY]
+        recorder_registers[TemplateRecorder::REGISTER_KEY] = recording
+      end
+
       # Retrying a render resets resource usage
       context.resource_limits.reset
 
@@ -192,16 +202,30 @@ module Liquid
       previous_error_mode = context.registers.static[:template_error_mode]
       context.registers.static[:template_error_mode] = @error_mode
 
+      rendered_output = nil
+      render_succeeded = false
       begin
         # render the nodelist.
-        @root.render_to_output_buffer(context, output || +'')
+        rendered_output = @root.render_to_output_buffer(context, output || +'')
+        render_succeeded = true
+        rendered_output
       rescue Liquid::MemoryError => e
-        context.handle_error(e)
+        rendered_output = context.handle_error(e)
+        render_succeeded = true
+        rendered_output
       ensure
         if previous_error_mode
           context.registers.static[:template_error_mode] = previous_error_mode
         else
           context.registers.static.delete(:template_error_mode)
+        end
+        if recording
+          if previous_recorder
+            recorder_registers[TemplateRecorder::REGISTER_KEY] = previous_recorder
+          else
+            recorder_registers.delete(TemplateRecorder::REGISTER_KEY)
+          end
+          recording_session.finish_render(recording, rendered_output, context, success: render_succeeded)
         end
         @errors = context.errors
       end
