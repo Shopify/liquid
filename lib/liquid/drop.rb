@@ -37,11 +37,20 @@ module Liquid
 
     # called by liquid to invoke a drop
     def invoke_drop(method_or_key)
-      if self.class.invokable?(method_or_key)
+      result = if self.class.invokable?(method_or_key)
         send(method_or_key)
       else
         liquid_method_missing(method_or_key)
       end
+
+      # A host application may assign its own object as a drop's context, and a
+      # drop can be invoked outside any render. Neither case has registers, and
+      # instrumentation must never turn either into a NoMethodError.
+      if defined?(TemplateRecorder) && @context.respond_to?(:registers)
+        recorder = @context.registers[TemplateRecorder::REGISTER_KEY]
+      end
+      recorder&.emit_drop_read(self, method_or_key, result)
+      result
     end
 
     def key?(_name)

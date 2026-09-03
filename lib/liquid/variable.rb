@@ -109,8 +109,14 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
+      if (replayer = context.registers[TemplateRecorder::REPLAYER_REGISTER_KEY])
+        return output << replayer.replay_variable
+      end
+
+      output_start = output.length
       obj = render(context)
       render_obj_to_output(obj, output)
+      TemplateRecorder.current&.emit_variable_output(output[output_start..])
       output
     end
 
