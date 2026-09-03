@@ -17,6 +17,9 @@ module Liquid
     REGISTER_KEY = :__liquid_template_recorder
     REPLAYER_REGISTER_KEY = :__liquid_template_recorder_replayer
 
+    # Opening tag markup, with or without whitespace control.
+    TAG_NAME_PATTERN = /\{%-?\s*(\w+)/
+
     class Error < StandardError; end
     class ReplayError < Error; end
     class SerializationError < Error; end
@@ -509,9 +512,56 @@ module Liquid
         tags&.each do |name, tag_class|
           tags[name] = replay_tag_class(tag_class, name)
         end
+        register_host_tag_stubs(tags)
         Liquid::Environment.build(tags: tags) do |environment|
           environment.strainer_template = strainer
         end
+      end
+
+      # Registers a stub for every tag the recorded sources mention that this
+      # environment does not know.
+      #
+      # A recording taken inside a host application names that application's
+      # tags, and strict replay re-parses the recorded source. Without a stub
+      # the parse fails and the recording is replayable only inside the
+      # application it came from, which defeats the point of recording it.
+      #
+      # A stub is only ever parsed. A tag that was invoked has its recorded
+      # output substituted by +replay_tag_class+; a block stub consumes its
+      # body without rendering it, so a custom tag nested inside another one
+      # never executes and never consumes a recorded call.
+      def register_host_tag_stubs(tags)
+        names, blocks = host_tag_names(tags)
+
+        names.each do |name|
+          stub = blocks.include?(name) ? Liquid::Block : Liquid::Tag
+          tags[name] = replay_tag_class(Class.new(stub), name)
+        end
+      end
+
+      # Unknown tag names in every recorded source, and which of them are
+      # closed by a matching +end+ tag and so must parse as blocks.
+      def host_tag_names(known)
+        names = []
+        blocks = []
+
+        recorded_sources.each do |source|
+          source.scan(TAG_NAME_PATTERN) do |(name)|
+            if name.start_with?("end")
+              blocks << name.delete_prefix("end")
+            elsif !known.key?(name) && !names.include?(name)
+              names << name
+            end
+          end
+        end
+
+        [names, blocks]
+      end
+
+      def recorded_sources
+        sources = Array(@record["templates"]).filter_map { |template| template["source"] }
+        sources.concat(Array(@record["file_system"]&.values))
+        sources.compact
       end
 
       def replay_tag_class(tag_class, name)

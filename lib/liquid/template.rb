@@ -204,6 +204,11 @@ module Liquid
 
       rendered_output = nil
       render_succeeded = false
+      # A caller may hand in a buffer that already holds bytes this template did
+      # not produce, and may keep appending to it after this render returns. The
+      # recording must describe only what the template rendered, so remember
+      # where its output starts.
+      recorded_output_start = recording ? (output || '').bytesize : 0
       begin
         # render the nodelist.
         rendered_output = @root.render_to_output_buffer(context, output || +'')
@@ -211,7 +216,11 @@ module Liquid
         rendered_output
       rescue Liquid::MemoryError => e
         rendered_output = context.handle_error(e)
-        render_succeeded = true
+        # The caller still gets the error text, but a render that hit the memory
+        # limit is truncated by definition: recording it as a success would put
+        # a partial render into the corpus as if it were the specified output.
+        render_succeeded = false
+        recorded_output_start = 0
         rendered_output
       ensure
         if previous_error_mode
@@ -225,7 +234,15 @@ module Liquid
           else
             recorder_registers.delete(TemplateRecorder::REGISTER_KEY)
           end
-          recording_session.finish_render(recording, rendered_output, context, success: render_succeeded)
+          # Slice off any caller-supplied prefix, and copy: the buffer is the
+          # caller's and may still be appended to, which would otherwise leak
+          # bytes into a recording that has already been taken.
+          recorded_output = if rendered_output.is_a?(String)
+            rendered_output.byteslice(recorded_output_start, rendered_output.bytesize - recorded_output_start).dup
+          else
+            rendered_output
+          end
+          recording_session.finish_render(recording, recorded_output, context, success: render_succeeded)
         end
         @errors = context.errors
       end

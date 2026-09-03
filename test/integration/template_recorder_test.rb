@@ -160,6 +160,17 @@ class TemplateRecorderTest < Minitest::Test
     refute_path_exists(recording)
   end
 
+  def test_memory_limited_render_is_not_recorded_as_successful
+    writer = CollectingWriter.new
+    template = Liquid::Template.parse("0123456789")
+    template.resource_limits.render_length_limit = 9
+
+    output = Liquid::TemplateRecorder.record(writer) { template.render }
+
+    assert_equal("Liquid error: Memory limits exceeded", output)
+    assert_empty(writer.records)
+  end
+
   def test_tampered_template_is_rejected
     Liquid::TemplateRecorder.record(path) { Liquid::Template.parse("safe").render! }
     session = JSON.parse(File.read(path))
@@ -311,6 +322,35 @@ class TemplateRecorderTest < Minitest::Test
     assert_equal({}, writer.records.first["assigns"])
   end
 
+  def test_recorder_hooks_accept_host_application_contexts
+    product = ProductDrop.new("Computed", "secret")
+    product.context = Object.new
+    assert_equal("Computed", product.invoke_drop("title"))
+
+    filter = Module.new do
+      def passthrough(input)
+        input
+      end
+    end
+    strainer_class = Class.new(Liquid::StrainerTemplate)
+    strainer_class.add_filter(filter)
+
+    assert_equal("value", strainer_class.new(Object.new).invoke(:passthrough, "value"))
+  end
+
+  def test_records_only_output_produced_by_the_template
+    writer = CollectingWriter.new
+    output = +"prefix:"
+
+    Liquid::TemplateRecorder.record(writer) do
+      Liquid::Template.parse("body").render!({}, output: output)
+      output << ":suffix"
+    end
+
+    assert_equal("prefix:body:suffix", output)
+    assert_equal("body", writer.records.first["output"])
+  end
+
   def test_strict_replay_accepts_the_application_environment
     environment = Liquid::Environment.build(
       tags: Liquid::Environment.default.tags.merge("marker" => MarkerTag),
@@ -325,6 +365,20 @@ class TemplateRecorderTest < Minitest::Test
       mode: :strict,
       environment: environment,
     )
+
+    assert_equal("custom", replay.render)
+  end
+
+  def test_strict_replay_stubs_host_application_tags
+    environment = Liquid::Environment.build(
+      tags: Liquid::Environment.default.tags.merge("wrapper" => WrapperTag, "marker" => MarkerTag),
+    )
+    writer = CollectingWriter.new
+    Liquid::TemplateRecorder.record(writer) do
+      Liquid::Template.parse("{% wrapper %}{% marker %}{% endwrapper %}", environment: environment).render!
+    end
+
+    replay = Liquid::TemplateRecorder::Replayer.new(writer.records.first, mode: :strict)
 
     assert_equal("custom", replay.render)
   end
