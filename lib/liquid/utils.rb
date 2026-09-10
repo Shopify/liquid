@@ -93,41 +93,53 @@ module Liquid
       obj
     end
 
-    def self.to_s(obj, seen = {})
-      case obj
-      when BigDecimal
-        obj.to_s("F")
-      when Hash
-        # If the custom hash implementation overrides `#to_s`, use their
-        # custom implementation. Otherwise we use Liquid's default
-        # implementation.
-        if obj.class.instance_method(:to_s) == HASH_TO_S_METHOD
-          hash_inspect(obj, seen)
+    def self.to_s(*args)
+      if args.empty?
+        super
+      else
+        obj = args[0]
+        seen = args[1] || {}
+        case obj
+        when BigDecimal
+          obj.to_s("F")
+        when Hash
+          # If the custom hash implementation overrides `#to_s`, use their
+          # custom implementation. Otherwise we use Liquid's default
+          # implementation.
+          if obj.class.instance_method(:to_s) == HASH_TO_S_METHOD
+            hash_inspect(obj, seen)
+          else
+            obj.to_s
+          end
+        when Array
+          array_inspect(obj, seen)
         else
           obj.to_s
         end
-      when Array
-        array_inspect(obj, seen)
-      else
-        obj.to_s
       end
     end
 
-    def self.inspect(obj, seen = {})
-      case obj
-      when Hash
-        # If the custom hash implementation overrides `#inspect`, use their
-        # custom implementation. Otherwise we use Liquid's default
-        # implementation.
-        if obj.class.instance_method(:inspect) == HASH_INSPECT_METHOD
-          hash_inspect(obj, seen)
+    def self.inspect(*args)
+      if args.empty?
+        super
+      else
+        obj = args[0]
+        seen = args[1] || {}
+        case obj
+        when Hash
+          # If the custom hash implementation overrides `#inspect`, use their
+          # custom implementation. Otherwise we use Liquid's default
+          # implementation.
+          if obj.class.instance_method(:inspect) == HASH_INSPECT_METHOD
+            hash_inspect(obj, seen)
+          else
+            obj.inspect
+          end
+        when Array
+          array_inspect(obj, seen)
         else
           obj.inspect
         end
-      when Array
-        array_inspect(obj, seen)
-      else
-        obj.inspect
       end
     end
 
