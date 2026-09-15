@@ -61,12 +61,15 @@ class SecurityTest < Minitest::Test
   end
 
   def test_does_not_add_drop_methods_to_symbol_table
-    assert_no_new_symbols do
-      assigns = { 'drop' => Drop.new }
-      assert_equal("", Template.parse("{{ drop.custom_method_1 }}", assigns).render!)
-      assert_equal("", Template.parse("{{ drop.custom_method_2 }}", assigns).render!)
-      assert_equal("", Template.parse("{{ drop.custom_method_3 }}", assigns).render!)
+    assigns = { 'drop' => Drop.new }
+    method_names = Array.new(3) { |index| "untrusted_drop_method_#{object_id}_#{index}" }
+
+    method_names.each do |method_name|
+      assert_equal("", Template.parse("{{ drop.#{method_name} }}").render!(assigns))
     end
+
+    # JITs can intern internal metadata; untrusted Drop method names must not be interned.
+    assert_equal([], Symbol.all_symbols.map(&:to_s) & method_names)
   end
 
   def assert_no_new_symbols
