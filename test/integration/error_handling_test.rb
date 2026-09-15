@@ -265,11 +265,13 @@ class ErrorHandlingTest < Minitest::Test
   end
 
   def test_bug_compatible_silencing_of_errors_in_blank_nodes
-    output = Liquid::Template.parse("{% assign x = 0 %}{% if 1 < '2' %}not blank{% assign x = 3 %}{% endif %}{{ x }}").render
-    assert_equal("Liquid error: comparison of Integer with String failed0", output)
+    with_error_modes(:lax, :strict) do
+      output = Liquid::Template.parse("{% assign x = 0 %}{% if 1 < '2' %}not blank{% assign x = 3 %}{% endif %}{{ x }}").render
+      assert_equal("Liquid error: comparison of Integer with String failed0", output)
 
-    output = Liquid::Template.parse("{% assign x = 0 %}{% if 1 < '2' %}{% assign x = 3 %}{% endif %}{{ x }}").render
-    assert_equal("0", output)
+      output = Liquid::Template.parse("{% assign x = 0 %}{% if 1 < '2' %}{% assign x = 3 %}{% endif %}{{ x }}").render
+      assert_equal("0", output)
+    end
   end
 
   def test_syntax_error_is_raised_with_template_name
