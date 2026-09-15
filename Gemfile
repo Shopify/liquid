@@ -32,7 +32,7 @@ group :test do
 end
 
 group :spec do
-  # Includes the merged specs from https://github.com/Shopify/liquid-spec/pull/144.
-  gem 'liquid-spec', github: 'Shopify/liquid-spec', ref: '8a308cb199a7d4e635ae399797560875732c8839'
+  # Includes the range resource-limit specs from https://github.com/Shopify/liquid-spec/pull/165.
+  gem 'liquid-spec', github: 'Shopify/liquid-spec', ref: '84bf25e0edbca5f7e530574788b0f875ab331f50'
   gem 'activesupport', require: false
 end

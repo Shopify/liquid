@@ -465,4 +465,94 @@ class TableRowTest < Minitest::Test
       assert_match(/Unexpected character =/, error.message)
     end
   end
+
+  def test_integer_range_is_not_materialized_and_charges_empty_iterations
+    range = bounded_integer_range_with_tripwires
+    template = Template.parse('{% tablerow i in numbers %}{% endtablerow %}')
+    template.resource_limits.render_score_limit = 3
+
+    assert_raises(Liquid::MemoryError) { template.render!('numbers' => range) }
+
+    assert(template.resource_limits.reached?)
+    assert_equal(4, template.resource_limits.render_score)
+  end
+
+  def test_integer_range_uses_arithmetic_offsets_limit_and_full_metadata
+    range = bounded_integer_range_with_tripwires
+    template = Template.parse(
+      '{% tablerow i in numbers offset:997 limit:2 %}{{ tablerowloop.length }}:{{ tablerowloop.index }}:{{ i }}{% endtablerow %}',
+    )
+
+    assert_equal(
+      "<tr class=\"row1\">\n<td class=\"col1\">2:1:998</td><td class=\"col2\">2:2:999</td></tr>\n",
+      template.render!('numbers' => range),
+    )
+  end
+
+  def test_tablerow_checks_generated_output_during_empty_body_iteration
+    template = Template.parse('{% tablerow i in (1..100) %}{% endtablerow %}')
+    template.resource_limits.render_length_limit = 40
+    checked_lengths = []
+    limits = template.resource_limits
+    original_increment_write_score = limits.method(:increment_write_score)
+    limits.define_singleton_method(:increment_write_score) do |output|
+      checked_lengths << output.bytesize
+      original_increment_write_score.call(output)
+    end
+
+    assert_equal('Liquid error: Memory limits exceeded', template.render)
+    assert(template.resource_limits.reached?)
+    assert_operator(checked_lengths.last, :<, 1000)
+  end
+
+  def test_tablerow_range_scores_persist_across_renders
+    template = Template.parse('{% tablerow i in (1..2) %}{% endtablerow %}')
+    template.resource_limits.cumulative_render_score_limit = 3
+    template.render!
+    assert_raises(Liquid::MemoryError) { template.render! }
+  end
+
+  def test_range_subclass_uses_its_custom_each_with_beginless_bounds
+    range = Class.new(Range) do
+      def each
+        yield 10
+        yield 20
+      end
+    end.new(nil, 3)
+
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\">10</td><td class=\"col2\">20</td></tr>\n",
+      '{% tablerow i in numbers %}{{ i }}{% endtablerow %}',
+      { 'numbers' => range },
+    )
+  end
+
+  def test_endless_range_subclass_uses_its_custom_each_without_a_limit
+    range = Class.new(Range) do
+      def each
+        yield 10
+        yield 20
+      end
+    end.new(1, nil)
+
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\">10</td><td class=\"col2\">20</td></tr>\n",
+      '{% tablerow i in numbers %}{{ i }}{% endtablerow %}',
+      { 'numbers' => range },
+    )
+  end
+
+  def test_range_subclass_custom_to_a_is_not_used
+    range = Class.new(Range) do
+      def to_a
+        [42]
+      end
+    end.new(1, 3)
+
+    assert_template_result(
+      "<tr class=\"row1\">\n<td class=\"col1\">1</td><td class=\"col2\">2</td><td class=\"col3\">3</td></tr>\n",
+      '{% tablerow i in numbers %}{{ i }}{% endtablerow %}',
+      { 'numbers' => range },
+    )
+  end
 end

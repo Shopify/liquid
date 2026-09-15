@@ -465,4 +465,85 @@ HERE
 
     assert(context.registers[:for_stack].empty?)
   end
+
+  def test_integer_range_is_not_materialized_and_charges_empty_iterations
+    range = bounded_integer_range_with_tripwires
+    template = Template.parse('{% for i in numbers %}{% endfor %}')
+    template.resource_limits.render_score_limit = 3
+
+    assert_raises(Liquid::MemoryError) { template.render!('numbers' => range) }
+
+    assert(template.resource_limits.reached?)
+    assert_equal(4, template.resource_limits.render_score)
+  end
+
+  def test_integer_range_uses_arithmetic_offsets_reversal_and_metadata
+    range = bounded_integer_range_with_tripwires
+    template = Template.parse(
+      '{% for i in numbers reversed offset:997 limit:2 %}{{ forloop.length }}:{{ i }}{% endfor %}',
+    )
+    template.resource_limits.render_score_limit = 10
+
+    assert_equal('2:9992:998', template.render!('numbers' => range))
+  end
+
+  def test_range_scores_cannot_be_bypassed_by_repeated_renders
+    template = Template.parse('{% for i in (1..2) %}{% endfor %}')
+    template.resource_limits.cumulative_render_score_limit = 3
+    assert_equal('', template.render!)
+    assert_raises(Liquid::MemoryError) { template.render! }
+  end
+
+  def test_range_break_charges_only_visited_items_and_preserves_full_metadata
+    range = bounded_integer_range_with_tripwires
+    template = Template.parse(
+      '{% for i in numbers reversed %}{{ forloop.length }}:{{ i }}{% break %}{% endfor %}',
+    )
+    template.resource_limits.render_score_limit = 10
+
+    assert_equal('1000:1000', template.render!('numbers' => range))
+    assert_operator(template.resource_limits.render_score, :<=, 10)
+  end
+
+  def test_range_subclass_uses_its_custom_each
+    range = Class.new(Range) do
+      def each
+        yield 10
+        yield 20
+      end
+    end.new(nil, 3)
+
+    assert_template_result('1020', '{% for i in numbers %}{{ i }}{% endfor %}', { 'numbers' => range })
+  end
+
+  def test_range_subclass_custom_to_a_is_honored_for_finite_and_open_bounds
+    range_class = Class.new(Range) do
+      def to_a
+        [42]
+      end
+    end
+
+    [range_class.new(1, 3), range_class.new(nil, 3), range_class.new(1, nil)].each do |range|
+      assert_template_result('42', '{% for i in numbers %}{{ i }}{% endfor %}', { 'numbers' => range })
+    end
+  end
+
+  def test_endless_range_remains_unsupported_with_a_limit
+    template = Template.parse('{% for i in numbers limit:2 %}{{ i }}{% endfor %}')
+
+    assert_raises(RangeError) { template.render!('numbers' => (1..)) }
+  end
+
+  def test_endless_range_subclass_with_custom_each_remains_unsupported
+    range = Class.new(Range) do
+      def each
+        yield 10
+        yield 20
+      end
+    end.new(1, nil)
+
+    assert_raises(RangeError) do
+      Template.parse('{% for i in numbers %}{{ i }}{% endfor %}').render!('numbers' => range)
+    end
+  end
 end
