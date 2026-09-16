@@ -627,6 +627,15 @@ class StandardFiltersTest < Minitest::Test
     end
   end
 
+  def test_date_with_negative_unix_timestamp_string
+    with_timezone("UTC") do
+      assert_equal("12/31/1969", @filters.date(-1, "%m/%d/%Y"))
+      assert_equal("12/31/1969", @filters.date("-1", "%m/%d/%Y"))
+      assert_equal("01/01/1900", @filters.date("-2208988800", "%m/%d/%Y"))
+      assert_template_result("12/31/1969", '{{ timestamp | date: "%m/%d/%Y" }}', { 'timestamp' => '-1' })
+    end
+  end
+
   def test_first_last
     assert_equal(1, @filters.first([1, 2, 3]))
     assert_equal(3, @filters.last([1, 2, 3]))
