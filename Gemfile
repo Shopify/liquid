@@ -33,6 +33,6 @@ end
 
 group :spec do
   # Includes the merged specs from https://github.com/Shopify/liquid-spec/pull/144.
-  gem 'liquid-spec', github: 'Shopify/liquid-spec', ref: '416a66b4cd9abf7927cf78bb1f4bf950f68b862f'
+  gem 'liquid-spec', github: 'Shopify/liquid-spec', ref: '8a308cb199a7d4e635ae399797560875732c8839'
   gem 'activesupport', require: false
 end
