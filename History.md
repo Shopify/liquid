@@ -1,8 +1,8 @@
 # Liquid Change Log
 
-## Unreleased
+## 5.14.0
 
-* Avoid materializing integer ranges in `for` and `tablerow` loops, and account for each visited range item.
+* Avoid materializing integer ranges in `for` and `tablerow` loops, and account for each visited range item [Ian Ker-Seymer]
 
 ## 5.13.0
 
