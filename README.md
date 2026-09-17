@@ -149,6 +149,13 @@ template.render!({ 'x' => 1}, { strict_variables: true })
 #=> Liquid::UndefinedVariable: Liquid error: undefined variable y
 ```
 
+### Resource limits
+
+`render_score_limit` and `cumulative_render_score_limit` account for each item visited by
+integer-range `for` and `tablerow` loops, including loops with empty bodies. This bounds range
+iteration work when a score limit is configured; `render_length_limit` only bounds generated
+output and does not by itself limit CPU work for output-free loops.
+
 ### Usage tracking
 
 To help track usages of a feature or code path in production, we have released opt-in usage tracking. To enable this, we provide an empty `Liquid:: Usage.increment` method which you can customize to your needs. The feature is well suited to https://github.com/Shopify/statsd-instrument. However, the choice of implementation is up to you.

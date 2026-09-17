@@ -132,7 +132,7 @@ class TemplateTest < Minitest::Test
     assert_equal("Liquid error: Memory limits exceeded", t.render)
     assert(t.resource_limits.reached?)
 
-    t.resource_limits.render_score_limit = 200
+    t.resource_limits.render_score_limit = 201
     assert_equal(" foo " * 100, t.render!)
     refute_nil(t.resource_limits.render_score)
   end

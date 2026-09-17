@@ -32,6 +32,15 @@ module Minitest
   module Assertions
     include Liquid
 
+    # Exact Range fixture for fast-path tests; singleton tripwires must remain
+    # untouched because the arithmetic path does not materialize or traverse it.
+    def bounded_integer_range_with_tripwires
+      range = (1..1000).dup
+      range.define_singleton_method(:to_a) { raise 'range was materialized' }
+      range.define_singleton_method(:each) { raise 'range was traversed' }
+      range
+    end
+
     def assert_template_result(
       expected, template, assigns = {},
       message: nil, partials: nil, error_mode: Liquid::Environment.default.error_mode, render_errors: false,

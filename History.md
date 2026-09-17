@@ -1,5 +1,9 @@
 # Liquid Change Log
 
+## Unreleased
+
+* Avoid materializing integer ranges in `for` and `tablerow` loops, and account for each visited range item.
+
 ## 5.13.0
 
 * Add TruffleRuby in CI [Benoit Daloze]

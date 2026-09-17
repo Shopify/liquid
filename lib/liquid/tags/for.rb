@@ -130,7 +130,6 @@ module Liquid
       end
 
       collection = context.evaluate(@collection_name)
-      collection = collection.to_a if collection.is_a?(Range)
 
       limit_value = context.evaluate(@limit)
       to = if limit_value.nil?
@@ -139,7 +138,9 @@ module Liquid
         Utils.to_integer(limit_value) + from
       end
 
-      segment = Utils.slice_collection(collection, from, to)
+      segment = Utils.slice_collection_for_iteration(
+        collection, from, to, context.resource_limits, use_range_to_a: true
+      )
       segment.reverse! if @reversed
 
       offsets[@name] = from + segment.length
