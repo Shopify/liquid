@@ -36,6 +36,30 @@ class RegistersUnitTest < Minitest::Test
     assert_nil(static_register.delete(:d))
   end
 
+  def test_keys
+    static_register = Registers.new(a: 1, b: 2)
+    assert_equal([:a, :b], static_register.keys.sort)
+
+    static_register[:b] = 3
+    assert_equal([:a, :b], static_register.keys.sort)
+
+    static_register[:c] = 4
+    assert_equal([:a, :b, :c], static_register.keys.sort)
+  end
+
+  def test_each
+    static_register = Registers.new(a: 1, b: 2)
+
+    keys = []
+    vals = []
+    static_register.each do |key, val|
+      keys << key
+      vals << val
+    end
+    assert_equal([:a, :b], keys.sort)
+    assert_equal([1, 2], vals.sort)
+  end
+
   def test_fetch
     static_register = Registers.new(a: 1, b: 2)
     static_register[:b] = 22
