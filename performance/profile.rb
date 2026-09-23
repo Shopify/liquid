@@ -1,26 +1,42 @@
 # frozen_string_literal: true
 
 require 'stackprof'
+require 'fileutils'
 require_relative 'theme_runner'
+
+output_dir = ENV['OUTPUT_DIR'] || "/tmp/liquid-performance"
+FileUtils.mkdir_p(output_dir)
 
 Liquid::Template.error_mode = ARGV.first.to_sym if ARGV.first
 profiler = ThemeRunner.new
-profiler.run
+profiler.run_all # warmup
 
-[:cpu, :object].each do |profile_type|
-  puts "Profiling in #{profile_type} mode..."
-  results = StackProf.run(mode: profile_type) do
+[:cpu, :object].each do |mode|
+  puts
+  puts "Profiling in #{mode} mode..."
+  puts "writing to #{output_dir}/#{mode}.profile:"
+  puts
+  StackProf.run(mode: mode, raw: true, out: "#{output_dir}/#{mode}.profile") do
     200.times do
-      profiler.run
+      profiler.run_all
     end
   end
 
-  if profile_type == :cpu && (graph_filename = ENV['GRAPH_FILENAME'])
-    File.open(graph_filename, 'w') do |f|
-      StackProf::Report.new(results).print_graphviz(nil, f)
+  result = StackProf.run(mode: mode) do
+    100.times do
+      profiler.run_all
     end
   end
 
-  StackProf::Report.new(results).print_text(false, 20)
-  File.write(ENV['FILENAME'] + "." + profile_type.to_s, Marshal.dump(results)) if ENV['FILENAME']
+  StackProf::Report.new(result).print_text(false, 30)
 end
+
+puts
+puts "files in #{output_dir}:"
+Dir.glob("#{output_dir}/*").each do |file|
+  puts "  #{file}"
+end
+puts "Recommended:"
+puts "  stackprof --d3-flamegraph #{output_dir}/cpu.profile > #{output_dir}/flame.html"
+puts "  stackprof --method #{output_dir}/cpu.profile"
+puts "  etc"
