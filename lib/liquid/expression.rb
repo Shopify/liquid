@@ -36,6 +36,7 @@ module Liquid
 
       def parse(markup, ss = StringScanner.new(""), cache = nil)
         return unless markup
+        return markup unless markup.is_a?(String)
 
         markup = markup.strip # markup can be a frozen string
 

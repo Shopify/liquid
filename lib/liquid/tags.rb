@@ -7,6 +7,8 @@ require_relative "tags/break"
 require_relative "tags/inline_comment"
 require_relative "tags/for"
 require_relative "tags/assign"
+require_relative "tags/let"
+require_relative "tags/set"
 require_relative "tags/ifchanged"
 require_relative "tags/case"
 require_relative "tags/include"
@@ -37,6 +39,8 @@ module Liquid
       'case' => Case,
       'ifchanged' => Ifchanged,
       'assign' => Assign,
+      'let' => Let,
+      'set' => SetTag,
       'for' => For,
       '#' => InlineComment,
       'break' => Break,

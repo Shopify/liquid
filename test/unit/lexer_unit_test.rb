@@ -26,6 +26,13 @@ class LexerUnitTest < Minitest::Test
     )
   end
 
+  def test_assignment_and_comparison_tokens
+    assert_equal(
+      [[:id, 'n'], [:assign, '='], [:number, '1'], [:comparison, '=='], [:number, '2'], [:end_of_string]],
+      tokenize('n=1==2'),
+    )
+  end
+
   def test_comparison
     assert_equal(
       [[:comparison, '=='], [:comparison, '<>'], [:comparison, 'contains'], [:end_of_string]],

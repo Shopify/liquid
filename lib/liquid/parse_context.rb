@@ -38,7 +38,11 @@ module Liquid
 
     def new_parser(input)
       @string_scanner.string = input
-      Parser.new(@string_scanner, reject_bare_brackets: @error_mode == :strict2 || @error_mode == :rigid)
+      Parser.new(
+        @string_scanner,
+        reject_bare_brackets: @error_mode == :strict2 || @error_mode == :rigid,
+        allow_calls: @error_mode == :strict2,
+      )
     end
 
     def new_tokenizer(source, start_line_number: nil, for_liquid_tag: false)
@@ -60,13 +64,61 @@ module Liquid
         # compatibility while raising awareness about strict2 parser standards,
         # the safe flag supports API users make a deliberate decision.
         #
-        # In strict2 mode, markup MUST come from a string returned by the parser
-        # (e.g., parser.expression). We're not calling the parser here to
+        # In strict2 mode, markup MUST come from parser.expression, which returns
+        # markup or a parsed callable node. We're not calling the parser here to
         # prevent redundant parser overhead.
         raise Liquid::InternalError, "unsafe parse_expression cannot be used in strict2 mode"
       end
 
       Expression.parse(markup, @string_scanner, @expression_cache)
+    end
+
+    def with_document_scope(&block)
+      previous_usage = @uses_local_bindings
+      @uses_local_bindings = false
+      with_lexical_scope(&block)
+      @uses_local_bindings
+    ensure
+      @uses_local_bindings = previous_usage
+    end
+
+    def with_lexical_scope(parameters = Const::EMPTY_ARRAY)
+      previous_scope = @lexical_scope
+      @lexical_scope = parameters.to_h { |name| [name, true] }
+      yield
+    ensure
+      @lexical_scope = previous_scope
+    end
+
+    def local_declarations?
+      @lexical_scope && !@lexical_scope.empty?
+    end
+
+    def declare_local(name)
+      @lexical_scope ||= {}
+      raise SyntaxError, "Duplicate let declaration '#{name}'" if @lexical_scope.key?(name)
+
+      @lexical_scope[name] = true
+    end
+
+    def with_closure(parameters = Const::EMPTY_ARRAY, &block)
+      require_closures!
+      previous_closure = @in_closure
+      @in_closure = true
+      with_lexical_scope(parameters, &block)
+    ensure
+      @in_closure = previous_closure
+    end
+
+    def in_closure?
+      @in_closure
+    end
+
+    def require_closures!
+      @uses_local_bindings = true
+      return if @error_mode == :strict2
+
+      raise SyntaxError, "Closures require strict2 mode"
     end
 
     def partial=(value)

@@ -10,10 +10,13 @@ module Liquid
     end
 
     def parse(tokens)
-      @body = new_body
-      while parse_body(@body, tokens)
-      end
-      @body.freeze
+      parse_block_body(tokens)
+    end
+
+    # Parse an external block body with closure validation and lexical declarations.
+    def parse_closure_body(tokens, parameters: Const::EMPTY_ARRAY)
+      parse_context.with_closure(parameters) { parse_block_body(tokens) }
+      ClosureBody.new(@body, parameters)
     end
 
     # For backwards compatibility
@@ -65,6 +68,13 @@ module Liquid
     end
 
     private
+
+    def parse_block_body(tokens)
+      @body = new_body
+      while parse_body(@body, tokens)
+      end
+      @body.freeze
+    end
 
     # @api public
     def new_body

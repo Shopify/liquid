@@ -118,6 +118,50 @@ This is useful for doing things like enabling strict mode only in the theme edit
 It is recommended that you enable `:strict` or `:warn` mode on new apps to stop invalid templates from being created.
 It is also recommended that you use it in the template editors of existing apps to give editors better error messages.
 
+### Strict2 bindings and closures
+
+In `error_mode: :strict2`, `let` binds a value or defines a callable Liquid body:
+
+```liquid
+{% let count = 1 %}
+{% let title(step) %}
+  {% let count = count | plus: step %}
+  {{ count }}
+{% endlet %}
+{{ title(2) }}
+```
+
+Each call has fresh locals and writable parameters. Captures read the latest parent
+bindings. `set name = expression` updates the nearest local binding, or creates a
+shadow at the invocation root when the name is captured or absent. Initializers run
+before installing the new binding. Loops have fresh `let` bindings each iteration
+and can shadow outer names; conditional branches share their surrounding scope.
+Duplicate `let` declarations in one scope
+and `assign` inside closure bodies are parse errors. Calls accept positional
+arguments and invoke only Liquid closures.
+
+Custom `Liquid::Block` subclasses can use the same body rules:
+
+```ruby
+def parse(tokens)
+  @closure_body = parse_closure_body(tokens)
+end
+
+def render_to_output_buffer(context, output)
+  body = @closure_body.bind(context)
+  exports = body.invoke(context, output: output)
+  exports['title']&.render_to_output_buffer(context, output, ['Hello'])
+  output
+end
+```
+
+`invoke` renders into the supplied buffer and returns direct-child body-form `let`
+bindings by name. Value bindings and declarations nested in control flow are not
+exported. Each invocation has fresh state; bind the body at render time rather than
+caching a closure on the parsed tag. For parameterized bodies, pass
+`parameters: ['name']` to `parse_closure_body`, then pass an argument array as the
+second argument to `invoke`. The syntax remains visible to `ParseTreeVisitor`.
+
 ### Undefined variables and filters
 
 By default, the renderer doesn't raise or in any other way notify you if some variables or filters are missing, i.e. not passed to the `render` method.

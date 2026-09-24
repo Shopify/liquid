@@ -2,6 +2,7 @@
 
 module Liquid
   class Lexer
+    ASSIGN = [:assign, "="].freeze
     CLOSE_ROUND = [:close_round, ")"].freeze
     CLOSE_SQUARE = [:close_square, "]"].freeze
     COLON = [:colon, ":"].freeze
@@ -133,6 +134,8 @@ module Liquid
             if (peeked_byte = ss.peek_byte) && (found = sub_table[peeked_byte])
               output << found
               ss.scan_byte
+            elsif peeked == "=".ord && ss.peek_byte != "<".ord && ss.peek_byte != ">".ord && ss.peek_byte != "!".ord
+              output << ASSIGN
             else
               raise_syntax_error(start_pos, ss)
             end

@@ -82,6 +82,78 @@ class ParserUnitTest < Minitest::Test
     end
   end
 
+  def test_assignment_delimiter
+    parser = new_parser('title = product.title')
+    assert_equal('title', parser.consume(:id))
+    assert_equal('=', parser.consume(:assign))
+    assert_equal('product.title', parser.expression)
+    parser.consume(:end_of_string)
+  end
+
+  def test_callable_expression_consumes_only_its_arguments
+    context = ParseContext.new(error_mode: :strict2)
+    parser = context.new_parser('title(product, nested(1),), next')
+    expression = context.safe_parse_expression(parser)
+    assert_instance_of(CallExpression, expression)
+    assert_equal('title', expression.target.name)
+    assert_equal('product', expression.arguments.first.name)
+    assert_instance_of(CallExpression, expression.arguments.last)
+    assert_equal([1], expression.arguments.last.arguments)
+    parser.consume(:comma)
+    assert_equal('next', parser.consume(:id))
+    parser.consume(:end_of_string)
+  end
+
+  def test_expression_markup_preserves_callable_syntax_without_consuming_attributes
+    [
+      ['(1 .. finish( ))', '(1..finish())', RangeLookup],
+      ['groups[ key( ) ].items', 'groups[key()].items', VariableLookup],
+      ['identity( "a b", nested(1) )', 'identity("a b",nested(1))', CallExpression],
+    ].each do |source, expected_markup, expected_class|
+      parser = ParseContext.new(error_mode: :strict2).new_parser("#{source} limit: 1")
+      value, markup = parser.expression_with_markup
+      assert_instance_of(expected_class, value)
+      assert_equal(expected_markup, markup)
+      assert_equal('limit', parser.consume(:id))
+      parser.consume(:colon)
+      assert_equal('1', parser.consume(:number))
+      parser.consume(:end_of_string)
+    end
+  end
+
+  def test_expression_markup_preserves_non_callable_loop_names
+    ['items', 'groups[key].items', '(1..finish)', '"a b"'].each do |source|
+      value, markup = new_parser(source).expression_with_markup
+      assert_equal(source, value)
+      assert_equal(source, markup)
+    end
+  end
+
+  def test_parameters_consume_parentheses_and_optional_trailing_comma
+    parser = new_parser('(first, second,)')
+    assert_equal(['first', 'second'], parser.parameters)
+    parser.consume(:end_of_string)
+    assert_equal([], new_parser('()').parameters)
+  end
+
+  def test_callable_grammar_uses_effective_partial_mode
+    environment = Environment.build(error_mode: :strict)
+    context = ParseContext.new(environment: environment, error_mode: :strict2, include_options_blacklist: [:error_mode])
+    assert_instance_of(CallExpression, context.safe_parse_expression(context.new_parser('title()')))
+    context.partial = true
+    parser = context.new_parser('title()')
+    assert_equal('title', parser.expression)
+    assert_raises(SyntaxError) { parser.consume(:end_of_string) }
+  end
+
+  def test_callable_grammar_is_explicitly_disabled_in_other_modes
+    [:lax, :warn, :strict, :rigid].each do |mode|
+      parser = ParseContext.new(error_mode: mode).new_parser('title(1)')
+      assert_equal('title', parser.expression)
+      assert_raises(SyntaxError) { parser.consume(:end_of_string) }
+    end
+  end
+
   private
 
   def new_parser(str)

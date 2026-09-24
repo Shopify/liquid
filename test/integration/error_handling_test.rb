@@ -268,8 +268,11 @@ class ErrorHandlingTest < Minitest::Test
     output = Liquid::Template.parse("{% assign x = 0 %}{% if 1 < '2' %}not blank{% assign x = 3 %}{% endif %}{{ x }}").render
     assert_equal("Liquid error: comparison of Integer with String failed0", output)
 
-    output = Liquid::Template.parse("{% assign x = 0 %}{% if 1 < '2' %}{% assign x = 3 %}{% endif %}{{ x }}").render
-    assert_equal("0", output)
+    source = "{% assign x = 0 %}{% if 1 < '2' %}{% assign x = 3 %}{% endif %}{{ x }}"
+    [:lax, :warn, :strict].each do |mode|
+      assert_equal("0", Liquid::Template.parse(source, error_mode: mode).render)
+    end
+    assert_equal("Liquid error: comparison of Integer with String failed0", Liquid::Template.parse(source, error_mode: :strict2).render)
   end
 
   def test_syntax_error_is_raised_with_template_name

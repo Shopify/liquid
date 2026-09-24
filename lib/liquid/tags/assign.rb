@@ -31,6 +31,8 @@ module Liquid
 
     def initialize(tag_name, markup, parse_context)
       super
+      raise SyntaxError, "assign is not allowed in closure bodies" if parse_context.in_closure?
+
       parse_with_selected_parser(markup)
     end
 
@@ -65,7 +67,7 @@ module Liquid
     def render_to_output_buffer(context, output)
       val = @from.render(context)
       context.scopes.last[@to] = val
-      context.resource_limits.increment_assign_score(assign_score_of(val))
+      context.resource_limits.increment_assign_score(self.class.assign_score_of(val))
       output
     end
 
@@ -73,9 +75,8 @@ module Liquid
       true
     end
 
-    private
-
-    def assign_score_of(val)
+    # @api private
+    def self.assign_score_of(val)
       if val.instance_of?(String)
         val.bytesize
       elsif val.instance_of?(Array)

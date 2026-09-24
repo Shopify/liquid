@@ -40,6 +40,12 @@ module Liquid
       end
     end
 
+    # @api private
+    def add_lookup(key, command: false)
+      @command_flags |= 1 << @lookups.length if command && COMMAND_METHODS.include?(key)
+      @lookups << key
+    end
+
     def lookup_command?(lookup_index)
       @command_flags & (1 << lookup_index) != 0
     end

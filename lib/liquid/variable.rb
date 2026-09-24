@@ -25,7 +25,7 @@ module Liquid
     include ParserSwitching
 
     def initialize(markup, parse_context)
-      @markup        = markup
+      @markup        = markup.is_a?(Parser) ? markup.remaining_markup : markup
       @name          = nil
       @parse_context = parse_context
       @line_number   = parse_context.line_number
@@ -42,6 +42,7 @@ module Liquid
     end
 
     def markup_context(markup)
+      markup = @markup if markup.is_a?(Parser)
       "in \"{{#{markup}}}\""
     end
 
@@ -80,7 +81,7 @@ module Liquid
 
     def strict2_parse(markup)
       @filters = []
-      p = @parse_context.new_parser(markup)
+      p = markup.is_a?(Parser) ? markup : @parse_context.new_parser(markup)
 
       return if p.look(:end_of_string)
 
@@ -109,6 +110,10 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
+      if @name.is_a?(CallExpression) && @filters.empty? && context.global_filter.nil?
+        return @name.render_to_output_buffer(context, output)
+      end
+
       obj = render(context)
       render_obj_to_output(obj, output)
       output
@@ -207,7 +212,7 @@ module Liquid
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
-        [@node.name] + @node.filters.flatten
+        [@node.name] + @node.filters.flatten.flat_map { |value| value.is_a?(Hash) ? value.values : value }
       end
     end
   end

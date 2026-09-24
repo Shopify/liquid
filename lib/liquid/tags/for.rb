@@ -38,15 +38,10 @@ module Liquid
     end
 
     def parse(tokens)
-      if parse_body(@for_block, tokens)
-        parse_body(@else_block, tokens)
+      parse_context.with_lexical_scope do
+        parse_loop(tokens)
+        @has_local_declarations = parse_context.local_declarations?
       end
-      if blank?
-        @else_block&.remove_blank_strings
-        @for_block.remove_blank_strings
-      end
-      @else_block&.freeze
-      @for_block.freeze
     end
 
     def nodelist
@@ -92,10 +87,10 @@ module Liquid
       @variable_name = p.consume(:id)
       raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in") unless p.id?('in')
 
-      collection_name  = p.expression
+      collection_name, collection_markup = p.expression_with_markup
       @collection_name = parse_expression(collection_name, safe: true)
 
-      @name     = "#{@variable_name}-#{collection_name}"
+      @name     = "#{@variable_name}-#{collection_markup}"
       @reversed = p.id?('reversed')
 
       while p.look(:comma) || p.look(:id)
@@ -110,6 +105,18 @@ module Liquid
     end
 
     private
+
+    def parse_loop(tokens)
+      if parse_body(@for_block, tokens)
+        parse_body(@else_block, tokens)
+      end
+      if blank?
+        @else_block&.remove_blank_strings
+        @for_block.remove_blank_strings
+      end
+      @else_block&.freeze
+      @for_block.freeze
+    end
 
     def strict2_parse(markup)
       strict_parse(markup)
@@ -161,7 +168,7 @@ module Liquid
 
           segment.each do |item|
             context[@variable_name] = item
-            @for_block.render_to_output_buffer(context, output)
+            render_iteration(context, output)
             loop_vars.send(:increment!)
 
             # Handle any interrupts if they exist.
@@ -178,6 +185,12 @@ module Liquid
       output
     end
 
+    def render_iteration(context, output)
+      return @for_block.render_to_output_buffer(context, output) unless @has_local_declarations
+
+      context.stack { @for_block.render_to_output_buffer(context, output) }
+    end
+
     def set_attribute(key, expr, safe: false)
       case key
       when 'offset'
@@ -192,11 +205,10 @@ module Liquid
     end
 
     def render_else(context, output)
-      if @else_block
-        @else_block.render_to_output_buffer(context, output)
-      else
-        output
-      end
+      return output unless @else_block
+      return @else_block.render_to_output_buffer(context, output) unless @has_local_declarations
+
+      context.stack { @else_block.render_to_output_buffer(context, output) }
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor

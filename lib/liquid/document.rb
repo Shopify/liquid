@@ -20,7 +20,9 @@ module Liquid
     end
 
     def parse(tokenizer, parse_context)
-      while parse_body(tokenizer)
+      @local_bindings = parse_context.with_document_scope do
+        while parse_body(tokenizer)
+        end
       end
       @body.freeze
     rescue SyntaxError => e
@@ -38,7 +40,9 @@ module Liquid
     end
 
     def render_to_output_buffer(context, output)
-      @body.render_to_output_buffer(context, output)
+      return @body.render_to_output_buffer(context, output) unless @local_bindings
+
+      context.with_binding_scope { @body.render_to_output_buffer(context, output) }
     end
 
     def render(context)

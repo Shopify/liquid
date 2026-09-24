@@ -162,6 +162,40 @@ module Liquid
       end
     end
 
+    # @api private
+    def new_closure_subcontext(scopes, environments, static_environments)
+      new_isolated_subcontext.tap do |invocation|
+        captures = Closure::CapturedBindings.new(scopes, environments + static_environments, invocation)
+        invocation.captured_bindings = captures
+        invocation.environments = [captures]
+        invocation.static_environments = static_environments
+        invocation.strict_variables = strict_variables
+        invocation.strict_filters = strict_filters
+        invocation.global_filter = global_filter
+        invocation.template_name = template_name
+        invocation.partial = partial
+        invocation.base_scope_depth = base_scope_depth + @scopes.length
+      end
+    end
+
+    # @api private
+    def with_binding_scope
+      previous_root = @binding_root
+      stack do
+        @binding_root = @scopes.first
+        yield
+      end
+    ensure
+      @binding_root = previous_root
+    end
+
+    # @api private
+    def set_local(name, value)
+      root = @binding_root || @scopes.last
+      scope = @scopes.find { |owned| owned.key?(name) || owned.equal?(root) }
+      scope[name] = value
+    end
+
     def clear_instance_assigns
       @scopes[0] = {}
     end
@@ -206,7 +240,7 @@ module Liquid
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.key?(key) }
 
-      fallback_to_self_drop = key == Expression::SELF && index.nil?
+      fallback_to_self_drop = key == Expression::SELF && index.nil? && !@captured_bindings&.local_key?(key)
 
       variable = if index
         lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
@@ -262,13 +296,17 @@ module Liquid
 
     protected
 
-    attr_writer :base_scope_depth, :warnings, :errors, :strainer, :filters, :disabled_tags
+    attr_writer :base_scope_depth, :warnings, :errors, :strainer, :filters, :disabled_tags, :environments, :static_environments, :captured_bindings
 
     private
 
     attr_reader :base_scope_depth
 
     def try_variable_find_in_environments(key, raise_on_not_found:)
+      if @captured_bindings
+        return @captured_bindings.find_variable(key, self, raise_on_not_found: raise_on_not_found)
+      end
+
       @environments.each do |environment|
         found_variable = lookup_and_evaluate(environment, key, raise_on_not_found: raise_on_not_found)
         if !found_variable.nil? || @strict_variables && raise_on_not_found

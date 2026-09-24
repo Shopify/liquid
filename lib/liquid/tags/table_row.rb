@@ -34,6 +34,13 @@ module Liquid
       parse_with_selected_parser(markup)
     end
 
+    def parse(tokens)
+      parse_context.with_lexical_scope do
+        super
+        @has_local_declarations = parse_context.local_declarations?
+      end
+    end
+
     def strict2_parse(markup)
       p = @parse_context.new_parser(markup)
 
@@ -99,7 +106,11 @@ module Liquid
           context[@variable_name] = item
 
           output << "<td class=\"col#{tablerowloop.col}\">"
-          super
+          if @has_local_declarations
+            context.stack { super }
+          else
+            super
+          end
           output << '</td>'
 
           # Handle any interrupts if they exist.
