@@ -146,4 +146,10 @@ class LiquidTagTest < Minitest::Test
       -%}
     LIQUID
   end
+
+  def test_nested_liquid_tags_do_not_raise_NoMethodError_when_line_numbers_is_false
+    assert_template_result('good', <<~LIQUID, line_numbers: false)
+      {% liquid liquid echo "good" %}
+    LIQUID
+  end
 end
