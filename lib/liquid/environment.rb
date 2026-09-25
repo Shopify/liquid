@@ -155,5 +155,18 @@ module Liquid
       # @strainer_template.freeze
       super
     end
+
+    def marshal_dump
+      filter_modules = @strainer_template.ancestors[1...@strainer_template.ancestors.index(StrainerTemplate)]
+      [@tags, @error_mode, @file_system, @default_resource_limits, filter_modules]
+    end
+
+    def marshal_load(data)
+      @tags, @error_mode, @file_system, @default_resource_limits, filter_modules = data
+      @exception_renderer = ->(exception) { exception }
+      @strainer_template = Class.new(StrainerTemplate)
+      filter_modules.reverse_each { |m| @strainer_template.add_filter(m) }
+      @strainer_template_class_cache = {}
+    end
   end
 end
