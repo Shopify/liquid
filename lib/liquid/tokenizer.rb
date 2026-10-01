@@ -9,6 +9,7 @@ module Liquid
     TAG_END = /%\}/
     TAG_OR_VARIABLE_START = /\{[\{\%]/
     NEWLINE = /\n/
+    RAW_TAG_END = /-?\s*endraw\s*-?%\}/
 
     OPEN_CURLEY = "{".ord
     CLOSE_CURLEY = "}".ord
@@ -115,6 +116,11 @@ module Liquid
       start = @ss.pos - 2
 
       byte_a = byte_b = @ss.scan_byte
+
+      # The second opening brace can start a tag, e.g. {{% endraw %}}.
+      if byte_a == PERCENTAGE && @ss.match?(RAW_TAG_END)
+        return next_tag_token_with_start(start)
+      end
 
       while byte_b
         byte_a = @ss.scan_byte while byte_a && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
