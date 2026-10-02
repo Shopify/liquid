@@ -50,7 +50,7 @@ class CycleTagTest < Minitest::Test
     assert_template_result("112233", template)
   end
 
-  def test_unnamed_cycle_have_independent_counters_when_used_with_lookups
+  def test_unnamed_cycle_share_counters_when_used_with_lookups
     template = <<~LIQUID
       {%- assign a = "1" -%}
       {%- for i in (1..3) -%}
@@ -59,7 +59,12 @@ class CycleTagTest < Minitest::Test
       {%- endfor -%}
     LIQUID
 
-    assert_template_result("112211", template)
+    assert_template_result("121212", template)
+  end
+
+  def test_unnamed_cycle_advances_when_first_value_is_a_lookup
+    assert_template_result("b", "{% cycle a, 'b' %}{% cycle a, 'b' %}")
+    assert_template_result("ab", "{% assign a = 'a' %}{% cycle a, 'b' %}{% cycle a, 'b' %}")
   end
 
   def test_unnamed_cycle_dependent_counter_when_used_with_literal_values
