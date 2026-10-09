@@ -169,6 +169,15 @@ class StandardFiltersTest < Minitest::Test
 \t   boo   " | squish }})).render)
     assert_equal("", Liquid::Template.parse('{{ nil | squish }}').render)
     assert_equal("", Liquid::Template.parse('{{ " " | squish }}').render)
+
+    unicode_spaces = "\u00A0\u202F\u2009\u2007"
+
+    assert_template_result(
+      "foo bar boo",
+      "{{ source | squish }}",
+      { 'source' => "#{unicode_spaces}foo\u202F\u2009bar\t\n\u2007boo#{unicode_spaces}" },
+    )
+    assert_template_result("\u200Bfoo\u200B", "{{ source | squish }}", { 'source' => "\u200Bfoo\u200B" })
   end
 
   def test_escape
@@ -703,16 +712,42 @@ class StandardFiltersTest < Minitest::Test
   def test_strip
     assert_template_result('ab c', "{{ source | strip }}", { 'source' => " ab c  " })
     assert_template_result('ab c', "{{ source | strip }}", { 'source' => " \tab c  \n \t" })
+
+    unicode_spaces = "\u00A0\u202F\u2009\u2007"
+
+    assert_template_result(
+      'ab c',
+      "{{ source | strip }}",
+      { 'source' => "#{unicode_spaces}ab c#{unicode_spaces}" },
+    )
+    assert_template_result("a\u00A0b\u202Fc", "{{ source | strip }}", { 'source' => "a\u00A0b\u202Fc" })
+    assert_template_result("\u200Bfoo\u200B", "{{ source | strip }}", { 'source' => "\u200Bfoo\u200B" })
   end
 
   def test_lstrip
     assert_template_result('ab c  ', "{{ source | lstrip }}", { 'source' => " ab c  " })
     assert_template_result("ab c  \n \t", "{{ source | lstrip }}", { 'source' => " \tab c  \n \t" })
+
+    unicode_spaces = "\u00A0\u202F\u2009\u2007"
+
+    assert_template_result(
+      "ab c#{unicode_spaces}",
+      "{{ source | lstrip }}",
+      { 'source' => "#{unicode_spaces}ab c#{unicode_spaces}" },
+    )
   end
 
   def test_rstrip
     assert_template_result(" ab c", "{{ source | rstrip }}", { 'source' => " ab c  " })
     assert_template_result(" \tab c", "{{ source | rstrip }}", { 'source' => " \tab c  \n \t" })
+
+    unicode_spaces = "\u00A0\u202F\u2009\u2007"
+
+    assert_template_result(
+      "#{unicode_spaces}ab c",
+      "{{ source | rstrip }}",
+      { 'source' => "#{unicode_spaces}ab c#{unicode_spaces}" },
+    )
   end
 
   def test_strip_newlines
