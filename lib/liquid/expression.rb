@@ -14,7 +14,7 @@ module Liquid
       'blank' => '',
       'empty' => '',
       # in lax mode, minus sign can be a VariableLookup
-      # For simplicity and performace, we treat it like a literal
+      # For simplicity and performance, we treat it like a literal
       '-' => VariableLookup.parse("-", nil).freeze,
     }.freeze
 

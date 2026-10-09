@@ -200,7 +200,7 @@ module Liquid
       object.respond_to?(:evaluate) ? object.evaluate(self) : object
     end
 
-    # Fetches an object starting at the local scope and then moving up the hierachy
+    # Fetches an object starting at the local scope and then moving up the hierarchy
     def find_variable(key, raise_on_not_found: true)
       # This was changed from find() to find_index() because this is a very hot
       # path and find_index() is optimized in MRI to reduce object allocation
