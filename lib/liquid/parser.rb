@@ -2,10 +2,11 @@
 
 module Liquid
   class Parser
-    def initialize(input)
-      l       = Lexer.new(input)
-      @tokens = l.tokenize
+    def initialize(input, reject_bare_brackets: false)
+      ss = input.is_a?(StringScanner) ? input : StringScanner.new(input)
+      @tokens = Lexer.tokenize(ss)
       @p      = 0 # pointer to current location
+      @reject_bare_brackets = reject_bare_brackets
     end
 
     def jump(point)
@@ -53,7 +54,10 @@ module Liquid
         str = consume
         str << variable_lookups
       when :open_square
-        str = consume
+        if @reject_bare_brackets
+          raise SyntaxError, "Bare bracket access is not allowed. Use #{Expression::SELF}['...'] instead"
+        end
+        str = consume.dup
         str << expression
         str << consume(:close_square)
         str << variable_lookups

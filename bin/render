@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'liquid'
+
+class VirtualFileSystem
+  def initialize
+    snippet_1 = <<~LIQUID
+      <h1>
+        {{- greating | default: 'Hello' }}, {{ name | default: 'world' -}}!
+      </h1>
+    LIQUID
+    snippet_2 = <<~LIQUID
+      {%- for i in (1..5) -%}
+        > {{ i }}
+      {%- endfor -%}
+    LIQUID
+
+    @templates = {
+      'snippet-1' => snippet_1,
+      'snippet-2' => snippet_2,
+    }
+  end
+
+  def read_template_file(key)
+    @templates[key] || raise(Liquid::FileSystemError, "No such template '#{key}'")
+  end
+end
+
+def source
+  File.read(ARGV[0])
+rescue StandardError
+  'Usage: bin/render example/server/templates/index.liquid'
+end
+
+def assigns
+  {
+    'date' => Time.now,
+  }
+end
+
+puts Liquid::Template
+  .parse(source, error_mode: :strict2)
+  .tap { |t| t.registers[:file_system] = VirtualFileSystem.new }
+  .render(assigns)

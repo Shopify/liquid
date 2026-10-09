@@ -6,7 +6,11 @@ class CaptureTest < Minitest::Test
   include Liquid
 
   def test_captures_block_content_in_variable
-    assert_template_result("test string", "{% capture 'var' %}test string{% endcapture %}{{var}}", {})
+    assert_template_result("test string", "{% capture var %}test string{% endcapture %}{{var}}", {})
+  end
+
+  def test_captures_block_content_in_quoted_variable_in_lax
+    assert_template_result("test string", "{% capture 'var' %}test string{% endcapture %}{{var}}", {}, error_mode: :lax)
   end
 
   def test_capture_with_hyphen_in_variable_name
@@ -48,5 +52,36 @@ class CaptureTest < Minitest::Test
     t = Template.parse("{% capture foo %}すごい{% endcapture %}")
     t.render!
     assert_equal(9, t.resource_limits.assign_score)
+  end
+
+  def test_capture_with_valid_identifier_in_strict2
+    assert_template_result("hello", "{% capture my_var %}hello{% endcapture %}{{ my_var }}", error_mode: :strict2)
+  end
+
+  def test_capture_with_hyphen_in_strict2
+    assert_template_result("hello", "{% capture my-var %}hello{% endcapture %}{{ my-var }}", error_mode: :strict2)
+  end
+
+  def test_capture_rejects_parentheses_in_variable_name_in_strict2
+    assert_raises(Liquid::SyntaxError) do
+      Liquid::Template.parse("{% capture (x[y %}hello{% endcapture %}", error_mode: :strict2)
+    end
+  end
+
+  def test_capture_rejects_dot_in_variable_name_in_strict2
+    assert_raises(Liquid::SyntaxError) do
+      Liquid::Template.parse("{% capture a.b %}hello{% endcapture %}", error_mode: :strict2)
+    end
+  end
+
+  def test_capture_rejects_numeric_variable_name_in_strict2
+    assert_raises(Liquid::SyntaxError) do
+      Liquid::Template.parse("{% capture 1abc %}hello{% endcapture %}", error_mode: :strict2)
+    end
+  end
+
+  def test_capture_allows_invalid_names_in_lax
+    t = Liquid::Template.parse("{% capture (x[y %}hello{% endcapture %}", error_mode: :lax)
+    assert_equal("(x[y", t.root.nodelist.first.to)
   end
 end

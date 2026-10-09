@@ -49,8 +49,3 @@ module Database
     end
   end
 end
-
-if __FILE__ == $PROGRAM_NAME
-  p(Database.tables['collections']['frontpage'].keys)
-  # p Database.tables['blog']['articles']
-end

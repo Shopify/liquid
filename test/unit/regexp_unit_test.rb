@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'timeout'
 
 class RegexpUnitTest < Minitest::Test
   include Liquid
@@ -37,10 +38,22 @@ class RegexpUnitTest < Minitest::Test
 
   def test_variable_parser
     assert_equal(['var'],                               'var'.scan(VariableParser))
+    assert_equal(['[var]'],                             '[var]'.scan(VariableParser))
     assert_equal(['var', 'method'],                     'var.method'.scan(VariableParser))
     assert_equal(['var', '[method]'],                   'var[method]'.scan(VariableParser))
     assert_equal(['var', '[method]', '[0]'],            'var[method][0]'.scan(VariableParser))
     assert_equal(['var', '["method"]', '[0]'],          'var["method"][0]'.scan(VariableParser))
     assert_equal(['var', '[method]', '[0]', 'method'],  'var[method][0].method'.scan(VariableParser))
+  end
+
+  def test_variable_parser_with_large_input
+    Timeout.timeout(1) { assert_equal(['[var]'], '[var]'.scan(VariableParser)) }
+
+    very_long_string = "foo" * 1000
+
+    # valid dynamic lookup
+    Timeout.timeout(1) { assert_equal(["[#{very_long_string}]"], "[#{very_long_string}]".scan(VariableParser)) }
+    # invalid dynamic lookup with missing closing bracket
+    Timeout.timeout(1) { assert_equal([very_long_string], "[#{very_long_string}".scan(VariableParser)) }
   end
 end # RegexpTest

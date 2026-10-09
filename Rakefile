@@ -33,7 +33,7 @@ task :rubocop do
   end
 end
 
-desc('runs test suite with both strict and lax parsers')
+desc('runs test suite with lax, strict, and strict2 parsers')
 task :test do
   ENV['LIQUID_PARSER_MODE'] = 'lax'
   Rake::Task['base_test'].invoke
@@ -42,14 +42,20 @@ task :test do
   Rake::Task['base_test'].reenable
   Rake::Task['base_test'].invoke
 
-  if RUBY_ENGINE == 'ruby' || RUBY_ENGINE == 'truffleruby'
-    ENV['LIQUID_C'] = '1'
+  ENV['LIQUID_PARSER_MODE'] = 'strict2'
+  Rake::Task['base_test'].reenable
+  Rake::Task['base_test'].invoke
 
+  if RUBY_ENGINE == 'ruby' || RUBY_ENGINE == 'truffleruby'
     ENV['LIQUID_PARSER_MODE'] = 'lax'
     Rake::Task['integration_test'].reenable
     Rake::Task['integration_test'].invoke
 
     ENV['LIQUID_PARSER_MODE'] = 'strict'
+    Rake::Task['integration_test'].reenable
+    Rake::Task['integration_test'].invoke
+
+    ENV['LIQUID_PARSER_MODE'] = 'strict2'
     Rake::Task['integration_test'].reenable
     Rake::Task['integration_test'].invoke
   end
@@ -73,13 +79,45 @@ end
 
 namespace :benchmark do
   desc "Run the liquid benchmark with lax parsing"
-  task :run do
+  task :lax do
     ruby "./performance/benchmark.rb lax"
   end
 
   desc "Run the liquid benchmark with strict parsing"
   task :strict do
     ruby "./performance/benchmark.rb strict"
+  end
+
+  desc "Run the liquid benchmark with strict2 parsing"
+  task :strict2 do
+    ruby "./performance/benchmark.rb strict2"
+  end
+
+  desc "Run the liquid benchmark with lax, strict, and strict2 parsing"
+  task run: [:lax, :strict, :strict2]
+
+  desc "Run unit benchmarks"
+  namespace :unit do
+    task :all do
+      Dir["./performance/unit/*_benchmark.rb"].each do |file|
+        puts "🧪 Running #{file}"
+        ruby file
+      end
+    end
+
+    task :lexer do
+      Dir["./performance/unit/lexer_benchmark.rb"].each do |file|
+        puts "🧪 Running #{file}"
+        ruby file
+      end
+    end
+
+    task :expression do
+      Dir["./performance/unit/expression_benchmark.rb"].each do |file|
+        puts "🧪 Running #{file}"
+        ruby file
+      end
+    end
   end
 end
 
@@ -109,4 +147,12 @@ end
 
 task :console do
   exec 'irb -I lib -r liquid'
+end
+
+desc('run liquid-spec suite across all adapters')
+task :spec do
+  Dir['./spec/*.rb'].sort.each do |adapter|
+    puts "=== Running #{adapter} ==="
+    sh 'bundle', 'exec', 'liquid-spec', 'run', adapter, '--no-max-failures'
+  end
 end

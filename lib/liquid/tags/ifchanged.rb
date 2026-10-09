@@ -14,6 +14,4 @@ module Liquid
       output
     end
   end
-
-  Template.register_tag('ifchanged', Ifchanged)
 end

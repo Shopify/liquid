@@ -2,9 +2,9 @@
 
 module Liquid
   class RangeLookup
-    def self.parse(start_markup, end_markup)
-      start_obj = Expression.parse(start_markup)
-      end_obj   = Expression.parse(end_markup)
+    def self.parse(start_markup, end_markup, string_scanner, cache = nil)
+      start_obj = Expression.parse(start_markup, string_scanner, cache)
+      end_obj   = Expression.parse(end_markup, string_scanner, cache)
       if start_obj.respond_to?(:evaluate) || end_obj.respond_to?(:evaluate)
         new(start_obj, end_obj)
       else

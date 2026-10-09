@@ -15,35 +15,40 @@ module Liquid
   #   context['bob']  #=> nil  class Context
   class Context
     attr_reader :scopes, :errors, :registers, :environments, :resource_limits, :static_registers, :static_environments
-    attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters
+    attr_accessor :exception_renderer, :template_name, :partial, :global_filter, :strict_variables, :strict_filters, :environment
 
     # rubocop:disable Metrics/ParameterLists
-    def self.build(environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {}, &block)
-      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments, &block)
+    def self.build(environment: Environment.default, environments: {}, outer_scope: {}, registers: {}, rethrow_errors: false, resource_limits: nil, static_environments: {}, &block)
+      new(environments, outer_scope, registers, rethrow_errors, resource_limits, static_environments, environment, &block)
     end
 
-    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {})
+    def initialize(environments = {}, outer_scope = {}, registers = {}, rethrow_errors = false, resource_limits = nil, static_environments = {}, environment = Environment.default)
+      @environment = environment
       @environments = [environments]
       @environments.flatten!
 
       @static_environments = [static_environments].flatten(1).freeze
-      @scopes              = [(outer_scope || {})]
+      @scopes              = [outer_scope || {}]
       @registers           = registers.is_a?(Registers) ? registers : Registers.new(registers)
       @errors              = []
       @partial             = false
       @strict_variables    = false
-      @resource_limits     = resource_limits || ResourceLimits.new(Template.default_resource_limits)
+      @resource_limits     = resource_limits || ResourceLimits.new(environment.default_resource_limits)
       @base_scope_depth    = 0
       @interrupts          = []
       @filters             = []
       @global_filter       = nil
       @disabled_tags       = {}
 
+      # Instead of constructing new StringScanner objects for each Expression parse,
+      # we recycle the same one.
+      @string_scanner = StringScanner.new("")
+
       @registers.static[:cached_partials] ||= {}
-      @registers.static[:file_system] ||= Liquid::Template.file_system
+      @registers.static[:file_system] ||= environment.file_system
       @registers.static[:template_factory] ||= Liquid::TemplateFactory.new
 
-      self.exception_renderer = Template.default_exception_renderer
+      self.exception_renderer = environment.exception_renderer
       if rethrow_errors
         self.exception_renderer = Liquid::RAISE_EXCEPTION_LAMBDA
       end
@@ -60,7 +65,7 @@ module Liquid
     end
 
     def strainer
-      @strainer ||= StrainerFactory.create(self, @filters)
+      @strainer ||= @environment.create_strainer(self, @filters)
     end
 
     # Adds filters to this context.
@@ -142,9 +147,10 @@ module Liquid
       check_overflow
 
       self.class.build(
+        environment: @environment,
         resource_limits: resource_limits,
         static_environments: static_environments,
-        registers: Registers.new(registers)
+        registers: Registers.new(registers),
       ).tap do |subcontext|
         subcontext.base_scope_depth   = base_scope_depth + 1
         subcontext.exception_renderer = exception_renderer
@@ -174,11 +180,20 @@ module Liquid
     # Example:
     #   products == empty #=> products.empty?
     def [](expression)
-      evaluate(Expression.parse(expression))
+      evaluate(Expression.parse(expression, @string_scanner))
     end
 
     def key?(key)
-      self[key] != nil
+      find_variable(key, raise_on_not_found: false) != nil
+    end
+
+    # Checks whether a variable is defined in any scope, including nil-valued keys.
+    # Unlike #key?, this uses Hash#key? so that variables explicitly set to nil
+    # are still considered defined.
+    def variable_defined?(key)
+      @scopes.any? { |s| s.key?(key) } ||
+        @environments.any? { |e| e.key?(key) } ||
+        @static_environments.any? { |e| e.key?(key) }
     end
 
     def evaluate(object)
@@ -191,16 +206,29 @@ module Liquid
       # path and find_index() is optimized in MRI to reduce object allocation
       index = @scopes.find_index { |s| s.key?(key) }
 
+      fallback_to_self_drop = key == Expression::SELF && index.nil?
+
       variable = if index
         lookup_and_evaluate(@scopes[index], key, raise_on_not_found: raise_on_not_found)
       else
-        try_variable_find_in_environments(key, raise_on_not_found: raise_on_not_found)
+        try_variable_find_in_environments(
+          key,
+          raise_on_not_found: raise_on_not_found && !fallback_to_self_drop,
+        )
       end
 
-      variable         = variable.to_liquid
+      # `self` resolves to a SelfDrop (enabling `self['var']` lookups),
+      # but only after the normal environment lookup doesn't find a value.
+      return @self_drop ||= SelfDrop.new(self) if fallback_to_self_drop && variable.nil?
+
+      # update variable's context before invoking #to_liquid
       variable.context = self if variable.respond_to?(:context=)
 
-      variable
+      liquid_variable = variable.to_liquid
+
+      liquid_variable.context = self if variable != liquid_variable && liquid_variable.respond_to?(:context=)
+
+      liquid_variable
     end
 
     def lookup_and_evaluate(obj, key, raise_on_not_found: true)

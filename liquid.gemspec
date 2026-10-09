@@ -13,11 +13,11 @@ Gem::Specification.new do |s|
   s.summary     = "A secure, non-evaling end user template engine with aesthetic markup."
   s.authors     = ["Tobias Lütke"]
   s.email       = ["tobi@leetsoft.com"]
-  s.homepage    = "http://www.liquidmarkup.org"
+  s.homepage    = "https://shopify.github.io/liquid/"
   s.license     = "MIT"
   # s.description = "A secure, non-evaling end user template engine with aesthetic markup."
 
-  s.required_ruby_version     = ">= 2.7.0"
+  s.required_ruby_version     = ">= 3.0.0"
   s.required_rubygems_version = ">= 1.3.7"
 
   s.metadata['allowed_push_host'] = 'https://rubygems.org'
@@ -27,6 +27,9 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ["History.md", "README.md"]
 
   s.require_path = "lib"
+
+  s.add_dependency("strscan", ">= 3.1.1")
+  s.add_dependency("bigdecimal")
 
   s.add_development_dependency('rake', '~> 13.0')
   s.add_development_dependency('minitest')

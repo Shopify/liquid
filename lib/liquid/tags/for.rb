@@ -9,10 +9,10 @@ module Liquid
   #   Renders an expression for every item in an array.
   # @liquid_description
   #   You can do a maximum of 50 iterations with a `for` loop. If you need to iterate over more than 50 items, then use the
-  #   [`paginate` tag](/api/liquid/tags#paginate) to split the items over multiple pages.
+  #   [`paginate` tag](/docs/api/liquid/tags/paginate) to split the items over multiple pages.
   #
   #   > Tip:
-  #   > Every `for` loop has an associated [`forloop` object](/api/liquid/objects#forloop) with information about the loop.
+  #   > Every `for` loop has an associated [`forloop` object](/docs/api/liquid/objects/forloop) with information about the loop.
   # @liquid_syntax
   #   {% for variable in array %}
   #     expression
@@ -20,8 +20,8 @@ module Liquid
   # @liquid_syntax_keyword variable The current item in the array.
   # @liquid_syntax_keyword array The array to iterate over.
   # @liquid_syntax_keyword expression The expression to render for each iteration.
-  # @liquid_optional_param limit [number] The number of iterations to perform.
-  # @liquid_optional_param offset [number] The 1-based index to start iterating at.
+  # @liquid_optional_param limit: [number] The number of iterations to perform.
+  # @liquid_optional_param offset: [number] The 1-based index to start iterating at.
   # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   # @liquid_optional_param reversed [untyped] Iterate in reverse order.
   class For < Block
@@ -88,27 +88,32 @@ module Liquid
     end
 
     def strict_parse(markup)
-      p = Parser.new(markup)
+      p = @parse_context.new_parser(markup)
       @variable_name = p.consume(:id)
       raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in") unless p.id?('in')
 
       collection_name  = p.expression
-      @collection_name = parse_expression(collection_name)
+      @collection_name = parse_expression(collection_name, safe: true)
 
       @name     = "#{@variable_name}-#{collection_name}"
       @reversed = p.id?('reversed')
 
-      while p.look(:id) && p.look(:colon, 1)
+      while p.look(:comma) || p.look(:id)
+        p.consume?(:comma)
         unless (attribute = p.id?('limit') || p.id?('offset'))
           raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_attribute")
         end
-        p.consume
-        set_attribute(attribute, p.expression)
+        p.consume(:colon)
+        set_attribute(attribute, p.expression, safe: true)
       end
       p.consume(:end_of_string)
     end
 
     private
+
+    def strict2_parse(markup)
+      strict_parse(markup)
+    end
 
     def collection_segment(context)
       offsets = context.registers[:for] ||= {}
@@ -125,7 +130,6 @@ module Liquid
       end
 
       collection = context.evaluate(@collection_name)
-      collection = collection.to_a if collection.is_a?(Range)
 
       limit_value = context.evaluate(@limit)
       to = if limit_value.nil?
@@ -134,7 +138,9 @@ module Liquid
         Utils.to_integer(limit_value) + from
       end
 
-      segment = Utils.slice_collection(collection, from, to)
+      segment = Utils.slice_collection_for_iteration(
+        collection, from, to, context.resource_limits, use_range_to_a: true
+      )
       segment.reverse! if @reversed
 
       offsets[@name] = from + segment.length
@@ -173,17 +179,16 @@ module Liquid
       output
     end
 
-    def set_attribute(key, expr)
+    def set_attribute(key, expr, safe: false)
       case key
       when 'offset'
         @from = if expr == 'continue'
-          Usage.increment('for_offset_continue')
           :continue
         else
-          parse_expression(expr)
+          parse_expression(expr, safe: safe)
         end
       when 'limit'
-        @limit = parse_expression(expr)
+        @limit = parse_expression(expr, safe: safe)
       end
     end
 
@@ -201,6 +206,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('for', For)
 end

@@ -9,8 +9,8 @@ class BreakTagTest < Minitest::Test
   # block
   def test_break_with_no_block
     assigns  = { 'i' => 1 }
-    markup   = '{% break %}'
-    expected = ''
+    markup   = 'before{% break %}after'
+    expected = 'before'
 
     assert_template_result(expected, markup, assigns)
   end

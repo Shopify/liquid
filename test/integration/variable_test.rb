@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'timeout'
 
 class VariableTest < Minitest::Test
   include Liquid
@@ -24,17 +25,23 @@ class VariableTest < Minitest::Test
 
   def test_if_tag_calls_to_liquid_value
     assert_template_result('one', '{% if foo == 1 %}one{% endif %}', { 'foo' => IntegerDrop.new('1') })
+    assert_template_result('one', '{% if foo == eqv %}one{% endif %}', { 'foo' => IntegerDrop.new(1), 'eqv' => IntegerDrop.new(1) })
     assert_template_result('one', '{% if 0 < foo %}one{% endif %}', { 'foo' => IntegerDrop.new('1') })
     assert_template_result('one', '{% if foo > 0 %}one{% endif %}', { 'foo' => IntegerDrop.new('1') })
+    assert_template_result('one', '{% if b > a %}one{% endif %}', { 'b' => IntegerDrop.new(1), 'a' => IntegerDrop.new(0) })
     assert_template_result('true', '{% if foo == true %}true{% endif %}', { 'foo' => BooleanDrop.new(true) })
     assert_template_result('true', '{% if foo %}true{% endif %}', { 'foo' => BooleanDrop.new(true) })
 
     assert_template_result('', '{% if foo %}true{% endif %}', { 'foo' => BooleanDrop.new(false) })
     assert_template_result('', '{% if foo == true %}True{% endif %}', { 'foo' => BooleanDrop.new(false) })
+    assert_template_result('', '{% if foo and true %}SHOULD NOT HAPPEN{% endif %}', { 'foo' => BooleanDrop.new(false) })
+
+    assert_template_result('one', '{% if a contains x %}one{% endif %}', { 'a' => [1], 'x' => IntegerDrop.new(1) })
   end
 
   def test_unless_tag_calls_to_liquid_value
     assert_template_result('', '{% unless foo %}true{% endunless %}', { 'foo' => BooleanDrop.new(true) })
+    assert_template_result('true', '{% unless foo %}true{% endunless %}', { 'foo' => BooleanDrop.new(false) })
   end
 
   def test_case_tag_calls_to_liquid_value
@@ -48,7 +55,7 @@ class VariableTest < Minitest::Test
 
   def test_expression_with_whitespace_in_square_brackets
     assert_template_result('result', "{{ a[ 'b' ] }}", { 'a' => { 'b' => 'result' } })
-    assert_template_result('result', "{{ a[ [ 'b' ] ] }}", { 'b' => 'c', 'a' => { 'c' => 'result' } })
+    assert_template_result('result', "{{ a[ self[ 'b' ] ] }}", { 'b' => 'c', 'a' => { 'c' => 'result' } })
   end
 
   def test_ignore_unknown
@@ -123,11 +130,148 @@ class VariableTest < Minitest::Test
     assert_template_result('bar', '{{ foo }}', { 'foo' => :bar })
   end
 
+  def test_nested_array
+    assert_template_result('', '{{ foo }}', { 'foo' => [[nil]] })
+  end
+
   def test_dynamic_find_var
-    assert_template_result('bar', '{{ [key] }}', { 'key' => 'foo', 'foo' => 'bar' })
+    assert_template_result('bar', '{{ self[key] }}', { 'key' => 'foo', 'foo' => 'bar' })
   end
 
   def test_raw_value_variable
-    assert_template_result('bar', '{{ [key] }}', { 'key' => 'foo', 'foo' => 'bar' })
+    assert_template_result('bar', '{{ self[key] }}', { 'key' => 'foo', 'foo' => 'bar' })
+  end
+
+  def test_dynamic_find_var_with_drop
+    assert_template_result(
+      'bar',
+      '{{ self[list[settings.zero]] }}',
+      {
+        'list' => ['foo'],
+        'settings' => SettingsDrop.new("zero" => 0),
+        'foo' => 'bar',
+      },
+    )
+
+    assert_template_result(
+      'foo',
+      '{{ self[list[settings.zero]["foo"]] }}',
+      {
+        'list' => [{ 'foo' => 'bar' }],
+        'settings' => SettingsDrop.new("zero" => 0),
+        'bar' => 'foo',
+      },
+    )
+  end
+
+  def test_double_nested_variable_lookup
+    assert_template_result(
+      'bar',
+      '{{ list[list[settings.zero]]["foo"] }}',
+      {
+        'list' => [1, { 'foo' => 'bar' }],
+        'settings' => SettingsDrop.new("zero" => 0),
+        'bar' => 'foo',
+      },
+    )
+  end
+
+  def test_variable_lookup_should_not_hang_with_invalid_syntax
+    Timeout.timeout(1) do
+      assert_template_result(
+        'bar',
+        "{{['foo'}}",
+        {
+          'foo' => 'bar',
+        },
+        error_mode: :lax,
+      )
+    end
+
+    very_long_key = "1234567890" * 100
+
+    template_list = [
+      "{{['#{very_long_key}']}}", # valid
+      "{{['#{very_long_key}'}}", # missing closing bracket
+      "{{[['#{very_long_key}']}}", # extra open bracket
+    ]
+
+    template_list.each do |template|
+      Timeout.timeout(1) do
+        assert_template_result(
+          'bar',
+          template,
+          {
+            very_long_key => 'bar',
+          },
+          error_mode: :lax,
+        )
+      end
+    end
+  end
+
+  def test_filter_with_single_trailing_comma
+    template = '{{ "hello" | append: "world", }}'
+
+    with_error_modes(:strict) do
+      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+      assert_match(/is not a valid expression/, error.message)
+    end
+
+    with_error_modes(:strict2) do
+      assert_template_result('helloworld', template)
+    end
+  end
+
+  def test_multiple_filters_with_trailing_commas
+    template = '{{ "hello" | append: "1", | append: "2", }}'
+
+    with_error_modes(:strict) do
+      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+      assert_match(/is not a valid expression/, error.message)
+    end
+
+    with_error_modes(:strict2) do
+      assert_template_result('hello12', template)
+    end
+  end
+
+  def test_filter_with_colon_but_no_arguments
+    template = '{{ "test" | upcase: }}'
+
+    with_error_modes(:strict) do
+      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+      assert_match(/is not a valid expression/, error.message)
+    end
+
+    with_error_modes(:strict2) do
+      assert_template_result('TEST', template)
+    end
+  end
+
+  def test_filter_chain_with_colon_no_args
+    template = '{{ "test" | append: "x" | upcase: }}'
+
+    with_error_modes(:strict) do
+      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+      assert_match(/is not a valid expression/, error.message)
+    end
+
+    with_error_modes(:strict2) do
+      assert_template_result('TESTX', template)
+    end
+  end
+
+  def test_combining_trailing_comma_and_empty_args
+    template = '{{ "test" | append: "x", | upcase: }}'
+
+    with_error_modes(:strict) do
+      error = assert_raises(Liquid::SyntaxError) { Template.parse(template) }
+      assert_match(/is not a valid expression/, error.message)
+    end
+
+    with_error_modes(:strict2) do
+      assert_template_result('TESTX', template)
+    end
   end
 end

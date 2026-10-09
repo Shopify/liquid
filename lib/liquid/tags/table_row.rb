@@ -11,7 +11,7 @@ module Liquid
   #   The `tablerow` tag must be wrapped in HTML `<table>` and `</table>` tags.
   #
   #   > Tip:
-  #   > Every `tablerow` loop has an associated [`tablerowloop` object](/api/liquid/objects#tablerowloop) with information about the loop.
+  #   > Every `tablerow` loop has an associated [`tablerowloop` object](/docs/api/liquid/objects/tablerowloop) with information about the loop.
   # @liquid_syntax
   #   {% tablerow variable in array %}
   #     expression
@@ -19,17 +19,54 @@ module Liquid
   # @liquid_syntax_keyword variable The current item in the array.
   # @liquid_syntax_keyword array The array to iterate over.
   # @liquid_syntax_keyword expression The expression to render.
-  # @liquid_optional_param cols [number] The number of columns that the table should have.
-  # @liquid_optional_param limit [number] The number of iterations to perform.
-  # @liquid_optional_param offset [number] The 1-based index to start iterating at.
+  # @liquid_optional_param cols: [number] The number of columns that the table should have.
+  # @liquid_optional_param limit: [number] The number of iterations to perform.
+  # @liquid_optional_param offset: [number] The 1-based index to start iterating at.
   # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   class TableRow < Block
     Syntax = /(\w+)\s+in\s+(#{QuotedFragment}+)/o
+    ALLOWED_ATTRIBUTES = ['cols', 'limit', 'offset', 'range'].freeze
 
     attr_reader :variable_name, :collection_name, :attributes
 
     def initialize(tag_name, markup, options)
       super
+      parse_with_selected_parser(markup)
+    end
+
+    def strict2_parse(markup)
+      p = @parse_context.new_parser(markup)
+
+      @variable_name = p.consume(:id)
+
+      unless p.id?("in")
+        raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in")
+      end
+
+      @collection_name = safe_parse_expression(p)
+
+      p.consume?(:comma)
+
+      @attributes = {}
+      while p.look(:id)
+        key = p.consume
+        unless ALLOWED_ATTRIBUTES.include?(key)
+          raise SyntaxError, options[:locale].t("errors.syntax.table_row_invalid_attribute", attribute: key)
+        end
+
+        p.consume(:colon)
+        @attributes[key] = safe_parse_expression(p)
+        p.consume?(:comma)
+      end
+
+      p.consume(:end_of_string)
+    end
+
+    def strict_parse(markup)
+      lax_parse(markup)
+    end
+
+    def lax_parse(markup)
       if markup =~ Syntax
         @variable_name   = Regexp.last_match(1)
         @collection_name = parse_expression(Regexp.last_match(2))
@@ -45,15 +82,16 @@ module Liquid
     def render_to_output_buffer(context, output)
       (collection = context.evaluate(@collection_name)) || (return '')
 
-      from = @attributes.key?('offset') ? context.evaluate(@attributes['offset']).to_i : 0
-      to   = @attributes.key?('limit')  ? from + context.evaluate(@attributes['limit']).to_i : nil
+      from = @attributes.key?('offset') ? to_integer(context.evaluate(@attributes['offset'])) : 0
+      to = @attributes.key?('limit') ? from + to_integer(context.evaluate(@attributes['limit'])) : nil
 
-      collection = Utils.slice_collection(collection, from, to)
+      collection = Utils.slice_collection_for_iteration(collection, from, to, context.resource_limits, allow_endless: true)
       length     = collection.length
 
-      cols = context.evaluate(@attributes['cols']).to_i
+      cols = @attributes.key?('cols') ? to_integer(context.evaluate(@attributes['cols'])) : length
 
       output << "<tr class=\"row1\">\n"
+      context.resource_limits.increment_write_score(output)
       context.stack do
         tablerowloop = Liquid::TablerowloopDrop.new(length, cols)
         context['tablerowloop'] = tablerowloop
@@ -64,9 +102,17 @@ module Liquid
           output << "<td class=\"col#{tablerowloop.col}\">"
           super
           output << '</td>'
+          context.resource_limits.increment_write_score(output)
+
+          # Handle any interrupts if they exist.
+          if context.interrupt?
+            interrupt = context.pop_interrupt
+            break if interrupt.is_a?(BreakInterrupt)
+          end
 
           if tablerowloop.col_last && !tablerowloop.last
             output << "</tr>\n<tr class=\"row#{tablerowloop.row + 1}\">"
+            context.resource_limits.increment_write_score(output)
           end
 
           tablerowloop.send(:increment!)
@@ -74,6 +120,7 @@ module Liquid
       end
 
       output << "</tr>\n"
+      context.resource_limits.increment_write_score(output)
       output
     end
 
@@ -82,7 +129,13 @@ module Liquid
         super + @node.attributes.values + [@node.collection_name]
       end
     end
-  end
 
-  Template.register_tag('tablerow', TableRow)
+    private
+
+    def to_integer(value)
+      value.to_i
+    rescue NoMethodError
+      raise Liquid::ArgumentError, "invalid integer"
+    end
+  end
 end

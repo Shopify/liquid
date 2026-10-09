@@ -31,12 +31,7 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       @blocks = []
-
-      if markup =~ Syntax
-        @left = parse_expression(Regexp.last_match(1))
-      else
-        raise SyntaxError, options[:locale].t("errors.syntax.case")
-      end
+      parse_with_selected_parser(markup)
     end
 
     def parse(tokens)
@@ -77,7 +72,7 @@ module Liquid
         end
 
         result = Liquid::Utils.to_liquid_value(
-          block.evaluate(context)
+          block.evaluate(context),
         )
 
         if result
@@ -91,9 +86,50 @@ module Liquid
 
     private
 
+    def strict2_parse(markup)
+      parser = @parse_context.new_parser(markup)
+      @left = safe_parse_expression(parser)
+      parser.consume(:end_of_string)
+    end
+
+    def strict_parse(markup)
+      lax_parse(markup)
+    end
+
+    def lax_parse(markup)
+      if markup =~ Syntax
+        @left = parse_expression(Regexp.last_match(1))
+      else
+        raise SyntaxError, options[:locale].t("errors.syntax.case")
+      end
+    end
+
     def record_when_condition(markup)
       body = new_body
 
+      if strict2_mode?
+        parse_strict2_when(markup, body)
+      else
+        parse_lax_when(markup, body)
+      end
+    end
+
+    def parse_strict2_when(markup, body)
+      parser = @parse_context.new_parser(markup)
+
+      loop do
+        expr = Condition.parse_expression(parse_context, parser.expression, safe: true)
+        block = Condition.new(@left, '==', expr)
+        block.attach(body)
+        @blocks << block
+
+        break unless parser.id?('or') || parser.consume?(:comma)
+      end
+
+      parser.consume(:end_of_string)
+    end
+
+    def parse_lax_when(markup, body)
       while markup
         unless markup =~ WhenSyntax
           raise SyntaxError, options[:locale].t("errors.syntax.case_invalid_when")
@@ -123,6 +159,4 @@ module Liquid
       end
     end
   end
-
-  Template.register_tag('case', Case)
 end

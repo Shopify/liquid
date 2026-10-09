@@ -45,8 +45,8 @@ class Paginate < Liquid::Block
 
       pagination['items']      = collection_size
       pagination['pages']      = page_count - 1
-      pagination['previous']   = link('&laquo; Previous', current_page - 1)  unless 1 >= current_page
-      pagination['next']       = link('Next &raquo;', current_page + 1)      unless page_count <= current_page + 1
+      pagination['previous']   = link('&laquo; Previous', current_page - 1)  if 1 < current_page
+      pagination['next']       = link('Next &raquo;', current_page + 1)      if page_count > current_page + 1
       pagination['parts']      = []
 
       hellip_break = false

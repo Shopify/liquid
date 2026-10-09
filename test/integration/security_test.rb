@@ -44,33 +44,43 @@ class SecurityTest < Minitest::Test
   end
 
   def test_does_not_permanently_add_filters_to_symbol_table
-    current_symbols = Symbol.all_symbols
+    assert_no_new_symbols do
+      # MRI imprecisely marks objects found on the C stack, which can result
+      # in uninitialized memory being marked. This can even result in the test failing
+      # deterministically for a given compilation of ruby. Using a separate thread will
+      # keep these writes of the symbol pointer on a separate stack that will be garbage
+      # collected after Thread#join.
+      Thread.new do
+        test = %( {{ "some_string" | a_bad_filter }} )
+        Template.parse(test).render!
+        nil
+      end.join
 
-    # MRI imprecisely marks objects found on the C stack, which can result
-    # in uninitialized memory being marked. This can even result in the test failing
-    # deterministically for a given compilation of ruby. Using a separate thread will
-    # keep these writes of the symbol pointer on a separate stack that will be garbage
-    # collected after Thread#join.
-    Thread.new do
-      test = %( {{ "some_string" | a_bad_filter }} )
-      Template.parse(test).render!
-      nil
-    end.join
-
-    GC.start
-
-    assert_equal([], (Symbol.all_symbols - current_symbols))
+      GC.start
+    end
   end
 
   def test_does_not_add_drop_methods_to_symbol_table
-    current_symbols = Symbol.all_symbols
-
     assigns = { 'drop' => Drop.new }
-    assert_equal("", Template.parse("{{ drop.custom_method_1 }}", assigns).render!)
-    assert_equal("", Template.parse("{{ drop.custom_method_2 }}", assigns).render!)
-    assert_equal("", Template.parse("{{ drop.custom_method_3 }}", assigns).render!)
+    method_names = Array.new(3) { |index| "untrusted_drop_method_#{object_id}_#{index}" }
 
-    assert_equal([], (Symbol.all_symbols - current_symbols))
+    method_names.each do |method_name|
+      assert_equal("", Template.parse("{{ drop.#{method_name} }}").render!(assigns))
+    end
+
+    # JITs can intern internal metadata; untrusted Drop method names must not be interned.
+    assert_equal([], Symbol.all_symbols.map(&:to_s) & method_names)
+  end
+
+  def assert_no_new_symbols
+    # Run once to trigger any first-time initialization which might create some symbols,
+    # for example autoload or lazy method parsing might create symbols on first execution.
+    yield
+
+    # Ensure no new symbols for further runs, i.e. the code does not leak symbols
+    current_symbols = Symbol.all_symbols
+    yield
+    assert_equal([], Symbol.all_symbols - current_symbols)
   end
 
   def test_max_depth_nested_blocks_does_not_raise_exception

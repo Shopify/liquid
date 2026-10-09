@@ -36,7 +36,7 @@ module Liquid
     protected
 
     def children
-      @node.respond_to?(:nodelist) ? Array(@node.nodelist) : []
+      @node.respond_to?(:nodelist) ? Array(@node.nodelist) : Const::EMPTY_ARRAY
     end
   end
 end

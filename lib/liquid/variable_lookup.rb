@@ -6,16 +6,20 @@ module Liquid
 
     attr_reader :name, :lookups
 
-    def self.parse(markup)
-      new(markup)
+    def self.parse(markup, string_scanner = StringScanner.new(""), cache = nil)
+      new(markup, string_scanner, cache)
     end
 
-    def initialize(markup)
+    def initialize(markup, string_scanner = StringScanner.new(""), cache = nil)
       lookups = markup.scan(VariableParser)
 
       name = lookups.shift
       if name&.start_with?('[') && name&.end_with?(']')
-        name = Expression.parse(name[1..-2])
+        name = Expression.parse(
+          name[1..-2],
+          string_scanner,
+          cache,
+        )
       end
       @name = name
 
@@ -25,7 +29,11 @@ module Liquid
       @lookups.each_index do |i|
         lookup = lookups[i]
         if lookup&.start_with?('[') && lookup&.end_with?(']')
-          lookups[i] = Expression.parse(lookup[1..-2])
+          lookups[i] = Expression.parse(
+            lookup[1..-2],
+            string_scanner,
+            cache,
+          )
         elsif COMMAND_METHODS.include?(lookup)
           @command_flags |= 1 << i
         end
@@ -61,6 +69,11 @@ module Liquid
           # as commands and call them on the current object
         elsif lookup_command?(i) && object.respond_to?(key)
           object = object.send(key).to_liquid
+
+        # Handle string first/last like ActiveSupport does (returns first/last character)
+        # ActiveSupport returns "" for empty strings, not nil
+        elsif lookup_command?(i) && object.is_a?(String) && (key == "first" || key == "last")
+          object = key == "first" ? (object[0] || "") : (object[-1] || "")
 
           # No key was present with the desired value and it wasn't one of the directly supported
           # keywords either. The only thing we got left is to return nil or

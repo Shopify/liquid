@@ -28,7 +28,7 @@ module Liquid
     def interpolate(name, vars)
       name.gsub(/%\{(\w+)\}/) do
         # raise TranslationError, "Undefined key #{$1} for interpolation in translation #{name}"  unless vars[$1.to_sym]
-        (vars[Regexp.last_match(1).to_sym]).to_s
+        vars[Regexp.last_match(1).to_sym].to_s
       end
     end
 

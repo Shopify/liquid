@@ -24,6 +24,9 @@ module Liquid
         else
           false
         end
+      rescue Encoding::CompatibilityError
+        # "✅".b.include?("✅") raises Encoding::CompatibilityError despite being materially equal
+        left.b.include?(right.b)
       end,
     }
 
@@ -45,8 +48,8 @@ module Liquid
       @@operators
     end
 
-    def self.parse_expression(parse_context, markup)
-      @@method_literals[markup] || parse_context.parse_expression(markup)
+    def self.parse_expression(parse_context, markup, safe: false)
+      @@method_literals[markup] || parse_context.parse_expression(markup, safe: safe)
     end
 
     attr_reader :attachment, :child_condition
@@ -69,9 +72,9 @@ module Liquid
 
         case condition.child_relation
         when :or
-          break if result
+          break if Liquid::Utils.to_liquid_value(result)
         when :and
-          break unless result
+          break unless Liquid::Utils.to_liquid_value(result)
         else
           break
         end
@@ -110,22 +113,65 @@ module Liquid
 
     def equal_variables(left, right)
       if left.is_a?(MethodLiteral)
-        if right.respond_to?(left.method_name)
-          return right.send(left.method_name)
-        else
-          return nil
-        end
+        return call_method_literal(left, right)
       end
 
       if right.is_a?(MethodLiteral)
-        if left.respond_to?(right.method_name)
-          return left.send(right.method_name)
-        else
-          return nil
-        end
+        return call_method_literal(right, left)
       end
 
       left == right
+    end
+
+    def call_method_literal(literal, value)
+      method_name = literal.method_name
+
+      # If the object responds to the method (e.g., ActiveSupport is loaded), use it
+      if value.respond_to?(method_name)
+        value.send(method_name)
+      else
+        # Emulate ActiveSupport's blank?/empty? to make Liquid invariant
+        # to whether ActiveSupport is loaded or not
+        case method_name
+        when :blank?
+          liquid_blank?(value)
+        when :empty?
+          liquid_empty?(value)
+        else
+          false
+        end
+      end
+    end
+
+    # Implement blank? semantics matching ActiveSupport
+    # blank? returns true for nil, false, empty strings, whitespace-only strings,
+    # empty arrays, and empty hashes
+    def liquid_blank?(value)
+      case value
+      when NilClass, FalseClass
+        true
+      when TrueClass, Numeric
+        false
+      when String
+        # Blank if empty or whitespace only (matches ActiveSupport)
+        value.empty? || value.match?(/\A\s*\z/)
+      when Array, Hash
+        value.empty?
+      else
+        # Fall back to empty? if available, otherwise false
+        value.respond_to?(:empty?) ? value.empty? : false
+      end
+    end
+
+    # Implement empty? semantics
+    # Note: nil is NOT empty. empty? checks if a collection has zero elements.
+    def liquid_empty?(value)
+      case value
+      when String, Array, Hash
+        value.empty?
+      else
+        value.respond_to?(:empty?) ? value.empty? : false
+      end
     end
 
     def interpret_condition(left, right, op, context)
@@ -151,16 +197,18 @@ module Liquid
     end
 
     def deprecated_default_context
-      warn("DEPRECATION WARNING: Condition#evaluate without a context argument is deprecated" \
-        " and will be removed from Liquid 6.0.0.")
+      warn("DEPRECATION WARNING: Condition#evaluate without a context argument is deprecated " \
+        "and will be removed from Liquid 6.0.0.")
       Context.new
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
         [
-          @node.left, @node.right,
-          @node.child_condition, @node.attachment
+          @node.left,
+          @node.right,
+          @node.child_condition,
+          @node.attachment
         ].compact
       end
     end
