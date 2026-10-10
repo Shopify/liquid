@@ -12,10 +12,10 @@ class ParseTreeVisitorTest < Minitest::Test
     )
   end
 
-  def test_varible_with_filter
+  def test_variable_with_filter
     assert_equal(
-      ["test", "infilter"],
-      visit(%({{ test | split: infilter }})),
+      ["test", "infilter", "infilter_hash_value"],
+      visit(%({{ test | default: infilter, allow_false: infilter_hash_value }})),
     )
   end
 
