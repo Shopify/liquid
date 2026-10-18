@@ -219,6 +219,17 @@ class ConditionUnitTest < Minitest::Test
     assert_evaluates_true(VariableLookup.new('whitespace'), '==', blank_literal)
   end
 
+  def test_blank_with_unicode_whitespace_string
+    # ActiveSupport's String#blank? matches /\A[[:space:]]*\z/, so Unicode
+    # whitespace such as a non-breaking space or an ideographic space is blank.
+    blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
+
+    ["\u00A0", "\u3000", "\u2003 \n"].each do |value|
+      @context['unicode_whitespace'] = value
+      assert_evaluates_true(VariableLookup.new('unicode_whitespace'), '==', blank_literal)
+    end
+  end
+
   def test_blank_with_empty_string
     # An empty string has no content, so it should be considered blank.
     # This is the most basic case of a blank string.
