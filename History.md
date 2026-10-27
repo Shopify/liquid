@@ -8,6 +8,7 @@
   * As filter argument `{{ collection | where: 'prop', a or b }}`
   * As tag argument `{% render 'snip', enabled: a or b %}`
   * As conditional tag argument `{% if cond %}` (extending previous behaviour)
+  * As `for` collection, `limit` and `offset` `{% for item in fallback or items limit: (count or 2) %}`
 * Add support for subexpression prioritization and associativity
   * In ascending order of priority:
     * Logical: `and`, `or` (right to left)

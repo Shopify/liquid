@@ -18,6 +18,30 @@ class ParserUnitTest < Minitest::Test
     assert_equal('7', p.consume(:number))
   end
 
+  def test_position_returns_to_a_jump_point
+    p = new_parser("wat: 7")
+    start = p.position
+    p.consume(:id)
+    p.jump(start)
+    assert_equal('wat', p.consume(:id))
+  end
+
+  def test_expression_string_leaves_tokens_for_a_jump_back
+    p = new_parser("a.b[c.d] or e")
+    start = p.position
+    assert_equal('a.b[c.d]', p.expression_string)
+    p.jump(start)
+    assert_equal(new_parser('a.b[c.d]').expression, p.expression.left_node)
+    assert_equal('a.b[c.d] or e', p.markup_since(start))
+  end
+
+  def test_markup_since_spaces_operators
+    p = new_parser("(a.b[0] or c) == 'x y' limit")
+    start = p.position
+    p.expression
+    assert_equal("(a.b[0] or c) == 'x y'", p.markup_since(start))
+  end
+
   def test_consume?
     p = new_parser("wat: 7")
     assert_equal('wat', p.consume?(:id))

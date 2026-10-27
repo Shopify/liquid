@@ -166,6 +166,13 @@ class ParseTreeVisitorTest < Minitest::Test
     )
   end
 
+  def test_for_expressions
+    assert_equal(
+      ["candidate", "cap", "skipped", "start", "fallback", "test"],
+      visit(%({% for x in fallback or test limit: (candidate or cap) offset: skipped or start %}{% endfor %})),
+    )
+  end
+
   def test_tablerow_in
     assert_equal(
       ["test"],

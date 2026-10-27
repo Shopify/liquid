@@ -75,8 +75,7 @@ module Liquid
       @variable_name = p.consume(:id)
       raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in") unless p.id?('in')
 
-      collection_name  = p.expression_string
-      @collection_name = p.unsafe_parse_expression(collection_name)
+      collection_name, @collection_name = parse_loop_expression(p)
 
       @name     = "#{@variable_name}-#{collection_name}"
       @reversed = p.id?('reversed')
@@ -159,17 +158,36 @@ module Liquid
     end
 
     def set_attribute(key, p)
-      expr = p.expression_string
+      markup, expression = parse_loop_expression(p)
       case key
       when 'offset'
-        @from = if expr == 'continue'
-          :continue
-        else
-          p.unsafe_parse_expression(expr)
-        end
+        @from = markup == 'continue' ? :continue : expression
       when 'limit'
-        @limit = p.unsafe_parse_expression(expr)
+        @limit = expression
       end
+    end
+
+    # Parses a collection, limit or offset and returns its markup with the
+    # parsed expression. Markup from the simple value and range grammar keeps
+    # its previous parse and loop name. Other markup uses the shared
+    # expression grammar.
+    def parse_loop_expression(p)
+      start = p.position
+      if (markup = simple_expression_string(p))
+        [markup, p.unsafe_parse_expression(markup)]
+      else
+        p.jump(start)
+        expression = p.expression
+        [p.markup_since(start), expression]
+      end
+    end
+
+    # Returns nil when the markup needs the shared expression grammar.
+    def simple_expression_string(p)
+      markup = p.expression_string
+      markup unless Parser::OPERATOR_TOKEN_TYPES.any? { |type| p.look(type) }
+    rescue SyntaxError
+      nil
     end
 
     def render_else(context, output)

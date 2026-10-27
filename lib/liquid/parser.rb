@@ -2,12 +2,19 @@
 
 module Liquid
   class Parser
+    OPERATOR_TOKEN_TYPES = [:logical, :equality, :comparison].freeze
+
     def initialize(input, expression_cache = nil, reject_bare_brackets: false)
       @ss = input.is_a?(StringScanner) ? input : StringScanner.new(input)
       @cache = expression_cache
       @tokens = Lexer.tokenize(@ss)
       @p      = 0 # pointer to current location
       @reject_bare_brackets = reject_bare_brackets
+    end
+
+    # The current token position, which jump can return to.
+    def position
+      @p
     end
 
     def jump(point)
@@ -179,7 +186,7 @@ module Liquid
       token = @tokens[@p]
       case token[0]
       when :id
-        str = consume
+        str = consume.dup
         str << variable_lookups_string
       when :open_square
         raise_bare_bracket_error if @reject_bare_brackets
@@ -227,6 +234,18 @@ module Liquid
         end
       end
       str
+    end
+
+    # Markup for the tokens consumed since the start position. Tokens are
+    # joined like expression_string, with spaces around operators.
+    def markup_since(start)
+      @tokens[start...@p].each_with_object(+"") do |(type, text), markup|
+        if OPERATOR_TOKEN_TYPES.include?(type)
+          markup << " " << text << " "
+        else
+          markup << text
+        end
+      end
     end
 
     # Assumes safe input. For cases where you need the string.

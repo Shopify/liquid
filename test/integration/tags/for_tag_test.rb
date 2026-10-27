@@ -546,4 +546,160 @@ HERE
       Template.parse('{% for i in numbers %}{{ i }}{% endfor %}').render!('numbers' => range)
     end
   end
+
+  def test_collection_accepts_grouped_and_ungrouped_logical_expressions
+    assigns = { 'fallback' => nil, 'items' => ['a', 'b'] }
+
+    assert_template_result('0=a;1=b;', '{% for item in fallback or items %}{{ forloop.index0 }}={{ item }};{% endfor %}', assigns)
+    assert_template_result('0=a;1=b;', '{% for item in (fallback or items) %}{{ forloop.index0 }}={{ item }};{% endfor %}', assigns)
+    assert_template_result('ab', '{% for item in items and items %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('empty', '{% for item in fallback and items %}{{ item }}{% else %}empty{% endfor %}', assigns)
+  end
+
+  def test_collection_expression_returns_the_selected_operand
+    assigns = { 'first' => [1, 2], 'second' => [3, 4] }
+
+    assert_template_result('12', '{% for item in first or second %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('34', '{% for item in first and second %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('12', '{% for item in first or (second and nothing) %}{{ item }}{% endfor %}', assigns)
+  end
+
+  def test_collection_expression_with_ranges_and_lookups
+    assigns = { 'fallback' => nil, 'collections' => { 'featured' => [7, 8] }, 'key' => 'featured' }
+
+    assert_template_result('123', '{% for item in fallback or (1..3) %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('78', '{% for item in fallback or collections[key] %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('78', '{% for item in collections[fallback or key] %}{{ item }}{% endfor %}', assigns)
+  end
+
+  def test_collection_expression_starting_with_a_lookup
+    assigns = {
+      'values' => ['a', 'b'],
+      'key' => 0,
+      'data' => { 'list' => [1, 2], 'missing' => nil, 'keys' => { 'name' => 'list' } },
+    }
+
+    assert_template_result('a', '{% for item in values[key] or values %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('a', '{% for item in (values[key] or values) %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('a', '{% for item in values.first or values %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('12', '{% for item in data.list or values %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('12', '{% for item in data.missing or data.list %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('12', '{% for item in data[data.keys.name] or values %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('ab', "{% for item in data[data.keys['name']] and values %}{{ item }}{% endfor %}", assigns)
+    assert_template_result('a', '{% for item in data.list and values[key] %}{{ item }}{% endfor %}', assigns)
+  end
+
+  def test_collection_expression_starting_with_a_lookup_matches_assign
+    assigns = { 'values' => ['a', 'b'], 'key' => 0, 'data' => { 'missing' => nil, 'list' => [1, 2] } }
+
+    [
+      'values[key] or values',
+      'values.first or values',
+      '(data.missing or data.list)',
+      "data['missing'] or data.list",
+    ].each do |expression|
+      workaround = "{% assign selected = #{expression} %}{% for item in selected %}{{ item }},{% endfor %}"
+      template = "{% for item in #{expression} %}{{ item }},{% endfor %}"
+
+      assert_equal(Template.parse(workaround).render!(assigns), Template.parse(template).render!(assigns), expression)
+    end
+  end
+
+  def test_expression_collection_starting_with_a_lookup_keeps_its_loop_name
+    assigns = { 'values' => ['a', 'b'], 'key' => 0, 'data' => { 'list' => [1], 'keys' => { 'name' => 'list' } } }
+
+    assert_template_result('item-values[key] or values', '{% for item in values[key] or values %}{{ forloop.name }}{% endfor %}', assigns)
+    assert_template_result(
+      'item-data[data.keys.name] or values',
+      '{% for item in data[data.keys.name] or values %}{{ forloop.name }}{% endfor %}',
+      assigns,
+    )
+  end
+
+  def test_limit_and_offset_expressions_starting_with_a_lookup
+    assigns = { 'items' => [1, 2, 3, 4], 'i' => 0, 'counts' => [2, 1], 'settings' => { 'two' => 2, 'one' => 1, 'missing' => nil } }
+
+    assert_template_result('12', '{% for item in items limit: settings.two or 5 %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('12', '{% for item in items limit: counts[i] or 5 %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('1', '{% for item in items limit: (counts[1] or 3) %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('34', '{% for item in items offset: counts[i] or 0 %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('234', '{% for item in items offset: settings.missing or counts[1] %}{{ item }}{% endfor %}', assigns)
+    assert_template_result(
+      '32',
+      "{% for item in items reversed limit: counts[i] or 9 offset: settings['missing'] or settings.one %}{{ item }}{% endfor %}",
+      assigns,
+    )
+  end
+
+  def test_limit_and_offset_accept_logical_expressions
+    assigns = { 'items' => [1, 2, 3, 4], 'candidate' => nil, 'cap' => 2, 'start' => 1 }
+
+    assert_template_result('12', '{% for item in items limit: candidate or cap %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('12', '{% for item in items limit: (candidate or cap) %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('234', '{% for item in items offset: candidate or start %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('234', '{% for item in items offset: (candidate or start) %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('23', '{% for item in items limit: candidate or cap, offset: candidate or start %}{{ item }}{% endfor %}', assigns)
+  end
+
+  def test_modifiers_delimit_expressions
+    assigns = { 'fallback' => nil, 'items' => [1, 2, 3, 4, 5], 'candidate' => nil, 'cap' => 2, 'skipped' => nil, 'start' => 1 }
+    template = '{% for item in fallback or items reversed limit: candidate or cap offset: skipped or start %}{{ item }},{% endfor %}'
+    workaround = '{% assign selected = fallback or items %}{% assign count = candidate or cap %}' \
+      '{% assign begin = skipped or start %}' \
+      '{% for item in selected reversed limit: count offset: begin %}{{ item }},{% endfor %}'
+
+    assert_template_result('3,2,', template, assigns)
+    assert_template_result('3,2,', workaround, assigns)
+  end
+
+  def test_expression_collection_loop_name_and_continuation
+    assigns = { 'fallback' => nil, 'items' => [1, 2, 3, 4] }
+
+    assert_template_result(
+      'item-fallback or items|item-(fallback or items)',
+      '{% for item in fallback or items limit: 1 %}{{ forloop.name }}{% endfor %}|' \
+        '{% for item in (fallback or items) limit: 1 %}{{ forloop.name }}{% endfor %}',
+      assigns,
+    )
+    assert_template_result(
+      '12|34',
+      '{% for item in fallback or items limit: 2 %}{{ item }}{% endfor %}|' \
+        '{% for item in fallback or items offset: continue %}{{ item }}{% endfor %}',
+      assigns,
+    )
+  end
+
+  def test_simple_collections_keep_their_loop_names
+    assigns = { 'collections' => { 'featured' => ['a'] }, 'key' => 'featured', 'items' => ['a'] }
+
+    assert_template_result('item-items', '{% for item in items %}{{ forloop.name }}{% endfor %}', assigns)
+    assert_template_result('item-(1..1)', '{% for item in ( 1 .. 1 ) %}{{ forloop.name }}{% endfor %}', assigns)
+    assert_template_result('item-collections[key]', '{% for item in collections[ key ] %}{{ forloop.name }}{% endfor %}', assigns)
+    assert_template_result('item-collections["featured"]', '{% for item in collections["featured"] %}{{ forloop.name }}{% endfor %}', assigns)
+  end
+
+  def test_simple_collections_keep_their_previous_lookup_results
+    # These lookups render differently through the shared expression grammar.
+    # Templates the simple grammar accepted keep their previous output.
+    assigns = { 'a' => { ']' => [7, 8], 'x y' => 2 } }
+
+    assert_template_result('empty', '{% for i in a["]"] %}{{ i }}{% else %}empty{% endfor %}', assigns)
+    assert_template_result('empty', '{% for i in (a["x y"]..3) %}{{ i }}{% else %}empty{% endfor %}', assigns)
+  end
+
+  def test_expression_collection_keeps_resource_limits
+    template = Template.parse('{% for i in fallback or numbers %}{% endfor %}')
+    template.resource_limits.render_score_limit = 3
+
+    assert_raises(Liquid::MemoryError) { template.render!('numbers' => bounded_integer_range_with_tripwires) }
+  end
+
+  def test_invalid_loop_expressions_remain_syntax_errors
+    assert_syntax_error('{% for item in fallback or %}{% endfor %}')
+    assert_syntax_error('{% for item in (fallback or items %}{% endfor %}')
+    assert_syntax_error('{% for item in items limit: candidate or %}{% endfor %}')
+    assert_syntax_error('{% for item in items offset: (candidate or) %}{% endfor %}')
+    assert_syntax_error('{% for item in fallback or items limit: 1 reversed %}{% endfor %}')
+    assert_match_syntax_error(/Invalid attribute in for loop/, '{% for item in fallback or items size: 1 %}{% endfor %}')
+  end
 end
