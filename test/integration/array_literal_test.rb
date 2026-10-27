@@ -127,8 +127,26 @@ class ArrayLiteralTest < Minitest::Test
     assert_template_result('321;321;', "{% for n in (1..2) %}{% for i in [1, 2, 3] reversed %}{{ i }}{% endfor %};{% endfor %}")
   end
 
-  def test_host_lookup_keeps_bare_brackets
+  def test_host_expression_with_a_leading_bracket_is_an_array
     context = Context.new({ 'key' => 'name', 'name' => 'value' })
-    assert_equal('value', context['[key]'])
+    assert_equal(['name'], context['[key]'])
+    assert_equal([], context['[]'])
+    assert_equal([1, ['name']], context['[1, [key]]'])
+  end
+
+  def test_host_self_lookup_reads_a_variable_by_name
+    context = Context.new({ 'key' => 'name', 'name' => 'value' })
+    assert_equal('value', context['self[key]'])
+    assert_equal('value', context["self['name']"])
+  end
+
+  def test_for_single_element_literals
+    assigns = { 'x' => 'name', 'name' => 'value', 'list' => [5, 6] }
+    assert_template_result('1;', "{% for i in [1] %}{{ i }};{% endfor %}")
+    assert_template_result('name;', "{% for i in [x] %}{{ i }};{% endfor %}", assigns)
+    assert_template_result('', "{% for i in [] %}{{ i }};{% endfor %}")
+    assert_template_result('1,2;3;', "{% for i in [[1, 2], 3] %}{{ i | join: ',' }};{% endfor %}")
+    assert_template_result('6;', "{% for i in [list[1]] %}{{ i }};{% endfor %}", assigns)
+    assert_template_result('7;8;', "{% for i in table[[1]] %}{{ i }};{% endfor %}", { 'table' => { [1] => [7, 8] } })
   end
 end

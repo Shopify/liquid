@@ -4,12 +4,11 @@ module Liquid
   class Parser
     OPERATOR_TOKEN_TYPES = [:logical, :equality, :comparison].freeze
 
-    def initialize(input, expression_cache = nil, reject_bare_brackets: false)
+    def initialize(input, expression_cache = nil)
       @ss = input.is_a?(StringScanner) ? input : StringScanner.new(input)
       @cache = expression_cache
       @tokens = Lexer.tokenize(@ss)
       @p      = 0 # pointer to current location
-      @reject_bare_brackets = reject_bare_brackets
     end
 
     # The current token position, which jump can return to.
@@ -102,16 +101,13 @@ module Liquid
     end
 
     # primary := string | number | variable_lookup | range | boolean | grouping | array_literal
-    #
-    # A leading "[" starts an array literal in the grammar that rejects bare
-    # bracket lookups. Parsers that allow them keep reading "[key]" as a lookup.
     def primary
       token = @tokens[@p]
       case token[0]
       when :id
         variable_lookup_or_literal
       when :open_square
-        @reject_bare_brackets ? array_literal : unnamed_variable_lookup
+        array_literal
       when :string
         string
       when :number
@@ -151,14 +147,6 @@ module Liquid
       else
         VariableLookup.new(name, lookups, command_flags)
       end
-    end
-
-    # unnamed_variable_lookup := indexed_lookup (lookup)*
-    def unnamed_variable_lookup
-      raise_bare_bracket_error if @reject_bare_brackets
-      name = indexed_lookup
-      lookups, command_flags = variable_lookups
-      VariableLookup.new(name, lookups, command_flags)
     end
 
     # array_literal := "[" (expression ("," expression)* ","?)? "]"
@@ -201,12 +189,6 @@ module Liquid
       case token[0]
       when :id
         str = consume.dup
-        str << variable_lookups_string
-      when :open_square
-        raise_bare_bracket_error if @reject_bare_brackets
-        str = consume.dup
-        str << expression_string
-        str << consume(:close_square)
         str << variable_lookups_string
       when :string, :number
         consume
@@ -298,10 +280,6 @@ module Liquid
       expr = expression
       consume(:close_square)
       expr
-    end
-
-    def raise_bare_bracket_error
-      raise SyntaxError, "Bare bracket access is not allowed. Use #{Expression::SELF}['...'] instead"
     end
   end
 end
