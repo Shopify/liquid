@@ -82,7 +82,7 @@ class ConditionUnitTest < Minitest::Test
   def test_contains_works_on_arrays
     @context          = Liquid::Context.new
     @context['array'] = [1, 2, 3, 4, 5]
-    array_expr        = VariableLookup.new("array")
+    array_expr        = VariableLookup.parse("array")
 
     assert_evaluates_false(array_expr, 'contains', 0)
     assert_evaluates_true(array_expr, 'contains', 1)
@@ -96,8 +96,8 @@ class ConditionUnitTest < Minitest::Test
 
   def test_contains_returns_false_for_nil_operands
     @context = Liquid::Context.new
-    assert_evaluates_false(VariableLookup.new('not_assigned'), 'contains', '0')
-    assert_evaluates_false(0, 'contains', VariableLookup.new('not_assigned'))
+    assert_evaluates_false(VariableLookup.parse('not_assigned'), 'contains', '0')
+    assert_evaluates_false(0, 'contains', VariableLookup.parse('not_assigned'))
   end
 
   def test_contains_return_false_on_wrong_data_type
@@ -149,7 +149,7 @@ class ConditionUnitTest < Minitest::Test
     @context        = Liquid::Context.new
     @context['one'] = @context['another'] = "gnomeslab-and-or-liquid"
 
-    assert_evaluates_true(VariableLookup.new("one"), '==', VariableLookup.new("another"))
+    assert_evaluates_true(VariableLookup.parse("one"), '==', VariableLookup.parse("another"))
   end
 
   def test_default_context_is_deprecated
@@ -166,25 +166,24 @@ class ConditionUnitTest < Minitest::Test
     assert_includes(err.lines.map(&:strip), expected)
   end
 
-  def test_parse_expression_with_safe_true
+  def test_parse_expression
     environment = Environment.build
     parse_context = ParseContext.new(environment: environment)
-    result = Condition.parse_expression(parse_context, 'product.title', safe: true)
+    parser = parse_context.new_parser('product.title')
+    result = Condition.parse_expression(parser)
 
     assert_instance_of(VariableLookup, result)
     assert_equal('product', result.name)
     assert_equal(['title'], result.lookups)
   end
 
-  def test_parse_expression_raises_internal_error_if_not_safe
+  def test_parse_expression_returns_method_literal_for_blank_and_empty
     environment = Environment.build
     parse_context = ParseContext.new(environment: environment)
+    parser = parse_context.new_parser('blank')
+    result = Condition.parse_expression(parser)
 
-    error = assert_raises(Liquid::InternalError) do
-      Condition.parse_expression(parse_context, 'product.title')
-    end
-
-    assert_match(/unsafe parse_expression cannot be used/, error.message)
+    assert_instance_of(Condition::MethodLiteral, result)
   end
 
   # Tests for blank? comparison without ActiveSupport
@@ -206,7 +205,7 @@ class ConditionUnitTest < Minitest::Test
     @context['whitespace'] = '   '
     blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
 
-    assert_evaluates_true(VariableLookup.new('whitespace'), '==', blank_literal)
+    assert_evaluates_true(VariableLookup.parse('whitespace'), '==', blank_literal)
   end
 
   def test_blank_with_empty_string
@@ -215,7 +214,7 @@ class ConditionUnitTest < Minitest::Test
     @context['empty_string'] = ''
     blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
 
-    assert_evaluates_true(VariableLookup.new('empty_string'), '==', blank_literal)
+    assert_evaluates_true(VariableLookup.parse('empty_string'), '==', blank_literal)
   end
 
   def test_blank_with_empty_array
@@ -224,7 +223,7 @@ class ConditionUnitTest < Minitest::Test
     @context['empty_array'] = []
     blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
 
-    assert_evaluates_true(VariableLookup.new('empty_array'), '==', blank_literal)
+    assert_evaluates_true(VariableLookup.parse('empty_array'), '==', blank_literal)
   end
 
   def test_blank_with_empty_hash
@@ -233,7 +232,7 @@ class ConditionUnitTest < Minitest::Test
     @context['empty_hash'] = {}
     blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
 
-    assert_evaluates_true(VariableLookup.new('empty_hash'), '==', blank_literal)
+    assert_evaluates_true(VariableLookup.parse('empty_hash'), '==', blank_literal)
   end
 
   def test_blank_with_nil
@@ -242,7 +241,7 @@ class ConditionUnitTest < Minitest::Test
     @context['nil_value'] = nil
     blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
 
-    assert_evaluates_true(VariableLookup.new('nil_value'), '==', blank_literal)
+    assert_evaluates_true(VariableLookup.parse('nil_value'), '==', blank_literal)
   end
 
   def test_blank_with_false
@@ -251,7 +250,7 @@ class ConditionUnitTest < Minitest::Test
     @context['false_value'] = false
     blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
 
-    assert_evaluates_true(VariableLookup.new('false_value'), '==', blank_literal)
+    assert_evaluates_true(VariableLookup.parse('false_value'), '==', blank_literal)
   end
 
   def test_not_blank_with_true
@@ -260,7 +259,7 @@ class ConditionUnitTest < Minitest::Test
     @context['true_value'] = true
     blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
 
-    assert_evaluates_false(VariableLookup.new('true_value'), '==', blank_literal)
+    assert_evaluates_false(VariableLookup.parse('true_value'), '==', blank_literal)
   end
 
   def test_not_blank_with_number
@@ -269,7 +268,7 @@ class ConditionUnitTest < Minitest::Test
     @context['number'] = 42
     blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
 
-    assert_evaluates_false(VariableLookup.new('number'), '==', blank_literal)
+    assert_evaluates_false(VariableLookup.parse('number'), '==', blank_literal)
   end
 
   def test_not_blank_with_string_content
@@ -278,7 +277,7 @@ class ConditionUnitTest < Minitest::Test
     @context['string'] = 'hello'
     blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
 
-    assert_evaluates_false(VariableLookup.new('string'), '==', blank_literal)
+    assert_evaluates_false(VariableLookup.parse('string'), '==', blank_literal)
   end
 
   def test_not_blank_with_non_empty_array
@@ -287,7 +286,7 @@ class ConditionUnitTest < Minitest::Test
     @context['array'] = [1, 2, 3]
     blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
 
-    assert_evaluates_false(VariableLookup.new('array'), '==', blank_literal)
+    assert_evaluates_false(VariableLookup.parse('array'), '==', blank_literal)
   end
 
   def test_not_blank_with_non_empty_hash
@@ -296,7 +295,7 @@ class ConditionUnitTest < Minitest::Test
     @context['hash'] = { 'a' => 1 }
     blank_literal = Condition.class_variable_get(:@@method_literals)['blank']
 
-    assert_evaluates_false(VariableLookup.new('hash'), '==', blank_literal)
+    assert_evaluates_false(VariableLookup.parse('hash'), '==', blank_literal)
   end
 
   # Tests for empty? comparison without ActiveSupport
@@ -312,7 +311,7 @@ class ConditionUnitTest < Minitest::Test
     @context['empty_string'] = ''
     empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
 
-    assert_evaluates_true(VariableLookup.new('empty_string'), '==', empty_literal)
+    assert_evaluates_true(VariableLookup.parse('empty_string'), '==', empty_literal)
   end
 
   def test_empty_with_whitespace_string_not_empty
@@ -322,7 +321,7 @@ class ConditionUnitTest < Minitest::Test
     @context['whitespace'] = '   '
     empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
 
-    assert_evaluates_false(VariableLookup.new('whitespace'), '==', empty_literal)
+    assert_evaluates_false(VariableLookup.parse('whitespace'), '==', empty_literal)
   end
 
   def test_empty_with_empty_array
@@ -331,7 +330,7 @@ class ConditionUnitTest < Minitest::Test
     @context['empty_array'] = []
     empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
 
-    assert_evaluates_true(VariableLookup.new('empty_array'), '==', empty_literal)
+    assert_evaluates_true(VariableLookup.parse('empty_array'), '==', empty_literal)
   end
 
   def test_empty_with_empty_hash
@@ -340,7 +339,7 @@ class ConditionUnitTest < Minitest::Test
     @context['empty_hash'] = {}
     empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
 
-    assert_evaluates_true(VariableLookup.new('empty_hash'), '==', empty_literal)
+    assert_evaluates_true(VariableLookup.parse('empty_hash'), '==', empty_literal)
   end
 
   def test_nil_is_not_empty
@@ -350,7 +349,7 @@ class ConditionUnitTest < Minitest::Test
     @context['nil_value'] = nil
     empty_literal = Condition.class_variable_get(:@@method_literals)['empty']
 
-    assert_evaluates_false(VariableLookup.new('nil_value'), '==', empty_literal)
+    assert_evaluates_false(VariableLookup.parse('nil_value'), '==', empty_literal)
   end
 
   private
