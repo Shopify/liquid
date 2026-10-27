@@ -14,10 +14,6 @@ module Liquid
   # @liquid_syntax_keyword condition The condition to evaluate.
   # @liquid_syntax_keyword expression The expression to render if the condition is met.
   class If < Block
-    Syntax                  = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
-    ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
-    BOOLEAN_OPERATORS       = %w(and or).freeze
-
     attr_reader :blocks
 
     def initialize(tag_name, markup, options)
@@ -66,10 +62,6 @@ module Liquid
 
     private
 
-    def strict2_parse(markup)
-      strict_parse(markup)
-    end
-
     def push_block(tag, markup)
       block = if tag == 'else'
         ElseCondition.new
@@ -85,27 +77,7 @@ module Liquid
       Condition.parse_expression(parse_context, markup, safe: safe)
     end
 
-    def lax_parse(markup)
-      expressions = markup.scan(ExpressionsAndOperators)
-      raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop =~ Syntax
-
-      condition = Condition.new(parse_expression(Regexp.last_match(1)), Regexp.last_match(2), parse_expression(Regexp.last_match(3)))
-
-      until expressions.empty?
-        operator = expressions.pop.to_s.strip
-
-        raise SyntaxError, options[:locale].t("errors.syntax.if") unless expressions.pop.to_s =~ Syntax
-
-        new_condition = Condition.new(parse_expression(Regexp.last_match(1)), Regexp.last_match(2), parse_expression(Regexp.last_match(3)))
-        raise SyntaxError, options[:locale].t("errors.syntax.if") unless BOOLEAN_OPERATORS.include?(operator)
-        new_condition.send(operator, condition)
-        condition = new_condition
-      end
-
-      condition
-    end
-
-    def strict_parse(markup)
+    def parse_markup(markup)
       p = @parse_context.new_parser(markup)
       condition = parse_binary_comparisons(p)
       p.consume(:end_of_string)

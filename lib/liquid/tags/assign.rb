@@ -34,20 +34,7 @@ module Liquid
       parse_with_selected_parser(markup)
     end
 
-    def lax_parse(markup)
-      if markup =~ Syntax
-        @to   = Regexp.last_match(1)
-        @from = Variable.new(Regexp.last_match(2), parse_context)
-      else
-        self.class.raise_syntax_error(parse_context)
-      end
-    end
-
-    def strict_parse(markup)
-      lax_parse(markup)
-    end
-
-    def strict2_parse(markup)
+    def parse_markup(markup)
       unless markup =~ Syntax
         self.class.raise_syntax_error(parse_context)
       end

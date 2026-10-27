@@ -27,11 +27,6 @@ class ExpressionTest < Minitest::Test
     assert_template_result("-17.42", "{{ -17.42 }}")
     assert_template_result("2.5", "{{ 2.5 }}")
 
-    with_error_modes(:lax) do
-      assert_expression_result(0.0, "0.....5")
-      assert_expression_result(0.0, "-0..1")
-    end
-
     assert_expression_result(1.5, "1.5")
 
     # this is a unfortunate quirky behavior of Liquid
@@ -53,19 +48,6 @@ class ExpressionTest < Minitest::Test
     assert_match_syntax_error(
       "Liquid syntax error (line 1): Invalid expression type '(1..2)' in range expression",
       "{{ ((1..2)..3) }}",
-    )
-  end
-
-  def test_quirky_negative_sign_expression_markup
-    result = Expression.parse("-", nil)
-    assert(result.is_a?(VariableLookup))
-    assert_equal("-", result.name)
-
-    # for this template, the expression markup is "-"
-    assert_template_result(
-      "",
-      "{{ - 'theme.css' - }}",
-      error_mode: :lax,
     )
   end
 

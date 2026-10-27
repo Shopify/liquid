@@ -21,8 +21,6 @@ module Liquid
     prepend Tag::Disableable
 
     FOR = 'for'
-    SYNTAX = /(#{QuotedFragment}+)(\s+(with|#{FOR})\s+(#{QuotedFragment}+))?(\s+(?:as)\s+(#{VariableSegment}+))?/o
-    Syntax = SYNTAX
 
     attr_reader :template_name_expr, :variable_name_expr, :attributes
 
@@ -89,7 +87,7 @@ module Liquid
       @is_for_loop
     end
 
-    def strict2_parse(markup)
+    def parse_markup(markup)
       p = @parse_context.new_parser(markup)
 
       @template_name_expr = safe_parse_expression(p)
@@ -109,31 +107,6 @@ module Liquid
       end
 
       p.consume(:end_of_string)
-    end
-
-    def strict_parse(markup)
-      lax_parse(markup)
-    end
-
-    def lax_parse(markup)
-      if markup =~ SYNTAX
-        template_name = Regexp.last_match(1)
-        with_or_for   = Regexp.last_match(3)
-        variable_name = Regexp.last_match(4)
-
-        @alias_name         = Regexp.last_match(6)
-        @variable_name_expr = variable_name ? parse_expression(variable_name) : nil
-        @template_name_expr = parse_expression(template_name)
-        @is_for_loop        = (with_or_for == FOR)
-        @attributes         = {}
-
-        markup.scan(TagAttributes) do |key, value|
-          @attributes[key] = parse_expression(value)
-        end
-
-      else
-        raise SyntaxError, options[:locale].t("errors.syntax.include")
-      end
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
