@@ -261,10 +261,42 @@ class ParserUnitTest < Minitest::Test
 
   def test_rejects_bare_brackets_when_requested
     ['[key].title', 'a[[key]]'].each do |markup|
-      assert_raises(SyntaxError) { Parser.new(markup, reject_bare_brackets: true).expression }
       assert_raises(SyntaxError) { Parser.new(markup, reject_bare_brackets: true).expression_string }
     end
     assert_instance_of(VariableLookup, Parser.new('self[key].title', reject_bare_brackets: true).expression)
+  end
+
+  def test_array_literal_when_bare_brackets_are_rejected
+    p = Parser.new("[] [1, 'a', key, [nil,],] values[0]", reject_bare_brackets: true)
+    assert_equal(ArrayLiteral.new([]), p.expression)
+    assert_equal(
+      ArrayLiteral.new([1, 'a', VariableLookup.new('key', [], 0), ArrayLiteral.new([nil])]),
+      p.expression,
+    )
+    assert_equal(VariableLookup.new('values', [0], 0), p.expression)
+    assert(p.look(:end_of_string))
+  end
+
+  def test_array_literal_elements_are_full_expressions
+    literal = Parser.new('[a or b, x == y, (1..2)]', reject_bare_brackets: true).expression
+    assert_equal(['or', '=='], literal.elements.first(2).map(&:operator))
+    assert_equal(1..2, literal.elements.last)
+  end
+
+  def test_array_literal_is_an_operand
+    expr = Parser.new("fallback or ['a']", reject_bare_brackets: true).expression
+    assert_equal('or', expr.operator)
+    assert_equal(ArrayLiteral.new(['a']), expr.right_node)
+  end
+
+  def test_malformed_array_literals
+    ['[1, , 2]', '[,]', '[1, 2,,]', '[1 2]', '[1, 2', '[a: 1]'].each do |markup|
+      assert_raises(SyntaxError, markup) { Parser.new(markup, reject_bare_brackets: true).expression }
+    end
+  end
+
+  def test_leading_bracket_is_a_lookup_when_bare_brackets_are_allowed
+    assert_instance_of(VariableLookup, new_parser('[key]').expression)
   end
 
   private

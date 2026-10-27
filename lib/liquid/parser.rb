@@ -62,7 +62,7 @@ module Liquid
     # logical    := equality (("and" | "or") equality)*
     # equality   := comparison (("==" | "!=" | "<>") comparison)*
     # comparison := primary ((">=" | ">" | "<" | "<=" | ... ) primary)*
-    # primary    := string | number | variable_lookup | range | boolean | grouping
+    # primary    := string | number | variable_lookup | range | boolean | grouping | array_literal
     def expression
       logical
     end
@@ -101,14 +101,17 @@ module Liquid
       expr
     end
 
-    # primary := string | number | variable_lookup | range | boolean | grouping
+    # primary := string | number | variable_lookup | range | boolean | grouping | array_literal
+    #
+    # A leading "[" starts an array literal in the grammar that rejects bare
+    # bracket lookups. Parsers that allow them keep reading "[key]" as a lookup.
     def primary
       token = @tokens[@p]
       case token[0]
       when :id
         variable_lookup_or_literal
       when :open_square
-        unnamed_variable_lookup
+        @reject_bare_brackets ? array_literal : unnamed_variable_lookup
       when :string
         string
       when :number
@@ -156,6 +159,17 @@ module Liquid
       name = indexed_lookup
       lookups, command_flags = variable_lookups
       VariableLookup.new(name, lookups, command_flags)
+    end
+
+    # array_literal := "[" (expression ("," expression)* ","?)? "]"
+    def array_literal
+      consume(:open_square)
+      elements = []
+      until consume?(:close_square)
+        elements << expression
+        consume(:comma) unless look(:close_square)
+      end
+      ArrayLiteral.new(elements)
     end
 
     # Parenthesized expressions are recursive

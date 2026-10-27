@@ -173,6 +173,20 @@ class ParseTreeVisitorTest < Minitest::Test
     )
   end
 
+  def test_array_literal_elements
+    assert_equal(
+      ["a", "b", "c"],
+      visit(%({{ [a, [b], 1, (c or 'x')] }})),
+    )
+  end
+
+  def test_for_array_literal
+    assert_equal(
+      ["test", "a"],
+      visit(%({% for x in [a] %}{{ test }}{% endfor %})),
+    )
+  end
+
   def test_tablerow_in
     assert_equal(
       ["test"],

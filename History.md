@@ -20,6 +20,8 @@
     * `{{ ((a > b) == (c < d)) or (e == f) }}`
 - Add support for parenthesized expressions
   * e.g. `(a or b) == c`
+* Add array literals wherever an expression is accepted
+  * e.g. `{% assign rows = ['top', product.title, [1, 2]] %}` or `{% for item in fallback or [] %}`
 
 ### Architectural changes
 * `parse_expression` and `safe_parse_expression` have been removed from `Tag` and `ParseContext`
