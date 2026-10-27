@@ -62,6 +62,8 @@ require 'liquid/interrupts'
 require 'liquid/tags'
 require "liquid/environment"
 require 'liquid/lexer'
+require 'liquid/method_literal'
+require 'liquid/binary_expression'
 require 'liquid/parser'
 require 'liquid/i18n'
 require 'liquid/drop'

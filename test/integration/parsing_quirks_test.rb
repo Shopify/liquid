@@ -35,11 +35,10 @@ class ParsingQuirksTest < Minitest::Test
     assert_raises(Liquid::SyntaxError) { Template.parse("{{test |a|b|}}") }
   end
 
-  def test_meaningless_parens_error
-    assert_raises(SyntaxError) do
-      markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
-      Template.parse("{% if #{markup} %} YES {% endif %}")
-    end
+  def test_supported_parens
+    markup = "a == 'foo' or (b == 'bar' and c == 'baz') or false"
+    out = Template.parse("{% if #{markup} %} YES {% endif %}").render({ 'b' => 'bar', 'c' => 'baz' })
+    assert_equal(' YES ', out)
   end
 
   def test_unexpected_characters_syntax_error

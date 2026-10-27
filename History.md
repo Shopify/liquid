@@ -3,21 +3,22 @@
 ## 6.0.0
 
 ### Features
-* (TODO) Add support for boolean expressions everywhere
+* Add support for boolean expressions everywhere
   * As variable output `{{ a or b }}`
   * As filter argument `{{ collection | where: 'prop', a or b }}`
   * As tag argument `{% render 'snip', enabled: a or b %}`
   * As conditional tag argument `{% if cond %}` (extending previous behaviour)
-* (TODO) Add support for subexpression prioritization and associativity
+* Add support for subexpression prioritization and associativity
   * In ascending order of priority:
     * Logical: `and`, `or` (right to left)
     * Equality: `==`, `!=`, `<>` (left to right)
     * Comparison: `>`, `>=`, `<`, `<=`, `contains` (left to right)
+    * Groupings: `( expr )`
   - For example, this is now supported
     * `{{ a > b == c < d or e == f }}` which is equivalent to
     * `{{ ((a > b) == (c < d)) or (e == f) }}`
-- (TODO) Add support for parenthesized expressions
-  * e.g. `(a or b) and c`
+- Add support for parenthesized expressions
+  * e.g. `(a or b) == c`
 
 ### Architectural changes
 * `parse_expression` and `safe_parse_expression` have been removed from `Tag` and `ParseContext`
@@ -32,10 +33,17 @@
   * `:lax` and `lax_parse` is no longer supported
   * `:strict` and `strict_parse` is no longer supported
   * `strict2_parse` is renamed to `parse_markup`
-* The `warnings` system has been removed.
-* `Parser#expression` is renamed to `Parser#expression_string`
-* `safe_parse_expression` methods are replaced by `Parser#expression`
-* `parse_expression` methods are replaced by `Parser#unsafe_parse_expression`
+* Expressions
+  * The `warnings` system has been removed.
+  * `Parser#expression` is renamed to `Parser#expression_string`
+  * `safe_parse_expression` methods are replaced by `Parser#expression`
+  * `parse_expression` methods are replaced by `Parser#unsafe_parse_expression`
+* `Condition`
+  * `new(expr)` no longer accepts an `op` or `right`. Logic moved to BinaryExpression.
+  * `Condition#or` and `Condition#and` were replaced by `BinaryExpression`.
+  * `Condition#child_relation` replaced by `BinaryExpression`.
+  * `Condition.operations` was removed.
+  * `Condtion::MethodLiteral` was moved to the `Liquid` namespace
 
 ### Migrating from `^5.11.0`
 - In custom tags that include `ParserSwitching`, rename `strict2_parse` to `parse_markup`
