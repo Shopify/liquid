@@ -221,8 +221,9 @@ module Liquid
       # but only after the normal environment lookup doesn't find a value.
       return @self_drop ||= SelfDrop.new(self) if fallback_to_self_drop && variable.nil?
 
-      # update variable's context before invoking #to_liquid
-      variable.context = self if variable.respond_to?(:context=)
+      # Only Liquid::Drop owns this context contract; application objects may
+      # define an unrelated context= method.
+      variable.context = self if variable.is_a?(Liquid::Drop) && variable.respond_to?(:context=)
 
       liquid_variable = variable.to_liquid
 
