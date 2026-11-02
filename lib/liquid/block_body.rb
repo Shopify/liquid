@@ -95,6 +95,10 @@ module Liquid
       case exc
       when MemoryError
         raise
+      when StackLevelError
+        # Nesting is a resource limit; continuing can multiply work exponentially.
+        context.handle_error(exc, line_number)
+        raise
       when UndefinedVariable, UndefinedDropMethod, UndefinedFilter
         context.handle_error(exc, line_number)
       else

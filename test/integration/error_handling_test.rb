@@ -328,7 +328,10 @@ class ErrorHandlingTest < Minitest::Test
       },
     )
 
-    assert_equal("Liquid error (some/path/snippet line 1): Nesting too deep", template.render(context))
+    error = assert_raises(Liquid::StackLevelError) do
+      template.render(context)
+    end
+    assert_equal("Liquid error (some/path/snippet line 1): Nesting too deep", error.to_s)
   end
 
   def test_internal_error_is_raised_with_template_name
