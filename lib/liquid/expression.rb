@@ -139,7 +139,7 @@ module Liquid
         bracket_depth = 0
         delimiter_index = nil
         index = 1
-        end_index = markup.length - 1
+        end_index = markup.bytesize - 1
 
         # Keep the regex's rightmost-separator behaviour for triple-dot ranges.
         while index < end_index
@@ -170,8 +170,8 @@ module Liquid
 
         return unless delimiter_index
 
-        start_markup = markup[1...delimiter_index].strip
-        end_markup = markup[(delimiter_index + 2)...-1].strip
+        start_markup = markup.byteslice(1...delimiter_index).strip
+        end_markup = markup.byteslice((delimiter_index + 2)...-1).strip
         return if start_markup.empty? || end_markup.empty?
 
         [start_markup, end_markup]
