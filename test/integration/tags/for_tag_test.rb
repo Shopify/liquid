@@ -52,6 +52,36 @@ HERE
     assert_template_result(' 1  2  3 ', '{%for item in (1..foobar) %} {{item}} {%endfor%}', { "foobar" => 3 })
   end
 
+  def test_for_with_range_endpoints_containing_double_dots
+    assigns = { 'paths' => { '..' => 1, '...' => 5 } }
+
+    assert_template_result('12345', '{% for item in (1..paths["..."]) %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('12345', '{% for item in (paths[".."]..paths["..."]) %}{{ item }}{% endfor %}', assigns)
+  end
+
+  def test_for_with_multibyte_dotted_range_keys
+    ["é", "界", "🍎"].each do |prefix|
+      assigns = { 'paths' => { "#{prefix}.." => 1, "#{prefix}..." => 5 } }
+      ranges = [
+        '(paths["' + prefix + '.."]..paths["' + prefix + '..."])',
+        '(paths["' + prefix + '.."]..5)',
+        '(1..paths["' + prefix + '..."])',
+      ]
+
+      ranges.each do |range|
+        assert_template_result('12345', '{% for item in ' + range + ' %}{{ item }}{% endfor %}', assigns)
+      end
+    end
+  end
+
+  def test_for_with_dotted_range_keys_in_non_utf8_encoding
+    lower = "é..".encode(Encoding::ISO_8859_1)
+    upper = "é...".encode(Encoding::ISO_8859_1)
+    markup = '{% for item in (paths["' + lower + '"]..paths["' + upper + '"]) %}{{ item }}{% endfor %}'
+
+    assert_template_result('12345', markup, { 'paths' => { lower => 1, upper => 5 } })
+  end
+
   def test_for_with_hash_value_range
     foobar = { "value" => 3 }
     assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', { "foobar" => foobar })
