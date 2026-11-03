@@ -122,9 +122,16 @@ module Liquid
     # Build an unnamed cycle key from lookup paths instead of object identity so
     # repeated cycle tags using the same variables share their counter.
     def cycle_key
-      @variables.map do |variable|
-        variable.is_a?(VariableLookup) ? [variable.name, variable.lookups] : variable
-      end.to_s
+      @variables.map { |variable| cycle_expression_key(variable) }.to_s
+    end
+
+    def cycle_expression_key(expression)
+      return expression unless expression.is_a?(VariableLookup)
+
+      lookups = expression.lookups.each_with_index.map do |lookup, index|
+        [cycle_expression_key(lookup), expression.lookup_command?(index)]
+      end
+      [cycle_expression_key(expression.name), lookups]
     end
 
     def maybe_dup_lookup(var)
