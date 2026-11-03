@@ -52,6 +52,13 @@ HERE
     assert_template_result(' 1  2  3 ', '{%for item in (1..foobar) %} {{item}} {%endfor%}', { "foobar" => 3 })
   end
 
+  def test_for_with_range_endpoints_containing_double_dots
+    assigns = { 'paths' => { '..' => 1, '...' => 5 } }
+
+    assert_template_result('12345', '{% for item in (1..paths["..."]) %}{{ item }}{% endfor %}', assigns)
+    assert_template_result('12345', '{% for item in (paths[".."]..paths["..."]) %}{{ item }}{% endfor %}', assigns)
+  end
+
   def test_for_with_hash_value_range
     foobar = { "value" => 3 }
     assert_template_result(' 1  2  3 ', '{%for item in (1..foobar.value) %} {{item}} {%endfor%}', { "foobar" => foobar })
