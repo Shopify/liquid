@@ -50,7 +50,7 @@ class CycleTagTest < Minitest::Test
     assert_template_result("112233", template)
   end
 
-  def test_unnamed_cycle_have_independent_counters_when_used_with_lookups
+  def test_unnamed_cycle_share_counters_when_used_with_lookups
     template = <<~LIQUID
       {%- assign a = "1" -%}
       {%- for i in (1..3) -%}
@@ -59,7 +59,38 @@ class CycleTagTest < Minitest::Test
       {%- endfor -%}
     LIQUID
 
-    assert_template_result("112211", template)
+    assert_template_result("121212", template)
+  end
+
+  def test_unnamed_cycle_advances_when_first_value_is_a_lookup
+    assert_template_result("b", "{% cycle a, 'b' %}{% cycle a, 'b' %}")
+    assert_template_result("ab", "{% assign a = 'a' %}{% cycle a, 'b' %}{% cycle a, 'b' %}")
+  end
+
+  def test_unnamed_cycle_nested_lookups_share_counters_without_expression_cache
+    source = "{% cycle values[keys[index]], 'z' %}{% cycle values[keys[index]], 'z' %}"
+    assigns = { "values" => { "a" => "A" }, "keys" => ["a"], "index" => 0 }
+
+    [true, false].each do |expression_cache|
+      template = Template.parse(source, expression_cache: expression_cache)
+      assert_equal("Az", template.render(assigns))
+    end
+  end
+
+  def test_unnamed_cycle_distinguishes_lookup_commands_from_hash_keys
+    source = "{% cycle values.size, 'z' %}{% cycle values['size'], 'z' %}"
+    [true, false].each do |expression_cache|
+      template = Template.parse(source, expression_cache: expression_cache)
+      assert_equal("2", template.render("values" => [1, 2]))
+    end
+  end
+
+  def test_unnamed_cycle_dynamic_names_share_counters_without_expression_cache
+    with_error_modes(:lax, :strict) do
+      source = "{% cycle [key], 'z' %}{% cycle [key], 'z' %}"
+      template = Template.parse(source, expression_cache: false)
+      assert_equal("Az", template.render("key" => "a", "a" => "A"))
+    end
   end
 
   def test_unnamed_cycle_dependent_counter_when_used_with_literal_values
