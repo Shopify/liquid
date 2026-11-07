@@ -143,7 +143,11 @@ module Liquid
       )
       segment.reverse! if @reversed
 
-      offsets[@name] = from + segment.length
+      # The slice is clamped to the start of the collection, so a negative
+      # offset still renders from the first item. Clamp the stored cursor
+      # the same way, otherwise `offset: continue` resumes from
+      # `from + segment.length` and replays items (or skips past the end).
+      offsets[@name] = [from, 0].max + segment.length
 
       segment
     end
