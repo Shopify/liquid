@@ -15,6 +15,12 @@ class VariableTest < Minitest::Test
     assert_template_result('foobar', '{{ foo }}', { 'foo' => ThingWithToLiquid.new })
   end
 
+  def test_array_index_beyond_64_bit_integer_is_nil
+    assert_template_result('', '{{ a[99999999999999999999] }}', { 'a' => [1, 2] })
+    assert_template_result('', '{{ a[-99999999999999999999] }}', { 'a' => [1, 2] })
+    assert_template_result('', '{% assign i = 99999999999999999999 %}{{ a[i] }}', { 'a' => [1, 2] })
+  end
+
   def test_variable_lookup_calls_to_liquid_value
     assert_template_result('1', '{{ foo }}', { 'foo' => IntegerDrop.new('1') })
     assert_template_result('2', '{{ list[foo] }}', { 'foo' => IntegerDrop.new('1'), 'list' => [1, 2, 3] })
