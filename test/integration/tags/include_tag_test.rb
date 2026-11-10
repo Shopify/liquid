@@ -83,6 +83,22 @@ class IncludeTagTest < Minitest::Test
     )
   end
 
+  def test_include_for_stops_rendering_after_interrupt
+    options = { partials: { 'brk' => '<{% break %}>', 'cont' => '<{% continue %}>' } }
+    assigns = { 'a' => [1, 2, 3], 'one' => [1] }
+    assert_template_result('1<end', "{% for y in (1..2) %}{{ y }}{% include 'brk' %}{% endfor %}end", assigns, **options)
+    assert_template_result('1<end', "{% for y in (1..2) %}{{ y }}{% include 'brk' with one %}{% endfor %}end", assigns, **options)
+    assert_template_result('1<end', "{% for y in (1..2) %}{{ y }}{% include 'brk' with a %}{% endfor %}end", assigns, **options)
+    assert_template_result('1<end', "{% for y in (1..2) %}{{ y }}{% include 'brk' for a %}{% endfor %}end", assigns, **options)
+    assert_template_result('1<2<end', "{% for y in (1..2) %}{{ y }}{% include 'cont' for a %}{% endfor %}end", assigns, **options)
+    assert_template_result(
+      '<|123|end',
+      "{% for y in (1..2) %}{% include 'brk' for a %}{% endfor %}|{% for z in (1..3) %}{{ z }}{% endfor %}|end",
+      assigns,
+      **options,
+    )
+  end
+
   def test_include_tag_with_default_name
     assert_template_result(
       "Product: Draft 151cm ",
