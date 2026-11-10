@@ -236,7 +236,15 @@ module Liquid
         raise Liquid::UndefinedVariable, "undefined variable #{key}"
       end
 
-      value = obj[key]
+      value = begin
+        obj[key]
+      rescue RangeError
+        # Array#[] converts its argument to a C long and raises for an
+        # integer outside that range; treat it as an out-of-range index.
+        raise unless obj.is_a?(Array) && key.is_a?(Integer)
+
+        nil
+      end
 
       if value.is_a?(Proc) && obj.respond_to?(:[]=)
         obj[key] = value.arity == 0 ? value.call : value.call(self)
