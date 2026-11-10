@@ -887,7 +887,12 @@ module Liquid
     # @liquid_syntax number | round
     # @liquid_return [number]
     def round(input, n = 0)
-      result = Utils.to_number(input).round(Utils.to_number(n))
+      n = Utils.to_number(n)
+      # Float#round/Integer#round convert the precision to a C long and
+      # raise RangeError for a bignum; clamp it like truncatewords does.
+      n = MAX_I32 if n > MAX_I32
+      n = -MAX_I32 if n < -MAX_I32
+      result = Utils.to_number(input).round(n)
       result = result.to_f if result.is_a?(BigDecimal)
       result = result.to_i if n == 0
       result
