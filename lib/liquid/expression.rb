@@ -30,11 +30,13 @@ module Liquid
     FLOAT_REGEX = /\A(-?\d+)\.\d+\z/
 
     class << self
-      def safe_parse(parser, ss = StringScanner.new(""), cache = nil)
+      # `ss` is accepted for compatibility with callers written for the
+      # StringScanner-based parser. It is not used.
+      def safe_parse(parser, ss = nil, cache = nil)
         parse(parser.expression, ss, cache)
       end
 
-      def parse(markup, ss = StringScanner.new(""), cache = nil)
+      def parse(markup, ss = nil, cache = nil)
         return unless markup
 
         markup = markup.strip # markup can be a frozen string
@@ -82,14 +84,13 @@ module Liquid
           return markup.to_f
         end
 
-        ss.string = markup
         # the first byte must be a digit or  a dash
-        byte = ss.scan_byte
+        byte = markup.getbyte(0)
 
         return false if byte != DASH && (byte < ZERO || byte > NINE)
 
         if byte == DASH
-          peek_byte = ss.peek_byte
+          peek_byte = markup.getbyte(1)
 
           # if it starts with a dash, the next byte must be a digit
           return false if peek_byte.nil? || !(peek_byte >= ZERO && peek_byte <= NINE)
@@ -98,8 +99,10 @@ module Liquid
         # The markup could be a float with multiple dots
         first_dot_pos = nil
         num_end_pos = nil
+        pos = 1
 
-        while (byte = ss.scan_byte)
+        while (byte = markup.getbyte(pos))
+          pos += 1
           return false if byte != DOT && (byte < ZERO || byte > NINE)
 
           # we found our number and now we are just scanning the rest of the string
@@ -107,15 +110,15 @@ module Liquid
 
           if byte == DOT
             if first_dot_pos.nil?
-              first_dot_pos = ss.pos
+              first_dot_pos = pos
             else
               # we found another dot, so we know that the number ends here
-              num_end_pos = ss.pos - 1
+              num_end_pos = pos - 1
             end
           end
         end
 
-        num_end_pos = markup.length if ss.eos?
+        num_end_pos = markup.length
 
         if num_end_pos
           # number ends with a number "123.123"

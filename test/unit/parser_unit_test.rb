@@ -85,6 +85,6 @@ class ParserUnitTest < Minitest::Test
   private
 
   def new_parser(str)
-    Parser.new(StringScanner.new(str))
+    Parser.new(str)
   end
 end
