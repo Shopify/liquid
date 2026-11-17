@@ -68,6 +68,7 @@ module Liquid
             variable.each do |var|
               context[context_variable_name] = var
               partial.render_to_output_buffer(context, output)
+              break if context.interrupt?
             end
           else
             context[context_variable_name] = variable
