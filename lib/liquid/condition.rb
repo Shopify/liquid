@@ -154,7 +154,7 @@ module Liquid
         false
       when String
         # Blank if empty or whitespace only (matches ActiveSupport)
-        value.empty? || value.match?(/\A\s*\z/)
+        value.empty? || value.match?(/\A[[:space:]]*\z/)
       when Array, Hash
         value.empty?
       else
