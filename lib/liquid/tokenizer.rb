@@ -28,6 +28,8 @@ module Liquid
       @line_number = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
       @source = source.to_s.to_str
+      raise SyntaxError, "Invalid byte sequence in #{@source.encoding}" unless @source.valid_encoding?
+
       @offset = 0
       @tokens = []
 
@@ -57,7 +59,6 @@ module Liquid
         @tokens = @source.split("\n")
       else
         @byte_search = BYTE_SEARCH_ENCODINGS.include?(@source.encoding)
-        @valid_encoding = @source.valid_encoding?
         @eos = @source.bytesize
         @pos = 0
         @tokens << next_token while @pos < @eos
@@ -93,19 +94,10 @@ module Liquid
         @pos = @eos
         @source.byteslice(start, @eos - start)
       end
-    rescue ::ArgumentError => e
-      if e.message == "invalid byte sequence in #{@source.encoding}"
-        raise SyntaxError, "Invalid byte sequence in #{@source.encoding}"
-      else
-        raise
-      end
     end
 
     def tag_or_variable_start_index
       return regexp_index(TAG_OR_VARIABLE_START) unless @byte_search
-
-      # A regular expression search raises ArgumentError for an invalid source, so a byte search does too.
-      TAG_OR_VARIABLE_START.match?(@source) unless @valid_encoding
 
       index = @pos
       while (index = @source.byteindex("{", index))
@@ -178,9 +170,6 @@ module Liquid
 
     def tag_end_index
       return regexp_index(TAG_END) unless @byte_search
-
-      # A regular expression search raises ArgumentError for an invalid source, so a byte search does too.
-      TAG_END.match?(@source) unless @valid_encoding
 
       @source.byteindex("%}", @pos)
     end
