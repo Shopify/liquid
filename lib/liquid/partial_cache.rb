@@ -12,6 +12,8 @@ module Liquid
       source      = file_system.read_template_file(template_name)
 
       parse_context.partial = true
+      trim_whitespace = parse_context.trim_whitespace
+      parse_context.trim_whitespace = false
 
       template_factory = context.registers[:template_factory]
       template = template_factory.for(template_name)
@@ -28,6 +30,7 @@ module Liquid
       cached_partials[cache_key] = partial
     ensure
       parse_context.partial = false
+      parse_context.trim_whitespace = trim_whitespace
     end
   end
 end
