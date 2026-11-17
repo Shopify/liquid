@@ -175,7 +175,8 @@ module Liquid
     # Example:
     #   products == empty #=> products.empty?
     def [](expression)
-      evaluate(Expression.parse(expression, @string_scanner))
+      @string_scanner.string = expression
+      evaluate(Parser.new(@string_scanner).expression)
     end
 
     def key?(key)

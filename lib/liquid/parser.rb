@@ -2,9 +2,10 @@
 
 module Liquid
   class Parser
-    def initialize(input, reject_bare_brackets: false)
-      ss = input.is_a?(StringScanner) ? input : StringScanner.new(input)
-      @tokens = Lexer.tokenize(ss)
+    def initialize(input, expression_cache = nil, reject_bare_brackets: false)
+      @ss = input.is_a?(StringScanner) ? input : StringScanner.new(input)
+      @cache = expression_cache
+      @tokens = Lexer.tokenize(@ss)
       @p      = 0 # pointer to current location
       @reject_bare_brackets = reject_bare_brackets
     end
@@ -51,23 +52,74 @@ module Liquid
       token = @tokens[@p]
       case token[0]
       when :id
-        str = consume
-        str << variable_lookups
+        variable_lookup
       when :open_square
-        if @reject_bare_brackets
-          raise SyntaxError, "Bare bracket access is not allowed. Use #{Expression::SELF}['...'] instead"
-        end
+        unnamed_variable_lookup
+      when :string
+        string
+      when :number
+        number
+      when :open_round
+        range_lookup
+      else
+        raise SyntaxError, "#{token} is not a valid expression"
+      end
+    end
+
+    def number
+      num = consume(:number)
+      Expression.parse_number(num)
+    end
+
+    def string
+      consume(:string)[1..-2]
+    end
+
+    def variable_lookup
+      name = consume(:id)
+      lookups, command_flags = variable_lookups
+      if Expression::LITERALS.key?(name) && lookups.empty?
+        Expression::LITERALS[name]
+      else
+        VariableLookup.new(name, lookups, command_flags)
+      end
+    end
+
+    def unnamed_variable_lookup
+      raise_bare_bracket_error if @reject_bare_brackets
+      name = indexed_lookup
+      lookups, command_flags = variable_lookups
+      VariableLookup.new(name, lookups, command_flags)
+    end
+
+    def range_lookup
+      consume(:open_round)
+      first = expression
+      consume(:dotdot)
+      last = expression
+      consume(:close_round)
+      RangeLookup.create(first, last)
+    end
+
+    def expression_string
+      token = @tokens[@p]
+      case token[0]
+      when :id
+        str = consume
+        str << variable_lookups_string
+      when :open_square
+        raise_bare_bracket_error if @reject_bare_brackets
         str = consume.dup
-        str << expression
+        str << expression_string
         str << consume(:close_square)
-        str << variable_lookups
+        str << variable_lookups_string
       when :string, :number
         consume
       when :open_round
         consume
-        first = expression
+        first = expression_string
         consume(:dotdot)
-        last = expression
+        last = expression_string
         consume(:close_round)
         "(#{first}..#{last})"
       else
@@ -75,23 +127,23 @@ module Liquid
       end
     end
 
-    def argument
+    def argument_string
       str = +""
       # might be a keyword argument (identifier: expression)
       if look(:id) && look(:colon, 1)
         str << consume << consume << ' '
       end
 
-      str << expression
+      str << expression_string
       str
     end
 
-    def variable_lookups
+    def variable_lookups_string
       str = +""
       loop do
         if look(:open_square)
           str << consume
-          str << expression
+          str << expression_string
           str << consume(:close_square)
         elsif look(:dot)
           str << consume
@@ -101,6 +153,48 @@ module Liquid
         end
       end
       str
+    end
+
+    # Assumes safe input. For cases where you need the string.
+    # Don't use this unless you're sure about what you're doing.
+    def unsafe_parse_expression(markup)
+      parse_expression(markup)
+    end
+
+    private
+
+    def parse_expression(markup)
+      Expression.parse(markup, @ss, @cache)
+    end
+
+    def variable_lookups
+      lookups = []
+      command_flags = 0
+      i = -1
+      loop do
+        i += 1
+        if look(:open_square)
+          lookups << indexed_lookup
+        elsif consume?(:dot)
+          lookup = consume(:id)
+          lookups << lookup
+          command_flags |= 1 << i if VariableLookup::COMMAND_METHODS.include?(lookup)
+        else
+          break
+        end
+      end
+      [lookups, command_flags]
+    end
+
+    def indexed_lookup
+      consume(:open_square)
+      expr = expression
+      consume(:close_square)
+      expr
+    end
+
+    def raise_bare_bracket_error
+      raise SyntaxError, "Bare bracket access is not allowed. Use #{Expression::SELF}['...'] instead"
     end
   end
 end

@@ -87,9 +87,9 @@ module Liquid
     def parse_markup(markup)
       p = @parse_context.new_parser(markup)
 
-      @template_name_expr = parse_expression(template_name(p), safe: true)
+      @template_name_expr = template_name(p)
       with_or_for         = p.id?("for") || p.id?("with")
-      @variable_name_expr = safe_parse_expression(p) if with_or_for
+      @variable_name_expr = p.expression if with_or_for
       @alias_name         = p.consume(:id) if p.id?("as")
       @is_for_loop        = (with_or_for == FOR)
 
@@ -99,7 +99,7 @@ module Liquid
       while p.look(:id)
         key = p.consume
         p.consume(:colon)
-        @attributes[key] = safe_parse_expression(p)
+        @attributes[key] = p.expression
         p.consume?(:comma)
       end
 
@@ -107,7 +107,7 @@ module Liquid
     end
 
     def template_name(p)
-      p.consume(:string)
+      p.string
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
