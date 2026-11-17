@@ -28,49 +28,49 @@ class IncrementTagTest < Minitest::Test
     )
   end
 
-  def test_increment_strict2_rejects_invalid_variable_name
+  def test_increment_rejects_invalid_variable_name
     assert_raises(Liquid::SyntaxError) do
-      Template.parse('{% increment foo bar %}', error_mode: :strict2)
+      Template.parse('{% increment foo bar %}')
     end
   end
 
-  def test_increment_strict2_rejects_variable_starting_with_number
+  def test_increment_rejects_variable_starting_with_number
     assert_raises(Liquid::SyntaxError) do
-      Template.parse('{% increment 11aa %}', error_mode: :strict2)
+      Template.parse('{% increment 11aa %}')
     end
   end
 
-  def test_increment_strict2_accepts_valid_variable_name
-    template = Template.parse('{% increment my-var %}', error_mode: :strict2)
+  def test_increment_accepts_valid_variable_name
+    template = Template.parse('{% increment my-var %}')
     assert_equal('0', template.render)
   end
 
-  def test_decrement_strict2_rejects_invalid_variable_name
+  def test_decrement_rejects_invalid_variable_name
     assert_raises(Liquid::SyntaxError) do
-      Template.parse('{% decrement foo bar %}', error_mode: :strict2)
+      Template.parse('{% decrement foo bar %}')
     end
   end
 
-  def test_decrement_strict2_rejects_variable_starting_with_number
+  def test_decrement_rejects_variable_starting_with_number
     assert_raises(Liquid::SyntaxError) do
-      Template.parse('{% decrement 11aa %}', error_mode: :strict2)
+      Template.parse('{% decrement 11aa %}')
     end
   end
 
-  def test_decrement_strict2_accepts_valid_variable_name
-    template = Template.parse('{% decrement my-var %}', error_mode: :strict2)
+  def test_decrement_accepts_valid_variable_name
+    template = Template.parse('{% decrement my-var %}')
     assert_equal('-1', template.render)
   end
 
-  def test_increment_strict2_rejects_empty_variable_name
+  def test_increment_rejects_empty_variable_name
     assert_raises(Liquid::SyntaxError) do
-      Template.parse('{% increment %}', error_mode: :strict2)
+      Template.parse('{% increment %}')
     end
   end
 
-  def test_decrement_strict2_rejects_empty_variable_name
+  def test_decrement_rejects_empty_variable_name
     assert_raises(Liquid::SyntaxError) do
-      Template.parse('{% decrement %}', error_mode: :strict2)
+      Template.parse('{% decrement %}')
     end
   end
 end

@@ -23,7 +23,6 @@ end
 
 # Compile a template string into a Liquid::Template
 LiquidSpec.compile do |ctx, source, options|
-  options[:error_mode] ||= :strict
   ctx[:template] = Liquid::Template.parse(source, **options)
 end
 

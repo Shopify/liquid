@@ -86,24 +86,19 @@ module Liquid
     def self.render_node(context, output, node)
       node.render_to_output_buffer(context, output)
     rescue => exc
-      blank_tag = !node.instance_of?(Variable) && node.blank?
-      rescue_render_node(context, output, node.line_number, exc, blank_tag)
+      rescue_render_node(context, output, node.line_number, exc)
     end
 
     # @api private
-    def self.rescue_render_node(context, output, line_number, exc, blank_tag)
+    # The unused blank_tag argument keeps the liquid-c call signature compatible.
+    def self.rescue_render_node(context, output, line_number, exc, _blank_tag = false)
       case exc
       when MemoryError
         raise
       when UndefinedVariable, UndefinedDropMethod, UndefinedFilter
         context.handle_error(exc, line_number)
       else
-        error_message = context.handle_error(exc, line_number)
-        error_mode = context.registers.static[:template_error_mode]
-        suppress_error_text = blank_tag && error_mode != :strict2 && error_mode != :rigid
-        unless suppress_error_text # blank-tag suppression is kept for backwards compatibility outside strict2
-          output << error_message
-        end
+        output << context.handle_error(exc, line_number)
       end
     end
 

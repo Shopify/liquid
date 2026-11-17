@@ -632,11 +632,9 @@ class ContextTest < Minitest::Test
   end
 
   def test_has_key_will_not_add_an_error_for_missing_keys
-    with_error_modes(:strict) do
-      context = Context.new
-      context.key?('unknown')
-      assert_empty(context.errors)
-    end
+    context = Context.new
+    context.key?('unknown')
+    assert_empty(context.errors)
   end
 
   def test_key_lookup_will_raise_for_missing_keys_when_strict_variables_is_enabled

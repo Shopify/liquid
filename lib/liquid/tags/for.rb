@@ -25,8 +25,6 @@ module Liquid
   # @liquid_optional_param range [untyped] A custom numeric range to iterate over.
   # @liquid_optional_param reversed [untyped] Iterate in reverse order.
   class For < Block
-    Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
-
     attr_reader :collection_name, :variable_name, :limit, :from
 
     def initialize(tag_name, markup, options)
@@ -72,22 +70,7 @@ module Liquid
 
     protected
 
-    def lax_parse(markup)
-      if markup =~ Syntax
-        @variable_name   = Regexp.last_match(1)
-        collection_name  = Regexp.last_match(2)
-        @reversed        = !!Regexp.last_match(3)
-        @name            = "#{@variable_name}-#{collection_name}"
-        @collection_name = parse_expression(collection_name)
-        markup.scan(TagAttributes) do |key, value|
-          set_attribute(key, value)
-        end
-      else
-        raise SyntaxError, options[:locale].t("errors.syntax.for")
-      end
-    end
-
-    def strict_parse(markup)
+    def parse_markup(markup)
       p = @parse_context.new_parser(markup)
       @variable_name = p.consume(:id)
       raise SyntaxError, options[:locale].t("errors.syntax.for_invalid_in") unless p.id?('in')
@@ -110,10 +93,6 @@ module Liquid
     end
 
     private
-
-    def strict2_parse(markup)
-      strict_parse(markup)
-    end
 
     def collection_segment(context)
       offsets = context.registers[:for] ||= {}
