@@ -794,6 +794,10 @@ class StandardFiltersTest < Minitest::Test
       assert_template_result("4", "{{ 1.0 | divided_by: 0.0 | round }}")
     end
 
+    # A precision beyond a 64-bit integer is clamped, like truncatewords
+    # clamps its word count, instead of raising an internal error (#2142).
+    assert_template_result("1.5", "{{ 1.5 | round: 99999999999999999999 }}")
+    assert_template_result("0", "{{ 15 | round: -99999999999999999999 }}")
     assert_template_result("5", "{{ price | round }}", { 'price' => NumberLikeThing.new(4.6) })
     assert_template_result("4", "{{ price | round }}", { 'price' => NumberLikeThing.new(4.3) })
   end
