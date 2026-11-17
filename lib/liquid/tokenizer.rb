@@ -1,22 +1,11 @@
 # frozen_string_literal: true
 
-require "strscan"
-
 module Liquid
   class Tokenizer
     attr_reader :line_number, :for_liquid_tag
 
-    TAG_END = /%\}/
-    TAG_OR_VARIABLE_START = /\{[\{\%]/
-    NEWLINE = /\n/
-
-    OPEN_CURLEY = "{".ord
-    CLOSE_CURLEY = "}".ord
-    PERCENTAGE = "%".ord
-
     def initialize(
       source:,
-      string_scanner:,
       line_numbers: false,
       line_number: nil,
       for_liquid_tag: false
@@ -28,8 +17,6 @@ module Liquid
       @tokens = []
 
       if @source
-        @ss = string_scanner
-        @ss.string = @source
         tokenize
       end
     end
@@ -51,111 +38,86 @@ module Liquid
     private
 
     def tokenize
-      if @for_liquid_tag
-        @tokens = @source.split("\n")
+      @tokens = if @for_liquid_tag
+        @source.split("\n")
       else
-        @tokens << shift_normal until @ss.eos?
+        scan(@source)
       end
 
       @source = nil
-      @ss = nil
     end
 
-    def shift_normal
-      token = next_token
+    # @param source [String]
+    # @return [Array<String>]
+    def scan(source)
+      raise SyntaxError, "Invalid byte sequence in #{source.encoding}" unless source.valid_encoding?
 
-      return unless token
+      tokens = [] # : Array[String]
+      pos = 0
+      eos = source.bytesize
 
-      token
-    end
+      # rubocop:disable Metrics/BlockNesting
+      while pos < eos
+        byte = source.getbyte(pos)
+        next_byte = source.getbyte(pos + 1)
 
-    def next_token
-      # possible states: :text, :tag, :variable
-      byte_a = @ss.peek_byte
-
-      if byte_a == OPEN_CURLEY
-        @ss.scan_byte
-
-        byte_b = @ss.peek_byte
-
-        if byte_b == PERCENTAGE
-          @ss.scan_byte
-          return next_tag_token
-        elsif byte_b == OPEN_CURLEY
-          @ss.scan_byte
-          return next_variable_token
-        end
-
-        @ss.pos -= 1
-      end
-
-      next_text_token
-    end
-
-    def next_text_token
-      start = @ss.pos
-
-      unless @ss.skip_until(TAG_OR_VARIABLE_START)
-        token = @ss.rest
-        @ss.terminate
-        return token
-      end
-
-      pos = @ss.pos -= 2
-      @source.byteslice(start, pos - start)
-    rescue ::ArgumentError => e
-      if e.message == "invalid byte sequence in #{@ss.string.encoding}"
-        raise SyntaxError, "Invalid byte sequence in #{@ss.string.encoding}"
-      else
-        raise
-      end
-    end
-
-    def next_variable_token
-      start = @ss.pos - 2
-
-      byte_a = byte_b = @ss.scan_byte
-
-      while byte_b
-        byte_a = @ss.scan_byte while byte_a && byte_a != CLOSE_CURLEY && byte_a != OPEN_CURLEY
-
-        break unless byte_a
-
-        if @ss.eos?
-          return byte_a == CLOSE_CURLEY ? @source.byteslice(start, @ss.pos - start) : "{{"
-        end
-
-        byte_b = @ss.scan_byte
-
-        if byte_a == CLOSE_CURLEY
-          if byte_b == CLOSE_CURLEY
-            return @source.byteslice(start, @ss.pos - start)
-          elsif byte_b != CLOSE_CURLEY
-            @ss.pos -= 1
-            return @source.byteslice(start, @ss.pos - start)
+        if byte == 123 && next_byte == 123 # {{
+          if (index = source.byteindex("}", pos + 2))
+            if source.getbyte(index + 1) == 125 # }}
+              tokens << source.byteslice(pos, index + 2 - pos)
+              pos = index + 2
+            else # } or %}
+              tokens << source.byteslice(pos, index + 1 - pos)
+              pos = index + 1
+            end
+          else
+            tokens << "{{"
+            pos += 2
           end
-        elsif byte_a == OPEN_CURLEY && byte_b == PERCENTAGE
-          return next_tag_token_with_start(start)
+        elsif byte == 123 && next_byte == 37 # {%
+          if (index = source.byteindex("%}", pos + 2))
+            tokens << source.byteslice(pos, index + 2 - pos)
+            pos = index + 2
+          else
+            tokens << "{%"
+            pos += 2
+          end
+        else
+          # Not markup. Scan until but not including {{ or {%
+          index = source.byteindex("{", pos)
+
+          unless index
+            # No more markup. Scan until end of string.
+            tokens << source.byteslice(pos, eos - pos)
+            break
+          end
+
+          next_byte = source.getbyte(index + 1)
+
+          while next_byte != 37 && next_byte != 123
+            index = source.byteindex("{", index + 1)
+            break unless index
+
+            next_byte = source.getbyte(index + 1)
+            unless next_byte
+              index = nil
+              break
+            end
+          end
+
+          if index
+            tokens << source.byteslice(pos, index - pos)
+            pos = index
+          else
+            # No more markup. Scan until end of string.
+            tokens << source.byteslice(pos, eos - pos)
+            break
+          end
         end
-
-        byte_a = byte_b
       end
+      # rubocop:enable Metrics/BlockNesting
 
-      "{{"
-    end
-
-    def next_tag_token
-      start = @ss.pos - 2
-      if (len = @ss.skip_until(TAG_END))
-        @source.byteslice(start, len + 2)
-      else
-        "{%"
-      end
-    end
-
-    def next_tag_token_with_start(start)
-      @ss.skip_until(TAG_END)
-      @source.byteslice(start, @ss.pos - start)
+      tokens
     end
   end
 end
