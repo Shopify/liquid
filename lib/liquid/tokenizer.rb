@@ -24,6 +24,8 @@ module Liquid
       @line_number = line_number || (line_numbers ? 1 : nil)
       @for_liquid_tag = for_liquid_tag
       @source = source.to_s.to_str
+      raise SyntaxError, "Invalid byte sequence in #{@source.encoding}" unless @source.valid_encoding?
+
       @offset = 0
       @tokens = []
 
@@ -103,12 +105,6 @@ module Liquid
 
       pos = @ss.pos -= 2
       @source.byteslice(start, pos - start)
-    rescue ::ArgumentError => e
-      if e.message == "invalid byte sequence in #{@ss.string.encoding}"
-        raise SyntaxError, "Invalid byte sequence in #{@ss.string.encoding}"
-      else
-        raise
-      end
     end
 
     def next_variable_token

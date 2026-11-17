@@ -48,6 +48,52 @@ class TokenizerTest < Minitest::Test
     assert_equal(["{%%}", "}"], tokenize('{%%}}'))
   end
 
+  def test_invalid_utf8_after_leading_tag_raises_syntax_error
+    error = assert_raises(Liquid::SyntaxError) { new_tokenizer("{% if true %}\xFF") }
+    assert_equal("Liquid syntax error: Invalid byte sequence in UTF-8", error.message)
+  end
+
+  def test_invalid_utf8_after_variable_then_tag_raises_syntax_error
+    error = assert_raises(Liquid::SyntaxError) { new_tokenizer("{{ x }}{% if true %}\xFF") }
+    assert_equal("Liquid syntax error: Invalid byte sequence in UTF-8", error.message)
+  end
+
+  def test_invalid_utf8_in_unterminated_variable_with_tag_raises_syntax_error
+    error = assert_raises(Liquid::SyntaxError) { new_tokenizer("{{ x {% if true %}\xFF") }
+    assert_equal("Liquid syntax error: Invalid byte sequence in UTF-8", error.message)
+  end
+
+  def test_invalid_utf8_deep_in_source_raises_syntax_error
+    source = "{% if true %}hi{% endif %}" + ("x" * 5000) + "\xFF"
+    error = assert_raises(Liquid::SyntaxError) { new_tokenizer(source) }
+    assert_equal("Liquid syntax error: Invalid byte sequence in UTF-8", error.message)
+  end
+
+  def test_invalid_utf8_with_line_numbers_raises_syntax_error
+    error = assert_raises(Liquid::SyntaxError) { new_tokenizer("{% if true %}\xFF", start_line_number: 1) }
+    assert_equal("Liquid syntax error: Invalid byte sequence in UTF-8", error.message)
+  end
+
+  def test_invalid_utf8_in_liquid_tag_body_raises_syntax_error
+    error = assert_raises(Liquid::SyntaxError) do
+      Liquid::ParseContext.new.new_tokenizer("echo \xFF\nx", for_liquid_tag: true, start_line_number: 1)
+    end
+    assert_equal("Liquid syntax error: Invalid byte sequence in UTF-8", error.message)
+  end
+
+  def test_valid_multibyte_utf8_after_leading_tag
+    assert_equal(["{% if true %}", "é", "{% endif %}"], tokenize("{% if true %}é{% endif %}"))
+  end
+
+  def test_binary_source_with_high_bytes_tokenizes
+    assert_equal(["{% if true %}".b, "\xFF".b], tokenize("{% if true %}\xFF".b))
+  end
+
+  def test_invalid_utf8_in_variable_only_source_raises_syntax_error
+    error = assert_raises(Liquid::SyntaxError) { new_tokenizer("{{ \"\xFF\" }}") }
+    assert_equal("Liquid syntax error: Invalid byte sequence in UTF-8", error.message)
+  end
+
   private
 
   def new_tokenizer(source, parse_context: Liquid::ParseContext.new, start_line_number: nil)

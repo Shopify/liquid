@@ -1,5 +1,9 @@
 # Liquid Change Log
 
+## Unreleased
+
+* Raise `Liquid::SyntaxError` instead of `ArgumentError` when a template with invalid bytes starts with a tag, a variable, or is a `{% liquid %}` body [Josh Faigan]
+
 ## 5.14.0
 
 * Avoid materializing integer ranges in `for` and `tablerow` loops, and account for each visited range item [Ian Ker-Seymer]
