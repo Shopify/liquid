@@ -5,19 +5,40 @@ require 'rake/testtask'
 $LOAD_PATH.unshift(File.expand_path("../lib", __FILE__))
 require "liquid/version"
 
+template_recorder_test = "test/integration/template_recorder_test.rb"
+
 task(default: [:test, :rubocop])
 
 desc('run test suite with default parser')
 Rake::TestTask.new(:base_test) do |t|
   t.libs << 'lib' << 'test'
-  t.test_files = FileList['test/{integration,unit}/**/*_test.rb']
+  test_files = FileList['test/{integration,unit}/**/*_test.rb']
+  test_files.exclude(template_recorder_test) unless ENV["LIQUID_TEMPLATE_RECORDER_HOOKS"]
+  t.test_files = test_files
   t.verbose    = false
 end
 
 Rake::TestTask.new(:integration_test) do |t|
   t.libs << 'lib' << 'test'
-  t.test_files = FileList['test/integration/**/*_test.rb']
+  test_files = FileList['test/integration/**/*_test.rb']
+  test_files.exclude(template_recorder_test) unless ENV["LIQUID_TEMPLATE_RECORDER_HOOKS"]
+  t.test_files = test_files
   t.verbose    = false
+end
+
+desc('run template recorder tests with hooks enabled')
+task :template_recorder_test do
+  sh(
+    {
+      "LIQUID_PARSER_MODE" => "lax",
+      "LIQUID_TEMPLATE_RECORDER_HOOKS" => "1",
+    },
+    "bundle",
+    "exec",
+    "ruby",
+    "-Itest",
+    template_recorder_test,
+  )
 end
 
 desc('run test suite with warn error mode')
@@ -59,6 +80,8 @@ task :test do
     Rake::Task['integration_test'].reenable
     Rake::Task['integration_test'].invoke
   end
+
+  Rake::Task['template_recorder_test'].invoke unless ENV["LIQUID_TEMPLATE_RECORDER_HOOKS"]
 end
 
 task(gem: :build)
