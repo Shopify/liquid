@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+for adapter in spec/*.rb; do
+  echo "=== Running $adapter ==="
+  bundle exec liquid-spec run "$adapter" --no-max-failures
+done
