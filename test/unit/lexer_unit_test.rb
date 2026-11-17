@@ -141,9 +141,75 @@ class LexerUnitTest < Minitest::Test
     )
   end
 
+  def test_vertical_tab_is_whitespace
+    assert_equal([[:id, "a"], [:id, "b"], [:end_of_string]], tokenize("a\vb"))
+  end
+
+  def test_numbers_stop_before_a_dot_without_digits
+    assert_equal([[:number, "1"], [:dot, "."], [:end_of_string]], tokenize("1."))
+    assert_equal([[:number, "1.2"], [:dot, "."], [:number, "3"], [:end_of_string]], tokenize("1.2.3"))
+    assert_equal([[:number, "1"], [:dotdot, ".."], [:number, "2"], [:end_of_string]], tokenize("1..2"))
+  end
+
+  def test_identifiers_with_dashes_and_question_marks
+    assert_equal([[:id, "a-b?"], [:id, "c"], [:end_of_string]], tokenize("a-b?c"))
+    assert_equal([[:id, "a"], [:question, "?"], [:end_of_string]], tokenize("a ?"))
+  end
+
+  def test_error_with_unterminated_string
+    error = assert_raises(SyntaxError) { tokenize("'abc") }
+    assert_equal("Liquid syntax error: Unexpected character '", error.message)
+  end
+
+  def test_error_with_lone_equals_sign
+    error = assert_raises(SyntaxError) { tokenize("a = b") }
+    assert_equal("Liquid syntax error: Unexpected character =", error.message)
+  end
+
+  def test_error_with_ascii_incompatible_encoding
+    assert_raises(Encoding::CompatibilityError) { tokenize("a".encode(Encoding::UTF_16LE)) }
+  end
+
+  def test_tokens_keep_the_source_encoding
+    tokens = tokenize("a 'b'".b)
+
+    assert_equal([[:id, "a"], [:string, "'b'"], [:end_of_string]], tokens)
+    assert_equal(Encoding::BINARY, tokens[0][1].encoding)
+  end
+
+  def test_tokenize_a_string_scanner
+    require "strscan"
+    scanner = StringScanner.new("foo.bar")
+
+    assert_equal([[:id, "foo"], [:dot, "."], [:id, "bar"], [:end_of_string]], Lexer.tokenize(scanner))
+    assert_predicate(scanner, :eos?)
+  end
+
+  def test_string_scanner_stops_after_an_unexpected_character
+    require "strscan"
+    scanner = StringScanner.new("a Ø b")
+
+    assert_raises(SyntaxError) { Lexer.tokenize(scanner) }
+    assert_equal(4, scanner.pos)
+  end
+
+  def test_raise_syntax_error_with_a_string_scanner
+    require "strscan"
+    scanner = StringScanner.new("a Ø b")
+    error = assert_raises(SyntaxError) { Lexer.raise_syntax_error(2, scanner) }
+
+    assert_equal("Liquid syntax error: Unexpected character Ø", error.message)
+    assert_equal(4, scanner.pos)
+  end
+
+  def test_error_with_a_non_string_input
+    error = assert_raises(::TypeError) { Lexer.tokenize(nil) }
+    assert_equal("no implicit conversion of nil into String", error.message)
+  end
+
   private
 
   def tokenize(input)
-    Lexer.tokenize(StringScanner.new(input))
+    Lexer.tokenize(input)
   end
 end

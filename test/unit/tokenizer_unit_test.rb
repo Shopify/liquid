@@ -48,6 +48,68 @@ class TokenizerTest < Minitest::Test
     assert_equal(["{%%}", "}"], tokenize('{%%}}'))
   end
 
+  def test_unterminated_variables_and_tags
+    assert_equal(["{{"], tokenize("{{ x"))
+    assert_equal(["{{ x}", "a}}"], tokenize("{{ x}a}}"))
+    assert_equal(["{%", " x"], tokenize("{% x"))
+    assert_equal(["{{{x}}"], tokenize("{{{x}}"))
+    assert_equal(["a", "{{%b%}"], tokenize("a{{%b%}"))
+  end
+
+  def test_tag_start_inside_variable
+    assert_equal(["{{ x {% y %}", " z"], tokenize("{{ x {% y %} z"))
+    assert_equal(["{{ x {%", " y z"], tokenize("{{ x {% y z"))
+  end
+
+  def test_multibyte_characters_next_to_delimiters
+    assert_equal(["日本", "{{é}}", "Ø", "{%😀%}", "{é}"], tokenize("日本{{é}}Ø{%😀%}{é}"))
+  end
+
+  def test_binary_source
+    source = "\xFF{{ x }}\xFE".b
+    tokens = tokenize(source)
+
+    assert_equal(["\xFF".b, "{{ x }}".b, "\xFE".b], tokens)
+    assert(tokens.all? { |t| t.encoding == Encoding::BINARY })
+  end
+
+  def test_invalid_byte_sequence_in_text
+    error = assert_raises(Liquid::SyntaxError) { tokenize("{{ x }} a\xFF") }
+    assert_equal("Liquid syntax error: Invalid byte sequence in UTF-8", error.message)
+  end
+
+  def test_ascii_incompatible_source
+    assert_raises(Encoding::CompatibilityError) { tokenize("a {{ x }}".encode(Encoding::UTF_16LE)) }
+  end
+
+  def test_ascii_incompatible_source_after_a_variable_that_ends_inside_a_character
+    error = assert_raises(Encoding::CompatibilityError) { tokenize("{{\u7B7B}a".encode(Encoding::UTF_16LE)) }
+    assert_equal("incompatible encoding regexp match (US-ASCII regexp with UTF-16LE string)", error.message)
+  end
+
+  def test_shift_jis_source
+    source = "表{{ x }}".encode(Encoding::Shift_JIS)
+    tokens = tokenize(source)
+
+    assert_equal(["表", "{{ x }}"].map { |t| t.encode(Encoding::Shift_JIS) }, tokens)
+  end
+
+  def test_shift_jis_characters_whose_second_byte_is_a_curly_brace
+    source = "＋{{ ± }}＋{%".encode(Encoding::Shift_JIS)
+    tokens = tokenize(source)
+
+    assert_equal(["＋", "{{ ±", " }}＋", "{%"].map { |t| t.encode(Encoding::Shift_JIS) }, tokens)
+  end
+
+  def test_string_scanner_keyword_is_accepted
+    require "strscan"
+    tokenizer = Liquid::Tokenizer.new(source: "a{{b}}", string_scanner: StringScanner.new(""))
+
+    assert_equal("a", tokenizer.shift)
+    assert_equal("{{b}}", tokenizer.shift)
+    assert_nil(tokenizer.shift)
+  end
+
   def test_invalid_utf8_after_leading_tag_raises_syntax_error
     error = assert_raises(Liquid::SyntaxError) { new_tokenizer("{% if true %}\xFF") }
     assert_equal("Liquid syntax error: Invalid byte sequence in UTF-8", error.message)

@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.license     = "MIT"
   # s.description = "A secure, non-evaling end user template engine with aesthetic markup."
 
-  s.required_ruby_version     = ">= 3.0.0"
+  s.required_ruby_version     = ">= 3.2.0"
   s.required_rubygems_version = ">= 1.3.7"
 
   s.metadata['allowed_push_host'] = 'https://rubygems.org'
@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
 
   s.require_path = "lib"
 
-  s.add_dependency("strscan", ">= 3.1.1")
   s.add_dependency("bigdecimal")
 
   s.add_development_dependency('rake', '~> 13.0')

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Tokenize templates and lex expressions with plain Ruby instead of `StringScanner`, and drop the `strscan` dependency. The `string_scanner` arguments of `Tokenizer.new`, `Expression.parse`, `Expression.safe_parse` and `VariableLookup.parse` are optional and unused. `Lexer.tokenize` and `Lexer.raise_syntax_error` take a String or a scanner, and `Lexer.tokenize` raises `TypeError` for other input. `Liquid::HAS_STRING_SCANNER_SCAN_BYTE` is removed. Requires Ruby 3.2 or later for `String#byteindex`. [Gira Chawda]
 * Raise `Liquid::SyntaxError` instead of `ArgumentError` when a template with invalid bytes starts with a tag, a variable, or is a `{% liquid %}` body [Josh Faigan]
 
 ## 5.14.0

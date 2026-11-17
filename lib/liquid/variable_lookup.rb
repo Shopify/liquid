@@ -6,11 +6,13 @@ module Liquid
 
     attr_reader :name, :lookups
 
-    def self.parse(markup, string_scanner = StringScanner.new(""), cache = nil)
+    # `string_scanner` is accepted for compatibility with callers written for
+    # the StringScanner-based parser. It is not used.
+    def self.parse(markup, string_scanner = nil, cache = nil)
       new(markup, string_scanner, cache)
     end
 
-    def initialize(markup, string_scanner = StringScanner.new(""), cache = nil)
+    def initialize(markup, string_scanner = nil, cache = nil)
       lookups = markup.scan(VariableParser)
 
       name = lookups.shift
