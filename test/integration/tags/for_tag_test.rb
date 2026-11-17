@@ -38,6 +38,24 @@ HERE
     assert_template_result('321', '{%for item in array reversed %}{{item}}{%endfor%}', assigns)
   end
 
+  def test_for_reversed_with_limit
+    assigns = { 'array' => [1, 2, 3, 4, 5] }
+    # limit:3 takes [1,2,3], reversed yields [3,2,1]
+    assert_template_result('321', '{%for i in array reversed limit:3%}{{i}}{%endfor%}', assigns)
+  end
+
+  def test_for_reversed_with_offset
+    assigns = { 'array' => [1, 2, 3, 4, 5] }
+    # offset:2 takes [3,4,5], reversed yields [5,4,3]
+    assert_template_result('543', '{%for i in array reversed offset:2%}{{i}}{%endfor%}', assigns)
+  end
+
+  def test_for_reversed_with_limit_and_offset
+    assigns = { 'array' => [1, 2, 3, 4, 5] }
+    # offset:1 limit:3 takes [2,3,4], reversed yields [4,3,2]
+    assert_template_result('432', '{%for i in array reversed limit:3 offset:1%}{{i}}{%endfor%}', assigns)
+  end
+
   def test_for_with_range
     assert_template_result(' 1  2  3 ', '{%for item in (1..3) %} {{item}} {%endfor%}')
 
