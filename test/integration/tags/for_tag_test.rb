@@ -228,6 +228,20 @@ HERE
     assert_template_result(expected, markup, assigns)
   end
 
+  def test_pause_resume_after_negative_offset
+    assigns = { 'array' => { 'items' => [1, 2, 3] } }
+    assert_template_result(
+      '1|23',
+      '{%for i in array.items offset: -1 limit: 2 %}{{i}}{%endfor%}|{%for i in array.items offset:continue %}{{i}}{%endfor%}',
+      assigns
+    )
+    assert_template_result(
+      '123|',
+      '{%for i in array.items offset: -1 %}{{i}}{%endfor%}|{%for i in array.items offset:continue %}{{i}}{%endfor%}',
+      assigns
+    )
+  end
+
   def test_for_with_break
     assigns = { 'array' => { 'items' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }
 
