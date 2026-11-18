@@ -36,4 +36,10 @@ class RawTagTest < Minitest::Test
     assert_match_syntax_error(/Valid syntax/, '{% raw } foo {% endraw %}')
     assert_match_syntax_error(/Valid syntax/, '{% raw } foo %}{% endraw %}')
   end
+
+  def test_endraw_after_variable_start_with_trailing_brace
+    assert_template_result('%{}x', '{%raw%}%{{%endraw%}}{%raw%}x{%endraw%}')
+    assert_template_result('{}}after', '{% raw %}{{% endraw %}}}after')
+    assert_template_result('{x', '{% raw %}{{%- endraw -%} {{ "x" }}')
+  end
 end
