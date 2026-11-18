@@ -48,7 +48,7 @@ module Liquid
           markup   = Regexp.last_match(2)
 
           if tag_name == 'liquid'
-            parse_context.line_number -= 1
+            parse_context.line_number -= 1 if parse_context.line_number
             next parse_liquid_tag(markup, parse_context)
           end
 
