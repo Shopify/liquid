@@ -96,4 +96,29 @@ class SecurityTest < Minitest::Test
       Template.parse(code).render!
     end
   end
+
+  def test_recursive_includes_fail_fast_on_stack_level_error
+    with_block_max_depth(4) do
+      file_system = StubFileSystem.new(
+        "recurse" => "({% include 'recurse' %})\n[{% include 'recurse' %}]",
+      )
+      template = Template.parse("{% include 'recurse' %}", error_mode: :lax)
+
+      assert_raises(Liquid::StackLevelError) do
+        template.render({}, registers: { file_system: file_system })
+      end
+    end
+  end
+
+  private
+
+  def with_block_max_depth(depth)
+    original_depth = Liquid::Block::MAX_DEPTH
+    Liquid::Block.send(:remove_const, :MAX_DEPTH)
+    Liquid::Block.const_set(:MAX_DEPTH, depth)
+    yield
+  ensure
+    Liquid::Block.send(:remove_const, :MAX_DEPTH)
+    Liquid::Block.const_set(:MAX_DEPTH, original_depth)
+  end
 end # SecurityTest
