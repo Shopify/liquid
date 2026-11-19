@@ -62,6 +62,16 @@ class CategoryDrop < Liquid::Drop
   end
 end
 
+class ReadonlyContextModel
+  def context=(_context)
+    raise "context is a read-only model attribute"
+  end
+
+  def to_liquid
+    { "name" => "record" }
+  end
+end
+
 class CounterDrop < Liquid::Drop
   def count
     @count ||= 0
@@ -477,6 +487,12 @@ class ContextTest < Minitest::Test
     @context['category'] = Category.new("foobar")
     assert_kind_of(CategoryDrop, @context['category'])
     assert_equal(@context, @context['category'].context)
+  end
+
+  def test_does_not_assign_context_to_non_drop_variables
+    model = ReadonlyContextModel.new
+
+    assert_equal("record", Template.parse("{{ item.name }}").render("item" => model))
   end
 
   def test_interrupt_avoids_object_allocations
