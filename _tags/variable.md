@@ -75,7 +75,7 @@ I am {{ age }} and my favorite food is {{ favorite_food }}.
 
 <p class="code-label">Output</p>
 ```text
-I am 35 and my favourite food is pizza.
+I am 35 and my favorite food is pizza.
 ```
 
 ## increment
