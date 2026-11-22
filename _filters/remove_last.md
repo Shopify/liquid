@@ -1,6 +1,6 @@
 ---
 title: remove_last
-description: Liquid filter that removes the last occurence of a given substring from a string.
+description: Liquid filter that removes the last occurrence of a given substring from a string.
 version-badge: 5.2.0
 ---
 
