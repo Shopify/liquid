@@ -20,6 +20,7 @@ to dynamically create a list of classes or inline styles.
     card--compact
   {% endif %}
 {% endcapture %}
+{% endraw %}
 
 <div style="{{ styles | squish }}" class="{{ class | squish }}">
 </div>
