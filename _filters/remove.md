@@ -1,6 +1,6 @@
 ---
 title: remove
-description: Liquid filter that removes all occurences of a given substring from a string.
+description: Liquid filter that removes all occurrences of a given substring from a string.
 ---
 
 Removes every occurrence of the specified substring from a string.
