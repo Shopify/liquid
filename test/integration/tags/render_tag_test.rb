@@ -165,6 +165,15 @@ class RenderTagTest < Minitest::Test
     )
   end
 
+  def test_trailing_whitespace_control_does_not_strip_partial_leading_whitespace
+    options = { partials: { 'p' => '  [p]' } }
+    assert_template_result('a   [p]', "a {% render 'p' %}", **options)
+    assert_template_result('a   [p]', "a {% render 'p' -%}", **options)
+    assert_template_result('  [p]|  [p]', "{% render 'p' %}|{% render 'p' -%}", **options)
+    assert_template_result('  [p]', "{% render 'p' %}{% assign x = 1 -%}", **options)
+    assert_template_result('  [p]1', "{% render 'p' %}{{ 1 -}}", **options)
+  end
+
   def test_break_through_render
     options = { partials: { 'break' => '{% break %}' } }
     assert_template_result('1', '{% for i in (1..3) %}{{ i }}{% break %}{{ i }}{% endfor %}', **options)
