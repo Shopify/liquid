@@ -35,6 +35,8 @@ You can string together multiple `concat` filters to join more than two arrays.
 <p class="code-label">Input</p>
 ```liquid
 {%- raw -%}
+{% assign fruits = "apples, oranges, peaches" | split: ", " %}
+{% assign vegetables = "carrots, turnips, potatoes" | split: ", " %}
 {% assign furniture = "chairs, tables, shelves" | split: ", " %}
 
 {% assign everything = fruits | concat: vegetables | concat: furniture %}
