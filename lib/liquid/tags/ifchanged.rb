@@ -8,7 +8,7 @@ module Liquid
 
       if block_output != context.registers[:ifchanged]
         context.registers[:ifchanged] = block_output
-        output << block_output
+        Utils.write_text_to_output(output, block_output)
       end
 
       output

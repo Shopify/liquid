@@ -58,7 +58,7 @@ module Liquid
     # method will be removed.
     def render_to_output_buffer(context, output)
       render_result = render(context)
-      output << render_result if render_result
+      Utils.write_to_output(output, render_result) if render_result
       output
     end
 

@@ -200,6 +200,49 @@ module Liquid
       end
     end
 
+    # Appends +str+ to +output+, converting +str+ to the output's encoding when
+    # the encodings differ.
+    #
+    # Appending a string in a different encoding with String#<< either changes
+    # the output's encoding (corrupting the whole rendered result, e.g. by
+    # turning a UTF-8 buffer into ASCII-8BIT) or raises
+    # Encoding::CompatibilityError, which escapes Template#render unhandled.
+    # Object output in ASCII-8BIT, like the result of base64_decode, is instead
+    # interpreted in the output's encoding and raises a Liquid error when its
+    # bytes are not representable there.
+    def self.write_to_output(output, str)
+      if output.is_a?(String) && str.is_a?(String) && str.encoding != output.encoding
+        str =
+          if output.encoding == Encoding::BINARY
+            str.b
+          elsif str.encoding == Encoding::BINARY
+            str = str.dup.force_encoding(output.encoding)
+            unless str.valid_encoding?
+              raise Liquid::ArgumentError, "invalid byte sequence in #{output.encoding}"
+            end
+
+            str
+          else
+            begin
+              str.encode(output.encoding)
+            rescue EncodingError => e
+              raise Liquid::ArgumentError, e.message
+            end
+          end
+      end
+
+      output << str
+    end
+
+    # Appends +str+ to +output+. Unlike {.write_to_output}, this is for strings
+    # that originate from the template source or rendered fragments, whose
+    # bytes are authoritative: a binary string keeps the historical behavior of
+    # making the buffer binary, and a binary buffer accepts any bytes.
+    def self.write_text_to_output(output, str)
+      str = str.b if output.is_a?(String) && output.encoding == Encoding::BINARY && str.encoding != Encoding::BINARY
+      output << str
+    end
+
     def self.array_inspect(arr, seen = {})
       if seen[arr.object_id]
         return "[...]"
