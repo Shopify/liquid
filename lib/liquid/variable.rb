@@ -123,7 +123,12 @@ module Liquid
           render_obj_to_output(o, output)
         end
       else
-        output << Liquid::Utils.to_s(obj)
+        str = Liquid::Utils.to_s(obj)
+        if output.is_a?(String) && str.encoding != output.encoding
+          Liquid::Utils.write_to_output(output, str)
+        else
+          output << str
+        end
       end
     end
 

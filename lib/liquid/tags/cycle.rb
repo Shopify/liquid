@@ -44,7 +44,7 @@ module Liquid
         val = val.to_s
       end
 
-      output << val
+      Utils.write_to_output(output, val)
 
       iteration += 1
       iteration = 0 if iteration >= @variables.size

@@ -117,4 +117,73 @@ class OutputTest < Minitest::Test
 
     assert_equal(expected, Template.parse(text).render!(@assigns, filters: [FunnyFilter]))
   end
+
+  def test_binary_string_output_with_valid_utf8_bytes
+    template = Template.parse("a{{ x }}é")
+    output   = template.render("x" => (+"\xC2\xA3").b)
+
+    assert_equal("a£é", output)
+    assert_equal(Encoding::UTF_8, output.encoding)
+    assert_empty(template.errors)
+  end
+
+  def test_binary_string_output_with_invalid_utf8_bytes
+    template = Template.parse("a{{ x }}é")
+    output   = template.render("x" => (+"\x80").b)
+
+    assert_equal("aLiquid error: invalid byte sequence in UTF-8é", output)
+    assert_equal(Encoding::UTF_8, output.encoding)
+    assert_equal([Liquid::ArgumentError], template.errors.map(&:class))
+  end
+
+  def test_binary_string_output_from_base64_filters
+    # https://github.com/Shopify/liquid/issues/1453
+    template = Template.parse("a{{ '£' | base64_encode | base64_decode }}é")
+    output   = template.render
+
+    assert_equal("a£é", output)
+    assert_equal(Encoding::UTF_8, output.encoding)
+    assert_empty(template.errors)
+
+    template = Template.parse("a{{ 'gA==' | base64_decode }}é")
+    output   = template.render
+
+    assert_equal("aLiquid error: invalid byte sequence in UTF-8é", output)
+    assert_equal(Encoding::UTF_8, output.encoding)
+    assert_equal([Liquid::ArgumentError], template.errors.map(&:class))
+  end
+
+  def test_binary_string_output_from_echo_cycle_and_custom_tags
+    template = Template.parse("a{% echo x %}é")
+    assert_equal("aLiquid error: invalid byte sequence in UTF-8é", template.render("x" => (+"\x80").b))
+
+    template = Template.parse("a{% cycle x %}é")
+    assert_equal("aLiquid error: invalid byte sequence in UTF-8é", template.render("x" => (+"\x80").b))
+
+    environment = Liquid::Environment.build do |env|
+      env.register_tag("binary", Class.new(Liquid::Tag) do
+        def render(_context) = (+"\x80").b
+      end)
+    end
+
+    template = Template.parse("a{% binary %}é", environment: environment)
+    assert_equal("aLiquid error: invalid byte sequence in UTF-8é", template.render)
+    assert_equal([Liquid::ArgumentError], template.errors.map(&:class))
+  end
+
+  def test_output_of_string_in_another_encoding_is_transcoded
+    template = Template.parse("a{{ x }}é")
+
+    assert_equal("ahié", template.render("x" => "hi".encode(Encoding::UTF_16LE)))
+    assert_empty(template.errors)
+  end
+
+  def test_render_into_binary_output_buffer
+    template = Template.parse("é{{ x }}")
+    output   = +"".b
+
+    template.render({ "x" => "✓" }, output: output)
+
+    assert_equal("é✓".b, output)
+  end
 end # OutputTest

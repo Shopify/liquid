@@ -5,7 +5,7 @@ module Liquid
     module Disableable
       def render_to_output_buffer(context, output)
         if context.tag_disabled?(tag_name)
-          output << disabled_error(context)
+          Utils.write_to_output(output, disabled_error(context))
           return
         end
         super

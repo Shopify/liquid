@@ -36,7 +36,7 @@ module Liquid
     end
 
     def render_to_output_buffer(_context, output)
-      output << @body
+      Utils.write_text_to_output(output, @body)
       output
     end
 

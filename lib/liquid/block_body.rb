@@ -102,7 +102,7 @@ module Liquid
         error_mode = context.registers.static[:template_error_mode]
         suppress_error_text = blank_tag && error_mode != :strict2 && error_mode != :rigid
         unless suppress_error_text # blank-tag suppression is kept for backwards compatibility outside strict2
-          output << error_message
+          Utils.write_text_to_output(output, error_message)
         end
       end
     end
@@ -225,7 +225,10 @@ module Liquid
       idx = 0
       while (node = @nodelist[idx])
         if node.instance_of?(String)
-          output << node
+          # A binary buffer accepts any bytes; appending a UTF-8 string to it
+          # would raise Encoding::CompatibilityError. This check is inlined for
+          # performance rather than using Utils.write_text_to_output.
+          output << (output.is_a?(String) && output.encoding == Encoding::BINARY && node.encoding != Encoding::BINARY ? node.b : node)
         else
           render_node(context, output, node)
           # If we get an Interrupt that means the block must stop processing. An
