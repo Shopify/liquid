@@ -20,7 +20,7 @@ class StrainerTemplateUnitTest < Minitest::Test
     private
 
     def public_filter
-      "overriden as private"
+      "overridden as private"
     end
   end
 
@@ -39,7 +39,7 @@ class StrainerTemplateUnitTest < Minitest::Test
     protected
 
     def public_filter
-      "overriden as protected"
+      "overridden as protected"
     end
   end
 
