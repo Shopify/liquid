@@ -41,6 +41,12 @@ class TokenizerTest < Minitest::Test
     assert_equal(["{{}}", "}"], tokenize('{{}}}'))
   end
 
+  def test_closing_brace_in_quoted_string
+    assert_equal(['{{ msg | replace: "{name}", name }}'], tokenize('{{ msg | replace: "{name}", name }}'))
+    assert_equal(["{{ msg | replace: '{name}', name }}"], tokenize("{{ msg | replace: '{name}', name }}"))
+    assert_equal(['{{ x | prepend: " {{ " | append: " }} " }}'], tokenize('{{ x | prepend: " {{ " | append: " }} " }}'))
+  end
+
   def test_unmatching_start_and_end
     assert_equal(["{{%}"], tokenize('{{%}'))
     assert_equal(["{{%%%}}"], tokenize('{{%%%}}'))
