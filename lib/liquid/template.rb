@@ -105,6 +105,9 @@ module Liquid
 
       tokenizer     = parse_context.new_tokenizer(source, start_line_number: @line_numbers && 1)
       @root         = Document.parse(tokenizer, parse_context)
+      if defined?(TemplateRecorder) && TemplateRecorder::HOOKS_ENABLED && TemplateRecorder.current
+        @template_recorder_source = source.dup.freeze
+      end
       self
     end
 
@@ -141,6 +144,10 @@ module Liquid
     def render(*args)
       return '' if @root.nil?
 
+      if defined?(TemplateRecorder) && TemplateRecorder::HOOKS_ENABLED
+        recording_session = TemplateRecorder.current
+      end
+      recording_assigns = args.first
       context = case args.first
       when Liquid::Context
         c = args.shift
@@ -180,6 +187,13 @@ module Liquid
         context.add_filters(args.pop)
       end
 
+      recording = recording_session&.begin_render(self, recording_assigns, context)
+      if recording
+        recorder_registers = context.registers.static
+        previous_recorder = recorder_registers[TemplateRecorder::REGISTER_KEY]
+        recorder_registers[TemplateRecorder::REGISTER_KEY] = recording
+      end
+
       # Retrying a render resets resource usage
       context.resource_limits.reset
 
@@ -189,19 +203,50 @@ module Liquid
 
       context.template_name ||= name
 
+      rendered_output = nil
+      render_succeeded = false
+      # A caller may hand in a buffer that already holds bytes this template did
+      # not produce, and may keep appending to it after this render returns. The
+      # recording must describe only what the template rendered, so remember
+      # where its output starts.
+      recorded_output_start = recording ? (output || '').bytesize : 0
       previous_error_mode = context.registers.static[:template_error_mode]
       context.registers.static[:template_error_mode] = @error_mode
 
       begin
         # render the nodelist.
-        @root.render_to_output_buffer(context, output || +'')
+        rendered_output = @root.render_to_output_buffer(context, output || +'')
+        render_succeeded = true
+        rendered_output
       rescue Liquid::MemoryError => e
-        context.handle_error(e)
+        rendered_output = context.handle_error(e)
+        # The caller still gets the error text, but a render that hit the memory
+        # limit is truncated by definition: recording it as a success would put
+        # a partial render into the corpus as if it were the specified output.
+        render_succeeded = false
+        recorded_output_start = 0
+        rendered_output
       ensure
         if previous_error_mode
           context.registers.static[:template_error_mode] = previous_error_mode
         else
           context.registers.static.delete(:template_error_mode)
+        end
+        if recording
+          if previous_recorder
+            recorder_registers[TemplateRecorder::REGISTER_KEY] = previous_recorder
+          else
+            recorder_registers.delete(TemplateRecorder::REGISTER_KEY)
+          end
+          # Slice off any caller-supplied prefix, and copy: the buffer is the
+          # caller's and may still be appended to, which would otherwise leak
+          # bytes into a recording that has already been taken.
+          recorded_output = if rendered_output.is_a?(String)
+            rendered_output.byteslice(recorded_output_start, rendered_output.bytesize - recorded_output_start).dup
+          else
+            rendered_output
+          end
+          recording_session.finish_render(recording, recorded_output, context, success: render_succeeded)
         end
         @errors = context.errors
       end
