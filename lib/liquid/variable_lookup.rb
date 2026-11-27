@@ -4,6 +4,25 @@ module Liquid
   class VariableLookup
     COMMAND_METHODS = ['size', 'first', 'last'].freeze
 
+    # Matches simple identifier chains: name(.name)* with no brackets/quotes
+    SIMPLE_LOOKUP_RE = /\A[\w-]+\??(?:\.[\w-]+\??)*\z/
+
+    # Returns true when markup is a simple dotted identifier chain that the
+    # fast path in initialize can handle. Accepts:
+    #   - Single names: "product", "item"
+    #   - Dotted chains: "product.title", "cart.items.first"
+    #   - Question-mark suffixes: "product.available?"
+    #   - Hyphens in names: "my-var.some-field"
+    # Rejects (falls through to VariableParser regex):
+    #   - Bracket lookups: "product[0]", "hash['key']"
+    #   - Quoted strings, empty input, leading/trailing dots
+    # Fallback: when this returns false, initialize uses the original
+    #   markup.scan(VariableParser) path — behavior is identical to
+    #   the pre-optimization code for any input the fast path rejects.
+    def self.simple_lookup?(markup)
+      markup.bytesize > 0 && markup.match?(SIMPLE_LOOKUP_RE)
+    end
+
     attr_reader :name, :lookups
 
     def self.parse(markup, string_scanner = StringScanner.new(""), cache = nil)
@@ -11,6 +30,31 @@ module Liquid
     end
 
     def initialize(markup, string_scanner = StringScanner.new(""), cache = nil)
+      if self.class.simple_lookup?(markup)
+        dot_pos = markup.index('.')
+        if dot_pos.nil?
+          @name = markup
+          @lookups = Const::EMPTY_ARRAY
+          @command_flags = 0
+          return
+        end
+
+        @name = markup.byteslice(0, dot_pos)
+        @lookups = []
+        @command_flags = 0
+        pos = dot_pos + 1
+        len = markup.bytesize
+        while pos < len
+          seg_start = pos
+          pos += 1 while pos < len && markup.getbyte(pos) != ByteTables::DOT
+          seg = markup.byteslice(seg_start, pos - seg_start)
+          @command_flags |= 1 << @lookups.length if COMMAND_METHODS.include?(seg)
+          @lookups << seg
+          pos += 1 # skip dot
+        end
+        return
+      end
+
       lookups = markup.scan(VariableParser)
 
       name = lookups.shift
