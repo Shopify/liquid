@@ -44,6 +44,10 @@ module Liquid
     def key?(key)
       @changes.key?(key) || @static.key?(key)
     end
+
+    def values_at(*keys)
+      keys.collect { |key| fetch(key) }
+    end
   end
 
   # Alias for backwards compatibility
