@@ -162,7 +162,12 @@ module Liquid
       obj
     end
 
-    def self.to_s(obj, seen = {})
+    # Optional first argument so Module#to_s / #inspect keep working when
+    # tooling (for example SimpleCov) calls these with no arguments.
+    def self.to_s(obj = (no_object = true
+                         nil), seen = {})
+      return super() if no_object
+
       case obj
       when BigDecimal
         obj.to_s("F")
@@ -182,7 +187,10 @@ module Liquid
       end
     end
 
-    def self.inspect(obj, seen = {})
+    def self.inspect(obj = (no_object = true
+                            nil), seen = {})
+      return super() if no_object
+
       case obj
       when Hash
         # If the custom hash implementation overrides `#inspect`, use their
