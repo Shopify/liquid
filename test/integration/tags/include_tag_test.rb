@@ -380,6 +380,48 @@ class IncludeTagTest < Minitest::Test
     )
   end
 
+  def test_break_in_included_array_stops_after_first_interrupt
+    assigns = { 'items' => [1, 2, 3] }
+    partials = { 'break' => '<{% break %}>' }
+
+    assert_template_result(
+      '1<end',
+      "{% for i in (1..2) %}{{ i }}{% include 'break' for items %}{% endfor %}end",
+      assigns,
+      partials: partials,
+    )
+    assert_template_result(
+      '1<end',
+      "{% for i in (1..2) %}{{ i }}{% include 'break' with items %}{% endfor %}end",
+      assigns,
+      partials: partials,
+    )
+    assert_template_result(
+      '<|123|end',
+      "{% for i in (1..2) %}{% include 'break' for items %}{% endfor %}|{% for z in (1..3) %}{{ z }}{% endfor %}|end",
+      assigns,
+      partials: partials,
+    )
+  end
+
+  def test_continue_in_included_array_stops_after_first_interrupt
+    assigns = { 'items' => [1, 2, 3] }
+    partials = { 'continue' => '<{% continue %}>' }
+
+    assert_template_result(
+      '1<2<end',
+      "{% for i in (1..2) %}{{ i }}{% include 'continue' for items %}{% endfor %}end",
+      assigns,
+      partials: partials,
+    )
+    assert_template_result(
+      '1<2<end',
+      "{% for i in (1..2) %}{{ i }}{% include 'continue' with items %}{% endfor %}end",
+      assigns,
+      partials: partials,
+    )
+  end
+
   def test_render_tag_renders_error_with_template_name
     assert_template_result(
       'Liquid error (foo line 1): standard error',
